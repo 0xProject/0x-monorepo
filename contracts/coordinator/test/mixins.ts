@@ -48,6 +48,7 @@ describe('Mixins tests', () => {
             artifacts.Coordinator,
             provider,
             txDefaults,
+            artifacts,
             exchangeAddress,
             new BigNumber(chainId),
         );

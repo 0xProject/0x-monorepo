@@ -3,14 +3,38 @@
         "version": "3.2.0",
         "changes": [
             {
-                "note": "re-export new ethereum-types types, TupleDataItem",
-                "pr": 1919
-            },
-            {
                 "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
-                "pr": 1919
+                "pr": 2055
             }
         ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "3.1.12",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "3.1.11",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.10",
+        "changes": [
+            {
+                "note": "re-export new ethereum-types types, TupleDataItem",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563006338,

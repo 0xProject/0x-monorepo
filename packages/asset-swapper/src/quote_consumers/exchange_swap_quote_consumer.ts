@@ -1,4 +1,4 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
@@ -45,7 +45,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { to, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
 
@@ -58,11 +58,11 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = params;
             args = [orders, takerAssetFillAmount, signatures];
         }
-        const calldataHexString = abiEncoder.encode(args);
+        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
         return {
             calldataHexString,
             methodAbi,
-            to,
+            toAddress,
             ethAmount,
         };
     }
@@ -77,6 +77,8 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const signatures = _.map(orders, o => o.signature);
 
+        const optimizedOrders = swapQuoteConsumerUtils.optimizeOrdersForMarketExchangeOperation(orders, quote.type);
+
         let params: ExchangeSmartContractParams;
         let methodName: string;
 
@@ -84,7 +86,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { makerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 makerAssetFillAmount,
                 type: MarketOperation.Buy,
@@ -95,7 +97,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 takerAssetFillAmount,
                 type: MarketOperation.Sell,
@@ -111,7 +113,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         return {
             params,
-            to: this._contractWrappers.exchange.address,
+            toAddress: this._contractWrappers.exchange.address,
             methodAbi,
         };
     }
@@ -142,34 +144,34 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             let txHash: string;
             if (quote.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
+                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrow.validateAndSendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
-                    finalTakerAddress,
+                    orders.map(o => o.signature),
                     {
-                        gasLimit,
+                        from: finalTakerAddress,
+                        gas: gasLimit,
                         gasPrice,
-                        shouldValidate: true,
                     },
                 );
             } else {
                 const { takerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrowAsync(
+                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrow.validateAndSendTransactionAsync(
                     orders,
                     takerAssetFillAmount,
-                    finalTakerAddress,
+                    orders.map(o => o.signature),
                     {
-                        gasLimit,
+                        from: finalTakerAddress,
+                        gas: gasLimit,
                         gasPrice,
-                        shouldValidate: true,
                     },
                 );
             }
             return txHash;
         } catch (err) {
-            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+            if (_.includes(err.message, ContractError.SignatureRequestDenied)) {
                 throw new Error(SwapQuoteConsumerError.SignatureRequestDenied);
-            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+            } else if (_.includes(err.message, ForwarderError.CompleteFillFailed)) {
                 throw new Error(SwapQuoteConsumerError.TransactionValueTooLow);
             } else {
                 throw err;

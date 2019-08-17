@@ -96,6 +96,7 @@ describe('Coordinator tests', () => {
             artifacts.Coordinator,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
             new BigNumber(chainId),
         );

@@ -25,6 +25,9 @@ export const docGenConfigs: DocGenConfigs = {
             'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/ganache-core/index.d.ts#L8',
         'lightwallet.keystore':
             'https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/eth-lightwallet/index.d.ts#L36',
+        // HACK: Asset-swapper specifies marketSell and marketBuy quotes with a descriminant MarketOperation Type to ignore the error, linking Buy and Sell to MarketOperation
+        Buy: 'https://github.com/0xProject/0x-monorepo/blob/development/packages/types/src/index.ts',
+        Sell: 'https://github.com/0xProject/0x-monorepo/blob/development/packages/types/src/index.ts',
     },
     // If a 0x package re-exports an external package, we should add a link to it's exported items here
     EXTERNAL_EXPORT_TO_LINK: {
@@ -57,14 +60,19 @@ export const docGenConfigs: DocGenConfigs = {
         'NonceSubproviderErrors',
         'Web3WrapperErrors',
         'AssetBuyerError',
-        'ContractWrappersError',
+        'ContractError',
         'TypedDataError',
         'SwapQuoterError',
         'SwapQuoteGetOutputOpts',
         'SwapQuoteExecutionOpts',
-        'ForwarderWrapperError',
+        'ForwarderError',
         'CoordinatorServerError',
         'CoordinatorServerCancellationResponse',
+        'EventCallback',
+        'IndexedFilterValues',
+        'OrderInfo',
+        'TransactionOpts',
+        'EventCallback ',
     ],
     // Some libraries only export types. In those cases, we cannot check if the exported types are part of the
     // "exported public interface". Thus we add them here and skip those checks.

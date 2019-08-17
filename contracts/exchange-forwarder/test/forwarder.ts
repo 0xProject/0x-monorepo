@@ -102,7 +102,6 @@ describe(ContractName.Forwarder, () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
-            zrxAssetData,
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
@@ -177,7 +176,6 @@ describe(ContractName.Forwarder, () => {
                 exchangeArtifacts.Exchange,
                 provider,
                 txDefaults,
-                zrxAssetData,
                 new BigNumber(chainId),
             );
             return expectContractCreationFailedAsync(

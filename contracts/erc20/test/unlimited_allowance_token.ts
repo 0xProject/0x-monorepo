@@ -37,6 +37,7 @@ describe('UnlimitedAllowanceToken', () => {
             artifacts.DummyERC20Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,

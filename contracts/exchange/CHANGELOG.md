@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.11 - _August 8, 2019_
+
+    * Dependencies updated
+
+## v2.1.10 - _July 31, 2019_
+
+    * Updated calls to <contract wrapper>.deployFrom0xArtifactAsync to include artifact dependencies. (#1995)
+
+## v2.1.9 - _July 24, 2019_
+
+    * Dependencies updated
+
 ## v2.1.8 - _July 15, 2019_
 
     * Dependencies updated

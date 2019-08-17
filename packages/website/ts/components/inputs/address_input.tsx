@@ -1,9 +1,9 @@
-import { colors } from '@0x/react-shared';
 import { addressUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import { RequiredLabel } from 'ts/components/ui/required_label';
+import { colors } from 'ts/utils/colors';
 
 interface AddressInputProps {
     disabled?: boolean;

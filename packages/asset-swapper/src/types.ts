@@ -43,26 +43,26 @@ export interface OrderProvider {
  * Represents the metadata to call a smart contract with calldata.
  * calldataHexString: The hexstring of the calldata.
  * methodAbi: The ABI of the smart contract method to call.
- * to: The contract address to call.
+ * toAddress: The contract address to call.
  * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
  */
 export interface CalldataInfo {
     calldataHexString: string;
     methodAbi: MethodAbi;
-    to: string;
+    toAddress: string;
     ethAmount?: BigNumber;
 }
 
 /**
  * Represents the metadata to call a smart contract with parameters.
  * params: The metadata object containing all the input parameters of a smart contract call.
- * to: The contract address to call.
+ * toAddress: The contract address to call.
  * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
  * methodAbi: The ABI of the smart contract method to call with params.
  */
 export interface SmartContractParamsInfo<T> {
     params: T;
-    to: string;
+    toAddress: string;
     ethAmount?: BigNumber;
     methodAbi: MethodAbi;
 }
@@ -256,9 +256,10 @@ export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffilia
 export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
 
 /**
- * assetEthAmount: The amount of eth required to pay for the requested asset.
- * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.
- * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
+ * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
+ * takerTokenAmount: The amount of takerToken required to conduct the swap.
+ * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, feeOrders, and paying affiliate fee)
+ * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
  */
 export interface SwapQuoteInfo {
     feeTakerTokenAmount: BigNumber;

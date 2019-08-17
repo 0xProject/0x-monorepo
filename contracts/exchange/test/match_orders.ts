@@ -117,7 +117,7 @@ describe('matchOrders', () => {
         await erc721Wrapper.setBalancesAndAllowancesAsync();
         // Deploy ERC1155 token and proxy
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
-        erc1155Token = erc1155Wrapper.getContract();
+        erc1155Token = (erc1155Wrapper.getContract() as any) as ERC1155TokenContract;
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
         await erc1155ProxyWrapper.setBalancesAndAllowancesAsync();
         // Deploy MultiAssetProxy.
@@ -125,12 +125,14 @@ describe('matchOrders', () => {
             assetProxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            {},
         );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
+            {},
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);

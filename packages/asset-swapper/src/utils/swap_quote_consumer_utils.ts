@@ -1,24 +1,21 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { SignedOrder } from '@0x/types';
+import { assetDataUtils } from '@0x/order-utils';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
-import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
 import {
-    SmartContractParams,
+    ConsumerType,
     SwapQuote,
-    SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
 } from '../types';
 
 import { assert } from './assert';
-import { assetDataUtils } from './asset_data_utils';
 
 export const swapQuoteConsumerUtils = {
     async getTakerAddressOrThrowAsync(
@@ -55,9 +52,8 @@ export const swapQuoteConsumerUtils = {
         takerAddress: string,
     ): Promise<[BigNumber, BigNumber]> {
         const web3Wrapper = new Web3Wrapper(provider);
-        const wethAddress = contractWrappers.forwarder.etherTokenAddress;
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-        const wethBalance = await contractWrappers.erc20Token.getBalanceAsync(wethAddress, takerAddress);
+        const wethBalance = await contractWrappers.weth9.balanceOf.callAsync(takerAddress);
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
@@ -72,15 +68,24 @@ export const swapQuoteConsumerUtils = {
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
     },
-    async getConsumerForSwapQuoteAsync(
+    optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
+        return _.map(orders, (order: SignedOrder, index: number) => {
+            const optimizedOrder = _.clone(order);
+            if (operation === MarketOperation.Sell && index !== 0) {
+                optimizedOrder.takerAssetData = constants.NULL_BYTES;
+            } else if (index !== 0) {
+                optimizedOrder.makerAssetData = constants.NULL_BYTES;
+            }
+            return optimizedOrder;
+        });
+    },
+    async getConsumerTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
         provider: Provider,
-        exchangeConsumer: ExchangeSwapQuoteConsumer,
-        forwarderConsumer: ForwarderSwapQuoteConsumer,
         opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
-        const wethAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
+    ): Promise<ConsumerType> {
+        const wethAssetData = assetDataUtils.encodeERC20AssetData(contractWrappers.contractAddresses.etherToken);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
@@ -97,14 +102,14 @@ export const swapQuoteConsumerUtils = {
             );
             if (isEnoughEthAndWethBalance[1]) {
                 // should be more gas efficient to use exchange consumer, so if possible use it.
-                return exchangeConsumer;
+                return ConsumerType.Exchange;
             } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
-                return forwarderConsumer;
+                return ConsumerType.Forwarder;
             }
             // Note: defaulting to forwarderConsumer if takerAddress is null or not enough balance of either wEth or Eth
-            return forwarderConsumer;
+            return ConsumerType.Forwarder;
         } else {
-            return exchangeConsumer;
+            return ConsumerType.Exchange;
         }
     },
 };

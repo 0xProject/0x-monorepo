@@ -1,8 +1,8 @@
-import { Link } from '@0x/react-shared';
 import _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled, { css, withTheme } from 'styled-components';
+import { Link } from 'ts/components/documentation/shared/link';
 
 import Headroom from 'react-headroom';
 

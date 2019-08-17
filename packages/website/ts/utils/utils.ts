@@ -1,14 +1,16 @@
-import { ContractWrappersError } from '@0x/contract-wrappers';
+import { ContractError } from '@0x/contract-wrappers';
 import { assetDataUtils, TypedDataError } from '@0x/order-utils';
-import { constants as sharedConstants, Networks } from '@0x/react-shared';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as bowser from 'bowser';
+import * as changeCase from 'change-case';
 import deepEqual from 'deep-equal';
+import isMobile from 'is-mobile';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
+import { scroller } from 'react-scroll';
 
 import { ZeroExProvider } from 'ethereum-types';
 import {
@@ -16,6 +18,8 @@ import {
     BlockchainCallErrs,
     BrowserType,
     Environments,
+    EtherscanLinkSuffixes,
+    Networks,
     OperatingSystemType,
     PortalOrder,
     Providers,
@@ -229,13 +233,13 @@ export const utils = {
         const isUniqueSymbol = tokenWithSameSymbolIfExists === undefined;
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
-        const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+    zeroExErrToHumanReadableErrMsg(error: ContractError | ExchangeContractErrs, takerAddress: string): string {
+        const ContractErrorToHumanReadableError: { [error: string]: string } = {
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [TypedDataError.InvalidSignature]: 'Order signature is not valid',
-            [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
+            [ContractError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ContractError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ContractError.OutOfGas]: 'Transaction ran out of gas',
         };
         const exchangeContractErrorToHumanReadableError: {
             [error: string]: string;
@@ -265,7 +269,7 @@ export const utils = {
             [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
         const humanReadableErrorMsg =
-            exchangeContractErrorToHumanReadableError[error] || ContractWrappersErrorToHumanReadableError[error];
+            exchangeContractErrorToHumanReadableError[error] || ContractErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
     isParityNode(nodeVersion: string): boolean {
@@ -277,9 +281,9 @@ export const utils = {
     isTestNetwork(networkId: number): boolean {
         const isTestNetwork = _.includes(
             [
-                sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan],
-                sharedConstants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
-                sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten],
+                constants.NETWORK_ID_BY_NAME[Networks.Kovan],
+                constants.NETWORK_ID_BY_NAME[Networks.Rinkeby],
+                constants.NETWORK_ID_BY_NAME[Networks.Ropsten],
             ],
             networkId,
         );
@@ -483,4 +487,45 @@ export const utils = {
         const result = `/images/token_icons/${symbol}.png`;
         return result;
     },
-};
+    setUrlHash(anchorId: string): void {
+        window.location.hash = anchorId;
+    },
+    scrollToHash(hash: string, containerId: string): void {
+        let finalHash = hash;
+        if (_.isEmpty(hash)) {
+            finalHash = constants.SCROLL_TOP_ID; // scroll to the top
+        }
+
+        scroller.scrollTo(finalHash, {
+            duration: 0,
+            offset: 0,
+            containerId,
+        });
+    },
+    isUserOnMobile(): boolean {
+        const isUserOnMobile = isMobile();
+        return isUserOnMobile;
+    },
+    getIdFromName(name: string): string {
+        const id = name.replace(/ /g, '-');
+        return id;
+    },
+    convertDashesToSpaces(text: string): string {
+        return text.replace(/-/g, ' ');
+    },
+    convertCamelCaseToSpaces(text: string): string {
+        return changeCase.snake(text).replace(/_/g, ' ');
+    },
+    getEtherScanLinkIfExists(
+        addressOrTxHash: string,
+        networkId: number,
+        suffix: EtherscanLinkSuffixes,
+    ): string | undefined {
+        const networkName = constants.NETWORK_NAME_BY_ID[networkId];
+        if (networkName === undefined) {
+            return undefined;
+        }
+        const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
+        return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
+    },
+}; // tslint:disable:max-file-line-count

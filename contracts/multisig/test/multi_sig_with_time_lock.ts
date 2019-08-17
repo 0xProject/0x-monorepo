@@ -66,6 +66,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 artifacts.MultiSigWalletWithTimeLock,
                 provider,
                 txDefaults,
+                artifacts,
                 owners,
                 REQUIRED_APPROVALS,
                 secondsTimeLocked,
@@ -81,6 +82,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 artifacts.MultiSigWalletWithTimeLock,
                 provider,
                 txDefaults,
+                artifacts,
                 owners,
                 REQUIRED_APPROVALS,
                 secondsTimeLocked,
@@ -135,6 +137,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 artifacts.MultiSigWalletWithTimeLock,
                 provider,
                 txDefaults,
+                artifacts,
                 owners,
                 REQUIRED_APPROVALS,
                 secondsTimeLocked,
@@ -198,6 +201,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 artifacts.TestRejectEther,
                 provider,
                 txDefaults,
+                artifacts,
             );
             const data = constants.NULL_BYTES;
             const value = new BigNumber(10);
@@ -234,6 +238,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
                     txDefaults,
+                    artifacts,
                     owners,
                     REQUIRED_APPROVALS,
                     secondsTimeLocked,
@@ -308,6 +313,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                     artifacts.MultiSigWalletWithTimeLock,
                     provider,
                     txDefaults,
+                    artifacts,
                     owners,
                     REQUIRED_APPROVALS,
                     SECONDS_TIME_LOCKED,

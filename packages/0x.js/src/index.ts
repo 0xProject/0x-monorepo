@@ -13,33 +13,23 @@ export {
     CoordinatorWrapper,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
-    DutchAuctionWrapper,
-    ERC20TokenWrapper,
-    ERC721TokenWrapper,
-    EtherTokenWrapper,
-    ExchangeWrapper,
-    ERC20ProxyWrapper,
-    ERC721ProxyWrapper,
-    ForwarderWrapper,
-    OrderValidatorWrapper,
     IndexedFilterValues,
-    BlockRange,
     ContractWrappersConfig,
-    MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    OrderStatus,
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
-    TransactionEncoder,
-    BalanceAndAllowance,
-    OrderAndTraderInfo,
-    TraderInfo,
-    ValidateOrderFillableOpts,
-} from '@0x/contract-wrappers';
-
-export {
+    OrderStatus,
+    DutchAuctionContract,
+    ERC20ProxyContract,
+    ERC20TokenContract,
+    ERC721ProxyContract,
+    ERC721TokenContract,
+    ExchangeContract,
+    ForwarderContract,
+    OrderValidatorContract,
+    WETH9Contract,
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -62,9 +52,7 @@ export {
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
     ExchangeEvents,
-} from '@0x/abi-gen-wrappers';
-
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0x/order-watcher';
+} from '@0x/contract-wrappers';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
@@ -81,14 +69,10 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export { BigNumber } from '@0x/utils';
 
 export {
-    ExchangeContractErrs,
     Order,
     SignedOrder,
     DutchAuctionData,
     ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
     AssetProxyId,
     AssetData,
     SingleAssetData,
@@ -99,18 +83,12 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     StaticCallAssetData,
     SignatureType,
-    ObjectMap,
-    OrderRelevantState,
-    Stats,
-    DutchAuctionDetails,
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
 
 export {
-    BlockParamLiteral,
     ContractAbi,
-    BlockParam,
     LogWithDecodedArgs,
     ContractEventArg,
     SupportedProvider,

@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.2.0 - _August 8, 2019_
+
+    * Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2018)
+
+## v5.1.0 - _July 31, 2019_
+
+    * Add subscribe/unsubscribe methods for events (#1970)
+
+## v5.0.3 - _July 24, 2019_
+
+    * Dependencies updated
+
 ## v5.0.2 - _July 15, 2019_
 
     * Dependencies updated
@@ -18,6 +30,7 @@ CHANGELOG
     * Wrappers no longer require passing in the contract ABI at instantiation (#1883)
     * Contract addresses now re-exported from @0x/contract-addresses (#1883)
     * Update wrappers to include parameter assertions (#1823)
+    * Update wrappers to normalize address inputs to lowercase (#1951)
     * Update wrappers to include `getABIEncodedTransactionData` for view and pure functions (#1863)
 
 ## v4.3.0 - _May 10, 2019_

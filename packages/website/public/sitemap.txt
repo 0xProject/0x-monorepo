@@ -23,7 +23,6 @@ https://0x.org/docs/contracts
 https://0x.org/docs/connect
 https://0x.org/docs/web3-wrapper
 https://0x.org/docs/contract-wrappers
-https://0x.org/docs/order-watcher
 https://0x.org/docs/sol-compiler
 https://0x.org/docs/json-schemas
 https://0x.org/docs/sol-coverage

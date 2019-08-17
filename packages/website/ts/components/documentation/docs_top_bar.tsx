@@ -1,11 +1,12 @@
-import { ALink, colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
 import * as React from 'react';
 import { DocsLogo } from 'ts/components/documentation/docs_logo';
+import { Link } from 'ts/components/documentation/shared/link';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, ScreenWidths } from 'ts/types';
+import { ALink, Deco, Key, ScreenWidths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

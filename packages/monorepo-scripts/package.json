@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0x/monorepo-scripts",
-    "version": "1.0.33",
+    "version": "1.0.34",
     "engines": {
         "node": ">=6.12"
     },
@@ -48,8 +48,8 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^2.4.0",
-        "@0x/utils": "^4.4.0",
+        "@0x/types": "^2.4.1",
+        "@0x/utils": "^4.5.0",
         "@lerna/batch-packages": "^3.0.0-beta.18",
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
@@ -63,7 +63,7 @@
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
         "prompt": "^1.0.0",
-        "publish-release": "0xproject/publish-release",
+        "publish-release": "https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed",
         "rimraf": "^2.6.2",
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",

@@ -1,17 +1,40 @@
 import * as _ from 'lodash';
 
-import { AsyncMethod, ContractWrappersError, SyncMethod } from '../types';
+export enum ContractError {
+    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
+    InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
+    InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
+    InvalidJump = 'INVALID_JUMP',
+    OutOfGas = 'OUT_OF_GAS',
+    SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
+    ERC721OwnerNotFound = 'ERC_721_OWNER_NOT_FOUND',
+    ERC721NoApproval = 'ERC_721_NO_APPROVAL',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+}
 
-import { constants } from './constants';
+export type AsyncMethod = (...args: any[]) => Promise<any>;
+export type SyncMethod = (...args: any[]) => any;
+
+const constants = {
+    INVALID_JUMP_PATTERN: 'invalid JUMP at',
+    REVERT: 'revert',
+    OUT_OF_GAS_PATTERN: 'out of gas',
+    INVALID_TAKER_FORMAT: 'instance.taker is not of a type(s) string',
+    METAMASK_USER_DENIED_SIGNATURE_PATTERN: 'User denied transaction signature',
+    TRUST_WALLET_USER_DENIED_SIGNATURE_PATTERN: 'cancelled',
+};
 
 type ErrorTransformer = (err: Error) => Error;
 
 const contractCallErrorTransformer = (error: Error) => {
     if (_.includes(error.message, constants.INVALID_JUMP_PATTERN)) {
-        return new Error(ContractWrappersError.InvalidJump);
+        return new Error(ContractError.InvalidJump);
     }
     if (_.includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
-        return new Error(ContractWrappersError.OutOfGas);
+        return new Error(ContractError.OutOfGas);
     }
     if (_.includes(error.message, constants.REVERT)) {
         const revertReason = error.message.split(constants.REVERT)[1].trim();
@@ -34,7 +57,7 @@ const signatureRequestErrorTransformer = (error: Error) => {
         _.includes(error.message, constants.METAMASK_USER_DENIED_SIGNATURE_PATTERN) ||
         _.includes(error.message, constants.TRUST_WALLET_USER_DENIED_SIGNATURE_PATTERN)
     ) {
-        const errMsg = ContractWrappersError.SignatureRequestDenied;
+        const errMsg = ContractError.SignatureRequestDenied;
         return new Error(errMsg);
     }
     return error;

@@ -84,6 +84,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
+            {},
             new BigNumber(chainId),
         );
 
@@ -91,6 +92,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             proxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            artifacts,
         );
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -103,6 +105,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             artifacts.DevUtils,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
         );
 

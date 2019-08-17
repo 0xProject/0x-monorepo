@@ -1,12 +1,43 @@
 [
     {
+        "version": "7.0.0",
+        "changes": [
+            {
+                "note": "Removed @0x/order-watcher"
+            },
+            {
+                "note": "Update to latest @0x/contract-wrappers v11",
+                "pr": 2068
+            }
+        ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "6.0.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "6.0.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "6.0.13",
         "changes": [
             {
                 "note": "re-export new ethereum-types type, TupleDataItem",
                 "pr": 1919
             }
-        ]
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563193019,

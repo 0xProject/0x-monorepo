@@ -21,6 +21,7 @@ import { AbiDecodedFillOrderData } from './types';
 
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
+    // tslint:disable no-unused-variable
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
     constructor(exchangeContract: ExchangeContract, provider: Web3ProviderEngine | ZeroExProvider) {
@@ -39,20 +40,18 @@ export class ExchangeWrapper {
         opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
-        const txHash = await this._exchange.fillOrder.sendTransactionAsync(
+        const txReceipt = await this._exchange.fillOrder.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
             { from },
         );
-        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return txReceipt;
     }
     public async cancelOrderAsync(signedOrder: SignedOrder, from: string): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createCancel(signedOrder);
-        const txHash = await this._exchange.cancelOrder.sendTransactionAsync(params.order, { from });
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        const txReceipt = await this._exchange.cancelOrder.awaitTransactionSuccessAsync(params.order, { from });
+        return txReceipt;
     }
     public async fillOrKillOrderAsync(
         signedOrder: SignedOrder,
@@ -60,14 +59,13 @@ export class ExchangeWrapper {
         opts: { takerAssetFillAmount?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
-        const txHash = await this._exchange.fillOrKillOrder.sendTransactionAsync(
+        const txReceipt = await this._exchange.fillOrKillOrder.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
             { from },
         );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        return txReceipt;
     }
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
@@ -75,14 +73,13 @@ export class ExchangeWrapper {
         opts: { takerAssetFillAmount?: BigNumber; gas?: number } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
-        const txHash = await this._exchange.fillOrderNoThrow.sendTransactionAsync(
+        const txReceipt = await this._exchange.fillOrderNoThrow.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
             { from, gas: opts.gas },
         );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        return txReceipt;
     }
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
@@ -169,17 +166,17 @@ export class ExchangeWrapper {
         return tx;
     }
     public async cancelOrdersUpToAsync(salt: BigNumber, from: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.cancelOrdersUpTo.sendTransactionAsync(salt, { from });
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        const txReceipt = await this._exchange.cancelOrdersUpTo.awaitTransactionSuccessAsync(salt, { from });
+        return txReceipt;
     }
     public async registerAssetProxyAsync(
         assetProxyAddress: string,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.registerAssetProxy.sendTransactionAsync(assetProxyAddress, { from });
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        const txReceipt = await this._exchange.registerAssetProxy.awaitTransactionSuccessAsync(assetProxyAddress, {
+            from,
+        });
+        return txReceipt;
     }
     public async executeTransactionAsync(
         signedTransaction: SignedZeroExTransaction,
@@ -324,15 +321,14 @@ export class ExchangeWrapper {
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
-        const txHash = await this._exchange.matchOrders.sendTransactionAsync(
+        const txReceipt = await this._exchange.matchOrders.awaitTransactionSuccessAsync(
             params.left,
             params.right,
             params.leftSignature,
             params.rightSignature,
             { from },
         );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
+        return txReceipt;
     }
     public async getMatchOrdersResultsAsync(
         signedOrderLeft: SignedOrder,

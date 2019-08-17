@@ -61,13 +61,33 @@
         ]
     },
     {
+        "timestamp": 1565296576,
+        "version": "8.2.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "8.2.4",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "version": "8.2.3",
         "changes": [
             {
                 "note": "Ensure `assetData` is word aligned",
                 "pr": 1964
             }
-        ]
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563193019,

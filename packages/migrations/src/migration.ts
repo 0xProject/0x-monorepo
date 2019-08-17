@@ -29,11 +29,13 @@ export async function runMigrationsAsync(
         artifacts.ERC20Proxy,
         provider,
         txDefaults,
+        artifacts,
     );
     const erc721Proxy = await wrappers.ERC721ProxyContract.deployFrom0xArtifactAsync(
         artifacts.ERC721Proxy,
         provider,
         txDefaults,
+        artifacts,
     );
 
     // ZRX
@@ -41,10 +43,16 @@ export async function runMigrationsAsync(
         artifacts.ZRXToken,
         provider,
         txDefaults,
+        artifacts,
     );
 
     // Ether token
-    const etherToken = await wrappers.WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, txDefaults);
+    const etherToken = await wrappers.WETH9Contract.deployFrom0xArtifactAsync(
+        artifacts.WETH9,
+        provider,
+        txDefaults,
+        artifacts,
+    );
 
     // Exchange
     const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
@@ -52,6 +60,7 @@ export async function runMigrationsAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
+        artifacts,
         zrxAssetData,
     );
 
@@ -63,6 +72,7 @@ export async function runMigrationsAsync(
             artifacts.DummyERC20Token,
             provider,
             txDefaults,
+            artifacts,
             token.name,
             token.symbol,
             token.decimals,
@@ -76,14 +86,31 @@ export async function runMigrationsAsync(
         artifacts.DummyERC721Token,
         provider,
         txDefaults,
+        artifacts,
         erc721TokenInfo[0].name,
         erc721TokenInfo[0].symbol,
+    );
+
+    // 1155 Asset Proxy
+    const erc1155Proxy = await wrappers.ERC1155ProxyContract.deployFrom0xArtifactAsync(
+        artifacts.ERC1155Proxy,
+        provider,
+        txDefaults,
+        artifacts,
+    );
+
+    const staticCallProxy = await wrappers.StaticCallProxyContract.deployFrom0xArtifactAsync(
+        artifacts.StaticCallProxy,
+        provider,
+        txDefaults,
+        artifacts,
     );
 
     const multiAssetProxy = await wrappers.MultiAssetProxyContract.deployFrom0xArtifactAsync(
         artifacts.MultiAssetProxy,
         provider,
         txDefaults,
+        artifacts,
     );
 
     await web3Wrapper.awaitTransactionSuccessAsync(
@@ -91,6 +118,9 @@ export async function runMigrationsAsync(
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
@@ -104,10 +134,19 @@ export async function runMigrationsAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(staticCallProxy.address, txDefaults),
     );
 
     // Register the Asset Proxies to the Exchange
@@ -118,7 +157,13 @@ export async function runMigrationsAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(multiAssetProxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(staticCallProxy.address, txDefaults),
     );
 
     // Forwarder
@@ -126,6 +171,7 @@ export async function runMigrationsAsync(
         artifacts.Forwarder,
         provider,
         txDefaults,
+        artifacts,
         exchange.address,
         assetDataUtils.encodeERC20AssetData(zrxToken.address),
         assetDataUtils.encodeERC20AssetData(etherToken.address),
@@ -136,6 +182,7 @@ export async function runMigrationsAsync(
         artifacts.OrderValidator,
         provider,
         txDefaults,
+        artifacts,
         exchange.address,
         zrxAssetData,
     );
@@ -145,6 +192,7 @@ export async function runMigrationsAsync(
         artifacts.DutchAuction,
         provider,
         txDefaults,
+        artifacts,
         exchange.address,
     );
 
@@ -159,6 +207,7 @@ export async function runMigrationsAsync(
         artifacts.AssetProxyOwner,
         provider,
         txDefaults,
+        artifacts,
         owners,
         [erc20Proxy.address, erc721Proxy.address, multiAssetProxy.address],
         confirmationsRequired,
@@ -171,6 +220,9 @@ export async function runMigrationsAsync(
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
@@ -188,6 +240,7 @@ export async function runMigrationsAsync(
         artifacts.CoordinatorRegistry,
         provider,
         txDefaults,
+        artifacts,
     );
 
     // Coordinator
@@ -195,12 +248,24 @@ export async function runMigrationsAsync(
         artifacts.Coordinator,
         provider,
         txDefaults,
+        artifacts,
         exchange.address,
+    );
+
+    // Dev Utils
+    const devUtils = await wrappers.DevUtilsContract.deployFrom0xArtifactAsync(
+        artifacts.DevUtils,
+        provider,
+        txDefaults,
+        artifacts,
+        exchange.address,
+        zrxAssetData,
     );
 
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
+        erc1155Proxy: erc1155Proxy.address,
         zrxToken: zrxToken.address,
         etherToken: etherToken.address,
         exchange: exchange.address,
@@ -210,6 +275,9 @@ export async function runMigrationsAsync(
         dutchAuction: dutchAuction.address,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
+        multiAssetProxy: multiAssetProxy.address,
+        staticCallProxy: staticCallProxy.address,
+        devUtils: devUtils.address,
     };
 
     return contractAddresses;

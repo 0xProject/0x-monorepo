@@ -20,6 +20,7 @@ describe('LibRichErrors', () => {
             artifacts.TestLibRichErrors,
             provider,
             txDefaults,
+            {},
         );
     });
 

@@ -1,8 +1,12 @@
 # Changelog
 
-## 3.0.0 - TBD
+## 3.0.1 - 2019-08-09
 
--   Major breaking changes: removal of definitions for Order, OrderInfo, order_to_jsdict, jsdict_to_order, all of which have been moved to contract_wrappers.exchange.types; removal of signature validation.
+-   Fixed dependencies: changed `deprecated` from being an extras_require["dev"] dependency to being an install_requires dependency, since it's required not just for doc generation but also just to import the package.
+
+## 3.0.0 - 2019-08-08
+
+-   Major breaking changes: removal of definitions for Order, OrderInfo, order_to_jsdict, jsdict_to_order, all of which have been moved to contract_wrappers.exchange.types; removal of signature validation; migration from v4 to v5 of Web3.py
 
 ## 2.0.0 - 2019-04-30
 

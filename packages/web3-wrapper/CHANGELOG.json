@@ -1,10 +1,28 @@
 [
     {
-        "version": "6.0.9",
+        "version": "6.0.11",
         "changes": [
             {
                 "note": "Let `toBaseUnitAmount()` accept a `number`",
                 "pr": 1819
+            }
+        ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "6.0.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "6.0.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },
@@ -15,7 +33,8 @@
                 "note": "re-export new ethereum-types types, TupleDataItem",
                 "pr": 1919
             }
-        ]
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563006338,

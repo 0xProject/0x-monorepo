@@ -20,6 +20,7 @@ blockchainTests('LibMath', env => {
             artifacts.TestLibMath,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

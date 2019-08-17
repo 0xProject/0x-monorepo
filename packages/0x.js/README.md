@@ -1,6 +1,6 @@
 ## 0x.js
 
-A TypeScript/Javascript library for interacting with the 0x protocol. It is a high level package which combines a number of underlying packages such as order-utils and order-watcher.
+A TypeScript/Javascript library for interacting with the 0x protocol. It is a high level package which combines a number of underlying packages such as order-utils and asset-data-utils.
 
 ### Read the [Documentation](https://0xproject.com/docs/0x.js).
 

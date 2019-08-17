@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from hexbytes import HexBytes
 from eth_account.local import LocalAccount
 from web3 import datastructures
-from web3.utils import datatypes
+from web3.contract import Contract
 from web3.providers.base import BaseProvider
 
 
@@ -47,7 +47,7 @@ class Web3:
         def getTransactionReceipt(tx_hash: Union[HexBytes, bytes]) -> Any: ...
         
         @staticmethod
-        def contract(address: str, abi: Dict) -> datatypes.Contract: ...
+        def contract(address: str, abi: Dict) -> Contract: ...
         ...
 
         @staticmethod

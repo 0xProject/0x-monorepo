@@ -20,6 +20,7 @@ describe('LibAddressArray', () => {
             artifacts.TestLibAddressArray,
             provider,
             txDefaults,
+            artifacts,
         );
     });
     after(async () => {

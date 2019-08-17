@@ -1,10 +1,48 @@
 [
     {
-        "version": "4.2.0",
+        "version": "4.4.0",
         "changes": [
             {
                 "note": "Update Coordinator and Exchange deployments to pass `chainId`",
                 "pr": 1742
+            }
+        ]
+    },
+    {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Added DevUtils to migration script",
+                "pr": 2060
+            }
+        ]
+    },
+    {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Added StaticCallAssetProxy and ERC1155AssetProxy",
+                "pr": 2021
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
+        "version": "4.1.11",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "4.1.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

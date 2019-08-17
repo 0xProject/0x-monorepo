@@ -16,6 +16,7 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
             artifacts.TestLibExchangeRichErrorDecoder,
             provider,
             txDefaults,
+            {},
         );
     });
 

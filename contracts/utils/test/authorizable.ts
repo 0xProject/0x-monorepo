@@ -31,6 +31,7 @@ describe('Authorizable', () => {
             artifacts.Authorizable,
             provider,
             txDefaults,
+            {},
         );
     });
 

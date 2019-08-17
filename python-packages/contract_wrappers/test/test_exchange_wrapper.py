@@ -6,7 +6,8 @@ import pytest
 from eth_utils import remove_0x_prefix
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-from zero_ex.contract_wrappers import Exchange, TxParams
+from zero_ex.contract_wrappers import TxParams
+from zero_ex.contract_wrappers.exchange import Exchange
 from zero_ex.contract_wrappers.exchange.types import Order
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, sign_hash_to_bytes
@@ -30,7 +31,7 @@ def create_test_order(
 ):
     """Create a test order."""
     order = Order(
-        makerAddress=maker_address.lower(),
+        makerAddress=maker_address,
         takerAddress="0x0000000000000000000000000000000000000000",
         feeRecipientAddress="0x0000000000000000000000000000000000000000",
         senderAddress="0x0000000000000000000000000000000000000000",
@@ -77,7 +78,7 @@ def test_exchange_wrapper__fill_order(
     )
     order_signature = sign_hash_to_bytes(ganache_provider, maker, order_hash)
 
-    tx_hash = exchange_wrapper.fill_order(
+    tx_hash = exchange_wrapper.fill_order.send_transaction(
         order=order,
         taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
@@ -114,7 +115,7 @@ def test_exchange_wrapper__batch_fill_orders(
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
-    tx_hash = exchange_wrapper.batch_fill_orders(
+    tx_hash = exchange_wrapper.batch_fill_orders.send_transaction(
         orders=orders,
         taker_asset_fill_amounts=taker_amounts,
         signatures=order_signatures,

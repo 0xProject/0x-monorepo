@@ -1,3 +1,0 @@
-**DEPRECATED: This project is deprecated. Please use [0x Mesh](https://github.com/0xProject/0x-mesh) for all your orderbook pruning needs. It can be used with or without order sharing enabled. If you have any questions about how to use Mesh, reach out to us in the [#mesh channel on Discord](https://discordapp.com/invite/d3FTX3M)**
-
-Welcome to the [order-watcher](https://github.com/0xProject/0x-monorepo/tree/development/packages/order-watcher) documentation! OrderWatcher is a daemon that efficiently watches a set of orders, emitting events whenever the validity of an order changes. It can be used by relayers to prune an orderbook, or by traders to keep orders fetched from a Relayer up-to-date.

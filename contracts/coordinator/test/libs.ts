@@ -27,6 +27,7 @@ describe('Libs tests', () => {
             artifacts.Coordinator,
             provider,
             txDefaults,
+            artifacts,
             exchangeAddress,
             new BigNumber(chainId),
         );

@@ -103,6 +103,7 @@ blockchainTests.resets('Exchange transactions', env => {
             artifacts.Exchange,
             env.provider,
             env.txDefaults,
+            {},
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
@@ -976,6 +977,7 @@ blockchainTests.resets('Exchange transactions', env => {
                         artifacts.ExchangeWrapper,
                         env.provider,
                         env.txDefaults,
+                        {},
                         exchangeInstance.address,
                     );
                 });
@@ -1078,6 +1080,7 @@ blockchainTests.resets('Exchange transactions', env => {
                         artifacts.Whitelist,
                         env.provider,
                         env.txDefaults,
+                        {},
                         exchangeInstance.address,
                     );
                     const isApproved = true;

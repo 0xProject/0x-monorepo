@@ -27,6 +27,8 @@
         "generated-artifacts/TestLibBytes.json",
         "generated-artifacts/TestLibEIP712.json",
         "generated-artifacts/TestLibRichErrors.json",
+        "generated-artifacts/TestLogDecoding.json",
+        "generated-artifacts/TestLogDecodingDownstream.json",
         "generated-artifacts/TestOwnable.json",
         "generated-artifacts/TestReentrancyGuard.json",
         "generated-artifacts/TestSafeMath.json"

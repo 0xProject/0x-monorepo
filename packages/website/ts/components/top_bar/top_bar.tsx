@@ -1,5 +1,5 @@
-import { DocsInfo } from '@0x/react-docs';
-import { ALink, colors, Link, Styles } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import Drawer from 'material-ui/Drawer';
@@ -12,9 +12,12 @@ import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
 import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, ProviderType, Styles, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
+
+import { DocsInfo } from '../../utils/docs_info';
 
 export enum TopBarDisplayType {
     Default,

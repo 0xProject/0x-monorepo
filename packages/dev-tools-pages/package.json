@@ -27,7 +27,6 @@
     },
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/react-shared": "^2.0.14",
         "basscss": "^8.0.3",
         "bowser": "^1.9.4",
         "highlight.js": "^9.13.1",

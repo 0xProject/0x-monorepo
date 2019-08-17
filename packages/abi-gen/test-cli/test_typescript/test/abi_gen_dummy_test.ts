@@ -7,8 +7,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as ChaiBigNumber from 'chai-bignumber';
 import * as dirtyChai from 'dirty-chai';
+import * as Sinon from 'sinon';
 
-import { AbiGenDummyContract, artifacts, TestLibDummyContract } from '../src';
+import { AbiGenDummyContract, AbiGenDummyEvents, artifacts, TestLibDummyContract } from '../src';
 
 const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -27,9 +28,28 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
+    const runTestAsync = async (contractMethod: any, input: any, output: any) => {
+        const transaction = contractMethod.getABIEncodedTransactionData(input);
+        // try decoding transaction
+        const decodedInput = contractMethod.getABIDecodedTransactionData(transaction);
+        expect(decodedInput, 'decoded input').to.be.deep.equal(input);
+        // execute transaction
+        const rawOutput = await web3Wrapper.callAsync({
+            to: abiGenDummy.address,
+            data: transaction,
+        });
+        // try decoding output
+        const decodedOutput = contractMethod.getABIDecodedReturnData(rawOutput);
+        expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
+    };
     before(async () => {
         providerUtils.startProviderEngine(provider);
-        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
+        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(
+            artifacts.AbiGenDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         await blockchainLifecycle.startAsync();
     });
     after(async () => {
@@ -74,6 +94,19 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
+    describe('struct handling', () => {
+        const sampleStruct = {
+            aDynamicArrayOfBytes: ['0x3078313233', '0x3078333231'],
+            anInteger: new BigNumber(5),
+            aString: 'abc',
+            someBytes: '0x3078313233',
+        };
+        it('should be able to handle struct output', async () => {
+            const result = await abiGenDummy.structOutput.callAsync();
+            expect(result).to.deep.equal(sampleStruct);
+        });
+    });
+
     describe('ecrecoverFn', () => {
         it('should implement ecrecover', async () => {
             const signerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
@@ -92,6 +125,44 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
+    describe('validate and send transaction', () => {
+        it('should call validateAndSendTransactionAsync', async () => {
+            const txHash = await abiGenDummy.nonPureMethod.validateAndSendTransactionAsync();
+            const hexRegex = /^0x[a-fA-F0-9]+$/;
+            expect(txHash.match(hexRegex)).to.deep.equal([txHash]);
+        });
+    });
+
+    describe('event subscription', () => {
+        const indexFilterValues = {};
+        const emptyCallback = () => {}; // tslint:disable-line:no-empty
+        let stubs: Sinon.SinonStub[] = [];
+
+        afterEach(() => {
+            stubs.forEach(s => s.restore());
+            stubs = [];
+        });
+        it('should return a subscription token', done => {
+            const subscriptionToken = abiGenDummy.subscribe(
+                AbiGenDummyEvents.Withdrawal,
+                indexFilterValues,
+                emptyCallback,
+            );
+            expect(subscriptionToken).to.be.a('string');
+            done();
+        });
+        it('should allow unsubscribeAll to be called successfully after an error', done => {
+            abiGenDummy.subscribe(AbiGenDummyEvents.Withdrawal, indexFilterValues, emptyCallback);
+            stubs.push(
+                Sinon.stub((abiGenDummy as any)._web3Wrapper, 'getBlockIfExistsAsync').throws(
+                    new Error('JSON RPC error'),
+                ),
+            );
+            abiGenDummy.unsubscribeAll();
+            done();
+        });
+    });
+
     describe('withAddressInput', () => {
         it('should normalize address inputs to lowercase', async () => {
             const xAddress = devConstants.TESTRPC_FIRST_ADDRESS.toUpperCase();
@@ -102,6 +173,63 @@ describe('AbiGenDummy Contract', () => {
             const output = await abiGenDummy.withAddressInput.callAsync(xAddress, a, b, yAddress, c);
 
             expect(output).to.equal(xAddress.toLowerCase());
+        });
+    });
+
+    describe('Encoding/Decoding Transaction Data and Return Values', () => {
+        it('should successfully encode/decode (no input / no output)', async () => {
+            const input = undefined;
+            const output = undefined;
+            await runTestAsync(abiGenDummy.noInputNoOutput, input, output);
+        });
+        it('should successfully encode/decode (no input / simple output)', async () => {
+            const input = undefined;
+            const output = new BigNumber(1991);
+            await runTestAsync(abiGenDummy.noInputSimpleOutput, input, output);
+        });
+        it('should successfully encode/decode (simple input / no output)', async () => {
+            const input = new BigNumber(1991);
+            const output = undefined;
+            await runTestAsync(abiGenDummy.simpleInputNoOutput, input, output);
+        });
+        it('should successfully encode/decode (simple input / simple output)', async () => {
+            const input = new BigNumber(16);
+            const output = new BigNumber(1991);
+            await runTestAsync(abiGenDummy.simpleInputSimpleOutput, input, output);
+        });
+        it('should successfully encode/decode (complex input / complex output)', async () => {
+            const input = {
+                foo: new BigNumber(1991),
+                bar: '0x1234',
+                car: 'zoom zoom',
+            };
+            const output = {
+                input,
+                lorem: '0x12345678',
+                ipsum: '0x87654321',
+                dolor: 'amet',
+            };
+            await runTestAsync(abiGenDummy.complexInputComplexOutput, input, output);
+        });
+        it('should successfully encode/decode (multi-input / multi-output)', async () => {
+            const input = [new BigNumber(1991), '0x1234', 'zoom zoom'];
+            const output = ['0x12345678', '0x87654321', 'amet'];
+            const transaction = abiGenDummy.multiInputMultiOutput.getABIEncodedTransactionData(
+                input[0] as BigNumber,
+                input[1] as string,
+                input[2] as string,
+            );
+            // try decoding transaction
+            const decodedInput = abiGenDummy.multiInputMultiOutput.getABIDecodedTransactionData(transaction);
+            expect(decodedInput, 'decoded input').to.be.deep.equal(input);
+            // execute transaction
+            const rawOutput = await web3Wrapper.callAsync({
+                to: abiGenDummy.address,
+                data: transaction,
+            });
+            // try decoding output
+            const decodedOutput = abiGenDummy.multiInputMultiOutput.getABIDecodedReturnData(rawOutput);
+            expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
         });
     });
 });
@@ -115,7 +243,12 @@ describe('Lib dummy contract', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(artifacts.TestLibDummy, provider, txDefaults);
+        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

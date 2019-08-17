@@ -27,6 +27,10 @@ import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
 
+export { SubscriptionManager } from './subscription_manager';
+
+export * from './types';
+
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }
@@ -201,12 +205,20 @@ export class BaseContract {
         const abiEncodedArguments = abiEncoder.encode(functionArguments);
         return abiEncodedArguments;
     }
+    /// @dev Constructs a contract wrapper.
+    /// @param contractName Name of contract.
+    /// @param abi of the contract.
+    /// @param address of the deployed contract.
+    /// @param supportedProvider for communicating with an ethereum node.
+    /// @param logDecodeDependencies the name and ABI of contracts whose event logs are
+    ///        decoded by this wrapper.
     constructor(
         contractName: string,
         abi: ContractAbi,
         address: string,
         supportedProvider: SupportedProvider,
         callAndTxnDefaults?: Partial<CallData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
     ) {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
@@ -230,6 +242,10 @@ export class BaseContract {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();
             this._abiEncoderByFunctionSignature[functionSignature] = abiEncoder;
+            this._web3Wrapper.abiDecoder.addABI(abi, contractName);
+        });
+        _.each(logDecodeDependencies, (dependencyAbi, dependencyName) => {
+            this._web3Wrapper.abiDecoder.addABI(dependencyAbi, dependencyName);
         });
     }
 }

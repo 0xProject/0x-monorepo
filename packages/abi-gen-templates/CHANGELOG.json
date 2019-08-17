@@ -1,5 +1,28 @@
 [
     {
+        "timestamp": 1565296576,
+        "version": "2.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {
@@ -18,7 +41,8 @@
                 "note": "Python: normalize bytes parameters in wrapper methods",
                 "pr": 1919
             }
-        ]
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563006338,

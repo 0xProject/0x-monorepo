@@ -50,12 +50,14 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             artifacts.TestSignatureValidator,
             env.provider,
             env.txDefaults,
+            {},
             new BigNumber(chainId),
         );
         validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
             artifacts.TestValidatorWallet,
             env.provider,
             env.txDefaults,
+            {},
             signatureValidator.address,
         );
         validatorWalletRevertReason = await validatorWallet.REVERT_REASON.callAsync();

@@ -110,7 +110,7 @@ The files in `test-cli/` are used to test the CLI output against a set of dummy 
 Compile dummy contracts and generate wrappers:
 
 ```
-yarn test_cli:prebuild
+yarn compile:sol
 ```
 
 Build generated wrappers and unit tests:

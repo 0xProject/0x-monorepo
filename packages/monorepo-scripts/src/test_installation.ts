@@ -12,7 +12,7 @@ import { Changelog, Package } from './types';
 import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
-const UNRUNNABLE_PACKAGES = ['@0x/abi-gen', '@0x/react-shared', '@0x/react-docs'];
+const UNRUNNABLE_PACKAGES = ['@0x/abi-gen'];
 
 const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);

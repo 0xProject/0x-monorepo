@@ -43,6 +43,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             artifacts.TestWrapperFunctions,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

@@ -27,7 +27,7 @@ from eth_utils import keccak, remove_0x_prefix, to_bytes, to_checksum_address
 from web3 import Web3
 import web3.exceptions
 from web3.providers.base import BaseProvider
-from web3.utils import datatypes
+from web3.contract import Contract
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 import zero_ex.contract_artifacts
@@ -186,7 +186,7 @@ def is_valid_signature(
         NetworkId(int(web3_instance.net.version))
     ].exchange
     # false positive from pylint: disable=no-member
-    contract: datatypes.Contract = web3_instance.eth.contract(
+    contract: Contract = web3_instance.eth.contract(
         address=to_checksum_address(contract_address),
         abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
     )
@@ -285,7 +285,7 @@ def sign_hash(
     >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
     >>> sign_hash(
     ...     provider,
-    ...     Web3(provider).personal.listAccounts[0],
+    ...     Web3(provider).geth.personal.listAccounts()[0],
     ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
     ... )
     '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
@@ -355,7 +355,7 @@ def sign_hash_to_bytes(
     >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
     >>> sign_hash_to_bytes(
     ...     provider,
-    ...     Web3(provider).personal.listAccounts[0],
+    ...     Web3(provider).geth.personal.listAccounts()[0],
     ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
     ... ).decode(encoding='utf_8')
     '1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'

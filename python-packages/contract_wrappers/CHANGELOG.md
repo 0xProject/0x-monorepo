@@ -1,9 +1,21 @@
 # Changelog
 
-## 2.0.0 - TBD
+## 1.1.0 - 2019-08-14
 
--   Completely new implementation of the Exchange wrapper, virtually all auto-generated from the Solidity contract. Breaking changes include method parameter name changes and accepting of signatures as bytes.
+-   Added wrapper for DevUtils contract.
 
-## 1.0.0 - 2019-04-30
+## 1.0.3 - 2019-08-10
 
--   Initial release.
+-   Added erroneously missing source files.
+
+## 1.0.2 - 2019-08-10
+
+-   Added erroneously missing source files.
+
+## 1.0.1 - 2019-08-10
+
+-   Botched upload to PyPI.
+
+## 1.0.0 - 2019-08-08
+
+-   Initial release

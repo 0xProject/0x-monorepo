@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.3.1",
+        "version": "2.3.2",
         "changes": [
             {
                 "note": "`revertWith` mocha extensions now accept Promise-like objects instead of just Promises",
@@ -9,7 +9,7 @@
         ]
     },
     {
-        "version": "2.3.0",
+        "version": "2.3.1",
         "changes": [
             {
                 "note": "Add `chaiSetup` function with `RevertError` testing support",
@@ -18,6 +18,34 @@
             {
                 "note": "Refactor out `Error` coercion code into the `utils` package",
                 "pr": 1819
+            }
+        ]
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Move `tokenUtils` here from `@0x/contract-wrappers`",
+                "pr": 2037
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "2.2.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "2.2.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

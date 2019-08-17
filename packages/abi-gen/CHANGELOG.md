@@ -5,6 +5,37 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _August 8, 2019_
+
+    * Updated expected typescript output for cli tests to include `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2018)
+    * Added tests for`getABIDecodedTransactionData` and `getABIDecodedReturnData` in contract wrappers. (#2018)
+
+## v4.0.0 - _Invalid date_
+
+    * whitespace changes to generated Python code (#1996)
+    * move Python Validator base class from generated code to common package (#1996)
+    * Changed fundamental thing-to-be-wrapped from the contract to the contract method.  That is, now there is a base contract method wrapper class rather than a base contract wrapper class, and individual contract methods are represented by named classes inheriting from that base, and the different operations on a method are now represented by a nested-object dot notation, ie, WrappedContract.ContractMethod.call() and WrappedContract.ContractMethod.send_transaction(). (#1996)
+    * added gas estimation functionality to contract methods (#1996)
+    * Python: fixed bug with methods returning multiple values (#1996)
+    * Python: fixed bug with methods returning arrays of structs (#1996)
+    * Python: fixed bug with methods that return a struct that contains another struct where the inner struct was not otherwise directly referenced by any method (#1996)
+    * Python: fixed bug with tuples sometimes being used before they were declared (#1996)
+    * Python: fixed bug with supporting overloaded methods (#1996)
+
+## v3.1.2 - _July 31, 2019_
+
+    * Dependencies updated
+
+## v3.1.1 - _July 24, 2019_
+
+    * Python method parameters are now in snake case (#1919)
+    * Python wrappers now support tuples in method parameters (#1919)
+    * document Python method's bytes params as requiring UTF-8 (#1919)
+    * generate Python output into a contract-named folder, not a file (eg exchange/__init__.py rather than exchange.py) leaving space for user-defined additions to the same module, such as for custom types, as used by the Exchange wrapper's manually-written type aliases in the contract_wrappers.exchange.types Python module (#1919)
+    * support for customizable parameter validation for Python wrappers (#1919)
+    * wrap Python docstrings better, for pydocstyle compliance (#1919)
+    * lots of fixes to satisfy linters of generated Python code (#1919)
+
 ## v2.1.1 - _July 13, 2019_
 
     * Dependencies updated

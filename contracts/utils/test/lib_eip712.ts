@@ -17,7 +17,7 @@ describe('LibEIP712', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         // Deploy LibEIP712
-        lib = await TestLibEIP712Contract.deployFrom0xArtifactAsync(artifacts.TestLibEIP712, provider, txDefaults);
+        lib = await TestLibEIP712Contract.deployFrom0xArtifactAsync(artifacts.TestLibEIP712, provider, txDefaults, {});
     });
 
     after(async () => {

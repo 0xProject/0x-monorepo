@@ -1,5 +1,6 @@
 import {
     artifacts as proxyArtifacts,
+    ERC1155ProxyContract,
     ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
@@ -67,7 +68,7 @@ blockchainTests.resets('Exchange core', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
-    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
     let multiAssetProxy: MultiAssetProxyContract;
     let validatorWallet: TestValidatorWalletContract;
     let erc1155Contract: ERC1155MintableContract;
@@ -111,11 +112,13 @@ blockchainTests.resets('Exchange core', () => {
             proxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            {},
         );
         staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.StaticCallProxy,
             provider,
             txDefaults,
+            {},
         );
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
@@ -126,12 +129,13 @@ blockchainTests.resets('Exchange core', () => {
             erc20Artifacts.DummyNoReturnERC20Token,
             provider,
             txDefaults,
+            {},
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
             constants.DUMMY_TOKEN_TOTAL_SUPPLY,
         );
-        erc20Wrapper.addDummyTokenContract(noReturnErc20Token);
+        erc20Wrapper.addDummyTokenContract((noReturnErc20Token as any) as DummyERC20TokenContract);
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
@@ -140,12 +144,14 @@ blockchainTests.resets('Exchange core', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            {},
             new BigNumber(chainId),
         );
         validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
             artifacts.TestValidatorWallet,
             provider,
             txDefaults,
+            {},
             exchange.address,
         );
         // Configure ERC20Proxy
@@ -1067,6 +1073,7 @@ blockchainTests.resets('Exchange core', () => {
                 proxyArtifacts.TestStaticCallTarget,
                 provider,
                 txDefaults,
+                {},
             );
         });
         it('should revert if the staticcall is unsuccessful', async () => {

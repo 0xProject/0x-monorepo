@@ -1,7 +1,6 @@
-import { CoordinatorRegistryContract } from '@0x/abi-gen-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
@@ -12,11 +11,11 @@ import 'mocha';
 import * as nock from 'nock';
 
 import { ContractWrappers } from '../src';
+import { CoordinatorRegistryContract } from '../src/index';
 import { CoordinatorServerErrorMsg } from '../src/utils/coordinator_server_types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
-import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -71,7 +70,7 @@ describe('CoordinatorWrapper', () => {
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
+        zrxTokenAddress = contractAddresses.zrxToken;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
@@ -99,7 +98,7 @@ describe('CoordinatorWrapper', () => {
         const coordinatorServerConfigs = {
             HTTP_PORT: 3000, // Only used in default instantiation in 0x-coordinator-server/server.js; not used here
             NETWORK_ID_TO_SETTINGS: {
-                50: {
+                [config.networkId]: {
                     FEE_RECIPIENTS: [
                         {
                             ADDRESS: feeRecipientAddressOne,
@@ -125,6 +124,9 @@ describe('CoordinatorWrapper', () => {
                     RPC_URL: 'http://ignore',
                 },
             },
+            NETWORK_ID_TO_CONTRACT_ADDRESSES: {
+                [config.networkId]: contractAddresses,
+            },
             // Optional selective delay on fill requests
             SELECTIVE_DELAY_MS: 0,
             EXPIRATION_DURATION_SECONDS: 60, // 1 minute
@@ -134,7 +136,15 @@ describe('CoordinatorWrapper', () => {
                 [config.networkId]: provider,
             },
             coordinatorServerConfigs,
-            defaultOrmConfig,
+            {
+                name: 'coord_server_1',
+                type: 'sqlite',
+                database: ':memory:',
+                entities: defaultOrmConfig.entities,
+                cli: defaultOrmConfig.cli,
+                logging: defaultOrmConfig.logging,
+                synchronize: defaultOrmConfig.synchronize,
+            },
         );
 
         coordinatorServerApp.listen(coordinatorPort, () => {
@@ -148,7 +158,8 @@ describe('CoordinatorWrapper', () => {
             coordinatorServerConfigs,
             {
                 type: 'sqlite',
-                database: 'database.sqlite_2',
+                name: 'coord_server_2',
+                database: ':memory:',
                 entities: defaultOrmConfig.entities,
                 cli: defaultOrmConfig.cli,
                 logging: defaultOrmConfig.logging,
@@ -410,7 +421,7 @@ describe('CoordinatorWrapper', () => {
                 txHash = await contractWrappers.coordinator.hardCancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
 
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
+                const orderEpoch = await contractWrappers.exchange.orderEpoch.callAsync(
                     makerAddress,
                     contractWrappers.coordinator.address,
                 );

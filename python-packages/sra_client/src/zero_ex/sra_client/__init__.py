@@ -76,7 +76,7 @@ What network is it?
 
 For our Maker role, we'll just use the first address available in the node:
 
->>> maker_address = Web3(eth_node).eth.accounts[0].lower()
+>>> maker_address = Web3(eth_node).eth.accounts[0]
 
 The 0x Ganache snapshot loaded into our eth_node has a pre-loaded ZRX balance
 for this account, so the example orders below have the maker trading away ZRX.
@@ -284,7 +284,7 @@ examples.
 Filling
 ^^^^^^^
 
->>> taker_address = Web3(eth_node).eth.accounts[1].lower()
+>>> taker_address = Web3(eth_node).eth.accounts[1]
 
 Our taker will take a ZRX/WETH order, but it doesn't have any WETH yet.  By
 depositing some ether into the WETH contract, it will be given some WETH to
@@ -304,8 +304,10 @@ Next the taker needs to give the 0x contracts permission to trade their WETH:
 
 >>> weth_instance.functions.approve(
 ...     Web3.toChecksumAddress(contract_addresses.erc20_proxy),
-...     1000000000000000000).transact(
-...     {"from": Web3.toChecksumAddress(taker_address)})
+...     1000000000000000000
+... ).transact(
+...     {"from": Web3.toChecksumAddress(taker_address)}
+... )
 HexBytes('0x...')
 
 Now the taker is ready to trade.
@@ -313,13 +315,20 @@ Now the taker is ready to trade.
 Recall that in a previous example we selected a specific order from the order
 book.  Now let's have the taker fill it:
 
->>> from zero_ex.contract_wrappers import Exchange, TxParams
+>>> from zero_ex.contract_wrappers import TxParams
+>>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> from zero_ex.order_utils import Order
 >>> exchange = Exchange(
 ...     provider=eth_node,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
 ... )
->>> exchange.fill_order(
+
+(Due to `an Issue with the Launch Kit Backend
+<https://github.com/0xProject/0x-launch-kit-backend/issues/73>`_, we need to
+checksum the address in the order before filling it.)
+>>> order['makerAddress'] = Web3.toChecksumAddress(order['makerAddress'])
+
+>>> exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
 ...     signature=order['signature'].replace('0x', '').encode('utf-8'),
@@ -333,7 +342,7 @@ Cancelling
 Note that the above fill was partial: it only filled half of the order.  Now
 we'll have our maker cancel the remaining order:
 
->>> exchange.cancel_order(
+>>> exchange.cancel_order.send_transaction(
 ...     order=order,
 ...     tx_params=TxParams(from_=maker_address)
 ... )

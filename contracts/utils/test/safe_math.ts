@@ -19,6 +19,7 @@ blockchainTests('SafeMath', env => {
             artifacts.TestSafeMath,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

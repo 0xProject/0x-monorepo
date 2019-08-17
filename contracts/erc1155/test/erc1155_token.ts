@@ -59,11 +59,13 @@ describe('ERC1155Token', () => {
             artifacts.ERC1155Mintable,
             provider,
             txDefaults,
+            artifacts,
         );
         erc1155Receiver = await DummyERC1155ReceiverContract.deployFrom0xArtifactAsync(
             artifacts.DummyERC1155Receiver,
             provider,
             txDefaults,
+            artifacts,
         );
         receiver = erc1155Receiver.address;
         // create wrapper & mint erc1155 tokens

@@ -8,6 +8,7 @@
     "include": ["./src/**/*", "./test/**/*"],
     "files": [
         "./artifacts/AssetProxyOwner.json",
+        "./artifacts/DevUtils.json",
         "./artifacts/DutchAuction.json",
         "./artifacts/DummyERC20Token.json",
         "./artifacts/DummyERC721Token.json",
@@ -26,6 +27,8 @@
         "./artifacts/ZRXToken.json",
         "./artifacts/CoordinatorRegistry.json",
         "./artifacts/Coordinator.json",
-        "./artifacts/EthBalanceChecker.json"
+        "./artifacts/EthBalanceChecker.json",
+        "./artifacts/ERC1155Proxy.json",
+        "./artifacts/StaticCallProxy.json"
     ]
 }

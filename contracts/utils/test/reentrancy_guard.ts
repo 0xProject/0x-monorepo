@@ -20,6 +20,7 @@ describe('ReentrancyGuard', () => {
             artifacts.TestReentrancyGuard,
             provider,
             txDefaults,
+            {},
         );
     });
 

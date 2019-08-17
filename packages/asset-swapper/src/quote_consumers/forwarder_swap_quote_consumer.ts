@@ -1,5 +1,5 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
-import { calldataOptimizationUtils } from '@0x/contract-wrappers/lib/src/utils/calldata_optimization_utils';
+import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
+import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
@@ -20,7 +20,6 @@ import {
 } from '../types';
 import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
-import { assetDataUtils } from '../utils/asset_data_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
@@ -53,10 +52,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { to, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-
         const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
@@ -66,11 +64,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         } else {
             args = [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient];
         }
-        const calldataHexString = abiEncoder.encode(args);
+        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
         return {
             calldataHexString,
             methodAbi,
-            to,
+            toAddress,
             ethAmount,
         };
     }
@@ -78,7 +76,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     /**
      * Given a SwapQuote, returns 'SmartContractParamsInfo' for a forwarder extension call. See type definition of CalldataInfo for more information.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
-     * @param opts  Options for getting CalldataInfo. See type definition for more information.
+     * @param opts  Options for getting SmartContractParams. See type definition for more information.
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
@@ -104,9 +102,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         // lowercase input addresses
         const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
-        // optimize orders
-        const optimizedOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
-        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
 
         const signatures = _.map(orders, o => o.signature);
         const feeSignatures = _.map(feeOrders, o => o.signature);
@@ -120,10 +115,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             const { makerAssetFillAmount } = quoteWithAffiliateFee;
 
             params = {
-                orders: optimizedOrders,
+                orders,
                 makerAssetFillAmount,
                 signatures,
-                feeOrders: optimizedFeeOrders,
+                feeOrders,
                 feeSignatures,
                 feePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
@@ -133,9 +128,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             methodName = 'marketBuyOrdersWithEth';
         } else {
             params = {
-                orders: optimizedOrders,
+                orders,
                 signatures,
-                feeOrders: optimizedFeeOrders,
+                feeOrders,
                 feeSignatures,
                 feePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
@@ -150,7 +145,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         return {
             params,
-            to: this._contractWrappers.forwarder.address,
+            toAddress: this._contractWrappers.forwarder.address,
             ethAmount: ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
             methodAbi,
         };
@@ -192,46 +187,52 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
+        // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-
+        // if no ethAmount is provided, default to the worst totalTakerTokenAmount
+        const value = ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount;
+        // format fee percentage
+        const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         try {
             let txHash: string;
             if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
-                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
-                    finalTakerAddress,
-                    ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+                    orders.map(o => o.signature),
                     feeOrders,
-                    feePercentage,
+                    feeOrders.map(o => o.signature),
+                    formattedFeePercentage,
                     feeRecipient,
                     {
-                        gasLimit,
+                        value,
+                        from: finalTakerAddress.toLowerCase(),
+                        gas: gasLimit,
                         gasPrice,
-                        shouldValidate: true,
                     },
                 );
             } else {
-                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEthAsync(
+                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.validateAndSendTransactionAsync(
                     orders,
-                    finalTakerAddress,
-                    ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+                    orders.map(o => o.signature),
                     feeOrders,
-                    feePercentage,
+                    feeOrders.map(o => o.signature),
+                    formattedFeePercentage,
                     feeRecipient,
                     {
-                        gasLimit,
+                        value,
+                        from: finalTakerAddress.toLowerCase(),
+                        gas: gasLimit,
                         gasPrice,
-                        shouldValidate: true,
                     },
                 );
             }
             return txHash;
         } catch (err) {
-            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+            if (_.includes(err.message, ContractError.SignatureRequestDenied)) {
                 throw new Error(SwapQuoteConsumerError.SignatureRequestDenied);
-            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+            } else if (_.includes(err.message, ForwarderError.CompleteFillFailed)) {
                 throw new Error(SwapQuoteConsumerError.TransactionValueTooLow);
             } else {
                 throw err;
@@ -240,6 +241,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     }
 
     private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
+        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken);
     }
 }

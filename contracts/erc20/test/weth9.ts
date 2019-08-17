@@ -33,10 +33,15 @@ describe('EtherToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         account = accounts[0];
 
-        etherToken = await WETH9Contract.deployFrom0xArtifactAsync(artifacts.WETH9, provider, {
-            gasPrice,
-            ...txDefaults,
-        });
+        etherToken = await WETH9Contract.deployFrom0xArtifactAsync(
+            artifacts.WETH9,
+            provider,
+            {
+                gasPrice,
+                ...txDefaults,
+            },
+            artifacts,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

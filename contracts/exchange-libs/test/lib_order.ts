@@ -41,6 +41,7 @@ blockchainTests('LibOrder', env => {
             artifacts.TestLibOrder,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

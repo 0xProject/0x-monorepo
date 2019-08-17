@@ -53,6 +53,7 @@ export class IsolatedExchangeWrapper {
             artifacts.IsolatedExchange,
             provider,
             txDefaults,
+            {},
         );
         return new IsolatedExchangeWrapper(web3Wrapper, instance);
     }

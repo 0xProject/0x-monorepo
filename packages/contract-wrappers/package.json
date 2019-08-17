@@ -1,7 +1,10 @@
 {
     "name": "@0x/contract-wrappers",
-    "version": "9.1.7",
-    "description": "Smart TS wrappers for 0x smart contracts",
+    "version": "11.0.0",
+    "engines": {
+        "node": ">=6.12"
+    },
+    "description": "Wrappers for 0x smart contract wrappers generated using @0x/abi-gen",
     "keywords": [
         "0xproject",
         "ethereum",
@@ -10,86 +13,71 @@
     ],
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
+    "directories": {
+        "test": "test"
+    },
     "scripts": {
-        "build": "tsc -b",
+        "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project . --exclude **/lib/**/*",
-        "fix": "tslint --fix --format stylish --project . --exclude **/lib/**/*",
+        "fix": "tslint --fix --format stylish --project .--exclude **/lib/**/*",
         "test:circleci": "run-s test:coverage",
         "test": "yarn run_mocha",
-        "rebuild_and_test": "run-s build test",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "clean": "shx rm -rf _bundles lib test_temp generated_docs",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "pre_build": "yarn generate_contract_wrappers && yarn prettier_contract_wrappers",
+        "prettier": "prettier --write **/* --config ../../.prettierrc",
+        "prettier_contract_wrappers": "prettier --write src/generated-wrappers/* --config ../../.prettierrc",
+        "clean": "shx rm -rf lib src/generated-wrappers",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers",
+        "docs_test": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --out generated_docs ./src/generated-wrappers/*"
     },
     "config": {
-        "postpublish": {
-            "assets": []
-        }
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DevUtils|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/0xProject/0x-monorepo"
+        "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "license": "Apache-2.0",
-    "engines": {
-        "node": ">=6.0.0"
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-wrappers/README.md",
     "devDependencies": {
-        "@0x/contracts-test-utils": "^3.1.10",
-        "@0x/coordinator-server": "0.1.1",
-        "@0x/dev-utils": "^2.2.4",
-        "@0x/fill-scenarios": "^3.0.13",
-        "@0x/migrations": "^4.1.9",
-        "@0x/subproviders": "^4.1.1",
+        "@0x/abi-gen": "^4.1.0",
+        "@0x/abi-gen-templates": "^2.4.1",
+        "@0x/assert": "^2.1.3",
+        "@0x/contracts-test-utils": "^3.1.12",
+        "@0x/coordinator-server": "^0.1.3",
+        "@0x/json-schemas": "^3.1.13",
         "@0x/tslint-config": "^3.0.1",
-        "@types/lodash": "4.14.104",
-        "@types/mocha": "^2.2.42",
-        "@types/nock": "^10.0.1",
-        "@types/node": "*",
-        "@types/sinon": "^2.2.2",
-        "@types/uuid": "^3.4.3",
-        "@types/web3-provider-engine": "^14.0.0",
+        "@0x/types": "^2.4.1",
+        "@0x/utils": "^4.5.0",
+        "@0x/web3-wrapper": "^6.0.10",
+        "@types/nock": "^10.0.3",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
-        "make-promises-safe": "^1.1.0",
-        "mocha": "^4.1.0",
+        "ethereum-types": "^2.1.4",
+        "ethers": "~4.0.4",
+        "lodash": "^4.17.11",
+        "mocha": "^6.2.0",
         "nock": "^10.0.6",
-        "npm-run-all": "^4.1.2",
-        "nyc": "^11.0.1",
-        "opn-cli": "^3.1.0",
-        "shx": "^0.2.2",
-        "sinon": "^4.0.0",
-        "source-map-support": "^0.5.0",
-        "tslint": "5.11.0",
-        "typedoc": "0.13.0",
-        "typescript": "3.0.1",
-        "web3-provider-engine": "14.0.6"
+        "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.0.2",
-        "@0x/assert": "^2.1.0",
-        "@0x/contract-addresses": "^3.0.2",
-        "@0x/contract-artifacts": "^2.0.1",
-        "@0x/json-schemas": "^3.0.11",
-        "@0x/order-utils": "^8.2.2",
-        "@0x/types": "^2.4.0",
-        "@0x/typescript-typings": "^4.2.3",
-        "@0x/utils": "^4.4.0",
-        "@0x/web3-wrapper": "^6.0.7",
-        "ethereum-types": "^2.1.3",
-        "ethereumjs-abi": "0.6.5",
-        "ethereumjs-blockstream": "6.0.0",
-        "ethereumjs-util": "^5.1.1",
-        "ethers": "~4.0.4",
-        "http-status-codes": "^1.3.2",
-        "js-sha3": "^0.7.0",
-        "lodash": "^4.17.11",
-        "uuid": "^3.3.2"
+        "@0x/base-contract": "^5.3.1",
+        "@0x/contract-addresses": "^3.0.3",
+        "@0x/contract-artifacts": "^2.0.4",
+        "@0x/dev-utils": "^2.3.0",
+        "@0x/fill-scenarios": "^3.0.16",
+        "@0x/migrations": "^4.2.0",
+        "@0x/order-utils": "^8.2.5",
+        "@0x/subproviders": "^5.0.1",
+        "http-status-codes": "^1.3.2"
     },
     "publishConfig": {
         "access": "public"

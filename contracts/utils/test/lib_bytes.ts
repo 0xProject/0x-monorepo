@@ -59,7 +59,12 @@ describe('LibBytes', () => {
         testAddress = accounts[1];
         testAddressB = accounts[2];
         // Deploy LibBytes
-        libBytes = await TestLibBytesContract.deployFrom0xArtifactAsync(artifacts.TestLibBytes, provider, txDefaults);
+        libBytes = await TestLibBytesContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibBytes,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         // Verify lengths of test data
         const byteArrayShorterThan32BytesLength = ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength;
         expect(byteArrayShorterThan32BytesLength).to.be.lessThan(32);

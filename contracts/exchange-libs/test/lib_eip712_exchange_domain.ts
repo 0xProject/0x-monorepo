@@ -12,6 +12,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
                 artifacts.TestLibEIP712ExchangeDomain,
                 env.provider,
                 env.txDefaults,
+                {},
                 new BigNumber(chainId),
                 constants.NULL_ADDRESS,
             );
@@ -32,6 +33,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
                 artifacts.TestLibEIP712ExchangeDomain,
                 env.provider,
                 env.txDefaults,
+                {},
                 new BigNumber(chainId),
                 verifyingContractAddress,
             );

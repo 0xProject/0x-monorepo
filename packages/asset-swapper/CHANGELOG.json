@@ -1,10 +1,47 @@
 [
     {
+        "timestamp": 1565296576,
+        "version": "1.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Added optimization utils to consumer output",
+                "pr": 1988
+            },
+            {
+                "note": "Expanded test coverage",
+                "pr": 1980
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "0.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "timestamp": 1563193019,
         "version": "0.0.4",
         "changes": [
             {
-                "note": "Dependencies updated"
+                "note": "Switched MarketOperation type to enum and expanded default constants configuration",
+                "pr": 1959
+            },
+            {
+                "note": "Added additional options to control asset-swapper behavior and optimized consumer output",
+                "pr": 1966
             }
         ]
     },

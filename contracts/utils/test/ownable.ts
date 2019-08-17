@@ -22,7 +22,7 @@ describe('Ownable', () => {
         await blockchainLifecycle.startAsync();
         // Deploy Ownable from the owner address
         txDefaults.from = owner;
-        ownable = await TestOwnableContract.deployFrom0xArtifactAsync(artifacts.TestOwnable, provider, txDefaults);
+        ownable = await TestOwnableContract.deployFrom0xArtifactAsync(artifacts.TestOwnable, provider, txDefaults, {});
     });
 
     after(async () => {

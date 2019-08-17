@@ -39,6 +39,7 @@ describe('LibTransactionDecoder', () => {
             artifacts.LibTransactionDecoder,
             provider,
             txDefaults,
+            artifacts,
         );
     });
     after(async () => {

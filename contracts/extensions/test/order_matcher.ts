@@ -104,12 +104,14 @@ describe('OrderMatcher', () => {
             proxyArtifacts.ERC721Proxy,
             provider,
             txDefaults,
+            artifacts,
         );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
             new BigNumber(chainId),
         );
@@ -128,6 +130,7 @@ describe('OrderMatcher', () => {
             artifacts.OrderMatcher,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
         );
         // Set default addresses
@@ -206,6 +209,7 @@ describe('OrderMatcher', () => {
                 artifacts.Exchange,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.NULL_BYTES,
                 new BigNumber(chainId),
             );
@@ -214,6 +218,7 @@ describe('OrderMatcher', () => {
                     artifacts.OrderMatcher,
                     provider,
                     txDefaults,
+                    artifacts,
                     exchangeInstance.address,
                 ) as any) as sendTransactionResult,
                 RevertReason.UnregisteredAssetProxy,
@@ -732,6 +737,7 @@ describe('OrderMatcher', () => {
                 erc721Artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
@@ -775,6 +781,7 @@ describe('OrderMatcher', () => {
                 erc721Artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
@@ -792,6 +799,7 @@ describe('OrderMatcher', () => {
                 erc721Artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );

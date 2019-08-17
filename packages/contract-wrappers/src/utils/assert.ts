@@ -8,7 +8,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './constants';
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const assert = {
     ...sharedAssert,
@@ -56,7 +56,7 @@ export const assert = {
         }
     },
     allTakerAddressesAreNull(orders: Order[]): void {
-        assert.ordersHaveAtMostOneUniqueValueForProperty(orders, 'takerAddress', constants.NULL_ADDRESS);
+        assert.ordersHaveAtMostOneUniqueValueForProperty(orders, 'takerAddress', NULL_ADDRESS);
     },
     allMakerAssetDatasAreErc20Token(orders: Order[], tokenAddress: string): void {
         assert.ordersHaveAtMostOneUniqueValueForProperty(

@@ -1,5 +1,24 @@
 [
     {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Added DevUtils",
+                "pr": 2060
+            }
+        ]
+    },
+    {
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Added StaticCallAssetProxy and ERC1155AssetProxy",
+                "pr": 2021
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
         "version": "3.0.2",
         "changes": [
             {

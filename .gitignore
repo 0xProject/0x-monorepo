@@ -77,7 +77,6 @@ TODO.md
 
 packages/website/public/bundle*
 packages/dev-tools-pages/public/bundle*
-packages/react-docs/example/public/bundle*
 
 # server cli
 packages/testnet-faucets/server/
@@ -117,6 +116,24 @@ contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/asset_proxy_owner/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/coordinator/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/coordinator_registry/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dummy_erc20_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dummy_erc721_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/dutch_auction/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_proxy/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_proxy/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc721_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/eth_balance_checker/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/forwarder/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_asset_proxy/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_validator/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/i_wallet/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/multi_asset_proxy/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/order_validator/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/weth9/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init__.py
 
 # cli test output
 packages/abi-gen/test-cli/output

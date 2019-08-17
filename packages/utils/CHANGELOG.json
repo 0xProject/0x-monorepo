@@ -5,6 +5,33 @@
             {
                 "note": "Add `SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero`",
                 "pr": 2031
+            },
+            {
+                "note": "Updated to include `strictDecode` for decoding method arguments",
+                "pr": 2018
+            },
+            {
+                "note": "Throw exception when trying to decode beyond boundaries of calldata",
+                "pr": 2018
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
+        "timestamp": 1564604963,
+        "version": "4.4.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563957393,
+        "version": "4.4.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

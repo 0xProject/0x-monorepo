@@ -28,6 +28,11 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class OrderValidatorContract extends BaseContract {
     public getOrderAndTraderInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -116,6 +121,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -141,8 +151,87 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+            {
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+                    {
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+            {
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+                    {
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getBalanceAndAllowance = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             target: string,
             assetData: string,
@@ -189,6 +278,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(target: string, assetData: string): string {
             assert.isString('target', target);
             assert.isString('assetData', assetData);
@@ -199,8 +293,27 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): [BigNumber, BigNumber] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, BigNumber]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): [BigNumber, BigNumber] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getOrdersAndTradersInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -290,6 +403,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -316,8 +434,87 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+            Array<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    Array<{
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }>
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+            Array<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    Array<{
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }>
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getTradersInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -401,6 +598,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -427,8 +629,75 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): Array<{
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        }> {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                Array<{
+                    makerBalance: BigNumber;
+                    makerAllowance: BigNumber;
+                    takerBalance: BigNumber;
+                    takerAllowance: BigNumber;
+                    makerZrxBalance: BigNumber;
+                    makerZrxAllowance: BigNumber;
+                    takerZrxBalance: BigNumber;
+                    takerZrxAllowance: BigNumber;
+                }>
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): Array<{
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        }> {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                Array<{
+                    makerBalance: BigNumber;
+                    makerAllowance: BigNumber;
+                    takerBalance: BigNumber;
+                    takerAllowance: BigNumber;
+                    makerZrxBalance: BigNumber;
+                    makerZrxAllowance: BigNumber;
+                    takerZrxBalance: BigNumber;
+                    takerZrxAllowance: BigNumber;
+                }>
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getERC721TokenOwner = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             token: string,
             tokenId: BigNumber,
@@ -475,6 +744,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(token: string, tokenId: BigNumber): string {
             assert.isString('token', token);
             assert.isBigNumber('tokenId', tokenId);
@@ -485,8 +759,27 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getBalancesAndAllowances = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             target: string,
             assetData: string[],
@@ -533,6 +826,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(target: string, assetData: string[]): string {
             assert.isString('target', target);
             assert.isArray('assetData', assetData);
@@ -543,8 +841,27 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): [BigNumber[], BigNumber[]] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber[], BigNumber[]]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): [BigNumber[], BigNumber[]] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getTraderInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -623,6 +940,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -648,11 +970,70 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): {
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        } {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): {
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        } {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
         _zrxAssetData: string,
     ): Promise<OrderValidatorContract> {
@@ -667,13 +1048,28 @@ export class OrderValidatorContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return OrderValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange, _zrxAssetData);
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        if (Object.keys(logDecodeDependencies) !== undefined) {
+            for (const key of Object.keys(logDecodeDependencies)) {
+                logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+            }
+        }
+        return OrderValidatorContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
+            _exchange,
+            _zrxAssetData,
+        );
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
         _zrxAssetData: string,
     ): Promise<OrderValidatorContract> {
@@ -703,7 +1099,12 @@ export class OrderValidatorContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`OrderValidator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new OrderValidatorContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new OrderValidatorContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [_exchange, _zrxAssetData];
         return contractInstance;
     }
@@ -1273,8 +1674,20 @@ export class OrderValidatorContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('OrderValidator', OrderValidatorContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super(
+            'OrderValidator',
+            OrderValidatorContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

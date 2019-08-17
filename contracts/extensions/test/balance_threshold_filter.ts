@@ -132,6 +132,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             zrxAssetData,
             new BigNumber(chainId),
         );
@@ -151,6 +152,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
+            artifacts,
             exchangeInstance.address,
             erc721BalanceThresholdAsset.address,
             erc721alanceThreshold,
@@ -160,6 +162,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
+            artifacts,
             exchangeInstance.address,
             erc20BalanceThresholdAsset.address,
             erc20BalanceThreshold,

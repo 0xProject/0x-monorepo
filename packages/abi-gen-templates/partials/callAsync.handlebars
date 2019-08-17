@@ -1,3 +1,12 @@
+/**
+ * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an 
+ * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+ * since they don't modify state.
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+{{#if devdoc.return}}
+ * @returns {{devdoc.return}}
+{{/if}}
+ */
 async callAsync(
 {{> typed_params inputs=inputs}}
     callData: Partial<CallData> = {},
@@ -39,6 +48,12 @@ async callAsync(
     // tslint:enable boolean-naming
     return result;
 },
+/**
+ * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+ * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+ * to create a 0x transaction (see protocol spec for more details).
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ */
 getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {
@@ -48,4 +63,22 @@ getABIEncodedTransactionData(
     const self = this as any as {{contractName}}Contract;
     const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     return abiEncodedTransactionData;
+},
+getABIDecodedTransactionData(
+    callData: string
+): ({{> return_type inputs=inputs ~}}) {
+    const self = this as any as {{contractName}}Contract;
+    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    // tslint:disable boolean-naming
+    const abiDecodedCallData = abiEncoder.strictDecode<{{> return_type inputs=inputs}}>(callData);
+    return abiDecodedCallData;
+},
+getABIDecodedReturnData(
+    returnData: string
+): ({{> return_type outputs=outputs ~}}) {
+    const self = this as any as {{contractName}}Contract;
+    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    // tslint:disable boolean-naming
+    const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(returnData);
+    return abiDecodedReturnData;
 },

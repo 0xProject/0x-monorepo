@@ -9,18 +9,154 @@ Python zero_ex.contract_wrappers
    :members:
 
 
-zero_ex.contract_wrappers.Exchange
-==================================
+zero_ex.contract_wrappers.asset_proxy_owner
+===========================================
 
-.. autoclass:: zero_ex.contract_wrappers.Exchange
+.. automodule:: zero_ex.contract_wrappers.asset_proxy_owner
    :members:
    :special-members:
 
 
-zero_ex.contract_wrappers.ERC20Token
-====================================
+zero_ex.contract_wrappers.coordinator
+=====================================
 
-.. autoclass:: zero_ex.contract_wrappers.ERC20Token
+.. automodule:: zero_ex.contract_wrappers.coordinator
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.coordinator_registry
+==============================================
+
+.. automodule:: zero_ex.contract_wrappers.coordinator_registry
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.dev_utils
+=======================================
+
+.. automodule:: zero_ex.contract_wrappers.dev_utils
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.dutch_auction
+=======================================
+
+.. automodule:: zero_ex.contract_wrappers.dutch_auction
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc20_proxy
+=====================================
+
+.. automodule:: zero_ex.contract_wrappers.erc20_proxy
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc20_token
+=====================================
+
+.. automodule:: zero_ex.contract_wrappers.erc20_token
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc721_proxy
+======================================
+
+.. automodule:: zero_ex.contract_wrappers.erc721_proxy
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc721_token
+======================================
+
+.. automodule:: zero_ex.contract_wrappers.erc721_token
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.eth_balance_checker
+=============================================
+
+.. automodule:: zero_ex.contract_wrappers.eth_balance_checker
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.exchange
+==================================
+
+.. automodule:: zero_ex.contract_wrappers.exchange
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.forwarder
+===================================
+
+.. automodule:: zero_ex.contract_wrappers.forwarder
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.i_asset_proxy
+=======================================
+
+.. automodule:: zero_ex.contract_wrappers.i_asset_proxy
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.i_validator
+=====================================
+
+.. automodule:: zero_ex.contract_wrappers.i_validator
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.i_wallet
+==================================
+
+.. automodule:: zero_ex.contract_wrappers.i_wallet
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.multi_asset_proxy
+===========================================
+
+.. automodule:: zero_ex.contract_wrappers.multi_asset_proxy
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.order_validator
+=========================================
+
+.. automodule:: zero_ex.contract_wrappers.order_validator
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.weth9
+===============================
+
+.. automodule:: zero_ex.contract_wrappers.weth9
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.zrx_token
+===================================
+
+.. automodule:: zero_ex.contract_wrappers.zrx_token
    :members:
    :special-members:
 

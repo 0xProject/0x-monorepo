@@ -93,6 +93,7 @@ blockchainTests.resets('Reentrancy Tests', env => {
             artifacts.ReentrancyTester,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

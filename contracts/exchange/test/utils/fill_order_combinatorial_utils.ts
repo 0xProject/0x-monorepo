@@ -102,6 +102,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         assetProxyArtifacts.MultiAssetProxy,
         provider,
         txDefaults,
+        {},
     );
 
     const assetWrapper = new AssetWrapper([erc20Wrapper, erc721Wrapper, erc1155Wrapper], burnerAddress);
@@ -110,6 +111,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
+        {},
         new BigNumber(chainId),
     );
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);

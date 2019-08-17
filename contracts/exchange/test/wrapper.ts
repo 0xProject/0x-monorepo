@@ -82,6 +82,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             artifacts.Exchange,
             env.provider,
             env.txDefaults,
+            {},
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, env.provider);

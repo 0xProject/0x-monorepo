@@ -32,6 +32,7 @@ blockchainTests('Exchange core internal functions', env => {
             artifacts.TestExchangeInternals,
             env.provider,
             env.txDefaults,
+            {},
             new BigNumber(CHAIN_ID),
         );
         logDecoder = new LogDecoder(env.web3Wrapper, artifacts);

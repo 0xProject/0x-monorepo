@@ -31,6 +31,7 @@ blockchainTests('LibZeroExTransaction', env => {
             artifacts.TestLibZeroExTransaction,
             env.provider,
             env.txDefaults,
+            {},
         );
     });
 

@@ -12,6 +12,12 @@ export const assert = {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, swapQuote.makerAssetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, swapQuote.orders, schemas.signedOrdersSchema);
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
+        assert.isValidOrdersForSwapQuote(
+            `${variableName}.orders`,
+            swapQuote.orders,
+            swapQuote.makerAssetData,
+            swapQuote.takerAssetData,
+        );
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
         if (swapQuote.type === MarketOperation.Buy) {
@@ -19,6 +25,27 @@ export const assert = {
         } else {
             sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
         }
+    },
+    isValidOrdersForSwapQuote(
+        variableName: string,
+        orders: SignedOrder[],
+        makerAssetData: string,
+        takerAssetData: string,
+    ): void {
+        _.every(orders, (order: SignedOrder, index: number) => {
+            assert.assert(
+                order.takerAssetData === takerAssetData,
+                `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData} but found ${
+                    order.takerAssetData
+                }`,
+            );
+            assert.assert(
+                order.makerAssetData === makerAssetData,
+                `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData} but found ${
+                    order.makerAssetData
+                }`,
+            );
+        });
     },
     isValidForwarderSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {
         assert.isValidSwapQuote(variableName, swapQuote);
