@@ -89,6 +89,17 @@
             "path": "tools/@0x/asset-swapper/v1.0.1/reference.mdx",
             "versions": ["v1.0.1", "v1.0.0"]
         },
+        "0x-js": {
+            "title": "0x.js",
+            "description": "An umbrella package that exports all the 0x tools you need to start building on 0x. Includes: @0x/order-utils, @0x/contract-wrappers and @0x/contract-addresses.",
+            "difficulty": "Beginner",
+            "topics": [],
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Trader", "Relayer", "Protocol Developer"],
+            "type": "Typescript Libraries",
+            "externalUrl": "https://www.npmjs.com/package/0x.js"
+        },
         "connect": {
             "title": "@0x/connect",
             "description": "An HTTP/WS client for interacting with the Standard Relayer API",
