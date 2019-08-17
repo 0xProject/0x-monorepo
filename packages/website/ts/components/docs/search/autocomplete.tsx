@@ -12,7 +12,7 @@ import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrap
 import { docs } from 'ts/style/docs';
 import { searchIndices } from 'ts/utils/algolia_constants';
 
-interface IHit {
+export interface IHit {
     description: string;
     difficulty?: string;
     externalUrl?: string;

@@ -11,37 +11,42 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
 interface IFeatureLinkProps {
-    title: string;
     description?: string;
-    url: string;
+    externalUrl?: string;
+    title: string;
+    url?: string;
 }
 
-export const FeatureLink: React.FC<IFeatureLinkProps> = props => (
-    <FeatureLinkWrapper to={props.url}>
-        <StyledIcon color={colors.brandLight} name="flexibleIntegration" size={60} />
-        <Content>
-            <div>
-                <Heading asElement="h3" size="small" marginBottom="6px">
-                    {props.title}
-                </Heading>
-                <Paragraph size="default" marginBottom="0">
-                    {props.description}
-                </Paragraph>
-            </div>
+export const FeatureLink: React.FC<IFeatureLinkProps> = ({ description, externalUrl, title, url }) => {
+    const to = externalUrl ? externalUrl : url;
 
-            <MediaQuery minWidth={500}>
-                <svg viewBox="0 0 14 14" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M2 0h11.5v11H12V2.62L1.06 13.56 0 12.5l11-11H2V0z"
-                        fill="currentColor"
-                    />
-                </svg>
-            </MediaQuery>
-        </Content>
-    </FeatureLinkWrapper>
-);
+    return (
+        <FeatureLinkWrapper to={to}>
+            <StyledIcon color={colors.brandLight} name="flexibleIntegration" size={60} />
+            <Content>
+                <div>
+                    <Heading asElement="h3" size="small" marginBottom="6px">
+                        {title}
+                    </Heading>
+                    <Paragraph size="default" marginBottom="0">
+                        {description}
+                    </Paragraph>
+                </div>
+
+                <MediaQuery minWidth={500}>
+                    <svg viewBox="0 0 14 14" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M2 0h11.5v11H12V2.62L1.06 13.56 0 12.5l11-11H2V0z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </MediaQuery>
+            </Content>
+        </FeatureLinkWrapper>
+    );
+};
 
 const StyledIcon = styled(Icon)`
     margin-bottom: 12px;

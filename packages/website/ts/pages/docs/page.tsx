@@ -59,7 +59,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
     const key = page ? page : type;
     // @ts-ignore
-    const { description, keywords, path, subtitle, title, versions } = meta[key];
+    const { description, keywords, path, subtitle, title, versions } = meta[type][key];
     // If the route path includes a version, replace the initial version on path
     const filePath = versions && version ? path.replace(versions[0], version) : path;
 

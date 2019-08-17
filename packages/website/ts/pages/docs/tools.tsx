@@ -13,25 +13,12 @@ import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/shared/separator';
 
+import { IHit } from 'ts/components/docs/search/autocomplete';
+
 import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
 
 interface IHitsProps {
     hits: IHit[];
-}
-interface IHit {
-    description: string;
-    difficulty: string;
-    id: number | string;
-    isCommunity?: boolean;
-    isFeatured?: boolean;
-    objectID: string;
-    tags?: string[];
-    textContent: string;
-    title: string;
-    type?: string;
-    url: string;
-    _highlightResult: any;
-    _snippetResult: any;
 }
 
 export const DocsTools: React.FC = () => {
