@@ -30,7 +30,7 @@ const sharedSettings = {
     distinct: true,
     attributeForDistinct: 'id',
     attributesForFaceting: [''],
-    attributesToSnippet: ['textContent:20'], // attribute:nbWords (number of words to show in a snippet)
+    attributesToSnippet: ['description:20', 'textContent:20'], // attribute:nbWords (number of words to show in a snippet)
     searchableAttributes: ['title', 'textContent'],
     snippetEllipsisText: '…',
 };

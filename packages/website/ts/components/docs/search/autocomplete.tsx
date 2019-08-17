@@ -96,11 +96,13 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const renderSuggestion = (hit: IHit): React.ReactNode => {
         const { externalUrl, urlWithHash } = hit;
         const to = externalUrl ? externalUrl : urlWithHash;
+        // The atrributes to snippet are set in algolia_constants
+        const attributeToSnippet = externalUrl ? 'description' : 'textContent';
 
         return (
             <Link shouldOpenInNewTab={externalUrl ? true : false} to={to}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
-                <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
+                <Snippet attribute={attributeToSnippet} hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
         );
     };
