@@ -101,18 +101,6 @@
             "path": "tools/@0x/connect/v5.0.16/reference.mdx",
             "versions": ["v5.0.16", "v5.0.15"]
         },
-        "migrations": {
-            "title": "@0x/migrations",
-            "description": "Migration tool for deploying 0x smart contracts on private testnets",
-            "difficulty": "Advanced",
-            "topics": [],
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Trader", "Relayer"],
-            "type": "Typescript Libraries",
-            "path": "tools/@0x/migrations/v4.2.0/reference.mdx",
-            "versions": ["v4.2.0", "v4.1.11"]
-        },
         "subproviders": {
             "title": "@0x/subproviders",
             "description": "Web3 provider middlewares (e.g. LedgerSubprovider)",
@@ -263,6 +251,191 @@
             "tags": ["Relayer", "Trader"],
             "title": "@0x/ts-mesh-client",
             "type": "Typescript Libraries"
+        },
+        "radar-relay-sdk": {
+            "title": "RadarRelay SDK",
+            "description": "The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs",
+            "difficulty": "Beginner",
+            "externalUrl": "https://developers.radarrelay.com/libraries/sdk",
+            "isCommunity": true,
+            "isFeatured": false,
+            "tags": ["Trader"],
+            "type": "Typescript Libraries"
+        },
+        "tokenlon-sdk": {
+            "title": "Tokenlon SDK",
+            "description": "Tokenlon SDK provides APIs for developers to trade of imToken's relayer",
+            "difficulty": "Beginner",
+            "externalUrl": "https://www.npmjs.com/package/tokenlon-sdk",
+            "isCommunity": true,
+            "isFeatured": false,
+            "tags": ["Trader"],
+            "type": "Typescript Libraries"
+        },
+        "ganache-cli": {
+            "title": "0xorg/ganache-cli",
+            "description": "Spin up a Ganache test Ethereum node with the 0x smart contracts pre-deployed",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "type": "Docker Images",
+            "externalUrl": "https://hub.docker.com/r/0xorg/ganache-cli"
+        },
+        "launch-kit-backend-docker": {
+            "title": "0xorg/launch-kit-backend",
+            "description": "A pre-built Standard Relayer API backend server",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Docker Images",
+            "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-backend"
+        },
+        "launch-kit-frontend-docker": {
+            "title": "0xorg/launch-kit-frontend",
+            "description": "An ERC20 exchange and ERC721 marketplace React front-end to use with any SRA API backend",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Docker Images",
+            "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-frontend"
+        },
+        "launch-kit-demo": {
+            "title": "0xorg/launch-kit-demo",
+            "description": "A demo of the front-end and backend Launch Kits running together",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Docker Images",
+            "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-demo"
+        },
+        "mesh": {
+            "title": "0xorg/mesh",
+            "description": "A peer-to-peer network for sharing 0x orders",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "trader", "Protocol Developer"],
+            "type": "Docker Images",
+            "externalUrl": "https://hub.docker.com/r/0xorg/mesh"
+        },
+        "contract-wrappers-py": {
+            "title": "contract-wrappers-py",
+            "description": "0x smart contract Python wrappers",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "type": "Python Libraries",
+            "externalUrl": "https://pypi.org/project/0x-contract-wrappers/"
+        },
+        "0x-order-utils": {
+            "title": "0x-order-utils",
+            "description": "A set of utilities for generating, parsing, signing and validating 0x orders in Python",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "type": "Python Libraries",
+            "externalUrl": "https://pypi.org/project/0x-order-utils/"
+        },
+        "0x-sra-client": {
+            "title": "0x-sra-client",
+            "description": "A Python client for interacting with servers conforming to the Standard Relayer API specification",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader"],
+            "type": "Python Libraries",
+            "externalUrl": "https://pypi.org/project/0x-sra-client"
+        },
+        "open-relay": {
+            "title": "OpenRelay",
+            "description": "OpenRelay is an open source relay for the 0x protocol. OpenRelay provides an open, scalable orderbook. Users can post offers for any ERC20 or ERC721 token, or search for trades with other users.",
+            "difficulty": "Intermediate",
+            "isCommunity": true,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Golang Libraries",
+            "externalUrl": "https://github.com/NoteGio/openrelay"
+        },
+        "launch-kit-frontend": {
+            "title": "0x Launch Kit Frontend",
+            "description": "An ERC20 exchange and ERC721 marketplace react frontend UI for any SRA relayer",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Starter projects",
+            "externalUrl": "https://github.com/0xProject/0x-launch-kit-frontend/"
+        },
+        "launch-kit-backend": {
+            "title": "0x Launch Kit Backend",
+            "description": "An open-source relayer backend that implements the Standard Relayer API",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Starter projects",
+            "externalUrl": "https://github.com/0xProject/0x-launch-kit-backend/"
+        },
+        "starter-project": {
+            "title": "0x Starter Project",
+            "description": "A project showcasing how to get started with 0x.js. This project will take you through a number of scenarios using the 0x v2 protocol.",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "type": "Starter projects",
+            "externalUrl": "https://github.com/0xProject/0x-starter-project"
+        },
+        "migrations": {
+            "title": "@0x/migrations",
+            "description": "A package to deploy the 0x protocol's system of smart contracts to the testnet of your choice",
+            "difficulty": "Advanced",
+            "topics": [],
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Protocol Developer", "Relayer"],
+            "type": "Command-line tool",
+            "path": "tools/@0x/migrations/v4.2.0/reference.mdx",
+            "versions": ["v4.2.0", "v4.1.11"]
+        },
+        "launch-kit-wizard": {
+            "title": "@0x/launch-kit-wizard",
+            "description": "A “create-react-app”-style CLI for spinning up a 0x Relayer",
+            "difficulty": "Beginner",
+            "topics": [],
+            "isCommunity": false,
+            "isFeatured": true,
+            "tags": ["Relayer"],
+            "type": "Command-line tool",
+            "externalUrl": "https://github.com/0xProject/0x-launch-kit"
+        },
+        "massive": {
+            "title": "Massive CLI",
+            "description": "A set of command-line tools for creating command-line scripts for interacting with the Ethereum blockchain in general, and 0x in particular",
+            "difficulty": "Intermediate",
+            "topics": [],
+            "isCommunity": true,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader"],
+            "type": "Command-line tool",
+            "externalUrl": "https://github.com/NoteGio/massive"
+        },
+        "coordinator-server": {
+            "title": "Coordinator Server",
+            "description": "A reference implementation of a 0x coordinator server (soft-cancel variant)",
+            "difficulty": "Advanced",
+            "topics": [],
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer"],
+            "type": "Starter projects",
+            "externalUrl": "https://github.com/0xProject/0x-coordinator-server"
         }
     }
 }
