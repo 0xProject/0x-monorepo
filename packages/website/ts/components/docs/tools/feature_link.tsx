@@ -21,7 +21,7 @@ export const FeatureLink: React.FC<IFeatureLinkProps> = ({ description, external
     const to = externalUrl ? externalUrl : url;
 
     return (
-        <FeatureLinkWrapper to={to}>
+        <FeatureLinkWrapper shouldOpenInNewTab={externalUrl ? true : false} to={to}>
             <StyledIcon color={colors.brandLight} name="flexibleIntegration" size={60} />
             <Content>
                 <div>
