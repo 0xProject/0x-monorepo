@@ -105,6 +105,7 @@ export const constants = {
     URL_WETH_IO: 'https://weth.io/',
     URL_CANONICAL_WETH_POST: 'https://blog.0xproject.com/canonical-weth-a9aa7d0279dd',
     URL_ZEROEX_CHAT,
+    URL_RELAYER_REGISTRY: 'https://github.com/0xProject/0x-relayer-registry',
     URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
     URL_LAUNCH_KIT_ERC20_DEMO: 'https://demo.0x.org/erc20/',
     URL_LAUNCH_KIT_ERC721_DEMO: 'https://demo.0x.org/marketplace/',
@@ -117,6 +118,7 @@ export const constants = {
     URL_MISSION_AND_VALUES_BLOG_POST: 'https://blog.0xproject.com/the-0x-mission-and-values-181a58706f9f',
     URL_VOTE_FAQ:
         'https://blog.0xproject.com/vote-with-zrx-to-add-support-for-erc-1155-and-the-staticcallassetproxy-49a855807bcd#967f',
+    URL_ZEIP_REPO: 'https://github.com/0xProject/ZEIPs/',
     DEVELOPER_TOPBAR_LINKS: [
         {
             title: Key.Wiki,
