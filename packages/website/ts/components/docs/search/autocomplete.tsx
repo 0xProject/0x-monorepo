@@ -14,8 +14,9 @@ import { searchIndices } from 'ts/utils/algolia_constants';
 
 interface IHit {
     description: string;
-    difficulty: string;
-    hash: string;
+    difficulty?: string;
+    externalUrl?: string;
+    hash?: string;
     id: number | string;
     isCommunity?: boolean;
     isFeatured?: boolean;
@@ -25,10 +26,10 @@ interface IHit {
     textContent: string;
     title: string;
     type?: string;
-    url: string;
-    urlWithHash: string;
-    _highlightResult: any;
-    _snippetResult: any;
+    url?: string;
+    urlWithHash?: string;
+    _highlightResult?: any;
+    _snippetResult?: any;
 }
 
 interface IAutoCompleteProps extends RouteComponentProps<{}> {
@@ -68,19 +69,22 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const onSuggestionsClearRequested = (): void => refine('');
 
     const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
-        const { hash, url, urlWithHash } = suggestion;
-        // If there is a hash (fragment identifier) and the user is currently
-        // on the same page, scroll to content. If not, route away to the doc page.
-        if (hash && location.pathname === url) {
-            const id = hash.substring(1); // Get rid of # symbol
-            scroller.scrollTo(id, {
-                smooth: true,
-                duration: docs.scrollDuration,
-                offset: -docs.headerOffset,
-            });
-        } else {
-            history.push(urlWithHash);
-            window.scrollTo(0, 0);
+        const { externalUrl, hash, url, urlWithHash } = suggestion;
+
+        if (!externalUrl) {
+            // If there is a hash (fragment identifier) and the user is currently
+            // on the same page, scroll to content. If not, route away to the doc page.
+            if (hash && location.pathname === url) {
+                const id = hash.substring(1); // Get rid of # symbol
+                scroller.scrollTo(id, {
+                    smooth: true,
+                    duration: docs.scrollDuration,
+                    offset: -docs.headerOffset,
+                });
+            } else {
+                history.push(urlWithHash);
+                window.scrollTo(0, 0);
+            }
         }
 
         setValue(''); // Clear input value
@@ -90,8 +94,11 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
 
     const renderSuggestion = (hit: IHit): React.ReactNode => {
+        const { externalUrl, urlWithHash } = hit;
+        const to = externalUrl ? externalUrl : urlWithHash;
+
         return (
-            <Link to={hit.urlWithHash}>
+            <Link shouldOpenInNewTab={externalUrl ? true : false} to={to}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
                 <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
