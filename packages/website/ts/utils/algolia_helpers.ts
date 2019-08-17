@@ -20,7 +20,6 @@ const { selectAll } = require('unist-util-select');
 const meta = require('./algolia_meta.json');
 
 export async function indexFilesAsync(indexName: string): Promise<void> {
-
     const nameToFile = getNameToFile(indexName); // Get file objects processed to get their meta information (name, path, versions, etc.)
 
     const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
@@ -41,14 +40,13 @@ export async function indexFilesAsync(indexName: string): Promise<void> {
             const titleSlug = slugify(metadata.title, { lower: true });
             const content = {
                 ...metadata,
-                url: metadata.externalUrl,
+                externalUrl: metadata.externalUrl,
                 id: titleSlug,
                 objectID: titleSlug,
             };
             await pushObjectsToAlgoliaAsync(algoliaIndex, [content]);
         }
     }
-
 }
 
 function getNameToFile(dirName: string): ObjectMap<File> {
@@ -60,11 +58,11 @@ function getNameToFile(dirName: string): ObjectMap<File> {
         if (dirName === 'tools') {
             const name = path.basename(path.join(p, '../../'));
             const version = path.basename(path.dirname(p));
-            const url = `/docs/tools/${name}/${version}`;
+            const externalUrl = `/docs/tools/${name}/${version}`;
 
             const fileIfExists = nameToFile[name];
 
-            const fileObject = { name, path: p, version, versions: [version], url };
+            const fileObject = { name, path: p, version, versions: [version], externalUrl };
 
             if (fileIfExists !== undefined) {
                 if (compareVersions.compare(version, fileIfExists.version, '>')) {
@@ -78,13 +76,13 @@ function getNameToFile(dirName: string): ObjectMap<File> {
 
         if (dirName === 'guides') {
             const { name } = path.parse(p);
-            const url = `/docs/guides/${name}`;
-            nameToFile[name] = { name, path: p, url };
+            const externalUrl = `/docs/guides/${name}`;
+            nameToFile[name] = { name, path: p, externalUrl };
         }
 
         if (dirName === 'core-concepts' || dirName === 'api-explorer') {
-            const url = `/docs/${dirName}`;
-            nameToFile[dirName] = { name: dirName, path: p, url };
+            const externalUrl = `/docs/${dirName}`;
+            nameToFile[dirName] = { name: dirName, path: p, externalUrl };
         }
     }
 
@@ -143,7 +141,7 @@ function modifier(node: Node, index: number, parent: Node): void {
         const endIndex = parent.children.indexOf(end);
         // Find all nodes between and including the heading and all nodes before the next heading
         const between = parent.children.slice(startIndex, endIndex > 0 ? endIndex : undefined);
-        // We add the id of the heading as hash part of the url to all text nodes
+        // We add the id of the heading as hash part of the externalUrl to all text nodes
         for (const item of between) {
             addHashToChildren(item, start);
         }
@@ -192,7 +190,7 @@ async function clearIndexAsync(algoliaIndex: any): Promise<void> {
 }
 
 function getContent(file: File, formattedTextNodes: FormattedNode[], indexName: string): Content[] {
-    const { name, url } = file;
+    const { name, externalUrl } = file;
     const metaData: Meta = meta[indexName][name];
     const content: Content[] = [];
 
@@ -201,8 +199,8 @@ function getContent(file: File, formattedTextNodes: FormattedNode[], indexName: 
 
         content.push({
             ...metaData,
-            url,
-            urlWithHash: url + node.hash,
+            externalUrl,
+            urlWithHash: externalUrl + node.hash,
             hash: node.hash,
             textContent: node.textContent,
             id: titleSlug,
@@ -229,7 +227,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
         if (isIndexPresent) {
             formattedTextNodes[nodeIndex].textContent += value; // Merge value with existing text at the given line
         } else {
-            formattedTextNodes.push({ line, hash, textContent: value }); // Create text, hash part of the url, and its start line
+            formattedTextNodes.push({ line, hash, textContent: value }); // Create text, hash part of the externalUrl, and its start line
         }
     });
 
@@ -241,7 +239,7 @@ interface File {
     path: string;
     version?: string;
     versions?: string[];
-    url: string;
+    externalUrl: string;
 }
 
 interface Meta {
@@ -258,7 +256,7 @@ interface Meta {
 }
 
 interface Content extends Meta {
-    url: string;
+    externalUrl: string;
     urlWithHash: string;
     hash: string;
     textContent: string;

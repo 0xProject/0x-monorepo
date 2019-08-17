@@ -255,14 +255,14 @@
             "versions": ["v6.0.10"]
         },
         "mesh-ts-client": {
-            "title": "@0x/ts-mesh-client",
             "description": "A Typescript/Javascript library for interacting with the Mesh JSON-RPC API over WebSockets",
             "difficulty": "Intermediate",
+            "externalUrl": "https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript",
             "isCommunity": false,
             "isFeatured": true,
             "tags": ["Relayer", "Trader"],
-            "type": "Typescript Libraries",
-            "path": "https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript"
+            "title": "@0x/ts-mesh-client",
+            "type": "Typescript Libraries"
         }
     }
 }
