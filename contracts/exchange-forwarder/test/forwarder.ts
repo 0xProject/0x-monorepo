@@ -183,7 +183,7 @@ describe(ContractName.Forwarder, () => {
                 wethAssetData,
             ) as any) as sendTransactionResult;
 
-            expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
+            await expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
         });
     });
     describe('marketSellOrdersWithEth without extra fees', () => {
@@ -442,7 +442,6 @@ describe(ContractName.Forwarder, () => {
                 makerFee: new BigNumber(0),
                 takerFee: new BigNumber(0),
             });
-            const ordersWithoutFee = [order];
             const desiredMakerAssetFillAmount = new BigNumber('5');
             const makerAssetFillAmount = new BigNumber('6');
             const ethValue = new BigNumber('4');

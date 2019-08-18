@@ -29,7 +29,6 @@ import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 
 
-
 contract MixinExchangeWrapper is
     LibConstants
 {
