@@ -107,11 +107,11 @@ async function processMdxAsync(algoliaIndex: any, file: File, indexName: string)
     await remark()
         .use(slug) // slugify heading text as ids
         .use(mdx)
-        .use(() => (tree: Node[]) => processContentTree(tree, file, algoliaIndex, indexName))
+        .use(() => async (tree: Node[]) => { await processContentTreeAsync(tree, file, algoliaIndex, indexName); })
         .process(content);
 }
 
-function processContentTree(tree: Node[], file: File, algoliaIndex: any, indexName: string): void {
+async function processContentTreeAsync(tree: Node[], file: File, algoliaIndex: any, indexName: string): Promise<void> {
     const modify = modifyChildren(modifier);
     // We first modify the tree to get slugified ids from headings to all text nodes
     // This is done to be able to link to a certain section in a doc after clicking a search suggestion
@@ -127,7 +127,7 @@ function processContentTree(tree: Node[], file: File, algoliaIndex: any, indexNa
         // Adds meta and formats information on all formatted text nodes
         const content = getContent(file, formattedTextNodes, indexName);
 
-        void pushObjectsToAlgoliaAsync(algoliaIndex, content);
+        await pushObjectsToAlgoliaAsync(algoliaIndex, content);
     }
 }
 
