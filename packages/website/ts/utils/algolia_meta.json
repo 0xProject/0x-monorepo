@@ -86,6 +86,14 @@
             "difficulty": "Intermediate",
             "path": "guides/use-networked-liquidity.mdx"
         },
+        "v2-specification": {
+            "title": "0x Protocol 2.0.0 Specification",
+            "description": "",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Advanced",
+            "path": "guides/v2-specification.mdx"
+        },
         "web3-provider-explained": {
             "title": "Web3 Provider Explained",
             "subtitle": "Allow your application to communicate with an Ethereum Node",
