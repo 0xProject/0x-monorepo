@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 
 import {
     ArticlesBySection,
+    WebsiteBackendCFLMetricsData,
     WebsiteBackendGasInfo,
     WebsiteBackendJobInfo,
     WebsiteBackendPriceInfo,
@@ -17,6 +18,7 @@ const PRICES_ENDPOINT = '/prices';
 const RELAYERS_ENDPOINT = '/relayers';
 const TOKENS_ENDPOINT = '/tokens';
 const WIKI_ENDPOINT = '/wiki';
+const CFL_METRICS_ENDPOINT = '/cfl-metrics';
 const SUBSCRIBE_SUBSTACK_NEWSLETTER_ENDPOINT = '/newsletter_subscriber/substack';
 
 export const backendClient = {
@@ -57,5 +59,8 @@ export const backendClient = {
             referrer: window.location.href,
         });
         return result;
+    },
+    async getCFLMetricsAsync(): Promise<WebsiteBackendCFLMetricsData> {
+        return fetchUtils.requestAsync(utils.getBackendBaseUrl(), CFL_METRICS_ENDPOINT);
     },
 };

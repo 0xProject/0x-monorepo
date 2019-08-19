@@ -723,6 +723,23 @@ export interface WebsiteBackendJobInfo {
     url: string;
 }
 
+export interface ExchangeSlippageData {
+    exchange: string;
+    current_period_avg_slippage: string;
+}
+
+export interface CFLMetricsPairData {
+    takerSymbol: string;
+    makerSymbol: string;
+    tradeAmount: number;
+    volumeUSD: number;
+    lastTradePrice: number;
+    lastTradeTime: string;
+    exchangeAverageSlippagePercentage: ExchangeSlippageData[];
+}
+
+export type WebsiteBackendCFLMetricsData = CFLMetricsPairData[];
+
 export enum BrowserType {
     Chrome = 'Chrome',
     Firefox = 'Firefox',

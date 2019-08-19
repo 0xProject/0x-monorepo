@@ -10,6 +10,7 @@ import { Icon, InlineIconWrap } from 'ts/components/icon';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
+import { CFLMetrics } from 'ts/pages/cfl/cfl_metrics';
 import { CodeStepper } from 'ts/pages/cfl/code_stepper';
 
 import { constants } from 'ts/utils/constants';
@@ -89,7 +90,8 @@ export class CFL extends React.Component<Props> {
                     isFullWidth={true}
                     description="Source liquidity for your DeFi users by filling orders at the best prices."
                     showFigureBottomMobile={true}
-                    figure={'TODO: LIQUIDITY DATA'}
+                    figure={<CFLMetrics />}
+                    figureMaxWidth="600px"
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started

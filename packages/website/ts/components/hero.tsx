@@ -18,6 +18,7 @@ interface Props {
     announcement?: AnnouncementProps;
     sectionPadding?: string;
     showFigureBottomMobile?: boolean;
+    figureMaxWidth?: string;
 }
 
 interface SectionProps {
@@ -163,7 +164,7 @@ export class Hero extends React.Component<Props> {
                     isCenteredMobile={props.isCenteredMobile}
                     showFigureBottomMobile={props.showFigureBottomMobile}
                 >
-                    {props.figure && <Content width="400px">{props.figure}</Content>}
+                    {props.figure && <Content width={props.figureMaxWidth || '400px'}>{props.figure}</Content>}
 
                     <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
                         {!!props.announcement && <Announcement {...props.announcement} />}
