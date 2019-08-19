@@ -109,7 +109,7 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 
 ## Usage
 
-Node version >= 6.12 is required.
+Node version 6.x or 8.x is required.
 
 Most of the packages require additional typings for external dependencies.
 You can include those by prepending the `@0x/typescript-typings` package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
