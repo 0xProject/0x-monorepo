@@ -1,0 +1,174 @@
+# Introduction
+
+When instantiating a [new instance of the 0x.js library](https://0x.org/docs/0x.js#zeroEx), we require that you pass in a Web3 provider. This Web3 provider allows your application to communicate with an Ethereum Node. Since there doesn't seem to be great documentation on what exactly a Web3 Provider is, we thought we'd fill the gap.
+
+A provider can be any module or class instance that implements the `sendAsync` method (simply `send` in web3 V1.0 Beta). That's it. What this `sendAsync` method does is take JSON RPC payload requests and handles them. [Web3.js](https://github.com/ethereum/web3.js/) is an example of a javascript module that contains a Web3 HTTP Provider.
+
+Using a configured Web3 Provider, the application can request signatures, estimate gas and gas price, and submit transactions to an Ethereum node.
+
+The simplest example of a provider is:
+
+```ts
+const provider = new web3.providers.HttpProvider('http://localhost:8545');
+```
+
+This provider simply takes each JSON RPC payload it receives and sends it on to the Ethereum node running on port 8545.
+
+# More complex providers
+
+Providers can have much more complex behavior however, and [ProviderEngine](https://github.com/MetaMask/provider-engine) is a great tool for building providers that do all kinds of cool stuff.
+
+We at 0x have put together a package of subproviders that we've needed ourselves. Our package also re-exports the `Web3ProviderEngine` from [ProviderEngine](https://github.com/MetaMask/provider-engine) so you only need to install a single package to get started. You can install it as follows:
+
+```
+npm install @0x/subproviders --save
+```
+
+We describe several of our subproviders below.
+
+## RedundantSubprovider
+
+In 0x Portal we use a custom built provider called [RedundantSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/redundant_subprovider.ts) that sends an RPC payload to several Ethereum nodes sequentially until one successfully handles it. During our token sale, the huge amount of traffic caused some of our Ethereum nodes to fail. Using this subprovider we were able to have requests sent to backup nodes when this happened, greatly improving the application's resilience to outages.
+
+## LedgerSubprovider
+
+A great use case for custom providers is to support additional ways for your users to sign requests and send transactions. We wanted to add hardware wallet signing support to 0x Portal so we wrote a [LedgerSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/ledger.ts) that would send all message and transaction signing requests to a users Ledger Nano S. All other requests would be sent to a backing Ethereum node.
+
+## SignerSubprovider
+
+Many people use browser extension wallets (e.g [Metamask](https://metamask.io/)). These services inject a web3 provider into the page so that your dApp can relay signing requests. We wrote [SignerSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/signer.ts) so that we could route all signing requests to the injected provider, but have all other requests handled by another backing Ethereum node.
+
+## Updating the provider used by `@0x/contract-wrappers`
+
+If at some point the provider used by your dApp changes (e.g if your user wants to use their Ledger Nano S to sign orders), it is important that you update the provider used by your `@0x/contract-wrappers`. You can do this by calling [setProvider](https://0x.org/docs/contract-wrappers#ContractWrappers-setProvider).
+
+```ts
+await contractWrappers.setProvider(newProvider, networkId);
+```
+
+# Web3 Provider Examples
+
+As described in the [Web3 Provider Explained](#Web3-Provider-Explained) section of the wiki, we at 0x have created a number of useful Web3 subproviders. These subproviders aren't only useful for 0x.js, they can be added to any application to provide resiliency, usability and to support hardware wallet functionality.
+
+You can install the 0x subproviders package as follows:
+
+```
+npm install @0x/subproviders --save
+```
+
+The subproviders work best when they are composed together using the [Web3 Provider Engine](https://github.com/MetaMask/provider-engine). This is re-exported from `@0x/subproviders` so you don't need to install any additional dependencies.
+
+In the first example, we will make use of a browser extension wallet (e.g [Metamask](https://metamask.io/)) composed with an Ethereum node we control. This set up allows all of the account based activity (signing of messages and sending transactions) to route to the browser extension wallet, while allowing the data fetching requests to flow through to a specific Ethereum node of our choosing.
+
+```typescript
+import { SignerSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+
+// Create a Web3 Provider Engine
+const providerEngine = new Web3ProviderEngine();
+// Compose our Providers, order matters
+// Use the SignerSubprovider to wrap the browser extension wallet
+// All account based and signing requests will go through the SignerSubprovider
+providerEngine.addProvider(new SignerSubprovider(window.web3.currentProvider));
+// Use an RPC provider to route all other requests
+providerEngine.addProvider(new RPCSubprovider('http://localhost:8545'));
+providerEngine.start();
+
+(async () => {
+    // Get all of the accounts through the Web3Wrapper
+    const web3Wrapper = new Web3Wrapper(providerEngine);
+    const accounts = await web3Wrapper.getAvailableAddressesAsync();
+    console.log(accounts);
+})();
+```
+
+Using the configuration above, all account related requests (e.g signing and sending a transaction) go through the browser extension wallet. All other data fetching requests go through the RPC Subprovider. This example is great as an application can use their own synced Ethereum node, rather than relying on Metamask or Infura uptime.
+
+Within the 0x Subprovider package, we have also added a [Ledger Nano S](https://www.ledgerwallet.com/start/ledger-nano-s) subprovider. By adding this subprovider first into the Web3 Provider Engine, we are able to route all account based requests to the Ledger. We again use the RPC Provider for all other requests.
+
+```typescript
+import {
+    ledgerEthereumBrowserClientFactoryAsync as ledgerEthereumClientFactoryAsync,
+    LedgerSubprovider,
+    RPCSubprovider,
+    Web3ProviderEngine,
+} from '@0x/subproviders';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+
+const KOVAN_NETWORK_ID = 42;
+// Create a Web3 Provider Engine
+const providerEngine = new Web3ProviderEngine();
+// Compose our Providers, order matters
+// Use the Ledger Subprovider to intercept all account based requests
+// All other requests will go through the RPCSubprovider
+const ledgerSubprovider = new LedgerSubprovider({
+    networkId: KOVAN_NETWORK_ID,
+    ledgerEthereumClientFactoryAsync,
+});
+providerEngine.addProvider(ledgerSubprovider);
+// Use an RPC provider to route all other requests
+providerEngine.addProvider(new RPCSubprovider('http://localhost:8545'));
+providerEngine.start();
+
+(async () => {
+    // Get all of the accounts through the Web3Wrapper
+    const web3Wrapper = new Web3Wrapper(providerEngine);
+    const accounts = await web3Wrapper.getAvailableAddressesAsync();
+    console.log(accounts);
+})();
+```
+
+This above example works for enabling the Ledger Subprovider in Browser based applications, if you want to use the Ledger directly in a Node.js application, you must use a different `ledgerEthereumClientFactoryAsync`, for example:
+
+```typescript
+// Import the NodeJS Client Factory, rather than the Browser Client Factory
+import {
+    ledgerEthereumNodeJsClientFactoryAsync as ledgerEthereumClientFactoryAsync,
+    LedgerSubprovider,
+} from '@0x/subproviders';
+```
+
+The Ledger Subprovider has a number of public methods and can be used directly to set various options. For example, the derivation path and the account index can be changed.
+
+```typescript
+public getPath(): string
+public setPath(derivationPath: string)
+public setPathIndex(pathIndex: number)
+public async getAccountsAsync(): Promise<string[]>
+public async signTransactionAsync(txParams: PartialTxParams): Promise<string>
+public async signPersonalMessageAsync(data: string): Promise<string>
+```
+
+### Notes on Ledger Subprovider
+
+It is important to remember that UI components and UX need to be considered when adding the hardware wallet support to your application. A few examples that require additional thought:
+
+-   The user may have multiple accounts on the hardware wallet. The first account may not be the desired one
+-   The user may want to set the a higher gas price so the transaction has a higher probability of being mined
+-   The hardware device is limited to handling one request at a time
+-   The hardware device is not capable of showing the message entirely on screen. An application [should confirm](https://github.com/ethfinex/0x-order-verify) what is displayed on the device
+
+In our last example we will add redundancy to the application by making use of the RedundantRPCSubprovider. The RedundantRPCSubprovider helps your application stay up when underlying Ethereum nodes experience network issues. To use this subprovider, simply provide it with a list of Ethereum node RPC endpoints and it will attempt each one in sequence until a successful response is returned.
+
+```typescript
+import { RedundantSubprovider, RPCSubprovider, SignerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+
+// Create a Web3 Provider Engine
+const providerEngine = new Web3ProviderEngine();
+// Compose our Providers, order matters
+// Use the SignerSubprovider to wrap the browser extension wallet
+const signerSubprovider = new SignerSubprovider(window.web3.currentProvider);
+providerEngine.addProvider(signerSubprovider);
+// Use the RedundantRPCSubprovider to route all other requests
+const subproviders = [new RPCSubprovider('http://localhost:8545'), new RPCSubprovider('https://kovan.infura.io')];
+providerEngine.addProvider(new RedundantSubprovider(subproviders));
+providerEngine.start();
+
+(async () => {
+    // Get the latest Block Number
+    const web3Wrapper = new Web3Wrapper(providerEngine);
+    const blockNumber = await web3Wrapper.getBlockNumberAsync();
+    console.log(blockNumber);
+})();
+```
