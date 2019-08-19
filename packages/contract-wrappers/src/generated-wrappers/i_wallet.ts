@@ -37,14 +37,14 @@ export class IWalletContract extends BaseContract {
          * since they don't modify state.
          * @param hash Message hash that is signed.
          * @param signature Proof of signing.
-         * @returns Validity of order signature.
+         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidWalletSignature(bytes32,address,bytes)&quot;))
          */
         async callAsync(
             hash: string,
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<string> {
             assert.isString('hash', hash);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -73,7 +73,7 @@ export class IWalletContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -94,18 +94,18 @@ export class IWalletContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as IWalletContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
-        getABIDecodedReturnData(returnData: string): boolean {
+        getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as IWalletContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -194,7 +194,7 @@ export class IWalletContract extends BaseContract {
                 outputs: [
                     {
                         name: 'isValid',
-                        type: 'bool',
+                        type: 'bytes4',
                     },
                 ],
                 payable: false,
