@@ -29,7 +29,7 @@ contract MixinDeploymentConstants {
 
     uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
 
-    uint256 constant internal REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 90;
+    uint256 constant internal REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 900000000000000000; // 0.9e18
 
     uint256 constant internal CHAIN_ID = 1;
 }

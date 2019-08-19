@@ -145,7 +145,7 @@ contract MixinExchangeFees is
         poolsRemaining = _unfinalizedPoolsRemaining._sub(_numPreFinalizedPools);
         if (poolsRemaining == 0) {
             // All pools already finalized.
-            return;
+            return 0;
         }
 
         uint256 epoch = _currentEpoch - 1;
@@ -188,7 +188,7 @@ contract MixinExchangeFees is
         );
         // If we have no more pools to finalize, stop.
         if (poolsRemaining == 0) {
-            return;
+            return 0;
         }
 
         uint256 epoch = _currentEpoch - 1;
@@ -285,12 +285,12 @@ contract MixinExchangeFees is
         weightedStake = stakeHeldByPoolOperator._add(
             totalStakeDelegatedToPool
             ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
-            ._div(100)
+            ._div(TOKEN_MULTIPLIER)
         );
     }
 
-    /// @dev Split a reward between the operator and members of a pool, based
-    ///      on the pool's `operatorShare`.
+    /// @dev Computes a split a reward between the operator and members of a pool,
+    ///      based on the pool's `operatorShare`.
     /// @param poolId The pool's unique ID.
     /// @param reward The reward.
     function _splitPoolReward(
@@ -298,11 +298,12 @@ contract MixinExchangeFees is
         uint256 reward
     )
         private
+        view
         returns (uint256 operatorReward, uint256 membersReward)
     {
-        uint256 share = _poolById[poolId];
-        uint256 operatorReward = reward._getPartialAmountCeil(
-            share,
+        IStructs.Pool memory pool = _poolById[poolId];
+        operatorReward = reward._getPartialAmountCeil(
+            pool.operatorShare,
             TOKEN_MULTIPLIER
         );
         membersReward = reward._sub(operatorReward);

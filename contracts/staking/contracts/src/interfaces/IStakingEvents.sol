@@ -67,7 +67,7 @@ interface IStakingEvents {
     /// @param poolId The pool ID.
     event StakingPoolActivated(
         uint256 indexed epoch,
-        uint256 indexed poolId
+        bytes32 indexed poolId
     );
 
     /// @dev Emitted by MixinExchangeFees when a pool's rewards are paid out.
@@ -77,7 +77,7 @@ interface IStakingEvents {
     /// @param weightedStake Weighted stake of the pool at the end of the epoch.
     /// @param feesCollected Fees collected by the pool at the end of the epoch.
     event RewardDeposited(
-        uint256 indexed poolId,
+        bytes32 indexed poolId,
         uint256 indexed epoch,
         uint256 rewards,
         uint256 weightedStake,
