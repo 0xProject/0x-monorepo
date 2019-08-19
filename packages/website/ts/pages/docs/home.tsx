@@ -29,25 +29,25 @@ export const DocsHome: React.FC = () => {
 const shortcutLinks = [
     {
         heading: 'Core Concepts',
-        description: 'Understand the fundamentals of 0x development',
+        description: "Learn all the core concepts you'll need to build effectively on 0x",
         icon: 'coreConcepts',
         url: WebsitePaths.DocsCoreConcepts,
     },
     {
         heading: 'API Explorer',
-        description: 'Browse and filter through all the open-source 0x developer tools',
+        description: 'Explore the core 0x library and learn how to use it',
         icon: 'apiExplorer',
         url: WebsitePaths.DocsApiExplorer,
     },
     {
         heading: 'Guides',
-        description: 'Dive into intermediate and advanced 0x development  topics',
+        description: 'Dive into beginner, intermediate and advanced 0x development topics',
         icon: 'getStarted',
         url: WebsitePaths.DocsGuides,
     },
     {
         heading: 'Tools',
-        description: 'Explore the core 0x library and how to use it',
+        description: 'Browse and filter through all the open-source 0x developer tools',
         icon: 'tools',
         url: WebsitePaths.DocsTools,
     },
