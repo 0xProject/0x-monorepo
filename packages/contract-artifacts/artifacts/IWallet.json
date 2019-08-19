@@ -10,7 +10,7 @@
                     { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "name": "isValidSignature",
-                "outputs": [{ "internalType": "bytes4", "name": "isValid", "type": "bytes4" }],
+                "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"

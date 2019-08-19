@@ -34,5 +34,5 @@ contract IValidator {
     )
         external
         view
-        returns (bytes4 isValid);
+        returns (bytes4);
 }

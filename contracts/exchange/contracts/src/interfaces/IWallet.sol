@@ -32,5 +32,5 @@ contract IWallet {
     )
         external
         view
-        returns (bytes4 isValid);
+        returns (bytes4);
 }
