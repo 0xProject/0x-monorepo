@@ -354,9 +354,6 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
 
         it('should revert if the signer != msg.sender and the signature is not valid', async () => {
-            // Set the contract to not accept signatures. Note: This doesn't need to be called but is kept for readability.
-            // await expect(transactionsContract.setShouldBeValid.sendTransactionAsync(false)).to.be.fulfilled('');
-
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const transaction = {
                 ...EMPTY_ZERO_EX_TRANSACTION,
@@ -364,7 +361,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                 signerAddress: accounts[1], // This is different than the account that will be used to send.
                 domain,
             };
-            const signature = randomSignature();
+            const signature = '0x0000'; // This is the invalid signature
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
                 transactionHash,
@@ -378,9 +375,6 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
 
         it('should revert if the signer == msg.sender but the delegatecall fails', async () => {
-            // Set the contract to fail on calls to the fallback function. Note: This call is unnecessary but is kept for readability.
-            // await expect(transactionsContract.setShouldBeValid.sendTransactionAsync(false)).to.be.fulfilled('');
-
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const transaction = {
                 ...EMPTY_ZERO_EX_TRANSACTION,
@@ -400,9 +394,6 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
 
         it('should revert if the signer != msg.sender and the signature is valid but the delegatecall fails', async () => {
-            // Set the contract to accept signatures.
-            await expect(transactionsContract.setShouldBeValid.sendTransactionAsync(true)).to.be.fulfilled('');
-
             // Set the contract to fail on calls to the fallback function. Note: This call is unnecessary but is kept for readability.
             // await expect(transactionsContract.setShouldSucceedCall.sendTransactionAsync(false)).to.be.fulfilled('');
 
@@ -413,21 +404,19 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                 signerAddress: accounts[1], // This is different than the account that will be used to send.
                 domain,
             };
+            const validSignature = randomSignature(); // Valid because length != 2
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                 transactionHash,
                 constants.NULL_BYTES,
             );
-            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, randomSignature(), {
+            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, validSignature, {
                 from: accounts[0],
             });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert with the correct return data if the signer != msg.sender and the signature is valid but the delegatecall fails', async () => {
-            // Set the contract to accept signatures.
-            await expect(transactionsContract.setShouldBeValid.sendTransactionAsync(true)).to.be.fulfilled('');
-
             // Set the contract to fail on calls to the fallback function. Note: This call is unnecessary but is kept for readability.
             // await expect(transactionsContract.setShouldCallSucceed.sendTransactionAsync(false)).to.be.fulfilled('');
 
@@ -437,6 +426,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             );
 
             const currentTimestamp = await getLatestBlockTimestampAsync();
+            const validSignature = randomSignature(); // Valid because length != 2
             const transaction = {
                 ...EMPTY_ZERO_EX_TRANSACTION,
                 expirationTimeSeconds: new BigNumber(currentTimestamp).plus(10),
@@ -445,16 +435,13 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             };
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(transactionHash, '0xdeadbeef');
-            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, randomSignature(), {
+            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, validSignature, {
                 from: accounts[0],
             });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should succeed with the correct return hash and event emitted', async () => {
-            // Set the contract to accept signatures.
-            await expect(transactionsContract.setShouldBeValid.sendTransactionAsync(true)).to.be.fulfilled('');
-
             // Set the contract to fail on calls to the fallback function. Note: This call is unnecessary but is kept for readability.
             await expect(transactionsContract.setShouldCallSucceed.sendTransactionAsync(true)).to.be.fulfilled('');
 
@@ -465,6 +452,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
 
             // Set up the necessary data for the transactions and tests
             const currentTimestamp = await getLatestBlockTimestampAsync();
+            const validSignature = randomSignature(); // Valid because length != 2
             const transaction = {
                 ...EMPTY_ZERO_EX_TRANSACTION,
                 expirationTimeSeconds: new BigNumber(currentTimestamp).plus(10),
@@ -474,7 +462,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
 
             // Verify that the returndata of the transaction is 0xDEADBEEF
-            const result = await transactionsContract.executeTransaction.callAsync(transaction, randomSignature(), {
+            const result = await transactionsContract.executeTransaction.callAsync(transaction, validSignature, {
                 from: accounts[0],
             });
             expect(result === '0xdeadbeef').to.be.true();

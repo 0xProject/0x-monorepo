@@ -26,9 +26,6 @@ import "../src/MixinTransactions.sol";
 contract TestTransactions is
     Exchange
 {
-    // Indicates whether or not the overridden _isValidTransactionWithHashSignature should return true or false.
-    bool public shouldBeValid;
-
     // Indicates whether or not the fallback function should succeed.
     bool public shouldSucceedCall;
 
@@ -99,12 +96,19 @@ contract TestTransactions is
         ZeroExTransaction memory,
         bytes32,
         address,
-        bytes memory
+        bytes memory signature
     )
         internal
         view
         returns (bool)
     {
-        return shouldBeValid;
+        if (
+            signature.length == 2 &&
+            signature[0] == 0x0 &&
+            signature[1] == 0x0
+        ) {
+            return false;
+        }
+        return true;
     }
 }
