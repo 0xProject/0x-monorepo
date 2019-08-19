@@ -11,7 +11,7 @@ interface IMiddleSectionProps {
 
 export const MiddleSection: React.FC<IMiddleSectionProps> = ({ getStartedLinks, usefulLinks }) => (
     <MiddleSectionWrapper>
-        <GetStartedLinks heading="Get started" links={getStartedLinks} />
+        <GetStartedLinks heading="Get Started" links={getStartedLinks} />
         <StepLinks heading="Useful Links" links={usefulLinks} />
     </MiddleSectionWrapper>
 );
