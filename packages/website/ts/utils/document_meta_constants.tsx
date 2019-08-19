@@ -80,12 +80,6 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
             '0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.',
         keywords: '',
     },
-    FAQ: {
-        title: '0x FAQs: Frequently Asked Questions',
-        description:
-            '0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.',
-        keywords: '',
-    },
     VOTE: {
         title: '0x Governance: Vote on ZEIPs with ZRX',
         description:

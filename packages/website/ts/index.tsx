@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
 import { DocsHome } from 'ts/containers/docs_home';
-import { FAQ } from 'ts/containers/faq';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
@@ -151,7 +150,6 @@ render(
                                 */}
                                 <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
                                 <Route path={WebsitePaths.Portal} component={LazyPortal} />
-                                <Route path={WebsitePaths.FAQ} component={FAQ as any} />
                                 <Route path={WebsitePaths.Wiki} component={Wiki as any} />
                                 <Route
                                     path={`${WebsitePaths.ZeroExJs}/:version?`}
