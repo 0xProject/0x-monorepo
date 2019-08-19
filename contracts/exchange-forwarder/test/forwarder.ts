@@ -145,6 +145,7 @@ describe(ContractName.Forwarder, () => {
         erc20Wrapper.addTokenOwnerAddress(forwarderContract.address);
 
         forwarderTestFactory = new ForwarderTestFactory(
+            exchangeWrapper,
             forwarderWrapper,
             erc20Wrapper,
             forwarderContract.address,
@@ -296,7 +297,7 @@ describe(ContractName.Forwarder, () => {
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
-        it('should not fill orders with different makerAssetData than the first order', async () => {
+        it('should fail to fill orders with mismatched makerAssetData', async () => {
             const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
             const firstOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: firstOrderMakerAssetData,

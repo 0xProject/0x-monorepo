@@ -1,8 +1,9 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { chaiSetup, constants, ERC20BalancesByOwner, web3Wrapper } from '@0x/contracts-test-utils';
-import { SignedOrder } from '@0x/types';
+import { ExchangeWrapper } from '@0x/contracts-exchange';
+import { chaiSetup, constants, ERC20BalancesByOwner, OrderStatus, web3Wrapper } from '@0x/contracts-test-utils';
+import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -88,6 +89,7 @@ function expectBalanceWithin(balance: BigNumber, low: BigNumber, high: BigNumber
 }
 
 export class ForwarderTestFactory {
+    private readonly _exchangeWrapper: ExchangeWrapper;
     private readonly _forwarderWrapper: ForwarderWrapper;
     private readonly _erc20Wrapper: ERC20Wrapper;
     private readonly _forwarderAddress: string;
@@ -105,6 +107,7 @@ export class ForwarderTestFactory {
     }
 
     constructor(
+        exchangeWrapper: ExchangeWrapper,
         forwarderWrapper: ForwarderWrapper,
         erc20Wrapper: ERC20Wrapper,
         forwarderAddress: string,
@@ -115,6 +118,7 @@ export class ForwarderTestFactory {
         wethAddress: string,
         gasPrice: BigNumber,
     ) {
+        this._exchangeWrapper = exchangeWrapper;
         this._forwarderWrapper = forwarderWrapper;
         this._erc20Wrapper = erc20Wrapper;
         this._forwarderAddress = forwarderAddress;
@@ -162,6 +166,9 @@ export class ForwarderTestFactory {
             .plus(ethSpentOnForwarderFee)
             .plus(ethValueAdjustment);
 
+        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
+
         const tx = this._forwarderWrapper.marketBuyOrdersWithEthAsync(
             orders,
             expectedResults.makerAssetFillAmount.minus(expectedResults.percentageFees),
@@ -176,7 +183,13 @@ export class ForwarderTestFactory {
             await expect(tx).to.revertWith(options.revertError);
         } else {
             const gasUsed = (await tx).gasUsed;
+            const ordersInfoAfter = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+            const orderStatusesAfter = ordersInfoAfter.map(orderInfo => orderInfo.orderStatus);
+
             await this._checkResultsAsync(
+                fractionalNumberOfOrdersToFill,
+                orderStatusesBefore,
+                orderStatusesAfter,
                 gasUsed,
                 expectedResults,
                 takerEthBalanceBefore,
@@ -223,6 +236,9 @@ export class ForwarderTestFactory {
             .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee);
 
+        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
+
         const tx = this._forwarderWrapper.marketSellOrdersWithEthAsync(
             orders,
             {
@@ -236,7 +252,13 @@ export class ForwarderTestFactory {
             await expect(tx).to.revertWith(options.revertError);
         } else {
             const gasUsed = (await tx).gasUsed;
+            const ordersInfoAfter = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+            const orderStatusesAfter = ordersInfoAfter.map(orderInfo => orderInfo.orderStatus);
+
             await this._checkResultsAsync(
+                fractionalNumberOfOrdersToFill,
+                orderStatusesBefore,
+                orderStatusesAfter,
                 gasUsed,
                 expectedResults,
                 takerEthBalanceBefore,
@@ -281,6 +303,9 @@ export class ForwarderTestFactory {
     }
 
     private async _checkResultsAsync(
+        fractionalNumberOfOrdersToFill: BigNumber,
+        orderStatusesBefore: OrderStatus[],
+        orderStatusesAfter: OrderStatus[],
         gasUsed: number,
         expectedResults: ForwarderFillState,
         takerEthBalanceBefore: BigNumber,
@@ -292,6 +317,13 @@ export class ForwarderTestFactory {
             makerAssetId?: BigNumber;
         } = {},
     ): Promise<void> {
+        for (const [i, orderStatus] of orderStatusesAfter.entries()) {
+            const expectedOrderStatus = fractionalNumberOfOrdersToFill.gte(i + 1)
+                ? OrderStatus.FullyFilled
+                : orderStatusesBefore[i];
+            expect(orderStatus).to.equal(expectedOrderStatus);
+        }
+
         const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
             expectedResults.takerAssetFillAmount,
             options.forwarderFeePercentage || constants.ZERO_AMOUNT,
