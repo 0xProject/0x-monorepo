@@ -24,12 +24,13 @@ contract IWallet {
     /// @dev Verifies that a signature is valid.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return Magic bytes4 value if the signature is valid.
+    ///         Magic value is bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
     function isValidSignature(
         bytes32 hash,
         bytes calldata signature
     )
         external
         view
-        returns (bool isValid);
+        returns (bytes4 isValid);
 }

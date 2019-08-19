@@ -21,7 +21,7 @@ pragma solidity ^0.5.5;
 import "../src/interfaces/IValidator.sol";
 
 
-contract Validator is 
+contract Validator is
     IValidator
 {
 
@@ -48,9 +48,11 @@ contract Validator is
     )
         external
         view
-        returns (bool isValid)
+        returns (bytes4)
     {
-        return (signerAddress == VALID_SIGNER);
+        require(signerAddress == VALID_SIGNER, "INVALID_SIGNER");
+        bytes4 magic_salt = bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"));
+        return magic_salt;
     }
     // solhint-enable no-unused-vars
 }

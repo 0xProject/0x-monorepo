@@ -5,9 +5,12 @@
         "abi": [
             {
                 "constant": true,
-                "inputs": [{ "name": "hash", "type": "bytes32" }, { "name": "signature", "type": "bytes" }],
+                "inputs": [
+                    { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
+                ],
                 "name": "isValidSignature",
-                "outputs": [{ "name": "isValid", "type": "bool" }],
+                "outputs": [{ "internalType": "bytes4", "name": "isValid", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -18,7 +21,7 @@
                 "isValidSignature(bytes32,bytes)": {
                     "details": "Verifies that a signature is valid.",
                     "params": { "hash": "Message hash that is signed.", "signature": "Proof of signing." },
-                    "return": "Validity of order signature."
+                    "return": "Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(\"isValidWalletSignature(bytes32,address,bytes)\"))"
                 }
             }
         },
