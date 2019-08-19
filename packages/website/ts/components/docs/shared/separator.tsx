@@ -17,6 +17,6 @@ export const Separator = styled.hr<ISeparatorProps>`
 `;
 
 Separator.defaultProps = {
-    margin: '30px 0',
+    margin: '60px 0',
     marginMobile: '30px 0',
 };
