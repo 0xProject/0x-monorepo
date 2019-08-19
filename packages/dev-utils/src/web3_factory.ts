@@ -19,6 +19,7 @@ export interface Web3Config {
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
     ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
+    shouldAllowUnlimitedContractSize?: boolean;
 }
 
 export const web3Factory = {
@@ -58,9 +59,7 @@ export const web3Factory = {
                 new GanacheSubprovider({
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
                     db_path: config.ganacheDatabasePath,
-                    // HACK(dorothy-zbornak): Mainnet gas limit is 8M, but ganache won't
-                    // go beyond 7M, which means we can't deploy certain large contracts.
-                    allowUnlimitedContractSize: true,
+                    allowUnlimitedContractSize: config.shouldAllowUnlimitedContractSize,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),

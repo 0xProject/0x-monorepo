@@ -7,7 +7,11 @@
                 "pr": 2031
             },
             {
-                "note": "Set `allowUnlimitedContractSize` option when creating a ganache provider",
+                "note": "Add `shouldAllowUnlimitedContractSize` to `Web3Config`.",
+                "pr": 2075
+            },
+            {
+                "note": "Add `UNLIMITED_CONTRACT_SIZE` to `EnvVars`.",
                 "pr": 2075
             }
         ]
