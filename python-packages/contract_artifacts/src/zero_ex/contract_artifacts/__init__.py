@@ -48,7 +48,9 @@ def abi_by_name(contract_name: str) -> Dict:
         >>> pprint(abi_by_name("IValidator"))
         [{'constant': True,
           'inputs': [{'internalType': 'bytes32', 'name': 'hash', 'type': 'bytes32'},
-                     {'internalType': 'address', 'name': 'signerAddress', 'type': 'address'},
+                     {'internalType': 'address',
+                      'name': 'signerAddress',
+                      'type': 'address'},
                      {'internalType': 'bytes', 'name': 'signature', 'type': 'bytes'}],
           'name': 'isValidSignature',
           'outputs': [{'internalType': 'bytes4', 'name': 'isValid', 'type': 'bytes4'}],
