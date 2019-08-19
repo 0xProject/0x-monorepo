@@ -105,6 +105,7 @@ export class StakingWrapper {
             artifacts.ZrxVault,
             this._provider,
             txDefaults,
+            artifacts,
             this._erc20ProxyContract.address,
             this._zrxTokenContract.address,
             zrxAssetData,
@@ -114,6 +115,7 @@ export class StakingWrapper {
             artifacts.StakingPoolRewardVault,
             this._provider,
             txDefaults,
+            artifacts,
         );
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
@@ -124,12 +126,14 @@ export class StakingWrapper {
             artifacts.Staking,
             this._provider,
             txDefaults,
+            artifacts,
         );
         // deploy staking proxy
         this._stakingProxyContractIfExists = await StakingProxyContract.deployFrom0xArtifactAsync(
             artifacts.StakingProxy,
             this._provider,
             txDefaults,
+            artifacts,
             this._stakingContractIfExists.address,
         );
         // set staking proxy contract in zrx vault
@@ -169,6 +173,7 @@ export class StakingWrapper {
             artifacts.LibFeeMathTest,
             this._provider,
             txDefaults,
+            artifacts,
         );
     }
     public async getEthBalanceAsync(owner: string): Promise<BigNumber> {
