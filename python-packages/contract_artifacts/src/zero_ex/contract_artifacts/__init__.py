@@ -53,7 +53,7 @@ def abi_by_name(contract_name: str) -> Dict:
                       'type': 'address'},
                      {'internalType': 'bytes', 'name': 'signature', 'type': 'bytes'}],
           'name': 'isValidSignature',
-          'outputs': [{'internalType': 'bytes4', 'name': 'isValid', 'type': 'bytes4'}],
+          'outputs': [{'internalType': 'bytes4', 'name': '', 'type': 'bytes4'}],
           'payable': False,
           'stateMutability': 'view',
           'type': 'function'}]
