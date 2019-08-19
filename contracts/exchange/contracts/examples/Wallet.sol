@@ -41,7 +41,7 @@ contract Wallet is
     ///      The signer must match the owner of this wallet.
     /// @param hash Message hash that is signed.
     /// @param eip712Signature Proof of signing.
-    /// @return Validity of signature.
+    /// @return Returns a known magic value if the signature is valid.
     function isValidSignature(
         bytes32 hash,
         bytes calldata eip712Signature
@@ -60,7 +60,7 @@ contract Wallet is
         bytes32 s = eip712Signature.readBytes32(33);
         address recoveredAddress = ecrecover(hash, v, r, s);
         require(WALLET_OWNER == recoveredAddress, "INVALID_SIGNATURE");
-        bytes4 magic_salt = bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"));
-        return magic_salt;
+        bytes4 magicValue = bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"));
+        return magicValue;
     }
 }

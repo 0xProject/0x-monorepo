@@ -39,7 +39,7 @@ contract Validator is
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
-    /// @return Validity of signature.
+    /// @return Returns a known magic value if the signature is valid.
     // solhint-disable no-unused-vars
     function isValidSignature(
         bytes32 hash,
@@ -51,8 +51,8 @@ contract Validator is
         returns (bytes4)
     {
         require(signerAddress == VALID_SIGNER, "INVALID_SIGNER");
-        bytes4 magic_salt = bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"));
-        return magic_salt;
+        bytes4 magicValue = bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"));
+        return magicValue;
     }
     // solhint-enable no-unused-vars
 }

@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Update `IWallet` and `IValidator` to reflect Mainnet",
+                "pr": 2078
+            }
+        ]
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

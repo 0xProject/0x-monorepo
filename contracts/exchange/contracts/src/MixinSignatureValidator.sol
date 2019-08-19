@@ -238,13 +238,13 @@ contract MixinSignatureValidator is
         internal
         view
         returns (bool isValid)
-     {
+    {
         bytes memory callData = abi.encodeWithSelector(
             IWallet(walletAddress).isValidSignature.selector,
             hash,
             signature
         );
-        bytes32 magic_salt = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
+        bytes32 magicValue = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
         assembly {
             if iszero(extcodesize(walletAddress)) {
                 // Revert with `Error("WALLET_ERROR")`
@@ -287,7 +287,7 @@ contract MixinSignatureValidator is
                 // Signature is valid if call did not revert and returned true
                 isValid := eq(
                     and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
-                    and(magic_salt, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
                 )
             }
         }
@@ -316,7 +316,7 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
-        bytes32 magic_salt = bytes32(bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)")));
+        bytes32 magicValue = bytes32(bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)")));
         assembly {
             if iszero(extcodesize(validatorAddress)) {
                 // Revert with `Error("VALIDATOR_ERROR")`
@@ -359,7 +359,7 @@ contract MixinSignatureValidator is
                 // Signature is valid if call did not revert and returned true
                 isValid := eq(
                     and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
-                    and(magic_salt, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
                 )
             }
         }
