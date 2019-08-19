@@ -138,6 +138,8 @@ Then install dependencies
 yarn install
 ```
 
+You will also need to have Python 3 installed, in order to build and run the tests of `abi-gen`'s command-line interface, which is integrated with the yarn build, yarn test, and yarn lint commands described below. More specifically, your local pip should resolve to the Python 3 version of pip, not a Python 2.x version.
+
 ### Build
 
 To build all packages:
