@@ -85,6 +85,15 @@
             "topics": ["Mesh"],
             "difficulty": "Intermediate",
             "path": "guides/use-networked-liquidity.mdx"
+        },
+        "web3-provider-explained": {
+            "title": "Web3 Provider Explained",
+            "subtitle": "Allow your application to communicate with an Ethereum Node",
+            "description": "Allow your application to request signatures, estimate gas and gas price, and submit transactions to an Ethereum node.",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Intermediate",
+            "path": "guides/web3-provider-explained.mdx"
         }
     },
     "tools": {
