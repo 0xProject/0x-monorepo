@@ -18,7 +18,7 @@
         "test:coverage": "SOLIDITY_COVERAGE=true run-s build run_mocha coverage:report:text coverage:report:lcov",
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
+        "run_mocha": "UNLIMITED_CONTRACT_SIZE=true mocha --require source-map-support/register --require make-promises-safe 'lib/test/**/*.js' --timeout 100000 --bail --exit",
         "compile": "sol-compiler",
         "watch": "sol-compiler -w",
         "clean": "shx rm -rf lib generated-artifacts generated-wrappers",
