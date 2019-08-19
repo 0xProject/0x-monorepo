@@ -17,6 +17,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
+import { constants } from './constants';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash';
 import { transactionHashUtils } from './transaction_hash';
@@ -135,8 +136,8 @@ export const signatureUtils = {
         // tslint:disable-next-line:custom-no-magic-numbers
         const signatureWithoutType = signature.slice(0, -2);
         const walletContract = new IWalletContract(signerAddress, provider);
-        const isValid = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
-        return isValid;
+        const magicValue = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
+        return magicValue === constants.IS_VALID_WALLET_SIGNATURE_MAGIC_VALUE;
     },
     /**
      * Verifies that the provided validator signature is valid according to the 0x Protocol smart contracts
@@ -169,12 +170,12 @@ export const signatureUtils = {
         }
 
         const validatorContract = new IValidatorContract(signerAddress, provider);
-        const isValid = await validatorContract.isValidSignature.callAsync(
+        const magicValue = await validatorContract.isValidSignature.callAsync(
             data,
             signerAddress,
             validatorSignature.signature,
         );
-        return isValid;
+        return magicValue === constants.IS_VALID_VALIDATOR_SIGNATURE_MAGIC_VALUE;
     },
     /**
      * Checks if the supplied elliptic curve signature corresponds to signing `data` with
