@@ -297,25 +297,38 @@ describe(ContractName.Forwarder, () => {
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
         it('should not fill orders with different makerAssetData than the first order', async () => {
-            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress);
-            const erc20SignedOrder = await orderFactory.newSignedOrderAsync({
+            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const firstOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: firstOrderMakerAssetData,
             });
 
-            const makerAssetId = erc721MakerAssetIds[0];
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId);
-            const erc721SignedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: new BigNumber(1),
+            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const secondOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
 
-            const orders = [erc20SignedOrder, erc721SignedOrder];
+            const orders = [firstOrder, secondOrder];
 
             const revertError = new ForwarderRevertErrors.MakerAssetMismatchError(
                 firstOrderMakerAssetData,
                 secondOrderMakerAssetData,
             );
             await forwarderTestFactory.marketSellTestAsync(orders, new BigNumber(2), erc20Token, {
+                revertError,
+            });
+        });
+        it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+
+            const order = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerFeeAssetData,
+                takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
+            });
+
+            const revertError = new ForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
+            await forwarderTestFactory.marketSellTestAsync([order], new BigNumber(0.5), erc20Token, {
                 revertError,
             });
         });
@@ -406,7 +419,7 @@ describe(ContractName.Forwarder, () => {
                 makerAssetId,
             });
         });
-        it('should buy an ERC721 asset and pay WETH fees from a single fee order', async () => {
+        it('should buy an ERC721 asset and pay a WETH fee', async () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721orderWithWethFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
@@ -416,6 +429,21 @@ describe(ContractName.Forwarder, () => {
             });
             await forwarderTestFactory.marketBuyTestAsync([erc721orderWithWethFee], new BigNumber(1), erc721Token, {
                 makerAssetId,
+            });
+        });
+        it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+
+            const order = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerFeeAssetData,
+                takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
+            });
+
+            const revertError = new ForwarderRevertErrors.UnsupportedFeeError(takerFeeAssetData);
+            await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.5), erc20Token, {
+                revertError,
             });
         });
         it('Should buy slightly greater MakerAsset when exchange rate is rounded', async () => {
