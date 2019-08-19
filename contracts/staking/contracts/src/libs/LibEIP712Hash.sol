@@ -73,13 +73,13 @@ library LibEIP712Hash
         pure
         returns (bytes32 result)
     {
-        bytes32 eip712StakingDomainHash = LibEIP712._hashEIP712Domain(
+        bytes32 eip712StakingDomainHash = LibEIP712.hashEIP712Domain(
             EIP712_STAKING_DOMAIN_NAME,
             EIP712_STAKING_DOMAIN_VERSION,
             chainId,
             verifierAddress
         );
-        return LibEIP712._hashEIP712Message(eip712StakingDomainHash, hashStruct);
+        return LibEIP712.hashEIP712Message(eip712StakingDomainHash, hashStruct);
     }
 
     /// @dev Calculated the EIP712 hash of the StakingPool approval mesasage with no domain separator.
