@@ -72,7 +72,8 @@ const StepLinkWrapper = styled(Link)`
 `;
 
 const StepLinkText = styled.span`
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    font-weight: 300;
 
     @media (max-width: 500px) {
         font-size: 16px;
