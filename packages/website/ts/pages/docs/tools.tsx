@@ -98,5 +98,4 @@ const filters = [
     { attribute: 'type', heading: 'Type' },
     { attribute: 'tags', heading: 'Developer Persona' },
     { attribute: 'difficulty', heading: 'Level' },
-    { attribute: 'isCommunity', heading: 'Community Maintained', customLabel: 'Include Community Maintained' },
 ];
