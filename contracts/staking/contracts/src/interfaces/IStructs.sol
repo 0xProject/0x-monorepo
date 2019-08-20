@@ -58,11 +58,11 @@ interface IStructs {
         uint256 weightedStake;
     }
 
-    /// @dev Tracks timelocked stake (see MixinTimelockedStake).
-    /// @param lockedAt The Timelock Period that stake was most recently locked at.
-    /// @param total Amount of stake that is timelocked.
-    /// @param pending Stake pending to be un-timelocked next Timelock Period.
-    struct Timelock {
+    /// @dev Tracks timeLocked stake (see MixinTimeLockedStake).
+    /// @param lockedAt The TimeLock Period that stake was most recently locked at.
+    /// @param total Amount of stake that is timeLocked.
+    /// @param pending Stake pending to be un-TimeLocked next TimeLock Period.
+    struct TimeLock {
         uint64 lockedAt;
         uint96 total;
         uint96 pending;

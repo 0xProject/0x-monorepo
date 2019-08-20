@@ -24,7 +24,7 @@ import "./stake/MixinZrxVault.sol";
 import "./staking_pools/MixinStakingPoolRewardVault.sol";
 import "./sys/MixinScheduler.sol";
 import "./stake/MixinStakeBalances.sol";
-import "./stake/MixinTimelockedStake.sol";
+import "./stake/MixinTimeLockedStake.sol";
 import "./stake/MixinStake.sol";
 import "./stake/MixinDelegatedStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
@@ -44,7 +44,7 @@ contract Staking is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakingPool,
-    MixinTimelockedStake,
+    MixinTimeLockedStake,
     MixinStakeBalances,
     MixinStake,
     MixinStakingPoolRewards,

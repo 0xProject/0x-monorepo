@@ -26,42 +26,42 @@ import "../interfaces/IStakingEvents.sol";
 import "../sys/MixinScheduler.sol";
 
 
-/// @dev This mixin contains logic for timelocking stake.
+/// @dev This mixin contains logic for timeLocking stake.
 /// **** Read MixinStake before continuing ****
 /// When stake moves from an Activated state it must first go to
-/// the Deactivated & Timelocked state. The stake will be timelocked
-/// for a period of time, called a Timelock Period, which is measured in epochs.
+/// the Deactivated & TimeLocked state. The stake will be timeLocked
+/// for a period of time, called a TimeLock Period, which is measured in epochs.
 /// (see MixinScheduler).
-/// Stake remains timelocked for at least one full Timelock Period; so,
-/// if your stake is locked sometime during Timelock Period #1 then it will
-/// be un-timelocked at Timelock Period #3.
-/// Note that no action is required by the user to un-timelock their stake, and
-/// when stake is un-timelocked it is moved to the state Deactivated & Withdrawable.
+/// Stake remains timeLocked for at least one full TimeLock Period; so,
+/// if your stake is locked sometime during TimeLock Period #1 then it will
+/// be un-TimeLocked at TimeLock Period #3.
+/// Note that no action is required by the user to un-TimeLock their stake, and
+/// when stake is un-TimeLocked it is moved to the state Deactivated & Withdrawable.
 /// (see MixinStake).
 ///
-/// -- The Timelocking Data Structure --
-/// Three fields are used to represent a timelock:
-///     1. Total timelocked stake (called `total`)
-///     2. Timelocked stake pending removal of timelock, on next Timelock Period (called `pending`)
-///     3. The most recent Timelock Period in which stake was timelocked. (called `lockedAt`)
+/// -- The TimeLocking Data Structure --
+/// Three fields are used to represent a timeLock:
+///     1. Total timeLocked stake (called `total`)
+///     2. TimeLocked stake pending removal of timeLock, on next TimeLock Period (called `pending`)
+///     3. The most recent TimeLock Period in which stake was timeLocked. (called `lockedAt`)
 ///
-/// Each user has exactly one instance of this timelock struct, which manages all of
-/// their timelocked stake. This data structure is defined in `IStructs.Timelock`.
+/// Each user has exactly one instance of this timeLock struct, which manages all of
+/// their timeLocked stake. This data structure is defined in `IStructs.TimeLock`.
 /// This data structure was designed to fit into one word of storage, as a gas optimization.
 /// Its fields are updated only when a user interacts with their stake.
 /// ------------------------------------
 ///
-/// -- Timelocking Example --
-/// In the example below, the user executes a series of actions on their stake (`Action`) during `Timelock Period` N.
-/// The fields of the user's timelocked struct (`lockedAt`, `total`, `pending`) are illustrated exactly as
+/// -- TimeLocking Example --
+/// In the example below, the user executes a series of actions on their stake (`Action`) during `TimeLock Period` N.
+/// The fields of the user's timeLocked struct (`lockedAt`, `total`, `pending`) are illustrated exactly as
 /// they would be represented in storage.
-/// The field `un-timelocked` is the amount of un-timelocked stake, as represented *in storage*; however, because
+/// The field `un-TimeLocked` is the amount of un-TimeLocked stake, as represented *in storage*; however, because
 /// state is only updated when the user interacts with their stake, this field may lag.
-/// The field `un-timelocked (virtual)` is the true amount of un-timelocked stake, as represented in the system;
+/// The field `un-TimeLocked (virtual)` is the true amount of un-TimeLocked stake, as represented in the system;
 /// the value in this field represents stake that has moved from the state
-/// "Deactivated & Timelocke" to "Deactivated & Withdrawable" (see MixinStake).
+/// "Deactivated & TimeLocke" to "Deactivated & Withdrawable" (see MixinStake).
 /// 
-/// |   Action    | Timelock Period | lockedAt  |  total   | pending | un-timelocked  | un-timelocked (virtual) |
+/// |   Action    | TimeLock Period | lockedAt  |  total   | pending | un-TimeLocked  | un-TimeLocked (virtual) |
 /// |             |        0        |     0     |    0     |    0    |       0        |          0              |
 /// |   lock(5)   |        1        |     1     |    5     |    0    |       0        |          0              |
 /// |             |        2        |     1     |    5     |    0    |       0        |          0              |
@@ -76,7 +76,7 @@ import "../sys/MixinScheduler.sol";
 /// |             |        7        |     6     |    20    |    0    |       0        |          0              |
 /// |             |        8        |     6     |    20    |    0    |       0        |          20             |
 /// -------------------------------------------------------------------------------------------------------------
-contract MixinTimelockedStake is
+contract MixinTimeLockedStake is
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
@@ -86,63 +86,63 @@ contract MixinTimelockedStake is
     
     using LibSafeMath for uint256;
 
-    /// @dev Forces the timelock data structure to sync to state.
+    /// @dev Forces the timeLock data structure to sync to state.
     /// This is not necessary but may optimize some subsequent calls.
     /// @param owner of Stake.
-    function forceTimelockSync(address owner)
+    function forceTimeLockSync(address owner)
         external
     {
-        _syncTimelockedStake(owner);
+        _syncTimeLockedStake(owner);
     }
 
-    /// @dev Timelocks Stake
-    /// This moves state into the Deactivated & Timelocked state.
+    /// @dev TimeLocks Stake
+    /// This moves state into the Deactivated & TimeLocked state.
     /// @param owner of Stake.
-    /// @param amount of Stake to timelock.
-    function _timelockStake(address owner, uint256 amount)
+    /// @param amount of Stake to timeLock.
+    function _timeLockStake(address owner, uint256 amount)
         internal
     {
-        (IStructs.Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
+        (IStructs.TimeLock memory ownerTimeLock,) = _getSynchronizedTimeLock(owner);
         uint96 downcastAmount = amount._downcastToUint96();
-        ownerTimelock.total += downcastAmount;
-        timelockedStakeByOwner[owner] = ownerTimelock;
+        ownerTimeLock.total += downcastAmount;
+        timeLockedStakeByOwner[owner] = ownerTimeLock;
     }
 
-    /// @dev Updates storage to reflect the most up-to-date timelock data structure for a given owner.
+    /// @dev Updates storage to reflect the most up-to-date timeLock data structure for a given owner.
     /// @param owner of Stake.
-    function _syncTimelockedStake(address owner)
+    function _syncTimeLockedStake(address owner)
         internal
     {
-        (IStructs.Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner);
+        (IStructs.TimeLock memory ownerTimeLock, bool isOutOfSync) = _getSynchronizedTimeLock(owner);
         if (!isOutOfSync) {
             return;
         }
-        timelockedStakeByOwner[owner] = ownerTimelock;
+        timeLockedStakeByOwner[owner] = ownerTimeLock;
     }
 
-    /// @dev Returns the most up-to-date timelock data structure for a given owner.
+    /// @dev Returns the most up-to-date timeLock data structure for a given owner.
     /// @param owner of Stake.
-    function _getSynchronizedTimelock(address owner)
+    function _getSynchronizedTimeLock(address owner)
         internal
         view
         returns (
-            IStructs.Timelock memory ownerTimelock,
+            IStructs.TimeLock memory ownerTimeLock,
             bool isOutOfSync
         )
     {
-        uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
-        ownerTimelock = timelockedStakeByOwner[owner];
+        uint64 currentTimeLockPeriod = getCurrentTimeLockPeriod();
+        ownerTimeLock = timeLockedStakeByOwner[owner];
         isOutOfSync = false;
-        if (currentTimelockPeriod == ownerTimelock.lockedAt._add(1)) {
+        if (currentTimeLockPeriod == ownerTimeLock.lockedAt._add(1)) {
             // shift n periods
-            ownerTimelock.pending = ownerTimelock.total;
+            ownerTimeLock.pending = ownerTimeLock.total;
             isOutOfSync = true;
-        } else if (currentTimelockPeriod > ownerTimelock.lockedAt) {
-            // Timelock has expired - zero out
-            ownerTimelock.lockedAt = 0;
-            ownerTimelock.total = 0;
-            ownerTimelock.pending = 0;
+        } else if (currentTimeLockPeriod > ownerTimeLock.lockedAt) {
+            // TimeLock has expired - zero out
+            ownerTimeLock.lockedAt = 0;
+            ownerTimeLock.total = 0;
+            ownerTimeLock.pending = 0;
         }
-        return (ownerTimelock, isOutOfSync);
+        return (ownerTimeLock, isOutOfSync);
     }
 }

@@ -27,7 +27,7 @@ import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinTimelockedStake.sol";
+import "./MixinTimeLockedStake.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
@@ -35,7 +35,7 @@ import "./MixinTimelockedStake.sol";
 /// Stake can exist in one of many states:
 /// 1. Activated
 /// 2. Activated & Delegated
-/// 3. Deactivated & Timelocked
+/// 3. Deactivated & TimeLocked
 /// 4. Deactivated & Withdrawable
 ///
 /// -- State Definitions --
@@ -49,9 +49,9 @@ import "./MixinTimelockedStake.sol";
 ///     For example, if delegated to a staking pool then it carries weight when computing fee-based rewards for
 ///     the staking pool; however, in this case, delegated stake carries less weight that regular stake (see MixinStakingPool).
 ///
-/// Deactivated & Timelocked Stake
+/// Deactivated & TimeLocked Stake
 ///     Stake in this state cannot be used as a utility within the 0x ecosystem.
-///     Stake is timelocked when it moves out of activated states (Activated / Activated & Delagated).
+///     Stake is timeLocked when it moves out of activated states (Activated / Activated & Delagated).
 ///     By limiting the portability of stake, we mitigate undesirable behavior such as switching staking pools
 ///     in the middle of an epoch.
 ///
@@ -61,11 +61,11 @@ import "./MixinTimelockedStake.sol";
 /// ----------------------------
 ///
 /// -- Valid State Transtions --
-/// Activated -> Deactivated & Timelocked
+/// Activated -> Deactivated & TimeLocked
 /// 
-/// Activated & Delegated -> Deactivated & Timelocked
+/// Activated & Delegated -> Deactivated & TimeLocked
 ///
-/// Deactivated & Timelocked -> Deactivated & Withdrawable
+/// Deactivated & TimeLocked -> Deactivated & Withdrawable
 ///
 /// Deactivated & Withdrawable -> Activated
 /// Deactivated & Withdrawable -> Activated & Delegated
@@ -74,7 +74,7 @@ import "./MixinTimelockedStake.sol";
 ///
 /// Freshly minted stake is in the "Deactvated & Withdrawable" State, so it can
 /// either be activated, delegated or withdrawn.
-/// See MixinDelegatedStake and MixinTimelockedStake for more on respective state transitions.
+/// See MixinDelegatedStake and MixinTimeLockedStake for more on respective state transitions.
 contract MixinStake is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -84,7 +84,7 @@ contract MixinStake is
     MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinTimelockedStake,
+    MixinTimeLockedStake,
     MixinStakeBalances
 {
 
@@ -116,7 +116,7 @@ contract MixinStake is
         external
     {
         address owner = msg.sender;
-        _syncTimelockedStake(owner);
+        _syncTimeLockedStake(owner);
         require(
             amount <= getDeactivatedStake(owner),
             "INSUFFICIENT_BALANCE"
@@ -130,7 +130,7 @@ contract MixinStake is
         public
     {
         address owner = msg.sender;
-        _syncTimelockedStake(owner);
+        _syncTimeLockedStake(owner);
         require(
             amount <= getActivatableStake(owner),
             "INSUFFICIENT_BALANCE"
@@ -139,20 +139,20 @@ contract MixinStake is
         totalActivatedStake = totalActivatedStake._add(amount);
     }
 
-    /// @dev Deactivate & Timelock stake that is currently in the Activated state.
-    /// @param amount of Stake to deactivate and timelock.
-    function deactivateAndTimelockStake(uint256 amount)
+    /// @dev Deactivate & TimeLock stake that is currently in the Activated state.
+    /// @param amount of Stake to deactivate and timeLock.
+    function deactivateAndTimeLockStake(uint256 amount)
         public
     {
         address owner = msg.sender;
-        _syncTimelockedStake(owner);
+        _syncTimeLockedStake(owner);
         require(
             amount <= getActivatedStake(owner),
             "INSUFFICIENT_BALANCE"
         );
         activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);
         totalActivatedStake = totalActivatedStake._sub(amount);
-        _timelockStake(owner, amount);
+        _timeLockStake(owner, amount);
     }
 
     /// @dev Mints Stake in the Deactivated & Withdrawable state.

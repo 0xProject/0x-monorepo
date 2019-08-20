@@ -24,7 +24,7 @@ import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
-import "./MixinTimelockedStake.sol";
+import "./MixinTimeLockedStake.sol";
 
 
 /// @dev This mixin contains logic for querying stake balances.
@@ -35,7 +35,7 @@ contract MixinStakeBalances is
     MixinConstants,
     MixinStorage,
     MixinScheduler,
-    MixinTimelockedStake
+    MixinTimeLockedStake
 {
 
     using LibSafeMath for uint256;
@@ -76,7 +76,7 @@ contract MixinStakeBalances is
     }
 
     /// @dev Returns the deactivated stake for a given owner.
-    /// This stake is in the "Deactivated & Timelocked" OR "Deactivated & Withdrawable" states.
+    /// This stake is in the "Deactivated & TimeLocked" OR "Deactivated & Withdrawable" states.
     /// @param owner to query.
     /// @return Deactivated stake for owner.
     function getDeactivatedStake(address owner)
@@ -108,7 +108,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return getDeactivatedStake(owner)._sub(getTimelockedStake(owner));
+        return getDeactivatedStake(owner)._sub(getTimeLockedStake(owner));
     }
 
     /// @dev Returns the stake that can be withdrawn for a given owner.
@@ -160,30 +160,30 @@ contract MixinStakeBalances is
         return delegatedStakeByPoolId[poolId];
     }
 
-    /// @dev Returns the timelocked stake for a given owner.
-    /// This stake is in the "Deactivated & Timelocked" state.
+    /// @dev Returns the timeLocked stake for a given owner.
+    /// This stake is in the "Deactivated & TimeLocked" state.
     /// @param owner to query.
-    /// @return Timelocked stake for owner.
-    function getTimelockedStake(address owner)
+    /// @return TimeLocked stake for owner.
+    function getTimeLockedStake(address owner)
         public
         view
         returns (uint256)
     {
-        (IStructs.Timelock memory timelock,) = _getSynchronizedTimelock(owner);
-        return timelock.total;
+        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
+        return timeLock.total;
     }
 
-    /// @dev Returns the starting Timelock Period of timelocked state for a given owner.
-    /// This stake is in the "Deactivated & Timelocked" state.
-    /// See MixinScheduling and MixinTimelock.
+    /// @dev Returns the starting TimeLock Period of timeLocked state for a given owner.
+    /// This stake is in the "Deactivated & TimeLocked" state.
+    /// See MixinScheduling and MixinTimeLock.
     /// @param owner to query.
-    /// @return Start of timelock for owner's timelocked stake.
-    function getTimelockStart(address owner)
+    /// @return Start of timeLock for owner's timeLocked stake.
+    function getTimeLockStart(address owner)
         public
         view
         returns (uint256)
     {
-        (IStructs.Timelock memory timelock,) = _getSynchronizedTimelock(owner);
-        return timelock.lockedAt;
+        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
+        return timeLock.lockedAt;
     }
 }

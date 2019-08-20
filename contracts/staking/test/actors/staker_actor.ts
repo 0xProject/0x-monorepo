@@ -61,11 +61,11 @@ export class StakerActor extends BaseActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async deactivateAndTimelockStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async deactivateAndTimeLockStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initStakerBalances = await this.getBalancesAsync();
-        // deactivate and timelock stake
-        const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockStakeAsync(this._owner, amount);
+        // deactivate and timeLock stake
+        const txReceiptPromise = this._stakingWrapper.deactivateAndTimeLockStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
@@ -75,7 +75,7 @@ export class StakerActor extends BaseActor {
         // check balances
         const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.minus(amount);
-        expectedStakerBalances.timelockedStakeBalance = initStakerBalances.timelockedStakeBalance.plus(amount);
+        expectedStakerBalances.timeLockedStakeBalance = initStakerBalances.timeLockedStakeBalance.plus(amount);
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
@@ -115,7 +115,7 @@ export class StakerActor extends BaseActor {
             withdrawableStakeBalance: await this._stakingWrapper.getWithdrawableStakeAsync(this._owner),
             activatableStakeBalance: await this._stakingWrapper.getActivatableStakeAsync(this._owner),
             activatedStakeBalance: await this._stakingWrapper.getActivatedStakeAsync(this._owner),
-            timelockedStakeBalance: await this._stakingWrapper.getTimelockedStakeAsync(this._owner),
+            timeLockedStakeBalance: await this._stakingWrapper.getTimeLockedStakeAsync(this._owner),
             deactivatedStakeBalance: await this._stakingWrapper.getDeactivatedStakeAsync(this._owner),
         };
         return stakerBalances;
@@ -136,33 +136,33 @@ export class StakerActor extends BaseActor {
         expect(balances.activatedStakeBalance, 'activated stake balance').to.be.bignumber.equal(
             expectedBalances.activatedStakeBalance,
         );
-        expect(balances.timelockedStakeBalance, 'timelocked stake balance').to.be.bignumber.equal(
-            expectedBalances.timelockedStakeBalance,
+        expect(balances.timeLockedStakeBalance, 'timeLocked stake balance').to.be.bignumber.equal(
+            expectedBalances.timeLockedStakeBalance,
         );
         expect(balances.deactivatedStakeBalance, 'deactivated stake balance').to.be.bignumber.equal(
             expectedBalances.deactivatedStakeBalance,
         );
     }
-    public async forceTimelockSyncAsync(): Promise<void> {
+    public async forceTimeLockSyncAsync(): Promise<void> {
         const initBalances = await this.getBalancesAsync();
-        await this._stakingWrapper.forceTimelockSyncAsync(this._owner);
+        await this._stakingWrapper.forceTimeLockSyncAsync(this._owner);
         await this.assertBalancesAsync(initBalances);
     }
-    public async skipToNextTimelockPeriodAsync(): Promise<void> {
+    public async skipToNextTimeLockPeriodAsync(): Promise<void> {
         // query some initial values
         const initBalances = await this.getBalancesAsync();
-        const timelockStart = await this._stakingWrapper.getTimelockStartAsync(this._owner);
+        const timeLockStart = await this._stakingWrapper.getTimeLockStartAsync(this._owner);
         // skip to next period
-        await this._stakingWrapper.skipToNextTimelockPeriodAsync();
+        await this._stakingWrapper.skipToNextTimeLockPeriodAsync();
         // validate new balances
         const expectedBalances = initBalances;
-        const currentTimelockPeriod = await this._stakingWrapper.getCurrentTimelockPeriodAsync();
-        if (currentTimelockPeriod.minus(timelockStart).isGreaterThan(1)) {
+        const currentTimeLockPeriod = await this._stakingWrapper.getCurrentTimeLockPeriodAsync();
+        if (currentTimeLockPeriod.minus(timeLockStart).isGreaterThan(1)) {
             expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(
-                initBalances.timelockedStakeBalance,
+                initBalances.timeLockedStakeBalance,
             );
             expectedBalances.withdrawableStakeBalance = expectedBalances.activatableStakeBalance;
-            expectedBalances.timelockedStakeBalance = new BigNumber(0);
+            expectedBalances.timeLockedStakeBalance = new BigNumber(0);
         }
         await this.assertBalancesAsync(expectedBalances);
     }

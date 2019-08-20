@@ -31,7 +31,7 @@ import "../interfaces/IStakingEvents.sol";
 /// Epochs have a fixed minimum time period that is configured when this contract is deployed.
 /// The current epoch only changes by calling this contract, which can be invoked by anyone.
 /// Epochs serve as the basis for all other time intervals, which provides a more stable
-/// and consistent scheduling metric than time. Timelocks, for example, are measured in epochs.
+/// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -86,20 +86,20 @@ contract MixinScheduler is
         return getCurrentEpochStartTimeInSeconds()._add(getEpochDurationInSeconds());
     }
 
-    /// @dev Returns the current timelock period.
-    /// @return Timelock period.
-    function getCurrentTimelockPeriod()
+    /// @dev Returns the current timeLock period.
+    /// @return TimeLock period.
+    function getCurrentTimeLockPeriod()
         public
         view
         returns (uint64)
     {
-        return currentTimelockPeriod;
+        return currentTimeLockPeriod;
     }
 
-    /// @dev Returns the length of a timelock period, measured in epochs.
-    ///      Timelock period = [startEpoch..endEpoch)
-    /// @return Timelock period end.
-    function getTimelockDurationInEpochs()
+    /// @dev Returns the length of a timeLock period, measured in epochs.
+    ///      TimeLock period = [startEpoch..endEpoch)
+    /// @return TimeLock period end.
+    function getTimeLockDurationInEpochs()
         public
         pure
         returns (uint64)
@@ -107,30 +107,30 @@ contract MixinScheduler is
         return TIMELOCK_DURATION_IN_EPOCHS;
     }
 
-    /// @dev Returns the epoch that the current timelock period started at.
-    ///      Timelock period = [startEpoch..endEpoch)
-    /// @return Timelock period start.
-    function getCurrentTimelockPeriodStartEpoch()
+    /// @dev Returns the epoch that the current timeLock period started at.
+    ///      TimeLock period = [startEpoch..endEpoch)
+    /// @return TimeLock period start.
+    function getCurrentTimeLockPeriodStartEpoch()
         public
         view
         returns (uint64)
     {
-        return currentTimelockPeriodStartEpoch;
+        return currentTimeLockPeriodStartEpoch;
     }
 
-    /// @dev Returns the epoch that the current timelock period will end.
-    ///      Timelock period = [startEpoch..endEpoch)
-    /// @return Timelock period.
-    function getCurrentTimelockPeriodEndEpoch()
+    /// @dev Returns the epoch that the current timeLock period will end.
+    ///      TimeLock period = [startEpoch..endEpoch)
+    /// @return TimeLock period.
+    function getCurrentTimeLockPeriodEndEpoch()
         public
         view
         returns (uint64)
     {
-        return getCurrentTimelockPeriodStartEpoch()._add(getTimelockDurationInEpochs());
+        return getCurrentTimeLockPeriodStartEpoch()._add(getTimeLockDurationInEpochs());
     }
 
     /// @dev Moves to the next epoch, given the current epoch period has ended.
-    ///      Time intervals that are measured in epochs (like timelocks) are also incremented, given
+    ///      Time intervals that are measured in epochs (like timeLocks) are also incremented, given
     ///      their periods have ended.
     function _goToNextEpoch()
         internal
@@ -158,16 +158,16 @@ contract MixinScheduler is
             earliestEndTimeInSeconds
         );
 
-        // increment timelock period, if needed
-        if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
-            currentTimelockPeriod = currentTimelockPeriod._add(1);
-            currentTimelockPeriodStartEpoch = currentEpoch;
-            uint64 endEpoch = currentEpoch._add(getTimelockDurationInEpochs());
+        // increment timeLock period, if needed
+        if (getCurrentTimeLockPeriodEndEpoch() <= nextEpoch) {
+            currentTimeLockPeriod = currentTimeLockPeriod._add(1);
+            currentTimeLockPeriodStartEpoch = currentEpoch;
+            uint64 endEpoch = currentEpoch._add(getTimeLockDurationInEpochs());
             
             // notify
-            emit TimelockPeriodChanged(
-                currentTimelockPeriod,
-                currentTimelockPeriodStartEpoch,
+            emit TimeLockPeriodChanged(
+                currentTimeLockPeriod,
+                currentTimeLockPeriodStartEpoch,
                 endEpoch
             );
         }

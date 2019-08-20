@@ -32,7 +32,7 @@
         "generated-artifacts/MixinStakingPoolRewardVault.json",
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
-        "generated-artifacts/MixinTimelockedStake.json",
+        "generated-artifacts/MixinTimeLockedStake.json",
         "generated-artifacts/MixinVaultCore.json",
         "generated-artifacts/MixinZrxVault.json",
         "generated-artifacts/Staking.json",

@@ -42,8 +42,8 @@ contract MixinStorage is
     // mapping from Owner to Amount of Instactive Stake
     mapping (address => uint256) internal activatedStakeByOwner;
 
-    // mapping from Owner to Amount Timelocked
-    mapping (address => IStructs.Timelock) internal timelockedStakeByOwner;
+    // mapping from Owner to Amount TimeLocked
+    mapping (address => IStructs.TimeLock) internal timeLockedStakeByOwner;
 
     // mapping from Owner to Amount Delegated
     mapping (address => uint256) internal delegatedStakeByOwner;
@@ -77,10 +77,10 @@ contract MixinStorage is
     uint64 internal currentEpochStartTimeInSeconds;
 
     // current withdrawal period
-    uint64 internal currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
+    uint64 internal currentTimeLockPeriod = INITIAL_TIMELOCK_PERIOD;
 
     // current epoch start time
-    uint64 internal currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
+    uint64 internal currentTimeLockPeriodStartEpoch = INITIAL_EPOCH;
 
     // fees collected this epoch
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;

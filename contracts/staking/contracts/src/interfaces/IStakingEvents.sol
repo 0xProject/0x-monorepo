@@ -41,12 +41,12 @@ interface IStakingEvents {
         uint64 earliestEndTimeInSeconds
     );
 
-     /// @dev Emitted by MixinScheduler when the timelock period is changed.
-     /// @param timelockPeriod The timelock period we changed to.
+     /// @dev Emitted by MixinScheduler when the timeLock period is changed.
+     /// @param timeLockPeriod The timeLock period we changed to.
      /// @param startEpoch The epoch this period started.
      /// @param endEpoch The epoch this period ends.
-    event TimelockPeriodChanged(
-        uint64 timelockPeriod,
+    event TimeLockPeriodChanged(
+        uint64 timeLockPeriod,
         uint64 startEpoch,
         uint64 endEpoch
     );

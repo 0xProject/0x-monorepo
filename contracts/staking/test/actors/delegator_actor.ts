@@ -86,15 +86,15 @@ export class DelegatorActor extends StakerActor {
         expectedDelegatorBalances.stakeDelegatedToPool[0] = initDelegatorBalances.stakeDelegatedToPool[0].plus(amount);
         await this.assertBalancesAsync(expectedDelegatorBalances, [poolId]);
     }
-    public async deactivateAndTimelockDelegatedStakeAsync(
+    public async deactivateAndTimeLockDelegatedStakeAsync(
         poolId: string,
         amount: BigNumber,
         revertReason?: RevertReason,
     ): Promise<void> {
         // query init balances
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
-        // deactivate and timelock
-        const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(
+        // deactivate and timeLock
+        const txReceiptPromise = this._stakingWrapper.deactivateAndTimeLockDelegatedStakeAsync(
             this._owner,
             poolId,
             amount,
@@ -108,7 +108,7 @@ export class DelegatorActor extends StakerActor {
         // check balances
         const expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.minus(amount);
-        expectedDelegatorBalances.timelockedStakeBalance = expectedDelegatorBalances.timelockedStakeBalance.plus(
+        expectedDelegatorBalances.timeLockedStakeBalance = expectedDelegatorBalances.timeLockedStakeBalance.plus(
             amount,
         );
         expectedDelegatorBalances.deactivatedStakeBalance = expectedDelegatorBalances.deactivatedStakeBalance.plus(

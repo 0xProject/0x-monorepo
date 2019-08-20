@@ -26,7 +26,7 @@ import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinTimelockedStake.sol";
+import "./MixinTimeLockedStake.sol";
 import "./MixinStake.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 
@@ -48,7 +48,7 @@ contract MixinDelegatedStake is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakingPool,
-    MixinTimelockedStake,
+    MixinTimeLockedStake,
     MixinStakeBalances,
     MixinStake,
     MixinStakingPoolRewards
@@ -85,14 +85,14 @@ contract MixinDelegatedStake is
         _delegateStake(owner, poolId, amount);
     }
 
-    /// @dev Deactivate & Timelock stake that is currently in the Activated & Delegated state.
+    /// @dev Deactivate & TimeLock stake that is currently in the Activated & Delegated state.
     /// Note that the sender must be payable, as they may receive rewards in ETH from their staking pool.
     /// @param poolId Unique Id of staking pool that the Stake is currently delegated to.
-    /// @param amount of Stake to deactivate and timelock.
-    function deactivateAndTimelockDelegatedStake(bytes32 poolId, uint256 amount)
+    /// @param amount of Stake to deactivate and timeLock.
+    function deactivateAndTimeLockDelegatedStake(bytes32 poolId, uint256 amount)
         public
     {
-        deactivateAndTimelockStake(amount);
+        deactivateAndTimeLockStake(amount);
         address payable owner = msg.sender;
         _undelegateStake(owner, poolId, amount);
     }

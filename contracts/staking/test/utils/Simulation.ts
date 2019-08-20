@@ -72,7 +72,7 @@ export class Simulation {
                 const delegatorAddress = delegator.getOwner();
                 const amountOfStakeDelegated = p.stakeByDelegator[delegatorIdx];
                 const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
-                await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
+                await delegator.deactivateAndTimeLockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
                 const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);

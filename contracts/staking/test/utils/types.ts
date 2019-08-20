@@ -19,7 +19,7 @@ export interface StakerBalances {
     activatableStakeBalance: BigNumber;
     activatedStakeBalance: BigNumber;
     deactivatedStakeBalance: BigNumber;
-    timelockedStakeBalance: BigNumber;
+    timeLockedStakeBalance: BigNumber;
 }
 
 export interface DelegatorBalances extends StakerBalances {

@@ -63,16 +63,16 @@ describe('Staking & Delegating', () => {
             // run test - this actor will validate its own state
             const staker = new StakerActor(stakers[0], stakingWrapper);
             await staker.depositZrxAndMintActivatedStakeAsync(amountToStake);
-            await staker.deactivateAndTimelockStakeAsync(amountToDeactivate);
-            // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
+            await staker.deactivateAndTimeLockStakeAsync(amountToDeactivate);
+            // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
             //        attempting to do so should revert.
             await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimelockPeriodAsync();
+            await staker.skipToNextTimeLockPeriodAsync();
             await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimelockPeriodAsync();
+            await staker.skipToNextTimeLockPeriodAsync();
             // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timelock period rolls over.
-            await staker.forceTimelockSyncAsync();
+            // allows us to check that state is updated correctly after a timeLock period rolls over.
+            await staker.forceTimeLockSyncAsync();
             // now we can activate stake
             await staker.activateStakeAsync(amountToReactivate);
             await staker.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);
@@ -92,16 +92,16 @@ describe('Staking & Delegating', () => {
             // run test
             const delegator = new DelegatorActor(stakers[0], stakingWrapper);
             await delegator.depositZrxAndDelegateToStakingPoolAsync(poolId, amountToDelegate);
-            await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountToDeactivate);
-            // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
+            await delegator.deactivateAndTimeLockDelegatedStakeAsync(poolId, amountToDeactivate);
+            // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
             //        attempting to do so should revert.
             await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimelockPeriodAsync();
+            await delegator.skipToNextTimeLockPeriodAsync();
             await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimelockPeriodAsync();
+            await delegator.skipToNextTimeLockPeriodAsync();
             // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timelock period rolls over.
-            await delegator.forceTimelockSyncAsync();
+            // allows us to check that state is updated correctly after a timeLock period rolls over.
+            await delegator.forceTimeLockSyncAsync();
             // now we can activate stake
             await delegator.activateAndDelegateStakeAsync(poolId, amountToReactivate);
             await delegator.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);

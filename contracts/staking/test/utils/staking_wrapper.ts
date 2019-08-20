@@ -228,20 +228,20 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async deactivateAndTimelockStakeAsync(
+    public async deactivateAndTimeLockStakeAsync(
         owner: string,
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().deactivateAndTimelockStake.getABIEncodedTransactionData(amount);
+        const calldata = this.getStakingContract().deactivateAndTimeLockStake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async deactivateAndTimelockDelegatedStakeAsync(
+    public async deactivateAndTimeLockDelegatedStakeAsync(
         owner: string,
         poolId: string,
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(
+        const calldata = this.getStakingContract().deactivateAndTimeLockDelegatedStake.getABIEncodedTransactionData(
             poolId,
             amount,
         );
@@ -258,8 +258,8 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async forceTimelockSyncAsync(owner: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().forceTimelockSync.getABIEncodedTransactionData(owner);
+    public async forceTimeLockSyncAsync(owner: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().forceTimeLockSync.getABIEncodedTransactionData(owner);
         const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddress);
         return txReceipt;
     }
@@ -294,16 +294,16 @@ export class StakingWrapper {
         const value = this.getStakingContract().getWithdrawableStake.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getTimelockedStakeAsync(owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTimelockedStake.getABIEncodedTransactionData(owner);
+    public async getTimeLockedStakeAsync(owner: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimeLockedStake.getABIEncodedTransactionData(owner);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getTimelockedStake.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTimeLockedStake.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getTimelockStartAsync(owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTimelockStart.getABIEncodedTransactionData(owner);
+    public async getTimeLockStartAsync(owner: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimeLockStart.getABIEncodedTransactionData(owner);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getTimelockStart.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTimeLockStart.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getStakeDelegatedByOwnerAsync(owner: string): Promise<BigNumber> {
@@ -440,10 +440,10 @@ export class StakingWrapper {
         await this._web3Wrapper.mineBlockAsync();
         return txReceipt;
     }
-    public async skipToNextTimelockPeriodAsync(): Promise<void> {
-        const timelockEndEpoch = await this.getCurrentTimelockPeriodEndEpochAsync();
+    public async skipToNextTimeLockPeriodAsync(): Promise<void> {
+        const timeLockEndEpoch = await this.getCurrentTimeLockPeriodEndEpochAsync();
         const currentEpoch = await this.getCurrentEpochAsync();
-        const nEpochsToJump = timelockEndEpoch.minus(currentEpoch);
+        const nEpochsToJump = timeLockEndEpoch.minus(currentEpoch);
         const nEpochsToJumpAsNumber = nEpochsToJump.toNumber();
         for (let i = 0; i < nEpochsToJumpAsNumber; ++i) {
             await this.skipToNextEpochAsync();
@@ -455,10 +455,10 @@ export class StakingWrapper {
         const value = this.getStakingContract().getEpochDurationInSeconds.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getTimelockDurationInEpochsAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTimelockDurationInEpochs.getABIEncodedTransactionData();
+    public async getTimeLockDurationInEpochsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimeLockDurationInEpochs.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getTimelockDurationInEpochs.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTimeLockDurationInEpochs.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getCurrentEpochStartTimeInSecondsAsync(): Promise<BigNumber> {
@@ -467,10 +467,10 @@ export class StakingWrapper {
         const value = this.getStakingContract().getCurrentEpochStartTimeInSeconds.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getCurrentTimelockPeriodStartEpochAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getCurrentTimelockPeriodStartEpoch.getABIEncodedTransactionData();
+    public async getCurrentTimeLockPeriodStartEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimeLockPeriodStartEpoch.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getCurrentTimelockPeriodStartEpoch.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getCurrentTimeLockPeriodStartEpoch.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getCurrentEpochEarliestEndTimeInSecondsAsync(): Promise<BigNumber> {
@@ -481,10 +481,10 @@ export class StakingWrapper {
         );
         return value;
     }
-    public async getCurrentTimelockPeriodEndEpochAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getCurrentTimelockPeriodEndEpoch.getABIEncodedTransactionData();
+    public async getCurrentTimeLockPeriodEndEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimeLockPeriodEndEpoch.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getCurrentTimelockPeriodEndEpoch.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getCurrentTimeLockPeriodEndEpoch.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getCurrentEpochAsync(): Promise<BigNumber> {
@@ -493,10 +493,10 @@ export class StakingWrapper {
         const value = this.getStakingContract().getCurrentEpoch.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getCurrentTimelockPeriodAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getCurrentTimelockPeriod.getABIEncodedTransactionData();
+    public async getCurrentTimeLockPeriodAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimeLockPeriod.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getCurrentTimelockPeriod.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getCurrentTimeLockPeriod.getABIDecodedReturnData(returnData);
         return value;
     }
     ///// PROTOCOL FEES /////

@@ -34,7 +34,7 @@ import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json'
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
-import * as MixinTimelockedStake from '../generated-artifacts/MixinTimelockedStake.json';
+import * as MixinTimeLockedStake from '../generated-artifacts/MixinTimeLockedStake.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
 import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
@@ -67,7 +67,7 @@ export const artifacts = {
     MixinDelegatedStake: MixinDelegatedStake as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,
-    MixinTimelockedStake: MixinTimelockedStake as ContractArtifact,
+    MixinTimeLockedStake: MixinTimeLockedStake as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,

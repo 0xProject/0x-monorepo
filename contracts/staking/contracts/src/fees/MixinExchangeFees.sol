@@ -50,7 +50,7 @@ contract MixinExchangeFees is
     MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinStakingPool,
-    MixinTimelockedStake,
+    MixinTimeLockedStake,
     MixinStakeBalances
 {
 
