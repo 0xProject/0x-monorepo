@@ -73,10 +73,12 @@ contract Whitelist is
     )
         external
         view
-        returns (bool isValid)
+        returns (bytes4)
     {
         // solhint-disable-next-line avoid-tx-origin
-        return signerAddress == tx.origin;
+        require(signerAddress == tx.origin, "INVALID_SIGNER");
+        bytes4 magicValue = bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"));
+        return magicValue;
     }
     // solhint-enable no-unused-vars
 

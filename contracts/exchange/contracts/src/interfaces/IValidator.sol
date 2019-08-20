@@ -25,7 +25,8 @@ contract IValidator {
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return Magic bytes4 value if the signature is valid.
+    ///         Magic value is bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"))
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
@@ -33,5 +34,5 @@ contract IValidator {
     )
         external
         view
-        returns (bool isValid);
+        returns (bytes4);
 }

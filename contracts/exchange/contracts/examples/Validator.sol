@@ -21,7 +21,7 @@ pragma solidity ^0.5.5;
 import "../src/interfaces/IValidator.sol";
 
 
-contract Validator is 
+contract Validator is
     IValidator
 {
 
@@ -39,7 +39,7 @@ contract Validator is
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
-    /// @return Validity of signature.
+    /// @return Returns a known magic value if the signature is valid.
     // solhint-disable no-unused-vars
     function isValidSignature(
         bytes32 hash,
@@ -48,9 +48,11 @@ contract Validator is
     )
         external
         view
-        returns (bool isValid)
+        returns (bytes4)
     {
-        return (signerAddress == VALID_SIGNER);
+        require(signerAddress == VALID_SIGNER, "INVALID_SIGNER");
+        bytes4 magicValue = bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"));
+        return magicValue;
     }
     // solhint-enable no-unused-vars
 }
