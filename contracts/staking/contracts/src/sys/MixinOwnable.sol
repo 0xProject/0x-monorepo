@@ -5,6 +5,11 @@ import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinStorage.sol";
 
 
+/// @dev This mixin contains logic for ownable contracts.
+/// Note that unlike the standardized `ownable` contract,
+/// there is no state declared here. It is instead located
+/// in `immutable/MixinStorage.sol` and its value is set
+/// by the delegating proxy (StakingProxy.sol)
 contract MixinOwnable is
     Ownable,
     IStakingEvents,
@@ -13,10 +18,8 @@ contract MixinOwnable is
     MixinStorage
 {
     
-    /// @dev This mixin contains logic for ownable contracts.
-    /// Note that unlike the standardized `ownable` contract,
-    /// there is no state declared here. It is instead located
-    /// in `immutable/MixinStorage.sol` and its value is set
-    /// by the delegating proxy (StakingProxy.sol)
-    constructor() public {}
+    // solhint-disable no-empty-blocks
+    constructor()
+        public
+    {}
 }

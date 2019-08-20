@@ -22,22 +22,21 @@ import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "../interfaces/IVaultCore.sol";
 
 
+/// @dev This mixin contains core logic for vaults.
+/// This includes management of the staking contract
+/// and setting the vault to "Catastrophic Failure Mode".
+/// It's up to the vault how they handle this failure mode; however,
+/// all vaults should disable all functionality aside from withdrawals.
+/// Vaults should only be set to Catastrophic Failure Mode iff there is
+/// non-recoverable corruption of the staking contracts. If there is a
+/// recoverable flaw/bug/vulnerability, simply detach the staking contract
+/// by setting its address to `address(0)`. Once in Catostrophic Failure Mode,
+/// a vault cannot be reset to normal mode; this prevents corruption of related
+/// state in the staking contract.
 contract MixinVaultCore is
     Authorizable,
     IVaultCore
 {
-
-    /// @dev This mixin contains core logic for vaults.
-    /// This includes management of the staking contract
-    /// and setting the vault to "Catastrophic Failure Mode".
-    /// It's up to the vault how they handle this failure mode; however,
-    /// all vaults should disable all functionality aside from withdrawals.
-    /// Vaults should only be set to Catastrophic Failure Mode iff there is
-    /// non-recoverable corruption of the staking contracts. If there is a
-    /// recoverable flaw/bug/vulnerability, simply detach the staking contract
-    /// by setting its address to `address(0)`. Once in Catostrophic Failure Mode,
-    /// a vault cannot be reset to normal mode; this prevents corruption of related
-    /// state in the staking contract.
 
     // Address of staking contract
     address payable internal stakingContractAddress;

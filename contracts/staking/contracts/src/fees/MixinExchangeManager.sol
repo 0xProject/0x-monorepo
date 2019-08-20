@@ -24,6 +24,10 @@ import "../immutable/MixinStorage.sol";
 import "../sys/MixinOwnable.sol";
 
 
+/// @dev This mixin contains logic for managing exchanges.
+/// Any exchange contract that connects to the staking contract
+/// must be added here. When an exchange contract is deprecated
+/// then it should be removed.
 contract MixinExchangeManager is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -31,11 +35,6 @@ contract MixinExchangeManager is
     MixinStorage,
     MixinOwnable
 {
-
-    /// @dev This mixin contains logic for managing exchanges.
-    /// Any exchange contract that connects to the staking contract
-    /// must be added here. When an exchange contract is deprecated
-    /// then it should be removed.
 
     /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {

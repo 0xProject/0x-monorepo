@@ -21,18 +21,17 @@
 pragma solidity ^0.5.5;
 
 
+/// @dev This library implements math helpers for fee computation.
+/// *** READ MixinExchangeFees BEFORE CONTINUING ***
+/// @TODO - Optimization / Precision / SafeMath.
+/// @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
+/// @TODO Update these values for deployment.
+/// There may be better, more efficient ways of implementing these functions.
+/// This works well enough to test the end-to-system, but it would be really
+/// good to get some math experts in here to check out this code. We should also
+/// look at existing projects, in case similar functionality exists and has been
+/// audited by a third-party.
 library LibFeeMath {
-
-    /// @dev This library implements math helpers for fee computation.
-    /// *** READ MixinExchangeFees BEFORE CONTINUING ***
-    /// @TODO - Optimization / Precision / SafeMath.
-    /// @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
-    /// @TODO Update these values for deployment.
-    /// There may be better, more efficient ways of implementing these functions.
-    /// This works well enough to test the end-to-system, but it would be really
-    /// good to get some math experts in here to check out this code. We should also
-    /// look at existing projects, in case similar functionality exists and has been
-    /// audited by a third-party.
 
     // Denominator of alpha in cobb-douglas function
     uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;

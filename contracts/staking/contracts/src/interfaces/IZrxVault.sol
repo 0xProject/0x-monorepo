@@ -19,15 +19,14 @@
 pragma solidity ^0.5.5;
 
 
+/// @dev This vault manages Zrx Tokens.
+/// When a user mints stake, their Zrx Tokens are deposited into this vault.
+/// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
+/// There is a "Catastrophic Failure Mode" that, when invoked, only
+/// allows withdrawals to be made. Once this vault is in catostrophic
+/// failure mode, it cannot be returned to normal mode; this prevents
+/// corruption of related state in the staking contract.
 interface IZrxVault {
-
-    /// @dev This vault manages Zrx Tokens.
-    /// When a user mints stake, their Zrx Tokens are deposited into this vault.
-    /// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
-    /// There is a "Catastrophic Failure Mode" that, when invoked, only
-    /// allows withdrawals to be made. Once this vault is in catostrophic
-    /// failure mode, it cannot be returned to normal mode; this prevents
-    /// corruption of related state in the staking contract.
 
     /// @dev Emitted when Zrx Tokens are deposited into the vault.
     /// @param sender Address of sender (`msg.sender`).

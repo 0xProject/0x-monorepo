@@ -19,14 +19,13 @@
 pragma solidity ^0.5.5;
 
 
+/// @dev This vault manages staking pool rewards.
+/// Rewards can be deposited and withdraw by the staking contract.
+/// There is a "Catastrophic Failure Mode" that, when invoked, only
+/// allows withdrawals to be made. Once this vault is in catostrophic
+/// failure mode, it cannot be returned to normal mode; this prevents
+/// corruption of related state in the staking contract.
 interface IStakingPoolRewardVault {
-
-    /// @dev This vault manages staking pool rewards.
-    /// Rewards can be deposited and withdraw by the staking contract.
-    /// There is a "Catastrophic Failure Mode" that, when invoked, only
-    /// allows withdrawals to be made. Once this vault is in catostrophic
-    /// failure mode, it cannot be returned to normal mode; this prevents
-    /// corruption of related state in the staking contract.
 
     /// @dev Holds the balance for a staking pool.
     /// @param initialzed True iff the balance struct is initialized.

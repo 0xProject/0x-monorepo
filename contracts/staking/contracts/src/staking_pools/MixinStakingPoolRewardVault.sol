@@ -24,6 +24,9 @@ import "../immutable/MixinStorage.sol";
 import "../sys/MixinOwnable.sol";
 
 
+/// @dev This mixin contains logic for interfacing with the Staking Pool Reward Vault (vaults/StakingPoolRewardVault.sol)
+/// Note that setters are callable only by the owner of this contract, and withdraw functionality is accessible only
+/// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -31,10 +34,6 @@ contract MixinStakingPoolRewardVault is
     MixinStorage,
     MixinOwnable
 {
-
-    /// @dev This mixin contains logic for interfacing with the Staking Pool Reward Vault (vaults/StakingPoolRewardVault.sol)
-    /// Note that setters are callable only by the owner of this contract, and withdraw functionality is accessible only
-    /// from within this contract.
 
     /// @dev Sets the address of the reward vault.
     /// This can only be called by the owner of this contract.

@@ -31,6 +31,15 @@ import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "./MixinExchangeManager.sol";
 
 
+/// @dev This mixin contains the logic for 0x protocol fees.
+/// Protocol fees are sent by 0x exchanges every time there is a trade.
+/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
+/// the fee will be attributed to their pool. At the end of an epoch the maker and
+/// their pool will receive a rebate that is proportional to (i) the fee volume attributed
+/// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
+/// their delegators. Note that delegated stake (see MixinStake) is weighted less than
+/// stake provided by directly by the maker; this is a disincentive for market makers to
+/// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -44,16 +53,6 @@ contract MixinExchangeFees is
     MixinTimelockedStake,
     MixinStakeBalances
 {
-
-    /// @dev This mixin contains the logic for 0x protocol fees.
-    /// Protocol fees are sent by 0x exchanges every time there is a trade.
-    /// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
-    /// the fee will be attributed to their pool. At the end of an epoch the maker and
-    /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
-    /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
-    /// their delegators. Note that delegated stake (see MixinStake) is weighted less than
-    /// stake provided by directly by the maker; this is a disincentive for market makers to
-    /// monopolize a single pool that they all delegate to.
 
     using LibSafeMath for uint256;
 

@@ -27,6 +27,8 @@ import "../sys/MixinScheduler.sol";
 import "./MixinTimelockedStake.sol";
 
 
+/// @dev This mixin contains logic for querying stake balances.
+/// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -35,9 +37,6 @@ contract MixinStakeBalances is
     MixinScheduler,
     MixinTimelockedStake
 {
-
-    /// @dev This mixin contains logic for querying stake balances.
-    /// **** Read MixinStake before continuing ****
 
     using LibSafeMath for uint256;
 

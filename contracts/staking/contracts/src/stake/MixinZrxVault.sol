@@ -23,6 +23,8 @@ import "../immutable/MixinStorage.sol";
 import "../sys/MixinOwnable.sol";
 
 
+/// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
+/// (see vaults/ZrxVault.sol).
 contract MixinZrxVault is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -30,9 +32,6 @@ contract MixinZrxVault is
     MixinStorage,
     MixinOwnable
 {
-
-    /// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
-    /// (see vaults/ZrxVault.sol).
 
     /// @dev Set the Zrx Vault.
     /// @param zrxVaultAddress Address of the Zrx Vault.

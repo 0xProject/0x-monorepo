@@ -21,10 +21,9 @@ pragma solidity ^0.5.5;
 import "./LibSafeMath.sol";
 
 
+/// @dev This library contains logic for computing the reward balances of staking pool members.
+/// *** READ MixinStakingPoolRewards BEFORE CONTINUING ***
 library LibRewardMath {
-
-    /// @dev This library contains logic for computing the reward balances of staking pool members.
-    /// *** READ MixinStakingPoolRewards BEFORE CONTINUING ***
 
     using LibSafeMath for uint256;
 

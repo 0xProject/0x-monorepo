@@ -25,6 +25,15 @@ import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
+/// @dev This vault manages staking pool rewards.
+/// Rewards can be deposited and withdraw by the staking contract.
+/// There is a "Catastrophic Failure Mode" that, when invoked, only
+/// allows withdrawals to be made. Once this vault is in catostrophic
+/// failure mode, it cannot be returned to normal mode; this prevents
+/// corruption of related state in the staking contract.
+///
+/// When in Catastrophic Failure Mode, the Staking contract can still
+/// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
     Authorizable,
     IStakingPoolRewardVault,
@@ -35,16 +44,6 @@ contract StakingPoolRewardVault is
 
     using LibSafeMath for uint256;
     using LibSafeMath96 for uint96;
-
-    /// @dev This vault manages staking pool rewards.
-    /// Rewards can be deposited and withdraw by the staking contract.
-    /// There is a "Catastrophic Failure Mode" that, when invoked, only
-    /// allows withdrawals to be made. Once this vault is in catostrophic
-    /// failure mode, it cannot be returned to normal mode; this prevents
-    /// corruption of related state in the staking contract.
-    ///
-    /// When in Catastrophic Failure Mode, the Staking contract can still
-    /// perform withdrawals on behalf of its users.
 
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;

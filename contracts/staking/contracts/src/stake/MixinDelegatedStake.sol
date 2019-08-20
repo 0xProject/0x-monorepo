@@ -31,6 +31,13 @@ import "./MixinStake.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 
 
+/// @dev This mixin contains logic for managing delegated stake.
+/// **** Read MixinStake before continuing ****
+/// Stake can be delegated to staking pools in order to trustlessly
+/// leverage the weight of several stakers. The meaning of this
+/// leverage depends on the context in which stake the is being utilized.
+/// For example, the amount of fee-based rewards a market maker receives
+/// is correlated to how much stake has been delegated to their pool (see MixinExchangeFees).
 contract MixinDelegatedStake is
     IStakingEvents,
     MixinDeploymentConstants,
@@ -46,14 +53,6 @@ contract MixinDelegatedStake is
     MixinStake,
     MixinStakingPoolRewards
 {
-
-    /// @dev This mixin contains logic for managing delegated stake.
-    /// **** Read MixinStake before continuing ****
-    /// Stake can be delegated to staking pools in order to trustlessly
-    /// leverage the weight of several stakers. The meaning of this
-    /// leverage depends on the context in which stake the is being utilized.
-    /// For example, the amount of fee-based rewards a market maker receives
-    /// is correlated to how much stake has been delegated to their pool (see MixinExchangeFees).
 
     using LibSafeMath for uint256;
 
