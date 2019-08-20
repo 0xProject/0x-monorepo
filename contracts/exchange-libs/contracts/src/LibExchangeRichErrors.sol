@@ -131,6 +131,10 @@ library LibExchangeRichErrors {
     // bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"))
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
         0x20d11f61;
+    
+    // bytes4(keccak256("TransactionGasPriceError(bytes32,unt256,uint256)"))
+    bytes4 internal constant TRANSACTION_GAS_PRICE_ERROR_SELECTOR =
+        0xa26dac09;
 
     // bytes4(keccak256("IncompleteFillError(uint8,uint256,uint256)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
@@ -291,6 +295,14 @@ library LibExchangeRichErrors {
         returns (bytes4)
     {
         return BATCH_MATCH_ORDERS_ERROR_SELECTOR;
+    }
+
+    function TransactionGasPriceErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return TRANSACTION_GAS_PRICE_ERROR_SELECTOR;
     }
 
     function BatchMatchOrdersError(
@@ -578,6 +590,23 @@ library LibExchangeRichErrors {
             TRANSACTION_EXECUTION_ERROR_SELECTOR,
             transactionHash,
             errorData
+        );
+    }
+
+    function TransactionGasPriceError(
+        bytes32 transactionHash,
+        uint256 actualGasPrice,
+        uint256 requiredGasPrice
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            TRANSACTION_GAS_PRICE_ERROR_SELECTOR,
+            transactionHash,
+            actualGasPrice,
+            requiredGasPrice
         );
     }
 
