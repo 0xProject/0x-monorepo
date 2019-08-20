@@ -69,10 +69,6 @@ export class Link extends React.Component<LinkProps, LinkState> {
             type = LinkType.ReactScroll;
         }
 
-        if (type === LinkType.ReactScroll && this.props.shouldOpenInNewTab) {
-            throw new Error(`Cannot open LinkType.ReactScroll links in new tab. link.to: ${this.props.to}`);
-        }
-
         const styleWithDefault = {
             textDecoration: this.props.textDecoration,
             cursor: 'pointer',
