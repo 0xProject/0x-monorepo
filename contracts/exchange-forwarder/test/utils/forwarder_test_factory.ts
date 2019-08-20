@@ -149,13 +149,13 @@ export class ForwarderTestFactory {
         fractionalNumberOfOrdersToFill: number,
         makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
         options: {
-            ethValueAdjustment?: BigNumber; // Used to provided insufficient/excess ETH
+            ethValueAdjustment?: number; // Used to provided insufficient/excess ETH
             forwarderFeePercentage?: BigNumber;
             makerAssetId?: BigNumber;
             revertError?: RevertError;
         } = {},
     ): Promise<void> {
-        const ethValueAdjustment = options.ethValueAdjustment || constants.ZERO_AMOUNT;
+        const ethValueAdjustment = options.ethValueAdjustment || 0;
         const forwarderFeePercentage = options.forwarderFeePercentage || constants.ZERO_AMOUNT;
 
         const erc20Balances = await this._erc20Wrapper.getBalancesAsync();

@@ -445,7 +445,7 @@ describe(ContractName.Forwarder, () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(17, DECIMALS_DEFAULT),
             });
             await forwarderTestFactory.marketBuyTestAsync([order], 0.57, erc20Token, {
-                ethValueAdjustment: new BigNumber(2),
+                ethValueAdjustment: 2,
             });
         });
         it('should buy the exact amount of makerAsset from a single order with a WETH fee', async () => {
@@ -474,7 +474,7 @@ describe(ContractName.Forwarder, () => {
             );
 
             await forwarderTestFactory.marketBuyTestAsync([order], 0.5, erc20Token, {
-                ethValueAdjustment: new BigNumber(-2),
+                ethValueAdjustment: -2,
                 revertError,
             });
         });
@@ -725,7 +725,7 @@ describe(ContractName.Forwarder, () => {
 
              // -2 to compensate for the extra 1 wei added in ForwarderTestFactory to account for rounding
             await forwarderTestFactory.marketBuyTestAsync([order], 0.5, erc20Token, {
-                ethValueAdjustment: new BigNumber(-2),
+                ethValueAdjustment: -2,
                 forwarderFeePercentage,
                 revertError,
             });
