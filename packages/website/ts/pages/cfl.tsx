@@ -73,7 +73,7 @@ const useCasesData = [
             'DeFi projects swap tokens through 0x to improve their UX by abstracting out required tokens, rebalancing user positions in real-time, and pre-baking terms of an asset sale into contracts so that they can be trustlessly executed in the future.',
         links: [
             {
-                label: 'Explore asset-swapper',
+                label: 'Explore Asset Swapper',
                 url: constants.CFL_DOCS,
             },
             {
@@ -89,7 +89,7 @@ const useCasesData = [
             'Trading bots consume 0x liquidity to atomically swap tokens at tight spreads and perform risk-free arbitrage across both centralized and decentralized exchange venues.',
         links: [
             {
-                label: 'Explore asset-swapper',
+                label: 'Explore Asset Swapper',
                 url: constants.CFL_DOCS,
             },
             {
@@ -109,17 +109,17 @@ export class CFL extends React.Component<Props> {
                     title="Swap tokens by tapping into 0x's networked liquidity"
                     isLargeTitle={false}
                     isFullWidth={true}
-                    description="Source liquidity for your DeFi users by filling orders at the best prices."
+                    description="Source liquidity for your DeFi users by filling orders at the best prices"
                     showFigureBottomMobile={true}
                     isCenteredMobile={true}
                     figure={<CFLMetrics />}
                     figureMaxWidth="600px"
                     maxWidth="500px"
-                    actions={
+                    actions={(
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
                         </Button>
-                    }
+                    )}
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>

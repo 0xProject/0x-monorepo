@@ -18,9 +18,9 @@ const navData = [
         url: WebsitePaths.LaunchKit,
     },
     {
-        title: 'Swap Tokens',
+        title: 'Asset Swapper',
         description: 'Swap tokens via smart contracts',
-        url: WebsitePaths.SwapTokens,
+        url: WebsitePaths.AssetSwapper,
     },
     {
         title: 'Governance',

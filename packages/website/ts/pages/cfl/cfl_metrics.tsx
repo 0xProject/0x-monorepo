@@ -3,7 +3,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Icon } from 'ts/components/icon';
-import { Paragraph } from 'ts/components/text';
 import { defaultData } from 'ts/pages/cfl/default_data';
 import { Metrics, MetricValue } from 'ts/pages/cfl/metrics';
 import { backendClient } from 'ts/utils/backend_client';
@@ -37,10 +36,6 @@ const MetricsContainer = styled.div`
     & div:not(:last-child) {
         margin-right: 15px;
     }
-`;
-
-const FreshnessIndicator = styled.div`
-    margin-top: 10px;
 `;
 
 interface PairTabProps {
@@ -110,11 +105,6 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
                         metrics={this._getSlippageMetrics()}
                     />
                 </MetricsContainer>
-                <FreshnessIndicator>
-                    <Paragraph size="small" textAlign="right">
-                        Updates every 30 minutes.
-                    </Paragraph>
-                </FreshnessIndicator>
             </CFLMetricsContainer>
         );
     }

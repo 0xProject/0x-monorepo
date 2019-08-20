@@ -131,7 +131,7 @@ render(
                                 <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
                                 <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
                                 <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
-                                <Route exact={true} path={WebsitePaths.SwapTokens} component={CFL as any} />
+                                <Route exact={true} path={WebsitePaths.AssetSwapper} component={CFL as any} />
                                 <Route
                                     exact={true}
                                     path={WebsitePaths.PrivacyPolicy}

@@ -22,8 +22,10 @@ interface TabProps {
 export const TabbedWrapper = styled.div`
     background-color: #0c2320;
     width: 100%;
-    height: 586px;
+    min-width: 605px;
+    height: 645px;
     margin-left: 50px;
+    overflow: hidden;
     @media (max-width: 1216px) {
         display: none;
     }

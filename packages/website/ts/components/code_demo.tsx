@@ -14,7 +14,6 @@ const CustomPre = styled.pre`
     width: 100%;
     height: 100%;
     max-height: 800px;
-    border-radius: 4px;
     code {
         background-color: inherit !important;
         border-radius: 0px;
@@ -33,7 +32,6 @@ const CustomPre = styled.pre`
     }
     code:last-of-type {
         position: relative;
-        top: 10px;
         top: 0;
         padding-top: 11px;
         display: inline-block;
@@ -191,7 +189,6 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
 }
 
 const StyledButton = styled(Button)`
-    border-radius: 4px;
     font-size: 15px;
     font-weight: 400;
     padding: 9px 21px 7px;
