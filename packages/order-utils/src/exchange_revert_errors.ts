@@ -38,6 +38,12 @@ export enum TransactionErrorCode {
     Expired,
 }
 
+export enum IncompleteFillErrorCode {
+    IncompleteMarketBuyOrders,
+    IncompleteMarketSellOrders,
+    IncompleteFillOrder,
+}
+
 export class BatchMatchOrdersError extends RevertError {
     constructor(error?: BatchMatchOrdersErrorCodes) {
         super('BatchMatchOrdersError', 'BatchMatchOrdersError(uint8 error)', { error });
@@ -208,31 +214,12 @@ export class TransactionExecutionError extends RevertError {
 }
 
 export class IncompleteFillError extends RevertError {
-    constructor(takerAssetFillAmount?: BigNumber, orderHash?: string) {
-        super('IncompleteFillError', 'IncompleteFillError(uint256 takerAssetFillAmount, bytes32 orderHash)', {
-            takerAssetFillAmount,
-            orderHash,
+    constructor(error?: IncompleteFillErrorCode, expectedAssetFillAmount?: BigNumber, actualAssetFillAmount?: BigNumber) {
+        super('IncompleteFillError', 'IncompleteFillError(uint8 error, uint256 expectedAssetFillAmount, uint256 actualAssetFillAmount)', {
+            error,
+            expectedAssetFillAmount,
+            actualAssetFillAmount,
         });
-    }
-}
-
-export class IncompleteMarketSellError extends RevertError {
-    constructor(takerAssetFillAmount?: BigNumber, orderHashes?: string[]) {
-        super(
-            'IncompleteMarketSellError',
-            'IncompleteMarketSellError(uint256 takerAssetFillAmount, bytes32[] orderHashes)',
-            { takerAssetFillAmount, orderHashes },
-        );
-    }
-}
-
-export class IncompleteMarketBuyError extends RevertError {
-    constructor(makerAssetFillAmount?: BigNumber, orderHashes?: string[]) {
-        super(
-            'IncompleteMarketBuyError',
-            'IncompleteMarketBuyError(uint256 makerAssetFillAmount, bytes32[] orderHashes)',
-            { makerAssetFillAmount, orderHashes },
-        );
     }
 }
 
@@ -256,8 +243,6 @@ const types = [
     TransactionSignatureError,
     TransactionExecutionError,
     IncompleteFillError,
-    IncompleteMarketSellError,
-    IncompleteMarketBuyError,
 ];
 
 // Register the types we've defined.
