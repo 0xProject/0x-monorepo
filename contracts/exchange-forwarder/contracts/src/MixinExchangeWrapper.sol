@@ -85,7 +85,8 @@ contract MixinExchangeWrapper is
     /// @param order A single order specification.
     /// @param signature Signature for the given order.
     /// @param remainingTakerAssetFillAmount Remaining amount of WETH to sell.
-    /// @return Amounts of WETH spent and makerAsset acquired by the taker for this order.
+    /// @return wethSpentAmount Amount of WETH spent on the given order.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given order.
     function _marketSellSingleOrder(
         LibOrder.Order memory order,
         bytes memory signature,
@@ -100,7 +101,7 @@ contract MixinExchangeWrapper is
         // No fee or percentage fee
         if (order.takerFee == 0 || order.makerAssetData.equals(order.takerFeeAssetData)) {
             // Attempt to sell the remaining amount of WETH
-            singleFillResults = _fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
                 remainingTakerAssetFillAmount,
                 signature
@@ -122,7 +123,7 @@ contract MixinExchangeWrapper is
                 remainingTakerAssetFillAmount
             );
 
-            singleFillResults = _fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
                 takerAssetFillAmount,
                 signature
@@ -144,7 +145,8 @@ contract MixinExchangeWrapper is
     /// @param orders Array of order specifications.
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts of WETH spent and makerAsset acquired by the taker.
+    /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
+    /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
     function _marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
@@ -172,7 +174,7 @@ contract MixinExchangeWrapper is
             }
 
             // The remaining amount of WETH to sell
-            uint256 remainingTakerAssetFillAmount = wethSellAmount.safeSub(wethSpentAmount);
+            uint256 remainingTakerAssetFillAmount = wethSellAmount.safeSub(totalWethSpentAmount);
 
             (
                 uint256 wethSpentAmount,
@@ -198,7 +200,8 @@ contract MixinExchangeWrapper is
     /// @param order A single order specification.
     /// @param signature Signature for the given order.
     /// @param remainingMakerAssetFillAmount Remaining amount of maker asset to buy.
-    /// @return Amounts of WETH spent and makerAsset acquired by the taker for this order.
+    /// @return wethSpentAmount Amount of WETH spent on the given order.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given order.
     function _marketBuySingleOrder(
         LibOrder.Order memory order,
         bytes memory signature,
@@ -210,9 +213,6 @@ contract MixinExchangeWrapper is
             uint256 makerAssetAcquiredAmount
         )
     {
-        // The remaining amount of maker asset to buy
-        uint256 remainingMakerAssetFillAmount = makerAssetBuyAmount.safeSub(totalMakerAssetAcquiredAmount);
-
         // No fee or WETH fee
         if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.takerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
@@ -223,7 +223,7 @@ contract MixinExchangeWrapper is
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            singleFillResults = _fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
                 remainingTakerAssetFillAmount,
                 signature
@@ -245,7 +245,7 @@ contract MixinExchangeWrapper is
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            singleFillResults = _fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
                 remainingTakerAssetFillAmount,
                 signature
@@ -270,7 +270,8 @@ contract MixinExchangeWrapper is
     /// @param orders Array of order specifications.
     /// @param makerAssetBuyAmount Desired amount of makerAsset to fill.
     /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts of WETH spent and makerAsset acquired by the taker.
+    /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
+    /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
     function _marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
@@ -317,7 +318,10 @@ contract MixinExchangeWrapper is
         }
 
         if (totalMakerAssetAcquiredAmount < makerAssetBuyAmount) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteFillFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteBuyFailedError(
+                makerAssetBuyAmount,
+                totalMakerAssetAcquiredAmount
+            ));
         }
     }
 }

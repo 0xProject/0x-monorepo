@@ -109,13 +109,13 @@ contract MixinAssets is
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
-        (bool success,) = token.call(abi.encodeWithSelector(
+        (bool success, bytes memory returnData) = token.call(abi.encodeWithSelector(
             ERC20_TRANSFER_SELECTOR,
             msg.sender,
             amount
         ));
         if (!success) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
         }
 
         // Check return data.
@@ -135,7 +135,7 @@ contract MixinAssets is
             }
         }
         if (!success) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
         }
     }
 
@@ -149,7 +149,7 @@ contract MixinAssets is
         internal
     {
         if (amount != 1) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.InvalidErc721AmountError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.Erc721AmountMustEqualOneError(
                 amount
             ));
         }

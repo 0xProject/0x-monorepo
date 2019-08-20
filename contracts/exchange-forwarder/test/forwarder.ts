@@ -468,8 +468,13 @@ describe(ContractName.Forwarder, () => {
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount', async () => {
             const order = await orderFactory.newSignedOrderAsync();
-            const revertError = new ForwarderRevertErrors.CompleteFillFailedError();
-            await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.5), erc20Token, {
+            const fillFraction = new BigNumber(0.5);
+            const revertError = new ForwarderRevertErrors.CompleteBuyFailedError(
+                order.makerAssetAmount.times(fillFraction),
+                constants.ZERO_AMOUNT,
+            );
+
+            await forwarderTestFactory.marketBuyTestAsync([order], fillFraction, erc20Token, {
                 ethValueAdjustment: new BigNumber(-2),
                 revertError,
             });
@@ -708,10 +713,22 @@ describe(ContractName.Forwarder, () => {
         });
         it('should fail if there is not enough ETH remaining to pay the fee', async () => {
             const order = await orderFactory.newSignedOrderAsync();
-            const revertError = new ForwarderRevertErrors.InsufficientEthForFeeError();
+            const forwarderFeePercentage = new BigNumber(2);
+            const fillFraction = new BigNumber(0.5);
+            const ethFee = ForwarderTestFactory.getPercentageOfValue(
+                order.takerAssetAmount.times(fillFraction),
+                forwarderFeePercentage,
+            );
+
+            const revertError = new ForwarderRevertErrors.InsufficientEthForFeeError(
+                ethFee,
+                ethFee.minus(1),
+            );
+
+             // -2 to compensate for the extra 1 wei added in ForwarderTestFactory to account for rounding
             await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.5), erc20Token, {
                 ethValueAdjustment: new BigNumber(-2),
-                forwarderFeePercentage: new BigNumber(2),
+                forwarderFeePercentage,
                 revertError,
             });
         });

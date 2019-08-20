@@ -31,9 +31,9 @@ library LibForwarderRichErrors {
     bytes4 internal constant UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR =
         0x7996a271;
 
-    // bytes4(keccak256("CompleteFillFailedError()"))
-    bytes internal constant COMPLETE_FILL_FAILED_ERROR =
-        hex"4bcb2058";
+    // bytes4(keccak256("CompleteBuyFailedError(uint256,uint256)"))
+    bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
+        0x91353a0c;
 
     // bytes4(keccak256("MakerAssetMismatchError(bytes,bytes)"))
     bytes4 internal constant MAKER_ASSET_MISMATCH_ERROR_SELECTOR =
@@ -47,33 +47,29 @@ library LibForwarderRichErrors {
     bytes4 internal constant FEE_PERCENTAGE_TOO_LARGE_ERROR_SELECTOR =
         0x1174fb80;
 
-    // bytes4(keccak256("InsufficientEthForFeeError()"))
-    bytes internal constant INSUFFICIENT_ETH_FOR_FEE_ERROR =
-        hex"54a53d9e";
+    // bytes4(keccak256("InsufficientEthForFeeError(uint256,uint256)"))
+    bytes4 internal constant INSUFFICIENT_ETH_FOR_FEE_ERROR_SELECTOR =
+        0xecf40fd9;
 
     // bytes4(keccak256("OversoldWethError(uint256,uint256)"))
     bytes4 internal constant OVERSOLD_WETH_ERROR_SELECTOR =
         0x5cc555c8;
 
-    // bytes4(keccak256("TransferFailedError()"))
-    bytes internal constant TRANSFER_FAILED_ERROR =
-        hex"570f1df4";
+    // bytes4(keccak256("TransferFailedError(bytes)"))
+    bytes4 internal constant TRANSFER_FAILED_ERROR_SELECTOR =
+        0x5e7eb60f;
 
     // bytes4(keccak256("DefaultFunctionWethContractOnlyError(address)"))
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
 
-    // bytes4(keccak256("InvalidMsgValueError()"))
-    bytes4 internal constant INVALID_MSG_VALUE_ERROR_SELECTOR =
-        0xb0658a43;
+    // bytes4(keccak256("MsgValueCantEqualZeroError()"))
+    bytes internal constant MSG_VALUE_CANT_EQUAL_ZERO_ERROR =
+        hex"1213e1d6";
 
-    // bytes4(keccak256("InvalidMsgValueError()"))
-    bytes internal constant INVALID_MSG_VALUE_ERROR =
-        hex"b0658a43";
-
-    // bytes4(keccak256("InvalidErc721AmountError(uint256)"))
-    bytes4 internal constant INVALID_ERC721_AMOUNT_ERROR_SELECTOR =
-        0x27ed87bf;
+    // bytes4(keccak256("Erc721AmountMustEqualOneError(uint256)"))
+    bytes4 internal constant ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR =
+        0xbaffa474;
 
     // solhint-disable func-name-mixedcase
     function UnregisteredAssetProxyError()
@@ -97,12 +93,19 @@ library LibForwarderRichErrors {
         );
     }
 
-    function CompleteFillFailedError()
+    function CompleteBuyFailedError(
+        uint256 expectedAssetBuyAmount,
+        uint256 actualAssetBuyAmount
+    )
         internal
         pure
         returns (bytes memory)
     {
-        return COMPLETE_FILL_FAILED_ERROR;
+        return abi.encodeWithSelector(
+            COMPLETE_BUY_FAILED_ERROR_SELECTOR,
+            expectedAssetBuyAmount,
+            actualAssetBuyAmount
+        );
     }
 
     function MakerAssetMismatchError(
@@ -146,12 +149,19 @@ library LibForwarderRichErrors {
         );
     }
 
-    function InsufficientEthForFeeError()
+    function InsufficientEthForFeeError(
+        uint256 ethFeeRequired,
+        uint256 ethAvailable
+    )
         internal
         pure
         returns (bytes memory)
     {
-        return INSUFFICIENT_ETH_FOR_FEE_ERROR;
+        return abi.encodeWithSelector(
+            INSUFFICIENT_ETH_FOR_FEE_ERROR_SELECTOR,
+            ethFeeRequired,
+            ethAvailable
+        );
     }
 
     function OversoldWethError(
@@ -169,16 +179,21 @@ library LibForwarderRichErrors {
         );
     }
 
-    function TransferFailedError()
+    function TransferFailedError(
+        bytes memory errorData
+    )
         internal
         pure
         returns (bytes memory)
     {
-        return TRANSFER_FAILED_ERROR;
+        return abi.encodeWithSelector(
+            TRANSFER_FAILED_ERROR_SELECTOR,
+            errorData
+        );
     }
 
     function DefaultFunctionWethContractOnlyError(
-        address callerAddress
+        address senderAddress
     )
         internal
         pure
@@ -186,19 +201,19 @@ library LibForwarderRichErrors {
     {
         return abi.encodeWithSelector(
             DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR,
-            callerAddress
+            senderAddress
         );
     }
 
-    function InvalidMsgValueError()
+    function MsgValueCantEqualZeroError()
         internal
         pure
         returns (bytes memory)
     {
-        return INVALID_MSG_VALUE_ERROR;
+        return MSG_VALUE_CANT_EQUAL_ZERO_ERROR;
     }
 
-    function InvalidErc721AmountError(
+    function Erc721AmountMustEqualOneError(
         uint256 amount
     )
         internal
@@ -206,7 +221,7 @@ library LibForwarderRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            INVALID_ERC721_AMOUNT_ERROR_SELECTOR,
+            ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR,
             amount
         );
     }

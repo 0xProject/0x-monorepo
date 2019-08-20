@@ -47,7 +47,7 @@ contract MixinWeth is
         internal
     {
         if (msg.value == 0) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.InvalidMsgValueError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.MsgValueCantEqualZeroError());
         }
         ETHER_TOKEN.deposit.value(msg.value)();
     }
@@ -57,7 +57,7 @@ contract MixinWeth is
     /// @param wethSold Amount of WETH sold when filling primary orders.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amount paid to feeRecipient as a percentage fee on the total WETH sold.
+    /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
         uint256 wethSold,
         uint256 feePercentage,
@@ -93,7 +93,10 @@ contract MixinWeth is
 
         // Ensure fee is less than amount of WETH remaining.
         if (ethFee > wethRemaining) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
+                ethFee,
+                wethRemaining
+            ));
         }
 
         // Do nothing if no WETH remaining

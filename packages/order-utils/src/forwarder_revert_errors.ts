@@ -1,5 +1,4 @@
 import { BigNumber, RevertError } from '@0x/utils';
-import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
 
@@ -15,9 +14,16 @@ export class UnsupportedAssetProxyError extends RevertError {
     }
 }
 
-export class CompleteFillFailedError extends RevertError {
-    constructor() {
-        super('CompleteFillFailedError', 'CompleteFillFailedError()', {});
+export class CompleteBuyFailedError extends RevertError {
+    constructor(
+        expectedAssetBuyAmount?: BigNumber | number | string,
+        actualAssetBuyAmount?: BigNumber | number | string,
+    ) {
+        super(
+            'CompleteBuyFailedError',
+            'CompleteBuyFailedError(uint256 expectedAssetBuyAmount, uint256 actualAssetBuyAmount)',
+            { expectedAssetBuyAmount, actualAssetBuyAmount },
+        );
     }
 }
 
@@ -49,8 +55,12 @@ export class FeePercentageTooLargeError extends RevertError {
 }
 
 export class InsufficientEthForFeeError extends RevertError {
-    constructor() {
-        super('InsufficientEthForFeeError', 'InsufficientEthForFeeError()', {});
+    constructor(ethFeeRequired?: BigNumber | number | string, ethAvailable?: BigNumber | number | string) {
+        super(
+            'InsufficientEthForFeeError',
+            'InsufficientEthForFeeError(uint256 ethFeeRequired, uint256 ethAvailable)',
+            { ethFeeRequired, ethAvailable },
+        );
     }
 }
 
@@ -64,28 +74,28 @@ export class OversoldWethError extends RevertError {
 }
 
 export class TransferFailedError extends RevertError {
-    constructor() {
-        super('TransferFailedError', 'TransferFailedError()', {});
+    constructor(errorData?: string) {
+        super('TransferFailedError', 'TransferFailedError(bytes errorData)', { errorData });
     }
 }
 
 export class DefaultFunctionWethContractOnlyError extends RevertError {
-    constructor(callerAddress?: string) {
-        super('DefaultFunctionWethContractOnlyError', 'DefaultFunctionWethContractOnlyError(address callerAddress)', {
-            callerAddress,
+    constructor(senderAddress?: string) {
+        super('DefaultFunctionWethContractOnlyError', 'DefaultFunctionWethContractOnlyError(address senderAddress)', {
+            senderAddress,
         });
     }
 }
 
-export class InvalidMsgValueError extends RevertError {
+export class MsgValueCantEqualZeroError extends RevertError {
     constructor() {
-        super('InvalidMsgValueError', 'InvalidMsgValueError()', {});
+        super('MsgValueCantEqualZeroError', 'MsgValueCantEqualZeroError()', {});
     }
 }
 
-export class InvalidErc721AmountError extends RevertError {
+export class Erc721AmountMustEqualOneError extends RevertError {
     constructor(amount?: BigNumber | number | string) {
-        super('InvalidErc721AmountError', 'InvalidErc721AmountError(uint256 amount)', {
+        super('Erc721AmountMustEqualOneError', 'Erc721AmountMustEqualOneError(uint256 amount)', {
             amount,
         });
     }
@@ -94,7 +104,7 @@ export class InvalidErc721AmountError extends RevertError {
 const types = [
     UnregisteredAssetProxyError,
     UnsupportedAssetProxyError,
-    CompleteFillFailedError,
+    CompleteBuyFailedError,
     MakerAssetMismatchError,
     UnsupportedFeeError,
     FeePercentageTooLargeError,
@@ -102,8 +112,8 @@ const types = [
     OversoldWethError,
     TransferFailedError,
     DefaultFunctionWethContractOnlyError,
-    InvalidMsgValueError,
-    InvalidErc721AmountError,
+    MsgValueCantEqualZeroError,
+    Erc721AmountMustEqualOneError,
 ];
 
 // Register the types we've defined.

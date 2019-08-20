@@ -61,7 +61,9 @@ contract MixinForwarderCore is
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
@@ -120,7 +122,9 @@ contract MixinForwarderCore is
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
         uint256 makerAssetBuyAmount,
