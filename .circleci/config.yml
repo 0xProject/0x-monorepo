@@ -34,12 +34,6 @@ jobs:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo
-            - save_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/python-contract-wrappers/generated
-            - store_artifacts:
-                  path: ~/repo/packages/python-contract-wrappers/generated
             - store_artifacts:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
@@ -195,7 +189,8 @@ jobs:
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       cd python-packages
@@ -237,9 +232,7 @@ jobs:
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
             - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
+                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
             - store_artifacts:
                   path: ~/repo/python-packages/contract_addresses/build
             - store_artifacts:
@@ -289,7 +282,8 @@ jobs:
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       python -m ensurepip

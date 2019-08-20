@@ -18,7 +18,9 @@ Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting 
 
 ### Install Code and Dependencies
 
-Ensure that you have installed Python >=3.6 and Docker. Then:
+This package contains code generated via npm package @0x/abi-gen. Preparing this package for development or installation requires running `./setup.py pre_install`, which will invoke abi-gen to write the files to the src hierarchy. It expects to find abi-gen and the contract artifacts at the relative directory locations in the monorepo.
+
+After code generation, ensure that you have installed Python >=3.6 and Docker, and then:
 
 ```bash
 pip install -e .[dev]
