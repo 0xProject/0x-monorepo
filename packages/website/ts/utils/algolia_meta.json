@@ -29,6 +29,14 @@
             "difficulty": "Beginner",
             "path": "guides/develop-on-ethereum.mdx"
         },
+        "deployed-addresses": {
+            "title": "Deployed Addresses",
+            "description": "",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Beginner",
+            "path": "guides/deployed-addresses.mdx"
+        },
         "ganache-setup": {
             "title": "How to Set Up Ganache",
             "description": "",
