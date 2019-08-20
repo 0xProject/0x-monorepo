@@ -214,12 +214,20 @@ export class TransactionExecutionError extends RevertError {
 }
 
 export class IncompleteFillError extends RevertError {
-    constructor(error?: IncompleteFillErrorCode, expectedAssetFillAmount?: BigNumber, actualAssetFillAmount?: BigNumber) {
-        super('IncompleteFillError', 'IncompleteFillError(uint8 error, uint256 expectedAssetFillAmount, uint256 actualAssetFillAmount)', {
-            error,
-            expectedAssetFillAmount,
-            actualAssetFillAmount,
-        });
+    constructor(
+        error?: IncompleteFillErrorCode,
+        expectedAssetFillAmount?: BigNumber,
+        actualAssetFillAmount?: BigNumber,
+    ) {
+        super(
+            'IncompleteFillError',
+            'IncompleteFillError(uint8 error, uint256 expectedAssetFillAmount, uint256 actualAssetFillAmount)',
+            {
+                error,
+                expectedAssetFillAmount,
+                actualAssetFillAmount,
+            },
+        );
     }
 }
 
