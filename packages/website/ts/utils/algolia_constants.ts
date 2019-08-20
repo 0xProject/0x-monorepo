@@ -7,6 +7,8 @@ const ALGOLIA_CLIENT_API_KEY = '53793d35f5e6b0583d273c4015373c3b';
 // @TODO: Move the following somewhere safe / out of the repo
 const ALGOLIA_ADMIN_API_KEY = 'b158fad22eba28a2660ae045c5766378';
 
+const ALGOLIA_MAX_NUMBER_HITS = 1000; // Limit set by algolia
+
 export interface IAlgoliaSettings {
     distinct: boolean;
     attributeForDistinct: string;
@@ -18,6 +20,11 @@ export interface IAlgoliaSettings {
 
 export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY);
 export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
+
+export const hitsPerPage = {
+    autocomplete: 5,
+    pages: ALGOLIA_MAX_NUMBER_HITS, // Maximum set by algolia
+};
 
 export const searchIndices: ObjectMap<string> = {
     'api-explorer': '0x_api_explorer',
