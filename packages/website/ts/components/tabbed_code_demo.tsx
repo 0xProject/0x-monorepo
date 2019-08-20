@@ -34,6 +34,7 @@ const Tab = styled.div<TabProps>`
     opacity: ${props => (props.isActive ? '1' : '0.5')};
     display: inline-block;
     padding: 20px 40px;
+    font-size: 16px;
     cursor: pointer;
     &:hover {
         opacity: ${props => (props.isActive ? '1' : '0.75')};
@@ -50,7 +51,7 @@ export const TabbedCodeDemo: React.FC<TabbedCodeDemoProps> = props => {
                     {tab.label}
                 </Tab>
             ))}
-            <CodeDemo language={language} fontSize="16px" shouldHideCopy={true}>
+            <CodeDemo language={language} fontSize="14px" shouldHideCopy={true}>
                 {code}
             </CodeDemo>
         </TabbedWrapper>

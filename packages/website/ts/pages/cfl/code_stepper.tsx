@@ -19,7 +19,7 @@ const InteractiveDefinition = styled(Definition)<InteractiveDefinitionProps>`
         padding: 20px;
         background-color: ${props => (props.isSelected ? '#0D1413' : '')};
         border-left: ${props => (props.isSelected ? '3px solid #00AE99' : '3px solid rgba(0,0,0,0)')};
-        width: 600px;
+        width: 500px;
         p {
             margin-bottom: 0px;
         }
