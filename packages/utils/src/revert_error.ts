@@ -416,7 +416,8 @@ function checkArgEquality(type: string, lhs: ArgTypes, rhs: ArgTypes): boolean {
         return normalizeBytes(lhs as string) === normalizeBytes(rhs as string);
     } else if (type === 'string') {
         return lhs === rhs;
-    } else if (/\[\d*\]$/.test(type)) { // An array type.
+    } else if (/\[\d*\]$/.test(type)) {
+        // An array type.
         // tslint:disable: custom-no-magic-numbers
         // Arguments must be arrays and have the same dimensions.
         if ((lhs as any[]).length !== (rhs as any[]).length) {
