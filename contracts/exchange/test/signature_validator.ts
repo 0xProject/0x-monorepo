@@ -388,12 +388,10 @@ describe('MixinSignatureValidator', () => {
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             // This will return false because we signed the message with `signerAddress`, but
             // are validating against `notSignerAddress`
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                notSignerAddress,
-                signatureHex,
+            await expectContractCallFailedAsync(
+                signatureValidator.publicIsValidSignature.callAsync(orderHashHex, notSignerAddress, signatureHex),
+                RevertReason.ValidatorError,
             );
-            expect(isValidSignature).to.be.false();
 
             const isValidSignatureTs = await signatureUtils.isValidSignatureAsync(
                 provider,
