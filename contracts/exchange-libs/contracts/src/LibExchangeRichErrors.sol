@@ -58,6 +58,12 @@ library LibExchangeRichErrors {
         EXPIRED
     }
 
+    enum IncompleteFillErrorCode {
+        INCOMPLETE_MARKET_BUY_ORDERS,
+        INCOMPLETE_MARKET_SELL_ORDERS,
+        INCOMPLETE_FILL_ORDER
+    }
+
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
         0x7e5a2318;
@@ -126,21 +132,13 @@ library LibExchangeRichErrors {
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
         0x20d11f61;
 
-    // bytes4(keccak256("IncompleteFillError(uint256,bytes32)"))
+    // bytes4(keccak256("IncompleteFillError(uint8,uint256,uint256)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
-        0x7db7f6fa;
+        0x18e4b141;
 
     // bytes4(keccak256("BatchMatchOrdersError(uint8)"))
     bytes4 internal constant BATCH_MATCH_ORDERS_ERROR_SELECTOR =
         0xd4092f4f;
-
-    // bytes4(keccak256("IncompleteMarketSellError(uint256,bytes32[])"))
-    bytes4 internal constant INCOMPLETE_MARKET_SELL_ERROR_SELECTOR =
-        0x3718c1f5;
-
-    // bytes4(keccak256("IncompleteMarketBuyError(uint256,bytes32[])"))
-    bytes4 internal constant INCOMPLETE_MARKET_BUY_ERROR_SELECTOR =
-        0x5599c1d8;
 
     // solhint-disable func-name-mixedcase
     function SignatureErrorSelector()
@@ -285,22 +283,6 @@ library LibExchangeRichErrors {
         returns (bytes4)
     {
         return INCOMPLETE_FILL_ERROR_SELECTOR;
-    }
-
-    function IncompleteMarketSellErrorSelector()
-        internal
-        pure
-        returns (bytes4)
-    {
-        return INCOMPLETE_MARKET_SELL_ERROR_SELECTOR;
-    }
-
-    function IncompleteMarketBuyErrorSelector()
-        internal
-        pure
-        returns (bytes4)
-    {
-        return INCOMPLETE_MARKET_BUY_ERROR_SELECTOR;
     }
 
     function BatchMatchOrdersErrorSelector()
@@ -600,8 +582,9 @@ library LibExchangeRichErrors {
     }
 
     function IncompleteFillError(
-        uint256 takerAssetFillAmount,
-        bytes32 orderHash
+        IncompleteFillErrorCode errorCode,
+        uint256 expectedAssetFillAmount,
+        uint256 actualAssetFillAmount
     )
         internal
         pure
@@ -609,38 +592,9 @@ library LibExchangeRichErrors {
     {
         return abi.encodeWithSelector(
             INCOMPLETE_FILL_ERROR_SELECTOR,
-            takerAssetFillAmount,
-            orderHash
-        );
-    }
-
-    function IncompleteMarketSellError(
-        uint256 takerAssetFillAmount,
-        bytes32[] memory orderHashes
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INCOMPLETE_MARKET_SELL_ERROR_SELECTOR,
-            takerAssetFillAmount,
-            orderHashes
-        );
-    }
-
-    function IncompleteMarketBuyError(
-        uint256 makerAssetFillAmount,
-        bytes32[] memory orderHashes
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INCOMPLETE_MARKET_BUY_ERROR_SELECTOR,
-            makerAssetFillAmount,
-            orderHashes
+            errorCode,
+            expectedAssetFillAmount,
+            actualAssetFillAmount
         );
     }
 }
