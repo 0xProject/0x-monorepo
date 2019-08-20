@@ -8,7 +8,7 @@ Using a configured Web3 Provider, the application can request signatures, estima
 
 The simplest example of a provider is:
 
-```ts
+```typescript
 const provider = new web3.providers.HttpProvider('http://localhost:8545');
 ```
 
@@ -42,7 +42,7 @@ Many people use browser extension wallets (e.g [Metamask](https://metamask.io/))
 
 If at some point the provider used by your dApp changes (e.g if your user wants to use their Ledger Nano S to sign orders), it is important that you update the provider used by your `@0x/contract-wrappers`. You can do this by calling [setProvider](https://0x.org/docs/contract-wrappers#ContractWrappers-setProvider).
 
-```ts
+```typescript
 await contractWrappers.setProvider(newProvider, networkId);
 ```
 

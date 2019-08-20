@@ -1,12 +1,13 @@
 import * as React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/button';
 import { CodeRun } from 'ts/components/docs/mdx/code_run';
 
 import { colors } from 'ts/style/colors';
-import { docs} from 'ts/style/docs';
+import { docs } from 'ts/style/docs';
 import { styled } from 'ts/style/theme';
 
 interface ICodeProps {
@@ -109,6 +110,13 @@ const CopyButton = styled(Button).attrs({
 `;
 
 const style = {
+    hljs: {
+        display: 'block',
+        overflowX: 'hidden',
+        background: colors.backgroundLight,
+        fontSize: '12px',
+        padding: '20px',
+    },
     'hljs-comment': {
         color: '#7e7887',
     },
@@ -131,10 +139,10 @@ const style = {
         color: '#be4678',
     },
     'hljs-tag': {
-        color: '#61f5ff',
+        color: '#3E85DD',
     },
     'hljs-name': {
-        color: '#61f5ff',
+        color: '#3E85DD',
     },
     'hljs-selector-id': {
         color: '#be4678',
@@ -146,7 +154,7 @@ const style = {
         color: '#c994ff',
     },
     'hljs-meta': {
-        color: '#61f5ff',
+        color: '#3E85DD',
     },
     'hljs-built_in': {
         color: '#aa573c',
@@ -168,6 +176,7 @@ const style = {
     },
     'hljs-function': {
         color: '#781818',
+        paddingRight: '2px',
     },
     'hljs-symbol': {
         color: '#2a9292',
@@ -198,15 +207,6 @@ const style = {
         display: 'inline-block',
         width: '100%',
         backgroundColor: '#2a9292',
-    },
-    hljs: {
-        display: 'block',
-        overflowX: 'hidden',
-        background: colors.backgroundLight,
-        fontSize: '12px',
-        paddingLeft: '20px',
-        paddingTop: '20px',
-        paddingBottom: '20px',
     },
     'hljs-emphasis': {
         fontStyle: 'italic',
