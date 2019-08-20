@@ -18,6 +18,7 @@ blockchainTests('LibZeroExTransaction', env => {
     const EMPTY_TRANSACTION: ZeroExTransaction = {
         salt: constants.ZERO_AMOUNT,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
+        gasPrice: constants.ZERO_AMOUNT,
         signerAddress: constants.NULL_ADDRESS,
         data: constants.NULL_BYTES,
         domain: {
@@ -66,6 +67,7 @@ blockchainTests('LibZeroExTransaction', env => {
             await testGetTypedDataHashAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),
+                gasPrice: randomUint256(),
                 signerAddress: randomAddress(),
                 data: randomAssetData(),
                 domain: {
@@ -121,6 +123,7 @@ blockchainTests('LibZeroExTransaction', env => {
             await testGetStructHashAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),
+                gasPrice: randomUint256(),
                 signerAddress: randomAddress(),
                 data: randomAssetData(),
                 // The domain is not used in this test, so it's okay if it is left empty.
