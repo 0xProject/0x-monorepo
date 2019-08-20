@@ -77,7 +77,6 @@ contract TestTransactions is
     function _isValidTransactionWithHashSignature(
         LibZeroExTransaction.ZeroExTransaction memory,
         bytes32,
-        address,
         bytes memory signature
     )
         internal

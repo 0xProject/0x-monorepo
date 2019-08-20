@@ -15,7 +15,7 @@ import * as _ from 'lodash';
 
 import { artifacts, TestTransactionsContract, TestTransactionsTransactionExecutionEventArgs } from '../src';
 
-blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDefaults }) => {
+blockchainTests.resets.only('Transaction Unit Tests', ({ provider, web3Wrapper, txDefaults }) => {
     let transactionsContract: TestTransactionsContract;
     let accounts: string[];
     let domain: EIP712DomainWithDefaultSchema;
