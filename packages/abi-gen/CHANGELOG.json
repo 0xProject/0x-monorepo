@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Provide a default set of templates for code generation, used when --template and --partials are left unspecified",
+                "pr": 2082
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {
