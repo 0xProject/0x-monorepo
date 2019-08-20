@@ -29,7 +29,7 @@ interface ForwarderFillState {
 function computeExpectedResults(
     orders: SignedOrder[],
     ordersInfoBefore: OrderInfo[],
-    fractionalNumberOfOrdersToFill: BigNumber,
+    fractionalNumberOfOrdersToFill: number,
 ): ForwarderFillState {
     const currentState = {
         takerAssetFillAmount: constants.ZERO_AMOUNT,
@@ -42,28 +42,23 @@ function computeExpectedResults(
     let remainingOrdersToFill = fractionalNumberOfOrdersToFill;
 
     for (const [i, order] of orders.entries()) {
-        if (remainingOrdersToFill.isEqualTo(constants.ZERO_AMOUNT)) {
+        if (remainingOrdersToFill === 0) {
             break;
         }
 
         if (ordersInfoBefore[i].orderStatus !== OrderStatus.Fillable) {
             // If the order is not fillable, skip over it but still count it towards fractionalNumberOfOrdersToFill
-            remainingOrdersToFill = BigNumber.max(remainingOrdersToFill.minus(new BigNumber(1)), constants.ZERO_AMOUNT);
+            remainingOrdersToFill = Math.max(remainingOrdersToFill - 1, 0);
             continue;
         }
 
         let makerAssetAmount;
         let takerAssetAmount;
         let takerFee;
-        if (remainingOrdersToFill.isLessThan(new BigNumber(1))) {
-            const [partialFillNumerator, partialFillDenominator] = remainingOrdersToFill.toFraction();
-            makerAssetAmount = order.makerAssetAmount
-                .times(partialFillNumerator)
-                .dividedToIntegerBy(partialFillDenominator);
-            takerAssetAmount = order.takerAssetAmount
-                .times(partialFillNumerator)
-                .dividedToIntegerBy(partialFillDenominator);
-            takerFee = order.takerFee.times(partialFillNumerator).dividedToIntegerBy(partialFillDenominator);
+        if (remainingOrdersToFill < 1) {
+            makerAssetAmount = order.makerAssetAmount.times(remainingOrdersToFill).integerValue();
+            takerAssetAmount = order.takerAssetAmount.times(remainingOrdersToFill).integerValue();
+            takerFee = order.takerFee.times(remainingOrdersToFill).integerValue();
 
             // Up to 1 wei worth of WETH will be oversold on the last order due to rounding
             currentState.maxOversoldWeth = new BigNumber(1);
@@ -95,7 +90,7 @@ function computeExpectedResults(
             currentState.wethFees = currentState.wethFees.plus(takerFee);
         }
 
-        remainingOrdersToFill = BigNumber.max(remainingOrdersToFill.minus(new BigNumber(1)), constants.ZERO_AMOUNT);
+        remainingOrdersToFill = Math.max(remainingOrdersToFill - 1, 0);
     }
 
     return currentState;
@@ -151,7 +146,7 @@ export class ForwarderTestFactory {
 
     public async marketBuyTestAsync(
         orders: SignedOrder[],
-        fractionalNumberOfOrdersToFill: BigNumber,
+        fractionalNumberOfOrdersToFill: number,
         makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
         options: {
             ethValueAdjustment?: BigNumber; // Used to provided insufficient/excess ETH
@@ -225,7 +220,7 @@ export class ForwarderTestFactory {
 
     public async marketSellTestAsync(
         orders: SignedOrder[],
-        fractionalNumberOfOrdersToFill: BigNumber,
+        fractionalNumberOfOrdersToFill: number,
         makerAssetContract: DummyERC20TokenContract,
         options: {
             forwarderFeePercentage?: BigNumber;
@@ -322,7 +317,7 @@ export class ForwarderTestFactory {
     }
 
     private async _checkResultsAsync(
-        fractionalNumberOfOrdersToFill: BigNumber,
+        fractionalNumberOfOrdersToFill: number,
         orderStatusesBefore: OrderStatus[],
         orderStatusesAfter: OrderStatus[],
         gasUsed: number,
@@ -338,7 +333,7 @@ export class ForwarderTestFactory {
     ): Promise<void> {
         for (const [i, orderStatus] of orderStatusesAfter.entries()) {
             let expectedOrderStatus = orderStatusesBefore[i];
-            if (fractionalNumberOfOrdersToFill.gte(i + 1) && orderStatusesBefore[i] === OrderStatus.Fillable) {
+            if (fractionalNumberOfOrdersToFill >= i + 1 && orderStatusesBefore[i] === OrderStatus.Fillable) {
                 expectedOrderStatus = OrderStatus.FullyFilled;
             }
 
