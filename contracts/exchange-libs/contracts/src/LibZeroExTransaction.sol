@@ -30,16 +30,18 @@ library LibZeroExTransaction {
     // keccak256(abi.encodePacked(
     //    "ZeroExTransaction(",
     //    "uint256 salt,",
-    //    "uint256 expirationTimeSeconds,"
+    //    "uint256 expirationTimeSeconds,",
+    //    "uint256 gasPrice,",
     //    "address signerAddress,",
     //    "bytes data",
     //    ")"
     // ));
-    bytes32 constant internal _EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = 0x6b4c70d217b44d0ff0d3bf7aeb18eb8604c5cd06f615a4b497aeefa4f01d2775;
+    bytes32 constant internal _EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = 0xec69816980a3a3ca4554410e60253953e9ff375ba4536a98adfa15cc71541508;
 
     struct ZeroExTransaction {
         uint256 salt;                   // Arbitrary number to ensure uniqueness of transaction hash.
         uint256 expirationTimeSeconds;  // Timestamp in seconds at which transaction expires.
+        uint256 gasPrice;               // gasPrice at which transaction is required to be executed with.
         address signerAddress;          // Address of transaction signer.
         bytes data;                     // AbiV2 encoded calldata.
     }
@@ -72,15 +74,17 @@ library LibZeroExTransaction {
         bytes memory data = transaction.data;
         uint256 salt = transaction.salt;
         uint256 expirationTimeSeconds = transaction.expirationTimeSeconds;
+        uint256 gasPrice = transaction.gasPrice;
         address signerAddress = transaction.signerAddress;
 
         // Assembly for more efficiently computing:
-        // keccak256(abi.encodePacked(
-        //     EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH,
-        //     transaction.salt,
-        //     transaction.expirationTimeSeconds,
-        //     uint256(transaction.signerAddress),
-        //     keccak256(transaction.data)
+        // result = keccak256(abi.encodePacked(
+        //     schemaHash,
+        //     salt,
+        //     expirationTimeSeconds,
+        //     gasPrice,
+        //     uint256(signerAddress),
+        //     keccak256(data)
         // ));
 
         assembly {
@@ -90,14 +94,15 @@ library LibZeroExTransaction {
             // Load free memory pointer
             let memPtr := mload(64)
 
-            mstore(memPtr, schemaHash)                                                               // hash of schema
-            mstore(add(memPtr, 32), salt)                                                            // salt
-            mstore(add(memPtr, 64), expirationTimeSeconds)                                           // expirationTimeSeconds
-            mstore(add(memPtr, 96), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))  // signerAddress
-            mstore(add(memPtr, 128), dataHash)                                                       // hash of data
+            mstore(memPtr, schemaHash)                                                                // hash of schema
+            mstore(add(memPtr, 32), salt)                                                             // salt
+            mstore(add(memPtr, 64), expirationTimeSeconds)                                            // expirationTimeSeconds
+            mstore(add(memPtr, 96), gasPrice)                                                         // gasPrice
+            mstore(add(memPtr, 128), and(signerAddress, 0xffffffffffffffffffffffffffffffffffffffff))  // signerAddress
+            mstore(add(memPtr, 160), dataHash)                                                        // hash of data
 
             // Compute hash
-            result := keccak256(memPtr, 160)
+            result := keccak256(memPtr, 192)
         }
         return result;
     }
