@@ -732,10 +732,10 @@ export interface CFLMetricsPairData {
     takerSymbol: string;
     makerSymbol: string;
     tradeAmount: number;
-    volumeUSD: number;
-    lastTradePrice: number;
-    lastTradeTime: string;
-    exchangeAverageSlippagePercentage: ExchangeSlippageData[];
+    volumeUSD?: number;
+    lastTradePrice?: number;
+    lastTradeTime?: string;
+    exchangeAverageSlippagePercentage?: ExchangeSlippageData[];
 }
 
 export type WebsiteBackendCFLMetricsData = CFLMetricsPairData[];

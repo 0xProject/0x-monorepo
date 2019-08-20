@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { Icon } from 'ts/components/icon';
 import { Paragraph } from 'ts/components/text';
+import { defaultData } from 'ts/pages/cfl/default_data';
 import { Metrics, MetricValue } from 'ts/pages/cfl/metrics';
 import { backendClient } from 'ts/utils/backend_client';
 
@@ -56,7 +57,7 @@ const PairTab = styled.label<PairTabProps>`
 interface CFLMetricsProps {}
 
 interface CFLMetricsState {
-    cflMetricsData?: CFLMetricsPairData[];
+    cflMetricsData: CFLMetricsPairData[];
     didError: boolean;
     selectedIndex: number;
 }
@@ -65,6 +66,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     public state: CFLMetricsState = {
         didError: false,
         selectedIndex: 0,
+        cflMetricsData: defaultData,
     };
     public componentDidMount(): void {
         // tslint:disable-next-line:no-floating-promises
@@ -72,7 +74,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     }
     public render(): React.ReactNode {
         const { cflMetricsData, selectedIndex } = this.state;
-        if (!cflMetricsData) {
+        if (!cflMetricsData.length) {
             return null;
         }
         const baseTokenSymbol = this._getSelectedPairData().takerSymbol;
@@ -129,6 +131,9 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     }
     private _getLastPrice(): string {
         const data = this._getSelectedPairData();
+        if (!data.lastTradePrice) {
+            return '—';
+        }
         const num = numeral(data.lastTradePrice);
         const formattedNum = num.format('0.00');
         const currency = data.makerSymbol;
@@ -136,11 +141,31 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     }
     private _getVolume(): string {
         const data = this._getSelectedPairData();
+        if (!data.volumeUSD) {
+            return '—';
+        }
         const num = numeral(data.volumeUSD);
         return num.format('$0,0');
     }
     private _getSlippageMetrics(): MetricValue[] {
         const data = this._getSelectedPairData();
+        if (!data.exchangeAverageSlippagePercentage) {
+            const placeholder = '—';
+            return [
+                {
+                    label: <Icon name="small_0x_logo" size="natural" />,
+                    value: placeholder,
+                },
+                {
+                    label: <Icon name="small_kyber_logo" size="natural" />,
+                    value: placeholder,
+                },
+                {
+                    label: <Icon name="small_uniswap_logo" size="natural" />,
+                    value: placeholder,
+                },
+            ];
+        }
         const zeroExSlippage = data.exchangeAverageSlippagePercentage.find(
             exchangeSlippage => exchangeSlippage.exchange === 'Radar Relay',
         );
