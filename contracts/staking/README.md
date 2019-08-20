@@ -28,6 +28,7 @@ These contracts connect to each other and the broader 0x ecosystem like this:
 ![](images/architecture.png)
 
 ## Architecture (Kill Switch)
+
 If a vulnerability is discovered in the staking contract, operations may be halted to conduct forensics:
 
 1. The 0x Exchange contract stops charging protocol fees
@@ -36,17 +37,16 @@ If a vulnerability is discovered in the staking contract, operations may be halt
 
 ![](images/architecture_kill_switch.png)
 
-
 ## Architecture (Catastrophic Failures)
 
 In this worst-case scenario, state has been irreperably corrupted and the staking contracts must be re-deployed. Users withdraw their funds from the vaults and re-stake under the new system, at will.
 
 4. Vaults enter "Catostrophic Failure Mode" allowing users to withdraw their ZRX and Rewards.
-5. A Balance Oracle is deployed for determining the Reward balance of each user. (*)
+5. A Balance Oracle is deployed for determining the Reward balance of each user. (\*)
 
 ![](images/architecture_failure_mode.png)
 
-(*) A Balance Oracle is implemented retroactively, and depends on how state has been corrupted. For example, if state used to compute rewards is not corrupted, then it would be used by the oracle. Conversely, if this state is corrupted, we may need to reconstruct balances from previous state. (No balance oracle is required for ZRX.)
+(\*) A Balance Oracle is implemented retroactively, and depends on how state has been corrupted. For example, if state used to compute rewards is not corrupted, then it would be used by the oracle. Conversely, if this state is corrupted, we may need to reconstruct balances from previous state. (No balance oracle is required for ZRX.)
 
 ## Contracts Directory Structure
 
