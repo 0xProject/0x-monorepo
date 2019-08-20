@@ -388,6 +388,8 @@ function declarationToAbi(declaration: string): RevertErrorAbi {
     const [name, args] = m.slice(1);
     const argList: string[] = _.filter(args.split(','));
     const argData: DataItem[] = _.map(argList, (a: string) => {
+        // Match a function parameter in the format 'TYPE ID', where 'TYPE' may be
+        // an array type.
         m = /^\s*(([_a-z][a-z0-9_]*)(\[\d*\])*)\s+([_a-z][a-z0-9_]*)\s*$/i.exec(a);
         if (!m) {
             throw new Error(`Invalid Revert Error signature: "${declaration}"`);
@@ -414,7 +416,7 @@ function checkArgEquality(type: string, lhs: ArgTypes, rhs: ArgTypes): boolean {
         return normalizeBytes(lhs as string) === normalizeBytes(rhs as string);
     } else if (type === 'string') {
         return lhs === rhs;
-    } else if (/\[\d*\]$/.test(type)) {
+    } else if (/\[\d*\]$/.test(type)) { // An array type.
         // tslint:disable: custom-no-magic-numbers
         // Arguments must be arrays and have the same dimensions.
         if ((lhs as any[]).length !== (rhs as any[]).length) {
