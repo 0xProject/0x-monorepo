@@ -109,7 +109,7 @@ These packages are all under development. See [/contracts/README.md](/contracts/
 
 ## Usage
 
-Node version >= 6.12 is required.
+Node version 6.x or 8.x is required.
 
 Most of the packages require additional typings for external dependencies.
 You can include those by prepending the `@0x/typescript-typings` package to your [`typeRoots`](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) config.
@@ -137,6 +137,8 @@ Then install dependencies
 ```bash
 yarn install
 ```
+
+You will also need to have Python 3 installed, in order to build and run the tests of `abi-gen`'s command-line interface, which is integrated with the yarn build, yarn test, and yarn lint commands described below. More specifically, your local pip should resolve to the Python 3 version of pip, not a Python 2.x version.
 
 ### Build
 

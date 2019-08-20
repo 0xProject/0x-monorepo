@@ -38,7 +38,7 @@ export class IValidatorContract extends BaseContract {
          * @param hash Message hash that is signed.
          * @param signerAddress Address that should have signed the given hash.
          * @param signature Proof of signing.
-         * @returns Validity of order signature.
+         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidValidatorSignature(address,bytes32,address,bytes)&quot;))
          */
         async callAsync(
             hash: string,
@@ -46,7 +46,7 @@ export class IValidatorContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<string> {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
@@ -80,7 +80,7 @@ export class IValidatorContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -104,18 +104,18 @@ export class IValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as IValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
-        getABIDecodedReturnData(returnData: string): boolean {
+        getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as IValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -208,7 +208,7 @@ export class IValidatorContract extends BaseContract {
                 outputs: [
                     {
                         name: 'isValid',
-                        type: 'bool',
+                        type: 'bytes4',
                     },
                 ],
                 payable: false,

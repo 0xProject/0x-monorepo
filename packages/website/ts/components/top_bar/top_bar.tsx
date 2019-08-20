@@ -256,11 +256,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
                         <MenuItem className="py2">{this.props.translate.get(Key.Blog, Deco.Cap)}</MenuItem>
                     </Link>
-                    <Link to={WebsitePaths.FAQ}>
-                        <MenuItem className="py2" onClick={this._onMenuButtonClick.bind(this)}>
-                            {this.props.translate.get(Key.Faq, Deco.Cap)}
-                        </MenuItem>
-                    </Link>
                 </div>
             </Drawer>
         );
@@ -273,10 +268,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
-    private _isViewingFAQ(): boolean {
-        return _.includes(this.props.location.pathname, WebsitePaths.FAQ);
-    }
     private _shouldDisplayBottomBar(): boolean {
-        return this._isViewingFAQ() || this._isViewingPortal();
+        return this._isViewingPortal();
     }
 } // tslint:disable:max-file-line-count

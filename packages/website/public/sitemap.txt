@@ -4,7 +4,6 @@ https://0x.org/portal
 https://0x.org/wiki
 https://0x.org/docs
 https://0x.org/docs/0x.js
-https://0x.org/faq
 https://0x.org/about
 https://0x.org/about/mission
 https://0x.org/about/team

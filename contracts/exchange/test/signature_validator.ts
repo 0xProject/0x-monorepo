@@ -313,7 +313,7 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=Wallet and signature is invalid', async () => {
+        it('should revert when SignatureType=Wallet and signature is invalid', async () => {
             // Create EIP712 signature using a private key that does not belong to the wallet owner.
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
@@ -328,12 +328,10 @@ describe('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
-            const isValidSignature = await signatureValidator.publicIsValidSignature.callAsync(
-                orderHashHex,
-                testWallet.address,
-                signatureHex,
+            return expectContractCallFailedAsync(
+                signatureValidator.publicIsValidSignature.callAsync(orderHashHex, testWallet.address, signatureHex),
+                RevertReason.WalletError,
             );
-            expect(isValidSignature).to.be.false();
         });
 
         it('should revert when `isValidSignature` attempts to update state and SignatureType=Wallet', async () => {

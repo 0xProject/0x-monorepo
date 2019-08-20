@@ -7,15 +7,11 @@ from shutil import copy, rmtree
 from os import environ, path, remove
 from pathlib import Path
 from sys import argv
-from importlib.util import find_spec
 
 from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
-
-
-BLACK_COMMAND = "black --line-length 79 "
 
 
 CONTRACTS_TO_BE_WRAPPED = [
@@ -82,16 +78,6 @@ class PreInstallCommand(distutils.command.build_py.build_py):
                     pkgdir, "src", "zero_ex", "contract_wrappers", contract
                 ),
             )
-        if find_spec("black") is None:
-            subprocess.check_call("pip install black".split())  # nosec
-        black_command = BLACK_COMMAND + " ".join(
-            [
-                f"src/zero_ex/contract_wrappers/{contract}/__init__.py"
-                for contract in CONTRACTS_TO_BE_WRAPPED
-            ]
-        )
-        print(f"Running command `{black_command}`...")
-        subprocess.check_call(black_command.split())  # nosec
 
 
 class TestCommandExtension(TestCommand):
@@ -114,7 +100,9 @@ class LintCommand(distutils.command.build_py.build_py):
         """Run linter shell commands."""
         lint_commands = [
             # formatter:
-            (BLACK_COMMAND + " --check --diff src test setup.py").split(),
+            (
+                "black --line-length 79 --check --diff src test setup.py"
+            ).split(),
             # style guide checker (formerly pep8):
             "pycodestyle src test setup.py".split(),
             # docstring style checker:

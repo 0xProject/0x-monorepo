@@ -198,6 +198,11 @@ const team: TeamMember[] = [
         name: 'Oskar Paolini',
         title: 'DevOps Engineer',
     },
+    {
+        imageUrl: '/images/team/michaelz.jpg',
+        name: 'Michael Zhu',
+        title: 'Protocol Engineer',
+    },
 ];
 
 const advisors: TeamMember[] = [
