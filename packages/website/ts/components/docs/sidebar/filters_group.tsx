@@ -36,8 +36,8 @@ const FiltersList: React.FC<IFilterListProps> = ({
     const sortAlphabetically = (items: IFilterProps[]) => _.orderBy(items, 'label', 'asc');
 
     const sortByDifficulty = (items: IFilterProps[]) => {
-        const findItem = (label: string) => items.find((item: IFilterProps) => item.label === label);
-        return [findItem('Beginner'), findItem('Intermediate'), findItem('Advanced')];
+        const order = ['Beginner', 'Intermediate', 'Advanced'];
+        return items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
     };
 
     const sortFilters = (items: IFilterProps[]) =>
