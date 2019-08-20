@@ -7,7 +7,7 @@
     "private": true,
     "description": "Python wrappers for 0x smart contracts, generated via abi-gen",
     "scripts": {
-        "generate": "abi-gen --abis  ${npm_package_config_abis} --template ../abi-gen-templates/Python/contract.handlebars --partials '../abi-gen-templates/Python/partials/**/*.handlebars' --output generated --language Python",
+        "generate": "abi-gen --abis  ${npm_package_config_abis} --output generated --language Python",
         "build": "yarn generate",
         "build:ci": "yarn build",
         "clean": "shx rm -rf generated"

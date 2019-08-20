@@ -18,7 +18,7 @@
         "prettier": "prettier --write src/**/* --config ../../.prettierrc",
         "prettier_contract_wrappers": "prettier --write src/generated-wrappers/* --config ../../.prettierrc",
         "clean": "shx rm -rf lib src/generated-wrappers",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --output src/generated-wrappers --backend ethers",
         "docs": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --out generated_docs ./src/generated-wrappers/*"
     },
     "config": {
@@ -35,7 +35,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^4.1.0",
-        "@0x/abi-gen-templates": "^2.4.1",
         "@0x/assert": "^2.1.3",
         "@0x/json-schemas": "^3.1.13",
         "@0x/tslint-config": "^3.0.1",
