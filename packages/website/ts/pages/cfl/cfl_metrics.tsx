@@ -68,13 +68,11 @@ interface CFLMetricsProps {}
 
 interface CFLMetricsState {
     cflMetricsData: CFLMetricsPairData[];
-    didError: boolean;
     selectedIndex: number;
 }
 
 export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState> {
     public state: CFLMetricsState = {
-        didError: false,
         selectedIndex: 0,
         cflMetricsData: defaultData,
     };
@@ -84,9 +82,6 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     }
     public render(): React.ReactNode {
         const { cflMetricsData, selectedIndex } = this.state;
-        if (!cflMetricsData.length) {
-            return null;
-        }
         const quoteToken = this._getSelectedPairData().makerSymbol;
         return (
             <CFLMetricsContainer>
@@ -130,7 +125,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
                 cflMetricsData: data,
             });
         } catch (err) {
-            this.setState({ didError: true });
+            // Do nothing. Will remain in loading state.
         }
     }
     private _onTabClick(index: number): void {
