@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { InfoTooltip } from 'ts/components/info_tooltip';
 import { Paragraph } from 'ts/components/text';
 
 const MetricsContainer = styled.div`
@@ -14,6 +15,11 @@ const MetricValueContainer = styled.div`
     justify-content: space-between;
 `;
 
+const TitleInfoContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
 export interface MetricValue {
     label?: React.ReactNode;
     value: string;
@@ -21,14 +27,18 @@ export interface MetricValue {
 
 interface MetricsProps {
     title: string;
+    info?: string;
     metrics: MetricValue[];
 }
 
 export const Metrics: React.FC<MetricsProps> = props => (
     <MetricsContainer>
-        <Paragraph marginBottom="15px" size="small">
-            {props.title}
-        </Paragraph>
+        <TitleInfoContainer>
+            <Paragraph marginBottom="15px" size="small">
+                {props.title}
+            </Paragraph>
+            {props.info && <InfoTooltip id="slippage-def">{props.info}</InfoTooltip>}
+        </TitleInfoContainer>
         <MetricValueContainer>
             {props.metrics.map((metric, index) => (
                 <div key={`metric-${index}`}>

@@ -50,7 +50,7 @@ export const TabbedCodeDemo: React.FC<TabbedCodeDemoProps> = props => {
                     {tab.label}
                 </Tab>
             ))}
-            <CodeDemo language={language} fontSize="16px">
+            <CodeDemo language={language} fontSize="16px" hideCopy={true}>
                 {code}
             </CodeDemo>
         </TabbedWrapper>

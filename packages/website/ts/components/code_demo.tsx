@@ -148,6 +148,7 @@ export interface CodeDemoProps {
     children: string;
     language: string;
     fontSize: string;
+    hideCopy?: boolean;
 }
 
 export interface CodeDemoState {
@@ -159,16 +160,18 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
         didCopyCode: false,
     };
     public render(): React.ReactNode {
-        const { fontSize } = this.props;
+        const { fontSize, hideCopy } = this.props;
         const copyButtonText = this.state.didCopyCode ? 'Copied!' : 'Copy';
         const hljs = { ...customStyle.hljs, fontSize };
         const style = { ...customStyle, hljs };
         return (
             <Container position="relative" height="100%">
                 <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
-                    <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <StyledButton>{copyButtonText}</StyledButton>
-                    </CopyToClipboard>
+                    {!hideCopy && (
+                        <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
+                            <StyledButton>{copyButtonText}</StyledButton>
+                        </CopyToClipboard>
+                    )}
                 </Container>
                 <SyntaxHighlighter
                     key={`${this.props.language}${this.props.children}`}

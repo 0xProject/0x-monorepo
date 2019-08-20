@@ -9,6 +9,9 @@ import { backendClient } from 'ts/utils/backend_client';
 
 import { CFLMetricsPairData } from 'ts/types';
 
+const SLIPPAGE_TOOLTIP_TEXT =
+    'Percent difference between the expected price of a buy and the price at which the buy is executed.';
+
 const CFLMetricsContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -94,11 +97,15 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
                     <Metrics title="7 day volume" metrics={[{ value: this._getVolume() }]} />
                 </MetricsContainer>
                 <MetricsContainer>
-                    <Metrics title="7 day average slippage across DEXes" metrics={this._getSlippageMetrics()} />
+                    <Metrics
+                        title="7 day average slippage across DEXes"
+                        info={SLIPPAGE_TOOLTIP_TEXT}
+                        metrics={this._getSlippageMetrics()}
+                    />
                 </MetricsContainer>
                 <FreshnessIndicator>
                     <Paragraph size="small" textAlign="right">
-                        Data can be up to 30 minutes behind.
+                        Data updates every 30 minutes.
                     </Paragraph>
                 </FreshnessIndicator>
             </CFLMetricsContainer>
