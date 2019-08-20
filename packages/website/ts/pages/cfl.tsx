@@ -13,6 +13,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { CFLMetrics } from 'ts/pages/cfl/cfl_metrics';
 import { CodeStepper } from 'ts/pages/cfl/code_stepper';
 
+import { colors } from 'ts/style/colors';
 import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
@@ -23,6 +24,26 @@ interface Props {
         linkColor: string;
     };
 }
+
+const TerminalContainer = styled.div`
+    font-size: 16px;
+    color: ${colors.brandLight};
+    position: relative;
+    p {
+        position: absolute;
+        bottom: 23px;
+        font-family: 'Roboto Mono';
+        @media (max-width: 768px) {
+            bottom: -7px;
+            left: 20px;
+        }
+        @media (max-width: 375px) {
+            font-size: 12px;
+            bottom: -15px;
+            left: 8px;
+        }
+    }
+`;
 
 const DeveloperLink = styled(Button)`
     @media (max-width: 500px) {
@@ -97,7 +118,8 @@ export class CFL extends React.Component<Props> {
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
-                        </Button>}
+                        </Button>
+                    }
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>
@@ -135,7 +157,12 @@ export class CFL extends React.Component<Props> {
                 <Banner
                     heading="Ready to get started?"
                     subline="Dive into our docs, or use your terminal"
-                    customCta={<Icon name="asset_swapper_term" size="natural" />}
+                    customCta={
+                        <TerminalContainer>
+                            <Icon name="asset_swapper_term" size="natural" />
+                            <p>$ yarn install @0x/asset-swapper</p>
+                        </TerminalContainer>
+                    }
                 />
             </SiteWrap>
         );
