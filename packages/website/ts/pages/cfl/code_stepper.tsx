@@ -123,9 +123,8 @@ export class CodeStepper extends React.Component<CodeStepperProps, CodeStepperSt
             <StepperContainer>
                 <div>
                     {useCasesData.map((item, index) => (
-                        <div onClick={this._onSideTabClick.bind(this, index)}>
+                        <div key={`offers-${index}`} onClick={this._onSideTabClick.bind(this, index)}>
                             <InteractiveDefinition
-                                key={`offers-${index}`}
                                 icon={item.icon}
                                 title={item.title}
                                 titleSize="small"
