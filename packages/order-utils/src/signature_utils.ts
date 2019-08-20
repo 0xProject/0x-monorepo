@@ -32,6 +32,7 @@ export const signatureUtils = {
      * @param   signature     A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].
      *          E.g [vrs][SignatureType.EIP712]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   exchangeAddress Optional address of the Exchange contract to validate the signature against.
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     async isValidSignatureAsync(
@@ -39,6 +40,7 @@ export const signatureUtils = {
         data: string,
         signature: string,
         signerAddress: string,
+        exchangeAddress?: string,
     ): Promise<boolean> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
@@ -81,12 +83,13 @@ export const signatureUtils = {
                     data,
                     signature,
                     signerAddress,
+                    exchangeAddress,
                 );
                 return isValid;
             }
 
             case SignatureType.PreSigned: {
-                return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress);
+                return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress, exchangeAddress);
             }
 
             default:
@@ -98,20 +101,30 @@ export const signatureUtils = {
      * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   exchangeAddress The address of the Exchange contract to validate the signature against.
      * @return  Whether the data was preSigned by the supplied signerAddress
      */
     async isValidPresignedSignatureAsync(
         supportedProvider: SupportedProvider,
         data: string,
         signerAddress: string,
+        exchangeAddress?: string,
     ): Promise<boolean> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        const web3Wrapper = new Web3Wrapper(provider);
-        const networkId = await web3Wrapper.getNetworkIdAsync();
-        const addresses = getContractAddressesForNetworkOrThrow(networkId);
-        const exchangeContract = new ExchangeContract(addresses.exchange, provider);
+
+        let exchangeContract: ExchangeContract;
+        if (exchangeAddress !== undefined) {
+            assert.isETHAddressHex('exchange', exchangeAddress);
+            exchangeContract = new ExchangeContract(exchangeAddress, provider);
+        } else {
+            const web3Wrapper = new Web3Wrapper(provider);
+            const networkId = await web3Wrapper.getNetworkIdAsync();
+            const addresses = getContractAddressesForNetworkOrThrow(networkId);
+            exchangeContract = new ExchangeContract(addresses.exchange, provider);
+        }
+
         const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
         return isValid;
     },
@@ -149,6 +162,7 @@ export const signatureUtils = {
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   exchangeAddress The address of the Exchange contract to validate the signature against.
      * @return  Whether the data was preSigned by the supplied signerAddress.
      */
     async isValidValidatorSignatureAsync(
@@ -156,13 +170,25 @@ export const signatureUtils = {
         data: string,
         signature: string,
         signerAddress: string,
+        exchangeAddress?: string,
     ): Promise<boolean> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
-        const validatorSignature = parseValidatorSignature(signature);
-        const exchangeContract = new ExchangeContract(signerAddress, provider);
+
+        let exchangeContract: ExchangeContract;
+        if (exchangeAddress !== undefined) {
+            assert.isETHAddressHex('exchange', exchangeAddress);
+            exchangeContract = new ExchangeContract(exchangeAddress, provider);
+        } else {
+            const web3Wrapper = new Web3Wrapper(provider);
+            const networkId = await web3Wrapper.getNetworkIdAsync();
+            const addresses = getContractAddressesForNetworkOrThrow(networkId);
+            exchangeContract = new ExchangeContract(addresses.exchange, provider);
+        }
+
+        const validatorSignature = signatureUtils.parseValidatorSignature(signature);
         const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
             signerAddress,
             validatorSignature.validatorAddress,
@@ -173,7 +199,7 @@ export const signatureUtils = {
             );
         }
 
-        const validatorContract = new IValidatorContract(signerAddress, provider);
+        const validatorContract = new IValidatorContract(validatorSignature.validatorAddress, provider);
         try {
             const magicValue = await validatorContract.isValidSignature.callAsync(
                 data,
@@ -494,18 +520,23 @@ export const signatureUtils = {
 
         return ecSignature;
     },
-};
 
-function parseValidatorSignature(signature: string): ValidatorSignature {
-    assert.isOneOfExpectedSignatureTypes(signature, [SignatureType.Validator]);
-    // tslint:disable:custom-no-magic-numbers
-    const validatorSignature = {
-        validatorAddress: signature.slice(-22, -2),
-        signature: signature.slice(0, -22),
-    };
-    // tslint:enable:custom-no-magic-numbers
-    return validatorSignature;
-}
+    /**
+     * Parse a hex-encoded Validator signature into validator address and signature components
+     * @param signature A hex encoded Validator 0x Protocol signature
+     * @return A ValidatorSignature with validatorAddress and signature parameters
+     */
+    parseValidatorSignature(signature: string): ValidatorSignature {
+        assert.isOneOfExpectedSignatureTypes(signature, [SignatureType.Validator]);
+        // tslint:disable:custom-no-magic-numbers
+        const validatorSignature = {
+            validatorAddress: `0x${signature.slice(-42, -2)}`,
+            signature: signature.slice(0, -42),
+        };
+        // tslint:enable:custom-no-magic-numbers
+        return validatorSignature;
+    },
+};
 
 function parseSignatureHexAsVRS(signatureHex: string): ECSignature {
     const signatureBuffer = ethUtil.toBuffer(signatureHex);

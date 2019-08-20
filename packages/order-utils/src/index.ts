@@ -67,6 +67,7 @@ export {
     EIP712DomainWithDefaultSchema,
     ZeroExTransaction,
     SignedZeroExTransaction,
+    ValidatorSignature,
 } from '@0x/types';
 
 export {
