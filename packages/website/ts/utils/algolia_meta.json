@@ -86,6 +86,22 @@
             "difficulty": "Intermediate",
             "path": "guides/use-networked-liquidity.mdx"
         },
+        "v2-coordinatior-specification": {
+            "title": "0x 2.0.0 Coordinator Specification",
+            "description": "",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Advanced",
+            "path": "guides/v2-coordinatior-specification.mdx"
+        },
+        "v2-forwarder-specification": {
+            "title": "0x 2.0.0 Forwarder Specification",
+            "description": "",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Advanced",
+            "path": "guides/v2-forwarder-specification.mdx"
+        },
         "v2-specification": {
             "title": "0x Protocol 2.0.0 Specification",
             "description": "",
