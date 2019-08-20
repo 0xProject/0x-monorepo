@@ -69,9 +69,7 @@ contract MixinAssets is
                 LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
             }
             IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
-            if (assetToken.allowance(address(this), proxyAddress) != MAX_UINT) {
-                assetToken.approve(proxyAddress, MAX_UINT);
-            }
+            assetToken.approve(proxyAddress, MAX_UINT);
         }
     }
 

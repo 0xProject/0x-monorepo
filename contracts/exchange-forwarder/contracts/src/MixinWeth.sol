@@ -46,7 +46,7 @@ contract MixinWeth is
     function _convertEthToWeth()
         internal
     {
-        if (msg.value <= 0) {
+        if (msg.value == 0) {
             LibRichErrors.rrevert(LibForwarderRichErrors.InvalidMsgValueError());
         }
         ETHER_TOKEN.deposit.value(msg.value)();
