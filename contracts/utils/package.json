@@ -31,7 +31,8 @@
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
+        "compile:truffle": "truffle compile"
     },
     "config": {
         "abis": "./generated-artifacts/@(Authorizable|IAuthorizable|IOwnable|LibAddress|LibAddressArray|LibAddressArrayRichErrors|LibAuthorizableRichErrors|LibBytes|LibBytesRichErrors|LibEIP1271|LibEIP712|LibOwnableRichErrors|LibReentrancyGuardRichErrors|LibRichErrors|LibSafeMath|LibSafeMathRichErrors|Ownable|ReentrancyGuard|SafeMath|TestLibAddress|TestLibAddressArray|TestLibBytes|TestLibEIP712|TestLibRichErrors|TestLogDecoding|TestLogDecodingDownstream|TestOwnable|TestReentrancyGuard|TestSafeMath).json",
@@ -66,6 +67,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "solhint": "^1.4.1",
+        "truffle": "^5.0.32",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },

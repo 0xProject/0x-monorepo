@@ -31,7 +31,8 @@
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
+        "compile:truffle": "truffle compile"
     },
     "config": {
         "abis": "./generated-artifacts/@(LibEIP712ExchangeDomain|LibExchangeRichErrors|LibFillResults|LibMath|LibMathRichErrors|LibOrder|LibZeroExTransaction|TestLibEIP712ExchangeDomain|TestLibFillResults|TestLibMath|TestLibOrder|TestLibZeroExTransaction).json",
@@ -52,7 +53,7 @@
         "@0x/contracts-test-utils": "^3.1.13",
         "@0x/dev-utils": "^2.3.0",
         "@0x/sol-compiler": "^3.1.12",
-        "@0x/subproviders": "^4.1.1",
+        "@0x/subproviders": "^5.0.1",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
@@ -67,6 +68,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "solhint": "^1.4.1",
+        "truffle": "^5.0.32",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
@@ -74,7 +76,6 @@
         "@0x/base-contract": "^5.3.1",
         "@0x/contracts-utils": "^3.2.1",
         "@0x/order-utils": "^8.2.5",
-        "@0x/subproviders": "5.0.1",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
         "@0x/utils": "^4.5.0",
