@@ -215,9 +215,7 @@ const calldataInfo = await swapQuoteConsumer.getCalldataOrThrowAsync(quote,
     });
 ```
 
----
-
-# Interacting with fees
+## Interacting with fees
 
 Dependent to where the orders are found, a fee, payed with ZRX, can be specified in an order that the taker would need to pay. The taker, for CFL integrations, is a smart contract. Developers will need to maintain a balance of ZRX in the smart contract to pay the fees for any order that contains a fee.
 
@@ -246,7 +244,7 @@ As described by the **“Smart” SwapQuoteConsumer Nuances** section, `SwapQuot
 * *Exchange*: `feeOrders` are dropped and ignored. `SwapQuoteConsumer` will prepare output assuming developer will handle fee operations.
 * *Forwarder*: The `forwarder` extension contract conducts a number of fee related operations on behalf of the user; `SwapQuoteConsumer` will prepare output such that the forwarder will be consuming the `feeOrders`. The developer will not have to conduct any additional operations for fees.
 
-#### Ignoring fees in SwapQuoter
+## Ignoring fees in SwapQuoter
 
 Fetching, pruning, and selecting feeOrders can be a costly operation (time-wise). For time-sensitive CFL integrations that sources fee-less 0x orders or handles fees through custom means, an option is provided to ignore all fee operations conducted by `SwapQuoter`.
 
@@ -262,9 +260,7 @@ const quote = await swapQuoter.getMarketBuySwapQuoteAsync(
     });
 ```
 
----
-
-# Executing a SwapQuote with web3
+## Executing a SwapQuote with web3
 
 `SwapQuoteConsumer` also provides a method to execute a `SwapQuote` with web3. This method powers products like [0x Instant](https://0x.org/instant) and helps build order execution experiences for exchanges like [0x Launchkit Frontend](https://0x.org/launch-kit).
 
