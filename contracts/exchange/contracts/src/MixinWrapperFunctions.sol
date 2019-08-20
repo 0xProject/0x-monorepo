@@ -361,19 +361,4 @@ contract MixinWrapperFunctions is
         }
         return fillResults;
     }
-
-    /// @dev Computes the hashes of multiple orders.
-    /// @param orders Array of orders.
-    /// @return orderHashes Array of order hashes for each respective order in `orders`.
-    function _getOrderHashes(LibOrder.Order[] memory orders)
-        internal
-        view
-        returns (bytes32[] memory orderHashes)
-    {
-        uint256 ordersLength = orders.length;
-        orderHashes = new bytes32[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            orderHashes[i] = orders[i].getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
-        }
-    }
 }
