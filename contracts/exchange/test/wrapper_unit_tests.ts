@@ -880,12 +880,18 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     order.salt = ALWAYS_FAILING_SALT;
                 }
                 const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
-                const badOrdersAmount = _.reduce(badOrders, (total, o) => o.takerAssetAmount.plus(total), constants.ZERO_AMOUNT);
+                const badOrdersAmount = _.reduce(
+                    badOrders,
+                    (total, o) => o.takerAssetAmount.plus(total),
+                    constants.ZERO_AMOUNT,
+                );
                 const takerAssetFillAmount = _.reduce(
                     orders,
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(badOrdersAmount).plus(1);
+                )
+                    .minus(badOrdersAmount)
+                    .plus(1);
                 const expectedError = new ExchangeRevertErrors.IncompleteFillError(
                     ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketSellOrders,
                     takerAssetFillAmount,
@@ -1230,12 +1236,18 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     order.salt = ALWAYS_FAILING_SALT;
                 }
                 const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
-                const badOrdersAmount = _.reduce(badOrders, (total, o) => o.makerAssetAmount.plus(total), constants.ZERO_AMOUNT);
+                const badOrdersAmount = _.reduce(
+                    badOrders,
+                    (total, o) => o.makerAssetAmount.plus(total),
+                    constants.ZERO_AMOUNT,
+                );
                 const makerAssetFillAmount = _.reduce(
                     orders,
                     (total, o) => o.makerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(badOrdersAmount).plus(1);
+                )
+                    .minus(badOrdersAmount)
+                    .plus(1);
                 const expectedError = new ExchangeRevertErrors.IncompleteFillError(
                     ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketBuyOrders,
                     makerAssetFillAmount,
