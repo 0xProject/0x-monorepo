@@ -2,18 +2,18 @@ import { CFLMetricsPairData } from 'ts/types';
 
 export const defaultData: CFLMetricsPairData[] = [
     {
-        takerSymbol: 'ETH',
-        makerSymbol: 'DAI',
+        baseAssetSymbol: 'ETH',
+        quoteAssetSymbol: 'DAI',
         tradeAmount: 10000,
     },
     {
-        takerSymbol: 'ETH',
-        makerSymbol: 'USDC',
+        baseAssetSymbol: 'ETH',
+        quoteAssetSymbol: 'USDC',
         tradeAmount: 10000,
     },
     {
-        takerSymbol: 'DAI',
-        makerSymbol: 'USDC',
+        baseAssetSymbol: 'DAI',
+        quoteAssetSymbol: 'USDC',
         tradeAmount: 10000,
     },
 ];

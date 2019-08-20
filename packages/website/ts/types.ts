@@ -725,12 +725,12 @@ export interface WebsiteBackendJobInfo {
 
 export interface ExchangeSlippageData {
     exchange: string;
-    current_period_avg_slippage: string;
+    slippage: string;
 }
 
 export interface CFLMetricsPairData {
-    takerSymbol: string;
-    makerSymbol: string;
+    baseAssetSymbol: string;
+    quoteAssetSymbol: string;
     tradeAmount: number;
     volumeUSD?: number;
     lastTradePrice?: number;

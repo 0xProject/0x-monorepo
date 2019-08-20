@@ -82,12 +82,12 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
     }
     public render(): React.ReactNode {
         const { cflMetricsData, selectedIndex } = this.state;
-        const quoteToken = this._getSelectedPairData().makerSymbol;
+        const quoteToken = this._getSelectedPairData().quoteAssetSymbol;
         return (
             <CFLMetricsContainer>
                 <PairTabsContainer>
                     {cflMetricsData.map((data, index) => {
-                        const symbol = `${data.takerSymbol} / ${data.makerSymbol}`;
+                        const symbol = `${data.baseAssetSymbol} / ${data.quoteAssetSymbol}`;
                         return (
                             <PairTab
                                 key={symbol}
@@ -182,15 +182,15 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
         return [
             {
                 label: <Icon name="small_0x_logo" size="natural" />,
-                value: formatSlippage(zeroExSlippage.current_period_avg_slippage),
+                value: formatSlippage(zeroExSlippage.slippage),
             },
             {
                 label: <Icon name="small_kyber_logo" size="natural" />,
-                value: formatSlippage(kyberSlippage.current_period_avg_slippage),
+                value: formatSlippage(kyberSlippage.slippage),
             },
             {
                 label: <Icon name="small_uniswap_logo" size="natural" />,
-                value: formatSlippage(uniswapSlippage.current_period_avg_slippage),
+                value: formatSlippage(uniswapSlippage.slippage),
             },
         ];
     }
