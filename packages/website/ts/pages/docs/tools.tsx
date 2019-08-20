@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { connectHits, InstantSearch } from 'react-instantsearch-dom';
+import { Configure, connectHits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
 import { FeatureLink } from 'ts/components/docs/tools/feature_link';
@@ -15,7 +15,7 @@ import { Separator } from 'ts/components/docs/shared/separator';
 
 import { IHit } from 'ts/components/docs/search/autocomplete';
 
-import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
+import { hitsPerPage, searchClient, searchIndices } from 'ts/utils/algolia_constants';
 
 interface IHitsProps {
     hits: IHit[];
@@ -25,6 +25,7 @@ export const DocsTools: React.FC = () => {
     return (
         <DocsPageLayout title="Tools">
             <InstantSearch searchClient={searchClient} indexName={searchIndices.tools}>
+                <Configure hitsPerPage={hitsPerPage.pages} />
                 <Columns>
                     <Filters filters={filters} />
                     <Separator />
