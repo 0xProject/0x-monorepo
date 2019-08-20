@@ -18,19 +18,14 @@ const navData = [
         url: WebsitePaths.LaunchKit,
     },
     {
-        title: 'Extensions',
-        description: 'Support new types of trading on your relayer with 0x Extensions',
-        url: WebsitePaths.Extensions,
+        title: 'Contract Liquidity',
+        description: 'Consume 0x liquidity from your smart contracts',
+        url: WebsitePaths.ContractFillableLiquidity,
     },
     {
         title: 'Governance',
         description: 'Vote on changes to the 0x protocol',
         url: WebsitePaths.Vote,
-    },
-    {
-        title: 'Contract Liquidity',
-        description: 'Consume 0x liquidity from your smart contracts',
-        url: WebsitePaths.ContractFillableLiquidity,
     },
 ];
 
