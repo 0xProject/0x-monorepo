@@ -481,7 +481,7 @@ export enum WebsitePaths {
     Vote = '/vote',
     Extensions = '/extensions',
     Explore = '/explore',
-    ContractFillableLiquidity = '/cfl',
+    SwapTokens = '/swap-tokens',
 }
 
 export enum DocPackages {

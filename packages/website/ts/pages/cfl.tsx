@@ -106,7 +106,7 @@ export class CFL extends React.Component<Props> {
             <SiteWrap theme="dark">
                 <DocumentTitle {...documentConstants.CFL} />
                 <Hero
-                    title="Swap Tokens by tapping into 0x's networked liquidity"
+                    title="Swap tokens by tapping into 0x's networked liquidity"
                     isLargeTitle={false}
                     isFullWidth={true}
                     description="Source liquidity for your DeFi users by filling orders at the best prices."
