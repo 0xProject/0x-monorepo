@@ -3,7 +3,6 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/IAssetProxy.json",
         "generated-artifacts/IStaking.json",
         "generated-artifacts/IStakingEvents.json",
         "generated-artifacts/IStakingPoolRewardVault.json",

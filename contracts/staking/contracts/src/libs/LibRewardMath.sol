@@ -101,6 +101,7 @@ library LibRewardMath {
 
     /// @dev Computes how much shadow asset to mint a member who wants to 
     /// join (or delegate more stake to) a staking pool.
+    /// See MixinStakingPoolRewards for more information on shadow assets.
     /// @param amountToDelegateByOwner Amount of Stake the new member would delegate.
     /// @param totalAmountDelegated Total amount currently delegated to the pool.
     ///                             This does *not* include `amountToDelegateByOwner`.

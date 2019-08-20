@@ -263,17 +263,7 @@ contract MixinStakingPool is
         view
         returns (address[] memory _makerAddressesByPoolId)
     {
-        // Load pointer to addresses of makers
-        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
-        uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
-
-        // Construct list of makers
-        _makerAddressesByPoolId = new address[](makerAddressesByPoolIdLength);
-        for (uint i = 0; i < makerAddressesByPoolIdLength; ++i) {
-            _makerAddressesByPoolId[i] = makerAddressesByPoolIdPtr[i];
-        }
-
-        return _makerAddressesByPoolId;
+        return makerAddressesByPoolId[poolId];
     }
 
     /// @dev Returns the unique id that will be assigned to the next pool that is created.
@@ -295,6 +285,7 @@ contract MixinStakingPool is
         returns (address operatorAddress)
     {
         operatorAddress = poolById[poolId].operatorAddress;
+        return operatorAddress;
     }
 
     /// @dev Convenience function for loading information on a pool.

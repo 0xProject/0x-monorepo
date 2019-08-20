@@ -23,8 +23,8 @@ import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 import "../interfaces/IStructs.sol";
 
 
-library LibEIP712Hash
-{
+library LibEIP712Hash {
+    
     // EIP712 Domain Name value for the Staking contract
     string constant internal EIP712_STAKING_DOMAIN_NAME = "0x Protocol Staking";
 

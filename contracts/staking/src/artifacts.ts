@@ -5,7 +5,6 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
 import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
@@ -32,8 +31,8 @@ import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
-import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
+import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
 import * as MixinTimelockedStake from '../generated-artifacts/MixinTimelockedStake.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
@@ -50,7 +49,6 @@ export const artifacts = {
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
-    IAssetProxy: IAssetProxy as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,

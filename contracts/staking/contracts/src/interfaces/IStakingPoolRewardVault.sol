@@ -76,15 +76,10 @@ interface IStakingPoolRewardVault {
         uint8 operatorShare
     );
 
-    /// @dev Default constructor. This contract is payable, but only by the staking contract.
-    function ()
-        external
-        payable;
-
-    /// @dev Deposit a reward in ETH.
+    /// @dev Default constructor.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
-    function deposit()
+    function ()
         external
         payable;
 

@@ -49,20 +49,8 @@ contract StakingPoolRewardVault is
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
 
-    /// @dev Default constructor. This contract is payable, but only by the staking contract.
+    /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
-        external
-        payable
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
-    {
-        emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
-    }
-
-    /// @dev Deposit a reward in ETH.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    function deposit()
         external
         payable
         onlyStakingContract
@@ -124,7 +112,7 @@ contract StakingPoolRewardVault is
         );
         
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].operatorBalance -= uint96(amount);
+        balanceByPoolId[poolId].operatorBalance -= amount._downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -147,7 +135,7 @@ contract StakingPoolRewardVault is
         );
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].membersBalance -= uint96(amount);
+        balanceByPoolId[poolId].membersBalance -= amount._downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify

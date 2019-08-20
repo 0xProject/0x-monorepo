@@ -166,8 +166,8 @@ contract MixinExchangeFees is
         }
 
         // step 1/3 - compute stats for active maker pools
-        IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](activePoolsThisEpoch.length);
-        for (uint i = 0; i != totalActivePools; i++) {
+        IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](totalActivePools);
+        for (uint256 i = 0; i != totalActivePools; i++) {
             bytes32 poolId = activePoolsThisEpoch[i];
 
             // compute weighted stake
@@ -203,7 +203,7 @@ contract MixinExchangeFees is
         }
 
         // step 2/3 - record reward for each pool
-        for (uint i = 0; i != totalActivePools; i++) {
+        for (uint256 i = 0; i != totalActivePools; i++) {
             // compute reward using cobb-douglas formula
             uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
                 initialContractBalance,

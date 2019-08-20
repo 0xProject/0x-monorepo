@@ -20,7 +20,7 @@ pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
 import "../interfaces/IZrxVault.sol";
-import "../interfaces/IAssetProxy.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
 
