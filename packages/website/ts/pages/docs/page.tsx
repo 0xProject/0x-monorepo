@@ -165,6 +165,7 @@ const mdxComponents = {
     ul: UnorderedList,
     Animation,
     CodeTabs,
+    Image,
     NewsletterWidget,
     Note,
     Notification,
