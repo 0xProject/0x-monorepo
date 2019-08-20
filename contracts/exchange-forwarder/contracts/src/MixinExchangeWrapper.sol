@@ -154,6 +154,11 @@ contract MixinExchangeWrapper is
                 ));
             }
 
+            // Preemptively skip to avoid division by zero in _marketSellSingleOrder
+            if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
+                continue;
+            }
+
             LibFillResults.FillResults memory singleFillResults = _marketSellSingleOrder(
                 orders[i],
                 signatures[i],
@@ -266,6 +271,11 @@ contract MixinExchangeWrapper is
                     orders[0].makerAssetData,
                     orders[i].makerAssetData
                 ));
+            }
+
+            // Preemptively skip to avoid division by zero in _marketBuySingleOrder
+            if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
+                continue;
             }
 
             LibFillResults.FillResults memory singleFillResults = _marketBuySingleOrder(

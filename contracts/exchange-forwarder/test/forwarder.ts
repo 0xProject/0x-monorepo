@@ -6,6 +6,7 @@ import {
     chaiSetup,
     constants,
     ContractName,
+    getLatestBlockTimestampAsync,
     OrderFactory,
     provider,
     sendTransactionResult,
@@ -333,6 +334,70 @@ describe(ContractName.Forwarder, () => {
                 revertError,
             });
         });
+        it('should fill a partially-filled order without a taker fee', async () => {
+            const order = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketSellTestAsync([order], new BigNumber(0.3), erc20Token);
+            await forwarderTestFactory.marketSellTestAsync([order], new BigNumber(0.8), erc20Token);
+        });
+        it('should skip over an order with an invalid maker asset amount', async () => {
+            const unfillableOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: constants.ZERO_AMOUNT,
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketSellTestAsync(
+                [unfillableOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over an order with an invalid taker asset amount', async () => {
+            const unfillableOrder = await orderFactory.newSignedOrderAsync({
+                takerAssetAmount: constants.ZERO_AMOUNT,
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketSellTestAsync(
+                [unfillableOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over an expired order', async () => {
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const expiredOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketSellTestAsync(
+                [expiredOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over a fully filled order', async () => {
+            const fullyFilledOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketSellTestAsync([fullyFilledOrder], new BigNumber(1), erc20Token);
+
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketSellTestAsync(
+                [fullyFilledOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over a cancelled order', async () => {
+            const cancelledOrder = await orderFactory.newSignedOrderAsync();
+            await exchangeWrapper.cancelOrderAsync(cancelledOrder, makerAddress);
+
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketSellTestAsync(
+                [cancelledOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
     });
     describe('marketSellOrdersWithEth with extra fees', () => {
         it('should fill the order and send fee to feeRecipient', async () => {
@@ -446,6 +511,70 @@ describe(ContractName.Forwarder, () => {
             await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.5), erc20Token, {
                 revertError,
             });
+        });
+        it('should fill a partially-filled order without a taker fee', async () => {
+            const order = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.3), erc20Token);
+            await forwarderTestFactory.marketBuyTestAsync([order], new BigNumber(0.8), erc20Token);
+        });
+        it('should skip over an order with an invalid maker asset amount', async () => {
+            const unfillableOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: constants.ZERO_AMOUNT,
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketBuyTestAsync(
+                [unfillableOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over an order with an invalid taker asset amount', async () => {
+            const unfillableOrder = await orderFactory.newSignedOrderAsync({
+                takerAssetAmount: constants.ZERO_AMOUNT,
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketBuyTestAsync(
+                [unfillableOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over an expired order', async () => {
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const expiredOrder = await orderFactory.newSignedOrderAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+            });
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+
+            await forwarderTestFactory.marketBuyTestAsync(
+                [expiredOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over a fully filled order', async () => {
+            const fullyFilledOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketBuyTestAsync([fullyFilledOrder], new BigNumber(1), erc20Token);
+
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketBuyTestAsync(
+                [fullyFilledOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
+        });
+        it('should skip over a cancelled order', async () => {
+            const cancelledOrder = await orderFactory.newSignedOrderAsync();
+            await exchangeWrapper.cancelOrderAsync(cancelledOrder, makerAddress);
+
+            const fillableOrder = await orderFactory.newSignedOrderAsync();
+            await forwarderTestFactory.marketBuyTestAsync(
+                [cancelledOrder, fillableOrder],
+                new BigNumber(1.5),
+                erc20Token,
+            );
         });
         it('Should buy slightly greater MakerAsset when exchange rate is rounded', async () => {
             // The 0x Protocol contracts round the exchange rate in favor of the Maker.

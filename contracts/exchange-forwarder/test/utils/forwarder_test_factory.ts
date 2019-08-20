@@ -26,7 +26,11 @@ interface ForwarderFillState {
 // Simulates filling some orders via the Forwarder contract. For example, if
 // orders = [A, B, C, D] and fractionalNumberOfOrdersToFill = 2.3, then
 // we simulate A and B being completely filled, and 0.3 * C being filled.
-function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersToFill: BigNumber): ForwarderFillState {
+function computeExpectedResults(
+    orders: SignedOrder[],
+    ordersInfoBefore: OrderInfo[],
+    fractionalNumberOfOrdersToFill: BigNumber,
+): ForwarderFillState {
     const currentState = {
         takerAssetFillAmount: constants.ZERO_AMOUNT,
         makerAssetFillAmount: constants.ZERO_AMOUNT,
@@ -37,9 +41,15 @@ function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersT
     };
     let remainingOrdersToFill = fractionalNumberOfOrdersToFill;
 
-    for (const order of orders) {
+    for (const [i, order] of orders.entries()) {
         if (remainingOrdersToFill.isEqualTo(constants.ZERO_AMOUNT)) {
             break;
+        }
+
+        if (ordersInfoBefore[i].orderStatus !== OrderStatus.Fillable) {
+            // If the order is not fillable, skip over it but still count it towards fractionalNumberOfOrdersToFill
+            remainingOrdersToFill = BigNumber.max(remainingOrdersToFill.minus(new BigNumber(1)), constants.ZERO_AMOUNT);
+            continue;
         }
 
         let makerAssetAmount;
@@ -57,7 +67,7 @@ function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersT
 
             // Up to 1 wei worth of WETH will be oversold on the last order due to rounding
             currentState.maxOversoldWeth = new BigNumber(1);
-            // Equivalently, up to 1 wei worth of maker asset will be overbought per order
+            // Equivalently, up to 1 wei worth of maker asset will be overbought
             currentState.maxOverboughtMakerAsset = currentState.maxOversoldWeth
                 .times(order.makerAssetAmount)
                 .dividedToIntegerBy(order.takerAssetAmount);
@@ -66,6 +76,15 @@ function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersT
             takerAssetAmount = order.takerAssetAmount;
             takerFee = order.takerFee;
         }
+
+        // Accounting for partially filled orders
+        // As with unfillable orders, these still count as 1 towards fractionalNumberOfOrdersToFill
+        const takerAssetFilled = ordersInfoBefore[i].orderTakerAssetFilledAmount;
+        const makerAssetFilled = takerAssetFilled
+            .times(order.makerAssetAmount)
+            .dividedToIntegerBy(order.takerAssetAmount);
+        takerAssetAmount = BigNumber.max(takerAssetAmount.minus(takerAssetFilled), constants.ZERO_AMOUNT);
+        makerAssetAmount = BigNumber.max(makerAssetAmount.minus(makerAssetFilled), constants.ZERO_AMOUNT);
 
         currentState.takerAssetFillAmount = currentState.takerAssetFillAmount.plus(takerAssetAmount);
         currentState.makerAssetFillAmount = currentState.makerAssetFillAmount.plus(makerAssetAmount);
@@ -150,7 +169,10 @@ export class ForwarderTestFactory {
             this._forwarderFeeRecipientAddress,
         );
 
-        const expectedResults = computeExpectedResults(orders, fractionalNumberOfOrdersToFill);
+        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
+
+        const expectedResults = computeExpectedResults(orders, ordersInfoBefore, fractionalNumberOfOrdersToFill);
         const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
             expectedResults.takerAssetFillAmount,
             forwarderFeePercentage,
@@ -165,9 +187,6 @@ export class ForwarderTestFactory {
             .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee)
             .plus(ethValueAdjustment);
-
-        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
-        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
 
         const tx = this._forwarderWrapper.marketBuyOrdersWithEthAsync(
             orders,
@@ -221,7 +240,10 @@ export class ForwarderTestFactory {
             this._forwarderFeeRecipientAddress,
         );
 
-        const expectedResults = computeExpectedResults(orders, fractionalNumberOfOrdersToFill);
+        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
+
+        const expectedResults = computeExpectedResults(orders, ordersInfoBefore, fractionalNumberOfOrdersToFill);
         const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
             expectedResults.takerAssetFillAmount,
             forwarderFeePercentage,
@@ -235,9 +257,6 @@ export class ForwarderTestFactory {
             .plus(expectedResults.wethFees)
             .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee);
-
-        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
-        const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
 
         const tx = this._forwarderWrapper.marketSellOrdersWithEthAsync(
             orders,
@@ -318,9 +337,11 @@ export class ForwarderTestFactory {
         } = {},
     ): Promise<void> {
         for (const [i, orderStatus] of orderStatusesAfter.entries()) {
-            const expectedOrderStatus = fractionalNumberOfOrdersToFill.gte(i + 1)
-                ? OrderStatus.FullyFilled
-                : orderStatusesBefore[i];
+            let expectedOrderStatus = orderStatusesBefore[i];
+            if (fractionalNumberOfOrdersToFill.gte(i + 1) && orderStatusesBefore[i] === OrderStatus.Fillable) {
+                expectedOrderStatus = OrderStatus.FullyFilled;
+            }
+
             expect(orderStatus).to.equal(expectedOrderStatus);
         }
 
