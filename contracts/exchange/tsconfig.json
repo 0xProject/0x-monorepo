@@ -10,7 +10,6 @@
         "generated-artifacts/IEIP1271Wallet.json",
         "generated-artifacts/IExchange.json",
         "generated-artifacts/IExchangeCore.json",
-        "generated-artifacts/IExchangeRichErrors.json",
         "generated-artifacts/IMatchOrders.json",
         "generated-artifacts/ISignatureValidator.json",
         "generated-artifacts/ITransactions.json",

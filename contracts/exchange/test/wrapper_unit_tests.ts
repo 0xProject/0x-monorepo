@@ -166,7 +166,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 takerAssetAmount: fillAmount.minus(1),
             });
             const signature = createOrderSignature(order);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(fillAmount, getExpectedOrderHash(order));
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
+                fillAmount,
+                fillAmount.minus(1),
+            );
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -179,7 +183,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 takerAssetAmount: fillAmount.plus(1),
             });
             const signature = createOrderSignature(order);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(fillAmount, getExpectedOrderHash(order));
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
+                fillAmount,
+                fillAmount.plus(1),
+            );
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -394,8 +402,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             // the `takerAssetFilledAmount`.
             failingOrder.takerAssetAmount = failingOrder.takerAssetAmount.minus(1);
             const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
                 failingAmount,
-                getExpectedOrderHash(failingOrder),
+                failingAmount.minus(1),
             );
             const tx = txHelper.getResultAndReceiptAsync(
                 testContract.batchFillOrKillOrders,
@@ -418,8 +427,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             // the `takerAssetFilledAmount`.
             failingOrder.takerAssetAmount = failingOrder.takerAssetAmount.plus(1);
             const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
                 failingAmount,
-                getExpectedOrderHash(failingOrder),
+                failingAmount.plus(1),
             );
             const tx = txHelper.getResultAndReceiptAsync(
                 testContract.batchFillOrKillOrders,
@@ -817,9 +827,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
                 ).plus(1);
-                const expectedError = new ExchangeRevertErrors.IncompleteMarketSellError(
+                const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                    ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketSellOrders,
                     takerAssetFillAmount,
-                    orders.map(o => getExpectedOrderHash(o)),
+                    takerAssetFillAmount.minus(1),
                 );
                 const tx = txHelper.getResultAndReceiptAsync(
                     testContract.marketSellOrdersFillOrKill,
@@ -869,16 +880,16 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     order.salt = ALWAYS_FAILING_SALT;
                 }
                 const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+                const badOrdersAmount = _.reduce(badOrders, (total, o) => o.takerAssetAmount.plus(total), constants.ZERO_AMOUNT);
                 const takerAssetFillAmount = _.reduce(
                     orders,
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                )
-                    .minus(_.reduce(badOrders, (total, o) => o.takerAssetAmount.plus(total), constants.ZERO_AMOUNT))
-                    .plus(1);
-                const expectedError = new ExchangeRevertErrors.IncompleteMarketSellError(
+                ).minus(badOrdersAmount).plus(1);
+                const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                    ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketSellOrders,
                     takerAssetFillAmount,
-                    orders.map(o => getExpectedOrderHash(o)),
+                    takerAssetFillAmount.minus(1),
                 );
                 const tx = txHelper.getResultAndReceiptAsync(
                     testContract.marketSellOrdersFillOrKill,
@@ -1166,9 +1177,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     (total, o) => o.makerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
                 ).plus(1);
-                const expectedError = new ExchangeRevertErrors.IncompleteMarketBuyError(
+                const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                    ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketBuyOrders,
                     makerAssetFillAmount,
-                    orders.map(o => getExpectedOrderHash(o)),
+                    makerAssetFillAmount.minus(1),
                 );
                 const tx = txHelper.getResultAndReceiptAsync(
                     testContract.marketBuyOrdersFillOrKill,
@@ -1218,16 +1230,16 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     order.salt = ALWAYS_FAILING_SALT;
                 }
                 const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+                const badOrdersAmount = _.reduce(badOrders, (total, o) => o.makerAssetAmount.plus(total), constants.ZERO_AMOUNT);
                 const makerAssetFillAmount = _.reduce(
                     orders,
                     (total, o) => o.makerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                )
-                    .minus(_.reduce(badOrders, (total, o) => o.makerAssetAmount.plus(total), constants.ZERO_AMOUNT))
-                    .plus(1);
-                const expectedError = new ExchangeRevertErrors.IncompleteMarketBuyError(
+                ).minus(badOrdersAmount).plus(1);
+                const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                    ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketBuyOrders,
                     makerAssetFillAmount,
-                    orders.map(o => getExpectedOrderHash(o)),
+                    makerAssetFillAmount.minus(1),
                 );
                 const tx = txHelper.getResultAndReceiptAsync(
                     testContract.marketBuyOrdersFillOrKill,

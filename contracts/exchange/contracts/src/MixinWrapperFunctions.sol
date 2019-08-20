@@ -189,7 +189,6 @@ contract MixinWrapperFunctions is
             // The `takerAssetData` must be the same for each order.
             // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
             // This is less expensive than checking equality.
-            bytes memory originalTakerAssetData = orders[i].takerAssetData;
             orders[i].takerAssetData = takerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
@@ -198,9 +197,6 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-
-            // Restore the original `takerAssetData` so we're non-destructive.
-            orders[i].takerAssetData = originalTakerAssetData;
 
             // Update amounts filled and fees paid by maker and taker
             fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
@@ -245,7 +241,6 @@ contract MixinWrapperFunctions is
             // The `makerAssetData` must be the same for each order.
             // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
             // This is less expensive than checking equality.
-            bytes memory originalMakerAssetData = orders[i].makerAssetData;
             orders[i].makerAssetData = makerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
@@ -254,9 +249,6 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-
-            // Restore the original `makerAssetData` so we're non-destructive.
-            orders[i].makerAssetData = originalMakerAssetData;
 
             // Update amounts filled and fees paid by maker and taker
             fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
@@ -284,9 +276,10 @@ contract MixinWrapperFunctions is
     {
         fillResults = marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
         if (fillResults.takerAssetFilledAmount < takerAssetFillAmount) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteMarketSellError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_MARKET_SELL_ORDERS,
                 takerAssetFillAmount,
-                _getOrderHashes(orders)
+                fillResults.takerAssetFilledAmount
             ));
         }
     }
@@ -306,9 +299,10 @@ contract MixinWrapperFunctions is
     {
         fillResults = marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);
         if (fillResults.makerAssetFilledAmount < makerAssetFillAmount) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteMarketBuyError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_MARKET_BUY_ORDERS,
                 makerAssetFillAmount,
-                _getOrderHashes(orders)
+                fillResults.makerAssetFilledAmount
             ));
         }
     }
@@ -360,8 +354,9 @@ contract MixinWrapperFunctions is
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
             LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_FILL_ORDER,
                 takerAssetFillAmount,
-                getOrderInfo(order).orderHash
+                fillResults.takerAssetFilledAmount
             ));
         }
         return fillResults;

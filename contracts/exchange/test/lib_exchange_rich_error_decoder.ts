@@ -146,20 +146,9 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     })();
 
     (() => {
-        const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const amount = new BigNumber(hexRandom(WORD_LENGTH));
-        createDecodeTest(ExchangeRevertErrors.IncompleteFillError, [amount, orderHash]);
-    })();
-
-    (() => {
-        const orderHashes = _.times(3, () => orderUtils.generatePseudoRandomOrderHash());
-        const amount = new BigNumber(hexRandom(WORD_LENGTH));
-        createDecodeTest(ExchangeRevertErrors.IncompleteMarketSellError, [amount, orderHashes]);
-    })();
-
-    (() => {
-        const orderHashes = _.times(3, () => orderUtils.generatePseudoRandomOrderHash());
-        const amount = new BigNumber(hexRandom(WORD_LENGTH));
-        createDecodeTest(ExchangeRevertErrors.IncompleteMarketBuyError, [amount, orderHashes]);
+        const errorCode = ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteMarketSellOrders;
+        const expectedAmount = new BigNumber(hexRandom(WORD_LENGTH));
+        const actualAmount = new BigNumber(hexRandom(WORD_LENGTH));
+        createDecodeTest(ExchangeRevertErrors.IncompleteFillError, [errorCode, expectedAmount, actualAmount]);
     })();
 });

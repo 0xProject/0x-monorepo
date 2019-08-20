@@ -197,8 +197,11 @@ blockchainTests.resets('Exchange wrappers', env => {
                 takerAssetFillAmount: signedOrder.takerAssetAmount.dividedToIntegerBy(2),
             });
 
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(takerAssetFillAmount, orderHashHex);
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
+                takerAssetFillAmount,
+                takerAssetFillAmount.dividedToIntegerBy(2),
+            );
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });

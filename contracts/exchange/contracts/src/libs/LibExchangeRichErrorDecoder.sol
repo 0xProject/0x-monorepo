@@ -382,53 +382,18 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            uint256 fillAmount,
-            bytes32 orderHash
+            LibExchangeRichErrors.IncompleteFillErrorCode errorCode,
+            uint256 expectedAssetFillAmount,
+            uint256 actualAssetFillAmount
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteFillErrorSelector());
-        (fillAmount, orderHash) = abi.decode(
+        uint8 _errorCode;
+        (_errorCode, expectedAssetFillAmount, actualAssetFillAmount) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
-            (uint256, bytes32)
+            (uint8, uint256, uint256)
         );
-    }
-
-    /// @dev Decompose an ABI-encoded IncompleteMarketSellError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return orderHash Hash of the order being filled.
-    function decodeIncompleteMarketSellError(bytes memory encoded)
-        public
-        pure
-        returns (
-            uint256 takerAssetFillAmount,
-            bytes32[] memory orderHashes
-        )
-    {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteMarketSellErrorSelector());
-        // solhint-disable-next-line
-        (takerAssetFillAmount, orderHashes) = abi.decode(
-            encoded.sliceDestructive(4, encoded.length),
-            (uint256, bytes32[])
-        );
-    }
-
-    /// @dev Decompose an ABI-encoded IncompleteMarketBuyError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return orderHash Hash of the order being filled.
-    function decodeIncompleteMarketBuyError(bytes memory encoded)
-        public
-        pure
-        returns (
-            uint256 makerAssetFillAmount,
-            bytes32[] memory orderHashes
-        )
-    {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteMarketBuyErrorSelector());
-        // solhint-disable-next-line
-        (makerAssetFillAmount, orderHashes) = abi.decode(
-            encoded.sliceDestructive(4, encoded.length),
-            (uint256, bytes32[])
-        );
+        errorCode = LibExchangeRichErrors.IncompleteFillErrorCode(_errorCode);
     }
 
     /// @dev Revert if the leading 4 bytes of `encoded` is not `selector`.
