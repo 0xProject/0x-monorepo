@@ -7,6 +7,7 @@ import { CodeTab, TabbedCodeDemo } from 'ts/components/tabbed_code_demo';
 const StepperContainer = styled.div`
     display: flex;
     padding: 30px;
+    justify-content: center;
 `;
 
 interface InteractiveDefinitionProps extends DefinitionProps {
@@ -14,7 +15,7 @@ interface InteractiveDefinitionProps extends DefinitionProps {
 }
 
 const InteractiveDefinition = styled(Definition)<InteractiveDefinitionProps>`
-    @media (min-width: 768px) {
+    @media (min-width: 1216px) {
         padding: 20px;
         background-color: ${props => (props.isSelected ? '#0D1413' : '')};
         border-left: ${props => (props.isSelected ? '3px solid #00AE99' : '3px solid rgba(0,0,0,0)')};
@@ -28,7 +29,7 @@ const InteractiveDefinition = styled(Definition)<InteractiveDefinitionProps>`
         }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1216px) {
         text-align: center;
         margin-top: 60px;
     }

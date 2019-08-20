@@ -24,7 +24,7 @@ export const TabbedWrapper = styled.div`
     width: 100%;
     height: 586px;
     margin-left: 50px;
-    @media (max-width: 768px) {
+    @media (max-width: 1216px) {
         display: none;
     }
 `;

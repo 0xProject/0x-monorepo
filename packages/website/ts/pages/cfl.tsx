@@ -90,12 +90,15 @@ export class CFL extends React.Component<Props> {
                     isFullWidth={true}
                     description="Source liquidity for your DeFi users by filling orders at the best prices."
                     showFigureBottomMobile={true}
+                    isCenteredMobile={true}
                     figure={<CFLMetrics />}
                     figureMaxWidth="600px"
+                    maxWidth="500px"
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
-                        </Button>}
+                        </Button>
+                    }
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>

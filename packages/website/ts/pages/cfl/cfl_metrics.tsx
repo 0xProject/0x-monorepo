@@ -17,6 +17,12 @@ const CFLMetricsContainer = styled.div`
     display: flex;
     flex-direction: column;
     width: fit-content;
+    @media (max-width: 768px) {
+        margin-top: 60px;
+    }
+    @media (min-width: 768px) {
+        margin-left: 60px;
+    }
 `;
 
 const PairTabsContainer = styled.div`
@@ -42,15 +48,19 @@ interface PairTabProps {
 }
 
 const PairTab = styled.label<PairTabProps>`
-    padding: 15px 40px;
+    cursor: pointer;
     white-space: nowrap;
-    font-size: 17px;
     background-color: ${props => (props.isSelected ? props.theme.lightBgColor : '')};
     opacity: ${props => (props.isSelected ? 1 : 0.5)};
-    cursor: pointer;
     margin: 5px 0px 5px 5px;
     &:hover {
         background-color: ${props => props.theme.lightBgColor};
+    }
+    padding: 10px 17px;
+    font-size: 12px;
+    @media (min-width: 1024px) {
+        padding: 15px 40px;
+        font-size: 17px;
     }
 `;
 
@@ -77,7 +87,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
         if (!cflMetricsData.length) {
             return null;
         }
-        const baseTokenSymbol = this._getSelectedPairData().takerSymbol;
+        const quoteToken = this._getSelectedPairData().makerSymbol;
         return (
             <CFLMetricsContainer>
                 <PairTabsContainer>
@@ -95,12 +105,12 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
                     })}
                 </PairTabsContainer>
                 <MetricsContainer>
-                    <Metrics title="Last price" metrics={[{ value: this._getLastPrice() }]} />
+                    <Metrics title={`Price in ${quoteToken}`} metrics={[{ value: this._getLastPrice() }]} />
                     <Metrics title="7 day volume" metrics={[{ value: this._getVolume() }]} />
                 </MetricsContainer>
                 <MetricsContainer>
                     <Metrics
-                        title={`7 day average slippage for $10,000 of ${baseTokenSymbol} across DEXes`}
+                        title={`7 day average slippage for $10,000`}
                         info={SLIPPAGE_TOOLTIP_TEXT}
                         metrics={this._getSlippageMetrics()}
                     />
@@ -135,9 +145,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
             return '—';
         }
         const num = numeral(data.lastTradePrice);
-        const formattedNum = num.format('0.00');
-        const currency = data.makerSymbol;
-        return `${formattedNum} ${currency}`;
+        return num.format('0.00');
     }
     private _getVolume(): string {
         const data = this._getSelectedPairData();
