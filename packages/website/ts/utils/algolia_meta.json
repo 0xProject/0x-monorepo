@@ -21,6 +21,15 @@
             "difficulty": "Advanced",
             "path": "guides/build-a-relayer.mdx"
         },
+        "contract-fillable-liquidity": {
+            "title": "Contract-fillable Liquidity",
+            "subtitle": "Swap tokens by tapping into 0x's networked liquidity",
+            "description": "Use Asset-Swapper to programmatically exchange assets with a single line of code or build custom integrations for more advanced token trades.",
+            "tags": [""],
+            "topics": [""],
+            "difficulty": "Intermediate",
+            "path": "guides/contract-fillable-liquidity.mdx"
+        },
         "develop-on-ethereum": {
             "title": "Develop on Ethereum",
             "description": "Welcome to the exciting world of building applications on the Ethereum Blockchain",
