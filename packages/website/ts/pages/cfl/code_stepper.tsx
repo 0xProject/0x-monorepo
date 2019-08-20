@@ -107,7 +107,8 @@ const txHash = await yourSmartContract.methods
   function liquidityRequiringMethod(bytes calldata calldataHexString) {
     zeroExExchangeAddress.call(calldataHexString);
   }
-}`,
+}
+`,
         label: 'smartContract.sol',
         language: 'typescript',
     },
