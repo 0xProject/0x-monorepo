@@ -85,6 +85,7 @@ export {
     SignatureType,
     ZeroExTransaction,
     SignedZeroExTransaction,
+    ValidatorSignature,
 } from '@0x/types';
 
 export {

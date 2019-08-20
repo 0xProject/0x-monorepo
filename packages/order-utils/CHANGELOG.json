@@ -1,5 +1,18 @@
 [
     {
+        "version": "8.3.0",
+        "changes": [
+            {
+                "note": "Fix isValidValidatorSignatureAsync, allow to pass exchangeAddress to isValidSignatureAsync.",
+                "pr": 2017
+            },
+            {
+                "note": "Fix `Wallet` and `Validator` signature validation",
+                "pr": 2078
+            }
+        ]
+    },
+    {
         "timestamp": 1565296576,
         "version": "8.2.5",
         "changes": [

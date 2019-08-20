@@ -3,6 +3,10 @@
         "version": "7.0.0",
         "changes": [
             {
+                "note": "Add optional `exchangeAddress` parameter to `signatureUtils.isValidSignatureAsync` to fix `Validator` type signatures.",
+                "pr": 2017
+            },
+            {
                 "note": "Removed @0x/order-watcher"
             },
             {

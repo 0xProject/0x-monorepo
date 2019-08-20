@@ -133,9 +133,6 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/order_validator/
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/weth9/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init__.py
 
-# cli test output
-packages/abi-gen/test-cli/output
-
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
 

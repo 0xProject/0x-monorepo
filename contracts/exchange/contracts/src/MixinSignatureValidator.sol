@@ -32,7 +32,7 @@ contract MixinSignatureValidator is
     MTransactions
 {
     using LibBytes for bytes;
-    
+
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
 
@@ -197,7 +197,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.Validator) {
             // Pop last 20 bytes off of signature byte array.
             address validatorAddress = signature.popLast20Bytes();
-            
+
             // Ensure signer has approved validator.
             if (!allowedValidators[signerAddress][validatorAddress]) {
                 return false;
@@ -224,7 +224,8 @@ contract MixinSignatureValidator is
         revert("SIGNATURE_UNSUPPORTED");
     }
 
-    /// @dev Verifies signature using logic defined by Wallet contract.
+    /// @dev Verifies signature using logic defined by Wallet contract. Wallet contract
+    ///      must return `bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))`
     /// @param hash Any 32 byte hash.
     /// @param walletAddress Address that should have signed the given hash
     ///                      and defines its own signature verification method.
@@ -244,7 +245,19 @@ contract MixinSignatureValidator is
             hash,
             signature
         );
+        // bytes4 0xb0671381
+        bytes32 magicValue = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
         assembly {
+            // extcodesize added as an extra safety measure
+            if iszero(extcodesize(walletAddress)) {
+                // Revert with `Error("WALLET_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+
             let cdStart := add(callData, 32)
             let success := staticcall(
                 gas,              // forward all gas
@@ -254,6 +267,15 @@ contract MixinSignatureValidator is
                 cdStart,          // write output over input
                 32                // output size is 32 bytes
             )
+
+            if iszero(eq(returndatasize(), 32)) {
+                // Revert with `Error("WALLET_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
 
             switch success
             case 0 {
@@ -266,13 +288,17 @@ contract MixinSignatureValidator is
             }
             case 1 {
                 // Signature is valid if call did not revert and returned true
-                isValid := mload(cdStart)
+                isValid := eq(
+                    and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
+                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                )
             }
         }
         return isValid;
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
+    ///      Validator must return `bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"))`
     /// @param validatorAddress Address of validator contract.
     /// @param hash Any 32 byte hash.
     /// @param signerAddress Address that should have signed the given hash.
@@ -294,7 +320,19 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
+        // bytes4 0x42b38674
+        bytes32 magicValue = bytes32(bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)")));
         assembly {
+            // extcodesize added as an extra safety measure
+            if iszero(extcodesize(validatorAddress)) {
+                // Revert with `Error("VALIDATOR_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
+
             let cdStart := add(callData, 32)
             let success := staticcall(
                 gas,               // forward all gas
@@ -304,6 +342,15 @@ contract MixinSignatureValidator is
                 cdStart,           // write output over input
                 32                 // output size is 32 bytes
             )
+
+            if iszero(eq(returndatasize(), 32)) {
+                // Revert with `Error("VALIDATOR_ERROR")`
+                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
+                mstore(96, 0)
+                revert(0, 100)
+            }
 
             switch success
             case 0 {
@@ -316,7 +363,10 @@ contract MixinSignatureValidator is
             }
             case 1 {
                 // Signature is valid if call did not revert and returned true
-                isValid := mload(cdStart)
+                isValid := eq(
+                    and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
+                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
+                )
             }
         }
         return isValid;

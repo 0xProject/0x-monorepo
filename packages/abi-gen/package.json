@@ -38,7 +38,7 @@
         "generate_contract_wrappers": "run-p gen_typescript gen_python",
         "gen_typescript": "abi-gen --abis ${npm_package_config_abis} --output ./test-cli/output/typescript --backend ethers",
         "gen_python": "pip install black && abi-gen --abis  ${npm_package_config_abis} --output ./test-cli/output/python --language Python",
-        "diff_contract_wrappers": "test-cli/diff.sh ./test-cli/expected-output ./test-cli/output",
+        "diff_contract_wrappers": "git diff --exit-code ./test-cli/output",
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
