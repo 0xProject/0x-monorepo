@@ -134,6 +134,7 @@ contract Whitelist is
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
             data: data,
+            gasPrice: tx.gasprice,
             expirationTimeSeconds: uint256(-1),
             signerAddress: takerAddress
         });
