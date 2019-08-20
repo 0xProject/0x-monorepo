@@ -6,7 +6,6 @@ import { Button } from 'ts/components/button';
 import { Definition } from 'ts/components/definition';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Hero } from 'ts/components/hero';
-import { LandingAnimation } from 'ts/components/heroImage';
 import { Icon, InlineIconWrap } from 'ts/components/icon';
 import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
@@ -98,8 +97,7 @@ export class CFL extends React.Component<Props> {
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
-                        </Button>
-                    }
+                        </Button>}
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>
