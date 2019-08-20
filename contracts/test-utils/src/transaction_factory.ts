@@ -4,6 +4,7 @@ import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { getLatestBlockTimestampAsync } from './block_timestamp';
+import { constants } from './constants';
 import { signingUtils } from './signing_utils';
 
 export class TransactionFactory {
@@ -34,6 +35,7 @@ export class TransactionFactory {
             signerAddress,
             data: customTransactionParams.data,
             expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
+            gasPrice: new BigNumber(constants.DEFAULT_GAS_PRICE),
             domain: {
                 verifyingContractAddress: this._exchangeAddress,
                 chainId: this._chainId,
