@@ -4,8 +4,10 @@ import styled from 'styled-components';
 
 import { Icon } from 'ts/components/icon';
 
-const InfoTooltipContainer = styled.div`
+const InfoTooltipContainer = styled.div<InfoTooltipProps>`
     cursor: pointer;
+    position: relative;
+    left: ${props => props.left || '0px'};
 `;
 const Tooltip = styled.div`
     max-width: 250px;
@@ -14,11 +16,12 @@ const Tooltip = styled.div`
 
 export interface InfoTooltipProps {
     id: string;
+    left?: string;
 }
 
 export const InfoTooltip: React.FC<InfoTooltipProps> = props => {
     return (
-        <InfoTooltipContainer>
+        <InfoTooltipContainer {...props}>
             <ReactTooltip id={props.id} type="light">
                 <Tooltip>{props.children}</Tooltip>
             </ReactTooltip>

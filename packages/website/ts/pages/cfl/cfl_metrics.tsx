@@ -75,7 +75,7 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
         if (!cflMetricsData) {
             return null;
         }
-
+        const baseTokenSymbol = this._getSelectedPairData().takerSymbol;
         return (
             <CFLMetricsContainer>
                 <PairTabsContainer>
@@ -98,14 +98,14 @@ export class CFLMetrics extends React.Component<CFLMetricsProps, CFLMetricsState
                 </MetricsContainer>
                 <MetricsContainer>
                     <Metrics
-                        title="7 day average slippage across DEXes"
+                        title={`7 day average slippage for $10,000 of ${baseTokenSymbol} across DEXes`}
                         info={SLIPPAGE_TOOLTIP_TEXT}
                         metrics={this._getSlippageMetrics()}
                     />
                 </MetricsContainer>
                 <FreshnessIndicator>
                     <Paragraph size="small" textAlign="right">
-                        Data updates every 30 minutes.
+                        Updates every 30 minutes.
                     </Paragraph>
                 </FreshnessIndicator>
             </CFLMetricsContainer>

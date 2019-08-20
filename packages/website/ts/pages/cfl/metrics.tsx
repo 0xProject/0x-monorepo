@@ -37,7 +37,11 @@ export const Metrics: React.FC<MetricsProps> = props => (
             <Paragraph marginBottom="15px" size="small">
                 {props.title}
             </Paragraph>
-            {props.info && <InfoTooltip id="slippage-def">{props.info}</InfoTooltip>}
+            {props.info && (
+                <InfoTooltip id="slippage-def" left="16px">
+                    {props.info}
+                </InfoTooltip>
+            )}
         </TitleInfoContainer>
         <MetricValueContainer>
             {props.metrics.map((metric, index) => (
