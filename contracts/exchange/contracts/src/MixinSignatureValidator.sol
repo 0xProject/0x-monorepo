@@ -224,7 +224,8 @@ contract MixinSignatureValidator is
         revert("SIGNATURE_UNSUPPORTED");
     }
 
-    /// @dev Verifies signature using logic defined by Wallet contract.
+    /// @dev Verifies signature using logic defined by Wallet contract. Wallet contract
+    ///      must return `bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))`
     /// @param hash Any 32 byte hash.
     /// @param walletAddress Address that should have signed the given hash
     ///                      and defines its own signature verification method.
@@ -244,8 +245,10 @@ contract MixinSignatureValidator is
             hash,
             signature
         );
+        // bytes4 0xb0671381
         bytes32 magicValue = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
         assembly {
+            // extcodesize added as an extra safety measure
             if iszero(extcodesize(walletAddress)) {
                 // Revert with `Error("WALLET_ERROR")`
                 mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
@@ -295,6 +298,7 @@ contract MixinSignatureValidator is
     }
 
     /// @dev Verifies signature using logic defined by Validator contract.
+    ///      Validator must return `bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"))`
     /// @param validatorAddress Address of validator contract.
     /// @param hash Any 32 byte hash.
     /// @param signerAddress Address that should have signed the given hash.
@@ -316,8 +320,10 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
+        // bytes4 0x42b38674
         bytes32 magicValue = bytes32(bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)")));
         assembly {
+            // extcodesize added as an extra safety measure
             if iszero(extcodesize(validatorAddress)) {
                 // Revert with `Error("VALIDATOR_ERROR")`
                 mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
