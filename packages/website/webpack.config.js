@@ -71,6 +71,7 @@ const config = {
             },
             {
                 test: /\.mdx$/,
+                include: path.join(__dirname, '/mdx'),
                 use: [
                     {
                         loader: 'babel-loader',
