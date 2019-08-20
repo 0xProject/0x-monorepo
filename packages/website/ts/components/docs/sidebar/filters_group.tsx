@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import { connectRefinementList } from 'react-instantsearch-dom';
 
@@ -7,6 +8,7 @@ import { Heading } from 'ts/components/text';
 import { styled } from 'ts/style/theme';
 
 interface IFilterListProps {
+    attribute: string;
     heading: string;
     currentRefinement: string[];
     customLabel?: string;
@@ -17,49 +19,67 @@ interface IFilterListProps {
     transformItems: (items: IFilterProps[]) => void;
 }
 
-const FiltersList: React.FC<IFilterListProps> = ({ items, currentRefinement, customLabel, heading, refine }) => {
+const FiltersList: React.FC<IFilterListProps> = ({
+    attribute,
+    items,
+    currentRefinement,
+    customLabel,
+    heading,
+    refine,
+}) => {
     const [filters, setFilters] = React.useState<IFilterProps[]>([]);
     //    Note (Piotr): Whenever you choose a filter (refinement), algolia removes all filters that could not match the query.
     //    What we are doing instead is first grabbing the list of all possible filters on mount (or clearing all filters) and
     //    then visually disabling filters. That way the user is still able to see all filters, even those that do not apply to
     //    the current state of filtering.
 
-    React.useEffect(
-        () => {
-            // This happens on mount when filters are empty or on clearing all filters, when the items number exceeds that of filters
-            if (!filters.length || items.length >= filters.length) {
-                setFilters(items);
-            } else {
-                const updatedFilters = [...filters];
-                for (const filter of updatedFilters) {
-                    // Look for item corresponding to the filter we already have
-                    const currentItem = items.find(item => item.label === filter.label);
-                    if (currentItem) {
-                        // If there is a matching item and it is in the current refinement, we update our list of filters so that the filter is checked
-                        const isRefined = currentRefinement.includes(filter.label);
-                        filter.isRefined = isRefined;
-                        filter.isDisabled = false;
-                    } else {
-                        // No match found means that algolia does not return the filter and we disable it on the initial list
-                        filter.isDisabled = true;
-                    }
+    const sortAlphabetically = (items: IFilterProps[]) => _.orderBy(items, 'label', 'asc');
+
+    const sortByDifficulty = (items: IFilterProps[]) => {
+        const findItem = (label: string) => items.find((item: IFilterProps) => item.label === label);
+        return [findItem('Beginner'), findItem('Intermediate'), findItem('Advanced')];
+    };
+
+    const sortFilters = (items: IFilterProps[]) =>
+        attribute === 'difficulty' ? sortByDifficulty(items) : sortAlphabetically(items);
+
+    React.useEffect(() => {
+        // This happens on mount when filters are empty or on clearing all filters, when the items number exceeds that of filters
+        if (!filters.length || items.length >= filters.length) {
+            setFilters(items);
+        } else {
+            const updatedFilters = [...filters];
+
+            for (const filter of updatedFilters) {
+                // Look for item corresponding to the filter we already have
+                const currentItem = items.find(item => item.label === filter.label);
+                if (currentItem) {
+                    // If there is a matching item and it is in the current refinement, we update our list of filters so that the filter is checked
+                    const isRefined = currentRefinement.includes(filter.label);
+                    filter.isRefined = isRefined;
+                    filter.isDisabled = false;
+                } else {
+                    // No match found means that algolia does not return the filter and we disable it on the initial list
+                    filter.isDisabled = true;
                 }
-                setFilters(updatedFilters);
             }
-        },
-        [items],
-    );
+
+            setFilters(updatedFilters);
+        }
+    }, [items]);
 
     if (!filters.length) {
         return null;
     }
+
+    const sortedFilters = sortFilters(filters);
 
     return (
         <FiltersGroupWrapper>
             <Heading asElement="h3" size={18} fontWeight="400" marginBottom="1rem">
                 {heading}
             </Heading>
-            {filters.map((filter: IFilterProps, index: number) => (
+            {sortedFilters.map((filter: IFilterProps, index: number) => (
                 <Filter
                     key={`filter-${index}`}
                     currentRefinement={currentRefinement}
