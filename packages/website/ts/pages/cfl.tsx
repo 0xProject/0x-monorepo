@@ -83,7 +83,7 @@ const useCasesData = [
         ],
     },
     {
-        title: 'High-frequency Algo Traders',
+        title: 'Crypto Algo Traders',
         icon: 'hummingbot',
         description:
             'Trading bots consume 0x liquidity to atomically swap tokens at tight spreads and perform risk-free arbitrage across both centralized and decentralized exchange venues.',
