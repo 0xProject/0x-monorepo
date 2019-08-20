@@ -19,63 +19,24 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "../src/Exchange.sol";
-import "../src/MixinTransactions.sol";
 
 
 contract TestTransactions is
     Exchange
 {
-    // Indicates whether or not the fallback function should succeed.
-    bool public shouldSucceedCall;
-
-    // The returndata of the fallback function.
-    bytes public fallbackReturnData;
+    event ExecutableCalled(bytes data, bytes returnData);
 
     constructor ()
         public
         Exchange(1337)
     {} // solhint-disable-line no-empty-blocks
 
-    // This fallback function will succeed if the bool `shouldSucceedCall` has been set
-    // to true, and will fail otherwise. It will return returndata `fallbackReturnData`
-    // in either case.
-    function ()
-        external
-    {
-        // Circumvent the compiler to return data through the fallback
-        bool success = shouldSucceedCall;
-        bytes memory returnData = fallbackReturnData;
-        assembly {
-            if or(iszero(success), gt(calldatasize, 0x0)) {
-                revert(add(0x20, returnData), mload(returnData))
-            }
-            return(add(0x20, returnData), mload(returnData))
-        }
-    }
-
     function setCurrentContextAddress(address context)
         external
     {
         currentContextAddress = context;
-    }
-
-    function setFallbackReturnData(bytes calldata returnData)
-        external
-    {
-        fallbackReturnData = returnData;
-    }
-
-    function setShouldBeValid(bool isValid)
-        external
-    {
-        shouldBeValid = isValid;
-    }
-
-    function setShouldCallSucceed(bool shouldSucceed)
-        external
-    {
-        shouldSucceedCall = shouldSucceed;
     }
 
     function setTransactionHash(bytes32 hash)
@@ -92,8 +53,29 @@ contract TestTransactions is
         return _getCurrentContextAddress();
     }
 
+    // This function will execute arbitrary calldata via a delegatecall. This is highly unsafe to use in production, and this
+    // is only meant to be used during testing.
+    function executable(
+        bool shouldSucceed,
+        bytes memory data,
+        bytes memory returnData
+    )
+        public
+        returns (bytes memory)
+    {
+        emit ExecutableCalled(data, returnData);
+        require(shouldSucceed, "EXECUTABLE_FAILED");
+        if (data.length != 0) {
+            (bool didSucceed, bytes memory callResultData) = address(this).delegatecall(data); // This is a delegatecall to preserve the `msg.sender` field
+            if (!didSucceed) {
+                assembly { revert(add(callResultData, 0x20), mload(callResultData)) }
+            }
+        }
+        return returnData;
+    }
+
     function _isValidTransactionWithHashSignature(
-        ZeroExTransaction memory,
+        LibZeroExTransaction.ZeroExTransaction memory,
         bytes32,
         address,
         bytes memory signature
