@@ -143,11 +143,10 @@ const config = {
 };
 
 module.exports = (_env, argv) => {
-    let plugins = [];
+    const plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
-        plugins.concat([new BundleAnalyzerPlugin()]);
-
+        plugins.push(new BundleAnalyzerPlugin());
         // SSL certs
         if (fs.existsSync('./server.cert') && fs.existsSync('./server.key')) {
             config.devServer.https = {
@@ -158,7 +157,7 @@ module.exports = (_env, argv) => {
         }
     } else {
         config.mode = 'production';
-        plugins = plugins.concat([
+        plugins.push(
             // Since we do not use moment's locale feature, we exclude them from the bundle.
             // This reduces the bundle size by 0.4MB.
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
@@ -167,15 +166,15 @@ module.exports = (_env, argv) => {
                     GIT_SHA: JSON.stringify(GIT_SHA),
                 },
             }),
-        ]);
+        );
         if (process.env.DEPLOY_ROLLBAR_SOURCEMAPS === 'true') {
-            plugins = plugins.concat([
+            plugins.push(
                 new RollbarSourceMapPlugin({
                     accessToken: '32c39bfa4bb6440faedc1612a9c13d28',
                     version: GIT_SHA,
                     publicPath: 'https://0x.org/',
                 }),
-            ]);
+            );
         }
     }
     console.log('i ｢atl｣: Mode: ', config.mode);
