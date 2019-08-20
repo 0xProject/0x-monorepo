@@ -57,5 +57,5 @@ def abi_by_name(contract_name: str) -> Dict:
           'payable': False,
           'stateMutability': 'view',
           'type': 'function'}]
-    """
+    """  # noqa: E501 (line too long)
     return _ArtifactCache.contract_name_to_abi(contract_name)
