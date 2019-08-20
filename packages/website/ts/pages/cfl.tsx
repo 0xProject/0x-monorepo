@@ -39,7 +39,7 @@ const TerminalContainer = styled.div`
         }
         @media (max-width: 375px) {
             font-size: 12px;
-            bottom: -15px;
+            bottom: 0px;
             left: 8px;
         }
     }
