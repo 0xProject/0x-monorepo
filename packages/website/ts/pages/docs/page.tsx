@@ -69,7 +69,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
     const loadPageAsync = async (filePath: string) => {
         try {
-            const component = await import(`mdx/${filePath}`);
+            const component = await import(/* webpackChunkName: "mdx/[request]" */ `mdx/${filePath}`);
 
             setState({
                 ...state,
