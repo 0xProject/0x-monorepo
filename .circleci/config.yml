@@ -65,6 +65,7 @@ jobs:
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
             - run: yarn build:contracts
+            - run: yarn contracts:compile:truffle
             - run: PKG='@0x/monorepo-scripts' yarn build
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
