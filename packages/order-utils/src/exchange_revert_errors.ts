@@ -213,6 +213,20 @@ export class TransactionExecutionError extends RevertError {
     }
 }
 
+export class TransactionGasPriceError extends RevertError {
+    constructor(transactionHash?: string, actualGasPrice?: BigNumber, requiredGasPrice?: BigNumber) {
+        super(
+            'TransactionGasPriceError',
+            'TransactionGasPriceError(bytes32 transactionHash, uint256 actualGasPrice, uint256 requiredGasPrice)',
+            {
+                transactionHash,
+                actualGasPrice,
+                requiredGasPrice,
+            },
+        );
+    }
+}
+
 export class IncompleteFillError extends RevertError {
     constructor(
         error?: IncompleteFillErrorCode,
