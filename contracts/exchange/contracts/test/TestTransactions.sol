@@ -53,6 +53,20 @@ contract TestTransactions is
         return _getCurrentContextAddress();
     }
 
+    function assertExecutableTransaction(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature
+    )
+        public
+        view
+    {
+        return _assertExecutableTransaction(
+            transaction,
+            signature,
+            transaction.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH)
+        );
+    }
+
     // This function will execute arbitrary calldata via a delegatecall. This is highly unsafe to use in production, and this
     // is only meant to be used during testing.
     function executable(

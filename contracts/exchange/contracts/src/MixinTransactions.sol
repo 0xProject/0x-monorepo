@@ -129,6 +129,7 @@ contract MixinTransactions is
         bytes32 transactionHash
     )
         internal
+        view
     {
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time
