@@ -12,6 +12,7 @@ import { Column, Section } from 'ts/components/newLayout';
 interface Props {
     heading?: string;
     subline?: string;
+    customCta?: React.ReactNode;
     mainCta?: CTAButton;
     secondaryCta?: CTAButton;
     theme?: ThemeInterface;
@@ -29,7 +30,7 @@ interface BorderProps {
 }
 
 export const Banner: React.StatelessComponent<Props> = (props: Props) => {
-    const { heading, subline, mainCta, secondaryCta } = props;
+    const { heading, subline, mainCta, secondaryCta, customCta } = props;
     return (
         <CustomSection
             bgColor={colors.brandDark}
@@ -52,6 +53,8 @@ export const Banner: React.StatelessComponent<Props> = (props: Props) => {
             </Column>
             <ColumnCta>
                 <ButtonWrap>
+                    {customCta}
+
                     {mainCta && (
                         <Button
                             color={colors.white}

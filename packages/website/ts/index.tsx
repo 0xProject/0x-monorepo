@@ -22,6 +22,7 @@ import { NextAboutTeam } from 'ts/pages/about/team';
 import { Credits } from 'ts/pages/credits';
 import { Explore } from 'ts/pages/explore';
 
+import { CFL } from 'ts/pages/cfl';
 import { NextEcosystem } from 'ts/pages/ecosystem';
 import { Extensions } from 'ts/pages/extensions';
 import { Governance } from 'ts/pages/governance/governance';
@@ -126,6 +127,7 @@ render(
                                 <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
                                 <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
                                 <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
+                                <Route exact={true} path={WebsitePaths.AssetSwapperPage} component={CFL as any} />
                                 <Route
                                     exact={true}
                                     path={WebsitePaths.PrivacyPolicy}
@@ -212,7 +214,7 @@ render(
                                     component={LazyAssetBuyerDocumentation}
                                 />
                                 <Route
-                                    path={`${WebsitePaths.AssetSwapper}/:version?`}
+                                    path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
                                     component={LazyAssetSwapperDocumentation}
                                 />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />

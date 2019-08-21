@@ -10,10 +10,10 @@ interface IconProps extends PaddingInterface {
     color?: string;
     name?: string;
     component?: React.ReactNode;
-    size?: 'small' | 'medium' | 'large' | 'hero' | number;
+    size?: 'small' | 'medium' | 'large' | 'hero' | 'natural' | number;
 }
 
-export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
+export const Icon: React.FunctionComponent<IconProps> = props => {
     if (props.name && !props.component) {
         const IconSVG = Loadable({
             loader: async () => import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
@@ -49,8 +49,11 @@ export const InlineIconWrap = styled.div<PaddingInterface>`
     }
 `;
 
-const _getSize = (size: string | number = 'small'): string => {
+const _getSize = (size: string | number = 'small'): string | undefined => {
     if (typeof size === 'string') {
+        if (size === 'natural') {
+            return undefined;
+        }
         return `var(--${size}Icon)`;
     }
 
@@ -68,8 +71,8 @@ const StyledIcon = styled.figure<IconProps>`
     max-width: 100%;
 
     svg {
-        width: 100%;
-        height: 100%;
+        width: ${props => (props.size === 'natural' ? '' : '100%')};
+        height: ${props => (props.size === 'natural' ? '' : '100%')};
         object-fit: cover;
     }
 `;

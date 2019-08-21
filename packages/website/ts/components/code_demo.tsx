@@ -14,7 +14,6 @@ const CustomPre = styled.pre`
     width: 100%;
     height: 100%;
     max-height: 800px;
-    border-radius: 4px;
     code {
         background-color: inherit !important;
         border-radius: 0px;
@@ -22,21 +21,21 @@ const CustomPre = styled.pre`
         border: none;
     }
     code:first-of-type {
-        background-color: #060d0d !important;
+        background-color: #003831 !important;
         color: #999;
         min-height: 100%;
         text-align: center;
-        margin-right: 15px;
-        line-height: 25px;
-        padding: 10px 7px !important;
+        margin-right: 5px;
+        margin-left: 10px
+        line-height: 33px;
+        padding: 10px 10px !important;
     }
     code:last-of-type {
         position: relative;
-        top: 10px;
         top: 0;
         padding-top: 11px;
         display: inline-block;
-        line-height: 25px;
+        line-height: 33px;
     }
 `;
 
@@ -96,7 +95,7 @@ const customStyle = {
         color: '#aa573c',
     },
     'hljs-string': {
-        color: '#bcff88',
+        color: '#f46036',
     },
     'hljs-symbol': {
         color: '#2a9292',
@@ -111,10 +110,10 @@ const customStyle = {
         color: '#576ddb',
     },
     'hljs-keyword': {
-        color: '#955ae7',
+        color: '#fff275',
     },
     'hljs-selector-tag': {
-        color: '#955ae7',
+        color: '#fff275',
     },
     'hljs-deletion': {
         color: '#19171c',
@@ -131,8 +130,8 @@ const customStyle = {
     hljs: {
         display: 'block',
         overflowX: 'hidden',
-        background: '#1B2625',
-        color: 'white',
+        background: '#003831',
+        color: '#7cffcb',
         fontSize: '12px',
     },
     'hljs-emphasis': {
@@ -145,6 +144,9 @@ const customStyle = {
 
 export interface CodeDemoProps {
     children: string;
+    language: string;
+    fontSize: string;
+    shouldHideCopy?: boolean;
 }
 
 export interface CodeDemoState {
@@ -156,15 +158,26 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
         didCopyCode: false,
     };
     public render(): React.ReactNode {
+        const { fontSize, shouldHideCopy } = this.props;
         const copyButtonText = this.state.didCopyCode ? 'Copied!' : 'Copy';
+        const hljs = { ...customStyle.hljs, fontSize };
+        const style = { ...customStyle, hljs };
         return (
             <Container position="relative" height="100%">
                 <Container position="absolute" top="10px" right="10px" zIndex={zIndex.overlay - 1}>
-                    <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <StyledButton>{copyButtonText}</StyledButton>
-                    </CopyToClipboard>
+                    {!shouldHideCopy && (
+                        <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
+                            <StyledButton>{copyButtonText}</StyledButton>
+                        </CopyToClipboard>
+                    )}
                 </Container>
-                <SyntaxHighlighter language="html" style={customStyle} showLineNumbers={true} PreTag={CustomPre}>
+                <SyntaxHighlighter
+                    key={`${this.props.language}${this.props.children}`}
+                    language={this.props.language}
+                    style={style}
+                    showLineNumbers={true}
+                    PreTag={CustomPre}
+                >
                     {this.props.children}
                 </SyntaxHighlighter>
             </Container>
@@ -176,7 +189,6 @@ export class CodeDemo extends React.Component<CodeDemoProps, CodeDemoState> {
 }
 
 const StyledButton = styled(Button)`
-    border-radius: 4px;
     font-size: 15px;
     font-weight: 400;
     padding: 9px 21px 7px;

@@ -17,6 +17,8 @@ interface Props {
     background?: React.ReactNode;
     announcement?: AnnouncementProps;
     sectionPadding?: string;
+    showFigureBottomMobile?: boolean;
+    figureMaxWidth?: string;
 }
 
 interface SectionProps {
@@ -36,6 +38,7 @@ interface WrapProps {
     isCentered?: boolean;
     isFullWidth?: boolean;
     isCenteredMobile?: boolean;
+    showFigureBottomMobile?: boolean;
 }
 const Wrap = styled.div<WrapProps>`
     width: calc(100% - 60px);
@@ -52,6 +55,9 @@ const Wrap = styled.div<WrapProps>`
 
     @media (max-width: 768px) {
         text-align: ${props => (props.isCenteredMobile ? `center` : 'left')};
+        flex-direction: ${props => (props.showFigureBottomMobile ? 'column-reverse' : 'column')};
+        display: flex;
+        align-items: center;
     }
 `;
 
@@ -90,12 +96,25 @@ const Description = styled.p`
     }
 `;
 
-const Content = styled.div<{ width: string }>`
+interface ContentProps {
+    width: string;
+    isCenteredMobile?: boolean;
+}
+
+const Content = styled.div<ContentProps>`
     width: 100%;
 
     @media (min-width: 768px) {
         max-width: ${props => props.width};
     }
+    ${props =>
+        props.isCenteredMobile &&
+        `
+        @media (max-width: 768px) {
+            display: flex;
+            justify-content: center;
+        }
+    `};
 `;
 
 const ButtonWrap = styled.div`
@@ -156,8 +175,13 @@ export class Hero extends React.Component<Props> {
                     isCentered={!props.figure}
                     isFullWidth={props.isFullWidth}
                     isCenteredMobile={props.isCenteredMobile}
+                    showFigureBottomMobile={props.showFigureBottomMobile}
                 >
-                    {props.figure && <Content width="400px">{props.figure}</Content>}
+                    {props.figure && (
+                        <Content isCenteredMobile={props.isCenteredMobile} width={props.figureMaxWidth || '400px'}>
+                            {props.figure}
+                        </Content>
+                    )}
 
                     <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
                         {!!props.announcement && <Announcement {...props.announcement} />}

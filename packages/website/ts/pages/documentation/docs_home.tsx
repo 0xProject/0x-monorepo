@@ -170,7 +170,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description: 'Convenience package for discovering and performing swaps for any ERC Assets',
             link: {
                 title: '@0x/asset-swapper',
-                to: WebsitePaths.AssetSwapper,
+                to: WebsitePaths.AssetSwapperDocs,
             },
         },
     ],

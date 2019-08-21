@@ -101,4 +101,9 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         description: '',
         keywords: '',
     },
+    CFL: {
+        title: '0x Asset Swapper: Programmatically swap tokens via smart contracts',
+        description: 'Bring automatic token trading to your DeFi users with Asset Swapper',
+        keywords: '',
+    },
 };

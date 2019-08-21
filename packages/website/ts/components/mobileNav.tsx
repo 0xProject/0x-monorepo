@@ -30,6 +30,9 @@ export class MobileNav extends React.PureComponent<Props> {
                             <li>
                                 <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
                             </li>
+                            <li>
+                                <Link to={WebsitePaths.AssetSwapperDocs}>Swap Tokens</Link>
+                            </li>
                         </ul>
                     </Section>
 
@@ -58,7 +61,7 @@ export class MobileNav extends React.PureComponent<Props> {
 
 const Wrap = styled.nav<{ isToggled: boolean }>`
     width: 100%;
-    height: 357px;
+    height: 400px;
     background-color: ${props => props.theme.mobileNavBgUpper};
     color: ${props => props.theme.mobileNavColor};
     transition: ${props => (props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s')};
