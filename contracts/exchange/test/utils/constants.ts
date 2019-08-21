@@ -9,6 +9,9 @@ export const constants = {
         ExchangeFunctionName.RegisterAssetProxy,
         ExchangeFunctionName.SimulateDispatchTransferFromCalls,
         ExchangeFunctionName.TransferOwnership,
+        ExchangeFunctionName.UpdateProtocolFeeMultiplier,
+        ExchangeFunctionName.UpdateStakingAddress,
+        ExchangeFunctionName.UpdateWethAddress,
     ],
     SINGLE_FILL_FN_NAMES: [
         ExchangeFunctionName.FillOrder,

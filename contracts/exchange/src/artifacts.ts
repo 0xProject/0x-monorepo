@@ -15,6 +15,7 @@ import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
 import * as IExchangeRichErrors from '../generated-artifacts/IExchangeRichErrors.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
+import * as IStakingManager from '../generated-artifacts/IStakingManager.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
 import * as ITransferSimulator from '../generated-artifacts/ITransferSimulator.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
@@ -25,6 +26,7 @@ import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetPro
 import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.json';
 import * as MixinMatchOrders from '../generated-artifacts/MixinMatchOrders.json';
 import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
+import * as MixinStakingManager from '../generated-artifacts/MixinStakingManager.json';
 import * as MixinTransactions from '../generated-artifacts/MixinTransactions.json';
 import * as MixinTransferSimulator from '../generated-artifacts/MixinTransferSimulator.json';
 import * as MixinWrapperFunctions from '../generated-artifacts/MixinWrapperFunctions.json';
@@ -44,6 +46,7 @@ export const artifacts = {
     MixinExchangeCore: MixinExchangeCore as ContractArtifact,
     MixinMatchOrders: MixinMatchOrders as ContractArtifact,
     MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
+    MixinStakingManager: MixinStakingManager as ContractArtifact,
     MixinTransactions: MixinTransactions as ContractArtifact,
     MixinTransferSimulator: MixinTransferSimulator as ContractArtifact,
     MixinWrapperFunctions: MixinWrapperFunctions as ContractArtifact,
@@ -55,6 +58,7 @@ export const artifacts = {
     IExchangeRichErrors: IExchangeRichErrors as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
+    IStakingManager: IStakingManager as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
     ITransferSimulator: ITransferSimulator as ContractArtifact,
     IWallet: IWallet as ContractArtifact,
