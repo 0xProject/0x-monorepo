@@ -3,31 +3,24 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } f
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
     ContractName,
+    expect,
     getLatestBlockTimestampAsync,
     OrderFactory,
-    provider,
     sendTransactionResult,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { artifacts, ForwarderContract, ForwarderTestFactory, ForwarderWrapper } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 const DECIMALS_DEFAULT = 18;
 
-describe(ContractName.Forwarder, () => {
+blockchainTests.only(ContractName.Forwarder, env => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -55,11 +48,11 @@ describe(ContractName.Forwarder, () => {
     let gasPrice: BigNumber;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
+        await env.blockchainLifecycle.startAsync();
 
-        chainId = await providerUtils.getChainIdAsync(provider);
+        chainId = await env.getChainIdAsync();
 
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([
             owner,
             makerAddress,
@@ -68,12 +61,12 @@ describe(ContractName.Forwarder, () => {
             forwarderFeeRecipientAddress,
         ] = accounts);
 
-        const txHash = await web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
-        const transaction = await web3Wrapper.getTransactionByHashAsync(txHash);
+        const txHash = await env.web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
+        const transaction = await env.web3Wrapper.getTransactionByHashAsync(txHash);
         gasPrice = new BigNumber(transaction.gasPrice);
 
-        const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        const erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 2;
         [erc20Token, secondErc20Token] = await erc20Wrapper.deployDummyTokensAsync(
@@ -90,18 +83,18 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults);
-        weth = new DummyERC20TokenContract(wethContract.address, provider);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, env.provider, env.txDefaults);
+        weth = new DummyERC20TokenContract(wethContract.address, env.provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
         const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
@@ -135,12 +128,12 @@ describe(ContractName.Forwarder, () => {
 
         forwarderContract = await ForwarderContract.deployFrom0xArtifactAsync(
             artifacts.Forwarder,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             exchangeInstance.address,
             wethAssetData,
         );
-        forwarderWrapper = new ForwarderWrapper(forwarderContract, provider);
+        forwarderWrapper = new ForwarderWrapper(forwarderContract, env.provider);
 
         await forwarderWrapper.approveMakerAssetProxyAsync(defaultOrderParams.makerAssetData, { from: takerAddress });
         erc20Wrapper.addTokenOwnerAddress(forwarderContract.address);
@@ -158,29 +151,20 @@ describe(ContractName.Forwarder, () => {
             gasPrice,
         );
     });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
 
-    describe('constructor', () => {
+    blockchainTests.resets('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
                 exchangeArtifacts.Exchange,
-                provider,
-                txDefaults,
+                env.provider,
+                env.txDefaults,
                 new BigNumber(chainId),
             );
 
             const deployForwarder = (ForwarderContract.deployFrom0xArtifactAsync(
                 artifacts.Forwarder,
-                provider,
-                txDefaults,
+                env.provider,
+                env.txDefaults,
                 exchangeInstance.address,
                 wethAssetData,
             ) as any) as sendTransactionResult;
@@ -188,7 +172,7 @@ describe(ContractName.Forwarder, () => {
             await expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
         });
     });
-    describe('marketSellOrdersWithEth without extra fees', () => {
+    blockchainTests.resets('marketSellOrdersWithEth without extra fees', () => {
         it('should fill a single order without a taker fee', async () => {
             const orderWithoutFee = await orderFactory.newSignedOrderAsync();
             await forwarderTestFactory.marketSellTestAsync([orderWithoutFee], 0.78, erc20Token);
@@ -233,7 +217,7 @@ describe(ContractName.Forwarder, () => {
 
             const ethValue = order.takerAssetAmount;
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
-            const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             // Execute test case
             tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
@@ -241,8 +225,8 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
 
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const totalEthSpent = gasPrice.times(tx.gasUsed);
 
@@ -287,13 +271,13 @@ describe(ContractName.Forwarder, () => {
         it('should refund remaining ETH if amount is greater than takerAssetAmount', async () => {
             const order = await orderFactory.newSignedOrderAsync();
             const ethValue = order.takerAssetAmount.plus(2);
-            const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
                 value: ethValue,
                 from: takerAddress,
             });
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const totalEthSpent = order.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
@@ -399,7 +383,7 @@ describe(ContractName.Forwarder, () => {
             );
         });
     });
-    describe('marketSellOrdersWithEth with extra fees', () => {
+    blockchainTests.resets('marketSellOrdersWithEth with extra fees', () => {
         it('should fill the order and send fee to feeRecipient', async () => {
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(157, DECIMALS_DEFAULT),
@@ -422,7 +406,7 @@ describe(ContractName.Forwarder, () => {
             });
         });
     });
-    describe('marketBuyOrdersWithEth without extra fees', () => {
+    blockchainTests.resets('marketBuyOrdersWithEth without extra fees', () => {
         it('should buy the exact amount of makerAsset in a single order', async () => {
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(131, DECIMALS_DEFAULT),
@@ -609,7 +593,7 @@ describe(ContractName.Forwarder, () => {
             const ethValue = new BigNumber('4');
 
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
-            const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             // Execute test case
             tx = await forwarderWrapper.marketBuyOrdersWithEthAsync([order], desiredMakerAssetFillAmount, {
@@ -617,8 +601,8 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -652,7 +636,7 @@ describe(ContractName.Forwarder, () => {
             });
 
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
-            const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             // The taker will receive more than the desired amount of makerAsset due to rounding
             const desiredMakerAssetFillAmount = new BigNumber('5000000000000000000');
@@ -666,8 +650,8 @@ describe(ContractName.Forwarder, () => {
                 from: takerAddress,
             });
             // Fetch end balances and construct expected outputs
-            const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
+            const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
+            const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
             const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
@@ -690,7 +674,7 @@ describe(ContractName.Forwarder, () => {
             expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
     });
-    describe('marketBuyOrdersWithEth with extra fees', () => {
+    blockchainTests.resets('marketBuyOrdersWithEth with extra fees', () => {
         it('should buy the asset and send fee to feeRecipient', async () => {
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(125, DECIMALS_DEFAULT),
