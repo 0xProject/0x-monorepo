@@ -20,7 +20,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('EtherToken', () => {
     let account: string;
-    const gasPrice = Web3Wrapper.toBaseUnitAmount(new BigNumber(20), 9);
+    const gasPrice = new BigNumber(constants.DEFAULT_GAS_PRICE);
     let etherToken: WETH9Contract;
 
     before(async () => {
