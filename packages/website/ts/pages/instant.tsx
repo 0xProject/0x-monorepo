@@ -63,11 +63,11 @@ const featuresData = [
         title: 'Easy and flexible integration',
         icon: 'flexibleIntegration0xInstant',
         description:
-            'Use our out-of-the-box design or customize the user interface by integrating via the AssetBuyer engine.. You can also tap into 0x networked liquidity or choose your own liquidity pool.',
+            'Use our out-of-the-box design or customize the user interface by integrating via the AssetSwapper engine. You can also tap into 0x networked liquidity or choose your own liquidity pool.',
         links: [
             {
-                label: 'Explore AssetBuyer',
-                url: `${WebsitePaths.Docs}/asset-buyer`,
+                label: 'Explore AssetSwapper',
+                url: WebsitePaths.AssetSwapperPage,
             },
         ],
     },
