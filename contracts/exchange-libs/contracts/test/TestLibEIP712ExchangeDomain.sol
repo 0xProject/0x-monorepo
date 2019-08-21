@@ -26,6 +26,7 @@ contract TestLibEIP712ExchangeDomain is
     LibEIP712ExchangeDomain
 {
 
+    // solhint-disable no-empty-blocks
     constructor(
         uint256 chainId,
         address verifyingContractAddressIfExists
