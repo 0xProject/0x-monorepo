@@ -24,12 +24,20 @@ contract Refundable {
     // This bool is used by the refund modifier to allow for lazily evaluated refunds.
     bool internal shouldNotRefund;
 
-    modifier refund {
+    modifier refundFinalBalance {
+        _;
+        if (!shouldNotRefund) {
+            msg.sender.transfer(address(this).balance);
+        }
+    }
+
+    modifier disableRefundUntilEnd {
         if (shouldNotRefund) {
             _;
         } else {
             shouldNotRefund = true;
             _;
+            shouldNotRefund = false;
             msg.sender.transfer(address(this).balance);
         }
     }

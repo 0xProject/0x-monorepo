@@ -24,43 +24,49 @@ import "../src/Refundable.sol";
 contract TestRefundable is
     Refundable
 {
-    uint256 public counter = 2;
-
-    function setCounter(uint256 newCounter)
+    function setShouldNotRefund(bool shouldNotRefundNew)
         external
     {
-        counter = newCounter;
+        shouldNotRefund = shouldNotRefundNew;
     }
 
-    function complexReentrantRefundFunction()
+    function getShouldNotRefund()
         external
-        payable
-        refund()
+        view
+        returns (bool)
     {
-        if (counter == 0) {
-            // This call tests lazy evaluation across different functions with the refund modifier
-            this.simpleRefundFunction();
-        } else {
-            counter--;
-            this.complexReentrantRefundFunction();
-        }
+        return shouldNotRefund;
     }
 
-    function simpleReentrantRefundFunction()
-        external
+    function refundFinalBalanceFunction()
+        public
         payable
-        refund()
-    {
-        if (counter != 0) {
-            counter--;
-            this.simpleReentrantRefundFunction();
-        }
-    }
-
-    function simpleRefundFunction()
-        external
-        payable
-        refund()
+        refundFinalBalance
     {} // solhint-disable-line no-empty-blocks
 
+    function disableRefundUntilEndFunction()
+        public
+        payable
+        disableRefundUntilEnd
+    {} // solhint-disable-line no-empty-blocks
+
+    function nestedDisableRefundUntilEndFunction()
+        public
+        payable
+        disableRefundUntilEnd
+        returns (uint256)
+    {
+        disableRefundUntilEndFunction();
+        return address(this).balance;
+    }
+
+    function mixedRefundModifierFunction()
+        public
+        payable
+        disableRefundUntilEnd
+        returns (uint256)
+    {
+        refundFinalBalanceFunction();
+        return address(this).balance;
+    }
 }

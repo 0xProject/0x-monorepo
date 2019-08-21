@@ -1,85 +1,118 @@
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
+import { blockchainTests } from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestRefundableContract } from '../src';
+import { artifacts, TestRefundableContract, TestRefundableReceiverContract } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('Refundable', () => {
-    let owner: string;
-    let notOwner: string;
-    let address: string;
+blockchainTests('Refundable', env => {
     let refundable: TestRefundableContract;
+    let receiver: TestRefundableReceiverContract;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
-    before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [owner, address, notOwner] = _.slice(accounts, 0, 3);
+        // Create the refundable contract.
         refundable = await TestRefundableContract.deployFrom0xArtifactAsync(
             artifacts.TestRefundable,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
+            {},
+        );
+
+        // Create the receiver contract.
+        receiver = await TestRefundableReceiverContract.deployFrom0xArtifactAsync(
+            artifacts.TestRefundableReceiver,
+            env.provider,
+            env.txDefaults,
             {},
         );
     });
 
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
+    // The contents of these typescript tests is not adequate to understand the assertions that are made during
+    // these calls. For a more accurate picture, checkout out "./contracts/test/TestRefundableReceiver.sol".
+    blockchainTests.resets('refundFinalBalance', async () => {
+        it('should fully refund the sender when `shouldNotRefund` is false', async () => {
+            // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
+        });
+
+        // This test may not be necessary, but it is included here as a sanity check.
+        it('should fully refund the sender when `shouldNotRefund` is false for two calls in a row', async () => {
+            // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
+
+            // Send 1000 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(1000),
+            });
+        });
+
+        it('should not refund the sender if `shouldNotRefund` is true', async () => {
+            /// Send 100 wei to the refundable contract that should not be refunded.
+            await receiver.testRefundFinalBalance.awaitTransactionSuccessAsync(refundable.address, true, {
+                value: new BigNumber(1000),
+            });
+        });
     });
 
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
-    describe('refund', async () => {
-        it('should refund all of the ether sent to the simpleRefundFunction', async () => {
-            await expect(
-                refundable.simpleRefundFunction.sendTransactionAsync({
-                    from: owner,
-                    value: Web3Wrapper.toBaseUnitAmount(1, 18),
-                }),
-            ).to.be.fulfilled(''); // tslint:disable-line:await-promise
-            expect(await web3Wrapper.getBalanceInWeiAsync(refundable.address)).bignumber.to.be.eq(
-                constants.ZERO_AMOUNT,
-            );
+    // The contents of these typescript tests is not adequate to understand the assertions that are made during
+    // these calls. For a more accurate picture, checkout out "./contracts/test/TestRefundableReceiver.sol".
+    blockchainTests.resets('disableRefundUntilEnd', async () => {
+        it('should fully refund the sender when `shouldNotRefund` is false', async () => {
+            // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
         });
 
-        it('should refund all of the ether sent to the simpleReentrantRefundFunction with a counter of 2', async () => {
-            await expect(
-                refundable.simpleReentrantRefundFunction.sendTransactionAsync({
-                    from: owner,
-                    value: Web3Wrapper.toBaseUnitAmount(1, 18),
-                }),
-            ).to.be.fulfilled(''); // tslint:disable-line:await-promise
-            expect(await web3Wrapper.getBalanceInWeiAsync(refundable.address)).bignumber.to.be.eq(
-                constants.ZERO_AMOUNT,
-            );
+        // This test may not be necessary, but it is included here as a sanity check.
+        it('should fully refund the sender when `shouldNotRefund` is false for two calls in a row', async () => {
+            // Send 100 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
+
+            // Send 1000 wei to the refundable contract that should be refunded to the receiver contract.
+            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(1000),
+            });
         });
 
-        it('should refund all of the ether sent to the complexReentrantRefundFunction with a counter of 2', async () => {
-            await expect(
-                refundable.complexReentrantRefundFunction.sendTransactionAsync({
-                    from: owner,
-                    value: Web3Wrapper.toBaseUnitAmount(1, 18),
-                }),
-            ).to.be.fulfilled(''); // tslint:disable-line:await-promise
-            expect(await web3Wrapper.getBalanceInWeiAsync(refundable.address)).bignumber.to.be.eq(
-                constants.ZERO_AMOUNT,
-            );
+        it('should not refund the sender if `shouldNotRefund` is true', async () => {
+            /// Send 100 wei to the refundable contract that should not be refunded.
+            await receiver.testDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
         });
 
-        // FIXME - Receiver tests
+        it('should disable the `disableRefundUntilEnd` modifier and refund when `shouldNotRefund` is false', async () => {
+            /// Send 100 wei to the refundable contract that should be refunded.
+            await receiver.testNestedDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
+        });
+
+        it('should disable the `refundFinalBalance` modifier and send no refund when `shouldNotRefund` is true', async () => {
+            /// Send 100 wei to the refundable contract that should not be refunded.
+            await receiver.testNestedDisableRefundUntilEnd.awaitTransactionSuccessAsync(refundable.address, true, {
+                value: new BigNumber(100),
+            });
+        });
+
+        it('should disable the `refundFinalBalance` modifier and refund when `shouldNotRefund` is false', async () => {
+            /// Send 100 wei to the refundable contract that should be refunded.
+            await receiver.testMixedRefunds.awaitTransactionSuccessAsync(refundable.address, false, {
+                value: new BigNumber(100),
+            });
+        });
+
+        it('should disable the `refundFinalBalance` modifier and send no refund when `shouldNotRefund` is true', async () => {
+            /// Send 100 wei to the refundable contract that should not be refunded.
+            await receiver.testMixedRefunds.awaitTransactionSuccessAsync(refundable.address, true, {
+                value: new BigNumber(100),
+            });
+        });
     });
 });

@@ -33,6 +33,7 @@
         "generated-artifacts/TestOwnable.json",
         "generated-artifacts/TestReentrancyGuard.json",
         "generated-artifacts/TestRefundable.json",
+        "generated-artifacts/TestRefundableReceiver.json",
         "generated-artifacts/TestSafeMath.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

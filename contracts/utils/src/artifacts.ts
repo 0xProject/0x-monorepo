@@ -35,6 +35,7 @@ import * as TestLogDecodingDownstream from '../generated-artifacts/TestLogDecodi
 import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
 import * as TestReentrancyGuard from '../generated-artifacts/TestReentrancyGuard.json';
 import * as TestRefundable from '../generated-artifacts/TestRefundable.json';
+import * as TestRefundableReceiver from '../generated-artifacts/TestRefundableReceiver.json';
 import * as TestSafeMath from '../generated-artifacts/TestSafeMath.json';
 export const artifacts = {
     Authorizable: Authorizable as ContractArtifact,
@@ -67,5 +68,6 @@ export const artifacts = {
     TestOwnable: TestOwnable as ContractArtifact,
     TestReentrancyGuard: TestReentrancyGuard as ContractArtifact,
     TestRefundable: TestRefundable as ContractArtifact,
+    TestRefundableReceiver: TestRefundableReceiver as ContractArtifact,
     TestSafeMath: TestSafeMath as ContractArtifact,
 };

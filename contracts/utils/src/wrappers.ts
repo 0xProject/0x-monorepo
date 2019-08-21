@@ -33,4 +33,5 @@ export * from '../generated-wrappers/test_log_decoding_downstream';
 export * from '../generated-wrappers/test_ownable';
 export * from '../generated-wrappers/test_reentrancy_guard';
 export * from '../generated-wrappers/test_refundable';
+export * from '../generated-wrappers/test_refundable_receiver';
 export * from '../generated-wrappers/test_safe_math';
