@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Configure, connectHits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
@@ -69,13 +70,14 @@ const Hits: React.FC<IHitsProps> = ({ hits }) => {
 
             {contentTypes.map(type => {
                 const filteredHits = hits.filter((hit: any) => hit.type === type);
+                const sortedHits = _.orderBy(filteredHits, ['isCommunity', 'title'], ['asc', 'asc']);
 
                 return (
                     <ResourcesWrapper key={type}>
                         <Heading asElement="h2" size="default">
                             {type}
                         </Heading>
-                        {filteredHits.map((hit: any, index: number) => (
+                        {sortedHits.map((hit: any, index: number) => (
                             <Resource key={`resource-${index}`} hit={hit} />
                         ))}
                     </ResourcesWrapper>
@@ -99,4 +101,10 @@ const filters = [
     { attribute: 'type', heading: 'Type' },
     { attribute: 'tags', heading: 'Developer Persona' },
     { attribute: 'difficulty', heading: 'Level' },
+    {
+        attribute: 'isCommunity',
+        heading: 'Community maintained',
+        hiddenLabels: ['false'],
+        customLabels: { true: 'Only community maintained' },
+    },
 ];
