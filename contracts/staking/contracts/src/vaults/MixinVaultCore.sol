@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "../interfaces/IVaultCore.sol";

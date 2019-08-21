@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStakingProxy.sol";

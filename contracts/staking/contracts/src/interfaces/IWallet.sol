@@ -11,7 +11,7 @@
   limitations under the License.
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 
 interface IWallet /* is EIP-1271 */ {

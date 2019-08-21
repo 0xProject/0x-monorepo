@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
