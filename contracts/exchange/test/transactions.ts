@@ -177,6 +177,48 @@ blockchainTests.resets('Exchange transactions', env => {
                 const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
                 return expect(tx).to.revertWith(expectedError);
             });
+            it('should revert if the actual gasPrice is greater than expected', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const actualGasPrice = transaction.gasPrice.plus(1);
+                const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                    transactionHashHex,
+                    actualGasPrice,
+                    transaction.gasPrice,
+                );
+                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    { gasPrice: actualGasPrice, from: senderAddress },
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
+            it('should revert if the actual gasPrice is less than expected', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const actualGasPrice = transaction.gasPrice.minus(1);
+                const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                    transactionHashHex,
+                    actualGasPrice,
+                    transaction.gasPrice,
+                );
+                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    { gasPrice: actualGasPrice, from: senderAddress },
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
         });
         describe('fill methods', () => {
             for (const fnName of [
