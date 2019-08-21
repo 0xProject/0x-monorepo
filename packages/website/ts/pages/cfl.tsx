@@ -115,11 +115,12 @@ export class CFL extends React.Component<Props> {
                     figure={<CFLMetrics />}
                     figureMaxWidth="600px"
                     maxWidth="500px"
-                    actions={(
+                    actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
                         </Button>
-                    )}
+                        // tslint:disable-next-line:jsx-curly-spacing
+                    }
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>
