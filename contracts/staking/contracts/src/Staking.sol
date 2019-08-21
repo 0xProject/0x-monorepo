@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "./IStaking.sol";
+import "./interfaces/IStaking.sol";
 
 
 contract Staking is IStaking {

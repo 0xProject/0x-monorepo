@@ -21,4 +21,15 @@ pragma solidity ^0.5.9;
 
 interface IStaking {
 
+    /// @dev Pays a protocol fee in ETH.
+    /// @param makerAddress The address of the order's maker.
+    function payProtocolFee(address makerAddress)
+        external
+        payable;
+
+    /// @dev Records a protocol fee that was paid in WETH.
+    /// @param makerAddress The address of the order's maker.
+    function recordProtocolFee(address makerAddress)
+        external
+        payable;
 }
