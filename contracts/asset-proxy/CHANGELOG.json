@@ -13,6 +13,10 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
+                "pr": 1910
             }
         ]
     },

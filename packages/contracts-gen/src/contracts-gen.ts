@@ -79,7 +79,7 @@ function generateArtifactsTs(contracts: string[], artifactsDir: string, prettier
         const importPath = path.join('..', artifactsDir, `${contractName}.json`);
         return `import * as ${contractName} from '${importPath}';`;
     });
-    const sortedImports = _.sortBy(imports);
+    const sortedImports = _.sortBy(imports, _import => _import.toLowerCase());
     const artifacts = _.map(contracts, contract => {
         const contractName = path.basename(contract, SOLIDITY_EXTENSION);
         if (contractName === 'ZRXToken') {

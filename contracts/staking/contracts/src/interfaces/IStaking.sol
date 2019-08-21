@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@
 pragma solidity ^0.5.9;
 
 
+// solhint-disable no-empty-blocks
 interface IStaking {
 
+    /// THIS INTERFACE IS LEFT INTENTIONALLY BLANK ///
+    /// @TODO Generate this file before deploying.
 }

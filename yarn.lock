@@ -649,26 +649,6 @@
   dependencies:
     "@0x/base-contract" "^4.0.3"
 
-"@0x/abi-gen@^2.0.9":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen/-/abi-gen-2.1.1.tgz#2ca9072e64a2a46b6149aaea434f09d5dbf0866f"
-  integrity sha512-QLigDvQEGe248MjafJ58nWfwMbz+Va6KTlCsrADTuQd711XY10c95poDPevOfAXNHFZYpgS6rEzIau0WmY+Kbw==
-  dependencies:
-    "@0x/types" "^2.4.0"
-    "@0x/typescript-typings" "^4.2.3"
-    "@0x/utils" "^4.4.0"
-    chalk "^2.3.0"
-    change-case "^3.0.2"
-    cli-format "^3.0.9"
-    ethereum-types "^2.1.3"
-    glob "^7.1.2"
-    handlebars "^4.0.11"
-    lodash "^4.17.11"
-    mkdirp "^0.5.1"
-    tmp "^0.0.33"
-    to-snake-case "^1.0.0"
-    yargs "^10.0.3"
-
 "@0x/asset-buyer@6.1.8":
   version "6.1.8"
   resolved "https://registry.yarnpkg.com/@0x/asset-buyer/-/asset-buyer-6.1.8.tgz#71f6abb366e89e62457c256644edb37e12113e94"
@@ -828,7 +808,7 @@
 
 "@0x/web3-wrapper@^4.0.1":
   version "4.0.2"
-  resolved "https://registry.npmjs.org/@0x/web3-wrapper/-/web3-wrapper-4.0.2.tgz#d4e0a4fa1217155e1aed4cd91086654fd99f2959"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-4.0.2.tgz#d4e0a4fa1217155e1aed4cd91086654fd99f2959"
   dependencies:
     "@0x/assert" "^2.0.2"
     "@0x/json-schemas" "^3.0.2"
