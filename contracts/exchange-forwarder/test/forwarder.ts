@@ -87,6 +87,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
             erc20Artifacts.WETH9,
             env.provider,
             env.txDefaults,
+            {},
         );
         weth = new DummyERC20TokenContract(wethContract.address, env.provider);
         erc20Wrapper.addDummyTokenContract(weth);
@@ -96,6 +97,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
             exchangeArtifacts.Exchange,
             env.provider,
             env.txDefaults,
+            {},
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
@@ -134,6 +136,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
             artifacts.Forwarder,
             env.provider,
             env.txDefaults,
+            {},
             exchangeInstance.address,
             wethAssetData,
         );
@@ -162,6 +165,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
                 exchangeArtifacts.Exchange,
                 env.provider,
                 env.txDefaults,
+                {},
                 new BigNumber(chainId),
             );
 
@@ -169,6 +173,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
                 artifacts.Forwarder,
                 env.provider,
                 env.txDefaults,
+                {},
                 exchangeInstance.address,
                 wethAssetData,
             ) as any) as sendTransactionResult;
