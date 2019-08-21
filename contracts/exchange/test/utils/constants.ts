@@ -10,8 +10,7 @@ export const constants = {
         ExchangeFunctionName.SimulateDispatchTransferFromCalls,
         ExchangeFunctionName.TransferOwnership,
         ExchangeFunctionName.UpdateProtocolFeeMultiplier,
-        ExchangeFunctionName.UpdateStakingAddress,
-        ExchangeFunctionName.UpdateWethAddress,
+        ExchangeFunctionName.UpdateProtocolFeeCollectorAddress,
     ],
     SINGLE_FILL_FN_NAMES: [
         ExchangeFunctionName.FillOrder,

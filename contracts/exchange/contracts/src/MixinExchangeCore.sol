@@ -30,8 +30,8 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-staking/contracts/src/interfaces/IStaking.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./MixinAssetProxyDispatcher.sol";
+import "./MixinProtocolFees.sol";
 import "./MixinSignatureValidator.sol";
-import "./MixinStakingManager.sol";
 
 
 contract MixinExchangeCore is
@@ -40,7 +40,7 @@ contract MixinExchangeCore is
     IExchangeCore,
     MixinAssetProxyDispatcher,
     MixinSignatureValidator,
-    MixinStakingManager
+    MixinProtocolFees
 {
     using LibOrder for LibOrder.Order;
     using LibSafeMath for uint256;

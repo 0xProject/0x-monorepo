@@ -33,6 +33,5 @@ export enum ExchangeFunctionName {
     SimulateDispatchTransferFromCalls = 'simulateDispatchTransferFromCalls',
     TransferOwnership = 'transferOwnership',
     UpdateProtocolFeeMultiplier = 'updateProtocolFeeMultiplier',
-    UpdateStakingAddress = 'updateStakingAddress',
-    UpdateWethAddress = 'updateWethAddress',
+    UpdateProtocolFeeCollectorAddress = 'updateProtocolFeeCollectorAddress',
 }
