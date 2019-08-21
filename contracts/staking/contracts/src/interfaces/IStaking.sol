@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,9 +19,17 @@
 pragma solidity ^0.5.9;
 
 
-// solhint-disable no-empty-blocks
 interface IStaking {
 
-    /// THIS INTERFACE IS LEFT INTENTIONALLY BLANK ///
-    /// @TODO Generate this file before deploying.
+    /// @dev Pays a protocol fee in ETH.
+    /// @param makerAddress The address of the order's maker.
+    function payProtocolFee(address makerAddress)
+        external
+        payable;
+
+    /// @dev Records a protocol fee that was paid in WETH.
+    /// @param makerAddress The address of the order's maker.
+    function recordProtocolFee(address makerAddress)
+        external
+        payable;
 }
