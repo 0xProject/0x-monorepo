@@ -25,10 +25,9 @@ const config = {
     externals: {
         zeroExInstant: 'zeroExInstant',
     },
-    devtool: 'source-map',
     resolve: {
         modules: [path.join(__dirname, '/ts'), 'node_modules'],
-        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.md'],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.md', '.mdx'],
         alias: {
             ts: path.join(__dirname, '/ts'),
             less: path.join(__dirname, '/less'),
@@ -53,6 +52,28 @@ const config = {
                 loader: 'awesome-typescript-loader',
             },
             {
+                test: /\.mdx$/,
+                include: path.join(__dirname, '/mdx'),
+                use: [
+                    'cache-loader',
+                    {
+                        loader: 'babel-loader?cacheDirectory',
+                        options: {
+                            plugins: ['@babel/plugin-syntax-object-rest-spread'],
+                            presets: ['@babel/preset-env', '@babel/preset-react'],
+                        },
+                    },
+                    {
+                        loader: '@mdx-js/loader',
+                        options: {
+                            remarkPlugins: [remarkSlug, remarkSectionizeHeadings],
+                            compilers: [mdxTableOfContents],
+                        },
+                    },
+                ],
+            },
+
+            {
                 test: /\.md$/,
                 use: 'raw-loader',
             },
@@ -69,36 +90,7 @@ const config = {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader'],
             },
-            {
-                test: /\.mdx$/,
-                include: path.join(__dirname, '/mdx'),
-                use: [
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            cacheDirectory: true,
-                            plugins: ['@babel/plugin-syntax-object-rest-spread'],
-                            presets: [
-                                [
-                                    '@babel/preset-env',
-                                    {
-                                        targets: '> 0.25%, not dead',
-                                    },
-                                ],
 
-                                '@babel/preset-react',
-                            ],
-                        },
-                    },
-                    {
-                        loader: '@mdx-js/loader',
-                        options: {
-                            remarkPlugins: [remarkSlug, remarkSectionizeHeadings],
-                            compilers: [mdxTableOfContents],
-                        },
-                    },
-                ],
-            },
             {
                 test: /\.svg$/,
                 use: [
@@ -158,6 +150,8 @@ module.exports = (_env, argv) => {
     const plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
+        config.devtool = 'eval-source-map';
+
         plugins.push(new BundleAnalyzerPlugin());
         // SSL certs
         if (fs.existsSync('./server.cert') && fs.existsSync('./server.key')) {
@@ -169,6 +163,8 @@ module.exports = (_env, argv) => {
         }
     } else {
         config.mode = 'production';
+        config.devtool = 'source-map';
+
         plugins.push(
             // Since we do not use moment's locale feature, we exclude them from the bundle.
             // This reduces the bundle size by 0.4MB.
