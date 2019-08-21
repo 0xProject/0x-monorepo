@@ -9,6 +9,14 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Add `marketBuy/SellOrdersNoThrow` and `marketBuy/SellOrdersFillOrKill` to `LibTransactionDecoder`.",
+                "pr": 2075
+            },
+            {
+                "note": "`run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable.",
+                "pr": 2075
             }
         ]
     },

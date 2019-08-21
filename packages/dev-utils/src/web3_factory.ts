@@ -19,6 +19,7 @@ export interface Web3Config {
     rpcUrl?: string; // default: localhost:8545
     shouldUseFakeGasEstimate?: boolean; // default: true
     ganacheDatabasePath?: string; // default: undefined, creates a tmp dir
+    shouldAllowUnlimitedContractSize?: boolean;
 }
 
 export const web3Factory = {
@@ -58,6 +59,7 @@ export const web3Factory = {
                 new GanacheSubprovider({
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
                     db_path: config.ganacheDatabasePath,
+                    allowUnlimitedContractSize: config.shouldAllowUnlimitedContractSize,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),

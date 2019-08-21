@@ -191,13 +191,17 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         it('should revert if entire takerAssetFillAmount not filled', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
+                takerAssetFillAmount: signedOrder.takerAssetAmount.dividedToIntegerBy(2),
             });
 
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(orderHashHex);
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                ExchangeRevertErrors.IncompleteFillErrorCode.IncompleteFillOrder,
+                takerAssetFillAmount,
+                takerAssetFillAmount.dividedToIntegerBy(2),
+            );
             const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -771,19 +775,19 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
         });
 
-        describe('marketSellOrders', () => {
+        describe('marketSellOrdersNoThrow', () => {
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
                 const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
                     signedOrders[1].takerAssetAmount.div(2),
                 );
 
-                const fillResults = await exchange.marketSellOrders.callAsync(
+                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -852,13 +856,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrders.callAsync(
+                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -926,13 +930,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrders.callAsync(
+                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -967,19 +971,19 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
         });
 
-        describe('marketBuyOrders', () => {
+        describe('marketBuyOrdersNoThrow', () => {
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
                 const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
                     signedOrders[1].makerAssetAmount.div(2),
                 );
 
-                const fillResults = await exchange.marketBuyOrders.callAsync(
+                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1048,13 +1052,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrders.callAsync(
+                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1123,13 +1127,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrders.callAsync(
+                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use

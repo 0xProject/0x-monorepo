@@ -173,6 +173,22 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Rename `marketSellOrders` and `marketBuyOrders` back to `marketSellOrdersNoThrow` and `marketBuyOrdersNoThrow`.",
+                "pr": 2075
+            },
+            {
+                "note": "Introduce new `marketSellOrdersFillOrKill` and `marketBuyOrdersFillOrKill` functions.",
+                "pr": 2075
+            },
+            {
+                "note": "Use `abi.decode()` in `LibExchangeRichErrorDecoder` over `LibBytes`.",
+                "pr": 2075
+            },
+            {
+                "note": "Overridden functions in `ReentrancyTester` now return sane values.",
+                "pr": 2075
             }
         ]
     },

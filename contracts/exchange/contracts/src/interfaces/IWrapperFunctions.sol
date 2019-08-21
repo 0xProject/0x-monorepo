@@ -96,7 +96,7 @@ contract IWrapperFunctions {
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrders(
+    function marketSellOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
         bytes[] memory signatures
@@ -109,7 +109,33 @@ contract IWrapperFunctions {
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrders(
+    function marketBuyOrdersNoThrow(
+        LibOrder.Order[] memory orders,
+        uint256 makerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults);
+
+    /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
+    /// @param orders Array of order specifications.
+    /// @param takerAssetFillAmount Minimum amount of takerAsset to sell.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketSellOrdersFillOrKill(
+        LibOrder.Order[] memory orders,
+        uint256 takerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults);
+
+    /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.
+    /// @param orders Array of order specifications.
+    /// @param makerAssetFillAmount Minimum amount of makerAsset to buy.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketBuyOrdersFillOrKill(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures

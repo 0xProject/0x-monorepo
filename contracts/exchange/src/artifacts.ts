@@ -12,7 +12,6 @@ import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispat
 import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
 import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
-import * as IExchangeRichErrors from '../generated-artifacts/IExchangeRichErrors.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
@@ -52,7 +51,6 @@ export const artifacts = {
     IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IExchangeCore: IExchangeCore as ContractArtifact,
-    IExchangeRichErrors: IExchangeRichErrors as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,

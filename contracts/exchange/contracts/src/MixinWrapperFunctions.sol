@@ -170,7 +170,7 @@ contract MixinWrapperFunctions is
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrders(
+    function marketSellOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
         bytes[] memory signatures
@@ -183,13 +183,13 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
+
             // The `takerAssetData` must be the same for each order.
             // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
             // This is less expensive than checking equality.
             orders[i].takerAssetData = takerAssetData;
-
-            // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
@@ -214,7 +214,7 @@ contract MixinWrapperFunctions is
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrders(
+    function marketBuyOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures
@@ -227,11 +227,6 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // The `makerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].makerAssetData = makerAssetData;
-
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = makerAssetFillAmount.safeSub(fillResults.makerAssetFilledAmount);
 
@@ -242,6 +237,11 @@ contract MixinWrapperFunctions is
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
+
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
+            orders[i].makerAssetData = makerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
@@ -259,6 +259,52 @@ contract MixinWrapperFunctions is
             }
         }
         return fillResults;
+    }
+
+    /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
+    /// @param orders Array of order specifications.
+    /// @param takerAssetFillAmount Minimum amount of takerAsset to sell.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketSellOrdersFillOrKill(
+        LibOrder.Order[] memory orders,
+        uint256 takerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        fillResults = marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
+        if (fillResults.takerAssetFilledAmount < takerAssetFillAmount) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_MARKET_SELL_ORDERS,
+                takerAssetFillAmount,
+                fillResults.takerAssetFilledAmount
+            ));
+        }
+    }
+
+    /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.
+    /// @param orders Array of order specifications.
+    /// @param makerAssetFillAmount Minimum amount of makerAsset to buy.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketBuyOrdersFillOrKill(
+        LibOrder.Order[] memory orders,
+        uint256 makerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        fillResults = marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);
+        if (fillResults.makerAssetFilledAmount < makerAssetFillAmount) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_MARKET_BUY_ORDERS,
+                makerAssetFillAmount,
+                fillResults.makerAssetFilledAmount
+            ));
+        }
     }
 
     /// @dev Executes multiple calls of cancelOrder.
@@ -308,7 +354,9 @@ contract MixinWrapperFunctions is
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
             LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
-                getOrderInfo(order).orderHash
+                LibExchangeRichErrors.IncompleteFillErrorCode.INCOMPLETE_FILL_ORDER,
+                takerAssetFillAmount,
+                fillResults.takerAssetFilledAmount
             ));
         }
         return fillResults;

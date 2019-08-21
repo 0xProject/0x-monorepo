@@ -61,6 +61,10 @@
             {
                 "note": "Update `testWithReferenceFuncAsync` to work with `RevertErrors`",
                 "pr": 2031
+            },
+            {
+                "note": "`web3Wrapper` is created with `shouldAllowUnlimitedContractSize` if `UNLIMITED_CONTRACT_SIZE` environment variable is set.",
+                "pr": 2075
             }
         ]
     },

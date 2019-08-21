@@ -38,6 +38,12 @@ export enum TransactionErrorCode {
     Expired,
 }
 
+export enum IncompleteFillErrorCode {
+    IncompleteMarketBuyOrders,
+    IncompleteMarketSellOrders,
+    IncompleteFillOrder,
+}
+
 export class BatchMatchOrdersError extends RevertError {
     constructor(error?: BatchMatchOrdersErrorCodes) {
         super('BatchMatchOrdersError', 'BatchMatchOrdersError(uint8 error)', { error });
@@ -208,8 +214,20 @@ export class TransactionExecutionError extends RevertError {
 }
 
 export class IncompleteFillError extends RevertError {
-    constructor(orderHash?: string) {
-        super('IncompleteFillError', 'IncompleteFillError(bytes32 orderHash)', { orderHash });
+    constructor(
+        error?: IncompleteFillErrorCode,
+        expectedAssetFillAmount?: BigNumber,
+        actualAssetFillAmount?: BigNumber,
+    ) {
+        super(
+            'IncompleteFillError',
+            'IncompleteFillError(uint8 error, uint256 expectedAssetFillAmount, uint256 actualAssetFillAmount)',
+            {
+                error,
+                expectedAssetFillAmount,
+                actualAssetFillAmount,
+            },
+        );
     }
 }
 

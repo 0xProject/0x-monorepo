@@ -20,7 +20,12 @@ export const constants = {
         ExchangeFunctionName.BatchFillOrKillOrders,
         ExchangeFunctionName.BatchFillOrdersNoThrow,
     ],
-    MARKET_FILL_FN_NAMES: [ExchangeFunctionName.MarketBuyOrders, ExchangeFunctionName.MarketSellOrders],
+    MARKET_FILL_FN_NAMES: [
+        ExchangeFunctionName.MarketBuyOrdersFillOrKill,
+        ExchangeFunctionName.MarketSellOrdersFillOrKill,
+        ExchangeFunctionName.MarketBuyOrdersNoThrow,
+        ExchangeFunctionName.MarketSellOrdersNoThrow,
+    ],
 };
 
 export enum ValidatorWalletAction {

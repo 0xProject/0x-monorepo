@@ -9,7 +9,7 @@ import { BigNumber } from './configured_bignumber';
 
 // tslint:disable: max-classes-per-file
 
-type ArgTypes = string | BigNumber | number | boolean;
+type ArgTypes = string | BigNumber | number | boolean | BigNumber[] | string[] | number[] | boolean[];
 type ValueMap = ObjectMap<ArgTypes | undefined>;
 type RevertErrorDecoder = (hex: string) => ValueMap;
 
@@ -388,14 +388,18 @@ function declarationToAbi(declaration: string): RevertErrorAbi {
     const [name, args] = m.slice(1);
     const argList: string[] = _.filter(args.split(','));
     const argData: DataItem[] = _.map(argList, (a: string) => {
-        m = /^\s*([_a-z][a-z0-9_]*)\s+([_a-z][a-z0-9_]*)\s*$/i.exec(a);
+        // Match a function parameter in the format 'TYPE ID', where 'TYPE' may be
+        // an array type.
+        m = /^\s*(([_a-z][a-z0-9_]*)(\[\d*\])*)\s+([_a-z][a-z0-9_]*)\s*$/i.exec(a);
         if (!m) {
             throw new Error(`Invalid Revert Error signature: "${declaration}"`);
         }
+        // tslint:disable: custom-no-magic-numbers
         return {
-            name: m[2],
+            name: m[4],
             type: m[1],
         };
+        // tslint:enable: custom-no-magic-numbers
     });
     const r: RevertErrorAbi = {
         type: 'error',
@@ -408,10 +412,35 @@ function declarationToAbi(declaration: string): RevertErrorAbi {
 function checkArgEquality(type: string, lhs: ArgTypes, rhs: ArgTypes): boolean {
     if (type === 'address') {
         return normalizeAddress(lhs as string) === normalizeAddress(rhs as string);
-    } else if (type.startsWith('bytes')) {
+    } else if (type === 'bytes' || /^bytes(\d+)$/.test(type)) {
         return normalizeBytes(lhs as string) === normalizeBytes(rhs as string);
     } else if (type === 'string') {
         return lhs === rhs;
+    } else if (/\[\d*\]$/.test(type)) {
+        // An array type.
+        // tslint:disable: custom-no-magic-numbers
+        // Arguments must be arrays and have the same dimensions.
+        if ((lhs as any[]).length !== (rhs as any[]).length) {
+            return false;
+        }
+        const m = /^(.+)\[(\d*)\]$/.exec(type) as string[];
+        const baseType = m[1];
+        const isFixedLength = m[2].length !== 0;
+        if (isFixedLength) {
+            const length = parseInt(m[2], 10);
+            // Fixed-size arrays have a fixed dimension.
+            if ((lhs as any[]).length !== length) {
+                return false;
+            }
+        }
+        // Recurse into sub-elements.
+        for (const [slhs, srhs] of _.zip(lhs as any[], rhs as any[])) {
+            if (!checkArgEquality(baseType, slhs, srhs)) {
+                return false;
+            }
+        }
+        return true;
+        // tslint:enable: no-magic-numbers
     }
     // tslint:disable-next-line
     return new BigNumber((lhs as any) || 0).eq(rhs as any);

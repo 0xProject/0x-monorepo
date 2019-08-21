@@ -1,10 +1,18 @@
 [
     {
-        "version": "2.3.2",
+        "version": "2.4.0",
         "changes": [
             {
                 "note": "`revertWith` mocha extensions now accept Promise-like objects instead of just Promises",
                 "pr": 2031
+            },
+            {
+                "note": "Add `shouldAllowUnlimitedContractSize` to `Web3Config`.",
+                "pr": 2075
+            },
+            {
+                "note": "Add `UNLIMITED_CONTRACT_SIZE` to `EnvVars`.",
+                "pr": 2075
             }
         ]
     },

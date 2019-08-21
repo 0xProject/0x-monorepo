@@ -25,6 +25,8 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 contract LibExchangeRichErrorDecoder {
 
+    using LibBytes for bytes;
+
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
@@ -41,10 +43,12 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureErrorSelector());
-        errorCode = LibExchangeRichErrors.SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
-        hash = _readErrorParameterAsBytes32(encoded, 1);
-        signerAddress = _readErrorParameterAsAddress(encoded, 2);
-        signature = _readErrorParameterAsBytes(encoded, 3);
+        uint8 _errorCode;
+        (_errorCode, hash, signerAddress, signature) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (uint8, bytes32, address, bytes)
+        );
+        errorCode = LibExchangeRichErrors.SignatureErrorCodes(_errorCode);
     }
 
     /// @dev Decompose an ABI-encoded SignatureValidatorError.
@@ -64,11 +68,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureValidatorErrorSelector());
-        hash = _readErrorParameterAsBytes32(encoded, 0);
-        signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        validatorAddress = _readErrorParameterAsAddress(encoded, 2);
-        signature = _readErrorParameterAsBytes(encoded, 3);
-        errorData = _readErrorParameterAsBytes(encoded, 4);
+        (hash, signerAddress, validatorAddress, signature, errorData) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address, address, bytes, bytes)
+        );
     }
 
     /// @dev Decompose an ABI-encoded SignatureValidatorNotApprovedError.
@@ -84,8 +87,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureValidatorNotApprovedErrorSelector());
-        signerAddress = _readErrorParameterAsAddress(encoded, 0);
-        validatorAddress = _readErrorParameterAsAddress(encoded, 1);
+        (signerAddress, validatorAddress) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (address, address)
+        );
     }
 
     /// @dev Decompose an ABI-encoded SignatureWalletError.
@@ -105,10 +110,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureWalletErrorSelector());
-        hash = _readErrorParameterAsBytes32(encoded, 0);
-        signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        signature = _readErrorParameterAsBytes(encoded, 2);
-        errorData = _readErrorParameterAsBytes(encoded, 3);
+        (hash, signerAddress, signature, errorData) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address, bytes, bytes)
+        );
     }
 
     /// @dev Decompose an ABI-encoded OrderStatusError.
@@ -124,8 +129,12 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.OrderStatusErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        orderStatus = LibOrder.OrderStatus(_readErrorParameterAsUint256(encoded, 1));
+        uint8 _orderStatus;
+        (orderHash, _orderStatus) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, uint8)
+        );
+        orderStatus = LibOrder.OrderStatus(_orderStatus);
     }
 
     /// @dev Decompose an ABI-encoded InvalidSenderError.
@@ -141,8 +150,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidSenderErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        senderAddress = _readErrorParameterAsAddress(encoded, 1);
+        (orderHash, senderAddress) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address)
+        );
     }
 
     /// @dev Decompose an ABI-encoded InvalidMakerError.
@@ -158,8 +169,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidMakerErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        makerAddress = _readErrorParameterAsAddress(encoded, 1);
+        (orderHash, makerAddress) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address)
+        );
     }
 
     /// @dev Decompose an ABI-encoded InvalidTaker.
@@ -175,8 +188,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidTakerErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        takerAddress = _readErrorParameterAsAddress(encoded, 1);
+        (orderHash, takerAddress) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address)
+        );
     }
 
     /// @dev Decompose an ABI-encoded FillError.
@@ -192,8 +207,12 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.FillErrorSelector());
-        errorCode = LibExchangeRichErrors.FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
-        orderHash = _readErrorParameterAsBytes32(encoded, 1);
+        uint8 _errorCode;
+        (_errorCode, orderHash) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (uint8, bytes32)
+        );
+        errorCode = LibExchangeRichErrors.FillErrorCodes(_errorCode);
     }
 
     /// @dev Decompose an ABI-encoded OrderEpochError.
@@ -211,9 +230,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.OrderEpochErrorSelector());
-        makerAddress = _readErrorParameterAsAddress(encoded, 0);
-        orderSenderAddress = _readErrorParameterAsAddress(encoded, 1);
-        currentEpoch = _readErrorParameterAsUint256(encoded, 2);
+        (makerAddress, orderSenderAddress, currentEpoch) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (address, address, uint256)
+        );
     }
 
     /// @dev Decompose an ABI-encoded AssetProxyExistsError.
@@ -225,7 +245,10 @@ contract LibExchangeRichErrorDecoder {
         returns (address assetProxyAddress)
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyExistsErrorSelector());
-        assetProxyAddress = _readErrorParameterAsAddress(encoded, 0);
+        (assetProxyAddress) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (address)
+        );
     }
 
     /// @dev Decompose an ABI-encoded AssetProxyDispatchError.
@@ -243,9 +266,12 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyDispatchErrorSelector());
-        errorCode = LibExchangeRichErrors.AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
-        orderHash = _readErrorParameterAsBytes32(encoded, 1);
-        assetData = _readErrorParameterAsBytes(encoded, 2);
+        uint8 _errorCode;
+        (_errorCode, orderHash, assetData) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (uint8, bytes32, bytes)
+        );
+        errorCode = LibExchangeRichErrors.AssetProxyDispatchErrorCodes(_errorCode);
     }
 
     /// @dev Decompose an ABI-encoded AssetProxyTransferError.
@@ -263,9 +289,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyTransferErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
-        assetData = _readErrorParameterAsBytes(encoded, 1);
-        errorData = _readErrorParameterAsBytes(encoded, 2);
+        (orderHash, assetData, errorData) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, bytes, bytes)
+        );
     }
 
     /// @dev Decompose an ABI-encoded NegativeSpreadError.
@@ -281,8 +308,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.NegativeSpreadErrorSelector());
-        leftOrderHash = _readErrorParameterAsBytes32(encoded, 0);
-        rightOrderHash = _readErrorParameterAsBytes32(encoded, 1);
+        (leftOrderHash, rightOrderHash) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, bytes32)
+        );
     }
 
     /// @dev Decompose an ABI-encoded TransactionError.
@@ -298,8 +327,12 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionErrorSelector());
-        errorCode = LibExchangeRichErrors.TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
-        transactionHash = _readErrorParameterAsBytes32(encoded, 1);
+        uint8 _errorCode;
+        (_errorCode, transactionHash) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (uint8, bytes32)
+        );
+        errorCode = LibExchangeRichErrors.TransactionErrorCodes(_errorCode);
     }
 
     /// @dev Decompose an ABI-encoded TransactionSignatureError.
@@ -317,9 +350,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionSignatureErrorSelector());
-        transactionHash = _readErrorParameterAsBytes32(encoded, 0);
-        signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        signature = _readErrorParameterAsBytes(encoded, 2);
+        (transactionHash, signerAddress, signature) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, address, bytes)
+        );
     }
 
     /// @dev Decompose an ABI-encoded TransactionExecutionError.
@@ -335,8 +369,10 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionExecutionErrorSelector());
-        transactionHash = _readErrorParameterAsBytes32(encoded, 0);
-        errorData = _readErrorParameterAsBytes(encoded, 1);
+        (transactionHash, errorData) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (bytes32, bytes)
+        );
     }
 
     /// @dev Decompose an ABI-encoded IncompleteFillError.
@@ -346,11 +382,18 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            bytes32 orderHash
+            LibExchangeRichErrors.IncompleteFillErrorCode errorCode,
+            uint256 expectedAssetFillAmount,
+            uint256 actualAssetFillAmount
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteFillErrorSelector());
-        orderHash = _readErrorParameterAsBytes32(encoded, 0);
+        uint8 _errorCode;
+        (_errorCode, expectedAssetFillAmount, actualAssetFillAmount) = abi.decode(
+            encoded.sliceDestructive(4, encoded.length),
+            (uint8, uint256, uint256)
+        );
+        errorCode = LibExchangeRichErrors.IncompleteFillErrorCode(_errorCode);
     }
 
     /// @dev Revert if the leading 4 bytes of `encoded` is not `selector`.
@@ -363,54 +406,5 @@ contract LibExchangeRichErrorDecoder {
             actualSelector == selector,
             "BAD_SELECTOR"
         );
-    }
-
-    /// @dev Read a parameter at index `index` as a uint256.
-    function _readErrorParameterAsUint256(bytes memory encoded, uint256 index)
-        private
-        pure
-        returns (uint256 value)
-    {
-        uint256 parameterOffset = 4 + index * 32;
-        return LibBytes.readUint256(encoded, parameterOffset);
-    }
-
-    /// @dev Read a parameter at index `index` as a bytes32.
-    function _readErrorParameterAsBytes32(bytes memory encoded, uint256 index)
-        private
-        pure
-        returns (bytes32 value)
-    {
-        uint256 parameterOffset = 4 + index * 32;
-        return LibBytes.readBytes32(encoded, parameterOffset);
-    }
-
-    /// @dev Read a parameter at index `index` as an address.
-    function _readErrorParameterAsAddress(bytes memory encoded, uint256 index)
-        private
-        pure
-        returns (address value)
-    {
-        uint256 parameterOffset = 4 + index * 32;
-        return address(uint160(LibBytes.readUint256(encoded, parameterOffset)));
-    }
-
-    /// @dev Read a parameter at index `index` as a bytes.
-    function _readErrorParameterAsBytes(bytes memory encoded, uint256 index)
-        private
-        pure
-        returns (bytes memory value)
-    {
-        uint256 dataOffset = 4 + _readErrorParameterAsUint256(encoded, index);
-        return LibBytes.readBytesWithLength(encoded, dataOffset);
-    }
-
-    /// @dev Read a parameter at index `index` as a string.
-    function _readErrorParameterAsString(bytes memory encoded, uint256 index)
-        private
-        pure
-        returns (string memory value)
-    {
-        return string(_readErrorParameterAsBytes(encoded, index));
     }
 }

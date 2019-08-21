@@ -62,10 +62,14 @@ contract LibTransactionDecoder {
             functionName = "fillOrderNoThrow";
         } else if (functionSelector == IExchange(address(0)).fillOrKillOrder.selector) {
             functionName = "fillOrKillOrder";
-        } else if (functionSelector == IExchange(address(0)).marketBuyOrders.selector) {
-            functionName = "marketBuyOrders";
-        } else if (functionSelector == IExchange(address(0)).marketSellOrders.selector) {
-            functionName = "marketSellOrders";
+        } else if (functionSelector == IExchange(address(0)).marketBuyOrdersNoThrow.selector) {
+            functionName = "marketBuyOrdersNoThrow";
+        } else if (functionSelector == IExchange(address(0)).marketSellOrdersNoThrow.selector) {
+            functionName = "marketSellOrdersNoThrow";
+        } else if (functionSelector == IExchange(address(0)).marketBuyOrdersFillOrKill.selector) {
+            functionName = "marketBuyOrdersFillOrKill";
+        } else if (functionSelector == IExchange(address(0)).marketSellOrdersFillOrKill.selector) {
+            functionName = "marketSellOrdersFillOrKill";
         } else if (functionSelector == IExchange(address(0)).matchOrders.selector) {
             functionName = "matchOrders";
         } else if (
@@ -100,8 +104,10 @@ contract LibTransactionDecoder {
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(transactionData);
         } else if (
-            functionSelector == IExchange(address(0)).marketBuyOrders.selector ||
-            functionSelector == IExchange(address(0)).marketSellOrders.selector
+            functionSelector == IExchange(address(0)).marketBuyOrdersNoThrow.selector ||
+            functionSelector == IExchange(address(0)).marketSellOrdersNoThrow.selector ||
+            functionSelector == IExchange(address(0)).marketBuyOrdersFillOrKill.selector ||
+            functionSelector == IExchange(address(0)).marketSellOrdersFillOrKill.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(transactionData);
         } else if (functionSelector == IExchange(address(0)).matchOrders.selector) {

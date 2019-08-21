@@ -101,6 +101,10 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields.",
+                "pr": 2075
             }
         ]
     },

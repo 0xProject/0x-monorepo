@@ -58,6 +58,12 @@ library LibExchangeRichErrors {
         EXPIRED
     }
 
+    enum IncompleteFillErrorCode {
+        INCOMPLETE_MARKET_BUY_ORDERS,
+        INCOMPLETE_MARKET_SELL_ORDERS,
+        INCOMPLETE_FILL_ORDER
+    }
+
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
         0x7e5a2318;
@@ -126,9 +132,9 @@ library LibExchangeRichErrors {
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
         0x20d11f61;
 
-    // bytes4(keccak256("IncompleteFillError(bytes32)"))
+    // bytes4(keccak256("IncompleteFillError(uint8,uint256,uint256)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
-        0x152aa60e;
+        0x18e4b141;
 
     // bytes4(keccak256("BatchMatchOrdersError(uint8)"))
     bytes4 internal constant BATCH_MATCH_ORDERS_ERROR_SELECTOR =
@@ -576,7 +582,9 @@ library LibExchangeRichErrors {
     }
 
     function IncompleteFillError(
-        bytes32 orderHash
+        IncompleteFillErrorCode errorCode,
+        uint256 expectedAssetFillAmount,
+        uint256 actualAssetFillAmount
     )
         internal
         pure
@@ -584,7 +592,9 @@ library LibExchangeRichErrors {
     {
         return abi.encodeWithSelector(
             INCOMPLETE_FILL_ERROR_SELECTOR,
-            orderHash
+            errorCode,
+            expectedAssetFillAmount,
+            actualAssetFillAmount
         );
     }
 }
