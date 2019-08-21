@@ -84,7 +84,7 @@ contract MixinAssetProxyDispatcher is
         internal
     {
         // Do nothing if no amount should be transferred.
-        if (amount > 0 && from != to) {
+        if (amount > 0) {
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(

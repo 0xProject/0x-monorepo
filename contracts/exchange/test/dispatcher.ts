@@ -230,7 +230,7 @@ describe('AssetProxyDispatcher', () => {
             expect(newBalances).to.deep.equal(erc20Balances);
         });
 
-        it('should not dispatch a transfer if from == to', async () => {
+        it('should perform a noop transfer if from == to', async () => {
             // Register ERC20 proxy
             await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
                 from: owner,
@@ -249,7 +249,7 @@ describe('AssetProxyDispatcher', () => {
                 amount,
                 { from: owner },
             );
-            expect(txReceipt.logs.length).to.be.equal(0);
+            expect(txReceipt.logs.length).to.be.equal(1);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             expect(newBalances).to.deep.equal(erc20Balances);
         });
