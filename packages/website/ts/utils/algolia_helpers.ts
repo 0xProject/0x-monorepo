@@ -107,7 +107,9 @@ async function processMdxAsync(algoliaIndex: any, file: File, indexName: string)
     await remark()
         .use(slug) // slugify heading text as ids
         .use(mdx)
-        .use(() => async (tree: Node[]) => { await processContentTreeAsync(tree, file, algoliaIndex, indexName); })
+        .use(() => async (tree: Node[]) => {
+            await processContentTreeAsync(tree, file, algoliaIndex, indexName);
+        })
         .process(content);
 }
 

@@ -9,9 +9,10 @@ import { styled } from 'ts/style/theme';
 
 interface IFilterListProps {
     attribute: string;
-    heading: string;
     currentRefinement: string[];
-    customLabel?: string;
+    customLabels?: ICustomLabels;
+    heading: string;
+    hiddenLabels?: string[];
     isDisabled?: boolean;
     items: IFilterProps[];
     operator: string;
@@ -19,12 +20,17 @@ interface IFilterListProps {
     transformItems: (items: IFilterProps[]) => void;
 }
 
+interface ICustomLabels {
+    [key: string]: string;
+}
+
 const FiltersList: React.FC<IFilterListProps> = ({
     attribute,
     items,
     currentRefinement,
-    customLabel,
+    customLabels,
     heading,
+    hiddenLabels,
     refine,
 }) => {
     const [filters, setFilters] = React.useState<IFilterProps[]>([]);
@@ -79,15 +85,20 @@ const FiltersList: React.FC<IFilterListProps> = ({
             <Heading asElement="h3" size={18} fontWeight="400" marginBottom="1rem">
                 {heading}
             </Heading>
-            {sortedFilters.map((filter: IFilterProps, index: number) => (
-                <Filter
-                    key={`filter-${index}`}
-                    currentRefinement={currentRefinement}
-                    customLabel={customLabel}
-                    refine={refine}
-                    {...filter}
-                />
-            ))}
+            {sortedFilters.map((filter: IFilterProps, index: number) => {
+                if (hiddenLabels && hiddenLabels.includes(filter.label)) {
+                    return null;
+                }
+                return (
+                    <Filter
+                        key={`filter-${index}`}
+                        currentRefinement={currentRefinement}
+                        customLabels={customLabels}
+                        refine={refine}
+                        {...filter}
+                    />
+                );
+            })}
         </FiltersGroupWrapper>
     );
 };

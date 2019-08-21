@@ -9,6 +9,14 @@ const ALGOLIA_ADMIN_API_KEY = 'b158fad22eba28a2660ae045c5766378';
 
 const ALGOLIA_MAX_NUMBER_HITS = 1000; // Limit set by algolia
 
+const ALGOLIA_ADMIN_OPTIONS = {
+    timeouts: {
+        connect: 10000,
+        read: 2 * 10000,
+        write: 30 * 10000,
+    },
+};
+
 export interface IAlgoliaSettings {
     distinct: boolean;
     attributeForDistinct: string;
@@ -19,7 +27,7 @@ export interface IAlgoliaSettings {
 }
 
 export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY);
-export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
+export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY, ALGOLIA_ADMIN_OPTIONS);
 
 export const hitsPerPage = {
     autocomplete: 5,

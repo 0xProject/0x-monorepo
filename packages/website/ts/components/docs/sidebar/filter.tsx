@@ -6,7 +6,7 @@ import { colors } from 'ts/style/colors';
 export interface IFilterProps extends IFilterCheckboxProps {
     label: string;
     currentRefinement: string[];
-    customLabel?: string;
+    customLabels?: ICustomLabels;
     isDisabled?: boolean;
     value: string;
     refine: (value: string | string[]) => void;
@@ -16,14 +16,20 @@ interface IFilterCheckboxProps {
     isRefined: boolean;
 }
 
+interface ICustomLabels {
+    [key: string]: string;
+}
+
 export const Filter: React.FC<IFilterProps> = ({
     currentRefinement,
-    customLabel,
+    customLabels,
     isDisabled,
     isRefined,
     label,
     refine,
 }) => {
+    const filterLabel = customLabels ? customLabels[label] : label;
+
     const handleClick = () => {
         if (isRefined) {
             const refinement = [...currentRefinement].filter((item: string) => item !== label); // Remove from current refinement
@@ -36,7 +42,7 @@ export const Filter: React.FC<IFilterProps> = ({
     return (
         <FilterWrapper isDisabled={isDisabled} onClick={handleClick}>
             <FilterCheckbox isRefined={isRefined} />
-            <FilterLabel>{customLabel ? customLabel : label}</FilterLabel>
+            <FilterLabel>{filterLabel}</FilterLabel>
         </FilterWrapper>
     );
 };
