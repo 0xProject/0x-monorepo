@@ -23,6 +23,7 @@ import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
 import * as LibSafeMathRichErrors from '../generated-artifacts/LibSafeMathRichErrors.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
+import * as Refundable from '../generated-artifacts/Refundable.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
 import * as TestLibAddress from '../generated-artifacts/TestLibAddress.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
@@ -33,6 +34,7 @@ import * as TestLogDecoding from '../generated-artifacts/TestLogDecoding.json';
 import * as TestLogDecodingDownstream from '../generated-artifacts/TestLogDecodingDownstream.json';
 import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
 import * as TestReentrancyGuard from '../generated-artifacts/TestReentrancyGuard.json';
+import * as TestRefundable from '../generated-artifacts/TestRefundable.json';
 import * as TestSafeMath from '../generated-artifacts/TestSafeMath.json';
 export const artifacts = {
     Authorizable: Authorizable as ContractArtifact,
@@ -51,6 +53,7 @@ export const artifacts = {
     LibSafeMathRichErrors: LibSafeMathRichErrors as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     ReentrancyGuard: ReentrancyGuard as ContractArtifact,
+    Refundable: Refundable as ContractArtifact,
     SafeMath: SafeMath as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
@@ -63,5 +66,6 @@ export const artifacts = {
     TestLogDecodingDownstream: TestLogDecodingDownstream as ContractArtifact,
     TestOwnable: TestOwnable as ContractArtifact,
     TestReentrancyGuard: TestReentrancyGuard as ContractArtifact,
+    TestRefundable: TestRefundable as ContractArtifact,
     TestSafeMath: TestSafeMath as ContractArtifact,
 };
