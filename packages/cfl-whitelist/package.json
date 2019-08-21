@@ -1,0 +1,37 @@
+{
+    "name": "@0x/cfl-whitelist",
+    "version": "1.0.0",
+    "description": "Whitelist of Ethereum contract accounts permitted to take liquidity on behalf of others",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/cfl-whitelist/README.md",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/0xProject/0x-monorepo.git"
+    },
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "engines": {
+        "node": ">=6.12"
+    },
+    "main": "lib/src/index.js",
+    "scripts": {
+        "build": "tsc -b",
+        "test": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
+        "lint": "tslint --project . --format stylish",
+        "clean": "shx rm -rf lib"
+    },
+    "private": true,
+    "dependencies": {
+        "@0x/contract-addresses": "^3.0.3"
+    },
+    "devDependencies": {
+        "@types/mocha": "^5.2.7",
+        "chai": "^4.0.1",
+        "chai-as-promised": "^7.1.0",
+        "chai-bignumber": "^3.0.0",
+        "dirty-chai": "^2.0.1",
+        "mocha": "^6.2.0",
+        "typescript": "3.0.1"
+    }
+}
