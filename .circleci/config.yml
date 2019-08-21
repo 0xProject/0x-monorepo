@@ -91,7 +91,7 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-dev-utils @0x/contracts-staking
-    test-contracts-ganache-3.0:
+    test-exchange-ganache-3.0:
         resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -100,7 +100,17 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun --stages test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-dev-utils @0x/contracts-staking
+            - run: yarn wsrun test:circleci @0x/contracts-exchange
+    test-contracts-rest-ganache-3.0:
+        resource_class: medium+
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun --stages test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-dev-utils @0x/contracts-staking
             # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
             # - run: yarn wsrun test:circleci @0x/contracts-extensions
             # TODO(abandeali): Re-enable after this package is complete.
@@ -563,7 +573,10 @@ workflows:
             # - build-website:
             #       requires:
             #           - build
-            - test-contracts-ganache-3.0:
+            - test-exchange-ganache-3.0:
+                  requires:
+                      - build-3.0
+            - test-contracts-rest-ganache-3.0:
                   requires:
                       - build-3.0
             # Disabled until geth docker image is fixed.
@@ -590,7 +603,8 @@ workflows:
             #           - build-3.0
             - submit-coverage-3.0:
                   requires:
-                      - test-contracts-ganache-3.0
+                      - test-contracts-rest-ganache-3.0
+                      - test-exchange-ganache-3.0
                       - test-rest-3.0
                       - static-tests-3.0
             # Disabled for 3.0
