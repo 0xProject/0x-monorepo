@@ -48,7 +48,7 @@
         "@0x/utils": "^4.5.0",
         "@0x/web3-wrapper": "^6.0.10",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-blockstream": "6.0.0",
+        "ethereumjs-blockstream": "^7.0.0",
         "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
         "js-sha3": "^0.7.0",
