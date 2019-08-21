@@ -474,7 +474,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
-    AssetSwapper = '/docs/asset-swapper',
+    AssetSwapperDocs = '/docs/asset-swapper',
     Migrations = '/docs/migrations',
     Careers = '/careers',
     Credits = '/credits',

@@ -31,7 +31,7 @@ export class MobileNav extends React.PureComponent<Props> {
                                 <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
                             </li>
                             <li>
-                                <Link to={WebsitePaths.AssetSwapper}>Swap Tokens</Link>
+                                <Link to={WebsitePaths.AssetSwapperDocs}>Swap Tokens</Link>
                             </li>
                         </ul>
                     </Section>

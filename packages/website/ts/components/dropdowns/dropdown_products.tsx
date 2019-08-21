@@ -20,7 +20,7 @@ const navData = [
     {
         title: 'Asset Swapper',
         description: 'Swap tokens via smart contracts',
-        url: WebsitePaths.AssetSwapper,
+        url: WebsitePaths.AssetSwapperPage,
     },
     {
         title: 'Governance',

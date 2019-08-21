@@ -223,7 +223,7 @@ render(
                                     component={LazyAssetBuyerDocumentation}
                                 />
                                 <Route
-                                    path={`${WebsitePaths.AssetSwapper}/:version?`}
+                                    path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
                                     component={LazyAssetSwapperDocumentation}
                                 />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
