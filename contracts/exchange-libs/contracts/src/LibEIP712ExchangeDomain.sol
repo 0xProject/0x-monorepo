@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
 contract LibEIP712ExchangeDomain {
+
     // EIP712 Exchange Domain Name value
     string constant public EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
 

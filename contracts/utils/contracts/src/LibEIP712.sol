@@ -109,12 +109,4 @@ library LibEIP712 {
         }
         return result;
     }
-
-    function _getDomainSeparatorSchemaHash()
-        internal
-        pure
-        returns (bytes32 hash)
-    {
-        return 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
-    }
 }

@@ -9,6 +9,11 @@
             {
                 "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
                 "pr": 2031
+            },
+            ,
+            {
+                "note": "Add status types for Staking contracts",
+                "pr": 1910
             }
         ]
     },
