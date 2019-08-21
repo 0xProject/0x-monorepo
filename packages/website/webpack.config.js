@@ -76,8 +76,18 @@ const config = {
                     {
                         loader: 'babel-loader',
                         options: {
+                            cacheDirectory: true,
                             plugins: ['@babel/plugin-syntax-object-rest-spread'],
-                            presets: ['@babel/preset-env', '@babel/preset-react'],
+                            presets: [
+                                [
+                                    '@babel/preset-env',
+                                    {
+                                        targets: '> 0.25%, not dead',
+                                    },
+                                ],
+
+                                '@babel/preset-react',
+                            ],
                         },
                     },
                     {
@@ -107,6 +117,7 @@ const config = {
     optimization: {
         minimizer: [
             new TerserPlugin({
+                parallel: true,
                 sourceMap: true,
                 terserOptions: {
                     mangle: {
