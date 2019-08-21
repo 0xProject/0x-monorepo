@@ -130,7 +130,7 @@ export class CFL extends React.Component<Props> {
                     </InlineIconWrap>
 
                     <Paragraph size="large" isCentered={true} isMuted={1} padding={['large', 0, 'default', 0]}>
-                        Use asset-swapper to programmatically exchange assets with a single line of code or build custom
+                        Use Asset Swapper to programmatically exchange assets with a single line of code or build custom
                         integrations for more advanced token trades.
                     </Paragraph>
 
