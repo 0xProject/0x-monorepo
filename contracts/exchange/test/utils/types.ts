@@ -32,4 +32,7 @@ export enum ExchangeFunctionName {
     SetSignatureValidatorApproval = 'setSignatureValidatorApproval',
     SimulateDispatchTransferFromCalls = 'simulateDispatchTransferFromCalls',
     TransferOwnership = 'transferOwnership',
+    UpdateProtocolFeeMultiplier = 'updateProtocolFeeMultiplier',
+    UpdateStakingAddress = 'updateStakingAddress',
+    UpdateWethAddress = 'updateWethAddress',
 }

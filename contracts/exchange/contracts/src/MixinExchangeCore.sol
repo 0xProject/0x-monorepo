@@ -28,13 +28,15 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinSignatureValidator.sol";
+import "./MixinStakingManager.sol";
 
 
 contract MixinExchangeCore is
     LibEIP712ExchangeDomain,
     IExchangeCore,
     MixinAssetProxyDispatcher,
-    MixinSignatureValidator
+    MixinSignatureValidator,
+    MixinStakingManager
 {
     using LibOrder for LibOrder.Order;
     using LibSafeMath for uint256;
