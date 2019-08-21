@@ -5,6 +5,10 @@
             {
                 "note": "Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo.",
                 "pr": 2068
+            },
+            {
+                "note": "Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package.",
+                "pr": 2086
             }
         ]
     },

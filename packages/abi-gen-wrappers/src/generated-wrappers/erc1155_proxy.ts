@@ -31,21 +31,21 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-export type ERC20ProxyEventArgs =
-    | ERC20ProxyAuthorizedAddressAddedEventArgs
-    | ERC20ProxyAuthorizedAddressRemovedEventArgs;
+export type ERC1155ProxyEventArgs =
+    | ERC1155ProxyAuthorizedAddressAddedEventArgs
+    | ERC1155ProxyAuthorizedAddressRemovedEventArgs;
 
-export enum ERC20ProxyEvents {
+export enum ERC1155ProxyEvents {
     AuthorizedAddressAdded = 'AuthorizedAddressAdded',
     AuthorizedAddressRemoved = 'AuthorizedAddressRemoved',
 }
 
-export interface ERC20ProxyAuthorizedAddressAddedEventArgs extends DecodedLogArgs {
+export interface ERC1155ProxyAuthorizedAddressAddedEventArgs extends DecodedLogArgs {
     target: string;
     caller: string;
 }
 
-export interface ERC20ProxyAuthorizedAddressRemovedEventArgs extends DecodedLogArgs {
+export interface ERC1155ProxyAuthorizedAddressRemovedEventArgs extends DecodedLogArgs {
     target: string;
     caller: string;
 }
@@ -53,7 +53,7 @@ export interface ERC20ProxyAuthorizedAddressRemovedEventArgs extends DecodedLogA
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
-export class ERC20ProxyContract extends BaseContract {
+export class ERC1155ProxyContract extends BaseContract {
     /**
      * Authorizes an address.
      */
@@ -67,7 +67,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -100,7 +100,7 @@ export class ERC20ProxyContract extends BaseContract {
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -122,7 +122,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -155,7 +155,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -185,21 +185,21 @@ export class ERC20ProxyContract extends BaseContract {
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [
                 target.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
@@ -231,7 +231,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -260,19 +260,19 @@ export class ERC20ProxyContract extends BaseContract {
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
@@ -292,7 +292,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -325,7 +325,7 @@ export class ERC20ProxyContract extends BaseContract {
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -347,7 +347,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -380,7 +380,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -410,21 +410,21 @@ export class ERC20ProxyContract extends BaseContract {
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [
                 target.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
@@ -451,7 +451,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('owner()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -479,19 +479,19 @@ export class ERC20ProxyContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
@@ -517,7 +517,7 @@ export class ERC20ProxyContract extends BaseContract {
         ): Promise<string> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
                 target.toLowerCase(),
                 index,
@@ -556,7 +556,7 @@ export class ERC20ProxyContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(
                 target.toLowerCase(),
                 index,
@@ -588,7 +588,7 @@ export class ERC20ProxyContract extends BaseContract {
         ): Promise<number> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
                 target.toLowerCase(),
                 index,
@@ -631,7 +631,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
                 target.toLowerCase(),
                 index,
@@ -666,7 +666,7 @@ export class ERC20ProxyContract extends BaseContract {
         getABIEncodedTransactionData(target: string, index: BigNumber): string {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'removeAuthorizedAddressAtIndex(address,uint256)',
                 [target.toLowerCase(), index],
@@ -674,14 +674,14 @@ export class ERC20ProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
@@ -698,6 +698,253 @@ export class ERC20ProxyContract extends BaseContract {
                 index,
                 txData,
             );
+            return txHash;
+        },
+    };
+    /**
+     * Transfers batch of ERC1155 assets. Either succeeds or throws.
+     */
+    public transferFrom = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param assetData Byte array encoded with ERC1155 token address, array of
+         *     ids, array of values, and callback data.
+         * @param from Address to transfer assets from.
+         * @param to Address to transfer assets to.
+         * @param amount Amount that will be multiplied with each element of
+         *     `assetData.values` to scale the        values that will be transferred.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            const self = (this as any) as ERC1155ProxyContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.transferFrom.estimateGasAsync.bind(self, assetData, from.toLowerCase(), to.toLowerCase(), amount),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param assetData Byte array encoded with ERC1155 token address, array of
+         *     ids, array of values, and callback data.
+         * @param from Address to transfer assets from.
+         * @param to Address to transfer assets to.
+         * @param amount Amount that will be multiplied with each element of
+         *     `assetData.values` to scale the        values that will be transferred.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            const self = (this as any) as ERC1155ProxyContract;
+            const txHashPromise = self.transferFrom.sendTransactionAsync(
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
+                txData,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param assetData Byte array encoded with ERC1155 token address, array of
+         *     ids, array of values, and callback data.
+         * @param from Address to transfer assets from.
+         * @param to Address to transfer assets to.
+         * @param amount Amount that will be multiplied with each element of
+         *     `assetData.values` to scale the        values that will be transferred.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            const self = (this as any) as ERC1155ProxyContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param assetData Byte array encoded with ERC1155 token address, array of
+         *     ids, array of values, and callback data.
+         * @param from Address to transfer assets from.
+         * @param to Address to transfer assets to.
+         * @param amount Amount that will be multiplied with each element of
+         *     `assetData.values` to scale the        values that will be transferred.
+         */
+        async callAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC1155ProxyContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetData Byte array encoded with ERC1155 token address, array of
+         *     ids, array of values, and callback data.
+         * @param from Address to transfer assets from.
+         * @param to Address to transfer assets to.
+         * @param amount Amount that will be multiplied with each element of
+         *     `assetData.values` to scale the        values that will be transferred.
+         */
+        getABIEncodedTransactionData(assetData: string, from: string, to: string, amount: BigNumber): string {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'transferFrom(bytes,address,address,uint256)',
+                [assetData, from.toLowerCase(), to.toLowerCase(), amount],
+            );
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(assetData, from, to, amount, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(assetData, from, to, amount, txData);
             return txHash;
         },
     };
@@ -720,7 +967,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('getProxyId()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -748,19 +995,19 @@ export class ERC20ProxyContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
@@ -787,7 +1034,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('authorized(address)', [index_0.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -816,21 +1063,21 @@ export class ERC20ProxyContract extends BaseContract {
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('authorized(address)', [
                 index_0.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): boolean {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
@@ -856,7 +1103,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -884,19 +1131,19 @@ export class ERC20ProxyContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): string[] {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string[] {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
@@ -912,7 +1159,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -944,7 +1191,7 @@ export class ERC20ProxyContract extends BaseContract {
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -965,7 +1212,7 @@ export class ERC20ProxyContract extends BaseContract {
          */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -997,7 +1244,7 @@ export class ERC20ProxyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1026,21 +1273,21 @@ export class ERC20ProxyContract extends BaseContract {
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC20ProxyContract;
+            const self = (this as any) as ERC1155ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
@@ -1052,13 +1299,13 @@ export class ERC20ProxyContract extends BaseContract {
             return txHash;
         },
     };
-    private readonly _subscriptionManager: SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<ERC1155ProxyEventArgs, ERC1155ProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-    ): Promise<ERC20ProxyContract> {
+    ): Promise<ERC1155ProxyContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -1076,7 +1323,7 @@ export class ERC20ProxyContract extends BaseContract {
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return ERC20ProxyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
+        return ERC1155ProxyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
@@ -1084,7 +1331,7 @@ export class ERC20ProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-    ): Promise<ERC20ProxyContract> {
+    ): Promise<ERC1155ProxyContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -1106,8 +1353,8 @@ export class ERC20ProxyContract extends BaseContract {
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`ERC20Proxy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ERC20ProxyContract(
+        logUtils.log(`ERC1155Proxy successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new ERC1155ProxyContract(
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
@@ -1202,6 +1449,32 @@ export class ERC20ProxyContract extends BaseContract {
                 type: 'function',
             },
             {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'assetData',
+                        type: 'bytes',
+                    },
+                    {
+                        name: 'from',
+                        type: 'address',
+                    },
+                    {
+                        name: 'to',
+                        type: 'address',
+                    },
+                    {
+                        name: 'amount',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'transferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
                 constant: true,
                 inputs: [],
                 name: 'getProxyId',
@@ -1263,13 +1536,6 @@ export class ERC20ProxyContract extends BaseContract {
                 type: 'function',
             },
             {
-                inputs: [],
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'fallback',
-            },
-            {
                 anonymous: false,
                 inputs: [
                     {
@@ -1309,29 +1575,29 @@ export class ERC20ProxyContract extends BaseContract {
         return abi;
     }
     /**
-     * Subscribe to an event type emitted by the ERC20Proxy contract.
-     * @param eventName The ERC20Proxy contract event you would like to subscribe to.
+     * Subscribe to an event type emitted by the ERC1155Proxy contract.
+     * @param eventName The ERC1155Proxy contract event you would like to subscribe to.
      * @param indexFilterValues An object where the keys are indexed args returned by the event and
      * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
      * @param callback Callback that gets called when a log is added/removed
      * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public subscribe<ArgsType extends ERC20ProxyEventArgs>(
-        eventName: ERC20ProxyEvents,
+    public subscribe<ArgsType extends ERC1155ProxyEventArgs>(
+        eventName: ERC1155ProxyEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
         blockPollingIntervalMs?: number,
     ): string {
-        assert.doesBelongToStringEnum('eventName', eventName, ERC20ProxyEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ERC1155ProxyEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             this.address,
             eventName,
             indexFilterValues,
-            ERC20ProxyContract.ABI(),
+            ERC1155ProxyContract.ABI(),
             callback,
             isVerbose,
             blockPollingIntervalMs,
@@ -1353,18 +1619,18 @@ export class ERC20ProxyContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param eventName The ERC20Proxy contract event you would like to subscribe to.
+     * @param eventName The ERC1155Proxy contract event you would like to subscribe to.
      * @param blockRange Block range to get logs from.
      * @param indexFilterValues An object where the keys are indexed args returned by the event and
      * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
      * @return Array of logs that match the parameters
      */
-    public async getLogsAsync<ArgsType extends ERC20ProxyEventArgs>(
-        eventName: ERC20ProxyEvents,
+    public async getLogsAsync<ArgsType extends ERC1155ProxyEventArgs>(
+        eventName: ERC1155ProxyEvents,
         blockRange: BlockRange,
         indexFilterValues: IndexedFilterValues,
     ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
-        assert.doesBelongToStringEnum('eventName', eventName, ERC20ProxyEvents);
+        assert.doesBelongToStringEnum('eventName', eventName, ERC1155ProxyEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
@@ -1372,7 +1638,7 @@ export class ERC20ProxyContract extends BaseContract {
             eventName,
             blockRange,
             indexFilterValues,
-            ERC20ProxyContract.ABI(),
+            ERC1155ProxyContract.ABI(),
         );
         return logs;
     }
@@ -1382,10 +1648,17 @@ export class ERC20ProxyContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
     ) {
-        super('ERC20Proxy', ERC20ProxyContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'ERC1155Proxy',
+            ERC1155ProxyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-        this._subscriptionManager = new SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>(
-            ERC20ProxyContract.ABI(),
+        this._subscriptionManager = new SubscriptionManager<ERC1155ProxyEventArgs, ERC1155ProxyEvents>(
+            ERC1155ProxyContract.ABI(),
             this._web3Wrapper,
         );
     }
