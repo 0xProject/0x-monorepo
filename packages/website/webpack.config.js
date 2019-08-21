@@ -76,8 +76,8 @@ const config = {
                     {
                         loader: 'babel-loader',
                         options: {
-                            plugins: ['syntax-object-rest-spread'],
-                            presets: ['env', 'react'],
+                            plugins: ['@babel/plugin-syntax-object-rest-spread'],
+                            presets: ['@babel/preset-env', '@babel/preset-react'],
                         },
                     },
                     {
