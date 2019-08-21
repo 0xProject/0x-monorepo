@@ -565,7 +565,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             ).to.revertWith(expectedError);
         });
         it('should revert if the gasPrice is less than required', async () => {
-            const transaction = await generateZeroExTransactionAsync({});
+            const transaction = await generateZeroExTransactionAsync();
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const actualGasPrice = transaction.gasPrice.minus(1);
             const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
@@ -580,7 +580,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             ).to.revertWith(expectedError);
         });
         it('should revert if the gasPrice is greater than required', async () => {
-            const transaction = await generateZeroExTransactionAsync({});
+            const transaction = await generateZeroExTransactionAsync();
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const actualGasPrice = transaction.gasPrice.plus(1);
             const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
@@ -596,7 +596,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
         it('should revert if currentContextAddress is non-zero', async () => {
             await transactionsContract.setCurrentContextAddress.awaitTransactionSuccessAsync(accounts[0]);
-            const transaction = await generateZeroExTransactionAsync({});
+            const transaction = await generateZeroExTransactionAsync();
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             const expectedError = new ExchangeRevertErrors.TransactionError(
                 ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
@@ -607,7 +607,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             ).to.revertWith(expectedError);
         });
         it('should revert if the transaction has already been executed', async () => {
-            const transaction = await generateZeroExTransactionAsync({});
+            const transaction = await generateZeroExTransactionAsync();
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
             await transactionsContract.setTransactionHash.awaitTransactionSuccessAsync(transactionHash);
             const expectedError = new ExchangeRevertErrors.TransactionError(
@@ -632,6 +632,23 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                     from: accounts[1],
                 }),
             ).to.revertWith(expectedError);
+        });
+        it('should be successful if signer == msg.sender and the signature is invalid', async () => {
+            const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            const invalidSignature = '0x0000';
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, invalidSignature, {
+                    from: accounts[0],
+                }),
+            ).to.be.fulfilled('');
+        });
+        it('should be successful if not expired, the gasPrice is correct, the tx has not been executed, currentContextAddress has not been set, signer != msg.sender, and the signature is valid', async () => {
+            const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature(), {
+                    from: accounts[1],
+                }),
+            ).to.be.fulfilled('');
         });
     });
 
