@@ -343,6 +343,20 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, randomSignature());
             return expect(tx).to.revertWith(expectedError);
         });
+        it('should revert if the transaction is submitted with a gasPrice that does not equal the required gasPrice', async () => {
+            const transaction = await generateZeroExTransactionAsync();
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const actualGasPrice = transaction.gasPrice.plus(1);
+            const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                transactionHash,
+                actualGasPrice,
+                transaction.gasPrice,
+            );
+            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction, randomSignature(), {
+                gasPrice: actualGasPrice,
+            });
+            return expect(tx).to.revertWith(expectedError);
+        });
         // FIXME - This should be unskipped when the contracts have been updated to fix this problem.
         it.skip('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender == signer for both calls', async () => {
             const validSignature = randomSignature();
@@ -532,6 +546,92 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             expect(logs[0].args.returnData).to.be.eq('0xdeadbeef');
             expect(logs[1].event).to.be.eq('TransactionExecution');
             expect(logs[1].args.transactionHash).to.eq(transactionHash);
+        });
+    });
+
+    blockchainTests.resets('assertExecutableTransaction', () => {
+        it('should revert if the transaction is expired', async () => {
+            const currentTimestamp = await getLatestBlockTimestampAsync();
+            const transaction = await generateZeroExTransactionAsync({
+                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+            });
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const expectedError = new ExchangeRevertErrors.TransactionError(
+                ExchangeRevertErrors.TransactionErrorCode.Expired,
+                transactionHash,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature()),
+            ).to.revertWith(expectedError);
+        });
+        it('should revert if the gasPrice is less than required', async () => {
+            const transaction = await generateZeroExTransactionAsync({});
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const actualGasPrice = transaction.gasPrice.minus(1);
+            const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                transactionHash,
+                actualGasPrice,
+                transaction.gasPrice,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature(), {
+                    gasPrice: actualGasPrice,
+                }),
+            ).to.revertWith(expectedError);
+        });
+        it('should revert if the gasPrice is greater than required', async () => {
+            const transaction = await generateZeroExTransactionAsync({});
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const actualGasPrice = transaction.gasPrice.plus(1);
+            const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                transactionHash,
+                actualGasPrice,
+                transaction.gasPrice,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature(), {
+                    gasPrice: actualGasPrice,
+                }),
+            ).to.revertWith(expectedError);
+        });
+        it('should revert if currentContextAddress is non-zero', async () => {
+            await transactionsContract.setCurrentContextAddress.awaitTransactionSuccessAsync(accounts[0]);
+            const transaction = await generateZeroExTransactionAsync({});
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const expectedError = new ExchangeRevertErrors.TransactionError(
+                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
+                transactionHash,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature()),
+            ).to.revertWith(expectedError);
+        });
+        it('should revert if the transaction has already been executed', async () => {
+            const transaction = await generateZeroExTransactionAsync({});
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            await transactionsContract.setTransactionHash.awaitTransactionSuccessAsync(transactionHash);
+            const expectedError = new ExchangeRevertErrors.TransactionError(
+                ExchangeRevertErrors.TransactionErrorCode.AlreadyExecuted,
+                transactionHash,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature()),
+            ).to.revertWith(expectedError);
+        });
+        it('should revert if signer != msg.sender and the signature is invalid', async () => {
+            const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+            const invalidSignature = '0x0000';
+            const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
+                transactionHash,
+                accounts[0],
+                invalidSignature,
+            );
+            expect(
+                transactionsContract.assertExecutableTransaction.callAsync(transaction, invalidSignature, {
+                    from: accounts[1],
+                }),
+            ).to.revertWith(expectedError);
         });
     });
 
