@@ -8,7 +8,13 @@ import { Resource } from 'ts/components/docs/resource/resource';
 import { Separator } from 'ts/components/docs/shared/separator';
 import { Filters } from 'ts/components/docs/sidebar/filters';
 
+import { IHit } from 'ts/components/docs/search/autocomplete';
+
 import { hitsPerPage, searchClient, searchIndices } from 'ts/utils/algolia_constants';
+
+interface IHitsProps {
+    hits: IHit[];
+}
 
 export const DocsGuides: React.FC = () => {
     return (
@@ -25,7 +31,7 @@ export const DocsGuides: React.FC = () => {
     );
 };
 
-const Hits: React.FC<any> = ({ hits }): any => {
+const Hits: React.FC<IHitsProps> = ({ hits }) => {
     const sortedHits = _.orderBy(hits, ['title'], ['asc']);
 
     return (
