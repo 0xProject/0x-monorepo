@@ -134,6 +134,7 @@
         "@types/web3-provider-engine": "^14.0.0",
         "awesome-typescript-loader": "^5.2.1",
         "babel-loader": "^8.0.6",
+        "cache-loader": "^4.1.0",
         "compare-versions": "^3.5.1",
         "css-loader": "0.23.x",
         "glob": "^7.1.4",
