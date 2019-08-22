@@ -33,7 +33,6 @@ export enum AssetProxyDispatchErrorCode {
 }
 
 export enum TransactionErrorCode {
-    NoReentrancy,
     AlreadyExecuted,
     Expired,
 }
@@ -222,6 +221,19 @@ export class TransactionGasPriceError extends RevertError {
                 transactionHash,
                 actualGasPrice,
                 requiredGasPrice,
+            },
+        );
+    }
+}
+
+export class TransactionInvalidContextError extends RevertError {
+    constructor(transactionHash?: string, currentContextAddress?: string) {
+        super(
+            'TransactionInvalidContextError',
+            'TransactionInvalidContextError(bytes32 transactionHash, address currentContextAddress)',
+            {
+                transactionHash,
+                currentContextAddress,
             },
         );
     }
