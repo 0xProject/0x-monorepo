@@ -6,7 +6,8 @@
                 "note": "Added DevUtils to migration script",
                 "pr": 2060
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "4.2.0",

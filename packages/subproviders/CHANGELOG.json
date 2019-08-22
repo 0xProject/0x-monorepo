@@ -6,7 +6,8 @@
                 "note": "Updated `MetamaskSubprovider` to use `personal_sign` instead of `eth_sign` to support proxied hardware wallets.",
                 "pr": 2054
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

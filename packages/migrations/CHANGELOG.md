@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _August 22, 2019_
+
+    * Added DevUtils to migration script (#2060)
+
 ## v4.2.0 - _August 8, 2019_
 
     * Added StaticCallAssetProxy and ERC1155AssetProxy (#2021)

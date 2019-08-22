@@ -6,7 +6,8 @@
                 "note": "Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo.",
                 "pr": 2068
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "11.0.0",

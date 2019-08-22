@@ -193,7 +193,7 @@ export class IWalletContract extends BaseContract {
                 name: 'isValidSignature',
                 outputs: [
                     {
-                        name: 'isValid',
+                        name: '',
                         type: 'bytes4',
                     },
                 ],

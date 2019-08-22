@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.3.0 - _August 22, 2019_
+
+    * Fix isValidValidatorSignatureAsync, allow to pass exchangeAddress to isValidSignatureAsync. (#2017)
+    * Fix `Wallet` and `Validator` signature validation (#2078)
+
 ## v8.2.5 - _August 8, 2019_
 
     * Dependencies updated

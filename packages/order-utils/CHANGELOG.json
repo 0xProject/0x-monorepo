@@ -10,7 +10,8 @@
                 "note": "Fix `Wallet` and `Validator` signature validation",
                 "pr": 2078
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,
