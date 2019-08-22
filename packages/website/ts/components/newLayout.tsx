@@ -38,6 +38,7 @@ export interface SectionProps extends WrapProps {
     bgColor?: 'dark' | 'light' | string;
     children: any;
     alignItems?: string;
+    omitWrapper?: boolean;
 }
 
 export interface FlexProps {
@@ -55,6 +56,9 @@ export interface ColumnProps {
 }
 
 export const Section: React.FunctionComponent<SectionProps> = (props: SectionProps) => {
+    if (props.omitWrapper) {
+        return <SectionBase {...props} />;
+    }
     return (
         <SectionBase {...props}>
             <Wrap {...props}>{props.children}</Wrap>
@@ -79,7 +83,7 @@ export const Column = styled.div<ColumnProps>`
 export const FlexWrap = styled.div<FlexProps>`
     max-width: 1500px;
     margin: 0 auto;
-
+    padding: ${props => props.padding};
     @media (min-width: ${props => props.flexBreakpoint || '768px'}) {
         display: ${props => props.isFlex && 'flex'};
         justify-content: ${props =>

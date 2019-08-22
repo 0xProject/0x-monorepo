@@ -207,7 +207,7 @@ export class IValidatorContract extends BaseContract {
                 name: 'isValidSignature',
                 outputs: [
                     {
-                        name: 'isValid',
+                        name: '',
                         type: 'bytes4',
                     },
                 ],

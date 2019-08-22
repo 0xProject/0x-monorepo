@@ -111,6 +111,8 @@ export const constants = {
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
+    URL_DYDX_CASE_STUDY: 'https://blog.0xproject.com/dydx-and-contract-fillable-liquidity-cb965fc6f7e9',
+    URL_HUMMING_BOT_0X: 'https://hummingbot.io/blog/2019-04-announcing-hummingbot/',
     URL_WEB3_LOG_ENTRY_EVENT: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L127',
     URL_WEB3_PROVIDER_DOCS: 'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L150',
     URL_BIGNUMBERJS_GITHUB: 'http://mikemcl.github.io/bignumber.js',
@@ -142,6 +144,7 @@ export const constants = {
     DOCS_SCROLL_DURATION_MS: 0,
     SCROLL_CONTAINER_ID: 'scroll_container',
     SCROLL_TOP_ID: 'pageScrollTop',
+    CFL_DOCS: `${WebsitePaths.Wiki}#Contract-Fillable-Liquidity`,
     NETWORK_NAME_BY_ID: {
         1: Networks.Mainnet,
         3: Networks.Ropsten,

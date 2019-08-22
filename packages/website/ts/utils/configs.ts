@@ -7,6 +7,7 @@ export const configs = {
     AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_PROD_URL: 'https://website-api.0x.org',
     BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0x.org',
+    BACKEND_BASE_DEV_URL: 'https://localhost:3001',
     GOOGLE_SHEETS_LEAD_FORMS: {
         CREDITS: 'https://script.google.com/macros/s/AKfycbyN1lJaSGWg2OIzqT8bou4GiqwCmOVjV2v_fiPO/exec',
     } as GoogleSheetLeadUrls,
@@ -16,8 +17,8 @@ export const configs = {
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
     DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
-    DOMAIN_DOGFOOD: 'dogfood.0x.org',
-    DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1'],
+    DOMAIN_DOGFOOD: 'dogfood.0xproject.com',
+    DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1', '0.0.0.0:3572'],
     DOMAIN_PRODUCTION: '0x.org',
     DOMAIN_VOTE: 'vote.0x.org',
     VOTE_INSTANT_ORDER_SOURCE: 'https://api.radarrelay.com/0x/v2/',

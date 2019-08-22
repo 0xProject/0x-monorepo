@@ -5,6 +5,12 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v7.0.0 - _August 22, 2019_
+
+    * Add optional `exchangeAddress` parameter to `signatureUtils.isValidSignatureAsync` to fix `Validator` type signatures. (#2017)
+    * Removed @0x/order-watcher
+    * Update to latest @0x/contract-wrappers v11 (#2068)
+
 ## v6.0.15 - _August 8, 2019_
 
     * Dependencies updated

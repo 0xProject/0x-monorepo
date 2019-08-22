@@ -463,13 +463,14 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
-    AssetSwapper = '/docs/asset-swapper',
+    AssetSwapperDocs = '/docs/asset-swapper',
     Migrations = '/docs/migrations',
     Careers = '/careers',
     Credits = '/credits',
     Vote = '/vote',
     Extensions = '/extensions',
     Explore = '/explore',
+    AssetSwapperPage = '/asset-swapper',
 }
 
 export enum DocPackages {
@@ -707,6 +708,23 @@ export interface WebsiteBackendJobInfo {
     office: string;
     url: string;
 }
+
+export interface ExchangeSlippageData {
+    exchange: string;
+    slippage: string;
+}
+
+export interface CFLMetricsPairData {
+    baseAssetSymbol: string;
+    quoteAssetSymbol: string;
+    tradeAmount: number;
+    volumeUSD?: number;
+    lastTradePrice?: number;
+    lastTradeTime?: string;
+    exchangeAverageSlippagePercentage?: ExchangeSlippageData[];
+}
+
+export type WebsiteBackendCFLMetricsData = CFLMetricsPairData[];
 
 export enum BrowserType {
     Chrome = 'Chrome',

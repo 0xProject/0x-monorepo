@@ -330,7 +330,12 @@ export const utils = {
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        return utils.isDogfood() ? configs.BACKEND_BASE_STAGING_URL : configs.BACKEND_BASE_PROD_URL;
+        if (utils.isDogfood()) {
+            return configs.BACKEND_BASE_STAGING_URL;
+        } else if (utils.isDevelopment()) {
+            return configs.BACKEND_BASE_DEV_URL;
+        }
+        return configs.BACKEND_BASE_PROD_URL;
     },
     isDevelopment(): boolean {
         return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.host);

@@ -1891,9 +1891,9 @@
   version "10.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.9.4.tgz#0f4cb2dc7c1de6096055357f70179043c33e9897"
 
-"@types/numeral@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@types/numeral/-/numeral-0.0.22.tgz#86bef1f0a2d743afdc2ef3168d45f2905e1a0b93"
+"@types/numeral@^0.0.26":
+  version "0.0.26"
+  resolved "https://registry.npmjs.org/@types/numeral/-/numeral-0.0.26.tgz#cfab9842ef9349ce714b06722940ca7ebf8a6298"
 
 "@types/opn@^5.1.0":
   version "5.1.0"
@@ -7113,6 +7113,14 @@ ethereumjs-blockchain@^3.4.0:
 ethereumjs-blockstream@6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-6.0.0.tgz#79d726d1f358935eb65195e91d40344c31e87eff"
+  dependencies:
+    immutable "3.8.2"
+    source-map-support "0.5.6"
+    uuid "3.2.1"
+
+ethereumjs-blockstream@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-7.0.0.tgz#b8d7b6257dd1100bc6ddb36d6bef58c2490f9999"
   dependencies:
     immutable "3.8.2"
     source-map-support "0.5.6"
@@ -13033,7 +13041,7 @@ number-to-bn@1.7.0:
 
 numeral@^2.0.6:
   version "2.0.6"
-  resolved "https://registry.yarnpkg.com/numeral/-/numeral-2.0.6.tgz#4ad080936d443c2561aed9f2197efffe25f4e506"
+  resolved "https://registry.npmjs.org/numeral/-/numeral-2.0.6.tgz#4ad080936d443c2561aed9f2197efffe25f4e506"
 
 nwsapi@^2.0.7:
   version "2.0.9"

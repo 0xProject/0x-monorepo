@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { CodeDemo } from 'ts/pages/instant/code_demo';
+import { CodeDemo } from 'ts/components/code_demo';
 import { ConfigGenerator } from 'ts/pages/instant/config_generator';
 
 import { Link } from 'ts/components/link';
@@ -43,7 +43,9 @@ export class Configurator extends React.Component {
                             Explore the Docs
                         </Link>
                     </HeadingWrapper>
-                    <CodeDemo key={codeToDisplay}>{codeToDisplay}</CodeDemo>
+                    <CodeDemo key={codeToDisplay} language="html" fontSize="14px">
+                        {codeToDisplay}
+                    </CodeDemo>
                 </Column>
             </FlexWrap>
         );
@@ -79,9 +81,9 @@ export class Configurator extends React.Component {
                 : ''
         }
                 }, 'body');
-            </script>
-        </body>
-    </html>`;
+        </script>
+    </body>
+</html>`;
     };
     private readonly _renderAvailableAssetDatasString = (availableAssetDatas: string[]): string => {
         const stringAvailableAssetDatas = availableAssetDatas.map(assetData => `'${assetData}'`);

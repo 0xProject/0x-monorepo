@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v11.1.0 - _August 22, 2019_
+
+    * Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo. (#2068)
+
 ## v11.0.0 - _August 8, 2019_
 
     * Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/2040 (#2037)

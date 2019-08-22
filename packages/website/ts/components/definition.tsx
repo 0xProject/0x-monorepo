@@ -12,7 +12,7 @@ export interface Action {
     shouldUseAnchorTag?: boolean;
 }
 
-interface Props {
+export interface DefinitionProps {
     isInline?: boolean;
     isInlineIcon?: boolean;
     isCentered?: boolean;
@@ -24,10 +24,11 @@ interface Props {
     titleSize?: 'small' | 'default' | number;
     description: React.ReactNode | string;
     actions?: Action[];
+    className?: string;
 }
 
-export const Definition = (props: Props) => (
-    <Wrap {...props}>
+export const Definition = ({ className, ...props }: DefinitionProps) => (
+    <Wrap {...props} className={className}>
         {!!props.icon && <Icon name={props.icon} size={props.iconSize || 'medium'} margin={[0, 0, 'default', 0]} />}
 
         <TextWrap {...props}>
@@ -69,7 +70,7 @@ export const Definition = (props: Props) => (
     </Wrap>
 );
 
-const Wrap = styled.div<Props>`
+const Wrap = styled.div<DefinitionProps>`
     max-width: ${props => props.isInline && '354px'};
 
     & + & {
@@ -94,7 +95,7 @@ const Wrap = styled.div<Props>`
     }
 `;
 
-const TextWrap = styled.div<Props>`
+const TextWrap = styled.div<DefinitionProps>`
     width: 100%;
     max-width: 560px;
 

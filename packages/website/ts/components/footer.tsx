@@ -33,6 +33,7 @@ const linkRows: LinkRows[] = [
         links: [
             { url: WebsitePaths.Instant, text: '0x Instant' },
             { url: WebsitePaths.LaunchKit, text: '0x Launch Kit' },
+            { url: WebsitePaths.AssetSwapperPage, text: 'Asset Swapper' },
             { url: WebsitePaths.Extensions, text: 'Extensions' },
             { url: WebsitePaths.Vote, text: 'Governance' },
         ],

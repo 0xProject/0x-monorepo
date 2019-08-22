@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _August 22, 2019_
+
+    * Dependencies updated
+
 ## v4.1.0 - _August 8, 2019_
 
     * Updated expected typescript output for cli tests to include `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2018)
