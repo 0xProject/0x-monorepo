@@ -87,7 +87,6 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
-        "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
         "@babel/core": "^7.5.5",
         "@babel/plugin-syntax-object-rest-spread": "^7.2.0",
