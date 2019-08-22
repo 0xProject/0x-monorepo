@@ -368,7 +368,7 @@ blockchainTests.resets('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should not emit transfer events for transfers where from == to', async () => {
+        it('should noop transfer but return nonzero FillResults for fills where from == to', async () => {
             await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, makerAddress);
         });
 
