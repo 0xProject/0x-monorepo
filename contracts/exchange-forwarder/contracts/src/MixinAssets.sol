@@ -19,25 +19,27 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
 
 
 contract MixinAssets is
     Ownable,
-    LibConstants
-    IAssets,
+    LibConstants,
+    IAssets
 {
     using LibBytes for bytes;
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
 
-    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to
-    ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
-    ///      used to withdraw assets that were accidentally sent to this contract.
+    /// @dev Withdraws assets from this contract. The contract formerly required a ZRX balance in order
+    ///      to function optimally, and this function allows the ZRX to be withdrawn by owner.
+    ///      It may also be used to withdraw assets that were accidentally sent to this contract.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of ERC20 token to withdraw.
     function withdrawAsset(
@@ -48,6 +50,27 @@ contract MixinAssets is
         onlyOwner
     {
         _transferAssetToSender(assetData, amount);
+    }
+
+    /// @dev Approves the respective proxy for a given asset to transfer tokens on the Forwarder contract's behalf.
+    ///      This is necessary because an order fee denominated in the maker asset (i.e. a percentage fee) is sent by the
+    ///      Forwarder contract to the fee recipient.
+    ///      This method needs to be called before forwarding orders of a maker asset that hasn't
+    ///      previously been approved.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    function approveMakerAssetProxy(bytes calldata assetData)
+        external
+    {
+        bytes4 proxyId = assetData.readBytes4(0);
+        // For now we only care about ERC20, since percentage fees on ERC721 tokens are invalid.
+        if (proxyId == ERC20_DATA_ID) {
+            address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+            if (proxyAddress == address(0)) {
+                LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+            }
+            IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
+            assetToken.approve(proxyAddress, MAX_UINT);
+        }
     }
 
     /// @dev Transfers given amount of asset to sender.
@@ -66,7 +89,9 @@ contract MixinAssets is
         } else if (proxyId == ERC721_DATA_ID) {
             _transferERC721Token(assetData, amount);
         } else {
-            revert("UNSUPPORTED_ASSET_PROXY");
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
+                proxyId
+            ));
         }
     }
 
@@ -84,15 +109,14 @@ contract MixinAssets is
         // Transfer tokens.
         // We do a raw call so we can check the success separate
         // from the return data.
-        (bool success,) = token.call(abi.encodeWithSelector(
+        (bool success, bytes memory returnData) = token.call(abi.encodeWithSelector(
             ERC20_TRANSFER_SELECTOR,
             msg.sender,
             amount
         ));
-        require(
-            success,
-            "TRANSFER_FAILED"
-        );
+        if (!success) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
+        }
 
         // Check return data.
         // If there is no return data, we assume the token incorrectly
@@ -110,10 +134,9 @@ contract MixinAssets is
                 }
             }
         }
-        require(
-            success,
-            "TRANSFER_FAILED"
-        );
+        if (!success) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
+        }
     }
 
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
@@ -125,10 +148,11 @@ contract MixinAssets is
     )
         internal
     {
-        require(
-            amount == 1,
-            "INVALID_AMOUNT"
-        );
+        if (amount != 1) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.Erc721AmountMustEqualOneError(
+                amount
+            ));
+        }
         // Decode asset data.
         address token = assetData.readAddress(16);
         uint256 tokenId = assetData.readUint256(36);

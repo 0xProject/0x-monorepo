@@ -19,31 +19,25 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinWeth.sol";
 import "./MixinForwarderCore.sol";
 import "./libs/LibConstants.sol";
-import "./MixinAssets.sol";
-import "./MixinExchangeWrapper.sol";
 
 
 // solhint-disable no-empty-blocks
+// MixinAssets, MixinExchangeWrapper, and MixinWeth are all inherited via
+// MixinForwarderCore.
 contract Forwarder is
     LibConstants,
-    MixinWeth,
-    MixinAssets,
-    MixinExchangeWrapper,
     MixinForwarderCore
 {
     constructor (
         address _exchange,
-        bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
         public
         Ownable()
         LibConstants(
             _exchange,
-            _zrxAssetData,
             _wethAssetData
         )
         MixinForwarderCore()

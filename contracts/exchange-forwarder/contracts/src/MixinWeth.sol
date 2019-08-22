@@ -18,78 +18,86 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinWeth is
-    LibMath,
-    LibConstants,
+    LibConstants
 {
-    /// @dev Default payabale function, this allows us to withdraw WETH
+    using LibSafeMath for uint256;
+
+    /// @dev Default payable function, this allows us to withdraw WETH
     function ()
         external
         payable
     {
-        require(
-            msg.sender == address(ETHER_TOKEN),
-            "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY"
-        );
+        if (msg.sender != address(ETHER_TOKEN)) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.DefaultFunctionWethContractOnlyError(
+                msg.sender
+            ));
+        }
     }
 
     /// @dev Converts message call's ETH value into WETH.
     function _convertEthToWeth()
         internal
     {
-        require(
-            msg.value > 0,
-            "INVALID_MSG_VALUE"
-        );
+        if (msg.value == 0) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.MsgValueCantEqualZeroError());
+        }
         ETHER_TOKEN.deposit.value(msg.value)();
     }
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
     ///      Refunds any excess ETH to msg.sender.
-    /// @param wethSoldExcludingFeeOrders Amount of WETH sold when filling primary orders.
-    /// @param wethSoldForZrx Amount of WETH sold when purchasing ZRX required for primary order fees.
+    /// @param wethSold Amount of WETH sold when filling primary orders.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
+    /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
-        uint256 wethSoldExcludingFeeOrders,
-        uint256 wethSoldForZrx,
+        uint256 wethSold,
         uint256 feePercentage,
         address payable feeRecipient
     )
         internal
+        returns (uint256 ethFee)
     {
         // Ensure feePercentage is less than 5%.
-        require(
-            feePercentage <= MAX_FEE_PERCENTAGE,
-            "FEE_PERCENTAGE_TOO_LARGE"
-        );
+        if (feePercentage > MAX_FEE_PERCENTAGE) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
+                feePercentage
+            ));
+        }
 
         // Ensure that no extra WETH owned by this contract has been sold.
-        uint256 wethSold = _safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx);
-        require(
-            wethSold <= msg.value,
-            "OVERSOLD_WETH"
-        );
+        if (wethSold > msg.value) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.OversoldWethError(
+                wethSold,
+                msg.value
+            ));
+        }
 
         // Calculate amount of WETH that hasn't been sold.
-        uint256 wethRemaining = _safeSub(msg.value, wethSold);
+        uint256 wethRemaining = msg.value.safeSub(wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        uint256 ethFee = _getPartialAmountFloor(
+        ethFee = LibMath.getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
-            wethSoldExcludingFeeOrders
+            wethSold
         );
 
         // Ensure fee is less than amount of WETH remaining.
-        require(
-            ethFee <= wethRemaining,
-            "INSUFFICIENT_ETH_REMAINING"
-        );
+        if (ethFee > wethRemaining) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError(
+                ethFee,
+                wethRemaining
+            ));
+        }
 
         // Do nothing if no WETH remaining
         if (wethRemaining > 0) {
@@ -102,7 +110,7 @@ contract MixinWeth is
             }
 
             // Refund remaining ETH to msg.sender.
-            uint256 ethRefund = _safeSub(wethRemaining, ethFee);
+            uint256 ethRefund = wethRemaining.safeSub(ethFee);
             if (ethRefund > 0) {
                 msg.sender.transfer(ethRefund);
             }

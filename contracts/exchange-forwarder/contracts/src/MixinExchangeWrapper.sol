@@ -19,18 +19,21 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "@0x/contracts/exchange/contracts/src/interfaces/IExchange.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinExchangeWrapper is
-    LibFillResults,
-    LibMath,
     LibConstants
 {
+    using LibSafeMath for uint256;
+
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
@@ -43,7 +46,7 @@ contract MixinExchangeWrapper is
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
@@ -77,183 +80,252 @@ contract MixinExchangeWrapper is
         return fillResults;
     }
 
+    /// @dev Executes a single call of fillOrder according to the wethSellAmount and
+    ///      the amount already sold.
+    /// @param order A single order specification.
+    /// @param signature Signature for the given order.
+    /// @param remainingTakerAssetFillAmount Remaining amount of WETH to sell.
+    /// @return wethSpentAmount Amount of WETH spent on the given order.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given order.
+    function _marketSellSingleOrder(
+        LibOrder.Order memory order,
+        bytes memory signature,
+        uint256 remainingTakerAssetFillAmount
+    )
+        internal
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount
+        )
+    {
+        // No fee or percentage fee
+        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.makerAssetData)) {
+            // Attempt to sell the remaining amount of WETH
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
+                order,
+                remainingTakerAssetFillAmount,
+                signature
+            );
+
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount;
+
+            // Subtract fee from makerAssetFilledAmount for the net amount acquired.
+            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount.safeSub(
+                singleFillResults.takerFeePaid
+            );
+        // WETH fee
+        } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
+            // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
+            // This ensures that we reserve enough to pay the fee.
+            uint256 takerAssetFillAmount = LibMath.getPartialAmountCeil(
+                order.takerAssetAmount,
+                order.takerAssetAmount.safeAdd(order.takerFee),
+                remainingTakerAssetFillAmount
+            );
+
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
+                order,
+                takerAssetFillAmount,
+                signature
+            );
+
+            // WETH is also spent on the taker fee, so we add it here.
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
+                singleFillResults.takerFeePaid
+            );
+
+            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+        // Unsupported fee
+        } else {
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
+        }
+
+        return (wethSpentAmount, makerAssetAcquiredAmount);
+    }
+
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH has been sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
+    /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
     function _marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
         bytes[] memory signatures
     )
         internal
-        returns (FillResults memory totalFillResults)
+        returns (
+            uint256 totalWethSpentAmount,
+            uint256 totalMakerAssetAcquiredAmount
+        )
     {
-        bytes memory makerAssetData = orders[0].makerAssetData;
-        bytes memory wethAssetData = WETH_ASSET_DATA;
-
         uint256 ordersLength = orders.length;
+
         for (uint256 i = 0; i != ordersLength; i++) {
+            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
+                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                    orders[0].makerAssetData,
+                    orders[i].makerAssetData
+                ));
+            }
 
-            // We assume that asset being bought by taker is the same for each order.
-            // We assume that asset being sold by taker is WETH for each order.
-            orders[i].makerAssetData = makerAssetData;
-            orders[i].takerAssetData = wethAssetData;
+            // Preemptively skip to avoid division by zero in _marketSellSingleOrder
+            if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
+                continue;
+            }
 
-            // Calculate the remaining amount of WETH to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(wethSellAmount, totalFillResults.takerAssetFilledAmount);
+            // The remaining amount of WETH to sell
+            uint256 remainingTakerAssetFillAmount = wethSellAmount.safeSub(totalWethSpentAmount);
 
-            // Attempt to sell the remaining amount of WETH
-            FillResults memory singleFillResults = _fillOrderNoThrow(
+            (
+                uint256 wethSpentAmount,
+                uint256 makerAssetAcquiredAmount
+            ) = _marketSellSingleOrder(
                 orders[i],
-                remainingTakerAssetFillAmount,
-                signatures[i]
+                signatures[i],
+                remainingTakerAssetFillAmount
             );
 
-            // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            totalWethSpentAmount = totalWethSpentAmount.safeAdd(wethSpentAmount);
+            totalMakerAssetAcquiredAmount = totalMakerAssetAcquiredAmount.safeAdd(makerAssetAcquiredAmount);
 
-            // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= wethSellAmount) {
+            // Stop execution if the entire amount of WETH has been sold
+            if (totalWethSpentAmount >= wethSellAmount) {
                 break;
             }
         }
-        return totalFillResults;
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
-    ///      The asset being sold by taker must always be WETH.
-    /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
-    /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function _marketBuyExactAmountWithWeth(
-        LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
-        bytes[] memory signatures
+    /// @dev Executes a single call of fillOrder according to the makerAssetBuyAmount and
+    ///      the amount already bought.
+    /// @param order A single order specification.
+    /// @param signature Signature for the given order.
+    /// @param remainingMakerAssetFillAmount Remaining amount of maker asset to buy.
+    /// @return wethSpentAmount Amount of WETH spent on the given order.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given order.
+    function _marketBuySingleOrder(
+        LibOrder.Order memory order,
+        bytes memory signature,
+        uint256 remainingMakerAssetFillAmount
     )
         internal
-        returns (FillResults memory totalFillResults)
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount
+        )
     {
-        bytes memory makerAssetData = orders[0].makerAssetData;
-        bytes memory wethAssetData = WETH_ASSET_DATA;
-
-        uint256 ordersLength = orders.length;
-        uint256 makerAssetFilledAmount = 0;
-        for (uint256 i = 0; i != ordersLength; i++) {
-
-            // We assume that asset being bought by taker is the same for each order.
-            // We assume that asset being sold by taker is WETH for each order.
-            orders[i].makerAssetData = makerAssetData;
-            orders[i].takerAssetData = wethAssetData;
-
-            // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
-
-            // Convert the remaining amount of makerAsset to buy into remaining amount
-            // of takerAsset to sell, assuming entire amount can be sold in the current order.
-            // We round up because the exchange rate computed by fillOrder rounds in favor
-            // of the Maker. In this case we want to overestimate the amount of takerAsset.
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
-                orders[i].takerAssetAmount,
-                orders[i].makerAssetAmount,
+        // No fee or WETH fee
+        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.takerAssetData)) {
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
+                order.takerAssetAmount,
+                order.makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = _fillOrderNoThrow(
-                orders[i],
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
+                order,
                 remainingTakerAssetFillAmount,
-                signatures[i]
+                signature
             );
 
-            // Update amounts filled and fees paid by maker and taker
-            _addFillResults(totalFillResults, singleFillResults);
+            // WETH is also spent on the taker fee, so we add it here.
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
+                singleFillResults.takerFeePaid
+            );
 
-            // Stop execution if the entire amount of makerAsset has been bought
-            makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
-            if (makerAssetFilledAmount >= makerAssetFillAmount) {
-                break;
-            }
+            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
+        // Percentage fee
+        } else if (order.takerFeeAssetData.equals(order.makerAssetData)) {
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
+                order.takerAssetAmount,
+                order.makerAssetAmount.safeSub(order.takerFee),
+                remainingMakerAssetFillAmount
+            );
+
+            // Attempt to sell the remaining amount of takerAsset
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
+                order,
+                remainingTakerAssetFillAmount,
+                signature
+            );
+
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount;
+
+            // Subtract fee from makerAssetFilledAmount for the net amount acquired.
+            makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount.safeSub(
+                singleFillResults.takerFeePaid
+            );
+        // Unsupported fee
+        } else {
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
 
-        require(
-            makerAssetFilledAmount >= makerAssetFillAmount,
-            "COMPLETE_FILL_FAILED"
-        );
-        return totalFillResults;
+        return (wethSpentAmount, makerAssetAcquiredAmount);
     }
 
-    /// @dev Buys zrxBuyAmount of ZRX fee tokens, taking into account ZRX fees for each order. This will guarantee
-    ///      that at least zrxBuyAmount of ZRX is purchased (sometimes slightly over due to rounding issues).
-    ///      It is possible that a request to buy 200 ZRX will require purchasing 202 ZRX
-    ///      as 2 ZRX is required to purchase the 200 ZRX fee tokens. This guarantees at least 200 ZRX for future purchases.
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is acquired.
+    ///      Note that the Forwarder may fill more than the makerAssetBuyAmount so that, after percentage fees
+    ///      are paid, the net amount acquired after fees is equal to makerAssetBuyAmount (modulo rounding).
     ///      The asset being sold by taker must always be WETH.
-    /// @param orders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset.
-    /// @param zrxBuyAmount Desired amount of ZRX to buy.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return totalFillResults Amounts filled and fees paid by maker and taker.
-    function _marketBuyExactZrxWithWeth(
+    /// @param orders Array of order specifications.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to fill.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return totalWethSpentAmount Total amount of WETH spent on the given orders.
+    /// @return totalMakerAssetAcquiredAmount Total amount of maker asset acquired from the given orders.
+    function _marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
-        uint256 zrxBuyAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures
     )
         internal
-        returns (FillResults memory totalFillResults)
+        returns (
+            uint256 totalWethSpentAmount,
+            uint256 totalMakerAssetAcquiredAmount
+        )
     {
-        // Do nothing if zrxBuyAmount == 0
-        if (zrxBuyAmount == 0) {
-            return totalFillResults;
-        }
-
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
-        bytes memory wethAssetData = WETH_ASSET_DATA;
-        uint256 zrxPurchased = 0;
-
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
+            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
+                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                    orders[0].makerAssetData,
+                    orders[i].makerAssetData
+                ));
+            }
 
-            // All of these are ZRX/WETH, so we can drop the respective assetData from calldata.
-            orders[i].makerAssetData = zrxAssetData;
-            orders[i].takerAssetData = wethAssetData;
+            // Preemptively skip to avoid division by zero in _marketBuySingleOrder
+            if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
+                continue;
+            }
 
-            // Calculate the remaining amount of ZRX to buy.
-            uint256 remainingZrxBuyAmount = _safeSub(zrxBuyAmount, zrxPurchased);
+            uint256 remainingMakerAssetFillAmount = makerAssetBuyAmount.safeSub(totalMakerAssetAcquiredAmount);
 
-            // Convert the remaining amount of ZRX to buy into remaining amount
-            // of WETH to sell, assuming entire amount can be sold in the current order.
-            // We round up because the exchange rate computed by fillOrder rounds in favor
-            // of the Maker. In this case we want to overestimate the amount of takerAsset.
-            uint256 remainingWethSellAmount = _getPartialAmountCeil(
-                orders[i].takerAssetAmount,
-                _safeSub(orders[i].makerAssetAmount, orders[i].takerFee),  // our exchange rate after fees
-                remainingZrxBuyAmount
-            );
-
-            // Attempt to sell the remaining amount of WETH.
-            FillResults memory singleFillResult = _fillOrderNoThrow(
+            (
+                uint256 wethSpentAmount,
+                uint256 makerAssetAcquiredAmount
+            ) = _marketBuySingleOrder(
                 orders[i],
-                remainingWethSellAmount,
-                signatures[i]
+                signatures[i],
+                remainingMakerAssetFillAmount
             );
 
-            // Update amounts filled and fees paid by maker and taker.
-            _addFillResults(totalFillResults, singleFillResult);
-            zrxPurchased = _safeSub(totalFillResults.makerAssetFilledAmount, totalFillResults.takerFeePaid);
+            totalWethSpentAmount = totalWethSpentAmount.safeAdd(wethSpentAmount);
+            totalMakerAssetAcquiredAmount = totalMakerAssetAcquiredAmount.safeAdd(makerAssetAcquiredAmount);
 
-            // Stop execution if the entire amount of ZRX has been bought.
-            if (zrxPurchased >= zrxBuyAmount) {
+            // Stop execution if the entire amount of makerAsset has been bought
+            if (totalMakerAssetAcquiredAmount >= makerAssetBuyAmount) {
                 break;
             }
         }
 
-        require(
-            zrxPurchased >= zrxBuyAmount,
-            "COMPLETE_FILL_FAILED"
-        );
-        return totalFillResults;
+        if (totalMakerAssetAcquiredAmount < makerAssetBuyAmount) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteBuyFailedError(
+                makerAssetBuyAmount,
+                totalMakerAssetAcquiredAmount
+            ));
+        }
     }
 }

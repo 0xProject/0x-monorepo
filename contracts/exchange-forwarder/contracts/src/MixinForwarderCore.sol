@@ -19,192 +19,154 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibConstants.sol";
-import "./interfaces/IAsserts.sol";
-import "./interfaces/IForwarderCore.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
+import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
+import "./interfaces/IAssets.sol";
+import "./interfaces/IForwarderCore.sol";
+import "./MixinAssets.sol";
+import "./MixinExchangeWrapper.sol";
+import "./MixinWeth.sol";
 
 
 contract MixinForwarderCore is
-    LibFillResults,
-    LibMath,
     LibConstants,
-    IAsserts,
-    IForwarderCore
+    IAssets,
+    IForwarderCore,
+    MixinWeth,
+    MixinAssets,
+    MixinExchangeWrapper
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
-    /// @dev Constructor approves ERC20 proxy to transfer ZRX and WETH on this contract's behalf.
+    /// @dev Constructor approves ERC20 proxy to transfer WETH on this contract's behalf.
     constructor ()
         public
     {
         address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
-        require(
-            proxyAddress != address(0),
-            "UNREGISTERED_ASSET_PROXY"
-        );
+        if (proxyAddress == address(0)) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+        }
         ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
-        ZRX_TOKEN.approve(proxyAddress, MAX_UINT);
     }
 
-    /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
-    ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
-    ///      Any ETH not spent will be refunded to sender.
+    /// @dev Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
+    ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
         returns (
-            FillResults memory orderFillResults,
-            FillResults memory feeOrderFillResults
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
         )
     {
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        uint256 wethSellAmount;
-        uint256 zrxBuyAmount;
-        uint256 makerAssetAmountPurchased;
-        if (orders[0].makerAssetData.equals(ZRX_ASSET_DATA)) {
-            // Calculate amount of WETH that won't be spent on ETH fees.
-            wethSellAmount = _getPartialAmountFloor(
-                PERCENTAGE_DENOMINATOR,
-                _safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
-                msg.value
-            );
-            // Market sell available WETH.
-            // ZRX fees are paid with this contract's balance.
-            orderFillResults = _marketSellWeth(
-                orders,
-                wethSellAmount,
-                signatures
-            );
-            // The fee amount must be deducted from the amount transfered back to sender.
-            makerAssetAmountPurchased = _safeSub(orderFillResults.makerAssetFilledAmount, orderFillResults.takerFeePaid);
-        } else {
-            // 5% of WETH is reserved for filling feeOrders and paying feeRecipient.
-            wethSellAmount = _getPartialAmountFloor(
-                MAX_WETH_FILL_PERCENTAGE,
-                PERCENTAGE_DENOMINATOR,
-                msg.value
-            );
-            // Market sell 95% of WETH.
-            // ZRX fees are payed with this contract's balance.
-            orderFillResults = _marketSellWeth(
-                orders,
-                wethSellAmount,
-                signatures
-            );
-            // Buy back all ZRX spent on fees.
-            zrxBuyAmount = orderFillResults.takerFeePaid;
-            feeOrderFillResults = _marketBuyExactZrxWithWeth(
-                feeOrders,
-                zrxBuyAmount,
-                feeSignatures
-            );
-            makerAssetAmountPurchased = orderFillResults.makerAssetFilledAmount;
-        }
+        // Calculate amount of WETH that won't be spent on the forwarder fee.
+        uint256 wethSellAmount = LibMath.getPartialAmountFloor(
+            PERCENTAGE_DENOMINATOR,
+            feePercentage.safeAdd(PERCENTAGE_DENOMINATOR),
+            msg.value
+        );
 
-        // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
+        // Spends up to wethSellAmount to fill orders and pay WETH order fees.
+        (
+            wethSpentAmount,
+            makerAssetAcquiredAmount
+        ) = _marketSellWeth(
+            orders,
+            wethSellAmount,
+            signatures
+        );
+
+        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
-            orderFillResults.takerAssetFilledAmount,
-            feeOrderFillResults.takerAssetFilledAmount,
+        ethFeePaid = _transferEthFeeAndRefund(
+            wethSpentAmount,
             feePercentage,
             feeRecipient
         );
 
         // Transfer purchased assets to msg.sender.
-        _transferAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
+        _transferAssetToSender(
+            orders[0].makerAssetData,
+            makerAssetAcquiredAmount
+        );
     }
 
-    /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can
+    ///      pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
         returns (
-            FillResults memory orderFillResults,
-            FillResults memory feeOrderFillResults
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
         )
     {
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        uint256 zrxBuyAmount;
-        uint256 makerAssetAmountPurchased;
-        if (orders[0].makerAssetData.equals(ZRX_ASSET_DATA)) {
-            // If the makerAsset is ZRX, it is not necessary to pay fees out of this
-            // contracts's ZRX balance because fees are factored into the price of the order.
-            orderFillResults = _marketBuyExactZrxWithWeth(
-                orders,
-                makerAssetFillAmount,
-                signatures
-            );
-            // The fee amount must be deducted from the amount transfered back to sender.
-            makerAssetAmountPurchased = _safeSub(orderFillResults.makerAssetFilledAmount, orderFillResults.takerFeePaid);
-        } else {
-            // Attemp to purchase desired amount of makerAsset.
-            // ZRX fees are payed with this contract's balance.
-            orderFillResults = _marketBuyExactAmountWithWeth(
-                orders,
-                makerAssetFillAmount,
-                signatures
-            );
-            // Buy back all ZRX spent on fees.
-            zrxBuyAmount = orderFillResults.takerFeePaid;
-            feeOrderFillResults = _marketBuyExactZrxWithWeth(
-                feeOrders,
-                zrxBuyAmount,
-                feeSignatures
-            );
-            makerAssetAmountPurchased = orderFillResults.makerAssetFilledAmount;
-        }
+        // Attempt to fill the desired amount of makerAsset. Note that makerAssetAcquiredAmount < makerAssetBuyAmount
+        // if any of the orders filled have an takerFee denominated in makerAsset, since these fees will be paid out
+        // from the Forwarder's temporary makerAsset balance.
+        (
+            wethSpentAmount,
+            makerAssetAcquiredAmount
+        ) = _marketBuyExactAmountWithWeth(
+            orders,
+            makerAssetBuyAmount,
+            signatures
+        );
 
-        // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
+        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
-            orderFillResults.takerAssetFilledAmount,
-            feeOrderFillResults.takerAssetFilledAmount,
+        ethFeePaid = _transferEthFeeAndRefund(
+            wethSpentAmount,
             feePercentage,
             feeRecipient
         );
 
-        // Transfer purchased assets to msg.sender.
-        _transferAssetToSender(orders[0].makerAssetData, makerAssetAmountPurchased);
+        // Transfer acquired assets to msg.sender.
+        _transferAssetToSender(
+            orders[0].makerAssetData,
+            makerAssetAcquiredAmount
+        );
     }
 }
