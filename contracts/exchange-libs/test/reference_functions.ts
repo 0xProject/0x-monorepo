@@ -23,12 +23,14 @@ describe('Reference Functions', () => {
                     takerAssetFilledAmount: ONE_ETHER.times(2),
                     makerFeePaid: ONE_ETHER.times(0.001),
                     takerFeePaid: ONE_ETHER.times(0.002),
+                    protocolFeePaid: ONE_ETHER.times(0.003),
                 },
                 {
                     makerAssetFilledAmount: ONE_ETHER.times(0.01),
                     takerAssetFilledAmount: ONE_ETHER.times(2).times(0.01),
                     makerFeePaid: ONE_ETHER.times(0.001).times(0.01),
                     takerFeePaid: ONE_ETHER.times(0.002).times(0.01),
+                    protocolFeePaid: ONE_ETHER.times(0.003).times(0.01),
                 },
             ];
 
@@ -72,6 +74,17 @@ describe('Reference Functions', () => {
                     SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
                     a.takerFeePaid,
                     b.takerFeePaid,
+                );
+                expect(() => addFillResults(a, b)).to.throw(expectedError.message);
+            });
+
+            it('reverts if computing `protocolFeePaid` overflows', () => {
+                const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
+                b.protocolFeePaid = MAX_UINT256;
+                const expectedError = new SafeMathRevertErrors.SafeMathError(
+                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                    a.protocolFeePaid,
+                    b.protocolFeePaid,
                 );
                 expect(() => addFillResults(a, b)).to.throw(expectedError.message);
             });

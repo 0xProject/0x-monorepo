@@ -37,8 +37,9 @@ library LibFillResults {
     struct FillResults {
         uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.
         uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.
-        uint256 makerFeePaid;            // Total amount of ZRX paid by maker(s) to feeRecipient(s).
-        uint256 takerFeePaid;            // Total amount of ZRX paid by taker to feeRecipients(s).
+        uint256 makerFeePaid;            // Total amount of fees paid by maker(s) to feeRecipient(s).
+        uint256 takerFeePaid;            // Total amount of fees paid by taker to feeRecipients(s).
+        uint256 protocolFeePaid;         // Total amount of fees paid by taker to the staking contract.
     }
 
     struct MatchedFillResults {
@@ -51,13 +52,15 @@ library LibFillResults {
     /// @dev Calculates amounts filled and fees paid by maker and taker.
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param protocolFeeMultiplier The multiplier used to calculate protocol fees.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         LibOrder.Order memory order,
-        uint256 takerAssetFilledAmount
+        uint256 takerAssetFilledAmount,
+        uint256 protocolFeeMultiplier
     )
         internal
-        pure
+        view
         returns (FillResults memory fillResults)
     {
         // Compute proportional transfer amounts
@@ -78,6 +81,9 @@ library LibFillResults {
             order.takerFee
         );
 
+        // Compute the protocol fee for a single fill.
+        fillResults.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
+
         return fillResults;
     }
 
@@ -89,6 +95,7 @@ library LibFillResults {
     /// @param rightOrder Second order to match.
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
+    /// @param protocolFeeMultiplier The multiplier used to calculate protocol fees.
     /// @param shouldMaximallyFillOrders A value that indicates whether or not this calculation should use
     ///                                  the maximal fill order matching strategy.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
@@ -97,10 +104,11 @@ library LibFillResults {
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
         uint256 rightOrderTakerAssetFilledAmount,
+        uint256 protocolFeeMultiplier,
         bool shouldMaximallyFillOrders
     )
         internal
-        pure
+        view
         returns (MatchedFillResults memory matchedFillResults)
     {
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
@@ -149,6 +157,7 @@ library LibFillResults {
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
+        matchedFillResults.left.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
 
         // Compute fees for right order
         matchedFillResults.right.makerFeePaid = LibMath.safeGetPartialAmountFloor(
@@ -161,6 +170,7 @@ library LibFillResults {
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
         );
+        matchedFillResults.right.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
 
         // Return fill results
         return matchedFillResults;
@@ -182,6 +192,7 @@ library LibFillResults {
         totalFillResults.takerAssetFilledAmount = fillResults1.takerAssetFilledAmount.safeAdd(fillResults2.takerAssetFilledAmount);
         totalFillResults.makerFeePaid = fillResults1.makerFeePaid.safeAdd(fillResults2.makerFeePaid);
         totalFillResults.takerFeePaid = fillResults1.takerFeePaid.safeAdd(fillResults2.takerFeePaid);
+        totalFillResults.protocolFeePaid = fillResults1.protocolFeePaid.safeAdd(fillResults2.protocolFeePaid);
 
         return totalFillResults;
     }
@@ -237,7 +248,7 @@ library LibFillResults {
                 rightOrder.makerAssetAmount,
                 leftTakerAssetAmountRemaining // matchedFillResults.right.makerAssetFilledAmount
             );
-        } else { 
+        } else {
             // leftTakerAssetAmountRemaining == rightMakerAssetAmountRemaining
             // Case 3: Both orders are fully filled. Technically, this could be captured by the above cases, but
             //         this calculation will be more precise since it does not include rounding.

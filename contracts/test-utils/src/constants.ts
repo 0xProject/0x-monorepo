@@ -68,4 +68,5 @@ export const constants = {
     ONE_ETHER: new BigNumber(1e18),
     EIP712_DOMAIN_NAME: '0x Protocol',
     EIP712_DOMAIN_VERSION: '3.0.0',
+    PROTOCOL_FEE_MULTIPLIER: new BigNumber(150000),
 };

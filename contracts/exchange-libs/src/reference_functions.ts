@@ -18,7 +18,7 @@ export function isRoundingErrorFloor(numerator: BigNumber, denominator: BigNumbe
     const remainder = numerator.times(target).mod(denominator);
     // Need to do this separately because solidity evaluates RHS of the comparison expression first.
     const rhs = safeMul(numerator, target);
-    const lhs = safeMul(new BigNumber(1000), remainder);
+    const lhs = safeMul(remainder, new BigNumber(1000));
     return lhs.gte(rhs);
 }
 
@@ -36,7 +36,7 @@ export function isRoundingErrorCeil(numerator: BigNumber, denominator: BigNumber
     remainder = safeSub(denominator, remainder).mod(denominator);
     // Need to do this separately because solidity evaluates RHS of the comparison expression first.
     const rhs = safeMul(numerator, target);
-    const lhs = safeMul(new BigNumber(1000), remainder);
+    const lhs = safeMul(remainder, new BigNumber(1000));
     return lhs.gte(rhs);
 }
 
@@ -73,7 +73,8 @@ export function getPartialAmountFloor(numerator: BigNumber, denominator: BigNumb
  * Calculates partial value given a numerator and denominator rounded down.
  */
 export function getPartialAmountCeil(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
-    return safeDiv(safeAdd(safeMul(numerator, target), safeSub(denominator, new BigNumber(1))), denominator);
+    const sub = safeSub(denominator, new BigNumber(1)); // This is computed first to simulate Solidity's order of operations
+    return safeDiv(safeAdd(safeMul(numerator, target), sub), denominator);
 }
 
 /**
@@ -85,13 +86,19 @@ export function addFillResults(a: FillResults, b: FillResults): FillResults {
         takerAssetFilledAmount: safeAdd(a.takerAssetFilledAmount, b.takerAssetFilledAmount),
         makerFeePaid: safeAdd(a.makerFeePaid, b.makerFeePaid),
         takerFeePaid: safeAdd(a.takerFeePaid, b.takerFeePaid),
+        protocolFeePaid: safeAdd(a.protocolFeePaid, b.protocolFeePaid),
     };
 }
 
 /**
  * Calculates amounts filled and fees paid by maker and taker.
  */
-export function calculateFillResults(order: OrderWithoutDomain, takerAssetFilledAmount: BigNumber): FillResults {
+export function calculateFillResults(
+    order: OrderWithoutDomain,
+    takerAssetFilledAmount: BigNumber,
+    protocolFeeMultiplier: BigNumber,
+    gasPrice: BigNumber,
+): FillResults {
     const makerAssetFilledAmount = safeGetPartialAmountFloor(
         takerAssetFilledAmount,
         order.takerAssetAmount,
@@ -99,10 +106,12 @@ export function calculateFillResults(order: OrderWithoutDomain, takerAssetFilled
     );
     const makerFeePaid = safeGetPartialAmountFloor(makerAssetFilledAmount, order.makerAssetAmount, order.makerFee);
     const takerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
+    const protocolFeePaid = safeMul(gasPrice, protocolFeeMultiplier);
     return {
         makerAssetFilledAmount,
         takerAssetFilledAmount,
         makerFeePaid,
         takerFeePaid,
+        protocolFeePaid,
     };
 }
