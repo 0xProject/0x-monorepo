@@ -6,7 +6,8 @@
                 "note": "Update `IWallet` and `IValidator` to reflect Mainnet",
                 "pr": 2078
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "2.1.0",

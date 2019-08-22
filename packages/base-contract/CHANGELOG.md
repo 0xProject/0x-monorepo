@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.2 - _August 22, 2019_
+
+    * Updated to ethereumjs-blockstream@^7.0.0 (#2089)
+
 ## v5.3.1 - _August 8, 2019_
 
     * Dependencies updated

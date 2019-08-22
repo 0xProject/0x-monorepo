@@ -13,7 +13,8 @@
                 "note": "Update to latest @0x/contract-wrappers v11",
                 "pr": 2068
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

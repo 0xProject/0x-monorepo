@@ -10,7 +10,8 @@
                 "note": "Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package.",
                 "pr": 2086
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "11.0.0",
