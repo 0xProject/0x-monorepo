@@ -79,7 +79,7 @@ const config = {
             },
             {
                 test: /\.less$/,
-                loader: 'style-loader!css-loader!less-loader',
+                use: ['style-loader', 'css-loader', 'less-loader'],
                 exclude: /node_modules/,
             },
             {
