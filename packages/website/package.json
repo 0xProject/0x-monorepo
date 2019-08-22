@@ -75,7 +75,6 @@
         "react-tabs": "^3.0.0",
         "react-tooltip": "^3.2.7",
         "react-transition-group": "^4.2.1",
-        "react-typist": "^2.0.4",
         "redux": "^3.6.0",
         "redux-devtools-extension": "^2.13.2",
         "rollbar": "^2.4.7",
