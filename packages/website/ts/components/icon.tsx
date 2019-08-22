@@ -1,5 +1,4 @@
-import React, { Fragment } from 'react';
-import Loadable from 'react-loadable';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import { getCSSPadding, PaddingInterface } from 'ts/constants/utilities';
@@ -14,14 +13,15 @@ interface IconProps extends PaddingInterface {
 
 export const Icon: React.FC<IconProps> = props => {
     if (props.name && !props.component) {
-        const IconSVG = Loadable({
-            loader: async () => import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
-            loading: () => <Fragment />,
-        });
+        const IconSVG = React.lazy(async () =>
+            import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
+        );
 
         return (
             <StyledIcon {...props}>
-                <IconSVG />
+                <React.Suspense fallback={<React.Fragment />}>
+                    <IconSVG />
+                </React.Suspense>
             </StyledIcon>
         );
     }
