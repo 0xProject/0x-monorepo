@@ -93,16 +93,28 @@ blockchainTests('LibFillResults', env => {
                 return ReferenceFunctions.calculateFillResults(
                     makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount),
                     takerAssetFilledAmount,
+                    // We have to pick a gasprice and a protocolFeeMultiplier for these combinatorial tests because otherwise the stack size limit will be exceeded.
+                    new BigNumber(150000),
+                    new BigNumber(1),
                 );
             }
 
+            // TODO(jalextowle): We might want to add combinatorial testing for protocol fees
             async function testCalculateFillResultsAsync(
                 orderTakerAssetAmount: BigNumber,
                 takerAssetFilledAmount: BigNumber,
                 otherAmount: BigNumber,
             ): Promise<FillResults> {
                 const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-                return libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount);
+                return libsContract.calculateFillResults.callAsync(
+                    order,
+                    takerAssetFilledAmount,
+                    // We have to pick a gasprice and a protocolFeeMultiplier for these combinatorial tests because otherwise the stack size limit will be exceeded.
+                    new BigNumber(150000),
+                    {
+                        gasPrice: new BigNumber(1),
+                    },
+                );
             }
 
             testCombinatoriallyWithReferenceFunc(
@@ -127,8 +139,20 @@ blockchainTests('LibFillResults', env => {
                     takerFee: ONE_ETHER.times(0.0025),
                 });
                 const takerAssetFilledAmount = ONE_ETHER.dividedToIntegerBy(3);
-                const expected = ReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount);
-                const actual = await libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount);
+                const expected = ReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    new BigNumber(1500000),
+                    new BigNumber(1000000),
+                );
+                const actual = await libsContract.calculateFillResults.callAsync(
+                    order,
+                    takerAssetFilledAmount,
+                    new BigNumber(1500000),
+                    {
+                        gasPrice: new BigNumber(1000000),
+                    },
+                );
                 expect(actual).to.deep.eq(expected);
             });
 
@@ -144,9 +168,9 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount,
                     order.makerAssetAmount,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if computing `fillResults.makerFeePaid` overflows', async () => {
@@ -167,9 +191,9 @@ blockchainTests('LibFillResults', env => {
                     makerAssetFilledAmount,
                     order.makerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if computing `fillResults.takerFeePaid` overflows', async () => {
@@ -185,9 +209,9 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount,
                     order.takerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if `order.makerAssetAmount` is 0', async () => {
@@ -197,9 +221,9 @@ blockchainTests('LibFillResults', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if `order.takerAssetAmount` is 0', async () => {
@@ -209,9 +233,9 @@ blockchainTests('LibFillResults', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', async () => {
@@ -225,9 +249,9 @@ blockchainTests('LibFillResults', env => {
                     order.takerAssetAmount,
                     order.makerAssetAmount,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if there is a rounding error computing `makerFeePaid`', async () => {
@@ -247,9 +271,9 @@ blockchainTests('LibFillResults', env => {
                     order.makerAssetAmount,
                     order.makerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if there is a rounding error computing `takerFeePaid`', async () => {
@@ -269,9 +293,32 @@ blockchainTests('LibFillResults', env => {
                     order.makerAssetAmount,
                     order.takerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, constants.ZERO_AMOUNT),
+                ).to.revertWith(expectedError);
+            });
+
+            it('reverts if there is an overflow when computing `protocolFeePaid`', async () => {
+                // All values need to be large to ensure we don't trigger a RoundingError.
+                const order = makeOrder({
+                    makerAssetAmount: ONE_ETHER,
+                    takerAssetAmount: ONE_ETHER.times(2),
+                    makerFee: ONE_ETHER.times(0.0023),
+                    takerFee: ONE_ETHER.times(0.0025),
+                });
+                const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
+                const protocolFeeMultiplier = MAX_UINT256;
+                const gasPrice = new BigNumber(2);
+                const expectedError = new SafeMathRevertErrors.SafeMathError(
+                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                    gasPrice,
+                    protocolFeeMultiplier,
                 );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount, protocolFeeMultiplier, {
+                        gasPrice,
+                    }),
+                ).to.revertWith(expectedError);
             });
         });
     });
@@ -284,12 +331,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: ONE_ETHER.times(2),
                     makerFeePaid: ONE_ETHER.times(0.001),
                     takerFeePaid: ONE_ETHER.times(0.002),
+                    protocolFeePaid: ONE_ETHER.times(0.003),
                 },
                 {
                     makerAssetFilledAmount: ONE_ETHER.times(0.01),
                     takerAssetFilledAmount: ONE_ETHER.times(2).times(0.01),
                     makerFeePaid: ONE_ETHER.times(0.001).times(0.01),
                     takerFeePaid: ONE_ETHER.times(0.002).times(0.01),
+                    protocolFeePaid: ONE_ETHER.times(0.003).times(0.01),
                 },
             ];
 
@@ -343,6 +392,17 @@ blockchainTests('LibFillResults', env => {
                 );
                 return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
             });
+
+            it('reverts if computing `protocolFeePaid` overflows', async () => {
+                const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
+                b.protocolFeePaid = MAX_UINT256;
+                const expectedError = new SafeMathRevertErrors.SafeMathError(
+                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                    a.protocolFeePaid,
+                    b.protocolFeePaid,
+                );
+                return expect(libsContract.addFillResults.callAsync(a, b)).to.revertWith(expectedError);
+            });
         });
     });
 
@@ -351,6 +411,7 @@ blockchainTests('LibFillResults', env => {
         takerAssetFilledAmount: constants.ZERO_AMOUNT,
         makerFeePaid: constants.ZERO_AMOUNT,
         takerFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
 
     const EMPTY_MATCHED_FILL_RESULTS: MatchedFillResults = {
@@ -366,12 +427,14 @@ blockchainTests('LibFillResults', env => {
             takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
             takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            protocolFeePaid: Web3Wrapper.toBaseUnitAmount(150000, 0),
         },
         right: {
             makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
             takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            protocolFeePaid: Web3Wrapper.toBaseUnitAmount(150000, 0),
         },
         profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
         profitInRightMakerAsset: constants.ZERO_AMOUNT,
@@ -398,6 +461,8 @@ blockchainTests('LibFillResults', env => {
             rightOrder: Order,
             leftOrderTakerAssetFilledAmount: BigNumber,
             rightOrderTakerAssetFilledAmount: BigNumber,
+            protocolFeeMultiplier: BigNumber,
+            gasPrice: BigNumber,
             from?: string,
         ): Promise<void> {
             const actualMatchedFillResults = await libsContract.calculateMatchedFillResults.callAsync(
@@ -405,8 +470,9 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 leftOrderTakerAssetFilledAmount,
                 rightOrderTakerAssetFilledAmount,
+                protocolFeeMultiplier,
                 false,
-                { from },
+                { from, gasPrice },
             );
             expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
         }
@@ -452,12 +518,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsAsync(
@@ -466,6 +534,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -484,12 +554,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.85%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(2, 0),
             });
@@ -499,6 +571,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -519,12 +593,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 0),
             });
@@ -534,6 +610,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -554,12 +632,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
             });
@@ -569,6 +649,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -591,12 +673,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(2650, 0),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(2653, 0),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 0),
             });
@@ -606,6 +690,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -629,12 +715,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(9166, 0),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(9175, 0),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
             });
@@ -644,6 +732,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -664,12 +754,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(503, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(497, 0),
             });
@@ -679,6 +771,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -697,12 +791,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
             });
@@ -712,6 +808,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -730,12 +828,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsAsync(
@@ -744,6 +844,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -762,12 +864,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(50, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(50, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
             });
@@ -777,6 +881,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -795,12 +901,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
             });
@@ -810,6 +918,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
         it('should transfer the correct amounts if fee recipient is the same across both matched orders', async () => {
@@ -830,6 +940,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -848,6 +960,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 leftOrder.makerAddress,
             );
         });
@@ -867,6 +981,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 rightOrder.makerAddress,
             );
         });
@@ -888,6 +1004,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddressLeft,
             );
         });
@@ -909,6 +1027,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddressRight,
             );
         });
@@ -930,6 +1050,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -950,6 +1072,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -970,6 +1094,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -991,6 +1117,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
     });
@@ -1005,6 +1133,8 @@ blockchainTests('LibFillResults', env => {
             rightOrder: Order,
             leftOrderTakerAssetFilledAmount: BigNumber,
             rightOrderTakerAssetFilledAmount: BigNumber,
+            protocolFeeMultiplier: BigNumber,
+            gasPrice: BigNumber,
             from?: string,
         ): Promise<void> {
             const actualMatchedFillResults = await libsContract.calculateMatchedFillResults.callAsync(
@@ -1012,8 +1142,9 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 leftOrderTakerAssetFilledAmount,
                 rightOrderTakerAssetFilledAmount,
+                protocolFeeMultiplier,
                 true,
-                { from },
+                { from, gasPrice },
             );
             expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
         }
@@ -1061,12 +1192,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
@@ -1075,6 +1208,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                new BigNumber(150000),
+                new BigNumber(100000),
             );
         });
 
@@ -1095,12 +1230,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(105, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: constants.ZERO_AMOUNT,
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(15, 0),
@@ -1111,6 +1248,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                new BigNumber(150000),
+                new BigNumber(100000),
             );
         });
 
@@ -1131,12 +1270,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: constants.ZERO_AMOUNT,
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(7, 0),
@@ -1147,6 +1288,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1167,12 +1310,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(4, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(8, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(6, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(1, 0),
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(4, 0),
@@ -1183,6 +1328,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1203,12 +1350,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
             });
@@ -1218,6 +1367,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1240,12 +1391,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(3333, 0),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(3333, 0),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(7, 0),
             });
@@ -1255,6 +1408,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1277,12 +1432,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(9166, 0),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(9175, 0),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
             });
@@ -1292,6 +1449,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1318,6 +1477,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
             const rightOrder2 = makeOrder({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
@@ -1329,12 +1490,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
@@ -1343,6 +1506,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder2,
                 Web3Wrapper.toBaseUnitAmount(10, 18),
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1363,12 +1528,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2000, 0),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(995, 0),
             });
@@ -1378,6 +1545,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1396,12 +1565,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
@@ -1410,6 +1581,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1429,12 +1602,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
             });
@@ -1444,6 +1619,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
             // Create second left order
             // Note: This order needs makerAssetAmount=96/takerAssetAmount=48 to fully fill the right order.
@@ -1459,12 +1636,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
                 right: {
                     makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
                     takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
+                    protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 9),
                 },
             });
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
@@ -1473,6 +1652,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 5),
             );
         });
 
@@ -1494,6 +1675,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -1512,6 +1695,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 leftOrder.makerAddress,
             );
         });
@@ -1531,6 +1716,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 rightOrder.makerAddress,
             );
         });
@@ -1552,6 +1739,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress,
             );
         });
@@ -1573,6 +1762,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress,
             );
         });
@@ -1594,6 +1785,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -1614,6 +1807,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -1634,6 +1829,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
 
@@ -1657,6 +1854,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 4),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
             );
         });
     });
