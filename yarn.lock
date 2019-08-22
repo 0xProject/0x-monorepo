@@ -16966,12 +16966,6 @@ react-transition-group@^4.2.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-typist@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/react-typist/-/react-typist-2.0.4.tgz#e7ee4de53ead913d363d38f07b700c00ce271be0"
-  dependencies:
-    prop-types "^15.5.10"
-
 react@^16.3.2:
   version "16.4.2"
   resolved "https://registry.npmjs.org/react/-/react-16.4.2.tgz#2cd90154e3a9d9dd8da2991149fdca3c260e129f"
