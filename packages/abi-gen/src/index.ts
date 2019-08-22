@@ -50,9 +50,9 @@ const args = yargs
         implies: 'template',
     })
     .option('template', {
-        describe: 'Path for the main template file that will be used to generate each contract',
+        describe:
+            'Path for the main template file that will be used to generate each contract. Default templates are used based on the --language parameter.',
         type: 'string',
-        demandOption: true,
         normalize: true,
     })
     .option('backend', {
@@ -77,10 +77,14 @@ const args = yargs
         'Full usage example',
     ).argv;
 
-const mainTemplate = utils.getNamedContent(args.template);
+const templateFilename = args.template || `${__dirname}/../../templates/${args.language}/contract.handlebars`;
+
+const mainTemplate = utils.getNamedContent(templateFilename);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
-const partialTemplateFileNames = globSync(args.partials);
+const partialTemplateFileNames = globSync(
+    args.partials || `${__dirname}/../../templates/${args.language}/partials/**/*.handlebars`,
+);
 
 function registerPartials(): void {
     logUtils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
@@ -350,7 +354,7 @@ for (const abiFileName of abiFileNames) {
         }
     })();
 
-    if (utils.isOutputFileUpToDate(outFilePath, [abiFileName, args.template, ...partialTemplateFileNames])) {
+    if (utils.isOutputFileUpToDate(outFilePath, [abiFileName, templateFilename, ...partialTemplateFileNames])) {
         logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);
         continue;
     }

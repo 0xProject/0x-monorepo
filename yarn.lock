@@ -14867,6 +14867,8 @@ react-highlight@0xproject/react-highlight#react-peer-deps:
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
+    react "^16.5.2"
+    react-dom "^16.5.2"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
