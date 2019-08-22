@@ -1,6 +1,6 @@
 {
     "name": "@0x/python-contract-wrappers",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "engines": {
         "node": ">=6.12"
     },
@@ -25,7 +25,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/python-contract-wrappers/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^4.1.0",
+        "@0x/abi-gen": "^4.1.1",
         "shx": "^0.2.2"
     },
     "publishConfig": {

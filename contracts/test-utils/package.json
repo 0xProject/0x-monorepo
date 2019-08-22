@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-test-utils",
-    "version": "3.1.13",
+    "version": "3.1.14",
     "engines": {
         "node": ">=6.12"
     },
@@ -42,18 +42,18 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/dev-utils": "^2.3.0",
-        "@0x/order-utils": "^8.2.5",
-        "@0x/sol-compiler": "^3.1.12",
-        "@0x/sol-coverage": "^3.0.9",
-        "@0x/sol-profiler": "^3.1.11",
-        "@0x/sol-trace": "^2.0.17",
-        "@0x/subproviders": "^5.0.1",
+        "@0x/dev-utils": "^2.3.1",
+        "@0x/order-utils": "^8.3.0",
+        "@0x/sol-compiler": "^3.1.13",
+        "@0x/sol-coverage": "^3.0.10",
+        "@0x/sol-profiler": "^3.1.12",
+        "@0x/sol-trace": "^2.0.18",
+        "@0x/subproviders": "^5.0.2",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
         "@0x/utils": "^4.5.0",
-        "@0x/web3-wrapper": "^6.0.10",
+        "@0x/web3-wrapper": "^6.0.11",
         "@types/bn.js": "^4.11.0",
         "@types/js-combinatorics": "^0.5.29",
         "@types/lodash": "4.14.104",
