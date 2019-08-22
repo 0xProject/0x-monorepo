@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import * as validUrl from 'valid-url';
 
 import { Link } from 'ts/components/documentation/shared/link';
 import { Heading } from 'ts/components/text';
@@ -28,19 +29,23 @@ export const StepLinks: React.FC<IStepLinksProps> = ({ heading, links }) => (
     </div>
 );
 
-export const StepLink: React.FC<IStepLinkProps> = props => (
-    <StepLinkWrapper to={props.url}>
-        <StepLinkText>{props.title}</StepLinkText>
-        <svg height="14px" width="14px" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M2 0h11.5v11H12V2.62L1.06 13.56 0 12.5l11-11H2V0z"
-                fill="currentColor"
-            />
-        </svg>
-    </StepLinkWrapper>
-);
+export const StepLink: React.FC<IStepLinkProps> = props => {
+    const shouldOpenInNewTab = validUrl.isWebUri(props.url) ? true : false;
+
+    return (
+        <StepLinkWrapper shouldOpenInNewTab={shouldOpenInNewTab} to={props.url}>
+            <StepLinkText>{props.title}</StepLinkText>
+            <svg height="14px" width="14px" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M2 0h11.5v11H12V2.62L1.06 13.56 0 12.5l11-11H2V0z"
+                    fill="currentColor"
+                />
+            </svg>
+        </StepLinkWrapper>
+    );
+};
 
 const StepLinksWrapper = styled.div`
     border: 1px solid #dbdfdd;
