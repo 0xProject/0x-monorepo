@@ -35,7 +35,7 @@ export const Animation: React.FC<IAnimationProps> = ({ name, ...props }) => {
 };
 
 Animation.defaultProps = {
-    width: '660px',
+    width: '620px',
     marginBottom: docs.marginBottom,
 };
 

@@ -17,9 +17,9 @@ interface IImageWrapperProps {
     marginBottom?: string;
 }
 
-export const Image: React.FC<IImageProps> = props => (
+export const Image: React.FC<IImageProps> = ({ src, alt, title, height, width, ...props }) => (
     <ImageWrapper {...props}>
-        <img {...props} />
+        <img src={src} alt={alt} title={title} height={height} width={width} />
     </ImageWrapper>
 );
 
