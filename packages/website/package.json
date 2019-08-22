@@ -45,7 +45,6 @@
         "ethereumjs-util": "^5.1.1",
         "find-versions": "^2.0.0",
         "is-mobile": "^0.2.2",
-        "less": "^2.7.2",
         "lodash": "^4.17.11",
         "lottie-web": "^5.5.7",
         "material-ui": "^0.20.0",
