@@ -2602,12 +2602,6 @@
   version "0.5.29"
   resolved "https://registry.yarnpkg.com/@types/js-combinatorics/-/js-combinatorics-0.5.29.tgz#47a7819a0b6925b6dc4bd2c2278a7e6329b29387"
 
-"@types/jsonschema@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@types/jsonschema/-/jsonschema-1.1.1.tgz#08703dfe074010e8e829123111594af731f57b1a"
-  dependencies:
-    jsonschema "*"
-
 "@types/lodash.foreach@^4.5.3":
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.foreach/-/lodash.foreach-4.5.3.tgz#87c01a0c5d9d17eec936ca3c28897af79440cdfc"
@@ -12451,7 +12445,7 @@ jsonschema-draft4@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/jsonschema-draft4/-/jsonschema-draft4-1.0.0.tgz#f0af2005054f0f0ade7ea2118614b69dc512d865"
 
-jsonschema@*, jsonschema@1.2.4, jsonschema@^1.2.0, jsonschema@^1.2.4:
+jsonschema@1.2.4, jsonschema@^1.2.0, jsonschema@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
 
