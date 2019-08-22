@@ -150,11 +150,12 @@ contract MixinTransactions is
             ));
         }
 
-        // Prevent reentrancy
-        if (currentContextAddress != address(0)) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                LibExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
-                transactionHash
+        // Prevent `executeTransaction` from being called when context is already set
+        address currentContextAddress_ = currentContextAddress;
+        if (currentContextAddress_ != address(0)) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionInvalidContextError(
+                transactionHash,
+                currentContextAddress_
             ));
         }
 
