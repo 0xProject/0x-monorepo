@@ -17,7 +17,7 @@ export const AnimationLoader: React.FC<IAnimationLoaderProps> = ({ name }) => {
 
     const loadAnimationAsync = async (name: string) => {
         try {
-            const animationData = await import(/* webpackChunkName: "animation/[request]" */ `./${name}.json`);
+            const animationData = await import(/* webpackChunkName: "animation/[request]" */ `../../../../public/animations/${name}.json`);
 
             lottie.loadAnimation({
                 container: container.current, // the dom element that will contain the animation
