@@ -53,7 +53,6 @@ library LibExchangeRichErrors {
     }
 
     enum TransactionErrorCodes {
-        NO_REENTRANCY,
         ALREADY_EXECUTED,
         EXPIRED
     }
@@ -135,6 +134,10 @@ library LibExchangeRichErrors {
     // bytes4(keccak256("TransactionGasPriceError(bytes32,unt256,uint256)"))
     bytes4 internal constant TRANSACTION_GAS_PRICE_ERROR_SELECTOR =
         0xa26dac09;
+
+    // bytes4(keccak256("TransactionInvalidContextError(bytes32,address)"))
+    bytes4 internal constant TRANSACTION_INVALID_CONTEXT_ERROR_SELECTOR =
+        0xdec4aedf;
 
     // bytes4(keccak256("IncompleteFillError(uint8,uint256,uint256)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
@@ -607,6 +610,21 @@ library LibExchangeRichErrors {
             transactionHash,
             actualGasPrice,
             requiredGasPrice
+        );
+    }
+
+    function TransactionInvalidContextError(
+        bytes32 transactionHash,
+        address currentContextAddress
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            TRANSACTION_INVALID_CONTEXT_ERROR_SELECTOR,
+            transactionHash,
+            currentContextAddress
         );
     }
 
