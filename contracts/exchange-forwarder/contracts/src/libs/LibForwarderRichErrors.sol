@@ -24,8 +24,8 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 library LibForwarderRichErrors {
 
     // bytes4(keccak256("UnregisteredAssetProxyError()"))
-    bytes internal constant UNREGISTERED_ASSET_PROXY_ERROR =
-        hex"f3b96b8d";
+    bytes4 internal constant UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR =
+        0xf3b96b8d;
 
     // bytes4(keccak256("UnsupportedAssetProxyError(bytes4)"))
     bytes4 internal constant UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR =
@@ -64,8 +64,8 @@ library LibForwarderRichErrors {
         0x08b18698;
 
     // bytes4(keccak256("MsgValueCantEqualZeroError()"))
-    bytes internal constant MSG_VALUE_CANT_EQUAL_ZERO_ERROR =
-        hex"1213e1d6";
+    bytes4 internal constant MSG_VALUE_CANT_EQUAL_ZERO_ERROR_SELECTOR =
+        0x1213e1d6;
 
     // bytes4(keccak256("Erc721AmountMustEqualOneError(uint256)"))
     bytes4 internal constant ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR =
@@ -77,7 +77,7 @@ library LibForwarderRichErrors {
         pure
         returns (bytes memory)
     {
-        return UNREGISTERED_ASSET_PROXY_ERROR;
+        return abi.encodeWithSelector(UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR);
     }
 
     function UnsupportedAssetProxyError(
@@ -210,7 +210,7 @@ library LibForwarderRichErrors {
         pure
         returns (bytes memory)
     {
-        return MSG_VALUE_CANT_EQUAL_ZERO_ERROR;
+        return abi.encodeWithSelector(MSG_VALUE_CANT_EQUAL_ZERO_ERROR_SELECTOR);
     }
 
     function Erc721AmountMustEqualOneError(

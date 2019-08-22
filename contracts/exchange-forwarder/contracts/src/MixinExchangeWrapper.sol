@@ -99,7 +99,7 @@ contract MixinExchangeWrapper is
         )
     {
         // No fee or percentage fee
-        if (order.takerFee == 0 || order.makerAssetData.equals(order.takerFeeAssetData)) {
+        if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.makerAssetData)) {
             // Attempt to sell the remaining amount of WETH
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
@@ -139,6 +139,8 @@ contract MixinExchangeWrapper is
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
+
+        return (wethSpentAmount, makerAssetAcquiredAmount);
     }
 
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH has been sold by taker.
@@ -261,6 +263,8 @@ contract MixinExchangeWrapper is
         } else {
             LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
+
+        return (wethSpentAmount, makerAssetAcquiredAmount);
     }
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is acquired.
