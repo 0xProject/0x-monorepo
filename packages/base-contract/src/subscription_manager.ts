@@ -101,17 +101,23 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
-        const log: LogEntry = marshaller.unmarshalLog(rawLog);
-        _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
-            if (filterUtils.matchesFilter(log, filter)) {
-                const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
-                const logEvent = {
-                    log: decodedLog,
-                    isRemoved,
-                };
-                this._filterCallbacks[filterToken](null, logEvent);
-            }
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(
+        isRemoved: boolean,
+        blockHash: string,
+        rawLogs: RawLogEntry[],
+    ): void {
+        const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog));
+        logs.forEach(log => {
+            _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
+                if (filterUtils.matchesFilter(log, filter)) {
+                    const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
+                    const logEvent = {
+                        log: decodedLog,
+                        isRemoved,
+                    };
+                    this._filterCallbacks[filterToken](null, logEvent);
+                }
+            });
         });
     }
     private _startBlockAndLogStream(isVerbose: boolean, blockPollingIntervalMs?: number): void {
