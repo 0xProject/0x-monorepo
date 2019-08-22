@@ -357,28 +357,6 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             });
             return expect(tx).to.revertWith(expectedError);
         });
-        // FIXME - This should be unskipped when the contracts have been updated to fix this problem.
-        it.skip('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender == signer for both calls', async () => {
-            const validSignature = randomSignature();
-            const transaction1 = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
-            const transactionHash1 = transactionHashUtils.getTransactionHashHex(transaction1);
-            const transaction2 = await generateZeroExTransactionAsync({
-                signerAddress: accounts[0],
-                callData: getExecuteTransactionCallData(transaction1, validSignature),
-                returnData: '0xdeadbeef',
-            });
-            const transactionHash2 = transactionHashUtils.getTransactionHashHex(transaction2);
-            const abiEncoder = AbiEncoder.createMethod('TransactionError', ['uint8', 'bytes32']);
-            const errorData = abiEncoder.encode([
-                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
-                transactionHash1,
-            ]);
-            const expectedError = new ExchangeRevertErrors.TransactionExecutionError(transactionHash2, errorData);
-            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction2, validSignature, {
-                from: accounts[0],
-            });
-            return expect(tx).to.revertWith(expectedError);
-        });
         it('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender != signer for both calls', async () => {
             const validSignature = randomSignature();
             const transaction1 = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
@@ -389,11 +367,10 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                 returnData: '0xdeadbeef',
             });
             const transactionHash2 = transactionHashUtils.getTransactionHashHex(transaction2);
-            const abiEncoder = AbiEncoder.createMethod('TransactionError', ['uint8', 'bytes32']);
-            const errorData = abiEncoder.encode([
-                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
+            const errorData = new ExchangeRevertErrors.TransactionInvalidContextError(
                 transactionHash1,
-            ]);
+                accounts[0],
+            ).encode();
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(transactionHash2, errorData);
             const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction2, validSignature, {
                 from: accounts[1], // Different then the signing addresses
@@ -410,33 +387,10 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                 returnData: '0xdeadbeef',
             });
             const transactionHash2 = transactionHashUtils.getTransactionHashHex(transaction2);
-            const abiEncoder = AbiEncoder.createMethod('TransactionError', ['uint8', 'bytes32']);
-            const errorData = abiEncoder.encode([
-                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
+            const errorData = new ExchangeRevertErrors.TransactionInvalidContextError(
                 transactionHash1,
-            ]);
-            const expectedError = new ExchangeRevertErrors.TransactionExecutionError(transactionHash2, errorData);
-            const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction2, validSignature, {
-                from: accounts[1], // Different then the signing addresses
-            });
-            return expect(tx).to.revertWith(expectedError);
-        });
-        // FIXME - This should be unskipped when the contracts have been updated to fix this problem.
-        it.skip('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender == signer and then msg.sender != sender', async () => {
-            const validSignature = randomSignature();
-            const transaction1 = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
-            const transactionHash1 = transactionHashUtils.getTransactionHashHex(transaction1);
-            const transaction2 = await generateZeroExTransactionAsync({
-                signerAddress: accounts[0],
-                callData: getExecuteTransactionCallData(transaction1, validSignature),
-                returnData: '0xdeadbeef',
-            });
-            const transactionHash2 = transactionHashUtils.getTransactionHashHex(transaction2);
-            const abiEncoder = AbiEncoder.createMethod('TransactionError', ['uint8', 'bytes32']);
-            const errorData = abiEncoder.encode([
-                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
-                transactionHash1,
-            ]);
+                accounts[0],
+            ).encode();
             const expectedError = new ExchangeRevertErrors.TransactionExecutionError(transactionHash2, errorData);
             const tx = transactionsContract.executeTransaction.sendTransactionAsync(transaction2, validSignature, {
                 from: accounts[1], // Different then the signing addresses
@@ -598,10 +552,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             await transactionsContract.setCurrentContextAddress.awaitTransactionSuccessAsync(accounts[0]);
             const transaction = await generateZeroExTransactionAsync();
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            const expectedError = new ExchangeRevertErrors.TransactionError(
-                ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
-                transactionHash,
-            );
+            const expectedError = new ExchangeRevertErrors.TransactionInvalidContextError(transactionHash, accounts[0]);
             expect(
                 transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature()),
             ).to.revertWith(expectedError);

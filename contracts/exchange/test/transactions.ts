@@ -43,7 +43,7 @@ import {
 const artifacts = { ...erc20Artifacts, ...localArtifacts };
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Exchange transactions', env => {
+blockchainTests.resets.only('Exchange transactions', env => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -349,9 +349,9 @@ blockchainTests.resets('Exchange transactions', env => {
                     const recursiveTransactionHashHex = transactionHashUtils.getTransactionHashHex(
                         recursiveTransaction,
                     );
-                    const noReentrancyError = new ExchangeRevertErrors.TransactionError(
-                        ExchangeRevertErrors.TransactionErrorCode.NoReentrancy,
+                    const noReentrancyError = new ExchangeRevertErrors.TransactionInvalidContextError(
                         transactionHashHex,
+                        transaction.signerAddress,
                     ).encode();
                     const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
                         recursiveTransactionHashHex,
