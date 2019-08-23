@@ -9,7 +9,7 @@ import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
 import { flatten } from 'lodash';
 
-import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from './index';
+import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 
 import { orderTxOptsSchema } from './schemas/order_tx_opts_schema';
 import { txOptsSchema } from './schemas/tx_opts_schema';

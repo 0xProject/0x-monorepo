@@ -26,30 +26,33 @@ import * as ethers from 'ethers';
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
-export class IValidatorContract extends BaseContract {
+export class StaticCallProxyContract extends BaseContract {
     /**
-     * Verifies that a signature is valid.
+     * Makes a staticcall to a target address and verifies that the data returned matches the expected return data.
      */
-    public isValidSignature = {
+    public transferFrom = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
-         * @param hash Message hash that is signed.
-         * @param signerAddress Address that should have signed the given hash.
-         * @param signature Proof of signing.
-         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidValidatorSignature(address,bytes32,address,bytes)&quot;))
+         * @param assetData Byte array encoded with staticCallTarget, staticCallData,
+         *     and expectedCallResultHash
+         * @param from This value is ignored.
+         * @param to This value is ignored.
+         * @param amount This value is ignored.
          */
         async callAsync(
-            hash: string,
-            signerAddress: string,
-            signature: string,
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
+        ): Promise<void> {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -58,11 +61,12 @@ export class IValidatorContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as IValidatorContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
+            const self = (this as any) as StaticCallProxyContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -78,7 +82,85 @@ export class IValidatorContract extends BaseContract {
 
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetData Byte array encoded with staticCallTarget, staticCallData,
+         *     and expectedCallResultHash
+         * @param from This value is ignored.
+         * @param to This value is ignored.
+         * @param amount This value is ignored.
+         */
+        getABIEncodedTransactionData(assetData: string, from: string, to: string, amount: BigNumber): string {
+            assert.isString('assetData', assetData);
+            assert.isString('from', from);
+            assert.isString('to', to);
+            assert.isBigNumber('amount', amount);
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'transferFrom(bytes,address,address,uint256)',
+                [assetData, from.toLowerCase(), to.toLowerCase(), amount],
+            );
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Gets the proxy id associated with the proxy address.
+     */
+    public getProxyId = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @returns Proxy id.
+         */
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as StaticCallProxyContract;
+            const encodedData = self._strictEncodeArguments('getProxyId()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
@@ -88,32 +170,22 @@ export class IValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
-         * @param hash Message hash that is signed.
-         * @param signerAddress Address that should have signed the given hash.
-         * @param signature Proof of signing.
          */
-        getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            const self = (this as any) as IValidatorContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as IValidatorContract;
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as IValidatorContract;
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            const self = (this as any) as StaticCallProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
@@ -124,7 +196,7 @@ export class IValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-    ): Promise<IValidatorContract> {
+    ): Promise<StaticCallProxyContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -142,7 +214,7 @@ export class IValidatorContract extends BaseContract {
                 logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
             }
         }
-        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
+        return StaticCallProxyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
@@ -150,7 +222,7 @@ export class IValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-    ): Promise<IValidatorContract> {
+    ): Promise<StaticCallProxyContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -172,8 +244,8 @@ export class IValidatorContract extends BaseContract {
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`IValidator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IValidatorContract(
+        logUtils.log(`StaticCallProxy successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new StaticCallProxyContract(
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
@@ -192,19 +264,32 @@ export class IValidatorContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'hash',
-                        type: 'bytes32',
+                        name: 'assetData',
+                        type: 'bytes',
                     },
                     {
-                        name: 'signerAddress',
+                        name: 'from',
                         type: 'address',
                     },
                     {
-                        name: 'signature',
-                        type: 'bytes',
+                        name: 'to',
+                        type: 'address',
+                    },
+                    {
+                        name: 'amount',
+                        type: 'uint256',
                     },
                 ],
-                name: 'isValidSignature',
+                name: 'transferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'getProxyId',
                 outputs: [
                     {
                         name: '',
@@ -212,7 +297,7 @@ export class IValidatorContract extends BaseContract {
                     },
                 ],
                 payable: false,
-                stateMutability: 'view',
+                stateMutability: 'pure',
                 type: 'function',
             },
         ] as ContractAbi;
@@ -224,7 +309,14 @@ export class IValidatorContract extends BaseContract {
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
     ) {
-        super('IValidator', IValidatorContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'StaticCallProxy',
+            StaticCallProxyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }
