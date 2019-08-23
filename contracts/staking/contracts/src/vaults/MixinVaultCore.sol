@@ -19,6 +19,8 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IVaultCore.sol";
 
 
@@ -52,28 +54,31 @@ contract MixinVaultCore is
 
     /// @dev Asserts that the sender (`msg.sender`) is the staking contract.
     modifier onlyStakingContract {
-        require(
-            msg.sender == stakingContractAddress,
-            "ONLY_CALLABLE_BY_STAKING_CONTRACT"
-        );
+        if (msg.sender != stakingContractAddress) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByStakingContractError(
+                msg.sender
+            ));
+        }
         _;
     }
 
     /// @dev Asserts that this contract *is in* Catostrophic Failure Mode.
     modifier onlyInCatostrophicFailure {
-        require(
-            isInCatostrophicFailure,
-            "ONLY_CALLABLE_IN_CATOSTROPHIC_FAILURE"
-        );
+        if (!isInCatostrophicFailure) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.OnlyCallableInCatastrophicFailureError()
+            );
+        }
         _;
     }
 
     /// @dev Asserts that this contract *is not in* Catostrophic Failure Mode.
     modifier onlyNotInCatostrophicFailure {
-        require(
-            !isInCatostrophicFailure,
-            "ONLY_CALLABLE_NOT_IN_CATOSTROPHIC_FAILURE"
-        );
+        if (isInCatostrophicFailure) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.OnlyCallableNotInCatastrophicFailureError()
+            );
+        }
         _;
     }
 

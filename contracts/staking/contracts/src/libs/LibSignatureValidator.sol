@@ -14,12 +14,14 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
 import "../interfaces/IWallet.sol";
 
 
 library LibSignatureValidator {
-    
+
     using LibBytes for bytes;
 
     // bytes4(keccak256("isValidSignature(bytes,bytes)")
@@ -39,19 +41,19 @@ library LibSignatureValidator {
         view
         returns (bool isValid)
     {
-        require(
-            signature.length > 0,
-            "LENGTH_GREATER_THAN_0_REQUIRED"
-        );
+        if (signature.length == 0) {
+            LibRichErrors.rrevert(LibStakingRichErrors.LengthGreaterThan0RequiredError());
+        }
 
         // Pop last byte off of signature byte array.
         uint8 signatureTypeRaw = uint8(signature.popLastByte());
 
         // Ensure signature is supported
-        require(
-            signatureTypeRaw < uint8(IStructs.SignatureType.NSignatureTypes),
-            "SIGNATURE_UNSUPPORTED"
-        );
+        if (signatureTypeRaw >= uint8(IStructs.SignatureType.NSignatureTypes)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.SignatureUnsupportedError(
+                signature
+            ));
+        }
 
         IStructs.SignatureType signatureType = IStructs.SignatureType(signatureTypeRaw);
 
@@ -67,26 +69,30 @@ library LibSignatureValidator {
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (signatureType == IStructs.SignatureType.Illegal) {
-            revert("SIGNATURE_ILLEGAL");
+            LibRichErrors.rrevert(LibStakingRichErrors.SignatureIllegalError(
+                signature
+            ));
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
         } else if (signatureType == IStructs.SignatureType.Invalid) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
+            if (signature.legnth > 0) {
+                LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength0RequiredError(
+                    signature
+                ));
+            }
             isValid = false;
             return isValid;
 
         // Signature using EIP712
         } else if (signatureType == IStructs.SignatureType.EIP712) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signature.legnth != 65) {
+                LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength65RequiredError(
+                    signature
+                ));
+            }
             v = uint8(signature[0]);
             r = signature.readBytes32(1);
             s = signature.readBytes32(33);
@@ -101,10 +107,11 @@ library LibSignatureValidator {
 
         // Signed using web3.eth_sign
         } else if (signatureType == IStructs.SignatureType.EthSign) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signature.legnth != 65) {
+                LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength65RequiredError(
+                    signature
+                ));
+            }
             v = uint8(signature[0]);
             r = signature.readBytes32(1);
             s = signature.readBytes32(33);
@@ -136,7 +143,9 @@ library LibSignatureValidator {
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        revert("SIGNATURE_UNSUPPORTED");
+        LibRichErrors.rrevert(LibStakingRichErrors.SignatureUnsupportedError(
+            signature
+        ));
     }
 
     /// @dev Verifies signature using logic defined by Wallet contract.
@@ -169,10 +178,12 @@ library LibSignatureValidator {
         (bool success, bytes memory result) = walletAddress.staticcall(callData);
 
         // Sanity check call and extract the magic value
-        require(
-            success,
-            "WALLET_ERROR"
-        );
+        if (!success) {
+            LibRichErrors.rrevert(LibStakingRichErrors.WalletError(
+                walletAddress,
+                result
+            ));
+        }
         bytes4 magicValue = result.readBytes4(0);
 
         isValid = (magicValue == EIP1271_MAGIC_VALUE);

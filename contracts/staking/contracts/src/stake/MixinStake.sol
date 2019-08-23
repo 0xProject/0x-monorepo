@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
@@ -62,7 +64,7 @@ import "./MixinTimeLockedStake.sol";
 ///
 /// -- Valid State Transtions --
 /// Activated -> Deactivated & TimeLocked
-/// 
+///
 /// Activated & Delegated -> Deactivated & TimeLocked
 ///
 /// Deactivated & TimeLocked -> Deactivated & Withdrawable
@@ -117,10 +119,13 @@ contract MixinStake is
     {
         address owner = msg.sender;
         _syncTimeLockedStake(owner);
-        require(
-            amount <= getDeactivatedStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
+        if (amount > getDeactivatedStake(owner)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
+                amount,
+                getDeactivatedStake(owner)
+            );
+        }
+
         _burnStake(owner, amount);
     }
 
@@ -131,10 +136,13 @@ contract MixinStake is
     {
         address owner = msg.sender;
         _syncTimeLockedStake(owner);
-        require(
-            amount <= getActivatableStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
+        if (amount > getActivatableStake(owner)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
+                amount,
+                getActivatableStake(owner)
+            );
+        }
+
         activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._add(amount);
         totalActivatedStake = totalActivatedStake._add(amount);
     }
@@ -146,10 +154,13 @@ contract MixinStake is
     {
         address owner = msg.sender;
         _syncTimeLockedStake(owner);
-        require(
-            amount <= getActivatedStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
+        if (amount > getActivatedStake(owner)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
+                amount,
+                getActivatedStake(owner)
+            );
+        }
+
         activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);
         totalActivatedStake = totalActivatedStake._sub(amount);
         _timeLockStake(owner, amount);

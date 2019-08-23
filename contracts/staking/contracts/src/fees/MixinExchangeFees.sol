@@ -18,8 +18,10 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibFeeMath.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
@@ -33,7 +35,7 @@ import "./MixinExchangeManager.sol";
 
 /// @dev This mixin contains the logic for 0x protocol fees.
 /// Protocol fees are sent by 0x exchanges every time there is a trade.
-/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
+/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then
 /// the fee will be attributed to their pool. At the end of an epoch the maker and
 /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
 /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
@@ -121,7 +123,7 @@ contract MixinExchangeFees is
 
     /// @dev Pays rewards to market making pools that were active this epoch.
     /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
-    /// proportional to (i) the fee volume attributed to their pool over the epoch, and 
+    /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
     /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
     /// the members of their pool. There will be a small amount of ETH leftover in this contract
@@ -223,10 +225,12 @@ contract MixinExchangeFees is
         activePoolsThisEpoch.length = 0;
 
         // step 3/3 send total payout to vault
-        require(
-            totalRewardsPaid <= initialContractBalance,
-            "MISCALCULATED_REWARDS"
-        );
+        if (totalRewardsPaid > initialContractBalance) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MiscalculatedRewardsError(
+                totalRewardsPaid,
+                initialContractBalance
+            ));
+        }
         if (totalRewardsPaid > 0) {
             _depositIntoStakingPoolRewardVault(totalRewardsPaid);
         }

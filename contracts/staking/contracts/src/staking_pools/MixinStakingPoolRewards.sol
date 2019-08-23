@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
@@ -39,7 +41,7 @@ import "./MixinStakingPool.sol";
 /// is currently at the end of each epoch. Additionally, each member has an associated "Shadow Balance" which is updated only
 /// when a member delegates/undelegates stake to the pool, along with a "Total Shadow Balance" that represents the cumulative
 /// Shadow Balances of all members in a pool.
-/// 
+///
 /// -- Member Balances --
 /// Terminology:
 ///     Real Balance - The reward balance in ETH of a member.
@@ -52,11 +54,11 @@ import "./MixinStakingPool.sol";
 ///    member delegates stake, we *increase* their Shadow Balance and the Total Shadow Balance of the pool.
 ///
 /// 2. When a member withdraws a portion of their reward, their realized balance increases but their ownership
-///    within the pool remains unchanged. Thus, we simultaneously *decrease* their Real Balance and 
+///    within the pool remains unchanged. Thus, we simultaneously *decrease* their Real Balance and
 ///    *increase* their Shadow Balance by the amount withdrawn. The cumulative balance decrease and increase, respectively.
 ///
 /// 3. When a member undelegates, the portion of their reward that corresponds to that stake is also withdrawn. Thus,
-///    their realized balance *increases* while their ownership of the pool *decreases*. To reflect this, we 
+///    their realized balance *increases* while their ownership of the pool *decreases*. To reflect this, we
 ///    decrease their Shadow Balance, the Total Shadow Balance, their Real Balance, and the Total Real Balance.
 contract MixinStakingPoolRewards is
     IStakingEvents,
@@ -108,10 +110,12 @@ contract MixinStakingPoolRewards is
         // sanity checks
         address payable member = msg.sender;
         uint256 memberBalance = computeRewardBalanceOfStakingPoolMember(poolId, member);
-        require(
-            amount <= memberBalance,
-            "INVALID_AMOUNT"
-        );
+        if (amount > memberBalance) {
+            LibRichErrors.rrevert(LibStakingRichErrors.WithdrawAmountExceedsMemberBalanceError(
+                amount,
+                memberBalance
+            ));
+        }
 
         // update shadow rewards
         shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(amount);
@@ -178,7 +182,7 @@ contract MixinStakingPoolRewards is
 
     /// @dev Returns the shadow balance of a specific member of a staking pool.
     /// @param poolId Unique id of pool.
-    /// @param member The member of the pool. 
+    /// @param member The member of the pool.
     /// @return Balance.
     function getShadowBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
@@ -201,7 +205,7 @@ contract MixinStakingPoolRewards is
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
-    /// @param member The member of the pool. 
+    /// @param member The member of the pool.
     /// @return Balance.
     function computeRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
@@ -223,7 +227,7 @@ contract MixinStakingPoolRewards is
     /// with the total shadow balance of the pool. This ensures that
     /// any rewards belonging to existing members will not be diluted.
     /// @param poolId Unique Id of pool to join.
-    /// @param member The member to join. 
+    /// @param member The member to join.
     /// @param amountOfStakeToDelegate The stake to be delegated by `member` upon joining.
     /// @param totalStakeDelegatedToPool The amount of stake currently delegated to the pool.
     ///                                  This does not include `amountOfStakeToDelegate`.
@@ -256,7 +260,7 @@ contract MixinStakingPoolRewards is
     /// with the total shadow balance of the pool. This ensures that
     /// any rewards belonging to co-members will not be inflated.
     /// @param poolId Unique Id of pool to leave.
-    /// @param member The member to leave. 
+    /// @param member The member to leave.
     /// @param amountOfStakeToUndelegate The stake to be undelegated by `member` upon leaving.
     /// @param totalStakeDelegatedToPoolByMember The amount of stake currently delegated to the pool by the member.
     ///                                          This includes `amountOfStakeToUndelegate`.

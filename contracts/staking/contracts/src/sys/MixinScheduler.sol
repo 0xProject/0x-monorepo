@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath64.sol";
 import "../immutable/MixinConstants.sol";
@@ -75,7 +77,7 @@ contract MixinScheduler is
     }
 
     /// @dev Returns the earliest end time in seconds of this epoch.
-    ///      The next epoch can begin once this time is reached.  
+    ///      The next epoch can begin once this time is reached.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
     /// @return Time in seconds.
     function getCurrentEpochEarliestEndTimeInSeconds()
@@ -140,17 +142,20 @@ contract MixinScheduler is
         uint64 currentBlockTimestamp = block.timestamp._downcastToUint64();
 
         // validate that we can increment the current epoch
-        require(
-            getCurrentEpochEarliestEndTimeInSeconds() <= currentBlockTimestamp,
-            "BLOCK_TIMESTAMP_TOO_LOW"
-        );
+        uint64 epochEndTime = getCurrentEpochEarliestEndTimeInSeconds();
+        if (epochEndTime > currentBlockTimestamp) {
+            LibRichErrors.rrevert(LibStakingRichErrors.BlockTimestampTooLowError(
+                epochEndTime,
+                currentBlockTimestamp
+            ));
+        }
 
         // incremment epoch
         uint64 nextEpoch = currentEpoch._add(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
         uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds._add(getEpochDurationInSeconds());
-        
+
         // notify of epoch change
         emit EpochChanged(
             currentEpoch,
@@ -163,7 +168,7 @@ contract MixinScheduler is
             currentTimeLockPeriod = currentTimeLockPeriod._add(1);
             currentTimeLockPeriodStartEpoch = currentEpoch;
             uint64 endEpoch = currentEpoch._add(getTimeLockDurationInEpochs());
-            
+
             // notify
             emit TimeLockPeriodChanged(
                 currentTimeLockPeriod,

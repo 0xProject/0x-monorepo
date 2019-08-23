@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
@@ -38,10 +40,11 @@ contract MixinExchangeManager is
 
     /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {
-        require(
-            isValidExchangeAddress(msg.sender),
-            "ONLY_CALLABLE_BY_EXCHANGE"
-        );
+        if (!isValidExchangeAddress(msg.sender)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByExchangeError(
+                msg.sender
+            ));
+        }
         _;
     }
 
@@ -51,10 +54,11 @@ contract MixinExchangeManager is
         external
         onlyOwner
     {
-        require(
-            !validExchanges[addr],
-            "EXCHANGE_ADDRESS_ALREADY_REGISTERED"
-        );
+        if (validExchanges[addr]) {
+            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAlreadyRegisteredError(
+                addr
+            ));
+        }
         validExchanges[addr] = true;
         emit ExchangeAdded(addr);
     }
@@ -65,10 +69,11 @@ contract MixinExchangeManager is
         external
         onlyOwner
     {
-        require(
-            validExchanges[addr],
-            "EXCHANGE_ADDRESS_NOT_REGISTERED"
-        );
+        if (!validExchanges[addr]) {
+            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressNotRegisteredError(
+                addr
+            ));
+        }
         validExchanges[addr] = false;
         emit ExchangeRemoved(addr);
     }
