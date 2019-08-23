@@ -23,7 +23,7 @@ pragma solidity ^0.5.9;
 /// When a user mints stake, their Zrx Tokens are deposited into this vault.
 /// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
 /// There is a "Catastrophic Failure Mode" that, when invoked, only
-/// allows withdrawals to be made. Once this vault is in catostrophic
+/// allows withdrawals to be made. Once this vault is in catastrophic
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 interface IZrxVault {
@@ -62,21 +62,21 @@ interface IZrxVault {
 
     /// @dev Sets the ERC20 proxy.
     /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     function setErc20Proxy(address erc20ProxyAddress)
         external;
 
     /// @dev Sets the Zrx Asset Data.
     /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
     function setZrxAssetData(bytes calldata _zrxAssetData)
         external;
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
     /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens to deposit.
     function depositFrom(address owner, uint256 amount)
@@ -84,14 +84,14 @@ interface IZrxVault {
 
     /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
     /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
     function withdrawFrom(address owner, uint256 amount)
         external;
 
     /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
-    /// Note that this can only be called when *in* Catostrophic Failure mode.
+    /// Note that this can only be called when *in* Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     function withdrawAllFrom(address owner)
         external

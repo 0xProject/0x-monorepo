@@ -29,7 +29,7 @@ import "./MixinVaultCore.sol";
 /// When a user mints stake, their Zrx Tokens are deposited into this vault.
 /// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
 /// There is a "Catastrophic Failure Mode" that, when invoked, only
-/// allows withdrawals to be made. Once this vault is in catostrophic
+/// allows withdrawals to be made. Once this vault is in catastrophic
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
@@ -70,12 +70,12 @@ contract ZrxVault is
 
     /// @dev Sets the ERC20 proxy.
     /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     function setErc20Proxy(address erc20ProxyAddress)
         external
         onlyOwner
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         erc20Proxy = IAssetProxy(erc20ProxyAddress);
         emit Erc20ProxyChanged(erc20ProxyAddress);
@@ -83,12 +83,12 @@ contract ZrxVault is
 
     /// @dev Sets the Zrx Asset Data.
     /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
     function setZrxAssetData(bytes calldata _zrxAssetData)
         external
         onlyOwner
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         zrxAssetData = _zrxAssetData;
         emit ZrxAssetDataChanged(_zrxAssetData);
@@ -96,13 +96,13 @@ contract ZrxVault is
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
     /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens to deposit.
     function depositFrom(address owner, uint256 amount)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         // update balance
         balances[owner] = balances[owner]._add(amount);
@@ -121,23 +121,23 @@ contract ZrxVault is
 
     /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
     /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
+    /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
     function withdrawFrom(address owner, uint256 amount)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         _withdrawFrom(owner, amount);
     }
 
     /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
-    /// Note that this can only be called when *in* Catostrophic Failure mode.
+    /// Note that this can only be called when *in* Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     function withdrawAllFrom(address owner)
         external
-        onlyInCatostrophicFailure
+        onlyInCatastrophicFailure
         returns (uint256)
     {
         // get total balance

@@ -42,7 +42,7 @@ library LibSignatureValidator {
         returns (bool isValid)
     {
         if (signature.length == 0) {
-            LibRichErrors.rrevert(LibStakingRichErrors.LengthGreaterThan0RequiredError());
+            LibRichErrors.rrevert(LibStakingRichErrors.SignatureLengthGreaterThan0RequiredError());
         }
 
         // Pop last byte off of signature byte array.
@@ -78,7 +78,7 @@ library LibSignatureValidator {
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
         } else if (signatureType == IStructs.SignatureType.Invalid) {
-            if (signature.legnth > 0) {
+            if (signature.length > 0) {
                 LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength0RequiredError(
                     signature
                 ));
@@ -88,7 +88,7 @@ library LibSignatureValidator {
 
         // Signature using EIP712
         } else if (signatureType == IStructs.SignatureType.EIP712) {
-            if (signature.legnth != 65) {
+            if (signature.length != 65) {
                 LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength65RequiredError(
                     signature
                 ));
@@ -107,7 +107,7 @@ library LibSignatureValidator {
 
         // Signed using web3.eth_sign
         } else if (signatureType == IStructs.SignatureType.EthSign) {
-            if (signature.legnth != 65) {
+            if (signature.length != 65) {
                 LibRichErrors.rrevert(LibStakingRichErrors.SignatureLength65RequiredError(
                     signature
                 ));

@@ -123,7 +123,7 @@ contract MixinStake is
             LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
                 amount,
                 getDeactivatedStake(owner)
-            );
+            ));
         }
 
         _burnStake(owner, amount);
@@ -140,7 +140,7 @@ contract MixinStake is
             LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
                 amount,
                 getActivatableStake(owner)
-            );
+            ));
         }
 
         activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._add(amount);
@@ -158,7 +158,7 @@ contract MixinStake is
             LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
                 amount,
                 getActivatedStake(owner)
-            );
+            ));
         }
 
         activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);

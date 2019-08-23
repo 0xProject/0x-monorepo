@@ -41,7 +41,7 @@ If a vulnerability is discovered in the staking contract, operations may be halt
 
 In this worst-case scenario, state has been irreperably corrupted and the staking contracts must be re-deployed. Users withdraw their funds from the vaults and re-stake under the new system, at will.
 
-4. Vaults enter "Catostrophic Failure Mode" allowing users to withdraw their ZRX and Rewards.
+4. Vaults enter "Catastrophic Failure Mode" allowing users to withdraw their ZRX and Rewards.
 5. A Balance Oracle is deployed for determining the Reward balance of each user. (\*)
 
 ![](images/architecture_failure_mode.png)
