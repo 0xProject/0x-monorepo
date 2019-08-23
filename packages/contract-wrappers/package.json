@@ -50,7 +50,6 @@
     "devDependencies": {
         "@0x/abi-gen": "^4.1.1",
         "@0x/assert": "^2.1.4",
-        "@0x/contracts-test-utils": "^3.1.13",
         "@0x/ts-doc-gen": "^0.0.16",
         "@0x/contracts-test-utils": "^3.1.14",
         "@0x/coordinator-server": "^0.1.3",
