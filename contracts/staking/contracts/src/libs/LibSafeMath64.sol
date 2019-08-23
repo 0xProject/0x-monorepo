@@ -18,6 +18,9 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMathRichErrors.sol";
+
 
 library LibSafeMath64 {
 
@@ -25,16 +28,29 @@ library LibSafeMath64 {
     /// Note that this reverts on overflow.
     function _add(uint64 a, uint64 b) internal pure returns (uint64) {
         uint64 c = a + b;
-        require(c >= a, "OVERFLOW");
+        if (c < a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint64BinopError(
+                LibSafeMathRichErrors.BinopErrorCodes.ADDITION_OVERFLOW,
+                a,
+                b
+            ));
+        }
+
         return c;
     }
 
     /// @dev Returns the subtraction of two unsigned integers.
     /// Note that this reverts on underflow.
     function _sub(uint64 a, uint64 b) internal pure returns (uint64) {
-        require(b <= a, "UNDEROVERFLOW");
-        uint64 c = a - b;
+        if (b > a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint64BinopError(
+                LibSafeMathRichErrors.BinopErrorCodes.SUBTRACTION_UNDERFLOW,
+                a,
+                b
+            ));
+        }
 
+        uint64 c = a - b;
         return c;
     }
 
@@ -49,7 +65,13 @@ library LibSafeMath64 {
         }
 
         uint64 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
+        if (c / a != b) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint64BinopError(
+                LibSafeMathRichErrors.BinopErrorCodes.MULTIPLICATION_OVERFLOW,
+                a,
+                b
+            ));
+        }
 
         return c;
     }
@@ -57,7 +79,14 @@ library LibSafeMath64 {
     /// @dev Returns the integer division of two unsigned integers.
     /// Note that this reverts on division by zero. The result is rounded towards zero.
     function _div(uint64 a, uint64 b) internal pure returns (uint64) {
-        require(b > 0, "DIVISION_BY_ZERO");
+        if (b == 0) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint64BinopError(
+                LibSafeMathRichErrors.BinopErrorCodes.DIVISION_BY_ZERO,
+                a,
+                b
+            ));
+        }
+
         uint64 c = a / b;
         return c;
     }

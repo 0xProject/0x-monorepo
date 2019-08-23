@@ -39,8 +39,8 @@ describe('Reference functions', () => {
                 takerAssetAmount: MAX_UINT256_ROOT,
             });
             const takerAssetFilledAmount = MAX_UINT256_ROOT;
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 takerAssetFilledAmount,
                 order.makerAssetAmount,
             );
@@ -60,8 +60,8 @@ describe('Reference functions', () => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 makerAssetFilledAmount,
                 order.makerFee,
             );
@@ -76,8 +76,8 @@ describe('Reference functions', () => {
                 takerFee: MAX_UINT256_ROOT.times(11),
             });
             const takerAssetFilledAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 takerAssetFilledAmount,
                 order.takerFee,
             );

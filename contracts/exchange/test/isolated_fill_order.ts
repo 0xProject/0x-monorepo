@@ -443,8 +443,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 takerAssetAmount: MAX_UINT256_ROOT,
             });
             const takerAssetFillAmount = MAX_UINT256_ROOT;
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 takerAssetFillAmount,
                 order.makerAssetAmount,
             );
@@ -464,8 +464,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 makerAssetFilledAmount,
                 order.makerFee,
             );
@@ -480,8 +480,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 takerFee: MAX_UINT256_ROOT.times(11),
             });
             const takerAssetFillAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
+                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
                 takerAssetFillAmount,
                 order.takerFee,
             );
