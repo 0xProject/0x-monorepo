@@ -135,7 +135,7 @@ export class FillError extends RevertError {
 }
 
 export class OrderEpochError extends RevertError {
-    constructor(maker?: string, sender?: string, currentEpoch?: BigNumber | number | string) {
+    constructor(maker?: string, sender?: string, currentEpoch?: BigNumber) {
         super('OrderEpochError', 'OrderEpochError(address maker, address sender, uint256 currentEpoch)', {
             maker,
             sender,

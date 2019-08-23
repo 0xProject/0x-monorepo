@@ -131,7 +131,7 @@ library LibExchangeRichErrors {
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
         0x20d11f61;
     
-    // bytes4(keccak256("TransactionGasPriceError(bytes32,unt256,uint256)"))
+    // bytes4(keccak256("TransactionGasPriceError(bytes32,uint256,uint256)"))
     bytes4 internal constant TRANSACTION_GAS_PRICE_ERROR_SELECTOR =
         0xa26dac09;
 

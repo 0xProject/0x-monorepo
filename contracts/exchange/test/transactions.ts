@@ -43,7 +43,7 @@ import {
 const artifacts = { ...erc20Artifacts, ...localArtifacts };
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Exchange transactions', env => {
+blockchainTests.resets('Exchange transactions', env => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;

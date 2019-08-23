@@ -26,7 +26,11 @@ import "../src/Exchange.sol";
 contract TestTransactions is
     Exchange
 {
-    event ExecutableCalled(bytes data, bytes returnData);
+    event ExecutableCalled(
+        bytes data,
+        bytes returnData,
+        address contextAddress
+    );
 
     constructor ()
         public
@@ -39,7 +43,7 @@ contract TestTransactions is
         currentContextAddress = context;
     }
 
-    function setTransactionHash(bytes32 hash)
+    function setTransactionExecuted(bytes32 hash)
         external
     {
         transactionsExecuted[hash] = true;
@@ -77,7 +81,11 @@ contract TestTransactions is
         public
         returns (bytes memory)
     {
-        emit ExecutableCalled(data, returnData);
+        emit ExecutableCalled(
+            data,
+            returnData,
+            currentContextAddress
+        );
         require(shouldSucceed, "EXECUTABLE_FAILED");
         if (data.length != 0) {
             (bool didSucceed, bytes memory callResultData) = address(this).delegatecall(data); // This is a delegatecall to preserve the `msg.sender` field
