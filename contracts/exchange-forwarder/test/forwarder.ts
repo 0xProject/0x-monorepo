@@ -20,7 +20,7 @@ import { artifacts, ForwarderContract, ForwarderTestFactory, ForwarderWrapper } 
 
 const DECIMALS_DEFAULT = 18;
 
-blockchainTests.only(ContractName.Forwarder, env => {
+blockchainTests(ContractName.Forwarder, env => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
