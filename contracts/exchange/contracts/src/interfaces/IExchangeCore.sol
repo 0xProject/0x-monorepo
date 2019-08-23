@@ -25,6 +25,9 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 
 contract IExchangeCore {
 
+    // keccak256("Fill(address,address,bytes32,address,address,uint256,uint256,uint256,uint256,uint256,bool,bytes,bytes,bytes,bytes)")
+    bytes32 internal constant FILL_EVENT_TOPIC = 0x266de417a663e51231ccdf89b2794cea06fde5e2c433d76473160b32d31fd867;
+
     // Fill event is emitted whenever an order is filled.
     event Fill(
         address indexed makerAddress,         // Address that created the order.

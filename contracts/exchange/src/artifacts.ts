@@ -27,7 +27,6 @@ import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.jso
 import * as MixinMatchOrders from '../generated-artifacts/MixinMatchOrders.json';
 import * as MixinProtocolFees from '../generated-artifacts/MixinProtocolFees.json';
 import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
-import * as MixinStakingManager from '../generated-artifacts/MixinStakingManager.json';
 import * as MixinTransactions from '../generated-artifacts/MixinTransactions.json';
 import * as MixinTransferSimulator from '../generated-artifacts/MixinTransferSimulator.json';
 import * as MixinWrapperFunctions from '../generated-artifacts/MixinWrapperFunctions.json';
@@ -49,7 +48,6 @@ export const artifacts = {
     MixinMatchOrders: MixinMatchOrders as ContractArtifact,
     MixinProtocolFees: MixinProtocolFees as ContractArtifact,
     MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
-    MixinStakingManager: MixinStakingManager as ContractArtifact,
     MixinTransactions: MixinTransactions as ContractArtifact,
     MixinTransferSimulator: MixinTransferSimulator as ContractArtifact,
     MixinWrapperFunctions: MixinWrapperFunctions as ContractArtifact,

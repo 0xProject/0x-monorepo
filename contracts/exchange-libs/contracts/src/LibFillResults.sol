@@ -52,12 +52,10 @@ library LibFillResults {
     /// @dev Calculates amounts filled and fees paid by maker and taker.
     /// @param order to be filled.
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @param protocolFeeMultiplier The multiplier used to calculate protocol fees.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         LibOrder.Order memory order,
-        uint256 takerAssetFilledAmount,
-        uint256 protocolFeeMultiplier
+        uint256 takerAssetFilledAmount
     )
         internal
         view
@@ -81,9 +79,6 @@ library LibFillResults {
             order.takerFee
         );
 
-        // Compute the protocol fee for a single fill.
-        fillResults.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
-
         return fillResults;
     }
 
@@ -95,7 +90,6 @@ library LibFillResults {
     /// @param rightOrder Second order to match.
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
-    /// @param protocolFeeMultiplier The multiplier used to calculate protocol fees.
     /// @param shouldMaximallyFillOrders A value that indicates whether or not this calculation should use
     ///                                  the maximal fill order matching strategy.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
@@ -104,7 +98,6 @@ library LibFillResults {
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
         uint256 rightOrderTakerAssetFilledAmount,
-        uint256 protocolFeeMultiplier,
         bool shouldMaximallyFillOrders
     )
         internal
@@ -169,11 +162,6 @@ library LibFillResults {
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
         );
-
-        // Compute the protocol fees
-        uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
-        matchedFillResults.left.protocolFeePaid = protocolFee;
-        matchedFillResults.right.protocolFeePaid = protocolFee;
 
         // Return fill results
         return matchedFillResults;

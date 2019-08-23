@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IExchange.sol";
@@ -89,7 +89,7 @@ contract ExchangeWrapper is
     )
         public
         payable
-        refund
+        refundFinalBalance
     {
         address takerAddress = msg.sender;
 

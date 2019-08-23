@@ -154,12 +154,4 @@ contract IWrapperFunctions {
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public;
-
-    /// @dev Fetches information for all passed in orders
-    /// @param orders Array of order specifications.
-    /// @return Array of OrderInfo instances that correspond to each order.
-    function getOrdersInfo(LibOrder.Order[] memory orders)
-        public
-        view
-        returns (LibOrder.OrderInfo[] memory);
 }

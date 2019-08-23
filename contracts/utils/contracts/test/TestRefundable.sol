@@ -24,6 +24,13 @@ import "../src/Refundable.sol";
 contract TestRefundable is
     Refundable
 {
+    function refundNonzeroBalanceExternal()
+        external
+        payable
+    {
+        refundNonzeroBalance();
+    }
+
     function setShouldNotRefund(bool shouldNotRefundNew)
         external
     {

@@ -53,7 +53,7 @@ contract MixinTransactions is
     )
         public
         payable
-        refund
+        disableRefundUntilEnd
         returns (bytes memory)
     {
         return _executeTransaction(transaction, signature);
@@ -69,7 +69,7 @@ contract MixinTransactions is
     )
         public
         payable
-        refund
+        disableRefundUntilEnd
         returns (bytes[] memory)
     {
         uint256 length = transactions.length;

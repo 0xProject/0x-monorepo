@@ -5,8 +5,6 @@ import { OrderWithoutDomain as Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { calculateFillResults } from '../src/reference_functions';
-
 describe('Reference functions', () => {
     const ONE_ETHER = constants.ONE_ETHER;
     const EMPTY_ORDER: Order = {
@@ -44,7 +42,9 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
+                expectedError.message,
+            );
         });
 
         it('reverts if computing `fillResults.makerFeePaid` overflows', () => {
@@ -65,7 +65,7 @@ describe('Reference functions', () => {
                 makerAssetFilledAmount,
                 order.makerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if computing `fillResults.takerFeePaid` overflows', () => {
@@ -81,7 +81,7 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.takerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if `order.makerAssetAmount` is 0', () => {
@@ -91,7 +91,7 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if `order.takerAssetAmount` is 0', () => {
@@ -101,7 +101,7 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', () => {
@@ -115,7 +115,7 @@ describe('Reference functions', () => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerFeePaid`', () => {
@@ -135,7 +135,7 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.makerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `takerFeePaid`', () => {
@@ -155,7 +155,7 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.takerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
+            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
     });
 });

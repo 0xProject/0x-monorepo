@@ -21,37 +21,15 @@ pragma solidity ^0.5.9;
 
 interface IStaking {
 
-    /// @dev Pays several protocols fee in ETH.
-    /// @param makers The addresses of the order makers.
-    /// @param fees The fee amounts paid by each of the makers.
-    function batchPayProtocolFees(
-        address[] calldata makers,
-        uint256[] calldata fees
-    )
-        external
-        payable;
-
     /// @dev Pays a protocol fee in ETH.
     /// @param makerAddress The address of the order's maker.
-    function payProtocolFee(address makerAddress)
+    /// @param payerAddress The address that is responsible for paying the protocol fee.
+    /// @param protocolFeePaid The amount of protocol fees that should be paid.
+    function payProtocolFee(
+        address makerAddress,
+        address payerAddress,
+        uint256 protocolFeePaid
+    )
         external
         payable;
-
-    /// @dev Records several protocol fees that were paid in WETH.
-    /// @param makers The addresses of the order makers.
-    /// @param fees The fee amounts paid by each of the makers.
-    function batchRecordProtocolFees(
-        address[] calldata makers,
-        uint256[] calldata fees
-    )
-        external;
-
-    /// @dev Records a protocol fee that was paid in WETH.
-    /// @param makerAddress The address of the order's maker.
-    /// @param fee The fee amount that was paid by the maker.
-    function recordProtocolFee(
-        address makerAddress,
-        uint256 fee
-    )
-        external;
 }

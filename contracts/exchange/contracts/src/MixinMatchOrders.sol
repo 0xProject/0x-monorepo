@@ -47,7 +47,7 @@ contract MixinMatchOrders is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -77,7 +77,7 @@ contract MixinMatchOrders is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -107,7 +107,7 @@ contract MixinMatchOrders is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -137,7 +137,7 @@ contract MixinMatchOrders is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -385,8 +385,17 @@ contract MixinMatchOrders is
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,
             rightOrderInfo.orderTakerAssetFilledAmount,
-            protocolFeeMultiplier,
             shouldMaximallyFillOrders
+        );
+
+        // Settle matched orders. Succeeds or throws.
+        _settleMatchedOrders(
+            leftOrderInfo.orderHash,
+            rightOrderInfo.orderHash,
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
         );
 
         // Update exchange state
@@ -403,16 +412,6 @@ contract MixinMatchOrders is
             rightOrderInfo.orderHash,
             rightOrderInfo.orderTakerAssetFilledAmount,
             matchedFillResults.right
-        );
-
-        // Settle matched orders. Succeeds or throws.
-        _settleMatchedOrders(
-            leftOrderInfo.orderHash,
-            rightOrderInfo.orderHash,
-            leftOrder,
-            rightOrder,
-            takerAddress,
-            matchedFillResults
         );
 
         return matchedFillResults;
@@ -490,39 +489,27 @@ contract MixinMatchOrders is
             matchedFillResults.profitInRightMakerAsset
         );
 
-        // Pay protocol fees
-        if (staking != address(0)) {
-            // matchedFillResults.left.protocolFeePaid == matchedFillResults.right.protocolFeePaid
-            // so we only use matchedFillResults.left.protocolFeePaid as a gas optimization.
-            uint256 protocolFee = matchedFillResults.left.protocolFeePaid;
+        // Pay the protocol fees if there is a registered `protocolFeeCollector` address.
+        address feeCollector = protocolFeeCollector;
+        if (feeCollector != address(0)) {
+            // Calculate the protocol fee that should be paid and populate the `protocolFeePaid` field in the left and
+            // right `fillResults` of `matchedFillResults`. It's worth noting that we leave this calculation until now
+            // so that work isn't wasted if a fee collector is not registered in the exchange.
+            uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
+            matchedFillResults.left.protocolFeePaid = protocolFee;
+            matchedFillResults.right.protocolFeePaid = protocolFee;
 
-            // Construct an array of makers and fee amounts so that the staking contract will only need to be called once.
-            address[] memory makers = new address[](2);
-            makers[0] = leftOrder.makerAddress;
-            makers[1] = rightOrder.makerAddress;
-            uint256[] memory fees = new uint256[](2);
-            fees[0] = protocolFee;
-            fees[1] = protocolFee;
+            // Create a stack variable for the value that will be sent to the feeCollector when `payProtocolFee` is called.
+            // This allows a gas optimization where the `leftOrder.makerAddress` only needs be loaded onto the stack once AND
+            // a stack variable does not need to be allocated for the call.
+            uint256 valuePaid = 0;
 
-            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
-            // Otherwise the fee should be paid in WETH.
+            // Pay the left order's protocol fee.
             if (address(this).balance >= 2 * protocolFee) {
-                // Forward the protocol fees
-                IStaking(staking).batchPayProtocolFees.value(2 * protocolFee)(makers, fees);
-            } else {
-                // Transfer the weth from the takerAddress.
-                // Note: `_dispatchTransferFrom` is only called once as a gas optimization.
-                _dispatchTransferFrom(
-                    leftOrderHash,
-                    WETH_ASSET_DATA,
-                    takerAddress,
-                    staking,
-                    2 * protocolFee
-                );
-
-                // Attribute the protocol fees to the maker addresses
-                IStaking(staking).batchRecordProtocolFees(makers, fees);
+                valuePaid = 2 * protocolFee;
             }
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(leftOrder.makerAddress, takerAddress, protocolFee);
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(rightOrder.makerAddress, takerAddress, protocolFee);
         }
 
         // Settle taker fees.

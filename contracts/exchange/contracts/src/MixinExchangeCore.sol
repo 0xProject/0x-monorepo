@@ -35,12 +35,12 @@ import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
+    IExchangeCore,
     Refundable,
     LibEIP712ExchangeDomain,
-    IExchangeCore,
     MixinAssetProxyDispatcher,
-    MixinSignatureValidator,
-    MixinProtocolFees
+    MixinProtocolFees,
+    MixinSignatureValidator
 {
     using LibOrder for LibOrder.Order;
     using LibSafeMath for uint256;
@@ -103,7 +103,7 @@ contract MixinExchangeCore is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
@@ -217,9 +217,17 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
 
         bytes32 orderHash = orderInfo.orderHash;
+
+        // Settle order
+        _settleOrder(
+            orderHash,
+            order,
+            takerAddress,
+            fillResults
+        );
 
         // Update exchange internal state
         _updateFilledState(
@@ -227,14 +235,6 @@ contract MixinExchangeCore is
             takerAddress,
             orderHash,
             orderInfo.orderTakerAssetFilledAmount,
-            fillResults
-        );
-
-        // Settle order
-        _settleOrder(
-            orderHash,
-            order,
-            takerAddress,
             fillResults
         );
 
@@ -462,25 +462,26 @@ contract MixinExchangeCore is
         );
 
         // Transfer protocol fee -> staking if the fee should be paid
-        if (staking != address(0)) {
-            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
-            // Otherwise the fee should be paid in WETH.
-            uint256 protocolFee = fillResults.protocolFeePaid;
-            if (address(this).balance >= protocolFee) {
-                IStaking(staking).payProtocolFee.value(protocolFee)(order.makerAddress);
-            } else {
-                // Transfer the Weth
-                _dispatchTransferFrom(
-                    orderHash,
-                    WETH_ASSET_DATA,
-                    takerAddress,
-                    staking,
-                    protocolFee
-                );
+        address feeCollector = protocolFeeCollector;
+        if (feeCollector != address(0)) {
+            // Create a stack variable to hold the value that will be sent so that the gas optimization of
+            // only having one call statement can be implemented.
+            uint256 valuePaid = 0;
 
-                // Attribute the protocol fee to the maker
-                IStaking(staking).recordProtocolFee(order.makerAddress, protocolFee);
+            // Calculate the protocol fee that should be paid and populate the `protocolFeePaid` field in `fillResults`.
+            // It's worth noting that we leave this calculation until now so that work isn't wasted if a fee collector
+            // is not registered in the exchange.
+            uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
+            fillResults.protocolFeePaid = protocolFee;
+
+            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
+            // Otherwise the fee should be paid in WETH. Since the exchange doesn't actually handle
+            // this case, it will just forward the procotolFee in ether in case 1 and will send zero
+            // value in case 2.
+            if (address(this).balance >= protocolFee) {
+                valuePaid = protocolFee;
             }
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(order.makerAddress, takerAddress, protocolFee);
         }
     }
 }

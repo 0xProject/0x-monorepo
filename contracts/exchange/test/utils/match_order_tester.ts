@@ -1,5 +1,5 @@
 import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { ERC1155HoldingsByOwner, expect, OrderStatus } from '@0x/contracts-test-utils';
+import { constants, ERC1155HoldingsByOwner, expect, OrderStatus } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -235,6 +235,7 @@ export class MatchOrderTester {
         return expectedBatchMatchResults;
     }
 
+    // FIXME - Punting on protocol fees until later
     /**
      * Matches two complementary orders and asserts results.
      * @param orders The matched orders and filled states.
@@ -266,6 +267,7 @@ export class MatchOrderTester {
                 orders.leftOrder,
                 orders.rightOrder,
                 takerAddress,
+                {}, // FIXME
             );
             transactionReceipt = await this._executeMatchOrdersWithMaximalFillAsync(
                 orders.leftOrder,
@@ -1198,12 +1200,14 @@ function convertToMatchResults(result: MatchResults): MatchedFillResults {
             takerAssetFilledAmount: result.fills[0].takerAssetFilledAmount,
             makerFeePaid: result.fills[0].makerFeePaid,
             takerFeePaid: result.fills[0].takerFeePaid,
+            protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
         },
         right: {
             makerAssetFilledAmount: result.fills[1].makerAssetFilledAmount,
             takerAssetFilledAmount: result.fills[1].takerAssetFilledAmount,
             makerFeePaid: result.fills[1].makerFeePaid,
             takerFeePaid: result.fills[1].takerFeePaid,
+            protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
         },
         profitInLeftMakerAsset,
         profitInRightMakerAsset,
@@ -1222,6 +1226,7 @@ function convertToFillResults(result: FillEventArgs): FillResults {
         takerAssetFilledAmount: result.takerAssetFilledAmount,
         makerFeePaid: result.makerFeePaid,
         takerFeePaid: result.takerFeePaid,
+        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
     };
     return fillResults;
 }

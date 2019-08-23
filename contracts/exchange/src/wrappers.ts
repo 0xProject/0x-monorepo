@@ -25,7 +25,6 @@ export * from '../generated-wrappers/mixin_exchange_core';
 export * from '../generated-wrappers/mixin_match_orders';
 export * from '../generated-wrappers/mixin_protocol_fees';
 export * from '../generated-wrappers/mixin_signature_validator';
-export * from '../generated-wrappers/mixin_staking_manager';
 export * from '../generated-wrappers/mixin_transactions';
 export * from '../generated-wrappers/mixin_transfer_simulator';
 export * from '../generated-wrappers/mixin_wrapper_functions';

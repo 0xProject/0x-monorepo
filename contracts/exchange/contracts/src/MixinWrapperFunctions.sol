@@ -48,7 +48,7 @@ contract MixinWrapperFunctions is
         public
         payable
         nonReentrant
-        refund
+        refundFinalBalance
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrKillOrder(
@@ -59,6 +59,10 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
+    /// Note: This function only needs `refundFinalBalance` modifier because ether will not
+    //        be returned in the event that the delegatecall fails. This said, there is no
+    //        reason to invoke `disableRefundUntilEnd` because it is cheaper to use this modifier
+    //        and the inner refund will not affect the logic of this call.
     /// @dev Fills the input order.
     ///      Returns a null FillResults instance if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
@@ -72,7 +76,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        refund
+        refundFinalBalance
         returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
@@ -85,7 +89,7 @@ contract MixinWrapperFunctions is
 
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
         if (didSucceed) {
-            assert(returnData.length == 128);
+            assert(returnData.length == 160);
             fillResults = abi.decode(returnData, (LibFillResults.FillResults));
         }
         // fillResults values will be 0 by default if call was unsuccessful
@@ -105,7 +109,7 @@ contract MixinWrapperFunctions is
         public
         payable
         nonReentrant
-        refund
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -133,7 +137,7 @@ contract MixinWrapperFunctions is
         public
         payable
         nonReentrant
-        refund
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -160,7 +164,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        refund
+        // disableRefundUntilEnd
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -187,7 +191,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        refund
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
@@ -233,7 +237,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        refund
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
@@ -331,22 +335,6 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i != ordersLength; i++) {
             _cancelOrder(orders[i]);
         }
-    }
-
-    /// @dev Fetches information for all passed in orders.
-    /// @param orders Array of order specifications.
-    /// @return Array of OrderInfo instances that correspond to each order.
-    function getOrdersInfo(LibOrder.Order[] memory orders)
-        public
-        view
-        returns (LibOrder.OrderInfo[] memory)
-    {
-        uint256 ordersLength = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            ordersInfo[i] = getOrderInfo(orders[i]);
-        }
-        return ordersInfo;
     }
 
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.

@@ -24,10 +24,33 @@ import "./TestRefundable.sol";
 contract TestRefundableReceiver {
 
     /// @dev A payable fallback function is necessary to receive refunds from the `TestRefundable` contract.
+    ///      This function ensures that zero value is not sent to the contract, which tests the feature of
+    ///      of the `refundNonzeroBalance` that doesn't transfer if the balance is zero.
     function ()
         external
         payable
-    {} // solhint-disable-line no-empty-blocks
+    {
+        // Ensure that a value of zero was not transferred to the contract.
+        require(msg.value != 0, "Zero value should not be sent to this contract.");
+    }
+
+    /// @dev This function tests the behavior of the `refundNonzeroBalance` function by checking whether or
+    ///      not the `callCounter` state variable changes after the `refundNonzeroBalance` is called.
+    /// @param testRefundable The TestRefundable that should be tested against.
+    function testRefundNonzeroBalance(TestRefundable testRefundable)
+        external
+        payable
+    {
+        // Call `refundNonzeroBalance()` and forward all of the eth sent to the contract.
+        testRefundable.refundNonzeroBalanceExternal.value(msg.value)();
+
+        // If the value sent was nonzero, a check that a refund was received will be executed. Otherwise, the fallback
+        // function contains a check that will fail in the event that a value of zero was sent to the contract.
+        if (msg.value > 0) {
+            // Ensure that a full refund was provided to this contract.
+            require(address(this).balance == msg.value, "A full refund was not provided by `refundNonzeroBalance`");
+        }
+    }
 
     /// @dev This function tests the behavior to a simple call to `refundFinalBalanceFunction`. This
     ///      test will verify that the correct refund was provided after the call (depending on whether

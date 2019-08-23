@@ -25,7 +25,6 @@
         "generated-artifacts/MixinMatchOrders.json",
         "generated-artifacts/MixinProtocolFees.json",
         "generated-artifacts/MixinSignatureValidator.json",
-        "generated-artifacts/MixinStakingManager.json",
         "generated-artifacts/MixinTransactions.json",
         "generated-artifacts/MixinTransferSimulator.json",
         "generated-artifacts/MixinWrapperFunctions.json",

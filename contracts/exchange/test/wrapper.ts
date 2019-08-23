@@ -8,7 +8,6 @@ import {
     ERC20BalancesByOwner,
     expect,
     getLatestBlockTimestampAsync,
-    increaseTimeAndMineBlockAsync,
     OrderFactory,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
@@ -48,11 +47,15 @@ blockchainTests.resets('Exchange wrappers', env => {
     let defaultTakerAssetAddress: string;
     let defaultFeeAssetAddress: string;
 
+    const DEFAULT_GAS_PRICE = new BigNumber(2);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+
     const nullFillResults: FillResults = {
         makerAssetFilledAmount: constants.ZERO_AMOUNT,
         takerAssetFilledAmount: constants.ZERO_AMOUNT,
         makerFeePaid: constants.ZERO_AMOUNT,
         takerFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
 
     before(async () => {
@@ -81,10 +84,16 @@ blockchainTests.resets('Exchange wrappers', env => {
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             env.provider,
-            env.txDefaults,
+            { ...env.txDefaults, from: owner },
             {},
             new BigNumber(chainId),
         );
+
+        // Set the protocol fee multiplier of the exchange
+        await exchange.updateProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER, {
+            from: owner,
+        });
+
         exchangeWrapper = new ExchangeWrapper(exchange, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
@@ -492,11 +501,14 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
+                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -522,11 +534,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(makerFee.plus(takerFee));
                 });
 
+                // FIXME - Punting on these tests for now since no staking contract will be registered. This
+                //         should be revisited when the protocol fee testing has been unit tested well.
                 const fillResults = await exchange.batchFillOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
+                    { from: takerAddress, gasPrice: DEFAULT_GAS_PRICE },
                 );
                 await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
@@ -559,11 +573,14 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
+                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -642,11 +659,14 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
+                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -712,11 +732,14 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
+                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -853,6 +876,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME - This is what is being used now.
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -864,6 +888,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -923,6 +948,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -934,6 +960,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -1037,6 +1064,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1048,6 +1076,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -1108,6 +1137,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1119,6 +1149,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -1149,190 +1180,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 tx.logs.forEach((log, index) => {
                     expect((log as any).args.orderHash).to.equal(expectedOrderHashes[index]);
                 });
-            });
-        });
-
-        describe('getOrdersInfo', () => {
-            beforeEach(async () => {
-                signedOrders = [
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync(),
-                ];
-            });
-            it('should get the correct information for multiple unfilled orders', async () => {
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.Fillable;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple partially filled orders', async () => {
-                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.Fillable;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple fully filled orders', async () => {
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress);
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
-                    const expectedOrderStatus = OrderStatus.FullyFilled;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple cancelled and unfilled orders', async () => {
-                await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.Cancelled;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple cancelled and partially filled orders', async () => {
-                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
-                await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.Cancelled;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple expired and unfilled orders', async () => {
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const timeUntilExpiration = signedOrders[0].expirationTimeSeconds.minus(currentTimestamp).toNumber();
-                await increaseTimeAndMineBlockAsync(timeUntilExpiration);
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = new BigNumber(0);
-                    const expectedOrderStatus = OrderStatus.Expired;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for multiple expired and partially filled orders', async () => {
-                const takerAssetFillAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount.div(2));
-                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, { takerAssetFillAmounts });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const timeUntilExpiration = signedOrders[0].expirationTimeSeconds.minus(currentTimestamp).toNumber();
-                await increaseTimeAndMineBlockAsync(timeUntilExpiration);
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(3);
-                _.forEach(signedOrders, (signedOrder, index) => {
-                    const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-                    const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
-                    const expectedOrderStatus = OrderStatus.Expired;
-                    const orderInfo = ordersInfo[index];
-                    expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-                    expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-                    expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
-                });
-            });
-            it('should get the correct information for a mix of unfilled, partially filled, fully filled, cancelled, and expired orders', async () => {
-                const unfilledOrder = await orderFactory.newSignedOrderAsync();
-                const partiallyFilledOrder = await orderFactory.newSignedOrderAsync();
-                await exchangeWrapper.fillOrderAsync(partiallyFilledOrder, takerAddress, {
-                    takerAssetFillAmount: partiallyFilledOrder.takerAssetAmount.div(2),
-                });
-                const fullyFilledOrder = await orderFactory.newSignedOrderAsync();
-                await exchangeWrapper.fillOrderAsync(fullyFilledOrder, takerAddress);
-                const cancelledOrder = await orderFactory.newSignedOrderAsync();
-                await exchangeWrapper.cancelOrderAsync(cancelledOrder, makerAddress);
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const expiredOrder = await orderFactory.newSignedOrderAsync({
-                    expirationTimeSeconds: new BigNumber(currentTimestamp),
-                });
-                signedOrders = [unfilledOrder, partiallyFilledOrder, fullyFilledOrder, cancelledOrder, expiredOrder];
-                const ordersInfo = await exchangeWrapper.getOrdersInfoAsync(signedOrders);
-                expect(ordersInfo.length).to.be.equal(5);
-
-                const expectedUnfilledOrderHash = orderHashUtils.getOrderHashHex(unfilledOrder);
-                const expectedUnfilledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedUnfilledOrderStatus = OrderStatus.Fillable;
-                const unfilledOrderInfo = ordersInfo[0];
-                expect(unfilledOrderInfo.orderHash).to.be.equal(expectedUnfilledOrderHash);
-                expect(unfilledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
-                    expectedUnfilledTakerAssetFilledAmount,
-                );
-                expect(unfilledOrderInfo.orderStatus).to.be.equal(expectedUnfilledOrderStatus);
-
-                const expectedPartialOrderHash = orderHashUtils.getOrderHashHex(partiallyFilledOrder);
-                const expectedPartialTakerAssetFilledAmount = partiallyFilledOrder.takerAssetAmount.div(2);
-                const expectedPartialOrderStatus = OrderStatus.Fillable;
-                const partialOrderInfo = ordersInfo[1];
-                expect(partialOrderInfo.orderHash).to.be.equal(expectedPartialOrderHash);
-                expect(partialOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
-                    expectedPartialTakerAssetFilledAmount,
-                );
-                expect(partialOrderInfo.orderStatus).to.be.equal(expectedPartialOrderStatus);
-
-                const expectedFilledOrderHash = orderHashUtils.getOrderHashHex(fullyFilledOrder);
-                const expectedFilledTakerAssetFilledAmount = fullyFilledOrder.takerAssetAmount;
-                const expectedFilledOrderStatus = OrderStatus.FullyFilled;
-                const filledOrderInfo = ordersInfo[2];
-                expect(filledOrderInfo.orderHash).to.be.equal(expectedFilledOrderHash);
-                expect(filledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
-                    expectedFilledTakerAssetFilledAmount,
-                );
-                expect(filledOrderInfo.orderStatus).to.be.equal(expectedFilledOrderStatus);
-
-                const expectedCancelledOrderHash = orderHashUtils.getOrderHashHex(cancelledOrder);
-                const expectedCancelledTakerAssetFilledAmount = new BigNumber(0);
-                const expectedCancelledOrderStatus = OrderStatus.Cancelled;
-                const cancelledOrderInfo = ordersInfo[3];
-                expect(cancelledOrderInfo.orderHash).to.be.equal(expectedCancelledOrderHash);
-                expect(cancelledOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
-                    expectedCancelledTakerAssetFilledAmount,
-                );
-                expect(cancelledOrderInfo.orderStatus).to.be.equal(expectedCancelledOrderStatus);
-
-                const expectedExpiredOrderHash = orderHashUtils.getOrderHashHex(expiredOrder);
-                const expectedExpiredTakerAssetFilledAmount = new BigNumber(0);
-                const expectedExpiredOrderStatus = OrderStatus.Expired;
-                const expiredOrderInfo = ordersInfo[4];
-                expect(expiredOrderInfo.orderHash).to.be.equal(expectedExpiredOrderHash);
-                expect(expiredOrderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(
-                    expectedExpiredTakerAssetFilledAmount,
-                );
-                expect(expiredOrderInfo.orderStatus).to.be.equal(expectedExpiredOrderStatus);
             });
         });
     });

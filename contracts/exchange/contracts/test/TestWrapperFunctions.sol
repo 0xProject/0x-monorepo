@@ -92,6 +92,7 @@ contract TestWrapperFunctions is
         fillResults.takerAssetFilledAmount = order.takerAssetAmount;
         fillResults.makerFeePaid = order.makerFee;
         fillResults.takerFeePaid = order.takerFee;
+        fillResults.protocolFeePaid = protocolFeeMultiplier;
     }
 
     /// @dev Overridden to only log arguments and revert with certain inputs.

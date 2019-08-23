@@ -29,14 +29,13 @@ contract TestLibFillResults {
 
     function calculateFillResults(
         LibOrder.Order memory order,
-        uint256 takerAssetFilledAmount,
-        uint256 protocolFeeMultiplier
+        uint256 takerAssetFilledAmount
     )
         public
         view
         returns (LibFillResults.FillResults memory fillResults)
     {
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
         return fillResults;
     }
 
@@ -45,7 +44,6 @@ contract TestLibFillResults {
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
         uint256 rightOrderTakerAssetFilledAmount,
-        uint256 protocolFeeMultiplier,
         bool shouldMaximallyFillOrders
     )
         public
@@ -57,7 +55,6 @@ contract TestLibFillResults {
             rightOrder,
             leftOrderTakerAssetFilledAmount,
             rightOrderTakerAssetFilledAmount,
-            protocolFeeMultiplier,
             shouldMaximallyFillOrders
         );
         return matchedFillResults;

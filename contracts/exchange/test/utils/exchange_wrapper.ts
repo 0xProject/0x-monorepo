@@ -43,35 +43,35 @@ export class ExchangeWrapper {
     public async fillOrKillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber; gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txReceipt = await this._exchange.fillOrKillOrder.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return txReceipt;
     }
     public async fillOrderNoThrowAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerAssetFillAmount?: BigNumber; gas?: number } = {},
+        opts: { takerAssetFillAmount?: BigNumber; gas?: number; gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const txReceipt = await this._exchange.fillOrderNoThrow.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
-            { from, gas: opts.gas },
+            { from, gas: opts.gas, gasPrice: opts.gasPrice },
         );
         return txReceipt;
     }
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[]; gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.batchFillOrders.awaitTransactionSuccessAsync(
             orders,
@@ -79,13 +79,13 @@ export class ExchangeWrapper {
                 ? orders.map(signedOrder => signedOrder.takerAssetAmount)
                 : opts.takerAssetFillAmounts,
             orders.map(signedOrder => signedOrder.signature),
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async batchFillOrKillOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmounts?: BigNumber[] } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[]; gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.batchFillOrKillOrders.awaitTransactionSuccessAsync(
             orders,
@@ -93,13 +93,13 @@ export class ExchangeWrapper {
                 ? orders.map(signedOrder => signedOrder.takerAssetAmount)
                 : opts.takerAssetFillAmounts,
             orders.map(signedOrder => signedOrder.signature),
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async batchFillOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmounts?: BigNumber[]; gas?: number } = {},
+        opts: { takerAssetFillAmounts?: BigNumber[]; gas?: number; gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.batchFillOrdersNoThrow.awaitTransactionSuccessAsync(
             orders,
@@ -107,25 +107,25 @@ export class ExchangeWrapper {
                 ? orders.map(signedOrder => signedOrder.takerAssetAmount)
                 : opts.takerAssetFillAmounts,
             orders.map(signedOrder => signedOrder.signature),
-            { from, gas: opts.gas },
+            { from, gas: opts.gas, gasPrice: opts.gasPrice },
         );
     }
     public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmount: BigNumber; gas?: number },
+        opts: { takerAssetFillAmount: BigNumber; gas?: number; gasPrice?: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.marketSellOrdersNoThrow.awaitTransactionSuccessAsync(
             orders,
             opts.takerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),
-            { from, gas: opts.gas },
+            { from, gas: opts.gas, gasPrice: opts.gasPrice },
         );
     }
     public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerAssetFillAmount: BigNumber; gas?: number },
+        opts: { makerAssetFillAmount: BigNumber; gas?: number; gasPrice?: BigNumber },
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.marketBuyOrdersNoThrow.awaitTransactionSuccessAsync(
             orders,
@@ -180,22 +180,23 @@ export class ExchangeWrapper {
     public async executeTransactionAsync(
         signedTransaction: SignedZeroExTransaction,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.executeTransaction.awaitTransactionSuccessAsync(
             signedTransaction,
             signedTransaction.signature,
-            {
-                from,
-            },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async batchExecuteTransactionsAsync(
         signedTransactions: SignedZeroExTransaction[],
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const signatures = signedTransactions.map(signedTransaction => signedTransaction.signature);
         return this._exchange.batchExecuteTransactions.awaitTransactionSuccessAsync(signedTransactions, signatures, {
             from,
+            gasPrice: opts.gasPrice,
         });
     }
     public async getTakerAssetFilledAmountAsync(orderHashHex: string): Promise<BigNumber> {
@@ -214,14 +215,11 @@ export class ExchangeWrapper {
         const orderInfo = await this._exchange.getOrderInfo.callAsync(signedOrder);
         return orderInfo;
     }
-    public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {
-        const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
-        return ordersInfo;
-    }
     public async batchMatchOrdersAsync(
         signedOrdersLeft: SignedOrder[],
         signedOrdersRight: SignedOrder[],
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         return this._exchange.batchMatchOrders.awaitTransactionSuccessAsync(
@@ -229,25 +227,27 @@ export class ExchangeWrapper {
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async batchMatchOrdersRawAsync(
         params: BatchMatchOrder,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.batchMatchOrders.awaitTransactionSuccessAsync(
             params.leftOrders,
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async getBatchMatchOrdersResultsAsync(
         signedOrdersLeft: SignedOrder[],
         signedOrdersRight: SignedOrder[],
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<BatchMatchedFillResults> {
         const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         const batchMatchedFillResults = await this._exchange.batchMatchOrders.callAsync(
@@ -255,7 +255,7 @@ export class ExchangeWrapper {
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return batchMatchedFillResults;
     }
@@ -263,6 +263,7 @@ export class ExchangeWrapper {
         signedOrdersLeft: SignedOrder[],
         signedOrdersRight: SignedOrder[],
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         return this._exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
@@ -270,25 +271,27 @@ export class ExchangeWrapper {
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async batchMatchOrdersWithMaximalFillRawAsync(
         params: BatchMatchOrder,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         return this._exchange.batchMatchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
             params.leftOrders,
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async getBatchMatchOrdersWithMaximalFillResultsAsync(
         signedOrdersLeft: SignedOrder[],
         signedOrdersRight: SignedOrder[],
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<BatchMatchedFillResults> {
         const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         const batchMatchedFillResults = await this._exchange.batchMatchOrdersWithMaximalFill.callAsync(
@@ -296,7 +299,7 @@ export class ExchangeWrapper {
             params.rightOrders,
             params.leftSignatures,
             params.rightSignatures,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return batchMatchedFillResults;
     }
@@ -304,6 +307,7 @@ export class ExchangeWrapper {
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
         const txReceipt = await this._exchange.matchOrders.awaitTransactionSuccessAsync(
@@ -311,7 +315,7 @@ export class ExchangeWrapper {
             params.right,
             params.leftSignature,
             params.rightSignature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return txReceipt;
     }
@@ -319,6 +323,7 @@ export class ExchangeWrapper {
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<MatchedFillResults> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
         const matchedFillResults = await this._exchange.matchOrders.callAsync(
@@ -326,7 +331,7 @@ export class ExchangeWrapper {
             params.right,
             params.leftSignature,
             params.rightSignature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return matchedFillResults;
     }
@@ -334,6 +339,7 @@ export class ExchangeWrapper {
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         from: string,
+        opts: { gasPrice?: BigNumber } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
         return this._exchange.matchOrdersWithMaximalFill.awaitTransactionSuccessAsync(
@@ -341,13 +347,14 @@ export class ExchangeWrapper {
             params.right,
             params.leftSignature,
             params.rightSignature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
     }
     public async getMatchOrdersWithMaximalFillResultsAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
         from: string,
+        opts: { gasPrice?: BigNumber },
     ): Promise<MatchedFillResults> {
         const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
         const matchedFillResults = await this._exchange.matchOrdersWithMaximalFill.callAsync(
@@ -355,21 +362,21 @@ export class ExchangeWrapper {
             params.right,
             params.leftSignature,
             params.rightSignature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return matchedFillResults;
     }
     public async getFillOrderResultsAsync(
         signedOrder: SignedOrder,
         from: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
+        opts: { takerAssetFillAmount?: BigNumber; gasPrice?: BigNumber } = {},
     ): Promise<FillResults> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const fillResults = await this._exchange.fillOrder.callAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
-            { from },
+            { from, gasPrice: opts.gasPrice },
         );
         return fillResults;
     }

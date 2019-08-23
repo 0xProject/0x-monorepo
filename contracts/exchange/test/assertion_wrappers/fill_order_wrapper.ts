@@ -17,7 +17,7 @@ import {
     Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, FillResults, SignedOrder } from '@0x/types';
+import { FillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
@@ -33,6 +33,8 @@ export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
     private readonly _web3Wrapper: Web3Wrapper;
 
+    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+    //         should be revisited when the protocol fee testing has been unit tested well.
     /**
      * Simulates matching two orders by transferring amounts defined in
      * `transferAmounts` and returns the results.
@@ -47,23 +49,18 @@ export class FillOrderWrapper {
         takerAddress: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
         initBalanceStore: BalanceStore,
-        stakingOpts: {
-            gasPrice: BigNumber;
-            messageValue: BigNumber;
-            protocolFeeMultiplier: BigNumber;
-            stakingAddress: string;
-            wethAddress: string;
-        },
+        // stakingOpts: {
+        //     gasPrice: BigNumber;
+        //     messageValue: BigNumber;
+        //     protocolFeeMultiplier: BigNumber;
+        //     stakingAddress: string;
+        //     wethAddress: string;
+        // },
     ): [FillResults, FillEventArgs, BalanceStore] {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        const fillResults = LibReferenceFunctions.calculateFillResults(
-            signedOrder,
-            takerAssetFillAmount,
-            stakingOpts.protocolFeeMultiplier,
-            stakingOpts.gasPrice,
-        );
+        const fillResults = LibReferenceFunctions.calculateFillResults(signedOrder, takerAssetFillAmount);
         const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
         // Taker -> Maker
         balanceStore.transferAsset(
@@ -93,18 +90,20 @@ export class FillOrderWrapper {
             fillResults.makerFeePaid,
             signedOrder.makerFeeAssetData,
         );
-        if (stakingOpts.messageValue.isGreaterThanOrEqualTo(fillResults.protocolFeePaid)) {
-            // Pay the protocol fee in ETH.
-            balanceStore.transferAsset(takerAddress, stakingOpts.stakingAddress, fillResults.protocolFeePaid, '');
-        } else {
-            // Pay the protocol fee in WETH.
-            balanceStore.transferAsset(
-                takerAddress,
-                stakingOpts.stakingAddress,
-                fillResults.protocolFeePaid,
-                AssetProxyId.ERC20,
-            );
-        }
+        // FIXME - Punting on these tests for now since no staking contract will be registered. This
+        //         should be revisited when the protocol fee testing has been unit tested well.
+        // if (stakingOpts.messageValue.isGreaterThanOrEqualTo(fillResults.protocolFeePaid)) {
+        //     // Pay the protocol fee in ETH.
+        //     balanceStore.transferAsset(takerAddress, stakingOpts.stakingAddress, fillResults.protocolFeePaid, '');
+        // } else {
+        //     // Pay the protocol fee in WETH.
+        //     balanceStore.transferAsset(
+        //         takerAddress,
+        //         stakingOpts.stakingAddress,
+        //         fillResults.protocolFeePaid,
+        //         AssetProxyId.ERC20,
+        //     );
+        // }
         return [fillResults, fillEvent, balanceStore];
     }
 
@@ -168,6 +167,8 @@ export class FillOrderWrapper {
         return this._blockchainBalanceStore;
     }
 
+    // FIXME - Punting on these tests for now since no staking contract will be registered. This
+    //         should be revisited when the protocol fee testing has been unit tested well.
     /**
      * Fills an order and asserts the effects. This includes
      * 1. The order info (via `getOrderInfo`)
