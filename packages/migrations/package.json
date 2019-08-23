@@ -40,7 +40,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/dev-utils": "^2.3.1",
-        "@0x/ts-doc-gen": "^0.0.15",
+        "@0x/ts-doc-gen": "^0.0.16",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.4.1",
         "@types/yargs": "^11.0.0",
