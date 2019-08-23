@@ -110,7 +110,7 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun --stages test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-dev-utils @0x/contracts-staking
+            - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-asset-proxy @0x/contracts-exchange-forwarder @0x/contracts-dev-utils @0x/contracts-staking
             # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
             # - run: yarn wsrun test:circleci @0x/contracts-extensions
             # TODO(abandeali): Re-enable after this package is complete.
