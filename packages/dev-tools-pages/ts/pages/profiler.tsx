@@ -142,7 +142,8 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
 
                 <Breakout>
                     <Code language="javascript" canCopy={true}>
-                        {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
+                        {`import ProviderEngine from 'web3-provider-engine';
+import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import { ProfilerSubprovider } from '@0x/sol-profiler';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
@@ -150,7 +151,7 @@ const profilerSubprovider = new ProfilerSubprovider(artifactAdapter, defaultFrom
 
 const providerEngine = new ProviderEngine();
 providerEngine.addProvider(profilerSubprovider);
-providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
+providerEngine.addProvider(new WebsocketSubprovider({rpcUrl: 'http://localhost:8545'}));
 providerEngine.start();`}
                     </Code>
                 </Breakout>

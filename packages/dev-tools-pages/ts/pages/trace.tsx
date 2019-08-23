@@ -112,7 +112,8 @@ const artifactAdapter = new YourCustomArtifactsAdapter(...);`}
 
                 <Breakout>
                     <Code language="javascript" canCopy={true}>
-                        {`import { ProviderEngine, RpcSubprovider } from 'web3-provider-engine';
+                        {`import ProviderEngine from 'web3-provider-engine';
+import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import { RevertTraceSubprovider } from '@0x/sol-trace';
 
 const defaultFromAddress = "..."; // Some ethereum address with test funds
@@ -120,7 +121,7 @@ const revertTraceSubprovider = new RevertTraceSubprovider(artifactAdapter, defau
 
 const providerEngine = new ProviderEngine();
 providerEngine.addProvider(revertTraceSubprovider);
-providerEngine.addProvider(new RpcSubprovider({rpcUrl: 'http://localhost:8545'}));
+providerEngine.addProvider(new WebsocketSubprovider({rpcUrl: 'http://localhost:8545'}));
 providerEngine.start();`}
                     </Code>
                 </Breakout>
