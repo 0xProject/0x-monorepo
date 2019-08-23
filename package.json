@@ -45,6 +45,7 @@
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
         "generate_md_docs": "wsrun docs:md --exclude-missing",
         "upload_md_docs": "wsrun s3:sync_md_docs --exclude-missing",
+        "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"

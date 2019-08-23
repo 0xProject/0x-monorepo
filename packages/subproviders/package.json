@@ -22,6 +22,7 @@
         "test:all": "run-s test:unit test:integration",
         "test:unit": "run-s clean build run_mocha_unit",
         "test:integration": "run-s clean build run_mocha_integration",
+        "diff_docs": "git diff --exit-code ./docs",
         "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "docs:md": "ts-doc-gen --sourceDir=./src --output=./docs --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
         "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"

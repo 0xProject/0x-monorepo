@@ -302,6 +302,7 @@ jobs:
             - run: yarn lerna run lint
             - run: yarn prettier:ci
             - run: yarn deps_versions:ci
+            - run: yarn diff_md_docs:ci
             - run: cd packages/0x.js && yarn build:umd:prod
             - run: yarn bundlewatch
     submit-coverage:
