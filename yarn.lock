@@ -755,6 +755,16 @@
     typeorm "0.2.7"
     websocket "^1.0.25"
 
+"@0x/json-schemas@^3.0.1", "@0x/json-schemas@^3.0.11", "@0x/json-schemas@^3.0.2", "@0x/json-schemas@^3.0.3", "@0x/json-schemas@^3.1.11":
+  version "3.1.13"
+  resolved "https://registry.yarnpkg.com/@0x/json-schemas/-/json-schemas-3.1.13.tgz#4b9010f1bdeaf2aef1daba1753aa2e5ecf57f654"
+  integrity sha512-V93sF6seHDHFCSLZOOEhgY5k+w+78tLmxJRhj8XvsW4+EnXcgpshxK38P6SQAmBoNLDutmM8Wk1inf6ghiW0qA==
+  dependencies:
+    "@0x/typescript-typings" "^4.2.4"
+    "@types/node" "*"
+    jsonschema "^1.2.0"
+    lodash.values "^4.3.0"
+
 "@0x/order-utils@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-5.0.0.tgz#7f43e0310ace31738895881501c8dda9c3a3aefa"
@@ -810,6 +820,20 @@
   version "0.0.15"
   resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.15.tgz#6a4d65faaede1debafd65495a8fe878e36ed7951"
   integrity sha512-Sg0zKYYWX0P2UfPOr5DqRw6G8Nd+uXmOFpCNWWIcgrj0COOIYMTwEeZvRN2D9OHVhp8ZWvGPcHomSzo/pvar5A==
+  dependencies:
+    "@0x/typescript-typings" "^4.2.2"
+    "@0x/utils" "^4.3.3"
+    glob "^7.1.4"
+    promisify-child-process "^3.1.1"
+    rimraf "^2.6.3"
+    typedoc "^0.15.0"
+    typedoc-plugin-markdown "^2.1.0"
+    yargs "^10.0.3"
+
+"@0x/ts-doc-gen@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.16.tgz#9ac03483803c89c5fd774a95d99a4cb0db070f69"
+  integrity sha512-jE2QPR0257Pa7MURN7NFB6F2bnEWvcHvvYTdSzLvFMmibQEa+5b0jron4NaK7TCseWFnKJD/psTbyXMResTnsQ==
   dependencies:
     "@0x/typescript-typings" "^4.2.2"
     "@0x/utils" "^4.3.3"
@@ -14909,8 +14933,6 @@ react-highlight@0xproject/react-highlight#react-peer-deps:
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
-    react "^16.5.2"
-    react-dom "^16.5.2"
 
 react-hot-loader@^4.3.3:
   version "4.3.4"
