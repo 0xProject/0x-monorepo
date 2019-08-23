@@ -213,6 +213,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             // Ensure that the correct events were logged.
             expect(logs[0].event).to.be.eq('ExecutableCalled');
             expect(logs[0].args.data).to.be.eq(constants.NULL_BYTES);
+            expect(logs[0].args.contextAddress).to.be.eq(accounts[1]);
             expect(logs[0].args.returnData).to.be.eq(DEADBEEF_RETURN_DATA);
             expect(logs[1].event).to.be.eq('TransactionExecution');
             expect(logs[1].args.transactionHash).to.eq(transactionHash);
@@ -253,13 +254,77 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             expect(logs[0].event).to.be.eq('ExecutableCalled');
             expect(logs[0].args.data).to.be.eq(constants.NULL_BYTES);
             expect(logs[0].args.returnData).to.be.eq(DEADBEEF_RETURN_DATA);
+            expect(logs[0].args.contextAddress).to.be.eq(constants.NULL_ADDRESS);
             expect(logs[1].event).to.be.eq('TransactionExecution');
             expect(logs[1].args.transactionHash).to.eq(transactionHash1);
             expect(logs[2].event).to.be.eq('ExecutableCalled');
             expect(logs[2].args.data).to.be.eq(constants.NULL_BYTES);
             expect(logs[2].args.returnData).to.be.eq('0xbeefdead');
+            expect(logs[2].args.contextAddress).to.be.eq(accounts[1]);
             expect(logs[3].event).to.be.eq('TransactionExecution');
             expect(logs[3].args.transactionHash).to.eq(transactionHash2);
+        });
+        it('should not allow recursion if currentContextAddress is already set', async () => {
+            const innerTransaction1 = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            const innerTransaction2 = await generateZeroExTransactionAsync({ signerAddress: accounts[1] });
+            const innerBatchExecuteTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[2],
+                callData: transactionsContract.batchExecuteTransactions.getABIEncodedTransactionData(
+                    [innerTransaction1, innerTransaction2],
+                    [randomSignature(), randomSignature()],
+                ),
+            });
+            const outerExecuteTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[1],
+                callData: transactionsContract.executeTransaction.getABIEncodedTransactionData(
+                    innerBatchExecuteTransaction,
+                    randomSignature(),
+                ),
+            });
+            const innerBatchExecuteTransactionHash = transactionHashUtils.getTransactionHashHex(
+                innerBatchExecuteTransaction,
+            );
+            const innerExpectedError = new ExchangeRevertErrors.TransactionInvalidContextError(
+                innerBatchExecuteTransactionHash,
+                accounts[1],
+            );
+            const outerExecuteTransactionHash = transactionHashUtils.getTransactionHashHex(outerExecuteTransaction);
+            const outerExpectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                outerExecuteTransactionHash,
+                innerExpectedError.encode(),
+            );
+            const tx = transactionsContract.batchExecuteTransactions.sendTransactionAsync(
+                [outerExecuteTransaction],
+                [randomSignature()],
+                { from: accounts[2] },
+            );
+            return expect(tx).to.revertWith(outerExpectedError);
+        });
+        it('should allow recursion as long as currentContextAddress is not set', async () => {
+            const innerTransaction1 = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            const innerTransaction2 = await generateZeroExTransactionAsync({ signerAddress: accounts[1] });
+            // From this point on, all transactions and calls will have the same sender, which does not change currentContextAddress when called
+            const innerBatchExecuteTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[2],
+                callData: transactionsContract.batchExecuteTransactions.getABIEncodedTransactionData(
+                    [innerTransaction1, innerTransaction2],
+                    [randomSignature(), randomSignature()],
+                ),
+            });
+            const outerExecuteTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[2],
+                callData: transactionsContract.executeTransaction.getABIEncodedTransactionData(
+                    innerBatchExecuteTransaction,
+                    randomSignature(),
+                ),
+            });
+            return expect(
+                transactionsContract.batchExecuteTransactions.awaitTransactionSuccessAsync(
+                    [outerExecuteTransaction],
+                    [randomSignature()],
+                    { from: accounts[2] },
+                ),
+            ).to.be.fulfilled('');
         });
     });
 
@@ -316,7 +381,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             });
             return expect(tx).to.revertWith(expectedError);
         });
-        it('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender != signer and then msg.sender == sender', async () => {
+        it('should revert if reentrancy occurs in the middle of an executeTransaction call and msg.sender != signer and then msg.sender == signer', async () => {
             const validSignature = randomSignature();
             const innerTransaction = await generateZeroExTransactionAsync({ signerAddress: accounts[1] });
             const innerTransactionHash = transactionHashUtils.getTransactionHashHex(innerTransaction);
@@ -335,6 +400,34 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
                 from: accounts[1], // Different then the signing addresses
             });
             return expect(tx).to.revertWith(expectedError);
+        });
+        it('should allow reentrancy in the middle of an executeTransaction call if msg.sender == signer for both calls', async () => {
+            const validSignature = randomSignature();
+            const innerTransaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
+            const outerTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[0],
+                callData: getExecuteTransactionCallData(innerTransaction, validSignature),
+                returnData: DEADBEEF_RETURN_DATA,
+            });
+            return expect(
+                transactionsContract.executeTransaction.sendTransactionAsync(outerTransaction, validSignature, {
+                    from: accounts[0],
+                }),
+            ).to.be.fulfilled('');
+        });
+        it('should allow reentrancy in the middle of an executeTransaction call if msg.sender == signer and then msg.sender != signer', async () => {
+            const validSignature = randomSignature();
+            const innerTransaction = await generateZeroExTransactionAsync({ signerAddress: accounts[1] });
+            const outerTransaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[0],
+                callData: getExecuteTransactionCallData(innerTransaction, validSignature),
+                returnData: DEADBEEF_RETURN_DATA,
+            });
+            return expect(
+                transactionsContract.executeTransaction.sendTransactionAsync(outerTransaction, validSignature, {
+                    from: accounts[0],
+                }),
+            ).to.be.fulfilled('');
         });
         it('should revert if the transaction has been executed previously', async () => {
             const validSignature = randomSignature();
@@ -400,7 +493,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             });
             return expect(tx).to.revertWith(expectedError);
         });
-        it('should succeed with the correct return hash and event emitted', async () => {
+        it('should succeed with the correct return hash and event emitted when msg.sender != signer', async () => {
             // This calldata is encoded to succeed when it hits the executable function.
             const validSignature = randomSignature(); // Valid because length != 2
             const transaction = await generateZeroExTransactionAsync({
@@ -427,6 +520,38 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
             expect(logs[0].event).to.be.eq('ExecutableCalled');
             expect(logs[0].args.data).to.be.eq(constants.NULL_BYTES);
             expect(logs[0].args.returnData).to.be.eq(DEADBEEF_RETURN_DATA);
+            expect(logs[0].args.contextAddress).to.be.eq(accounts[1]);
+            expect(logs[1].event).to.be.eq('TransactionExecution');
+            expect(logs[1].args.transactionHash).to.eq(transactionHash);
+        });
+        it('should succeed with the correct return hash and event emitted when msg.sender == signer', async () => {
+            // This calldata is encoded to succeed when it hits the executable function.
+            const validSignature = randomSignature(); // Valid because length != 2
+            const transaction = await generateZeroExTransactionAsync({
+                signerAddress: accounts[0],
+                returnData: DEADBEEF_RETURN_DATA,
+            });
+            const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+
+            const [result, receipt] = await transactionHelper.getResultAndReceiptAsync(
+                transactionsContract.executeTransaction,
+                transaction,
+                validSignature,
+                { from: accounts[0] },
+            );
+
+            expect(transactionsContract.executeTransaction.getABIDecodedReturnData(result)).to.equal(
+                DEADBEEF_RETURN_DATA,
+            );
+
+            // Ensure that the correct number of events were logged.
+            const logs = receipt.logs as Array<LogWithDecodedArgs<TestTransactionsTransactionExecutionEventArgs>>;
+            expect(logs.length).to.be.eq(2);
+            // Ensure that the correct events were logged.
+            expect(logs[0].event).to.be.eq('ExecutableCalled');
+            expect(logs[0].args.data).to.be.eq(constants.NULL_BYTES);
+            expect(logs[0].args.returnData).to.be.eq(DEADBEEF_RETURN_DATA);
+            expect(logs[0].args.contextAddress).to.be.eq(constants.NULL_ADDRESS);
             expect(logs[1].event).to.be.eq('TransactionExecution');
             expect(logs[1].args.transactionHash).to.eq(transactionHash);
         });
@@ -513,7 +638,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
         it('should be successful if signer == msg.sender and the signature is invalid', async () => {
             const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
-            expect(
+            return expect(
                 transactionsContract.assertExecutableTransaction.callAsync(transaction, INVALID_SIGNATURE, {
                     from: accounts[0],
                 }),
@@ -521,7 +646,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
         it('should be successful if not expired, the gasPrice is correct, the tx has not been executed, currentContextAddress has not been set, signer != msg.sender, and the signature is valid', async () => {
             const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
-            expect(
+            return expect(
                 transactionsContract.assertExecutableTransaction.callAsync(transaction, randomSignature(), {
                     from: accounts[1],
                 }),
