@@ -40,6 +40,7 @@ contract IMatchOrders {
         bytes[] memory rightSignatures
     )
         public
+        payable
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults);
 
     /// @dev Match complementary orders that have a profitable spread.
@@ -58,6 +59,7 @@ contract IMatchOrders {
         bytes[] memory rightSignatures
     )
         public
+        payable
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults);
 
     /// @dev Match two complementary orders that have a profitable spread.
@@ -76,6 +78,7 @@ contract IMatchOrders {
         bytes memory rightSignature
     )
         public
+        payable
         returns (LibFillResults.MatchedFillResults memory matchedFillResults);
 
     /// @dev Match two complementary orders that have a profitable spread.
@@ -94,5 +97,6 @@ contract IMatchOrders {
         bytes memory rightSignature
     )
         public
+        payable
         returns (LibFillResults.MatchedFillResults memory matchedFillResults);
 }

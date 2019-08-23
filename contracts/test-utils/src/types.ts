@@ -161,6 +161,9 @@ export interface TokenBalances {
         };
     };
     erc1155: ERC1155Holdings;
+    eth: {
+        [owner: string]: BigNumber;
+    };
 }
 
 export interface FillEventArgs {

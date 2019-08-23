@@ -72,7 +72,7 @@ export class BalanceStore {
      * Constructor.
      */
     public constructor() {
-        this._balances = { erc20: {}, erc721: {}, erc1155: {} };
+        this._balances = { erc20: {}, erc721: {}, erc1155: {}, eth: {} };
     }
 
     /**

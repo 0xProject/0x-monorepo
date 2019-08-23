@@ -157,7 +157,6 @@ library LibFillResults {
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
-        matchedFillResults.left.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
 
         // Compute fees for right order
         matchedFillResults.right.makerFeePaid = LibMath.safeGetPartialAmountFloor(
@@ -170,7 +169,11 @@ library LibFillResults {
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
         );
-        matchedFillResults.right.protocolFeePaid = tx.gasprice.safeMul(protocolFeeMultiplier);
+
+        // Compute the protocol fees
+        uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
+        matchedFillResults.left.protocolFeePaid = protocolFee;
+        matchedFillResults.right.protocolFeePaid = protocolFee;
 
         // Return fill results
         return matchedFillResults;

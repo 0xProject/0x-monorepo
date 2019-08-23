@@ -45,7 +45,9 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -73,7 +75,9 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -101,7 +105,9 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -129,7 +135,9 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -277,7 +285,7 @@ contract MixinMatchOrders is
                 // Update the batched fill results once the leftIdx is updated.
                 batchMatchedFillResults.left[leftIdx++] = leftFillResults;
                 // Clear the intermediate fill results value.
-                leftFillResults = LibFillResults.FillResults(0, 0, 0, 0);
+                leftFillResults = LibFillResults.FillResults(0, 0, 0, 0, 0);
 
                 // If all of the left orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
@@ -297,7 +305,7 @@ contract MixinMatchOrders is
                 // Update the batched fill results once the rightIdx is updated.
                 batchMatchedFillResults.right[rightIdx++] = rightFillResults;
                 // Clear the intermediate fill results value.
-                rightFillResults = LibFillResults.FillResults(0, 0, 0, 0);
+                rightFillResults = LibFillResults.FillResults(0, 0, 0, 0, 0);
 
                 // If all of the right orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
@@ -377,6 +385,7 @@ contract MixinMatchOrders is
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,
             rightOrderInfo.orderTakerAssetFilledAmount,
+            protocolFeeMultiplier,
             shouldMaximallyFillOrders
         );
 
@@ -473,7 +482,6 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.profitInLeftMakerAsset
         );
-
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,
@@ -481,6 +489,41 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.profitInRightMakerAsset
         );
+
+        // Pay protocol fees
+        if (staking != address(0)) {
+            // matchedFillResults.left.protocolFeePaid == matchedFillResults.right.protocolFeePaid
+            // so we only use matchedFillResults.left.protocolFeePaid as a gas optimization.
+            uint256 protocolFee = matchedFillResults.left.protocolFeePaid;
+
+            // Construct an array of makers and fee amounts so that the staking contract will only need to be called once.
+            address[] memory makers = new address[](2);
+            makers[0] = leftOrder.makerAddress;
+            makers[1] = rightOrder.makerAddress;
+            uint256[] memory fees = new uint256[](2);
+            fees[0] = protocolFee;
+            fees[1] = protocolFee;
+
+            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
+            // Otherwise the fee should be paid in WETH.
+            if (address(this).balance >= 2 * protocolFee) {
+                // Forward the protocol fees
+                IStaking(staking).batchPayProtocolFees.value(2 * protocolFee)(makers, fees);
+            } else {
+                // Transfer the weth from the takerAddress.
+                // Note: `_dispatchTransferFrom` is only called once as a gas optimization.
+                _dispatchTransferFrom(
+                    leftOrderHash,
+                    WETH_ASSET_DATA,
+                    takerAddress,
+                    staking,
+                    2 * protocolFee
+                );
+
+                // Attribute the protocol fees to the maker addresses
+                IStaking(staking).batchRecordProtocolFees(makers, fees);
+            }
+        }
 
         // Settle taker fees.
         if (

@@ -23,11 +23,13 @@ import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "./interfaces/ITransactions.sol";
 import "./interfaces/ISignatureValidator.sol";
 
 
 contract MixinTransactions is
+    Refundable,
     LibEIP712ExchangeDomain,
     ISignatureValidator,
     ITransactions
@@ -50,6 +52,8 @@ contract MixinTransactions is
         bytes memory signature
     )
         public
+        payable
+        refund
         returns (bytes memory)
     {
         return _executeTransaction(transaction, signature);
@@ -64,6 +68,8 @@ contract MixinTransactions is
         bytes[] memory signatures
     )
         public
+        payable
+        refund
         returns (bytes[] memory)
     {
         uint256 length = transactions.length;

@@ -22,12 +22,14 @@ pragma experimental ABIEncoderV2;
 import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "@0x/contracts-utils/contracts/src/Refundable.sol";
 
 
 contract Whitelist is
     Ownable,
+    Refundable,
     LibEIP1271
 {
     // Mapping of address => whitelist status.
@@ -101,6 +103,8 @@ contract Whitelist is
         bytes memory orderSignature
     )
         public
+        payable
+        refund
     {
         address takerAddress = msg.sender;
 
@@ -139,6 +143,6 @@ contract Whitelist is
         });
 
         // Call `fillOrder` via `executeTransaction`.
-        EXCHANGE.executeTransaction(transaction, TX_ORIGIN_SIGNATURE);
+        EXCHANGE.executeTransaction.value(msg.value)(transaction, TX_ORIGIN_SIGNATURE);
     }
 }
