@@ -1,3 +1,12 @@
+import {
+    DutchAuctionContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ForwarderContract,
+    OrderValidatorContract,
+    WETH9Contract,
+} from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
@@ -17,13 +26,6 @@ import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { CoordinatorWrapper } from './coordinator_wrapper';
-import { DutchAuctionContract } from './generated-wrappers/dutch_auction';
-import { ERC20ProxyContract } from './generated-wrappers/erc20_proxy';
-import { ERC721ProxyContract } from './generated-wrappers/erc721_proxy';
-import { ExchangeContract } from './generated-wrappers/exchange';
-import { ForwarderContract } from './generated-wrappers/forwarder';
-import { OrderValidatorContract } from './generated-wrappers/order_validator';
-import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';

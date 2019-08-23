@@ -98,7 +98,6 @@ packages/sol-tracing-utils/test/fixtures/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
 # generated contract wrappers
-packages/abi-gen-wrappers/src/generated-wrappers/
 packages/python-contract-wrappers/generated/
 contracts/coordinator/generated-wrappers/
 contracts/exchange/generated-wrappers/
