@@ -6,6 +6,7 @@ import {
 } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
+import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     expect,
     FillEventArgs,
@@ -16,14 +17,13 @@ import {
     Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { FillResults, SignedOrder } from '@0x/types';
+import { AssetProxyId, FillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract } from '../../src';
-import { calculateFillResults } from '../../src/reference_functions';
 import { BalanceStore } from '../balance_stores/balance_store';
 import { BlockchainBalanceStore } from '../balance_stores/blockchain_balance_store';
 import { LocalBalanceStore } from '../balance_stores/local_balance_store';
@@ -47,11 +47,23 @@ export class FillOrderWrapper {
         takerAddress: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
         initBalanceStore: BalanceStore,
+        stakingOpts: {
+            gasPrice: BigNumber;
+            messageValue: BigNumber;
+            protocolFeeMultiplier: BigNumber;
+            stakingAddress: string;
+            wethAddress: string;
+        },
     ): [FillResults, FillEventArgs, BalanceStore] {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        const fillResults = calculateFillResults(signedOrder, takerAssetFillAmount);
+        const fillResults = LibReferenceFunctions.calculateFillResults(
+            signedOrder,
+            takerAssetFillAmount,
+            stakingOpts.protocolFeeMultiplier,
+            stakingOpts.gasPrice,
+        );
         const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
         // Taker -> Maker
         balanceStore.transferAsset(
@@ -81,6 +93,18 @@ export class FillOrderWrapper {
             fillResults.makerFeePaid,
             signedOrder.makerFeeAssetData,
         );
+        if (stakingOpts.messageValue.isGreaterThanOrEqualTo(fillResults.protocolFeePaid)) {
+            // Pay the protocol fee in ETH.
+            balanceStore.transferAsset(takerAddress, stakingOpts.stakingAddress, fillResults.protocolFeePaid, '');
+        } else {
+            // Pay the protocol fee in WETH.
+            balanceStore.transferAsset(
+                takerAddress,
+                stakingOpts.stakingAddress,
+                fillResults.protocolFeePaid,
+                AssetProxyId.ERC20,
+            );
+        }
         return [fillResults, fillEvent, balanceStore];
     }
 

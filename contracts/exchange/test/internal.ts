@@ -169,10 +169,21 @@ blockchainTests('Exchange core internal functions', env => {
             orderTakerAssetFilledAmount: BigNumber,
             takerAddress: string,
             takerAssetFillAmount: BigNumber,
+            protocolFeeMultiplier: BigNumber,
+            gasPrice: BigNumber,
+            isProtocolFeePaidInEth: boolean,
         ): Promise<void> {
             const orderHash = randomHash();
-            const fillResults = LibReferenceFunctions.calculateFillResults(order, takerAssetFillAmount);
+            const fillResults = LibReferenceFunctions.calculateFillResults(
+                order,
+                takerAssetFillAmount,
+                protocolFeeMultiplier,
+                gasPrice,
+            );
             const expectedFilledState = orderTakerAssetFilledAmount.plus(takerAssetFillAmount);
+            const opts = isProtocolFeePaidInEth
+                ? { value: fillResults.protocolFeePaid }
+                : { value: constants.ZERO_AMOUNT };
             // CAll `testUpdateFilledState()`, which will set the `filled`
             // state for this order to `orderTakerAssetFilledAmount` before
             // calling `_updateFilledState()`.
@@ -183,6 +194,7 @@ blockchainTests('Exchange core internal functions', env => {
                     orderHash,
                     orderTakerAssetFilledAmount,
                     fillResults,
+                    opts,
                 ),
             );
             // Grab the new `filled` state for this order.
@@ -195,26 +207,44 @@ blockchainTests('Exchange core internal functions', env => {
             expect(fillEvent.event).to.eq('Fill');
             expect(fillEvent.args.makerAddress).to.eq(order.makerAddress);
             expect(fillEvent.args.feeRecipientAddress).to.eq(order.feeRecipientAddress);
-            expect(fillEvent.args.makerAssetData).to.eq(order.makerAssetData);
-            expect(fillEvent.args.takerAssetData).to.eq(order.takerAssetData);
-            expect(fillEvent.args.makerFeeAssetData).to.eq(order.makerFeeAssetData);
-            expect(fillEvent.args.takerFeeAssetData).to.eq(order.takerFeeAssetData);
+            expect(fillEvent.args.orderHash).to.eq(orderHash);
+            expect(fillEvent.args.takerAddress).to.eq(takerAddress);
+            expect(fillEvent.args.senderAddress).to.eq(senderAddress);
             expect(fillEvent.args.makerAssetFilledAmount).to.bignumber.eq(fillResults.makerAssetFilledAmount);
             expect(fillEvent.args.takerAssetFilledAmount).to.bignumber.eq(fillResults.takerAssetFilledAmount);
             expect(fillEvent.args.makerFeePaid).to.bignumber.eq(fillResults.makerFeePaid);
             expect(fillEvent.args.takerFeePaid).to.bignumber.eq(fillResults.takerFeePaid);
-            expect(fillEvent.args.takerAddress).to.eq(takerAddress);
-            expect(fillEvent.args.senderAddress).to.eq(senderAddress);
-            expect(fillEvent.args.orderHash).to.eq(orderHash);
+            expect(fillEvent.args.protocolFeePaid).to.bignumber.eq(fillResults.protocolFeePaid);
+            expect(fillEvent.args.isProtocolFeePaidInEth).to.eq(isProtocolFeePaidInEth);
+            expect(fillEvent.args.makerAssetData).to.eq(order.makerAssetData);
+            expect(fillEvent.args.takerAssetData).to.eq(order.takerAssetData);
+            expect(fillEvent.args.makerFeeAssetData).to.eq(order.makerFeeAssetData);
+            expect(fillEvent.args.takerFeeAssetData).to.eq(order.takerFeeAssetData);
         }
 
-        it('emits a `Fill` event and updates `filled` state correctly', async () => {
+        it('emits a `Fill` event and updates `filled` state correctly if protocol fee is paid in ETH', async () => {
             const order = makeOrder();
             return testUpdateFilledStateAsync(
                 order,
                 order.takerAssetAmount.times(0.1),
                 randomAddress(),
                 order.takerAssetAmount.times(0.25),
+                new BigNumber(150000),
+                new BigNumber(100000),
+                true,
+            );
+        });
+
+        it('emits a `Fill` event and updates `filled` state correctly if protocol fee is paid in WETH', async () => {
+            const order = makeOrder();
+            return testUpdateFilledStateAsync(
+                order,
+                order.takerAssetAmount.times(0.1),
+                randomAddress(),
+                order.takerAssetAmount.times(0.25),
+                new BigNumber(100000),
+                new BigNumber(150000),
+                true,
             );
         });
 

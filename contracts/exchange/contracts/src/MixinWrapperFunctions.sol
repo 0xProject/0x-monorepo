@@ -46,7 +46,9 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrKillOrder(
@@ -69,6 +71,8 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
+        payable
+        refund
         returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
@@ -99,7 +103,9 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -125,7 +131,9 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
         nonReentrant
+        refund
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -151,6 +159,8 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
+        refund
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -176,6 +186,8 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
+        refund
         returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
@@ -220,6 +232,8 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
+        refund
         returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;

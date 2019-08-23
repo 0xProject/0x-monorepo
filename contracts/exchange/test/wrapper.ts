@@ -49,10 +49,10 @@ blockchainTests.resets('Exchange wrappers', env => {
     let defaultFeeAssetAddress: string;
 
     const nullFillResults: FillResults = {
-        makerAssetFilledAmount: new BigNumber(0),
-        takerAssetFilledAmount: new BigNumber(0),
-        makerFeePaid: new BigNumber(0),
-        takerFeePaid: new BigNumber(0),
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
     };
 
     before(async () => {

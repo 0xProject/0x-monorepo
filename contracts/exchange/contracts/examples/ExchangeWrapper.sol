@@ -22,9 +22,12 @@ pragma experimental ABIEncoderV2;
 import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-utils/contracts/src/Refundable.sol";
 
 
-contract ExchangeWrapper {
+contract ExchangeWrapper is
+    Refundable
+{
 
     // Exchange contract.
     // solhint-disable-next-line var-name-mixedcase
@@ -51,7 +54,6 @@ contract ExchangeWrapper {
         external
     {
         address makerAddress = msg.sender;
-
         // Encode arguments into byte array.
         bytes memory data = abi.encodeWithSelector(
             EXCHANGE.cancelOrdersUpTo.selector,
@@ -86,6 +88,8 @@ contract ExchangeWrapper {
         bytes memory takerSignature
     )
         public
+        payable
+        refund
     {
         address takerAddress = msg.sender;
 
@@ -106,6 +110,6 @@ contract ExchangeWrapper {
         });
 
         // Call `fillOrder` via `executeTransaction`.
-        EXCHANGE.executeTransaction(transaction, takerSignature);
+        EXCHANGE.executeTransaction.value(msg.value)(transaction, takerSignature);
     }
 }

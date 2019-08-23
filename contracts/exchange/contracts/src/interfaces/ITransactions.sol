@@ -36,6 +36,7 @@ contract ITransactions {
         bytes memory signature
     )
         public
+        payable
         returns (bytes memory);
 
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
@@ -47,6 +48,7 @@ contract ITransactions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (bytes[] memory);
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).

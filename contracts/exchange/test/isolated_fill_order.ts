@@ -5,8 +5,6 @@ import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { calculateFillResults } from '../src/reference_functions';
-
 import {
     AssetBalances,
     createBadAssetData,
@@ -110,7 +108,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
         takerAssetFillAmount: BigNumber,
     ): FillResults {
         const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
-        return calculateFillResults(order, BigNumber.min(takerAssetFillAmount, remainingTakerAssetAmount));
+        return LibReferenceFunctions.calculateFillResults(
+            order,
+            BigNumber.min(takerAssetFillAmount, remainingTakerAssetAmount),
+        );
     }
 
     function calculateExpectedOrderInfo(order: Order, orderInfo: OrderInfo, fillResults: FillResults): OrderInfo {
