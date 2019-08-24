@@ -38,6 +38,17 @@ library LibFixedMath {
         c = _div(_mul(a, FIXED_1), b);
     }
 
+    /// @dev Returns the unsigned integer result of multiplying a fixed-point
+    ///      number with an integer, reverting if the multiplication overflows.
+    ///      Negative results are clamped to zero.
+    function uintMul(int256 a, int256 b) internal pure returns (uint256) {
+        int256 c = _mul(a, b);
+        if (c <= 0) {
+            return 0;
+        }
+        return uint256(c) >> 127;
+    }
+
     /// @dev Returns the absolute value of a fixed point number.
     function abs(int256 a) internal pure returns (int256 c) {
         if (a >= 0) {
