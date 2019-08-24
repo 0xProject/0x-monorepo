@@ -1,14 +1,15 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { Simulation } from './utils/Simulation';
 import { StakingWrapper } from './utils/staking_wrapper';
 chaiSetup.configure();
+const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('End-To-End Simulations', () => {
@@ -348,10 +349,9 @@ describe('End-To-End Simulations', () => {
         it('Should not be able to record a protocol fee from an unknown exchange', async () => {
             const makerAddress = users[1];
             const protocolFee = new BigNumber(1);
-            await expectTransactionFailedAsync(
-                stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner),
-                RevertReason.OnlyCallableByExchange,
-            );
+            const revertError = new StakingRevertErrors.OnlyCallableByExchangeError(owner);
+            const tx = stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner);
+            await expect(tx).to.revertWith(revertError);
         });
     });
 });

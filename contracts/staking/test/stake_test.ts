@@ -2,7 +2,7 @@ import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -66,9 +66,10 @@ describe('Staking & Delegating', () => {
             await staker.deactivateAndTimeLockStakeAsync(amountToDeactivate);
             // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
             //        attempting to do so should revert.
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            const revertError = new StakingRevertErrors.InsufficientBalanceError(amountToReactivate, 0);
+            await staker.activateStakeAsync(amountToReactivate, revertError);
             await staker.skipToNextTimeLockPeriodAsync();
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            await staker.activateStakeAsync(amountToReactivate, revertError);
             await staker.skipToNextTimeLockPeriodAsync();
             // this forces the internal state to update; it is not necessary to activate stake, but
             // allows us to check that state is updated correctly after a timeLock period rolls over.
@@ -95,9 +96,10 @@ describe('Staking & Delegating', () => {
             await delegator.deactivateAndTimeLockDelegatedStakeAsync(poolId, amountToDeactivate);
             // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
             //        attempting to do so should revert.
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            const revertError = new StakingRevertErrors.InsufficientBalanceError(amountToReactivate, 0);
+            await delegator.activateStakeAsync(amountToReactivate, revertError);
             await delegator.skipToNextTimeLockPeriodAsync();
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            await delegator.activateStakeAsync(amountToReactivate, revertError);
             await delegator.skipToNextTimeLockPeriodAsync();
             // this forces the internal state to update; it is not necessary to activate stake, but
             // allows us to check that state is updated correctly after a timeLock period rolls over.

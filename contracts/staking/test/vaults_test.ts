@@ -1,14 +1,15 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingWrapper } from './utils/staking_wrapper';
 
 chaiSetup.configure();
+const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Staking Vaults', () => {
@@ -62,15 +63,13 @@ describe('Staking Vaults', () => {
             // create pool in vault
             await stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress);
             // should fail to create pool if it already exists
-            await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress),
-                RevertReason.PoolAlreadyExists,
-            );
+            let revertError = new StakingRevertErrors.PoolAlreadyExistsError(poolId);
+            let tx = stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress);
+            await expect(tx).to.revertWith(revertError);
             // should fail to create a pool from an address other than the staking contract
-            await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, notStakingContractAddress),
-                RevertReason.OnlyCallableByStakingContract,
-            );
+            revertError = new StakingRevertErrors.OnlyCallableByStakingContractError(notStakingContractAddress);
+            tx = stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, notStakingContractAddress);
+            await expect(tx).to.revertWith(revertError);
         });
     });
 });

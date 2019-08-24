@@ -1,6 +1,7 @@
 import * as ExchangeRevertErrors from './exchange_revert_errors';
 import * as ForwarderRevertErrors from './forwarder_revert_errors';
 import * as LibMathRevertErrors from './lib_math_revert_errors';
+import * as StakingRevertErrors from './staking_revert_errors';
 
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
@@ -86,4 +87,4 @@ export {
 } from './types';
 
 export { ExchangeContract, NetworkId } from '@0x/abi-gen-wrappers';
-export { ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors };
+export { ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors, StakingRevertErrors };

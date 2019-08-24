@@ -1,8 +1,8 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -64,19 +64,17 @@ describe('Exchange Integrations', () => {
             const isValidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
             expect(isValidAddressValid).to.be.true();
             // 3 try adding valid address again
-            await expectTransactionFailedAsync(
-                stakingWrapper.addExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressAlreadyRegistered,
-            );
+            let revertError = new StakingRevertErrors.ExchangeAddressAlreadyRegisteredError(exchange);
+            let tx = stakingWrapper.addExchangeAddressAsync(exchange);
+            await expect(tx).to.revertWith(revertError);
             // 4 remove valid address
             await stakingWrapper.removeExchangeAddressAsync(exchange);
             const isValidAddressStillValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
             expect(isValidAddressStillValid).to.be.false();
             // 5 try removing valid address again
-            await expectTransactionFailedAsync(
-                stakingWrapper.removeExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressNotRegistered,
-            );
+            revertError = new StakingRevertErrors.ExchangeAddressNotRegisteredError(exchange);
+            tx = stakingWrapper.removeExchangeAddressAsync(exchange);
+            await expect(tx).to.revertWith(revertError);
             // @todo should not be able to add / remove an exchange if not contract owner.
         });
     });
