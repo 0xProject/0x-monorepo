@@ -134,6 +134,7 @@ export const constants = {
         parameters: [
             { name: 'salt', type: 'uint256' },
             { name: 'expirationTimeSeconds', type: 'uint256' },
+            { name: 'gasPrice', type: 'uint256' },
             { name: 'signerAddress', type: 'address' },
             { name: 'data', type: 'bytes' },
         ],

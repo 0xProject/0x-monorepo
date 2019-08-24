@@ -20,7 +20,7 @@ import { artifacts, ForwarderContract, ForwarderTestFactory, ForwarderWrapper } 
 
 const DECIMALS_DEFAULT = 18;
 
-blockchainTests.only(ContractName.Forwarder, env => {
+blockchainTests(ContractName.Forwarder, env => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -45,7 +45,7 @@ blockchainTests.only(ContractName.Forwarder, env => {
     let tx: TransactionReceiptWithDecodedLogs;
 
     let erc721MakerAssetIds: BigNumber[];
-    let gasPrice: BigNumber;
+    const gasPrice = new BigNumber(constants.DEFAULT_GAS_PRICE);
 
     before(async () => {
         await env.blockchainLifecycle.startAsync();
@@ -60,10 +60,6 @@ blockchainTests.only(ContractName.Forwarder, env => {
             orderFeeRecipientAddress,
             forwarderFeeRecipientAddress,
         ] = accounts);
-
-        const txHash = await env.web3Wrapper.sendTransactionAsync({ from: accounts[0], to: accounts[0], value: 0 });
-        const transaction = await env.web3Wrapper.getTransactionByHashAsync(txHash);
-        gasPrice = new BigNumber(transaction.gasPrice);
 
         const erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
         erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);

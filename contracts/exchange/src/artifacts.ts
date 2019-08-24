@@ -14,11 +14,11 @@ import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
+import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
 import * as ITransferSimulator from '../generated-artifacts/ITransferSimulator.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
-import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as LibExchangeRichErrorDecoder from '../generated-artifacts/LibExchangeRichErrorDecoder.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.json';
@@ -32,6 +32,7 @@ import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxy
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
+import * as TestTransactions from '../generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
 import * as Whitelist from '../generated-artifacts/Whitelist.json';
@@ -64,6 +65,7 @@ export const artifacts = {
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
+    TestTransactions: TestTransactions as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
     TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
 };

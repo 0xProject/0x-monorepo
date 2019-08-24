@@ -361,11 +361,14 @@ contract MixinExchangeCore is
                 orderInfo.orderHash,
                 makerAddress,
                 signature
-            )) {
+            )
+        ) {
             if (!_isValidOrderWithHashSignature(
                     order,
                     orderInfo.orderHash,
-                    signature)) {
+                    signature
+                )
+            ) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                     LibExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,

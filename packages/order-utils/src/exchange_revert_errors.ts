@@ -33,7 +33,6 @@ export enum AssetProxyDispatchErrorCode {
 }
 
 export enum TransactionErrorCode {
-    NoReentrancy,
     AlreadyExecuted,
     Expired,
 }
@@ -136,7 +135,7 @@ export class FillError extends RevertError {
 }
 
 export class OrderEpochError extends RevertError {
-    constructor(maker?: string, sender?: string, currentEpoch?: BigNumber | number | string) {
+    constructor(maker?: string, sender?: string, currentEpoch?: BigNumber) {
         super('OrderEpochError', 'OrderEpochError(address maker, address sender, uint256 currentEpoch)', {
             maker,
             sender,
@@ -210,6 +209,33 @@ export class TransactionExecutionError extends RevertError {
             transactionHash,
             errorData,
         });
+    }
+}
+
+export class TransactionGasPriceError extends RevertError {
+    constructor(transactionHash?: string, actualGasPrice?: BigNumber, requiredGasPrice?: BigNumber) {
+        super(
+            'TransactionGasPriceError',
+            'TransactionGasPriceError(bytes32 transactionHash, uint256 actualGasPrice, uint256 requiredGasPrice)',
+            {
+                transactionHash,
+                actualGasPrice,
+                requiredGasPrice,
+            },
+        );
+    }
+}
+
+export class TransactionInvalidContextError extends RevertError {
+    constructor(transactionHash?: string, currentContextAddress?: string) {
+        super(
+            'TransactionInvalidContextError',
+            'TransactionInvalidContextError(bytes32 transactionHash, address currentContextAddress)',
+            {
+                transactionHash,
+                currentContextAddress,
+            },
+        );
     }
 }
 

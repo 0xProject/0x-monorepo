@@ -4,6 +4,7 @@ import { logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
+import { constants } from './constants';
 import { coverage } from './coverage';
 import { profiler } from './profiler';
 import { revertTrace } from './revert_trace';
@@ -31,6 +32,7 @@ switch (process.env.TEST_PROVIDER) {
 const ganacheTxDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
     gas: devConstants.GAS_LIMIT,
+    gasPrice: constants.DEFAULT_GAS_PRICE,
 };
 const gethTxDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,

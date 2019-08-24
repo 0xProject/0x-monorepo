@@ -42,7 +42,7 @@ contract MixinTransactions is
     address public currentContextAddress;
 
     /// @dev Executes an Exchange method call in the context of signer.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param transaction 0x transaction structure.
     /// @param signature Proof that transaction has been signed by signer.
     /// @return ABI encoded return data of the underlying Exchange function call.
     function executeTransaction(
@@ -56,7 +56,7 @@ contract MixinTransactions is
     }
 
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
-    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param transactions Array of 0x transaction structures.
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
     /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
@@ -75,7 +75,7 @@ contract MixinTransactions is
     }
 
     /// @dev Executes an Exchange method call in the context of signer.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param transaction 0x transaction structure.
     /// @param signature Proof that transaction has been signed by signer.
     /// @return ABI encoded return data of the underlying Exchange function call.
     function _executeTransaction(
@@ -87,46 +87,14 @@ contract MixinTransactions is
     {
         bytes32 transactionHash = transaction.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
-        // Check transaction is not expired
-        // solhint-disable-next-line not-rely-on-time
-        if (block.timestamp >= transaction.expirationTimeSeconds) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                LibExchangeRichErrors.TransactionErrorCodes.EXPIRED,
-                transactionHash
-            ));
-        }
+        _assertExecutableTransaction(
+            transaction,
+            signature,
+            transactionHash
+        );
 
-        // Prevent reentrancy
-        if (currentContextAddress != address(0)) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                LibExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
-                transactionHash
-            ));
-        }
-
-        // Validate transaction has not been executed
-        if (transactionsExecuted[transactionHash]) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                LibExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
-                transactionHash
-            ));
-        }
-
-        // Transaction always valid if signer is sender of transaction
         address signerAddress = transaction.signerAddress;
         if (signerAddress != msg.sender) {
-            // Validate signature
-            if (!_isValidTransactionWithHashSignature(
-                    transaction,
-                    transactionHash,
-                    signature)) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.TransactionSignatureError(
-                    transactionHash,
-                    signerAddress,
-                    signature
-                ));
-            }
-
             // Set the current transaction signer
             currentContextAddress = signerAddress;
         }
@@ -149,6 +117,71 @@ contract MixinTransactions is
         emit TransactionExecution(transactionHash);
 
         return returnData;
+    }
+
+    /// @dev Validates context for executeTransaction. Succeeds or throws.
+    /// @param transaction 0x transaction structure.
+    /// @param signature Proof that transaction has been signed by signer.
+    /// @param transactionHash EIP712 typed data hash of 0x transaction.
+    function _assertExecutableTransaction(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature,
+        bytes32 transactionHash
+    )
+        internal
+        view
+    {
+        // Check transaction is not expired
+        // solhint-disable-next-line not-rely-on-time
+        if (block.timestamp >= transaction.expirationTimeSeconds) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
+                LibExchangeRichErrors.TransactionErrorCodes.EXPIRED,
+                transactionHash
+            ));
+        }
+
+        // Validate that transaction is executed with the correct gasPrice
+        uint256 requiredGasPrice = transaction.gasPrice;
+        if (tx.gasprice != requiredGasPrice) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionGasPriceError(
+                transactionHash,
+                tx.gasprice,
+                requiredGasPrice
+            ));
+        }
+
+        // Prevent `executeTransaction` from being called when context is already set
+        address currentContextAddress_ = currentContextAddress;
+        if (currentContextAddress_ != address(0)) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionInvalidContextError(
+                transactionHash,
+                currentContextAddress_
+            ));
+        }
+
+        // Validate transaction has not been executed
+        if (transactionsExecuted[transactionHash]) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
+                LibExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
+                transactionHash
+            ));
+        }
+
+        // Validate signature
+        // Transaction always valid if signer is sender of transaction
+        address signerAddress = transaction.signerAddress;
+        if (signerAddress != msg.sender && !_isValidTransactionWithHashSignature(
+                transaction,
+                transactionHash,
+                signature
+            )
+        ) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionSignatureError(
+                transactionHash,
+                signerAddress,
+                signature
+            ));
+        }
     }
 
     /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).

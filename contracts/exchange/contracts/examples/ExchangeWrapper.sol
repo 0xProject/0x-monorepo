@@ -61,6 +61,7 @@ contract ExchangeWrapper {
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
             expirationTimeSeconds: transactionExpirationTimeSeconds,
+            gasPrice: tx.gasprice,
             data: data,
             signerAddress: makerAddress
         });
@@ -99,6 +100,7 @@ contract ExchangeWrapper {
         LibZeroExTransaction.ZeroExTransaction memory transaction = LibZeroExTransaction.ZeroExTransaction({
             salt: salt,
             expirationTimeSeconds: transactionExpirationTimeSeconds,
+            gasPrice: tx.gasprice,
             data: data,
             signerAddress: takerAddress
         });

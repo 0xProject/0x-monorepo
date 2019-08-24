@@ -59,6 +59,7 @@ describe('EIP712 Utils', () => {
             const typedData = eip712Utils.createZeroExTransactionTypedData({
                 salt: new BigNumber(0),
                 expirationTimeSeconds: new BigNumber(0),
+                gasPrice: new BigNumber(0),
                 data: constants.NULL_BYTES,
                 signerAddress: constants.NULL_ADDRESS,
                 domain: {

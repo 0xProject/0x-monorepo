@@ -55,6 +55,7 @@ describe('Signature utils', () => {
             signerAddress: makerAddress,
             data: '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0',
             expirationTimeSeconds: new BigNumber(0),
+            gasPrice: new BigNumber(0),
         };
     });
     describe('#isValidSignatureAsync', () => {
