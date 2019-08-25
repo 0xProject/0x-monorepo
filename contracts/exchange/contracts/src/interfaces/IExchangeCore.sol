@@ -48,10 +48,10 @@ contract IExchangeCore {
     event Cancel(
         address indexed makerAddress,         // Address that created the order.
         address indexed feeRecipientAddress,  // Address that would have recieved fees if order was filled.
-        address senderAddress,                // Address that called the Exchange contract (msg.sender).
-        bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getTypedDataHash).
         bytes makerAssetData,                 // Encoded data specific to makerAsset.
-        bytes takerAssetData                  // Encoded data specific to takerAsset.
+        bytes takerAssetData,                 // Encoded data specific to takerAsset.
+        address senderAddress,                // Address that called the Exchange contract (msg.sender).
+        bytes32 indexed orderHash             // EIP712 hash of order (see LibOrder.getTypedDataHash).
     );
 
     // CancelUpTo event is emitted whenever `cancelOrdersUpTo` is executed succesfully.
