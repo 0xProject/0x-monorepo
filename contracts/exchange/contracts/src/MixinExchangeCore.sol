@@ -315,10 +315,10 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
-            msg.sender,
-            orderHash,
             order.makerAssetData,
-            order.takerAssetData
+            order.takerAssetData,
+            msg.sender,
+            orderHash
         );
     }
 
