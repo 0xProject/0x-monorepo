@@ -1,31 +1,20 @@
-> # Class: Compiler
+# Class: Compiler
 
 The Compiler facilitates compiling Solidity smart contracts and saves the results
 to artifact files.
 
-## Hierarchy
+### Hierarchy
 
 * **Compiler**
 
-## Index
 
 ### Constructors
 
-* [constructor](#constructor)
-
-### Methods
-
-* [compileAsync](#compileasync)
-* [getCompilerOutputsAsync](#getcompileroutputsasync)
-* [watchAsync](#watchasync)
-
-## Constructors
-
-###  constructor
+##  constructer
 
 \+ **new Compiler**(`opts?`: `CompilerOptions`): *[Compiler](#class-compiler)*
 
-*Defined in [compiler.ts:94](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/compiler.ts#L94)*
+*Defined in [compiler.ts:94](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/compiler.ts#L94)*
 
 Instantiates a new instance of the Compiler class.
 
@@ -39,13 +28,13 @@ Name | Type | Description |
 
 An instance of the Compiler class.
 
-## Methods
+### Methods
 
-###  compileAsync
+##  compileAsync
 
 ▸ **compileAsync**(): *`Promise<void>`*
 
-*Defined in [compiler.ts:132](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/compiler.ts#L132)*
+*Defined in [compiler.ts:132](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/compiler.ts#L132)*
 
 Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
 
@@ -53,11 +42,11 @@ Compiles selected Solidity files found in `contractsDir` and writes JSON artifac
 
 ___
 
-###  getCompilerOutputsAsync
+##  getCompilerOutputsAsync
 
 ▸ **getCompilerOutputsAsync**(): *`Promise<StandardOutput[]>`*
 
-*Defined in [compiler.ts:145](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/compiler.ts#L145)*
+*Defined in [compiler.ts:145](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/compiler.ts#L145)*
 
 Compiles Solidity files specified during instantiation, and returns the
 compiler output given by solc.  Return value is an array of outputs:
@@ -70,46 +59,32 @@ that version.
 
 ___
 
-###  watchAsync
+##  watchAsync
 
 ▸ **watchAsync**(): *`Promise<void>`*
 
-*Defined in [compiler.ts:149](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/compiler.ts#L149)*
+*Defined in [compiler.ts:149](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/compiler.ts#L149)*
 
 **Returns:** *`Promise<void>`*
 
 <hr />
 
-> # Class: CompilationError
+# Class: CompilationError
 
-## Hierarchy
+### Hierarchy
 
 * `Error`
 
   * **CompilationError**
 
-## Index
 
 ### Constructors
 
-* [constructor](#constructor)
-
-### Properties
-
-* [errorsCount](#errorscount)
-* [message](#message)
-* [name](#name)
-* [stack](#optional-stack)
-* [typeName](#typename)
-* [Error](#static-error)
-
-## Constructors
-
-###  constructor
+##  constructer
 
 \+ **new CompilationError**(`errorsCount`: number): *[CompilationError](#class-compilationerror)*
 
-*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L39)*
+*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L39)*
 
 **Parameters:**
 
@@ -119,41 +94,41 @@ Name | Type |
 
 **Returns:** *[CompilationError](#class-compilationerror)*
 
-## Properties
+### Properties
 
-###  errorsCount
+##  errorsCount
 
 • **errorsCount**: *number*
 
-*Defined in [utils/types.ts:38](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L38)*
+*Defined in [utils/types.ts:38](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L38)*
 
 ___
 
-###  message
+##  message
 
 • **message**: *string*
 
-*Inherited from void*
+
 
 
 
 ___
 
-###  name
+##  name
 
 • **name**: *string*
 
-*Inherited from void*
+
 
 
 
 ___
 
-### `Optional` stack
+## `Optional` stack
 
 • **stack**? : *undefined | string*
 
-*Inherited from void*
+
 
 *Overrides void*
 
@@ -161,15 +136,15 @@ ___
 
 ___
 
-###  typeName
+##  typeName
 
 • **typeName**: *string* = "CompilationError"
 
-*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L39)*
+*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L39)*
 
 ___
 
-### `Static` Error
+## `Static` Error
 
 ▪ **Error**: *`ErrorConstructor`*
 
@@ -177,191 +152,145 @@ ___
 
 <hr />
 
-> # Enumeration: AbiType
+# Enumeration: AbiType
 
-## Index
 
 ### Enumeration members
 
-* [Constructor](#constructor)
-* [Event](#event)
-* [Fallback](#fallback)
-* [Function](#function)
-
-## Enumeration members
-
-###  Constructor
+##  Constructor
 
 • **Constructor**: = "constructor"
 
-*Defined in [utils/types.ts:3](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L3)*
+*Defined in [utils/types.ts:3](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L3)*
 
 ___
 
-###  Event
+##  Event
 
 • **Event**: = "event"
 
-*Defined in [utils/types.ts:4](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L4)*
+*Defined in [utils/types.ts:4](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L4)*
 
 ___
 
-###  Fallback
+##  Fallback
 
 • **Fallback**: = "fallback"
 
-*Defined in [utils/types.ts:5](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L5)*
+*Defined in [utils/types.ts:5](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L5)*
 
 ___
 
-###  Function
+##  Function
 
 • **Function**: = "function"
 
-*Defined in [utils/types.ts:2](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L2)*
+*Defined in [utils/types.ts:2](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L2)*
 
 <hr />
 
-> # Interface: BinaryPaths
+# Interface: BinaryPaths
 
-## Hierarchy
+### Hierarchy
 
 * **BinaryPaths**
 
-## Indexable
 
-● \[▪ **key**: *string*\]: string
-
-<hr />
-
-> # Interface: ContractSourceData
-
-## Hierarchy
+### Hierarchy
 
 * **ContractSourceData**
 
-## Indexable
 
-● \[▪ **contractName**: *string*\]: [ContractSpecificSourceData](#class-contractspecificsourcedata)
-
-<hr />
-
-> # Interface: ContractSpecificSourceData
-
-## Hierarchy
+### Hierarchy
 
 * **ContractSpecificSourceData**
 
-## Index
 
 ### Properties
 
-* [solcVersionRange](#solcversionrange)
-* [sourceHash](#sourcehash)
-* [sourceTreeHash](#sourcetreehash)
-
-## Properties
-
-###  solcVersionRange
+##  solcVersionRange
 
 • **solcVersionRange**: *string*
 
-*Defined in [utils/types.ts:21](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L21)*
+*Defined in [utils/types.ts:21](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L21)*
 
 ___
 
-###  sourceHash
+##  sourceHash
 
 • **sourceHash**: *`Buffer`*
 
-*Defined in [utils/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L22)*
+*Defined in [utils/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L22)*
 
 ___
 
-###  sourceTreeHash
+##  sourceTreeHash
 
 • **sourceTreeHash**: *`Buffer`*
 
-*Defined in [utils/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L23)*
+*Defined in [utils/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L23)*
 
 <hr />
 
-> # Interface: SolcErrors
+# Interface: SolcErrors
 
-## Hierarchy
+### Hierarchy
 
 * **SolcErrors**
 
-## Indexable
 
-● \[▪ **key**: *string*\]: boolean
-
-<hr />
-
-> # Interface: Token
-
-## Hierarchy
+### Hierarchy
 
 * **Token**
 
-## Index
 
 ### Properties
 
-* [address](#optional-address)
-* [decimals](#decimals)
-* [ipfsHash](#ipfshash)
-* [name](#name)
-* [swarmHash](#swarmhash)
-* [symbol](#symbol)
-
-## Properties
-
-### `Optional` address
+## `Optional` address
 
 • **address**? : *undefined | string*
 
-*Defined in [utils/types.ts:27](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L27)*
+*Defined in [utils/types.ts:27](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L27)*
 
 ___
 
-###  decimals
+##  decimals
 
 • **decimals**: *number*
 
-*Defined in [utils/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L30)*
+*Defined in [utils/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L30)*
 
 ___
 
-###  ipfsHash
+##  ipfsHash
 
 • **ipfsHash**: *string*
 
-*Defined in [utils/types.ts:31](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L31)*
+*Defined in [utils/types.ts:31](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L31)*
 
 ___
 
-###  name
+##  name
 
 • **name**: *string*
 
-*Defined in [utils/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L28)*
+*Defined in [utils/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L28)*
 
 ___
 
-###  swarmHash
+##  swarmHash
 
 • **swarmHash**: *string*
 
-*Defined in [utils/types.ts:32](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L32)*
+*Defined in [utils/types.ts:32](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L32)*
 
 ___
 
-###  symbol
+##  symbol
 
 • **symbol**: *string*
 
-*Defined in [utils/types.ts:29](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-compiler/src/utils/types.ts#L29)*
+*Defined in [utils/types.ts:29](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-compiler/src/utils/types.ts#L29)*
 
 <hr />
 

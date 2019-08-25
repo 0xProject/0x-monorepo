@@ -1,38 +1,24 @@
-> # Class: ProfilerSubprovider
+# Class: ProfilerSubprovider
 
 This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
 ProfilerSubprovider is used to profile Solidity code while running tests.
 
-## Hierarchy
+### Hierarchy
 
 * `TraceInfoSubprovider`
 
   * **ProfilerSubprovider**
 
-## Index
 
 ### Constructors
 
-* [constructor](#constructor)
-
-### Methods
-
-* [emitPayloadAsync](#emitpayloadasync)
-* [handleRequest](#handlerequest)
-* [setEngine](#setengine)
-* [start](#start)
-* [stop](#stop)
-* [writeProfilerOutputAsync](#writeprofileroutputasync)
-
-## Constructors
-
-###  constructor
+##  constructer
 
 \+ **new ProfilerSubprovider**(`artifactAdapter`: `AbstractArtifactAdapter`, `defaultFromAddress`: string, `isVerbose`: boolean): *[ProfilerSubprovider](#class-profilersubprovider)*
 
 *Overrides void*
 
-*Defined in [profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
+*Defined in [profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
 
 Instantiates a ProfilerSubprovider instance
 
@@ -46,13 +32,13 @@ Name | Type | Default | Description |
 
 **Returns:** *[ProfilerSubprovider](#class-profilersubprovider)*
 
-## Methods
+### Methods
 
-###  emitPayloadAsync
+##  emitPayloadAsync
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from void*
+
 
 
 
@@ -72,11 +58,11 @@ JSON RPC response payload
 
 ___
 
-###  handleRequest
+##  handleRequest
 
 ▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: `NextCallback`, `_end`: `ErrorCallback`): *`Promise<void>`*
 
-*Inherited from void*
+
 
 *Overrides void*
 
@@ -98,11 +84,11 @@ Name | Type | Description |
 
 ___
 
-###  setEngine
+##  setEngine
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from void*
+
 
 *Overrides void*
 
@@ -122,11 +108,11 @@ Name | Type | Description |
 
 ___
 
-###  start
+##  start
 
 ▸ **start**(): *void*
 
-*Inherited from void*
+
 
 
 
@@ -136,11 +122,11 @@ Starts trace collection
 
 ___
 
-###  stop
+##  stop
 
 ▸ **stop**(): *void*
 
-*Inherited from void*
+
 
 
 
@@ -150,11 +136,11 @@ Stops trace collection
 
 ___
 
-###  writeProfilerOutputAsync
+##  writeProfilerOutputAsync
 
 ▸ **writeProfilerOutputAsync**(): *`Promise<void>`*
 
-*Defined in [profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
+*Defined in [profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
 
 Write the test profiler results to a file in Istanbul format.
 

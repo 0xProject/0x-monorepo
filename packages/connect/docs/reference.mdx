@@ -1,39 +1,24 @@
-> # Class: HttpClient
+# Class: HttpClient
 
 This class includes all the functionality related to interacting with a set of HTTP endpoints
 that implement the standard relayer API v2
 
-## Hierarchy
+### Hierarchy
 
 * **HttpClient**
 
-## Implements
+### Implements
 
 * [Client](#interface-client)
 
-## Index
 
 ### Constructors
 
-* [constructor](#constructor)
-
-### Methods
-
-* [getAssetPairsAsync](#getassetpairsasync)
-* [getFeeRecipientsAsync](#getfeerecipientsasync)
-* [getOrderAsync](#getorderasync)
-* [getOrderConfigAsync](#getorderconfigasync)
-* [getOrderbookAsync](#getorderbookasync)
-* [getOrdersAsync](#getordersasync)
-* [submitOrderAsync](#submitorderasync)
-
-## Constructors
-
-###  constructor
+##  constructer
 
 \+ **new HttpClient**(`url`: string): *[HttpClient](#class-httpclient)*
 
-*Defined in [http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L44)*
+*Defined in [http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L44)*
 
 Instantiates a new HttpClient instance
 
@@ -47,13 +32,13 @@ Name | Type | Description |
 
 An instance of HttpClient
 
-## Methods
+### Methods
 
-###  getAssetPairsAsync
+##  getAssetPairsAsync
 
 ▸ **getAssetPairsAsync**(`requestOpts?`: `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts`): *`Promise<AssetPairsResponse>`*
 
-*Defined in [http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L59)*
+*Defined in [http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L59)*
 
 Retrieve assetData pair info from the API
 
@@ -69,11 +54,11 @@ The resulting AssetPairsResponse that match the request
 
 ___
 
-###  getFeeRecipientsAsync
+##  getFeeRecipientsAsync
 
 ▸ **getFeeRecipientsAsync**(`requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<FeeRecipientsResponse>`*
 
-*Defined in [http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L160)*
+*Defined in [http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L160)*
 
 Retrieve the list of fee recipient addresses used by the relayer.
 
@@ -89,11 +74,11 @@ The resulting FeeRecipientsResponse
 
 ___
 
-###  getOrderAsync
+##  getOrderAsync
 
 ▸ **getOrderAsync**(`orderHash`: string, `requestOpts?`: `RequestOpts`): *`Promise<APIOrder>`*
 
-*Defined in [http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L99)*
+*Defined in [http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L99)*
 
 Retrieve a specific order from the API
 
@@ -110,11 +95,11 @@ The APIOrder that matches the supplied orderHash
 
 ___
 
-###  getOrderConfigAsync
+##  getOrderConfigAsync
 
 ▸ **getOrderConfigAsync**(`request`: `OrderConfigRequest`, `requestOpts?`: `RequestOpts`): *`Promise<OrderConfigResponse>`*
 
-*Defined in [http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L139)*
+*Defined in [http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L139)*
 
 Retrieve fee information from the API
 
@@ -131,11 +116,11 @@ The resulting OrderConfigResponse that matches the request
 
 ___
 
-###  getOrderbookAsync
+##  getOrderbookAsync
 
 ▸ **getOrderbookAsync**(`request`: `OrderbookRequest`, `requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<OrderbookResponse>`*
 
-*Defined in [http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L117)*
+*Defined in [http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L117)*
 
 Retrieve an orderbook from the API
 
@@ -152,11 +137,11 @@ The resulting OrderbookResponse that matches the request
 
 ___
 
-###  getOrdersAsync
+##  getOrdersAsync
 
 ▸ **getOrdersAsync**(`requestOpts?`: `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts`): *`Promise<OrdersResponse>`*
 
-*Defined in [http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L79)*
+*Defined in [http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L79)*
 
 Retrieve orders from the API
 
@@ -172,11 +157,11 @@ The resulting OrdersResponse that match the request
 
 ___
 
-###  submitOrderAsync
+##  submitOrderAsync
 
 ▸ **submitOrderAsync**(`signedOrder`: `SignedOrder`, `requestOpts?`: `RequestOpts`): *`Promise<void>`*
 
-*Defined in [http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/http_client.ts#L177)*
+*Defined in [http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/http_client.ts#L177)*
 
 Submit a signed order to the API
 
@@ -191,37 +176,27 @@ Name | Type | Description |
 
 <hr />
 
-> # Class: WebSocketOrdersChannel
+# Class: WebSocketOrdersChannel
 
 This class includes all the functionality related to interacting with a websocket endpoint
 that implements the standard relayer API v0
 
-## Hierarchy
+### Hierarchy
 
 * **WebSocketOrdersChannel**
 
-## Implements
+### Implements
 
 * [OrdersChannel](#interface-orderschannel)
 
-## Index
 
 ### Constructors
 
-* [constructor](#constructor)
-
-### Methods
-
-* [close](#close)
-* [subscribe](#subscribe)
-
-## Constructors
-
-###  constructor
+##  constructer
 
 \+ **new WebSocketOrdersChannel**(`client`: `w3cwebsocket`, `handler`: [OrdersChannelHandler](#interface-orderschannelhandler)): *[WebSocketOrdersChannel](#class-websocketorderschannel)*
 
-*Defined in [ws_orders_channel.ts:21](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/ws_orders_channel.ts#L21)*
+*Defined in [ws_orders_channel.ts:21](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/ws_orders_channel.ts#L21)*
 
 Instantiates a new WebSocketOrdersChannel instance
 
@@ -236,13 +211,13 @@ Name | Type | Description |
 
 An instance of WebSocketOrdersChannel
 
-## Methods
+### Methods
 
-###  close
+##  close
 
 ▸ **close**(): *void*
 
-*Defined in [ws_orders_channel.ts:66](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/ws_orders_channel.ts#L66)*
+*Defined in [ws_orders_channel.ts:66](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/ws_orders_channel.ts#L66)*
 
 Close the websocket and stop receiving updates
 
@@ -250,11 +225,11 @@ Close the websocket and stop receiving updates
 
 ___
 
-###  subscribe
+##  subscribe
 
 ▸ **subscribe**(`subscriptionOpts`: `OrdersChannelSubscriptionOpts`): *void*
 
-*Defined in [ws_orders_channel.ts:50](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/ws_orders_channel.ts#L50)*
+*Defined in [ws_orders_channel.ts:50](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/ws_orders_channel.ts#L50)*
 
 Subscribe to orderbook snapshots and updates from the websocket
 
@@ -268,62 +243,45 @@ Name | Type | Description |
 
 <hr />
 
-> # Enumeration: HttpRequestType
+# Enumeration: HttpRequestType
 
-## Index
 
 ### Enumeration members
 
-* [Get](#get)
-* [Post](#post)
-
-## Enumeration members
-
-###  Get
+##  Get
 
 • **Get**: = "GET"
 
-*Defined in [types.ts:46](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L46)*
+*Defined in [types.ts:46](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L46)*
 
 ___
 
-###  Post
+##  Post
 
 • **Post**: = "POST"
 
-*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L47)*
+*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L47)*
 
 <hr />
 
-> # Interface: Client
+# Interface: Client
 
-## Hierarchy
+### Hierarchy
 
 * **Client**
 
-## Implemented by
+### Implemented by
 
 * [HttpClient](#class-httpclient)
 
-## Index
 
 ### Properties
 
-* [getAssetPairsAsync](#getassetpairsasync)
-* [getFeeRecipientsAsync](#getfeerecipientsasync)
-* [getOrderAsync](#getorderasync)
-* [getOrderConfigAsync](#getorderconfigasync)
-* [getOrderbookAsync](#getorderbookasync)
-* [getOrdersAsync](#getordersasync)
-* [submitOrderAsync](#submitorderasync)
-
-## Properties
-
-###  getAssetPairsAsync
+##  getAssetPairsAsync
 
 • **getAssetPairsAsync**: *function*
 
-*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L18)*
+*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L18)*
 
 #### Type declaration:
 
@@ -337,11 +295,11 @@ Name | Type |
 
 ___
 
-###  getFeeRecipientsAsync
+##  getFeeRecipientsAsync
 
 • **getFeeRecipientsAsync**: *function*
 
-*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L25)*
+*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L25)*
 
 #### Type declaration:
 
@@ -355,11 +313,11 @@ Name | Type |
 
 ___
 
-###  getOrderAsync
+##  getOrderAsync
 
 • **getOrderAsync**: *function*
 
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L22)*
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L22)*
 
 #### Type declaration:
 
@@ -373,11 +331,11 @@ Name | Type |
 
 ___
 
-###  getOrderConfigAsync
+##  getOrderConfigAsync
 
 • **getOrderConfigAsync**: *function*
 
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L24)*
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L24)*
 
 #### Type declaration:
 
@@ -391,11 +349,11 @@ Name | Type |
 
 ___
 
-###  getOrderbookAsync
+##  getOrderbookAsync
 
 • **getOrderbookAsync**: *function*
 
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L23)*
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L23)*
 
 #### Type declaration:
 
@@ -410,11 +368,11 @@ Name | Type |
 
 ___
 
-###  getOrdersAsync
+##  getOrdersAsync
 
 • **getOrdersAsync**: *function*
 
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L21)*
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L21)*
 
 #### Type declaration:
 
@@ -428,11 +386,11 @@ Name | Type |
 
 ___
 
-###  submitOrderAsync
+##  submitOrderAsync
 
 • **submitOrderAsync**: *function*
 
-*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L26)*
+*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L26)*
 
 #### Type declaration:
 
@@ -446,61 +404,49 @@ Name | Type |
 
 <hr />
 
-> # Interface: HttpRequestOptions
+# Interface: HttpRequestOptions
 
-## Hierarchy
+### Hierarchy
 
 * **HttpRequestOptions**
 
-## Index
 
 ### Properties
 
-* [params](#optional-params)
-* [payload](#optional-payload)
-
-## Properties
-
-### `Optional` params
+## `Optional` params
 
 • **params**? : *undefined | object*
 
-*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L41)*
+*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L41)*
 
 ___
 
-### `Optional` payload
+## `Optional` payload
 
 • **payload**? : *undefined | object*
 
-*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L42)*
+*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L42)*
 
 <hr />
 
-> # Interface: OrdersChannel
+# Interface: OrdersChannel
 
-## Hierarchy
+### Hierarchy
 
 * **OrdersChannel**
 
-## Implemented by
+### Implemented by
 
 * [WebSocketOrdersChannel](#class-websocketorderschannel)
 
-## Index
 
 ### Properties
 
-* [close](#close)
-* [subscribe](#subscribe)
-
-## Properties
-
-###  close
+##  close
 
 • **close**: *function*
 
-*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L31)*
+*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L31)*
 
 #### Type declaration:
 
@@ -508,11 +454,11 @@ ___
 
 ___
 
-###  subscribe
+##  subscribe
 
 • **subscribe**: *function*
 
-*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L30)*
+*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L30)*
 
 #### Type declaration:
 
@@ -526,27 +472,20 @@ Name | Type |
 
 <hr />
 
-> # Interface: OrdersChannelHandler
+# Interface: OrdersChannelHandler
 
-## Hierarchy
+### Hierarchy
 
 * **OrdersChannelHandler**
 
-## Index
 
 ### Properties
 
-* [onClose](#onclose)
-* [onError](#onerror)
-* [onUpdate](#onupdate)
-
-## Properties
-
-###  onClose
+##  onClose
 
 • **onClose**: *function*
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L37)*
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L37)*
 
 #### Type declaration:
 
@@ -560,11 +499,11 @@ Name | Type |
 
 ___
 
-###  onError
+##  onError
 
 • **onError**: *function*
 
-*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L36)*
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L36)*
 
 #### Type declaration:
 
@@ -580,11 +519,11 @@ Name | Type |
 
 ___
 
-###  onUpdate
+##  onUpdate
 
 • **onUpdate**: *function*
 
-*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/connect/src/types.ts#L35)*
+*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/bfbc78c95/packages/connect/src/types.ts#L35)*
 
 #### Type declaration:
 
@@ -600,13 +539,13 @@ Name | Type |
 
 <hr />
 
-> # Interface: OrdersChannelSubscriptionOptsMap
+# Interface: OrdersChannelSubscriptionOptsMap
 
-## Hierarchy
+### Hierarchy
 
 * **OrdersChannelSubscriptionOptsMap**
 
-## Indexable
+### Indexable
 
 ● \[▪ **key**: *string*\]: `OrdersChannelSubscriptionOpts`
 
