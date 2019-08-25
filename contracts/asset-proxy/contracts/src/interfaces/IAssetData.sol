@@ -43,35 +43,35 @@ interface IAssetData {
     /// @dev Function signature for encoding ERC1155 assetData.
     /// @param tokenAddress Address of ERC1155 token contract.
     /// @param tokenIds Array of ids of tokens to be transferred. 
-    /// @param tokenValues Array of values that correspond to each token id to be transferred.
+    /// @param values Array of values that correspond to each token id to be transferred.
     ///        Note that each value will be multiplied by the amount being filled in the order before transferring.
     /// @param callbackData Extra data to be passed to receiver's `onERC1155Received` callback function.
     function ERC1155Assets(
         address tokenAddress,
         uint256[] calldata tokenIds,
-        uint256[] calldata tokenValues,
+        uint256[] calldata values,
         bytes calldata callbackData
     )
         external;
 
     /// @dev Function signature for encoding MultiAsset assetData.
-    /// @param amounts Array of amounts that correspond to each asset to be transferred.
+    /// @param values Array of amounts that correspond to each asset to be transferred.
     ///        Note that each value will be multiplied by the amount being filled in the order before transferring.
     /// @param nestedAssetData Array of assetData fields that will be be dispatched to their correspnding AssetProxy contract.
     function MultiAsset(
-        uint256[] calldata amounts,
+        uint256[] calldata values,
         bytes[] calldata nestedAssetData
     )
         external;
 
     /// @dev Function signature for encoding StaticCall assetData.
-    /// @param callTarget Contract that will execute the staticcall.
-    /// @param staticCallData Data that will be executed via staticcall on the callTarget contract.
-    /// @param callResultHash Keccak256 hash of the expected staticcall return data. 
+    /// @param staticCallTargetAddress Address that will execute the staticcall.
+    /// @param staticCallData Data that will be executed via staticcall on the staticCallTargetAddress.
+    /// @param expectedReturnDataHash Keccak-256 hash of the expected staticcall return data. 
     function StaticCall(
-        address callTarget,
+        address staticCallTargetAddress,
         bytes calldata staticCallData,
-        bytes32 callResultHash
+        bytes32 expectedReturnDataHash
     )
         external;
 }
