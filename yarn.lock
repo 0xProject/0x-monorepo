@@ -649,13 +649,6 @@
   dependencies:
     "@0x/base-contract" "^4.0.3"
 
-"@0x/abi-gen-wrappers@^5.3.0":
-  version "5.2.0"
-  dependencies:
-    "@0x/base-contract" "^5.3.1"
-    "@0x/contract-addresses" "^3.0.3"
-    "@0x/contract-artifacts" "^2.0.4"
-
 "@0x/asset-buyer@6.1.8":
   version "6.1.8"
   resolved "https://registry.yarnpkg.com/@0x/asset-buyer/-/asset-buyer-6.1.8.tgz#71f6abb366e89e62457c256644edb37e12113e94"
@@ -822,20 +815,6 @@
     web3-provider-engine "14.0.6"
   optionalDependencies:
     "@ledgerhq/hw-transport-node-hid" "^4.3.0"
-
-"@0x/ts-doc-gen@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.15.tgz#6a4d65faaede1debafd65495a8fe878e36ed7951"
-  integrity sha512-Sg0zKYYWX0P2UfPOr5DqRw6G8Nd+uXmOFpCNWWIcgrj0COOIYMTwEeZvRN2D9OHVhp8ZWvGPcHomSzo/pvar5A==
-  dependencies:
-    "@0x/typescript-typings" "^4.2.2"
-    "@0x/utils" "^4.3.3"
-    glob "^7.1.4"
-    promisify-child-process "^3.1.1"
-    rimraf "^2.6.3"
-    typedoc "^0.15.0"
-    typedoc-plugin-markdown "^2.1.0"
-    yargs "^10.0.3"
 
 "@0x/ts-doc-gen@^0.0.16":
   version "0.0.16"
