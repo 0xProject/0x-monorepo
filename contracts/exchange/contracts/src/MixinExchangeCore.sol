@@ -278,128 +278,23 @@ contract MixinExchangeCore is
         // Update state
         filled[orderHash] = orderTakerAssetFilledAmount.safeAdd(fillResults.takerAssetFilledAmount);
 
-        // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
-        // All this logic is equivalent to:
-        // emit Fill(
-        //     order.makerAddress,
-        //     order.feeRecipientAddress,
-        //     orderHash,
-        //     takerAddress,
-        //     msg.sender,
-        //     fillResults.makerAssetFilledAmount,
-        //     fillResults.takerAssetFilledAmount,
-        //     fillResults.makerFeePaid,
-        //     fillResults.takerFeePaid,
-        //     fillResults.protocolFeePaid,
-        //     msg.value >= fillResults.protocolFeePaid,
-        //     order.makerAssetData,
-        //     order.takerAssetData,
-        //     order.makerFeeAssetData,
-        //     order.takerFeeAssetData
-        // );
-
-        // There are 15 total fields in the `Fill()` event. Out of all of these fields,
-        // 3 are indexed fields. Due to the evm semantics of event logging, the 12 non-indexed
-        // fields will be abi-encoded into a bytes structure and then put into the `data` slot
-        // of the event logs.
-        //
-        // Since there are 12 fields, we will need 12 * 32 = 384 bytes to store the fields. Due
-        // to the fact that 4 of the fields are of type `bytes`, there is added complexity in that
-        // these fields in the log data are actually byte offsets to the length-prefaced `bytes`
-        // of the field. This means that we also need to account for 4 length slots -- 4 * 32 = 128
-        // more bytes in the log data -- and for the length of the bytes themselves -- total_length =
-        // order.makerAssetData.length + order.takerAssetData.length + order.makerFeeAssetData.length
-        // + order.takerFeeAssetData.length.
-        //
-        // Altogether, the log data will be 384 + 128 + total_length = 512 + total_length bytes long,
-        // which explains the memory allocation of the bytes below:
-        bytes memory logData = new bytes(
-            512
-            + order.makerAssetData.length
-            + order.takerAssetData.length
-            + order.makerFeeAssetData.length
-            + order.takerFeeAssetData.length
+        emit Fill(
+            order.makerAddress,
+            order.feeRecipientAddress,
+            order.makerAssetData,
+            order.takerAssetData,
+            order.makerFeeAssetData,
+            order.takerFeeAssetData,
+            orderHash,
+            takerAddress,
+            msg.sender,
+            fillResults.makerAssetFilledAmount,
+            fillResults.takerAssetFilledAmount,
+            fillResults.makerFeePaid,
+            fillResults.takerFeePaid,
+            fillResults.protocolFeePaid,
+            msg.value >= fillResults.protocolFeePaid
         );
-
-        uint256 argOffset = 0;
-
-        // Push takerAddress to logData
-        logData.writeAddress(argOffset, takerAddress);
-        argOffset += 32;
-
-        // Push senderAddress to logData
-        logData.writeAddress(argOffset, msg.sender);
-        argOffset += 32;
-
-        // Push makerAssetFilledAmount to logData
-        logData.writeUint256(argOffset, fillResults.makerAssetFilledAmount);
-        argOffset += 32;
-
-        // Push takerAssetFilledAmount to logData
-        logData.writeUint256(argOffset, fillResults.takerAssetFilledAmount);
-        argOffset += 32;
-
-        // Push makerFeePaid to logData
-        logData.writeUint256(argOffset, fillResults.makerFeePaid);
-        argOffset += 32;
-
-        // Push takerFeePaid to logData
-        logData.writeUint256(argOffset, fillResults.takerFeePaid);
-        argOffset += 32;
-
-        // Push protocolFeePaid to logData
-        logData.writeUint256(argOffset, fillResults.protocolFeePaid);
-        argOffset += 32;
-
-        // Push isProtocolFeePaidInEth to logData
-        logData.writeUint256(argOffset, msg.value >= fillResults.protocolFeePaid ? 1 : 0);
-        argOffset += 32;
-
-        // The next four fields are `bytes` fields. Constructing the logData for these fields
-        // entails storing a byte offset in their respective memory slots and then storing their
-        // length and contents in the location pointed to by the byte offset.
-        //
-        // With this in mind, the `dataOffset` will initially be set to the thirteenth memory slot
-        // in logData and will be incremented by the length of every assetData `bytes` that is placed
-        // and 32 bytes that reflects the slot that stores the length of the array.
-        uint256 dataOffset = argOffset + 128;
-
-        // Push makerAssetData to logData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.makerAssetData);
-        argOffset += 32;
-        dataOffset += order.makerAssetData.length;
-
-        // Push takerAssetData to logData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.takerAssetData);
-        argOffset += 32;
-        dataOffset += order.takerAssetData.length;
-
-        // Push makerFeeAssetData to logData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.makerFeeAssetData);
-        argOffset += 32;
-        dataOffset += order.makerFeeAssetData.length;
-
-        // Push takerFeeAssetData to logData
-        logData.writeUint256(argOffset, dataOffset);
-        logData.writeBytesWithLength(dataOffset, order.takerFeeAssetData);
-        argOffset += 32;
-        dataOffset += order.takerFeeAssetData.length;
-
-        // Add the event topics and log the event.
-        bytes32 fillTopic = FILL_EVENT_TOPIC;
-        assembly {
-            log4(
-                add(logData, 0x20),      // A pointer to the log data
-                mload(logData),          // The size of the log data
-                fillTopic,               // The `Fill()` event's name topic
-                mload(order),            // address indexed makerAddress
-                mload(add(order, 0x40)), // address indexed feeRecipientAddress
-                orderHash                // bytes32 indexed orderHash
-            )
-        }
     }
 
     /// @dev Updates state with results of cancelling an order.
