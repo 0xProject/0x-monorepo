@@ -225,6 +225,8 @@ contract MixinExchangeFees is
         activePoolsThisEpoch.length = 0;
 
         // step 3/3 send total payout to vault
+
+        // Sanity check rewards calculation
         if (totalRewardsPaid > initialContractBalance) {
             LibRichErrors.rrevert(LibStakingRichErrors.MiscalculatedRewardsError(
                 totalRewardsPaid,

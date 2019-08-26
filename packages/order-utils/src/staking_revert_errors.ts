@@ -157,15 +157,15 @@ export class OnlyCallableByStakingContractError extends RevertError {
     }
 }
 
-export class OnlyCallableInCatastrophicFailureError extends RevertError {
+export class OnlyCallableIfInCatastrophicFailureError extends RevertError {
     constructor() {
-        super('OnlyCallableInCatastrophicFailureError', 'OnlyCallableInCatastrophicFailureError()', {});
+        super('OnlyCallableIfInCatastrophicFailureError', 'OnlyCallableIfInCatastrophicFailureError()', {});
     }
 }
 
-export class OnlyCallableNotInCatastrophicFailureError extends RevertError {
+export class OnlyCallableIfNotInCatastrophicFailureError extends RevertError {
     constructor() {
-        super('OnlyCallableNotInCatastrophicFailureError', 'OnlyCallableNotInCatastrophicFailureError()', {});
+        super('OnlyCallableIfNotInCatastrophicFailureError', 'OnlyCallableIfNotInCatastrophicFailureError()', {});
     }
 }
 
@@ -215,8 +215,8 @@ const types = [
     WithdrawAmountExceedsMemberBalanceError,
     BlockTimestampTooLowError,
     OnlyCallableByStakingContractError,
-    OnlyCallableInCatastrophicFailureError,
-    OnlyCallableNotInCatastrophicFailureError,
+    OnlyCallableIfInCatastrophicFailureError,
+    OnlyCallableIfNotInCatastrophicFailureError,
     AmountExceedsBalanceOfPoolError,
     OperatorShareMustBeBetween0And100Error,
     PoolAlreadyExistsError,

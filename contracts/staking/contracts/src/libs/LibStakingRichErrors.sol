@@ -39,8 +39,8 @@ library LibStakingRichErrors {
         0x7dc025b0;
 
     // bytes4(keccak256("SignatureLengthGreaterThan0RequiredError()"))
-    bytes4 internal constant SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR_SELECTOR =
-        0x2dcb01d9;
+    bytes internal constant SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR =
+        hex"2dcb01d9";
 
     // bytes4(keccak256("SignatureUnsupportedError(bytes)"))
     bytes4 internal constant SIGNATURE_UNSUPPORTED_ERROR_SELECTOR =
@@ -98,13 +98,13 @@ library LibStakingRichErrors {
     bytes4 internal constant ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR =
         0xca1d07a2;
 
-    // bytes4(keccak256("OnlyCallableInCatastrophicFailureError()"))
-    bytes4 internal constant ONLY_CALLABLE_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR =
-        0xa4f5de9d;
+    // bytes4(keccak256("OnlyCallableIfInCatastrophicFailureError()"))
+    bytes internal constant ONLY_CALLABLE_IF_IN_CATASTROPHIC_FAILURE_ERROR =
+        hex"3ef081cc";
 
-    // bytes4(keccak256("OnlyCallableNotInCatastrophicFailureError()"))
-    bytes4 internal constant ONLY_CALLABLE_NOT_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR =
-        0x7e8d2ed9;
+    // bytes4(keccak256("OnlyCallableIfNotInCatastrophicFailureError()"))
+    bytes internal constant ONLY_CALLABLE_IF_NOT_IN_CATASTROPHIC_FAILURE_ERROR =
+        hex"7dd020ce";
 
     // bytes4(keccak256("AmountExceedsBalanceOfPoolError(uint256,uint96)"))
     bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR =
@@ -178,7 +178,7 @@ library LibStakingRichErrors {
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR_SELECTOR);
+        return SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR;
     }
 
     function SignatureUnsupportedError(
@@ -385,20 +385,20 @@ library LibStakingRichErrors {
         );
     }
 
-    function OnlyCallableInCatastrophicFailureError()
+    function OnlyCallableIfInCatastrophicFailureError()
         internal
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(ONLY_CALLABLE_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR);
+        return ONLY_CALLABLE_IF_IN_CATASTROPHIC_FAILURE_ERROR;
     }
 
-    function OnlyCallableNotInCatastrophicFailureError()
+    function OnlyCallableIfNotInCatastrophicFailureError()
         internal
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(ONLY_CALLABLE_NOT_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR);
+        return ONLY_CALLABLE_IF_NOT_IN_CATASTROPHIC_FAILURE_ERROR;
     }
 
     function AmountExceedsBalanceOfPoolError(

@@ -65,9 +65,7 @@ contract MixinVaultCore is
     /// @dev Asserts that this contract *is in* Catastrophic Failure Mode.
     modifier onlyInCatastrophicFailure {
         if (!isInCatastrophicFailure) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.OnlyCallableInCatastrophicFailureError()
-            );
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfInCatastrophicFailureError());
         }
         _;
     }
@@ -75,9 +73,7 @@ contract MixinVaultCore is
     /// @dev Asserts that this contract *is not in* Catastrophic Failure Mode.
     modifier onlyNotInCatastrophicFailure {
         if (isInCatastrophicFailure) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.OnlyCallableNotInCatastrophicFailureError()
-            );
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfNotInCatastrophicFailureError());
         }
         _;
     }
