@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "./MixinConstants.sol";
@@ -27,11 +28,17 @@ import "../interfaces/IStructs.sol";
 // solhint-disable max-states-count
 contract MixinStorage is
     MixinDeploymentConstants,
-    MixinConstants
+    MixinConstants,
+    Ownable
 {
 
-    // address of owner
-    address internal owner;
+    /// @dev Constructor asserts that all storage variables are in expected slots.
+    constructor(address _stakingContract)
+        public
+        Ownable()
+    {
+        stakingContract = _stakingContract;
+    }
 
     // address of staking contract
     address internal stakingContract;

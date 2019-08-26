@@ -38,7 +38,6 @@ contract Staking is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,

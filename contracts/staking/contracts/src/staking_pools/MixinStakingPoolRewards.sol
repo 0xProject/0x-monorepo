@@ -65,7 +65,6 @@ contract MixinStakingPoolRewards is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinStakingPool,

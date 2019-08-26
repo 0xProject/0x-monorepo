@@ -25,7 +25,6 @@
         "generated-artifacts/MixinDeploymentConstants.json",
         "generated-artifacts/MixinExchangeFees.json",
         "generated-artifacts/MixinExchangeManager.json",
-        "generated-artifacts/MixinOwnable.json",
         "generated-artifacts/MixinScheduler.json",
         "generated-artifacts/MixinStake.json",
         "generated-artifacts/MixinStakeBalances.json",

@@ -25,8 +25,6 @@ contract MixinConstants is
     MixinDeploymentConstants
 {
 
-    uint64 constant internal MAX_UINT_64 = 0xFFFFFFFFFFFFFFFF;
-
     uint256 constant internal TOKEN_MULTIPLIER = 1000000000000000000; // 10**18
 
     // The upper 16 bytes represent the pool id, so this would be pool id 1. See MixinStakinPool for more information.

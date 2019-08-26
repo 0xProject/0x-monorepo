@@ -67,12 +67,6 @@ interface IStakingEvents {
         uint256 finalContractBalance
     );
 
-    /// @dev Emitted by MixinOwnable when the contract's ownership changes
-    /// @param newOwner New owner of the contract
-    event OwnershipTransferred(
-        address newOwner
-    );
-
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operatorAddress Address of creator/operator of pool.

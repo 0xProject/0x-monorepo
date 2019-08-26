@@ -20,25 +20,21 @@ pragma solidity ^0.5.9;
 
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStakingProxy.sol";
-import "./sys/MixinOwnable.sol";
 
 
 contract StakingProxy is
     IStakingProxy,
     MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage,
-    MixinOwnable
+    MixinStorage
 {
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
     constructor(address _stakingContract)
         public
-    {
-        owner = msg.sender;
-        stakingContract = _stakingContract;
-    }
+        MixinStorage(_stakingContract)
+    {}
 
     /// @dev Delegates calls to the staking contract, if it is set.
     // solhint-disable no-complex-fallback

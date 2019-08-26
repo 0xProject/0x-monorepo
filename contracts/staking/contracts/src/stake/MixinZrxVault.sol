@@ -20,17 +20,12 @@ pragma solidity ^0.5.9;
 
 import "../interfaces/IZrxVault.sol";
 import "../immutable/MixinStorage.sol";
-import "../sys/MixinOwnable.sol";
 
 
 /// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
 /// (see vaults/ZrxVault.sol).
 contract MixinZrxVault is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
-    MixinOwnable
+    MixinStorage
 {
 
     /// @dev Set the Zrx Vault.

@@ -82,7 +82,6 @@ contract MixinStake is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinZrxVault,

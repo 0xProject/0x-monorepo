@@ -23,7 +23,6 @@ import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "../sys/MixinOwnable.sol";
 
 
 /// @dev This mixin contains logic for managing exchanges.
@@ -34,8 +33,7 @@ contract MixinExchangeManager is
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage,
-    MixinOwnable
+    MixinStorage
 {
 
     /// @dev Asserts that the call is coming from a valid exchange.

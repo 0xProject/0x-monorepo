@@ -47,7 +47,6 @@ contract MixinExchangeFees is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
