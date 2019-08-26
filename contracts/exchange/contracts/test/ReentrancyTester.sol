@@ -44,6 +44,9 @@ contract ReentrancyTester is
     {}
 
     /// @dev Calls a public function to check if it is reentrant.
+    /// Because this function uses the `nonReentrant` modifier, if
+    /// the function being called is also guarded by the `nonReentrant` modifier,
+    /// it will revert when it returns.
     function isReentrant(bytes calldata fnCallData)
         external
         nonReentrant
