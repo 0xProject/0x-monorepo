@@ -29,8 +29,8 @@ library LibSafeMath96 {
     function _add(uint96 a, uint96 b) internal pure returns (uint96) {
         uint96 c = a + b;
         if (c < a) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinopError(
-                LibSafeMathRichErrors.BinopErrorCodes.ADDITION_OVERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
                 a,
                 b
             ));
@@ -43,8 +43,8 @@ library LibSafeMath96 {
     /// Note that this reverts on underflow.
     function _sub(uint96 a, uint96 b) internal pure returns (uint96) {
         if (b > a) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinopError(
-                LibSafeMathRichErrors.BinopErrorCodes.SUBTRACTION_UNDERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.SUBTRACTION_UNDERFLOW,
                 a,
                 b
             ));
@@ -66,8 +66,8 @@ library LibSafeMath96 {
 
         uint96 c = a * b;
         if (c / a != b) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinopError(
-                LibSafeMathRichErrors.BinopErrorCodes.MULTIPLICATION_OVERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
                 a,
                 b
             ));
@@ -80,8 +80,8 @@ library LibSafeMath96 {
     /// Note that this reverts on division by zero. The result is rounded towards zero.
     function _div(uint96 a, uint96 b) internal pure returns (uint96) {
         if (b == 0) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinopError(
-                LibSafeMathRichErrors.BinopErrorCodes.DIVISION_BY_ZERO,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
                 a,
                 b
             ));

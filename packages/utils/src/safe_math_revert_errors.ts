@@ -3,7 +3,7 @@ import { RevertError } from './revert_error';
 
 // tslint:disable:max-classes-per-file
 
-export enum BinopErrorCodes {
+export enum BinOpErrorCodes {
     AdditionOverflow,
     MultiplicationOverflow,
     SubtractionUnderflow,
@@ -15,9 +15,9 @@ export enum DowncastErrorCodes {
     ValueTooLargeToDowncastToUint96,
 }
 
-export class Uint256BinopError extends RevertError {
-    constructor(error?: BinopErrorCodes, a?: BigNumber, b?: BigNumber) {
-        super('Uint256BinopError', 'Uint256BinopError(uint8 error, uint256 a, uint256 b)', {
+export class Uint256BinOpError extends RevertError {
+    constructor(error?: BinOpErrorCodes, a?: BigNumber, b?: BigNumber) {
+        super('Uint256BinOpError', 'Uint256BinOpError(uint8 error, uint256 a, uint256 b)', {
             error,
             a,
             b,
@@ -25,9 +25,9 @@ export class Uint256BinopError extends RevertError {
     }
 }
 
-export class Uint96BinopError extends RevertError {
-    constructor(error?: BinopErrorCodes, a?: BigNumber, b?: BigNumber) {
-        super('Uint96BinopError', 'Uint96BinopError(uint8 error, uint96 a, uint96 b)', {
+export class Uint96BinOpError extends RevertError {
+    constructor(error?: BinOpErrorCodes, a?: BigNumber, b?: BigNumber) {
+        super('Uint96BinOpError', 'Uint96BinOpError(uint8 error, uint96 a, uint96 b)', {
             error,
             a,
             b,
@@ -35,9 +35,9 @@ export class Uint96BinopError extends RevertError {
     }
 }
 
-export class Uint64BinopError extends RevertError {
-    constructor(error?: BinopErrorCodes, a?: BigNumber, b?: BigNumber) {
-        super('Uint64BinopError', 'Uint64BinopError(uint8 error, uint64 a, uint64 b)', {
+export class Uint64BinOpError extends RevertError {
+    constructor(error?: BinOpErrorCodes, a?: BigNumber, b?: BigNumber) {
+        super('Uint64BinOpError', 'Uint64BinOpError(uint8 error, uint64 a, uint64 b)', {
             error,
             a,
             b,
@@ -54,7 +54,7 @@ export class Uint256DowncastError extends RevertError {
     }
 }
 
-const types = [Uint256BinopError, Uint96BinopError, Uint64BinopError, Uint256DowncastError];
+const types = [Uint256BinOpError, Uint96BinOpError, Uint64BinOpError, Uint256DowncastError];
 
 // Register the types we've defined.
 for (const type of types) {

@@ -718,8 +718,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
                 orders[1].takerAssetAmount = MAX_UINT256;
                 const takerAssetFillAmount = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     orders[0].takerAssetAmount,
                     orders[1].takerAssetAmount,
                 );
@@ -1031,8 +1031,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const orders = [randomOrder({ takerAssetAmount: MAX_UINT256 })];
                 const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
                 const makerAssetFillAmount = new BigNumber(2);
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     orders[0].takerAssetAmount,
                     makerAssetFillAmount,
                 );
@@ -1044,8 +1044,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 const orders = [randomOrder({ makerAssetAmount: constants.ZERO_AMOUNT })];
                 const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
                 const makerAssetFillAmount = ONE_ETHER;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.DivisionByZero,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     orders[0].takerAssetAmount.times(makerAssetFillAmount),
                     orders[0].makerAssetAmount,
                 );
@@ -1066,8 +1066,8 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 ];
                 const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
                 const makerAssetFillAmount = new BigNumber(2);
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     orders[0].makerAssetAmount,
                     orders[1].makerAssetAmount,
                 );

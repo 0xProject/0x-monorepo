@@ -139,8 +139,8 @@ blockchainTests('LibFillResults', env => {
                     takerAssetAmount: MAX_UINT256_ROOT,
                 });
                 const takerAssetFilledAmount = MAX_UINT256_ROOT;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     takerAssetFilledAmount,
                     order.makerAssetAmount,
                 );
@@ -162,8 +162,8 @@ blockchainTests('LibFillResults', env => {
                     order.takerAssetAmount,
                     order.makerAssetAmount,
                 );
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     makerAssetFilledAmount,
                     order.makerFee,
                 );
@@ -180,8 +180,8 @@ blockchainTests('LibFillResults', env => {
                     takerFee: MAX_UINT256_ROOT.times(11),
                 });
                 const takerAssetFilledAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     takerAssetFilledAmount,
                     order.takerFee,
                 );
@@ -303,8 +303,8 @@ blockchainTests('LibFillResults', env => {
             it('reverts if computing `makerAssetFilledAmount` overflows', async () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.makerAssetFilledAmount = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.makerAssetFilledAmount,
                     b.makerAssetFilledAmount,
                 );
@@ -314,8 +314,8 @@ blockchainTests('LibFillResults', env => {
             it('reverts if computing `takerAssetFilledAmount` overflows', async () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.takerAssetFilledAmount = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.takerAssetFilledAmount,
                     b.takerAssetFilledAmount,
                 );
@@ -325,8 +325,8 @@ blockchainTests('LibFillResults', env => {
             it('reverts if computing `makerFeePaid` overflows', async () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.makerFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.makerFeePaid,
                     b.makerFeePaid,
                 );
@@ -336,8 +336,8 @@ blockchainTests('LibFillResults', env => {
             it('reverts if computing `takerFeePaid` overflows', async () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.takerFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.takerFeePaid,
                     b.takerFeePaid,
                 );

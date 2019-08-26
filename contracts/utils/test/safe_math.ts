@@ -45,8 +45,8 @@ blockchainTests('SafeMath', env => {
         it('should revert if the multiplication overflows', async () => {
             const a = toBigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); // The largest uint256 number
             const b = toBigNumber(2);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
                 b,
             );
@@ -91,8 +91,8 @@ blockchainTests('SafeMath', env => {
         it('should revert if second argument is zero', async () => {
             const a = toBigNumber(1);
             const b = toBigNumber(0);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.DivisionByZero,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                 a,
                 b,
             );
@@ -112,8 +112,8 @@ blockchainTests('SafeMath', env => {
         it('should revert if the subtraction underflows', async () => {
             const a = toBigNumber(0);
             const b = toBigNumber(1);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.SubtractionUnderflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 a,
                 b,
             );
@@ -143,8 +143,8 @@ blockchainTests('SafeMath', env => {
         it('should revert if the addition overflows', async () => {
             const a = toBigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); // The largest uint256 number
             const b = toBigNumber(1);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b,
             );

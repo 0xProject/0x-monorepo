@@ -35,8 +35,8 @@ describe('Reference Functions', () => {
             it('reverts if computing `makerAssetFilledAmount` overflows', () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.makerAssetFilledAmount = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.makerAssetFilledAmount,
                     b.makerAssetFilledAmount,
                 );
@@ -46,8 +46,8 @@ describe('Reference Functions', () => {
             it('reverts if computing `takerAssetFilledAmount` overflows', () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.takerAssetFilledAmount = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.takerAssetFilledAmount,
                     b.takerAssetFilledAmount,
                 );
@@ -57,8 +57,8 @@ describe('Reference Functions', () => {
             it('reverts if computing `makerFeePaid` overflows', () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.makerFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.makerFeePaid,
                     b.makerFeePaid,
                 );
@@ -68,8 +68,8 @@ describe('Reference Functions', () => {
             it('reverts if computing `takerFeePaid` overflows', () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.takerFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                    SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.takerFeePaid,
                     b.takerFeePaid,
                 );
@@ -85,8 +85,8 @@ describe('Reference Functions', () => {
                     const numerator = ONE_ETHER;
                     const denominator = ZERO_AMOUNT;
                     const target = ONE_ETHER.times(0.01);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.DivisionByZero,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                         numerator.times(target),
                         denominator,
                     );
@@ -99,8 +99,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );
@@ -118,8 +118,8 @@ describe('Reference Functions', () => {
                     const denominator = ZERO_AMOUNT;
                     const target = ONE_ETHER.times(0.01);
                     // This will actually manifest as a subtraction underflow.
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.SubtractionUnderflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                         denominator,
                         new BigNumber(1),
                     );
@@ -132,8 +132,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );
@@ -170,8 +170,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );
@@ -208,8 +208,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );
@@ -254,8 +254,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );
@@ -300,8 +300,8 @@ describe('Reference Functions', () => {
                     const numerator = MAX_UINT256;
                     const denominator = ONE_ETHER.dividedToIntegerBy(2);
                     const target = MAX_UINT256_ROOT.times(2);
-                    const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                        SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+                    const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                        SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                         numerator,
                         target,
                     );

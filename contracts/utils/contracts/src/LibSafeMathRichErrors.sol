@@ -3,23 +3,23 @@ pragma solidity ^0.5.9;
 
 library LibSafeMathRichErrors {
 
-    // bytes4(keccak256("Uint256BinopError(uint8,uint256,uint256)"))
+    // bytes4(keccak256("Uint256BinOpError(uint8,uint256,uint256)"))
     bytes4 internal constant UINT256_BINOP_ERROR_SELECTOR =
-        0x8d8e1919;
+        0xe946c1bb;
 
-    // bytes4(keccak256("Uint96BinopError(uint8,uint96,uint96)"))
+    // bytes4(keccak256("Uint96BinOpError(uint8,uint96,uint96)"))
     bytes4 internal constant UINT96_BINOP_ERROR_SELECTOR =
-        0x224cf712;
+        0xe486a353;
 
-    // bytes4(keccak256("Uint64BinopError(uint8,uint64,uint64)"))
+    // bytes4(keccak256("Uint64BinOpError(uint8,uint64,uint64)"))
     bytes4 internal constant UINT64_BINOP_ERROR_SELECTOR =
-        0x4e79032d;
+        0x67e71b32;
 
     // bytes4(keccak256("Uint256DowncastError(uint8,uint256)"))
     bytes4 internal constant UINT256_DOWNCAST_ERROR_SELECTOR =
         0xc996af7b;
 
-    enum BinopErrorCodes {
+    enum BinOpErrorCodes {
         ADDITION_OVERFLOW,
         MULTIPLICATION_OVERFLOW,
         SUBTRACTION_UNDERFLOW,
@@ -32,8 +32,8 @@ library LibSafeMathRichErrors {
     }
 
     // solhint-disable func-name-mixedcase
-    function Uint256BinopError(
-        BinopErrorCodes errorCode,
+    function Uint256BinOpError(
+        BinOpErrorCodes errorCode,
         uint256 a,
         uint256 b
     )
@@ -49,8 +49,8 @@ library LibSafeMathRichErrors {
         );
     }
 
-    function Uint96BinopError(
-        BinopErrorCodes errorCode,
+    function Uint96BinOpError(
+        BinOpErrorCodes errorCode,
         uint96 a,
         uint96 b
     )
@@ -66,8 +66,8 @@ library LibSafeMathRichErrors {
         );
     }
 
-    function Uint64BinopError(
-        BinopErrorCodes errorCode,
+    function Uint64BinOpError(
+        BinOpErrorCodes errorCode,
         uint64 a,
         uint64 b
     )

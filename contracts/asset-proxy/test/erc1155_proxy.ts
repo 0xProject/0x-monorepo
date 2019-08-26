@@ -1748,8 +1748,8 @@ describe('ERC1155Proxy', () => {
                 nftNotOwnerBalance,
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 maxUintValue,
                 valueMultiplier,
             );
@@ -1836,8 +1836,8 @@ describe('ERC1155Proxy', () => {
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            const expectedError = new SafeMathRevertErrors.Uint256BinopError(
-                SafeMathRevertErrors.BinopErrorCodes.SubtractionUnderflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 spenderInitialFungibleBalance,
                 valuesToTransfer[0].times(valueMultiplier),
             );
