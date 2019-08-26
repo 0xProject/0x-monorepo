@@ -146,8 +146,8 @@
             "isFeatured": false,
             "tags": ["Trader", "Protocol Developer"],
             "type": "Typescript Libraries",
-            "path": "tools/@0x/asset-swapper/v1.0.1/reference.mdx",
-            "versions": ["v1.0.1"]
+            "path": "tools/@0x/asset-swapper/v1.0.2/reference.mdx",
+            "versions": ["v1.0.2"]
         },
         "0x-js": {
             "title": "0x.js",
@@ -167,8 +167,8 @@
             "isFeatured": false,
             "tags": ["Trader", "Relayer"],
             "type": "Typescript Libraries",
-            "path": "tools/@0x/connect/v5.0.16/reference.mdx",
-            "versions": ["v5.0.16"]
+            "path": "tools/@0x/connect/v5.0.17/reference.mdx",
+            "versions": ["v5.0.17"]
         },
         "subproviders": {
             "title": "@0x/subproviders",
@@ -178,8 +178,8 @@
             "isFeatured": false,
             "tags": ["Relayer", "Trader"],
             "type": "Typescript Libraries",
-            "path": "tools/@0x/subproviders/v5.0.1/reference.mdx",
-            "versions": ["v5.0.1"]
+            "path": "tools/@0x/subproviders/v5.0.2/reference.mdx",
+            "versions": ["v5.0.2"]
         },
         "asset-buyer": {
             "title": "@0x/asset-buyer",
@@ -189,8 +189,8 @@
             "isFeatured": false,
             "tags": ["Trader", "Protocol Developer"],
             "type": "Typescript Libraries",
-            "path": "tools/@0x/asset-buyer/v6.1.11/reference.mdx",
-            "versions": ["v6.1.11"],
+            "path": "tools/@0x/asset-buyer/v6.1.12/reference.mdx",
+            "versions": ["v6.1.12"],
             "isHidden": true
         },
         "ethereum-types": {
@@ -214,8 +214,8 @@
             "tags": ["Trader", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/contract-wrappers/v11.0.0/reference.mdx",
-            "versions": ["v11.0.0"]
+            "path": "tools/@0x/contract-wrappers/v11.1.0/reference.mdx",
+            "versions": ["v11.1.0"]
         },
         "json-schemas": {
             "title": "@0x/json-schemas",
@@ -226,8 +226,8 @@
             "tags": ["Trader", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/json-schemas/v3.1.13/reference.mdx",
-            "versions": ["v3.1.13"]
+            "path": "tools/@0x/json-schemas/v4.0.0/reference.mdx",
+            "versions": ["v4.0.0"]
         },
         "order-utils": {
             "title": "@0x/order-utils",
@@ -238,8 +238,8 @@
             "tags": ["Trader", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/order-utils/v8.2.5/reference.mdx",
-            "versions": ["v8.2.5"]
+            "path": "tools/@0x/order-utils/v8.3.0/reference.mdx",
+            "versions": ["v8.3.0"]
         },
         "sol-compiler": {
             "title": "@0x/sol-compiler",
@@ -250,8 +250,8 @@
             "tags": ["Protocol Developer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/sol-compiler/v3.1.12/reference.mdx",
-            "versions": ["v3.1.12"]
+            "path": "tools/@0x/sol-compiler/v3.1.13/reference.mdx",
+            "versions": ["v3.1.13"]
         },
         "sol-coverage": {
             "title": "@0x/sol-coverage",
@@ -263,8 +263,8 @@
             "tags": ["Protocol Developer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/sol-coverage/v3.0.9/reference.mdx",
-            "versions": ["v3.0.9"]
+            "path": "tools/@0x/sol-coverage/v3.0.10/reference.mdx",
+            "versions": ["v3.0.10"]
         },
         "sol-profiler": {
             "title": "@0x/sol-profiler",
@@ -276,8 +276,8 @@
             "tags": ["Protocol Developer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/sol-profiler/v3.1.11/reference.mdx",
-            "versions": ["v3.1.11"]
+            "path": "tools/@0x/sol-profiler/v3.1.12/reference.mdx",
+            "versions": ["v3.1.12"]
         },
         "sol-trace": {
             "title": "@0x/sol-trace",
@@ -289,8 +289,8 @@
             "tags": ["Protocol Developer"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/sol-trace/v2.0.17/reference.mdx",
-            "versions": ["v2.0.17"]
+            "path": "tools/@0x/sol-trace/v2.0.18/reference.mdx",
+            "versions": ["v2.0.18"]
         },
         "web3-wrapper": {
             "title": "@0x/web3-wrapper",
@@ -301,8 +301,8 @@
             "tags": ["Relayer", "Trader"],
             "type": "Typescript Libraries",
             "isHidden": true,
-            "path": "tools/@0x/web3-wrapper/v6.0.10/reference.mdx",
-            "versions": ["v6.0.10"]
+            "path": "tools/@0x/web3-wrapper/v6.0.11/reference.mdx",
+            "versions": ["v6.0.11"]
         },
         "mesh-ts-client": {
             "description": "A Typescript/Javascript library for interacting with the Mesh JSON-RPC API over WebSockets",
@@ -424,6 +424,16 @@
             "type": "Golang Libraries",
             "externalUrl": "https://github.com/NoteGio/openrelay"
         },
+        "go-mesh-client": {
+            "title": "Golang Mesh RPC Client",
+            "description": "A Golang library for interacting with the Mesh JSON-RPC API over WebSockets",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": false,
+            "tags": ["Relayer", "Trader"],
+            "type": "Golang Libraries",
+            "externalUrl": "https://godoc.org/github.com/0xProject/0x-mesh/rpc#Client"
+        },
         "launch-kit-frontend": {
             "title": "0x Launch Kit Frontend",
             "description": "An ERC20 exchange and ERC721 marketplace react frontend UI for any SRA relayer",
@@ -472,8 +482,8 @@
             "isFeatured": false,
             "tags": ["Protocol Developer", "Relayer"],
             "type": "Command-line tool",
-            "path": "tools/@0x/migrations/v4.2.0/reference.mdx",
-            "versions": ["v4.2.0"]
+            "path": "tools/@0x/migrations/v4.3.0/reference.mdx",
+            "versions": ["v4.3.0"]
         },
         "launch-kit-wizard": {
             "title": "@0x/launch-kit-wizard",
