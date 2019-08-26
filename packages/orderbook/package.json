@@ -1,7 +1,7 @@
 {
     "name": "@0x/orderbook",
     "version": "0.0.1",
-    "description": "Library for retrieving and syncing a remote orderbook to storing locally",
+    "description": "Library for retrieving and syncing a remote orderbook locally",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "bugs": {
