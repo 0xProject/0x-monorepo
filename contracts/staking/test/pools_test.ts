@@ -12,7 +12,7 @@ import { constants as stakingConstants } from './utils/constants';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.only('Staking Pool Management', env => {
+blockchainTests('Staking Pool Management', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses

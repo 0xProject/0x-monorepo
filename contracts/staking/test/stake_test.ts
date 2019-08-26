@@ -10,7 +10,7 @@ import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.only('Staking & Delegating', env => {
+blockchainTests('Staking & Delegating', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses

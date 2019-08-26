@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.only('Staking Vaults', env => {
+blockchainTests('Staking Vaults', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
