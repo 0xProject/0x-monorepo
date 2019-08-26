@@ -5,6 +5,8 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as EthVault from '../generated-artifacts/EthVault.json';
+import * as IEthVault from '../generated-artifacts/IEthVault.json';
 import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
@@ -16,23 +18,22 @@ import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
 import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
-import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
-import * as MixinDelegatedStake from '../generated-artifacts/MixinDelegatedStake.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
+import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
+import * as MixinStakeStorage from '../generated-artifacts/MixinStakeStorage.json';
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
-import * as MixinTimeLockedStake from '../generated-artifacts/MixinTimeLockedStake.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
 import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
@@ -48,6 +49,7 @@ export const artifacts = {
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
+    IEthVault: IEthVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,
@@ -58,19 +60,19 @@ export const artifacts = {
     IZrxVault: IZrxVault as ContractArtifact,
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFeeMath: LibFeeMath as ContractArtifact,
-    LibRewardMath: LibRewardMath as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
-    MixinDelegatedStake: MixinDelegatedStake as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,
-    MixinTimeLockedStake: MixinTimeLockedStake as ContractArtifact,
+    MixinStakeStorage: MixinStakeStorage as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
+    MixinEthVault: MixinEthVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
+    EthVault: EthVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,

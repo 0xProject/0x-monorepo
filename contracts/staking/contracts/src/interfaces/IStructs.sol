@@ -56,15 +56,44 @@ interface IStructs {
         bytes32 poolId;
         uint256 feesCollected;
         uint256 weightedStake;
+        uint256 delegatedStake;
     }
 
-    /// @dev Tracks timeLocked stake (see MixinTimeLockedStake).
-    /// @param lockedAt The TimeLock Period that stake was most recently locked at.
-    /// @param total Amount of stake that is timeLocked.
-    /// @param pending Stake pending to be un-TimeLocked next TimeLock Period.
-    struct TimeLock {
-        uint64 lockedAt;
-        uint96 total;
-        uint96 pending;
+    /// @dev A delayed balance allows values to be computed
+    struct DelayedBalance {
+        uint96 current;
+        uint96 next;
+        uint64 lastStored;
+    }
+
+    /// @dev Balance struct for stake.
+    /// @param current Balance in the current epoch.
+    /// @param next Balance in the next epoch.
+    struct StakeBalance {
+        uint256 current;
+        uint256 next;
+    }
+
+    /// @dev States that stake can exist in.
+    enum StakeState {
+        ACTIVE,
+        INACTIVE,
+        DELEGATED
+    }
+
+    /// @dev Info used to describe a state.
+    /// @param state of the stake.
+    /// @param poolId Unique Id of pool. This is set when state=DELEGATED.
+    struct StakeStateInfo {
+        StakeState state;
+        bytes32 poolId;
+    }
+
+    /// @dev Struct to represent a fraction.
+    /// @param numerator of fraction.
+    /// @param denominator of fraction.
+    struct Fraction {
+        uint256 numerator;
+        uint256 denominator;
     }
 }

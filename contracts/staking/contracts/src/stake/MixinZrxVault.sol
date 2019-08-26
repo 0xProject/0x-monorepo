@@ -25,6 +25,9 @@ import "../immutable/MixinStorage.sol";
 /// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
 /// (see vaults/ZrxVault.sol).
 contract MixinZrxVault is
+    MixinDeploymentConstants,
+    Ownable,
+    MixinConstants,
     MixinStorage
 {
     /// @dev Set the Zrx Vault.
@@ -44,5 +47,48 @@ contract MixinZrxVault is
         returns (address)
     {
         return address(zrxVault);
+    }
+
+    /// @dev Deposits Zrx Tokens from the `owner` into the vault.
+    /// @param owner of Zrx Tokens
+    /// @param amount of tokens to deposit.
+    function _depositFromOwnerIntoZrxVault(address owner, uint256 amount)
+        internal
+    {
+        IZrxVault _zrxVault = zrxVault;
+        require(
+            address(_zrxVault) != address(0),
+            "INVALID_ZRX_VAULT"
+        );
+        _zrxVault.depositFrom(owner, amount);
+    }
+
+    /// @dev Withdraws Zrx Tokens from to `owner` from the vault.
+    /// @param owner of deposited Zrx Tokens
+    /// @param amount of tokens to withdraw.
+    function _withdrawToOwnerFromZrxVault(address owner, uint256 amount)
+        internal
+    {
+        IZrxVault _zrxVault = zrxVault;
+        require(
+            address(_zrxVault) != address(0),
+            "INVALID_ZRX_VAULT"
+        );
+        _zrxVault.withdrawFrom(owner, amount);
+    }
+
+    /// @dev Returns balance of `owner` in the ZRX ault.
+    /// @param owner of deposited Zrx Tokens.
+    function _balanceOfOwnerInZrxVault(address owner)
+        internal
+        view
+        returns (uint256)
+    {
+        IZrxVault _zrxVault = zrxVault;
+        require(
+            address(_zrxVault) != address(0),
+            "INVALID_ZRX_VAULT"
+        );
+        return _zrxVault.balanceOf(owner);
     }
 }

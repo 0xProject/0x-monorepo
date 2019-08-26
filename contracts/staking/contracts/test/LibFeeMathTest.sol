@@ -20,13 +20,13 @@
 
 pragma solidity ^0.5.5;
 
-import "../src/libs/LibFeeMath.sol";
+
 
 
 contract LibFeeMathTest {
-    
+
     function nthRoot(uint256 base, uint256 n) public pure returns (uint256 root) {
-        return LibFeeMath._nthRoot(base, n);
+        return 0;
     }
 
     function nthRootFixedPoint(
@@ -37,7 +37,7 @@ contract LibFeeMathTest {
         pure
         returns (uint256 root)
     {
-        return LibFeeMath._nthRootFixedPoint(base, n);
+        return 0;
     }
 
     function cobbDouglas(
@@ -53,15 +53,7 @@ contract LibFeeMathTest {
         pure
         returns (uint256)
     {
-        return LibFeeMath._cobbDouglas(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaNumerator,
-            alphaDenominator
-        );
+        return 0;
     }
 
     function cobbDouglasSimplified(
@@ -76,14 +68,7 @@ contract LibFeeMathTest {
         pure
         returns (uint256)
     {
-        return LibFeeMath._cobbDouglasSimplified(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator
-        );
+        return 0;
     }
 
     function cobbDouglasSimplifiedInverse(
@@ -98,14 +83,7 @@ contract LibFeeMathTest {
        // pure
         returns (uint256)
     {
-        return LibFeeMath._cobbDouglasSimplifiedInverse(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator
-        );
+        return 0;
     }
 }
 

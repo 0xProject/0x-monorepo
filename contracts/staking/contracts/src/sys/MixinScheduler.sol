@@ -36,6 +36,7 @@ import "../interfaces/IStakingEvents.sol";
 contract MixinScheduler is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage
 {
@@ -85,49 +86,6 @@ contract MixinScheduler is
         return getCurrentEpochStartTimeInSeconds().safeAdd(getEpochDurationInSeconds());
     }
 
-    /// @dev Returns the current timeLock period.
-    /// @return TimeLock period.
-    function getCurrentTimeLockPeriod()
-        public
-        view
-        returns (uint256)
-    {
-        return currentTimeLockPeriod;
-    }
-
-    /// @dev Returns the length of a timeLock period, measured in epochs.
-    ///      TimeLock period = [startEpoch..endEpoch)
-    /// @return TimeLock period end.
-    function getTimeLockDurationInEpochs()
-        public
-        pure
-        returns (uint256)
-    {
-        return TIMELOCK_DURATION_IN_EPOCHS;
-    }
-
-    /// @dev Returns the epoch that the current timeLock period started at.
-    ///      TimeLock period = [startEpoch..endEpoch)
-    /// @return TimeLock period start.
-    function getCurrentTimeLockPeriodStartEpoch()
-        public
-        view
-        returns (uint256)
-    {
-        return currentTimeLockPeriodStartEpoch;
-    }
-
-    /// @dev Returns the epoch that the current timeLock period will end.
-    ///      TimeLock period = [startEpoch..endEpoch)
-    /// @return TimeLock period.
-    function getCurrentTimeLockPeriodEndEpoch()
-        public
-        view
-        returns (uint256)
-    {
-        return getCurrentTimeLockPeriodStartEpoch().safeAdd(getTimeLockDurationInEpochs());
-    }
-
     /// @dev Moves to the next epoch, given the current epoch period has ended.
     ///      Time intervals that are measured in epochs (like timeLocks) are also incremented, given
     ///      their periods have ended.
@@ -152,26 +110,12 @@ contract MixinScheduler is
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
         uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(getEpochDurationInSeconds());
-        
+
         // notify of epoch change
         emit EpochChanged(
             currentEpoch,
             currentEpochStartTimeInSeconds,
             earliestEndTimeInSeconds
         );
-
-        // increment timeLock period, if needed
-        if (getCurrentTimeLockPeriodEndEpoch() <= nextEpoch) {
-            currentTimeLockPeriod = currentTimeLockPeriod.safeAdd(1);
-            currentTimeLockPeriodStartEpoch = currentEpoch;
-            uint256 endEpoch = currentEpoch.safeAdd(getTimeLockDurationInEpochs());
-            
-            // notify
-            emit TimeLockPeriodChanged(
-                currentTimeLockPeriod,
-                currentTimeLockPeriodStartEpoch,
-                endEpoch
-            );
-        }
     }
 }

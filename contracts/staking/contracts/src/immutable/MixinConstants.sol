@@ -42,4 +42,6 @@ contract MixinConstants is
     uint64 constant internal INITIAL_EPOCH = 0;
 
     uint64 constant internal INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
+
+    uint256 constant internal MIN_TOKEN_VALUE = 1000000000000000000; // 10**18
 }
