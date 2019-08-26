@@ -25,7 +25,7 @@ export const orderProviderResponseProcessor = {
      * Take the responses for the target orders to buy and fee orders and process them.
      * Processing includes:
      * - Drop orders that are expired or not open orders (null taker address)
-     * - If an orderValidator, attempt to grab fillable amounts from on-chain otherwise assume completely fillable
+     * - If an orderValidator is provided, attempt to grab fillable amounts from on-chain otherwise assume completely fillable
      * - Sort by rate
      */
     async processAsync(

@@ -86,7 +86,7 @@ describe('SRAPollingOrderProvider', () => {
                     }),
                 ),
             );
-            provider = new SRAPollingOrderProvider({ httpEndpoint, pollingIntervalMs: 5 }, orderStore);
+            provider = new SRAPollingOrderProvider({ httpEndpoint, pollingIntervalMs: 1 }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);

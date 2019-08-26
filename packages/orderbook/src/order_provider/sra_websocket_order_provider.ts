@@ -59,7 +59,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
 
     /**
      * Creates a websocket subscription. If the inital websocket connnection
-     * is not yet created it is created.
+     * does not exist, it is created.
      * @param makerAssetData the Maker Asset Data
      * @param takerAssetData the Taker Asset Data
      */
@@ -73,17 +73,22 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
             quoteAssetData: takerAssetData,
             limit: RECORD_COUNT,
         };
-        // No need for a second subscription as this contains updates on both pairs
         this._wsSubscriptions.set(assetPairKey, susbcriptionOpts);
+        // Subscribe to both sides of the book
         this._ordersChannel.subscribe(susbcriptionOpts);
+        this._ordersChannel.subscribe({
+            ...susbcriptionOpts,
+            baseAssetData: takerAssetData,
+            quoteAssetData: makerAssetData,
+        });
     }
 
     private async _fetchAndCreateSubscriptionAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
-        const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         // Create the subscription first to get any updates during waiting for the request
         await this._createWebsocketSubscriptionAsync(makerAssetData, takerAssetData);
         // first time we have had this request, preload the local storage
         const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
+        const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         const currentOrders = this._orderStore.getOrderSetForAssetPair(assetPairKey);
         const newOrders = new OrderSet(orders);
         const diff = currentOrders.diff(newOrders);
@@ -96,8 +101,8 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
 
     private async _syncOrdersInOrderStoreAsync(): Promise<void> {
         for (const assetPairKey of this._orderStore.keys()) {
-            const [makerAssetData, takerAssetData] = assetPairKey.split('-');
-            await this._fetchAndCreateSubscriptionAsync(makerAssetData, takerAssetData);
+            const [assetDataA, assetDataB] = OrderStore.assetPairKeyToAssets(assetPairKey);
+            await this._fetchAndCreateSubscriptionAsync(assetDataA, assetDataB);
         }
     }
 
@@ -113,7 +118,6 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
                 // Re-sync and create subscriptions
                 await utils.attemptAsync<boolean>(async () => {
                     this._ordersChannel = undefined;
-                    // this._wsSubscriptions.clear();
                     await this._syncOrdersInOrderStoreAsync();
                     return true;
                 });
