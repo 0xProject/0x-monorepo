@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
 import { NotFound } from 'ts/containers/not_found';
-import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
@@ -44,6 +43,7 @@ trackedTokenStorage.clearIfRequired();
 
 import 'less/all.less';
 import 'sass/modal_video.scss';
+import { constants } from 'ts/utils/constants';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
@@ -135,54 +135,67 @@ render(
                                   Note(ez): We remove/replace all old routes with next routes
                                   once we're ready to put a ring on it. for now let's keep em there for reference
                                 */}
-                        <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
                         <Route path={WebsitePaths.Portal} component={LazyPortal} />
-                        <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-                        <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.ContractWrappers}/:version?`}
-                            component={LazyContractWrappersDocumentation}
+                        <Redirect from={`${WebsiteLegacyPaths.ZeroExJs}/:version?`} to={constants.URL_NPMJS_ZEROEXJS} />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.ContractWrappers}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/contract-wrappers/:version?`}
                         />
-                        <Route path={`${WebsitePaths.Migrations}/:version?`} component={LazyMigrationsDocumentation} />
-                        <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.SolCompiler}/:version?`}
-                            component={LazySolCompilerDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.Migrations}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/migrations/:version?`}
                         />
-                        <Route
-                            path={`${WebsitePaths.SolCoverage}/:version?`}
-                            component={LazySolCoverageDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.Connect}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/connect/:version?`}
                         />
-                        <Route path={`${WebsitePaths.SolTrace}/:version?`} component={LazySolTraceDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.SolProfiler}/:version?`}
-                            component={LazySolProfilerDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.SolCompiler}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/sol-compiler/:version?`}
                         />
-                        <Route
-                            path={`${WebsitePaths.JSONSchemas}/:version?`}
-                            component={LazyJSONSchemasDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.SolCoverage}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/sol-coverage/:version?`}
                         />
-                        <Route
-                            path={`${WebsitePaths.Subproviders}/:version?`}
-                            component={LazySubprovidersDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.SolTrace}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/sol-trace/:version?`}
                         />
-                        <Route path={`${WebsitePaths.OrderUtils}/:version?`} component={LazyOrderUtilsDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.Web3Wrapper}/:version?`}
-                            component={LazyWeb3WrapperDocumentation}
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.SolProfiler}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/sol-profiler/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.JSONSchemas}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/json-schemas/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.Subproviders}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/subproviders/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.OrderUtils}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/order-utils/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/web3-wrapper/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.EthereumTypes}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/ethereum-types/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.AssetBuyer}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/asset-buyer/:version?`}
+                        />
+                        <Redirect
+                            from={`${WebsiteLegacyPaths.AssetSwapperDocs}/:version?`}
+                            to={`${WebsitePaths.Docs}/tools/asset-swapper/:version?`}
                         />
                         <Route
                             path={`${WebsitePaths.SmartContracts}/:version?`}
                             component={LazySmartContractsDocumentation}
-                        />
-                        <Route
-                            path={`${WebsitePaths.EthereumTypes}/:version?`}
-                            component={LazyEthereumTypesDocumentation}
-                        />
-                        <Route path={`${WebsitePaths.AssetBuyer}/:version?`} component={LazyAssetBuyerDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
-                            component={LazyAssetSwapperDocumentation}
                         />
                         <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />
                         <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
@@ -190,18 +203,7 @@ render(
                         <Route path={`${WebsitePaths.Docs}/:type/:page?/:version?`} component={DocsPage as any} />
 
                         {/* Legacy endpoints */}
-                        <Route
-                            path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
-                            component={LazyZeroExJSDocumentation}
-                        />
-                        <Route
-                            path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
-                            component={LazyWeb3WrapperDocumentation}
-                        />
-                        <Route
-                            path={`${WebsiteLegacyPaths.Deployer}/:version?`}
-                            component={LazySolCompilerDocumentation}
-                        />
+                        <Redirect from={WebsitePaths.Wiki} to={WebsitePaths.DocsGuides} />
                         <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
                         <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
                         <Route component={NotFound as any} />

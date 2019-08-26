@@ -95,6 +95,7 @@ export const constants = {
     URL_METAMASK_HOMEPAGE: 'https://metamask.io/',
     URL_METAMASK_OPERA_STORE: 'https://addons.opera.com/en/extensions/details/metamask/',
     URL_MIST_DOWNLOAD: 'https://github.com/ethereum/mist/releases',
+    URL_NPMJS_ZEROEXJS: 'https://www.npmjs.com/package/0x.js',
     URL_PARITY_CHROME_STORE:
         'https://chrome.google.com/webstore/detail/parity-ethereum-integrati/himekenlppkgeaoeddcliojfddemadig',
     URL_REDDIT: 'https://reddit.com/r/0xproject',

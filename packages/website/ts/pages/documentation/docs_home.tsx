@@ -8,7 +8,17 @@ import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ALink, Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import {
+    ALink,
+    Categories,
+    Deco,
+    Key,
+    Package,
+    ScreenWidths,
+    TutorialInfo,
+    WebsiteLegacyPaths,
+    WebsitePaths,
+} from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -63,7 +73,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'A library for interacting with the 0x protocol. It is a high level package which combines a number of smaller specific-purpose packages such as [order-utils](https://0x.org/docs/order-utils) and [contract-wrappers](https://0x.org/docs/contract-wrappers).',
             link: {
                 title: '0x.js',
-                to: WebsitePaths.ZeroExJs,
+                to: WebsiteLegacyPaths.ZeroExJs,
             },
         },
         {
@@ -97,7 +107,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'An http & websocket client for interacting with relayers that have implemented the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)',
             link: {
                 title: '@0x/connect',
-                to: WebsitePaths.Connect,
+                to: WebsiteLegacyPaths.Connect,
             },
         },
         {
@@ -105,7 +115,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'Typescript/Javascript wrappers of the 0x protocol Ethereum smart contracts. Use this library to call methods on the 0x smart contracts, subscribe to contract events and to fetch information stored in contracts.',
             link: {
                 title: '@0x/contract-wrappers',
-                to: WebsitePaths.ContractWrappers,
+                to: WebsiteLegacyPaths.ContractWrappers,
             },
         },
         {
@@ -113,7 +123,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 "A package to deploy the 0x protocol's system of smart contracts to the testnet of your choice",
             link: {
                 title: '@0x/migrations',
-                to: WebsitePaths.Migrations,
+                to: WebsiteLegacyPaths.Migrations,
             },
         },
         {
@@ -121,7 +131,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'A collection of 0x-related JSON-schemas (incl. SRA request/response schemas, 0x order message format schema, etc...)',
             link: {
                 title: '@0x/json-schemas',
-                to: WebsitePaths.JSONSchemas,
+                to: WebsiteLegacyPaths.JSONSchemas,
             },
         },
         {
@@ -129,7 +139,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'A set of utils for working with 0x orders. It includes utilities for creating, signing, validating 0x orders, encoding/decoding assetData and much more.',
             link: {
                 title: '@0x/order-utils',
-                to: WebsitePaths.OrderUtils,
+                to: WebsiteLegacyPaths.OrderUtils,
             },
         },
         {
@@ -163,14 +173,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'Convenience package for buying assets represented on the Ethereum blockchain using 0x. In its simplest form, the package helps in the usage of the [0x forwarder contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md), which allows users to execute [Wrapped Ether](https://weth.io/) based 0x orders without having to set allowances, wrap Ether or own ZRX, meaning they can buy tokens with Ether alone. Given some liquidity (0x signed orders), it helps estimate the Ether cost of buying a certain asset (giving a range) and then buying that asset.',
             link: {
                 title: '@0x/asset-buyer [Deprecated]',
-                to: WebsitePaths.AssetBuyer,
+                to: WebsiteLegacyPaths.AssetBuyer,
             },
         },
         {
             description: 'Convenience package for discovering and performing swaps for any ERC Assets',
             link: {
                 title: '@0x/asset-swapper',
-                to: WebsitePaths.AssetSwapperDocs,
+                to: WebsiteLegacyPaths.AssetSwapperDocs,
             },
         },
     ],
@@ -231,7 +241,7 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 'A collection of subproviders to use with [web3-provider-engine](https://www.npmjs.com/package/web3-provider-engine) (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
             link: {
                 title: '@0x/subproviders',
-                to: WebsitePaths.Subproviders,
+                to: WebsiteLegacyPaths.Subproviders,
             },
         },
     ],

@@ -8,7 +8,7 @@ import * as React from 'react';
 import { colors } from 'ts/style/colors';
 
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { ALink, Deco, Key, Language, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, Language, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -51,7 +51,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 },
                 {
                     title: '0x.js',
-                    to: WebsitePaths.ZeroExJs,
+                    to: WebsiteLegacyPaths.ZeroExJs,
                 },
                 {
                     title: this.props.translate.get(Key.SmartContracts, Deco.Cap),
@@ -59,7 +59,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
                 },
                 {
                     title: this.props.translate.get(Key.Connect, Deco.Cap),
-                    to: WebsitePaths.Connect,
+                    to: WebsiteLegacyPaths.Connect,
                 },
                 {
                     title: this.props.translate.get(Key.Whitepaper, Deco.Cap),

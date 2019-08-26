@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Text } from 'ts/components/ui/text';
-import { ALink, Deco, Key, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
@@ -33,11 +33,11 @@ const gettingStartedKeyToLinkInfo2: ALink[] = [
 const popularDocsToLinkInfos: ALink[] = [
     {
         title: Key.ZeroExJs,
-        to: WebsitePaths.ZeroExJs,
+        to: WebsiteLegacyPaths.ZeroExJs,
     },
     {
         title: Key.Connect,
-        to: WebsitePaths.Connect,
+        to: WebsiteLegacyPaths.Connect,
     },
     {
         title: Key.SmartContract,
