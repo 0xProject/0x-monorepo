@@ -385,6 +385,13 @@ export class SwapQuoter {
     }
 
     /**
+     * Destroys any subscriptions or connections.
+     */
+    public async destroyAsync(): Promise<void> {
+        return this.orderbook.destroyAsync();
+    }
+
+    /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */

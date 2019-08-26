@@ -98,4 +98,10 @@ export class Orderbook {
     public async addOrdersAsync(orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
         return this._orderProvider.addOrdersAsync(orders);
     }
+    /**
+     * Destroys any subscriptions or connections.
+     */
+    public async destroyAsync(): Promise<void> {
+        return this._orderProvider.destroyAsync();
+    }
 }

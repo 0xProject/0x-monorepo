@@ -21,6 +21,8 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
     private readonly _websocketEndpoint: string;
     private readonly _wsSubscriptions: Map<string, OrdersChannelSubscriptionOpts> = new Map();
     private _ordersChannel?: OrdersChannel;
+    private _isDestroyed = false;
+    private _isConnecting = false;
 
     /**
      * Instantiates a HTTP and WS [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) Order Provider
@@ -40,20 +42,24 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * @param takerAssetData the Taker Asset Data
      */
     public async createSubscriptionForAssetPairAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
+        // If we've previously been destroyed then reset
+        this._isDestroyed = false;
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         if (this._wsSubscriptions.has(assetPairKey)) {
             return;
         }
-        await this._fetchAndCreateSubscriptionAsync(makerAssetData, takerAssetData);
+        return this._fetchAndCreateSubscriptionAsync(makerAssetData, takerAssetData);
     }
 
     /**
      * Destroys the order provider, removing any subscriptions
      */
     public async destroyAsync(): Promise<void> {
+        this._isDestroyed = true;
         this._wsSubscriptions.clear();
         if (this._ordersChannel) {
             this._ordersChannel.close();
+            this._ordersChannel = undefined;
         }
     }
 
@@ -64,8 +70,17 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * @param takerAssetData the Taker Asset Data
      */
     private async _createWebsocketSubscriptionAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
+        // Prevent creating multiple channels
+        while (this._isConnecting && !this._ordersChannel) {
+            await utils.delayAsync(100);
+        }
         if (!this._ordersChannel) {
-            this._ordersChannel = await this._createOrdersChannelAsync();
+            this._isConnecting = true;
+            try {
+                this._ordersChannel = await this._createOrdersChannelAsync();
+            } finally {
+                this._isConnecting = false;
+            }
         }
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         const susbcriptionOpts = {
@@ -115,6 +130,10 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
             // tslint:disable-next-line:no-empty
             onError: (_channel, _err) => {},
             onClose: async () => {
+                // Do not reconnect if destroyed
+                if (this._isDestroyed) {
+                    return;
+                }
                 // Re-sync and create subscriptions
                 await utils.attemptAsync<boolean>(async () => {
                     this._ordersChannel = undefined;
@@ -123,7 +142,15 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
                 });
             },
         };
-        return ordersChannelFactory.createWebSocketOrdersChannelAsync(this._websocketEndpoint, ordersChannelHandler);
+        try {
+            return await ordersChannelFactory.createWebSocketOrdersChannelAsync(
+                this._websocketEndpoint,
+                ordersChannelHandler,
+            );
+        } catch (e) {
+            // Provide a more informative error
+            throw new Error(`Creating websocket connection to ${this._websocketEndpoint}`);
+        }
     }
 
     /**
