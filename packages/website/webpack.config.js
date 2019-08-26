@@ -4,7 +4,6 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const remarkSlug = require('remark-slug');
 const remarkSectionizeHeadings = require('./webpack/remark_sectionize_headings');
 const mdxTableOfContents = require('./webpack/mdx_table_of_contents');
@@ -151,8 +150,6 @@ module.exports = (_env, argv) => {
     if (argv.mode === 'development') {
         config.mode = 'development';
         config.devtool = 'eval-source-map';
-
-        plugins.push(new BundleAnalyzerPlugin());
         // SSL certs
         if (fs.existsSync('./server.cert') && fs.existsSync('./server.key')) {
             config.devServer.https = {
