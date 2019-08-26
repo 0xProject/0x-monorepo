@@ -20,7 +20,7 @@ import { colors } from 'ts/style/colors';
 import { TallyInterface } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { utils } from 'ts/utils/utils';
+import { environments } from 'ts/utils/environments';
 
 interface LabelInterface {
     [key: number]: string;
@@ -199,7 +199,7 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
-            const voteDomain = utils.isProduction()
+            const voteDomain = environments.isProduction()
                 ? `https://${configs.DOMAIN_VOTE}`
                 : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${this._proposalData.zeipId}`;

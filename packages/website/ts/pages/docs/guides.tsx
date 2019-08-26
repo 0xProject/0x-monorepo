@@ -10,16 +10,18 @@ import { Filters } from 'ts/components/docs/sidebar/filters';
 
 import { IHit } from 'ts/components/docs/search/autocomplete';
 
-import { hitsPerPage, searchClient, searchIndices } from 'ts/utils/algolia_constants';
+import { getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
+import { environments } from 'ts/utils/environments';
 
 interface IHitsProps {
     hits: IHit[];
 }
 
 export const DocsGuides: React.FC = () => {
+    const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
     return (
         <DocsPageLayout title="Guides">
-            <InstantSearch searchClient={searchClient} indexName={searchIndices.guides}>
+            <InstantSearch searchClient={searchClient} indexName={nameToSearchIndex.guides}>
                 <Configure hitsPerPage={hitsPerPage.pages} />
                 <Columns>
                     <Filters filters={filters} />

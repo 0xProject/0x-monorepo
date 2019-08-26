@@ -1,4 +1,4 @@
-import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from 'ts/types';
+import { GoogleSheetLeadUrls, OutdatedWrappedEtherByNetworkId, PublicNodeUrlsByNetworkId } from '../types';
 
 const BASE_URL = window.location.origin;
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
@@ -16,10 +16,6 @@ export const configs = {
     DEFAULT_DERIVATION_PATH: `44'/60'/0'`,
     // WARNING: ZRX & WETH MUST always be default trackedTokens
     DEFAULT_TRACKED_TOKEN_SYMBOLS: ['WETH', 'ZRX'],
-    DOMAIN_STAGING: 'staging-0xproject.s3-website-us-east-1.amazonaws.com',
-    DOMAIN_DOGFOOD: 'dogfood.0xproject.com',
-    DOMAINS_DEVELOPMENT: ['0xproject.localhost:3572', 'localhost:3572', '127.0.0.1', '0.0.0.0:3572'],
-    DOMAIN_PRODUCTION: '0x.org',
     DOMAIN_VOTE: 'vote.0x.org',
     VOTE_INSTANT_ORDER_SOURCE: 'https://api.radarrelay.com/0x/v2/',
     VOTE_INSTANT_ASSET_DATAS: ['0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498'],

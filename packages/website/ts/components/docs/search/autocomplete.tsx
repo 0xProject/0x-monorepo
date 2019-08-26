@@ -10,7 +10,8 @@ import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_over
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
 
 import { docs } from 'ts/style/docs';
-import { searchIndices } from 'ts/utils/algolia_constants';
+import { getNameToSearchIndex } from 'ts/utils/algolia_constants';
+import { environments } from 'ts/utils/environments';
 
 export interface IHit {
     description: string;
@@ -108,11 +109,8 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     };
 
     const renderSectionTitle = (section: any): React.ReactNode => {
-        const { tools, guides } = searchIndices;
-        const coreConcepts = searchIndices['core-concepts'];
-        // TODO: Add this back in when api - explorer page is ready
-        // to be indexed and included in the search results (ditto in search_input.tsx)
-        // const apiExplorer = searchIndices['api-explorer'];
+        // TODO(fabio): Add `apiExplorer` below once the API Explore page is ready (ditto in search_input.tsx)
+        const { tools, guides, coreConcepts } = getNameToSearchIndex(environments.getEnvironment());
 
         const titles: { [key: string]: string } = {
             // TODO: Add this back in when api - explorer page is ready

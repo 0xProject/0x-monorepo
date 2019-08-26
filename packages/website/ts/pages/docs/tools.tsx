@@ -16,16 +16,18 @@ import { Separator } from 'ts/components/docs/shared/separator';
 
 import { IHit } from 'ts/components/docs/search/autocomplete';
 
-import { hitsPerPage, searchClient, searchIndices } from 'ts/utils/algolia_constants';
+import { getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
+import { environments } from 'ts/utils/environments';
 
 interface IHitsProps {
     hits: IHit[];
 }
 
 export const DocsTools: React.FC = () => {
+    const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
     return (
         <DocsPageLayout title="Tools">
-            <InstantSearch searchClient={searchClient} indexName={searchIndices.tools}>
+            <InstantSearch searchClient={searchClient} indexName={nameToSearchIndex.tools}>
                 <Configure hitsPerPage={hitsPerPage.pages} />
                 <Columns>
                     <Filters filters={filters} />

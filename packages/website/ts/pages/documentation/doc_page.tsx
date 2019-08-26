@@ -12,6 +12,7 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { DocPackages, ScreenWidths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
+import { environments } from 'ts/utils/environments';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
@@ -20,7 +21,7 @@ import { SupportedDocJson } from '../../types';
 import { DocsInfo } from '../../utils/docs_info';
 import { TypeDocUtils } from '../../utils/typedoc_utils';
 
-const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
+const isDevelopmentOrStaging = environments.isDevelopment() || environments.isStaging();
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
 
 const docIdToSubpackageName: { [id: string]: string } = {

@@ -14,7 +14,7 @@ import { TallyInterface } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { utils } from 'ts/utils/utils';
+import { environments } from 'ts/utils/environments';
 
 const ZEIP_IDS = Object.keys(proposals).map(idString => parseInt(idString, 10));
 const ZEIP_PROPOSALS: Proposal[] = ZEIP_IDS.map(id => proposals[id]).sort(
@@ -79,7 +79,7 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
     }
     private async _fetchVoteStatusAsync(zeipId: number): Promise<TallyInterface> {
         try {
-            const voteDomain = utils.isProduction()
+            const voteDomain = environments.isProduction()
                 ? `https://${configs.DOMAIN_VOTE}`
                 : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${zeipId}`;

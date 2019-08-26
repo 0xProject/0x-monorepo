@@ -2,6 +2,8 @@ const algoliasearch = require('algoliasearch/lite');
 
 import { ObjectMap } from '@0x/types';
 
+import { environments } from './environments';
+
 const ALGOLIA_MAX_NUMBER_HITS = 1000; // Limit set by algolia
 
 export const ALGOLIA_APP_ID = 'HWXKQZ6EUX';
@@ -13,9 +15,13 @@ export const hitsPerPage = {
     pages: ALGOLIA_MAX_NUMBER_HITS, // Maximum set by algolia
 };
 
-export const searchIndices: ObjectMap<string> = {
-    'api-explorer': '0x_api_explorer',
-    'core-concepts': '0x_core_concepts',
-    guides: '0x_guides',
-    tools: '0x_tools',
-};
+export function getNameToSearchIndex(environment: string): ObjectMap<string> {
+    const lowercaseEnv = environment.toLowerCase();
+    const nameToSearchIndex: ObjectMap<string> = {
+        apiExplorer: `${lowercaseEnv}_api_explorer`,
+        coreConcepts: `${lowercaseEnv}_core_concepts`,
+        guides: `${lowercaseEnv}_guides`,
+        tools: `${lowercaseEnv}_tools`,
+    };
+    return nameToSearchIndex;
+}

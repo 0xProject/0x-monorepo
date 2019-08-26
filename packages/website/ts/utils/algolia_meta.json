@@ -1,12 +1,12 @@
 {
-    "api-explorer": {
-        "api-explorer": {
+    "apiExplorer": {
+        "apiExplorer": {
             "title": "API Explorer",
             "path": "api-explorer/index.mdx"
         }
     },
-    "core-concepts": {
-        "core-concepts": {
+    "coreConcepts": {
+        "coreConcepts": {
             "title": "Core Concepts",
             "subtitle": "Learn all the core concepts you'll need to build effectively on 0x",
             "path": "core-concepts/index.mdx"
