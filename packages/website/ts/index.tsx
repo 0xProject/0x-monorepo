@@ -53,55 +53,6 @@ import { constants } from 'ts/utils/constants';
 const LazyPortal = createLazyComponent('Portal', async () =>
     import(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
 );
-const LazyZeroExJSDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "zeroExDocs" */ 'ts/containers/zero_ex_js_documentation'),
-);
-const LazyContractWrappersDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "contractWrapperDocs" */ 'ts/containers/contract_wrappers_documentation'),
-);
-const LazyMigrationsDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "migrationsDocs" */ 'ts/containers/migrations_documentation'),
-);
-const LazySmartContractsDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "smartContractDocs" */ 'ts/containers/smart_contracts_documentation'),
-);
-const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
-);
-const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
-);
-const LazySolCompilerDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
-);
-const LazyJSONSchemasDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "jsonSchemasDocs" */ 'ts/containers/json_schemas_documentation'),
-);
-const LazySolCoverageDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solCoverageDocs" */ 'ts/containers/sol_coverage_documentation'),
-);
-const LazySolTraceDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solTraceDocs" */ 'ts/containers/sol_trace_documentation'),
-);
-const LazySolProfilerDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "solProfilerDocs" */ 'ts/containers/sol_profiler_documentation'),
-);
-const LazySubprovidersDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "subproviderDocs" */ 'ts/containers/subproviders_documentation'),
-);
-const LazyOrderUtilsDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "orderUtilsDocs" */ 'ts/containers/order_utils_documentation'),
-);
-const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "ethereumTypesDocs" */ 'ts/containers/ethereum_types_documentation'),
-);
-const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
-);
-const LazyAssetSwapperDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "assetSwapperDocs" */ 'ts/containers/asset_swapper_documentation'),
-);
-
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
 const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
 
@@ -192,10 +143,6 @@ render(
                         <Redirect
                             from={`${WebsiteLegacyPaths.AssetSwapperDocs}/:version?`}
                             to={`${WebsitePaths.Docs}/tools/asset-swapper/:version?`}
-                        />
-                        <Route
-                            path={`${WebsitePaths.SmartContracts}/:version?`}
-                            component={LazySmartContractsDocumentation}
                         />
                         <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />
                         <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
