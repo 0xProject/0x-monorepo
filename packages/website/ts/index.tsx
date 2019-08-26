@@ -4,13 +4,13 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
-import { DocsHome } from 'ts/containers/docs_home';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { DocsGuides } from 'ts/pages/docs/guides';
+import { DocsHome } from 'ts/pages/docs/home';
 import { DocsPage } from 'ts/pages/docs/page';
 import { DocsTools } from 'ts/pages/docs/tools';
 import { store } from 'ts/redux/store';
@@ -179,10 +179,7 @@ render(
                             path={`${WebsitePaths.EthereumTypes}/:version?`}
                             component={LazyEthereumTypesDocumentation}
                         />
-                        <Route
-                            path={`${WebsitePaths.AssetBuyer}/:version?`}
-                            component={LazyAssetBuyerDocumentation}
-                        />
+                        <Route path={`${WebsitePaths.AssetBuyer}/:version?`} component={LazyAssetBuyerDocumentation} />
                         <Route
                             path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
                             component={LazyAssetSwapperDocumentation}
