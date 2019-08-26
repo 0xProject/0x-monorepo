@@ -8,6 +8,7 @@ import { StakerBalances } from '../utils/types';
 import { BaseActor } from './base_actor';
 
 export class StakerActor extends BaseActor {
+    /*
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
@@ -136,27 +137,10 @@ export class StakerActor extends BaseActor {
             expectedBalances.deactivatedStakeBalance,
         );
     }
-    public async forceTimeLockSyncAsync(): Promise<void> {
+    public async forceBalanceSyncAsync(): Promise<void> {
         const initBalances = await this.getBalancesAsync();
-        await this._stakingWrapper.forceTimeLockSyncAsync(this._owner);
+        await this._stakingWrapper.stakeAsync(this._owner, new BigNumber(0));
         await this.assertBalancesAsync(initBalances);
     }
-    public async skipToNextTimeLockPeriodAsync(): Promise<void> {
-        // query some initial values
-        const initBalances = await this.getBalancesAsync();
-        const timeLockStart = await this._stakingWrapper.getTimeLockStartAsync(this._owner);
-        // skip to next period
-        await this._stakingWrapper.skipToNextTimeLockPeriodAsync();
-        // validate new balances
-        const expectedBalances = initBalances;
-        const currentTimeLockPeriod = await this._stakingWrapper.getCurrentTimeLockPeriodAsync();
-        if (currentTimeLockPeriod.minus(timeLockStart).isGreaterThan(1)) {
-            expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(
-                initBalances.timeLockedStakeBalance,
-            );
-            expectedBalances.withdrawableStakeBalance = expectedBalances.activatableStakeBalance;
-            expectedBalances.timeLockedStakeBalance = new BigNumber(0);
-        }
-        await this.assertBalancesAsync(expectedBalances);
-    }
+    */
 }

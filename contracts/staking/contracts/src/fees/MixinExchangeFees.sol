@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
@@ -45,14 +46,17 @@ import "./MixinExchangeManager.sol";
 contract MixinExchangeFees is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakingPool,
-    MixinTimeLockedStake,
-    MixinStakeBalances
+    MixinStakeStorage,
+    MixinStakeBalances,
+    MixinStakingPoolRewards,
+    MixinStakingPool
 {
     using LibSafeMath for uint256;
 
@@ -205,8 +209,8 @@ contract MixinExchangeFees is
             bytes32 poolId = activePoolsThisEpoch[i];
 
             // compute weighted stake
-            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId);
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).current;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId).current; // @TODO Update
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
@@ -218,6 +222,7 @@ contract MixinExchangeFees is
             activePools[i].poolId = poolId;
             activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
             activePools[i].weightedStake = weightedStake;
+            activePools[i].delegatedStake = totalStakeDelegatedToPool;
 
             // update cumulative amounts
             totalFeesCollected = totalFeesCollected.safeAdd(activePools[i].feesCollected);
@@ -251,8 +256,19 @@ contract MixinExchangeFees is
             );
 
             // record reward in vault
-            _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
+            bool rewardForOperatorOnly = activePools[i].delegatedStake == 0;
+            (, uint256 poolPortion) = rewardVault.recordDepositFor(activePools[i].poolId, reward, rewardForOperatorOnly);
             totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
+
+            // sync cumulative rewards, if necessary.
+            if (poolPortion > 0) {
+                _recordRewardForDelegators(
+                    activePools[i].poolId,
+                    poolPortion,
+                    activePools[i].delegatedStake,
+                    currentEpoch
+                );
+            }
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;

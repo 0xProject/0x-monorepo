@@ -13,6 +13,9 @@ import { SimulationParams } from './types';
 const REWARD_PRECISION = 12;
 
 export class Simulation {
+    /*
+
+
     private readonly _stakingWrapper: StakingWrapper;
     private readonly _p: SimulationParams;
     private _userQueue: Queue<string>;
@@ -272,4 +275,5 @@ export class Simulation {
             Simulation._assertRewardsEqual(reward, expectedReward, `reward withdrawn from pool ${poolId} for operator`);
         }
     }
+    */
 }

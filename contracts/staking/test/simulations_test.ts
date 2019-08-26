@@ -9,6 +9,7 @@ import { Simulation } from './utils/Simulation';
 import { StakingWrapper } from './utils/staking_wrapper';
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('End-To-End Simulations', env => {
+    /*
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const PPM_ONE = 1e6;
@@ -96,7 +97,7 @@ blockchainTests('End-To-End Simulations', env => {
 
         it('Should successfully simulate (delegators withdraw by undelegating / no shadow balances)', async () => {
             // @TODO - get computations more accurate
-            /*
+
 \           // the expected payouts were computed by hand
             // @TODO - get computations more accurate
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Weighted) | Payout
@@ -107,7 +108,7 @@ blockchainTests('End-To-End Simulations', env => {
                 Cumulative Fees = 43.75043836
                 Cumulative Weighted Stake = 386.8
                 Total Rewards = 43.75043836
-            */
+
             const simulationParams = {
                 users,
                 numberOfPools: 3,
@@ -175,7 +176,7 @@ blockchainTests('End-To-End Simulations', env => {
 
         it('Should successfully simulate (delegators withdraw by undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
             // @TODO - get computations more accurate
-            /*
+
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
                 0    |  0.304958   | 42          | 0                     | 42
                 1    | 15.323258   | 84          | 0                     | 84
@@ -189,7 +190,7 @@ blockchainTests('End-To-End Simulations', env => {
                 // The first delegator got to claim it all. This is due to the necessary conservation of payouts.
                 // When a new delegator arrives, their new stake should not affect existing delegator payouts.
                 // In this case, there was unclaimed $$ in the delegator pool - which is claimed by the first delegator.
-            */
+
             const simulationParams = {
                 users,
                 numberOfPools: 3,
@@ -250,7 +251,7 @@ blockchainTests('End-To-End Simulations', env => {
 
         it('Should successfully simulate (delegators withdraw without undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
             // @TODO - get computations more accurate
-            /*
+
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
                 0    |  0.304958   | 42          | 0                     | 42
                 1    | 15.323258   | 84          | 0                     | 84
@@ -264,7 +265,7 @@ blockchainTests('End-To-End Simulations', env => {
                 // The first delegator got to claim it all. This is due to the necessary conservation of payouts.
                 // When a new delegator arrives, their new stake should not affect existing delegator payouts.
                 // In this case, there was unclaimed $$ in the delegator pool - which is claimed by the first delegator.
-            */
+
             const simulationParams = {
                 users,
                 numberOfPools: 3,
@@ -332,5 +333,6 @@ blockchainTests('End-To-End Simulations', env => {
             await expect(tx).to.revertWith(revertError);
         });
     });
+    */
 });
 // tslint:enable:no-unnecessary-type-assertion

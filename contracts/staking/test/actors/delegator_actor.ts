@@ -8,6 +8,7 @@ import { DelegatorBalances, StakerBalances } from '../utils/types';
 import { StakerActor } from './staker_actor';
 
 export class DelegatorActor extends StakerActor {
+    /**
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
@@ -155,4 +156,5 @@ export class DelegatorActor extends StakerActor {
             ).to.be.bignumber.equal(expectedBalances.stakeDelegatedToPool[i]);
         }
     }
+    */
 }
