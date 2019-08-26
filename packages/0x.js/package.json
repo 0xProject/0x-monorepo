@@ -27,7 +27,7 @@
         "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers generated_docs",
         "build:umd:prod": "NODE_ENV=production node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
         "build:commonjs": "tsc -b",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -66,7 +66,7 @@
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0",
-        "typedoc": "0.13.0",
+        "typedoc": "^0.15.0",
         "typescript": "3.0.1",
         "uglifyjs-webpack-plugin": "^2.0.1",
         "webpack": "^4.20.2"

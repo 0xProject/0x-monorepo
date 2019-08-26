@@ -71,9 +71,12 @@ async function confirmAsync(message: string): Promise<void> {
         }
     });
 
-    // Push changelog changes to Github
+    // Generate markdown docs for packages
+    await execAsync(`yarn generate_md_docs`, { cwd: constants.monorepoRootPath });
+
+    // Push changelogs changes and markdown docs to Github
     if (!configs.IS_LOCAL_PUBLISH) {
-        await pushChangelogsToGithubAsync();
+        await pushChangelogsAndMDDocsToGithubAsync();
     }
 
     // Call LernaPublish
@@ -92,7 +95,11 @@ async function confirmAsync(message: string): Promise<void> {
         const isStaging = false;
         const shouldUploadDocs = true;
         await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
+
+        // Upload markdown docs to S3 bucket
+        await execAsync(`yarn upload_md_docs`, { cwd: constants.monorepoRootPath });
     }
+
     const releaseNotes = await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
     utils.log('Published release notes');
 
@@ -195,11 +202,11 @@ async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<
     await confirmAsync('Do all the doc pages render? (y/n)');
 }
 
-async function pushChangelogsToGithubAsync(): Promise<void> {
+async function pushChangelogsAndMDDocsToGithubAsync(): Promise<void> {
     await execAsync(`git add . --all`, { cwd: constants.monorepoRootPath });
-    await execAsync(`git commit -m "Updated CHANGELOGS"`, { cwd: constants.monorepoRootPath });
+    await execAsync(`git commit -m "Updated CHANGELOGS & MD docs"`, { cwd: constants.monorepoRootPath });
     await execAsync(`git push`, { cwd: constants.monorepoRootPath });
-    utils.log(`Pushed CHANGELOG updates to Github`);
+    utils.log(`Pushed CHANGELOG updates & updated MD docs to Github`);
 }
 
 async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<PackageToNextVersion> {

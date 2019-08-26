@@ -1,0 +1,1431 @@
+# Class: AbstractBalanceAndProxyAllowanceFetcher
+
+An abstract class to be implemented in order to use OrderStateUtils. The class that
+implements this interface must be capable of fetching the balance and proxyAllowance
+for an Ethereum address and assetData
+
+### Hierarchy
+
+* **AbstractBalanceAndProxyAllowanceFetcher**
+
+
+### Methods
+
+## `Abstract` getBalanceAsync
+
+▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L15)*
+
+Get balance of assetData for userAddress
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData for which to fetch the balance |
+`userAddress` | string | Ethereum address for which to fetch the balance |
+
+**Returns:** *`Promise<BigNumber>`*
+
+Balance amount in base units
+
+___
+
+## `Abstract` getProxyAllowanceAsync
+
+▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L22)*
+
+Get the 0x asset proxy allowance of assetData for userAddress
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData for which to fetch the allowance |
+`userAddress` | string | Ethereum address for which to fetch the allowance |
+
+**Returns:** *`Promise<BigNumber>`*
+
+Allowance amount in base units
+
+<hr />
+
+# Class: AbstractBalanceAndProxyAllowanceLazyStore
+
+### Hierarchy
+
+* **AbstractBalanceAndProxyAllowanceLazyStore**
+
+### Implemented by
+
+* [BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)
+
+
+### Methods
+
+## `Abstract` deleteAll
+
+▸ **deleteAll**(): *void*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L10)*
+
+**Returns:** *void*
+
+___
+
+## `Abstract` deleteBalance
+
+▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L7)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` deleteProxyAllowance
+
+▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L9)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` getBalanceAsync
+
+▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L4)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+## `Abstract` getProxyAllowanceAsync
+
+▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L5)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+## `Abstract` setBalance
+
+▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L6)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+`balance` | `BigNumber` |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` setProxyAllowance
+
+▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
+
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L8)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetData` | string |
+`userAddress` | string |
+`proxyAllowance` | `BigNumber` |
+
+**Returns:** *void*
+
+<hr />
+
+# Class: AbstractOrderFilledCancelledFetcher
+
+An abstract class to be implemented in order to use OrderStateUtils. The class that
+implements this interface must be capable of fetching the amount filled of an order
+and whether it's been cancelled.
+
+### Hierarchy
+
+* **AbstractOrderFilledCancelledFetcher**
+
+
+### Methods
+
+## `Abstract` getFilledTakerAmountAsync
+
+▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L15)*
+
+Get the amount of the order's takerToken amount already filled
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash of order we are interested in |
+
+**Returns:** *`Promise<BigNumber>`*
+
+FilledTakerAmount
+
+___
+
+## `Abstract` getZRXAssetData
+
+▸ **getZRXAssetData**(): *string*
+
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L22)*
+
+**Returns:** *string*
+
+___
+
+## `Abstract` isOrderCancelledAsync
+
+▸ **isOrderCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
+
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L21)*
+
+Whether an order is cancelled
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`signedOrder` | `SignedOrder` |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether or not the order is cancelled
+
+<hr />
+
+# Class: AbstractOrderFilledCancelledLazyStore
+
+### Hierarchy
+
+* **AbstractOrderFilledCancelledLazyStore**
+
+### Implemented by
+
+* [OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)
+
+
+### Methods
+
+## `Abstract` deleteAll
+
+▸ **deleteAll**(): *void*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L11)*
+
+**Returns:** *void*
+
+___
+
+## `Abstract` deleteFilledTakerAmount
+
+▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L8)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderHash` | string |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` deleteIsCancelled
+
+▸ **deleteIsCancelled**(`orderHash`: string): *void*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L10)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderHash` | string |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` getFilledTakerAmountAsync
+
+▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L5)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderHash` | string |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+## `Abstract` getIsCancelledAsync
+
+▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L6)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`signedOrder` | `SignedOrder` |
+
+**Returns:** *`Promise<boolean>`*
+
+___
+
+## `Abstract` getZRXAssetData
+
+▸ **getZRXAssetData**(): *string*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L12)*
+
+**Returns:** *string*
+
+___
+
+## `Abstract` setFilledTakerAmount
+
+▸ **setFilledTakerAmount**(`orderHash`: string, `balance`: `BigNumber`): *void*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L7)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderHash` | string |
+`balance` | `BigNumber` |
+
+**Returns:** *void*
+
+___
+
+## `Abstract` setIsCancelled
+
+▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
+
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L9)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderHash` | string |
+`isCancelled` | boolean |
+
+**Returns:** *void*
+
+<hr />
+
+# Class: ExchangeTransferSimulator
+
+An exchange transfer simulator which simulates asset transfers exactly how the
+0x exchange contract would do them.
+
+### Hierarchy
+
+* **ExchangeTransferSimulator**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new ExchangeTransferSimulator**(`store`: [AbstractBalanceAndProxyAllowanceLazyStore](_abstract_abstract_balance_and_proxy_allowance_lazy_store_.abstractbalanceandproxyallowancelazystore.md)): *[ExchangeTransferSimulator](#class-exchangetransfersimulator)*
+
+*Defined in [exchange_transfer_simulator.ts:50](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/exchange_transfer_simulator.ts#L50)*
+
+Instantiate a ExchangeTransferSimulator
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`store` | [AbstractBalanceAndProxyAllowanceLazyStore](#class-abstractbalanceandproxyallowancelazystore) | A class that implements AbstractBalanceAndProxyAllowanceLazyStore |
+
+**Returns:** *[ExchangeTransferSimulator](#class-exchangetransfersimulator)*
+
+an instance of ExchangeTransferSimulator
+
+### Methods
+
+##  transferFromAsync
+
+▸ **transferFromAsync**(`assetData`: string, `from`: string, `to`: string, `amountInBaseUnits`: `BigNumber`, `tradeSide`: [TradeSide](#enumeration-tradeside), `transferType`: [TransferType](#enumeration-transfertype)): *`Promise<void>`*
+
+*Defined in [exchange_transfer_simulator.ts:70](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/exchange_transfer_simulator.ts#L70)*
+
+Simulates transferFrom call performed by a proxy
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Data of the asset being transferred. Includes                           it's identifying information and assetType,                           e.g address for ERC20, address & tokenId for ERC721 |
+`from` | string | Owner of the transferred tokens |
+`to` | string | Recipient of the transferred tokens |
+`amountInBaseUnits` | `BigNumber` | The amount of tokens being transferred |
+`tradeSide` | [TradeSide](#enumeration-tradeside) | Is Maker/Taker transferring |
+`transferType` | [TransferType](#enumeration-transfertype) | Is it a fee payment or a value transfer  |
+
+**Returns:** *`Promise<void>`*
+
+<hr />
+
+# Class: OrderStateUtils
+
+### Hierarchy
+
+* **OrderStateUtils**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new OrderStateUtils**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md), `orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderStateUtils](#class-orderstateutils)*
+
+*Defined in [order_state_utils.ts:98](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L98)*
+
+Instantiate OrderStateUtils
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`balanceAndProxyAllowanceFetcher` | [AbstractBalanceAndProxyAllowanceFetcher](#class-abstractbalanceandproxyallowancefetcher) | A class that is capable of fetching balances and proxyAllowances for Ethereum addresses. It must implement AbstractBalanceAndProxyAllowanceFetcher |
+`orderFilledCancelledFetcher` | [AbstractOrderFilledCancelledFetcher](#class-abstractorderfilledcancelledfetcher) | A class that is capable of fetching whether an order is cancelled and how much of it has been filled. It must implement AbstractOrderFilledCancelledFetcher |
+
+**Returns:** *[OrderStateUtils](#class-orderstateutils)*
+
+Instance of OrderStateUtils
+
+### Methods
+
+##  getMaxFillableTakerAssetAmountAsync
+
+▸ **getMaxFillableTakerAssetAmountAsync**(`signedOrder`: `SignedOrder`, `takerAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [order_state_utils.ts:192](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L192)*
+
+Get the max amount of the supplied order's takerAmount that could still be filled
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | Order of interest |
+`takerAddress` | string | Hypothetical taker of the order |
+
+**Returns:** *`Promise<BigNumber>`*
+
+fillableTakerAssetAmount
+
+___
+
+##  getOpenOrderRelevantStateAsync
+
+▸ **getOpenOrderRelevantStateAsync**(`signedOrder`: `SignedOrder`): *`Promise<OrderRelevantState>`*
+
+*Defined in [order_state_utils.ts:162](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L162)*
+
+Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | Order of interest |
+
+**Returns:** *`Promise<OrderRelevantState>`*
+
+An instance of OrderRelevantState
+
+___
+
+##  getOpenOrderStateAsync
+
+▸ **getOpenOrderStateAsync**(`signedOrder`: `SignedOrder`, `transactionHash?`: undefined | string): *`Promise<OrderState>`*
+
+*Defined in [order_state_utils.ts:122](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L122)*
+
+Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
+This method will only check the maker's balance/allowance to calculate the
+OrderState.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | The order of interest |
+`transactionHash?` | undefined \| string | - |
+
+**Returns:** *`Promise<OrderState>`*
+
+State relevant to the signedOrder, as well as whether the signedOrder is "valid".
+Validity is defined as a non-zero amount of the order can still be filled.
+
+<hr />
+
+# Class: OrderValidationUtils
+
+A utility class for validating orders
+
+### Hierarchy
+
+* **OrderValidationUtils**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new OrderValidationUtils**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md), `supportedProvider`: `SupportedProvider`): *[OrderValidationUtils](#class-ordervalidationutils)*
+
+*Defined in [order_validation_utils.ts:159](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L159)*
+
+Instantiate OrderValidationUtils
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderFilledCancelledFetcher` | [AbstractOrderFilledCancelledFetcher](#class-abstractorderfilledcancelledfetcher) | A module that implements the AbstractOrderFilledCancelledFetcher |
+`supportedProvider` | `SupportedProvider` | Web3 provider to use for JSON RPC calls |
+
+**Returns:** *[OrderValidationUtils](#class-ordervalidationutils)*
+
+An instance of OrderValidationUtils
+
+### Methods
+
+##  validateFillOrderThrowIfInvalidAsync
+
+▸ **validateFillOrderThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `takerAddress`: string, `zrxAssetData`: string): *`Promise<BigNumber>`*
+
+*Defined in [order_validation_utils.ts:237](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L237)*
+
+Validate a call to FillOrder and throw if it wouldn't succeed
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`exchangeTradeEmulator` | [ExchangeTransferSimulator](#class-exchangetransfersimulator) | ExchangeTradeEmulator to use |
+`supportedProvider` | `SupportedProvider` | Web3 provider to use for JSON RPC requests |
+`signedOrder` | `SignedOrder` | SignedOrder of interest |
+`fillTakerAssetAmount` | `BigNumber` | Amount we'd like to fill the order for |
+`takerAddress` | string | The taker of the order |
+`zrxAssetData` | string | ZRX asset data  |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+##  validateOrderFillableOrThrowAsync
+
+▸ **validateOrderFillableOrThrowAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `zrxAssetData`: string, `expectedFillTakerTokenAmount?`: `BigNumber`): *`Promise<void>`*
+
+*Defined in [order_validation_utils.ts:185](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L185)*
+
+Validate if the supplied order is fillable, and throw if it isn't
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`exchangeTradeEmulator` | [ExchangeTransferSimulator](#class-exchangetransfersimulator) | ExchangeTradeEmulator instance |
+`signedOrder` | `SignedOrder` | SignedOrder of interest |
+`zrxAssetData` | string | ZRX assetData |
+`expectedFillTakerTokenAmount?` | `BigNumber` | If supplied, this call will make sure this amount is fillable. If it isn't supplied, we check if the order is fillable for a non-zero amount  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+## `Static` isRoundingErrorFloor
+
+▸ **isRoundingErrorFloor**(`numerator`: `BigNumber`, `denominator`: `BigNumber`, `target`: `BigNumber`): *boolean*
+
+*Defined in [order_validation_utils.ts:34](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L34)*
+
+A Typescript implementation mirroring the implementation of isRoundingError in the
+Exchange smart contract
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`numerator` | `BigNumber` | Numerator value. When used to check an order, pass in `takerAssetFilledAmount` |
+`denominator` | `BigNumber` | Denominator value.  When used to check an order, pass in `order.takerAssetAmount` |
+`target` | `BigNumber` | Target value. When used to check an order, pass in `order.makerAssetAmount`  |
+
+**Returns:** *boolean*
+
+___
+
+## `Static` validateFillOrderBalancesAllowancesThrowIfInvalidAsync
+
+▸ **validateFillOrderBalancesAllowancesThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `senderAddress`: string, `zrxAssetData`: string): *`Promise<void>`*
+
+*Defined in [order_validation_utils.ts:61](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L61)*
+
+Validate that the maker & taker have sufficient balances/allowances
+to fill the supplied order to the fillTakerAssetAmount amount
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`exchangeTradeEmulator` | [ExchangeTransferSimulator](#class-exchangetransfersimulator) | ExchangeTradeEmulator to use |
+`signedOrder` | `SignedOrder` | SignedOrder to test |
+`fillTakerAssetAmount` | `BigNumber` | Amount of takerAsset to fill the signedOrder |
+`senderAddress` | string | Sender of the fillOrder tx |
+`zrxAssetData` | string | AssetData for the ZRX token  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+## `Static` validateMakerTransferThrowIfInvalidAsync
+
+▸ **validateMakerTransferThrowIfInvalidAsync**(`networkId`: `NetworkId`, `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `makerAssetAmount`: `BigNumber`, `takerAddress?`: undefined | string): *`Promise<void>`*
+
+*Defined in [order_validation_utils.ts:127](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L127)*
+
+Validate the transfer from the maker to the taker. This is simulated on-chain
+via an eth_call. If this call fails, the asset is currently nontransferable.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | `NetworkId` | - |
+`supportedProvider` | `SupportedProvider` | - |
+`signedOrder` | `SignedOrder` | SignedOrder of interest |
+`makerAssetAmount` | `BigNumber` | Amount to transfer from the maker |
+`takerAddress?` | undefined \| string | The address to transfer to, defaults to signedOrder.takerAddress  |
+
+**Returns:** *`Promise<void>`*
+
+<hr />
+
+# Class: RemainingFillableCalculator
+
+### Hierarchy
+
+* **RemainingFillableCalculator**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new RemainingFillableCalculator**(`orderFee`: `BigNumber`, `orderAssetAmount`: `BigNumber`, `isTraderAssetZRX`: boolean, `transferrableAssetAmount`: `BigNumber`, `transferrableFeeAmount`: `BigNumber`, `remainingOrderAssetAmount`: `BigNumber`): *[RemainingFillableCalculator](#class-remainingfillablecalculator)*
+
+*Defined in [remaining_fillable_calculator.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/remaining_fillable_calculator.ts#L11)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderFee` | `BigNumber` |
+`orderAssetAmount` | `BigNumber` |
+`isTraderAssetZRX` | boolean |
+`transferrableAssetAmount` | `BigNumber` |
+`transferrableFeeAmount` | `BigNumber` |
+`remainingOrderAssetAmount` | `BigNumber` |
+
+**Returns:** *[RemainingFillableCalculator](#class-remainingfillablecalculator)*
+
+### Methods
+
+##  computeRemainingFillable
+
+▸ **computeRemainingFillable**(): *`BigNumber`*
+
+*Defined in [remaining_fillable_calculator.ts:30](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/remaining_fillable_calculator.ts#L30)*
+
+**Returns:** *`BigNumber`*
+
+<hr />
+
+# Class: BalanceAndProxyAllowanceLazyStore
+
+Copy on read store for balances/proxyAllowances of tokens/accounts
+
+### Hierarchy
+
+* **BalanceAndProxyAllowanceLazyStore**
+
+### Implements
+
+* [AbstractBalanceAndProxyAllowanceLazyStore](#class-abstractbalanceandproxyallowancelazystore)
+
+
+### Constructors
+
+##  constructer
+
+\+ **new BalanceAndProxyAllowanceLazyStore**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md)): *[BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L23)*
+
+Instantiates a BalanceAndProxyAllowanceLazyStore
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`balanceAndProxyAllowanceFetcher` | [AbstractBalanceAndProxyAllowanceFetcher](#class-abstractbalanceandproxyallowancefetcher) | Class the implements the AbstractBalanceAndProxyAllowanceFetcher |
+
+**Returns:** *[BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)*
+
+Instance of BalanceAndProxyAllowanceLazyStore
+
+### Methods
+
+##  deleteAll
+
+▸ **deleteAll**(): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:136](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L136)*
+
+Delete all balances & allowances
+
+**Returns:** *void*
+
+___
+
+##  deleteAllERC721ProxyAllowance
+
+▸ **deleteAllERC721ProxyAllowance**(`tokenAddress`: string, `userAddress`: string): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:119](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L119)*
+
+Clear all ERC721 0x proxy allowances a user has on all items of a specific ERC721 contract
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tokenAddress` | string | ERc721 token address |
+`userAddress` | string | Owner Ethereum address  |
+
+**Returns:** *void*
+
+___
+
+##  deleteBalance
+
+▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L63)*
+
+Clear the balance of an asset for a user
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+
+**Returns:** *void*
+
+___
+
+##  deleteProxyAllowance
+
+▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:106](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L106)*
+
+Clear the 0x asset proxy allowance
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+
+**Returns:** *void*
+
+___
+
+##  getBalanceAsync
+
+▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L39)*
+
+Get a users balance of an asset
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+##  getProxyAllowanceAsync
+
+▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:76](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L76)*
+
+Get the 0x asset proxy allowance
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+
+**Returns:** *`Promise<BigNumber>`*
+
+___
+
+##  setBalance
+
+▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:52](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L52)*
+
+Set the balance of an asset for a user
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+`balance` | `BigNumber` | - |
+
+**Returns:** *void*
+
+___
+
+##  setProxyAllowance
+
+▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
+
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:95](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L95)*
+
+Set the 0x asset proxy allowance
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | AssetData of interest |
+`userAddress` | string | Ethereum address of interest  |
+`proxyAllowance` | `BigNumber` | - |
+
+**Returns:** *void*
+
+<hr />
+
+# Class: OrderFilledCancelledLazyStore
+
+Copy on read store for balances/proxyAllowances of tokens/accounts
+
+### Hierarchy
+
+* **OrderFilledCancelledLazyStore**
+
+### Implements
+
+* [AbstractOrderFilledCancelledLazyStore](#class-abstractorderfilledcancelledlazystore)
+
+
+### Constructors
+
+##  constructer
+
+\+ **new OrderFilledCancelledLazyStore**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L19)*
+
+Instantiate a OrderFilledCancelledLazyStore
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderFilledCancelledFetcher` | [AbstractOrderFilledCancelledFetcher](#class-abstractorderfilledcancelledfetcher) | Class instance that implements the AbstractOrderFilledCancelledFetcher |
+
+**Returns:** *[OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)*
+
+An instance of OrderFilledCancelledLazyStore
+
+### Methods
+
+##  deleteAll
+
+▸ **deleteAll**(): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:90](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L90)*
+
+Clear all filled/cancelled state
+
+**Returns:** *void*
+
+___
+
+##  deleteAllFilled
+
+▸ **deleteAllFilled**(): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:103](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L103)*
+
+Clear all filled state
+
+**Returns:** *void*
+
+___
+
+##  deleteAllIsCancelled
+
+▸ **deleteAllIsCancelled**(): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:97](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L97)*
+
+Clear all cancelled state
+
+**Returns:** *void*
+
+___
+
+##  deleteFilledTakerAmount
+
+▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:55](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L55)*
+
+Clear the filledTakerAssetAmount of an order
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash from order of interest  |
+
+**Returns:** *void*
+
+___
+
+##  deleteIsCancelled
+
+▸ **deleteIsCancelled**(`orderHash`: string): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:84](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L84)*
+
+Clear whether the order has been cancelled if already set
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash from order of interest  |
+
+**Returns:** *void*
+
+___
+
+##  getFilledTakerAmountAsync
+
+▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:35](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L35)*
+
+Get the filledTakerAssetAmount of an order
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash from order of interest |
+
+**Returns:** *`Promise<BigNumber>`*
+
+filledTakerAssetAmount
+
+___
+
+##  getIsCancelledAsync
+
+▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L63)*
+
+Check if an order has been cancelled
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`signedOrder` | `SignedOrder` |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the order has been cancelled
+
+___
+
+##  getZRXAssetData
+
+▸ **getZRXAssetData**(): *string*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:109](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L109)*
+
+Get the ZRX assetData
+
+**Returns:** *string*
+
+___
+
+##  setFilledTakerAmount
+
+▸ **setFilledTakerAmount**(`orderHash`: string, `filledTakerAmount`: `BigNumber`): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L48)*
+
+Set the filledTakerAssetAmount of an order
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash from order of interest |
+`filledTakerAmount` | `BigNumber` | Desired filledTakerAssetAmount  |
+
+**Returns:** *void*
+
+___
+
+##  setIsCancelled
+
+▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
+
+*Defined in [store/order_filled_cancelled_lazy_store.ts:77](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L77)*
+
+Set whether an order has been cancelled or not
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | OrderHash from order of interest |
+`isCancelled` | boolean | Whether this order should be cancelled or not  |
+
+**Returns:** *void*
+
+<hr />
+
+# Enumeration: TradeSide
+
+
+### Enumeration members
+
+##  Maker
+
+• **Maker**: = "maker"
+
+*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L9)*
+
+___
+
+##  Taker
+
+• **Taker**: = "taker"
+
+*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L10)*
+
+<hr />
+
+# Enumeration: TransferType
+
+
+### Enumeration members
+
+##  Fee
+
+• **Fee**: = "fee"
+
+*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L15)*
+
+___
+
+##  Trade
+
+• **Trade**: = "trade"
+
+*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L14)*
+
+<hr />
+
+# Enumeration: TypedDataError
+
+
+### Enumeration members
+
+##  InvalidMetamaskSigner
+
+• **InvalidMetamaskSigner**: = "MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0x/subproviders' package) in order to work with this method."
+
+*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L5)*
+
+___
+
+##  InvalidSignature
+
+• **InvalidSignature**: = "INVALID_SIGNATURE"
+
+*Defined in [types.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L4)*
+
+<hr />
+
+# Interface: CreateOrderOpts
+
+### Hierarchy
+
+* **CreateOrderOpts**
+
+
+### Properties
+
+## `Optional` expirationTimeSeconds
+
+• **expirationTimeSeconds**? : *`BigNumber`*
+
+*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L25)*
+
+___
+
+## `Optional` feeRecipientAddress
+
+• **feeRecipientAddress**? : *undefined | string*
+
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L23)*
+
+___
+
+## `Optional` makerFee
+
+• **makerFee**? : *`BigNumber`*
+
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L21)*
+
+___
+
+## `Optional` salt
+
+• **salt**? : *`BigNumber`*
+
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L24)*
+
+___
+
+## `Optional` senderAddress
+
+• **senderAddress**? : *undefined | string*
+
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L20)*
+
+___
+
+## `Optional` takerAddress
+
+• **takerAddress**? : *undefined | string*
+
+*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L19)*
+
+___
+
+## `Optional` takerFee
+
+• **takerFee**? : *`BigNumber`*
+
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L22)*
+
+<hr />
+
+# Interface: FeeOrdersAndRemainingFeeAmount <**T**>
+
+### Type parameters
+
+▪ **T**
+
+### Hierarchy
+
+* **FeeOrdersAndRemainingFeeAmount**
+
+
+### Properties
+
+##  feeOrdersRemainingFillableMakerAssetAmounts
+
+• **feeOrdersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
+
+*Defined in [types.ts:70](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L70)*
+
+___
+
+##  remainingFeeAmount
+
+• **remainingFeeAmount**: *`BigNumber`*
+
+*Defined in [types.ts:71](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L71)*
+
+___
+
+##  resultFeeOrders
+
+• **resultFeeOrders**: *`T`[]*
+
+*Defined in [types.ts:69](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L69)*
+
+<hr />
+
+# Interface: FindFeeOrdersThatCoverFeesForTargetOrdersOpts
+
+remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
+You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.
+Defaults to `makerAssetAmount` values from the orders param.
+remainingFillableFeeAmounts: An array of BigNumbers corresponding to the feeOrders parameter.
+You can use OrderStateUtils @0x/order-utils to perform blockchain lookups for these values.
+Defaults to `makerAssetAmount` values from the feeOrders param.
+slippageBufferAmount: An additional amount of fee to be covered by the result in case of trade collisions or partial fills.
+Defaults to 0
+
+### Hierarchy
+
+* **FindFeeOrdersThatCoverFeesForTargetOrdersOpts**
+
+
+### Properties
+
+## `Optional` remainingFillableFeeAmounts
+
+• **remainingFillableFeeAmounts**? : *`BigNumber`[]*
+
+*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L64)*
+
+___
+
+## `Optional` remainingFillableMakerAssetAmounts
+
+• **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
+
+*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L63)*
+
+___
+
+## `Optional` slippageBufferAmount
+
+• **slippageBufferAmount**? : *`BigNumber`*
+
+*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L65)*
+
+<hr />
+
+# Interface: FindOrdersThatCoverMakerAssetFillAmountOpts
+
+remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
+You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.
+Defaults to `makerAssetAmount` values from the orders param.
+slippageBufferAmount: An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
+Defaults to 0
+
+### Hierarchy
+
+* **FindOrdersThatCoverMakerAssetFillAmountOpts**
+
+
+### Properties
+
+## `Optional` remainingFillableMakerAssetAmounts
+
+• **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
+
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L36)*
+
+___
+
+## `Optional` slippageBufferAmount
+
+• **slippageBufferAmount**? : *`BigNumber`*
+
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L37)*
+
+<hr />
+
+# Interface: FindOrdersThatCoverTakerAssetFillAmountOpts
+
+remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
+You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.
+Defaults to `makerAssetAmount` values from the orders param.
+slippageBufferAmount: An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
+Defaults to 0
+
+### Hierarchy
+
+* **FindOrdersThatCoverTakerAssetFillAmountOpts**
+
+
+### Properties
+
+## `Optional` remainingFillableTakerAssetAmounts
+
+• **remainingFillableTakerAssetAmounts**? : *`BigNumber`[]*
+
+*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L48)*
+
+___
+
+## `Optional` slippageBufferAmount
+
+• **slippageBufferAmount**? : *`BigNumber`*
+
+*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L49)*
+
+<hr />
+
+# Interface: OrdersAndRemainingMakerFillAmount <**T**>
+
+### Type parameters
+
+▪ **T**
+
+### Hierarchy
+
+* **OrdersAndRemainingMakerFillAmount**
+
+
+### Properties
+
+##  ordersRemainingFillableMakerAssetAmounts
+
+• **ordersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
+
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L76)*
+
+___
+
+##  remainingFillAmount
+
+• **remainingFillAmount**: *`BigNumber`*
+
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L77)*
+
+___
+
+##  resultOrders
+
+• **resultOrders**: *`T`[]*
+
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L75)*
+
+<hr />
+
+# Interface: OrdersAndRemainingTakerFillAmount <**T**>
+
+### Type parameters
+
+▪ **T**
+
+### Hierarchy
+
+* **OrdersAndRemainingTakerFillAmount**
+
+
+### Properties
+
+##  ordersRemainingFillableTakerAssetAmounts
+
+• **ordersRemainingFillableTakerAssetAmounts**: *`BigNumber`[]*
+
+*Defined in [types.ts:82](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L82)*
+
+___
+
+##  remainingFillAmount
+
+• **remainingFillAmount**: *`BigNumber`*
+
+*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L83)*
+
+___
+
+##  resultOrders
+
+• **resultOrders**: *`T`[]*
+
+*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L81)*
+
+<hr />
+

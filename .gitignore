@@ -150,3 +150,6 @@ python-packages/*/.coverage
 
 # python keeps package-local copies of json schemas
 python-packages/json_schemas/src/zero_ex/json_schemas/schemas
+
+# Doc README copy
+packages/*/docs/README.md

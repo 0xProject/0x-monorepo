@@ -38,3 +38,4 @@ packages/sol-coverage/test/fixtures/artifacts
 packages/abi-gen/test-cli/fixtures/artifacts/AbiGenDummy.json
 packages/abi-gen/test-cli/fixtures/artifacts/LibDummy.json
 packages/abi-gen/test-cli/fixtures/artifacts/TestLibDummy.json
+packages/*/docs

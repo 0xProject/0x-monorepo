@@ -13,7 +13,10 @@
         "clean": "shx rm -rf lib generated_docs",
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "diff_docs": "git diff --exit-code ./docs",
+        "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "docs:md": "ts-doc-gen --sourceDir=./src --output=./docs --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -30,10 +33,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
     "devDependencies": {
+        "@0x/ts-doc-gen": "^0.0.17",
         "@0x/tslint-config": "^3.0.1",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
+        "typedoc": "^0.15.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
