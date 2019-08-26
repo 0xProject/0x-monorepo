@@ -341,21 +341,6 @@ export enum RevertReason {
     TargetNotEven = 'TARGET_NOT_EVEN',
     UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
     TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
-    // Staking
-    OnlyCallableByPoolOperator = 'ONLY_CALLABLE_BY_POOL_OPERATOR',
-    OnlyCallableByPoolOperatorOrMaker = 'ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER',
-    MakerAddressAlreadyRegistered = 'MAKER_ADDRESS_ALREADY_REGISTERED',
-    MakerAddressNotRegistered = 'MAKER_ADDRESS_NOT_REGISTERED',
-    OnlyCallableByExchange = 'ONLY_CALLABLE_BY_EXCHANGE',
-    ExchangeAddressAlreadyRegistered = 'EXCHANGE_ADDRESS_ALREADY_REGISTERED',
-    ExchangeAddressNotRegistered = 'EXCHANGE_ADDRESS_NOT_REGISTERED',
-    PoolAlreadyExists = 'POOL_ALREADY_EXISTS',
-    PoolBalanceIsZero = 'POOL_BALANCE_IS_ZERO',
-    InvalidOwner = 'INVALID_OWNER',
-    AmountExceedsBalanceOfPool = 'AMOUNT_EXCEEDS_BALANCE_OF_POOL',
-    OnlyCallableByStakingContract = 'ONLY_CALLABLE_BY_STAKING_CONTRACT',
-    InvalidMakerSignature = 'INVALID_MAKER_SIGNATURE',
-    InsufficientBalance = 'INSUFFICIENT_BALANCE',
 }
 
 export enum StatusCodes {

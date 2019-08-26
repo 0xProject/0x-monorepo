@@ -75,10 +75,7 @@ export class StakerActor extends BaseActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async burnDeactivatedStakeAndWithdrawZrxAsync(
-        amount: BigNumber,
-        revertError?: RevertError,
-    ): Promise<void> {
+    public async burnDeactivatedStakeAndWithdrawZrxAsync(amount: BigNumber, revertError?: RevertError): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initStakerBalances = await this.getBalancesAsync();

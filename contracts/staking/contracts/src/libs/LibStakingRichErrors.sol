@@ -23,101 +23,103 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
 library LibStakingRichErrors {
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
-    bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR = 
+    bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
         0xf7806c4e;
-    
+
     // bytes4(keccak256("OnlyCallableByExchangeError(address)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_EXCHANGE_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_BY_EXCHANGE_ERROR_SELECTOR =
         0xb56d2df0;
-    
-    // bytes4(keccak256("ExchangeAlreadyRegisteredError(address)"))
-    bytes4 internal constant EXCHANGE_ALREADY_REGISTERED_ERROR_SELECTOR = 
-        0x5ef5b57d;
-    
+
+    // bytes4(keccak256("ExchangeAddressAlreadyRegisteredError(address)"))
+    bytes4 internal constant EXCHANGE_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR =
+        0xc87a78b7;
+
     // bytes4(keccak256("ExchangeAddressNotRegisteredError(address)"))
-    bytes4 internal constant EXCHANGE_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR = 
+    bytes4 internal constant EXCHANGE_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR =
         0x7dc025b0;
-    
+
     // bytes4(keccak256("SignatureLengthGreaterThan0RequiredError()"))
-    bytes4 internal constant SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR_SELECTOR = 
+    bytes4 internal constant SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR_SELECTOR =
         0x2dcb01d9;
-    
+
     // bytes4(keccak256("SignatureUnsupportedError(bytes)"))
-    bytes4 internal constant SIGNATURE_UNSUPPORTED_ERROR_SELECTOR = 
+    bytes4 internal constant SIGNATURE_UNSUPPORTED_ERROR_SELECTOR =
         0xffca2a70;
-    
+
     // bytes4(keccak256("SignatureIllegalError(bytes)"))
-    bytes4 internal constant SIGNATURE_ILLEGAL_ERROR_SELECTOR = 
+    bytes4 internal constant SIGNATURE_ILLEGAL_ERROR_SELECTOR =
         0x4a95093c;
-    
+
     // bytes4(keccak256("SignatureLength0RequiredError(bytes)"))
-    bytes4 internal constant SIGNATURE_LENGTH_0_REQUIRED_ERROR_SELECTOR = 
+    bytes4 internal constant SIGNATURE_LENGTH_0_REQUIRED_ERROR_SELECTOR =
         0xcbcd59a2;
-    
+
     // bytes4(keccak256("SignatureLength65RequiredError(bytes)"))
-    bytes4 internal constant SIGNATURE_LENGTH_65_REQUIRED_ERROR_SELECTOR = 
+    bytes4 internal constant SIGNATURE_LENGTH_65_REQUIRED_ERROR_SELECTOR =
         0x091d7ab9;
-    
+
     // bytes4(keccak256("WalletError(address,bytes)"))
-    bytes4 internal constant WALLET_ERROR_SELECTOR = 
+    bytes4 internal constant WALLET_ERROR_SELECTOR =
         0x0cfc935d;
-    
+
     // bytes4(keccak256("InsufficientBalanceError(uint256,uint256)"))
-    bytes4 internal constant INSUFFICIENT_BALANCE_ERROR_SELECTOR = 
+    bytes4 internal constant INSUFFICIENT_BALANCE_ERROR_SELECTOR =
         0x84c8b7c9;
-    
+
     // bytes4(keccak256("OnlyCallableByPoolOperatorError(address,address)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_ERROR_SELECTOR =
         0x6cfa0c22;
-    
+
     // bytes4(keccak256("OnlyCallableByPoolOperatorOrMakerError(address,address,address)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR =
         0x7d9e1c10;
-    
+
     // bytes4(keccak256("InvalidMakerSignatureError(bytes32,address,bytes)"))
-    bytes4 internal constant INVALID_MAKER_SIGNATURE_ERROR_SELECTOR = 
+    bytes4 internal constant INVALID_MAKER_SIGNATURE_ERROR_SELECTOR =
         0x726b89c8;
-    
+
     // bytes4(keccak256("MakerAddressAlreadyRegisteredError(address)"))
-    bytes4 internal constant MAKER_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR = 
+    bytes4 internal constant MAKER_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR =
         0x5a3971da;
-    
+
     // bytes4(keccak256("MakerAddressNotRegisteredError(address,bytes32,bytes32)"))
-    bytes4 internal constant MAKER_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR = 
+    bytes4 internal constant MAKER_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR =
         0x12ab07e8;
-    
+
     // bytes4(keccak256("WithdrawAmountExceedsMemberBalanceError(uint256,uint256)"))
-    bytes4 internal constant WITHDRAW_AMOUNT_EXCEEDS_MEMBER_BALANCE_ERROR_SELECTOR = 
+    bytes4 internal constant WITHDRAW_AMOUNT_EXCEEDS_MEMBER_BALANCE_ERROR_SELECTOR =
         0xfc9c065f;
-    
+
     // bytes4(keccak256("BlockTimestampTooLowError(uint64,uint64)"))
-    bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR = 
+    bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR =
         0x887225f7;
-    
+
     // bytes4(keccak256("OnlyCallableByStakingContractError(address)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR =
         0xca1d07a2;
-    
+
     // bytes4(keccak256("OnlyCallableInCatastrophicFailureError()"))
-    bytes4 internal constant ONLY_CALLABLE_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR =
         0xa4f5de9d;
-    
+
     // bytes4(keccak256("OnlyCallableNotInCatastrophicFailureError()"))
-    bytes4 internal constant ONLY_CALLABLE_NOT_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR = 
+    bytes4 internal constant ONLY_CALLABLE_NOT_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR =
         0x7e8d2ed9;
-    
+
     // bytes4(keccak256("AmountExceedsBalanceOfPoolError(uint256,uint96)"))
-    bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR = 
+    bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR =
         0x4c5c09dd;
-    
+
     // bytes4(keccak256("OperatorShareMustBeBetween0And100Error(bytes32,uint8)"))
-    bytes4 internal constant OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100_ERROR_SELECTOR = 
+    bytes4 internal constant OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100_ERROR_SELECTOR =
         0xde447684;
-    
+
     // bytes4(keccak256("PoolAlreadyExistsError(bytes32)"))
-    bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR = 
+    bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
-    
+
+    // solhint-disable func-name-mixedcase
+
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
         uint256 initialContractBalance
@@ -132,7 +134,7 @@ library LibStakingRichErrors {
             initialContractBalance
         );
     }
-    
+
     function OnlyCallableByExchangeError(
         address senderAddress
     )
@@ -145,8 +147,8 @@ library LibStakingRichErrors {
             senderAddress
         );
     }
-    
-    function ExchangeAlreadyRegisteredError(
+
+    function ExchangeAddressAlreadyRegisteredError(
         address exchangeAddress
     )
         internal
@@ -154,11 +156,11 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            EXCHANGE_ALREADY_REGISTERED_ERROR_SELECTOR,
+            EXCHANGE_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR,
             exchangeAddress
         );
     }
-    
+
     function ExchangeAddressNotRegisteredError(
         address exchangeAddress
     )
@@ -171,7 +173,7 @@ library LibStakingRichErrors {
             exchangeAddress
         );
     }
-    
+
     function SignatureLengthGreaterThan0RequiredError()
         internal
         pure
@@ -179,7 +181,7 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(SIGNATURE_LENGTH_GREATER_THAN_0_REQUIRED_ERROR_SELECTOR);
     }
-    
+
     function SignatureUnsupportedError(
         bytes memory signature
     )
@@ -192,7 +194,7 @@ library LibStakingRichErrors {
             signature
         );
     }
-    
+
     function SignatureIllegalError(
         bytes memory signature
     )
@@ -205,7 +207,7 @@ library LibStakingRichErrors {
             signature
         );
     }
-    
+
     function SignatureLength0RequiredError(
         bytes memory signature
     )
@@ -218,7 +220,7 @@ library LibStakingRichErrors {
             signature
         );
     }
-    
+
     function SignatureLength65RequiredError(
         bytes memory signature
     )
@@ -231,7 +233,7 @@ library LibStakingRichErrors {
             signature
         );
     }
-    
+
     function WalletError(
         address walletAddress,
         bytes memory errorData
@@ -246,7 +248,7 @@ library LibStakingRichErrors {
             errorData
         );
     }
-    
+
     function InsufficientBalanceError(
         uint256 amount,
         uint256 balance
@@ -261,7 +263,7 @@ library LibStakingRichErrors {
             balance
         );
     }
-    
+
     function OnlyCallableByPoolOperatorError(
         address senderAddress,
         address poolOperatorAddress
@@ -276,7 +278,7 @@ library LibStakingRichErrors {
             poolOperatorAddress
         );
     }
-    
+
     function OnlyCallableByPoolOperatorOrMakerError(
         address senderAddress,
         address poolOperatorAddress,
@@ -293,7 +295,7 @@ library LibStakingRichErrors {
             makerAddress
         );
     }
-    
+
     function InvalidMakerSignatureError(
         bytes32 poolId,
         address makerAddress,
@@ -310,7 +312,7 @@ library LibStakingRichErrors {
             makerSignature
         );
     }
-    
+
     function MakerAddressAlreadyRegisteredError(
         address makerAddress
     )
@@ -323,7 +325,7 @@ library LibStakingRichErrors {
             makerAddress
         );
     }
-    
+
     function MakerAddressNotRegisteredError(
         address makerAddress,
         bytes32 makerPoolId,
@@ -340,7 +342,7 @@ library LibStakingRichErrors {
             poolId
         );
     }
-    
+
     function WithdrawAmountExceedsMemberBalanceError(
         uint256 withdrawAmount,
         uint256 balance
@@ -355,7 +357,7 @@ library LibStakingRichErrors {
             balance
         );
     }
-    
+
     function BlockTimestampTooLowError(
         uint64 epochEndTime,
         uint64 currentBlockTimestamp
@@ -370,7 +372,7 @@ library LibStakingRichErrors {
             currentBlockTimestamp
         );
     }
-    
+
     function OnlyCallableByStakingContractError(
         address senderAddress
     )
@@ -383,7 +385,7 @@ library LibStakingRichErrors {
             senderAddress
         );
     }
-    
+
     function OnlyCallableInCatastrophicFailureError()
         internal
         pure
@@ -391,7 +393,7 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(ONLY_CALLABLE_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR);
     }
-    
+
     function OnlyCallableNotInCatastrophicFailureError()
         internal
         pure
@@ -399,7 +401,7 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(ONLY_CALLABLE_NOT_IN_CATASTROPHIC_FAILURE_ERROR_SELECTOR);
     }
-    
+
     function AmountExceedsBalanceOfPoolError(
         uint256 amount,
         uint96 poolBalance
@@ -414,7 +416,7 @@ library LibStakingRichErrors {
             poolBalance
         );
     }
-    
+
     function OperatorShareMustBeBetween0And100Error(
         bytes32 poolId,
         uint8 poolOperatorShare
@@ -429,7 +431,7 @@ library LibStakingRichErrors {
             poolOperatorShare
         );
     }
-    
+
     function PoolAlreadyExistsError(
         bytes32 poolId
     )

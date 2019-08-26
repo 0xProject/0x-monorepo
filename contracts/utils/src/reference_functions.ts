@@ -8,11 +8,7 @@ const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 export function safeAdd(a: BigNumber, b: BigNumber): BigNumber {
     const r = a.plus(b);
     if (r.isGreaterThan(MAX_UINT256)) {
-        throw new SafeMathRevertErrors.Uint256BinopError(
-            SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow,
-            a,
-            b,
-        );
+        throw new SafeMathRevertErrors.Uint256BinopError(SafeMathRevertErrors.BinopErrorCodes.AdditionOverflow, a, b);
     }
     return r;
 }
@@ -52,11 +48,7 @@ export function safeMul(a: BigNumber, b: BigNumber): BigNumber {
  */
 export function safeDiv(a: BigNumber, b: BigNumber): BigNumber {
     if (b.isEqualTo(0)) {
-        throw new SafeMathRevertErrors.Uint256BinopError(
-            SafeMathRevertErrors.BinopErrorCodes.DivisionByZero,
-            a,
-            b,
-        );
+        throw new SafeMathRevertErrors.Uint256BinopError(SafeMathRevertErrors.BinopErrorCodes.DivisionByZero, a, b);
     }
     return a.dividedToIntegerBy(b);
 }

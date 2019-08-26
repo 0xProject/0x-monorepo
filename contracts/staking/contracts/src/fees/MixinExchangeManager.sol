@@ -55,7 +55,7 @@ contract MixinExchangeManager is
         onlyOwner
     {
         if (validExchanges[addr]) {
-            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAlreadyRegisteredError(
+            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressAlreadyRegisteredError(
                 addr
             ));
         }

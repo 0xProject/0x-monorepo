@@ -18,11 +18,13 @@ export class OnlyCallableByExchangeError extends RevertError {
     }
 }
 
-export class ExchangeAlreadyRegisteredError extends RevertError {
+export class ExchangeAddressAlreadyRegisteredError extends RevertError {
     constructor(exchangeAddress?: string) {
-        super('ExchangeAlreadyRegisteredError', 'ExchangeAlreadyRegisteredError(address exchangeAddress)', {
-            exchangeAddress,
-        });
+        super(
+            'ExchangeAddressAlreadyRegisteredError',
+            'ExchangeAddressAlreadyRegisteredError(address exchangeAddress)',
+            { exchangeAddress },
+        );
     }
 }
 
@@ -196,7 +198,7 @@ export class PoolAlreadyExistsError extends RevertError {
 const types = [
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
-    ExchangeAlreadyRegisteredError,
+    ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,
     SignatureLengthGreaterThan0RequiredError,
     SignatureUnsupportedError,

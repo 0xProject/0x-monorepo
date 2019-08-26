@@ -47,7 +47,7 @@ blockchainTests.only('Exchange Integrations', env => {
             const isValidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
             expect(isValidAddressValid).to.be.true();
             // 3 try adding valid address again
-            let revertError = new StakingRevertErrors.ExchangeAlreadyRegisteredError(exchange);
+            let revertError = new StakingRevertErrors.ExchangeAddressAlreadyRegisteredError(exchange);
             let tx = stakingWrapper.addExchangeAddressAsync(exchange);
             await expect(tx).to.revertWith(revertError);
             // 4 remove valid address

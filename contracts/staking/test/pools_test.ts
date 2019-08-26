@@ -113,12 +113,7 @@ blockchainTests.only('Staking Pool Management', env => {
             await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
             const revertError = new StakingRevertErrors.MakerAddressAlreadyRegisteredError(makerAddress);
             // add same maker to pool again
-            await poolOperator.addMakerToStakingPoolAsync(
-                poolId,
-                makerAddress,
-                makerApproval.signature,
-                revertError,
-            );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to remove a maker that does not exist', async () => {
             // test parameters
@@ -135,11 +130,7 @@ blockchainTests.only('Staking Pool Management', env => {
                 poolId,
             );
             // remove non-existent maker from pool
-            await poolOperator.removeMakerFromStakingPoolAsync(
-                poolId,
-                makerAddress,
-                revertError,
-            );
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress, revertError);
         });
         it('Should fail to add a maker who signed with the wrong private key', async () => {
             // test parameters
@@ -161,12 +152,7 @@ blockchainTests.only('Staking Pool Management', env => {
                 makerAddress,
                 makerApproval.signature,
             );
-            await poolOperator.addMakerToStakingPoolAsync(
-                poolId,
-                makerAddress,
-                makerApproval.signature,
-                revertError,
-            );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker who signed with the wrong staking contract address', async () => {
             // test parameters
@@ -187,12 +173,7 @@ blockchainTests.only('Staking Pool Management', env => {
                 makerAddress,
                 makerApproval.signature,
             );
-            await poolOperator.addMakerToStakingPoolAsync(
-                poolId,
-                makerAddress,
-                makerApproval.signature,
-                revertError,
-            );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker who signed with the wrong chain id', async () => {
             // test parameters
@@ -220,12 +201,7 @@ blockchainTests.only('Staking Pool Management', env => {
                 makerAddress,
                 makerApproval.signature,
             );
-            await poolOperator.addMakerToStakingPoolAsync(
-                poolId,
-                makerAddress,
-                makerApproval.signature,
-                revertError,
-            );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker when called by someone other than the pool operator', async () => {
             // test parameters
