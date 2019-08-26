@@ -238,16 +238,18 @@ contract LibExchangeRichErrorDecoder {
 
     /// @dev Decompose an ABI-encoded AssetProxyExistsError.
     /// @param encoded ABI-encoded revert error.
-    /// @return proxyAddress The address of the asset proxy.
+    /// @return assetProxyId Id of asset proxy.
+    /// @return assetProxyAddress The address of the asset proxy.
     function decodeAssetProxyExistsError(bytes memory encoded)
         public
         pure
-        returns (address assetProxyAddress)
+        returns (
+            bytes4 assetProxyId, address assetProxyAddress)
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyExistsErrorSelector());
-        (assetProxyAddress) = abi.decode(
+        (assetProxyId, assetProxyAddress) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
-            (address)
+            (bytes4, address)
         );
     }
 
