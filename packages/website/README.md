@@ -59,6 +59,13 @@ yarn lint
 
 ### Indexing docs
 
+Before you can index the docs on Algolia, you need to set the admin API key environment variable:
+
+```
+# 0x Website frontend
+export ALGOLIA_ADMIN_API_KEY={YOUR_ADMIN_API_KEY}
+```
+
 ```bash
 yarn index_docs
 ```
