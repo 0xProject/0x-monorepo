@@ -125,34 +125,4 @@ export const eip712Utils = {
         );
         return typedData;
     },
-    /**
-     * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
-     * @return  A typed data object
-     */
-    createStakingPoolApprovalTypedData: (
-        poolId: string,
-        makerAddress: string,
-        verifyingContractAddress: string,
-        chainId: number,
-    ): EIP712TypedData => {
-        const domain = {
-            name: constants.STAKING_DOMAIN_NAME,
-            version: constants.STAKING_DOMAIN_VERSION,
-            verifyingContractAddress,
-            chainId,
-        };
-        const approval = {
-            poolId,
-            makerAddress,
-        };
-        const typedData = eip712Utils.createTypedData(
-            constants.STAKING_POOL_APPROVAL_SCHEMA.name,
-            {
-                StakingPoolApproval: constants.STAKING_POOL_APPROVAL_SCHEMA.parameters,
-            },
-            approval,
-            domain,
-        );
-        return typedData;
-    },
 };
