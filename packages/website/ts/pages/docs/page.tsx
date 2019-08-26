@@ -30,7 +30,7 @@ import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
-import { FullscreenMessage } from 'ts/pages/fullscreen_message';
+import { PageNotFound } from 'ts/pages/docs/page_not_found';
 
 import { Paragraph } from 'ts/components/text';
 
@@ -46,6 +46,17 @@ interface IDocsPageState {
 }
 
 export const DocsPage: React.FC<IDocsPageProps> = props => {
+    const { page, type, version } = props.match.params;
+    const { hash } = props.location;
+    // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
+    const key = page ? page : type;
+    // @ts-ignore
+    const pageMeta = meta[type] && meta[type][key];
+
+    if (!pageMeta) {
+        return <PageNotFound />;
+    }
+
     const [state, setState] = React.useState<IDocsPageState>({
         Component: '',
         contents: [],
@@ -53,13 +64,11 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     });
 
     const { Component, contents, wasNotFound } = state;
-    const isLoading = !Component && !wasNotFound;
-    const { page, type, version } = props.match.params;
-    const { hash } = props.location;
-    // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
-    const key = page ? page : type;
-    // @ts-ignore
-    const { description, keywords, path, subtitle, title, versions } = meta[type][key];
+
+    const { description, keywords, path, subtitle, title, versions } = pageMeta;
+
+    const isLoading = !Component;
+
     // If the route path includes a version, replace the initial version on path
     const filePath = versions && version ? path.replace(versions[0], version) : path;
 
@@ -86,62 +95,31 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
         }
     };
 
-    const waitForImages = async () => {
-        const images = document.querySelectorAll('img');
-        return Promise.all(
-            _.compact(
-                _.map(images, (img: HTMLImageElement) => {
-                    if (!img.complete) {
-                        return new Promise(resolve => {
-                            img.addEventListener('load', () => resolve());
-                        });
-                    }
-                    return false;
-                }),
-            ),
-        );
-    };
-
-    const scrollToHash = (hash: string): void => {
-        const element = document.getElementById(hash.substring(1));
-        if (element) {
-            const bodyRect = document.body.getBoundingClientRect();
-            const elemRect = element.getBoundingClientRect();
-            const elemOffset = elemRect.top - bodyRect.top;
-            const totalOffset = elemOffset - docs.headerOffset;
-            window.scrollTo(0, totalOffset);
-        }
-    };
+    if (wasNotFound) {
+        return <PageNotFound />;
+    }
 
     return (
         <DocsPageLayout
-            title={wasNotFound ? '404' : title}
+            title={title}
             description={description}
             keywords={keywords}
             subtitle={subtitle}
             loading={isLoading}
         >
-            {wasNotFound ? (
-                <FullscreenMessage
-                    headerText={'Not found'}
-                    headerTextColor={'#000'}
-                    bodyText={"Hm... looks like we couldn't find what you are looking for."}
-                />
-            ) : (
-                <Columns>
-                    <TableOfContents contents={contents} versions={versions} />
-                    <Separator />
-                    <ContentWrapper>
-                        <MDXProvider components={mdxComponents}>
-                            {/*
+            <Columns>
+                <TableOfContents contents={contents} versions={versions} />
+                <Separator />
+                <ContentWrapper>
+                    <MDXProvider components={mdxComponents}>
+                        {/*
                                 // @ts-ignore */}
-                            <Component />
-                        </MDXProvider>
-                        <HelpCallout />
-                        <HelpfulCta page={key} />
-                    </ContentWrapper>
-                </Columns>
-            )}
+                        <Component />
+                    </MDXProvider>
+                    <HelpCallout />
+                    <HelpfulCta page={key} />
+                </ContentWrapper>
+            </Columns>
         </DocsPageLayout>
     );
 };
@@ -170,4 +148,31 @@ const mdxComponents = {
     Note,
     Notification,
     StepLinks,
+};
+
+const waitForImages = async () => {
+    const images = document.querySelectorAll('img');
+    return Promise.all(
+        _.compact(
+            _.map(images, (img: HTMLImageElement) => {
+                if (!img.complete) {
+                    return new Promise(resolve => {
+                        img.addEventListener('load', () => resolve());
+                    });
+                }
+                return false;
+            }),
+        ),
+    );
+};
+
+const scrollToHash = (hash: string): void => {
+    const element = document.getElementById(hash.substring(1));
+    if (element) {
+        const bodyRect = document.body.getBoundingClientRect();
+        const elemRect = element.getBoundingClientRect();
+        const elemOffset = elemRect.top - bodyRect.top;
+        const totalOffset = elemOffset - docs.headerOffset;
+        window.scrollTo(0, totalOffset);
+    }
 };
