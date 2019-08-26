@@ -40,8 +40,8 @@ const sharedSettings = {
 };
 
 const settings: ObjectMap<IAlgoliaSettings> = {
-    apiExplorer: sharedSettings,
-    coreConcepts: sharedSettings,
+    'api-explorer': sharedSettings,
+    'core-concepts': sharedSettings,
     guides: {
         ...sharedSettings,
         attributesForFaceting: ['topics', 'difficulty'],
@@ -84,7 +84,7 @@ export async function indexFilesAsync(indexName: string, environment: string): P
 }
 
 function getNameToFile(dirName: string): ObjectMap<File> {
-    const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
+    const dirPath = path.join(__dirname, `../mdx/${dirName}`);
     const paths = glob.sync(`${dirPath}/**/*.mdx`);
     const nameToFile: ObjectMap<File> = {};
 
@@ -114,7 +114,7 @@ function getNameToFile(dirName: string): ObjectMap<File> {
             nameToFile[name] = { name, path: p, url };
         }
 
-        if (dirName === 'coreConcepts' || dirName === 'apiExplorer') {
+        if (dirName === 'core-concepts' || dirName === 'api-explorer') {
             const url = `/docs/${dirName}`;
             nameToFile[dirName] = { name: dirName, path: p, url };
         }

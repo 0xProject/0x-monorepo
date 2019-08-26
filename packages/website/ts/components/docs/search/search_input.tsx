@@ -19,11 +19,11 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => {
             {/* We could map these when we decide to show api explorer in search results */}
             <Index indexName={nameToSearchIndex.tools} />
             <Index indexName={nameToSearchIndex.guides} />
-            <Index indexName={nameToSearchIndex.coreConcepts} />
+            <Index indexName={nameToSearchIndex['core-concepts']} />
             {/*
-                TODO: Add this back in when apiExplorer page is ready
+                TODO: Add this back in when api-explorer page is ready
                 to be indexed and included in the search results (ditto in autocomplete.tsx)
-                <Index indexName={nameToSearchIndex.apiExplorer} />
+                <Index indexName={nameToSearchIndex.api-explorer} />
             */}
         </InstantSearch>
     );

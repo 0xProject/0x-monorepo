@@ -29,7 +29,7 @@ function processIndices(indices: string[], environment: string): void {
     }
 }
 
-if (args.index !== undefined) {
+if (args.indexes !== undefined) {
     processIndices(args.indexes.split(','), args.environment); // Use args given to process and push to algolia
 } else {
     processIndices(Object.keys(getNameToSearchIndex(args.environment)), args.environment); // Process and push all indices

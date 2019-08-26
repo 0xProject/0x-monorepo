@@ -109,8 +109,10 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     };
 
     const renderSectionTitle = (section: any): React.ReactNode => {
-        // TODO(fabio): Add `apiExplorer` below once the API Explore page is ready (ditto in search_input.tsx)
-        const { tools, guides, coreConcepts } = getNameToSearchIndex(environments.getEnvironment());
+        // TODO(fabio): Add `api-explorer` below once the API Explore page is ready (ditto in search_input.tsx)
+        const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
+        const { tools, guides } = nameToSearchIndex;
+        const coreConcepts = nameToSearchIndex['core-concepts'];
 
         const titles: { [key: string]: string } = {
             // TODO: Add this back in when api - explorer page is ready
