@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { WrapGrid, WrapProps } from 'ts/components/newLayout';
 
 import { zIndex } from 'ts/style/z_index';

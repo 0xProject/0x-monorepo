@@ -15,9 +15,9 @@ export const AnimationLoader: React.FC<IAnimationLoaderProps> = ({ name }) => {
         void loadAnimationAsync(name);
     }, [container.current, name]);
 
-    const loadAnimationAsync = async (name: string) => {
+    const loadAnimationAsync = async (_name: string) => {
         try {
-            const animationData = await import(/* webpackChunkName: "animation/[request]" */ `../../../../public/animations/${name}.json`);
+            const animationData = await import(/* webpackChunkName: "animation/[request]" */ `../../../../public/animations/${_name}.json`);
 
             lottie.loadAnimation({
                 container: container.current, // the dom element that will contain the animation
@@ -27,7 +27,8 @@ export const AnimationLoader: React.FC<IAnimationLoaderProps> = ({ name }) => {
                 animationData,
             });
         } catch (error) {
-            console.log('Error loading animation');
+            // tslint:disable-next-line:no-console
+            console.error('Error loading animation');
         }
     };
 

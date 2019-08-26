@@ -76,9 +76,9 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
         void loadPageAsync(filePath);
     }, [filePath]);
 
-    const loadPageAsync = async (filePath: string) => {
+    const loadPageAsync = async (_filePath: string) => {
         try {
-            const component = await import(/* webpackChunkName: "mdx/[request]" */ `mdx/${filePath}`);
+            const component = await import(/* webpackChunkName: "mdx/[request]" */ `mdx/${_filePath}`);
 
             setState({
                 ...state,
@@ -156,6 +156,7 @@ const waitForImages = async () => {
         _.compact(
             _.map(images, (img: HTMLImageElement) => {
                 if (!img.complete) {
+                    // tslint:disable-next-line:no-inferred-empty-object-type
                     return new Promise(resolve => {
                         img.addEventListener('load', () => resolve());
                     });

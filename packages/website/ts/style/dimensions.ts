@@ -14,7 +14,7 @@ interface DimensionObject {
 type UseDimensionsHook = [(node: HTMLElement) => void, {} | DimensionObject, HTMLElement];
 
 interface UseDimensionsArgs {
-    liveMeasure?: boolean;
+    isLiveMeasure?: boolean;
 }
 
 function getDimensionObject(node: HTMLElement): DimensionObject {
@@ -32,12 +32,12 @@ function getDimensionObject(node: HTMLElement): DimensionObject {
     };
 }
 
-export function useDimensions({ liveMeasure = true }: UseDimensionsArgs = {}): UseDimensionsHook {
+export function useDimensions({ isLiveMeasure = true }: UseDimensionsArgs = {}): UseDimensionsHook {
     const [dimensions, setDimensions] = React.useState({});
     const [node, setNode] = React.useState(null);
 
-    const ref = React.useCallback(node => {
-        setNode(node);
+    const ref = React.useCallback(_node => {
+        setNode(_node);
     }, []);
 
     React.useLayoutEffect(
@@ -47,7 +47,7 @@ export function useDimensions({ liveMeasure = true }: UseDimensionsArgs = {}): U
                 const measure = () => window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
                 measure();
 
-                if (liveMeasure) {
+                if (isLiveMeasure) {
                     window.addEventListener('resize', measure);
                     window.addEventListener('scroll', measure);
 

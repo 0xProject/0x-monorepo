@@ -1,8 +1,6 @@
-const algoliasearch = require('algoliasearch/lite');
+import * as algoliasearch from 'algoliasearch/lite';
 
 import { ObjectMap } from '@0x/types';
-
-import { environments } from './environments';
 
 const ALGOLIA_MAX_NUMBER_HITS = 1000; // Limit set by algolia
 

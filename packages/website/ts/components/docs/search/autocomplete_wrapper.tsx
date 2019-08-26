@@ -86,7 +86,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
                 background-color: white;
                 border: 1px solid #dbdfdd;
                 border-bottom-color: ${colors.brandLight};
-                
+
                 @media (min-width: 1200px) {
                     width: 750px;
                 }
@@ -170,7 +170,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             `
             right: 0;
             left: 0;
-            top: 81px; 
+            top: 81px;
         `};
 
         ${({ isHome }) =>
