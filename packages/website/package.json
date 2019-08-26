@@ -15,9 +15,9 @@
         "fix": "tslint --fix --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "update:tools": "aws s3 sync s3://docs-markdown/ mdx/tools/",
         "dev": "npm run update:tools; node --max-old-space-size=8192 ../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --content-base public --https",
-        "deploy_dogfood": "npm run build:prod; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_staging": "npm run build:prod; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "deploy_live": "DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build:prod; aws s3 sync ./public/. s3://0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js",
+        "deploy_dogfood": "npm run update:tools; npm run index_docs; npm run build:prod; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_staging": "npm run update:tools; npm run index_docs; npm run build:prod; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "deploy_live": "npm run update:tools; npm run index_docs; DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build:prod; aws s3 sync ./public/. s3://0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js",
         "index_docs": "TS_NODE_PROJECT=./tsconfig-indexing.json node --stack-size=16000 -r ts-node/register scripts/algolia_index.ts"
     },
     "author": "Fabio Berger",
