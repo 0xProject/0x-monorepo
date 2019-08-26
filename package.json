@@ -43,6 +43,9 @@
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate_and_upload.js",
+        "generate_md_docs": "wsrun docs:md --exclude-missing",
+        "upload_md_docs": "wsrun s3:sync_md_docs --exclude-missing",
+        "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
@@ -50,7 +53,7 @@
     "config": {
         "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-dev-utils",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
-        "packagesWithDocPages": "0x.js connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations",
+        "packagesWithDocPages": "connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
         "ignoreDependencyVersionsForPackage": "website instant dev-tools-pages contract-wrappers"
     },
@@ -72,9 +75,6 @@
             ],
             "repoBranchBase": "development"
         }
-    },
-    "resolutions": {
-        "graceful-fs": "4.1.15"
     },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.16.10",

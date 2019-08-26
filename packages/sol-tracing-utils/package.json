@@ -21,16 +21,11 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
         "clean": "shx rm -rf lib test/fixtures/artifacts src/artifacts generated_docs",
         "copy_test_fixtures": "copyfiles 'test/fixtures/**/*' ./lib",
-        "compile_test": "sol-compiler compile",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "compile_test": "sol-compiler compile"
     },
     "config": {
         "postpublish": {
-            "assets": [],
-            "docOmitExports": [
-                "ProfilerSubprovider",
-                "RevertTraceSubprovider"
-            ]
+            "assets": []
         }
     },
     "repository": {
@@ -83,7 +78,6 @@
         "shx": "^0.2.2",
         "sinon": "^4.0.0",
         "tslint": "5.11.0",
-        "typedoc": "0.13.0",
         "typescript": "3.0.1"
     },
     "publishConfig": {
