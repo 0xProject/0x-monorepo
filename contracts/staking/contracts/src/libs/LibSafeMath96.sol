@@ -26,7 +26,7 @@ library LibSafeMath96 {
 
     /// @dev Returns the addition of two unsigned integers, reverting on overflow.
     /// Note that this reverts on overflow.
-    function _add(uint96 a, uint96 b) internal pure returns (uint96) {
+    function safeAdd(uint96 a, uint96 b) internal pure returns (uint96) {
         uint96 c = a + b;
         if (c < a) {
             LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
@@ -41,7 +41,7 @@ library LibSafeMath96 {
 
     /// @dev Returns the subtraction of two unsigned integers.
     /// Note that this reverts on underflow.
-    function _sub(uint96 a, uint96 b) internal pure returns (uint96) {
+    function safeSub(uint96 a, uint96 b) internal pure returns (uint96) {
         if (b > a) {
             LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
                 LibSafeMathRichErrors.BinOpErrorCodes.SUBTRACTION_UNDERFLOW,
@@ -56,7 +56,7 @@ library LibSafeMath96 {
 
     /// @dev Returns the multiplication of two unsigned integers, reverting on overflow.
     /// Note that this reverts on overflow.
-    function _mul(uint96 a, uint96 b) internal pure returns (uint96) {
+    function safeMul(uint96 a, uint96 b) internal pure returns (uint96) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
         // benefit is lost if 'b' is also tested.
         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
@@ -78,7 +78,7 @@ library LibSafeMath96 {
 
     /// @dev Returns the integer division of two unsigned integers.
     /// Note that this reverts on division by zero. The result is rounded towards zero.
-    function _div(uint96 a, uint96 b) internal pure returns (uint96) {
+    function safeDiv(uint96 a, uint96 b) internal pure returns (uint96) {
         if (b == 0) {
             LibRichErrors.rrevert(LibSafeMathRichErrors.Uint96BinOpError(
                 LibSafeMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
@@ -100,11 +100,11 @@ library LibSafeMath96 {
         pure
         returns (uint96)
     {
-        uint96 scaledNumerator = _mul(value, slice);
+        uint96 scaledNumerator = safeMul(value, slice);
         uint96 ceilScalar = uint96(99);
         uint96 denominator = uint96(100);
-        return _div(
-            _add(scaledNumerator, ceilScalar),
+        return safeDiv(
+            safeAdd(scaledNumerator, ceilScalar),
             denominator
         );
     }

@@ -94,7 +94,7 @@ contract MixinStorage is
     // shadow balances by
     mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
 
-    // registrered 0x exchanges
+    // registered 0x Exchange contracts
     mapping (address => bool) internal validExchanges;
 
     // ZRX vault
