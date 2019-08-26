@@ -24,8 +24,6 @@ import "../src/ReentrancyGuard.sol";
 contract TestReentrancyGuard is
     ReentrancyGuard
 {
-    uint256 internal counter = 2;
-
     /// @dev Exposes the nonReentrant modifier publicly.
     /// @param shouldBeAttacked True if the contract should be attacked.
     /// @return True if successful.
@@ -47,19 +45,14 @@ contract TestReentrancyGuard is
         external
         returns (bool)
     {
-        if (counter > 0) {
-            counter--;
-            this.guarded(true);
-        } else {
-            counter = 2;
-            return true;
-        }
+        return this.guarded(true);
     }
 
     /// @dev This is a function that will not reenter the current contract.
     /// @return True if successful.
     function nonExploitive()
         external
+        pure
         returns (bool)
     {
         return true;
