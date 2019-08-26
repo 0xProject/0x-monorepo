@@ -46,10 +46,10 @@ contract ReentrancyTester is
     /// @dev Calls a public function to check if it is reentrant.
     function isReentrant(bytes calldata fnCallData)
         external
+        nonReentrant
         returns (bool isReentrant)
     {
-        bytes memory callData = abi.encodeWithSelector(this.testReentrantFunction.selector, fnCallData);
-        (bool didSucceed, bytes memory resultData) = address(this).delegatecall(callData);
+        (bool didSucceed, bytes memory resultData) = address(this).delegatecall(fnCallData);
         if (didSucceed) {
             isReentrant = true;
         } else {
@@ -61,18 +61,36 @@ contract ReentrancyTester is
         }
     }
 
-    /// @dev Calls a public function to check if it is reentrant.
-    /// Because this function uses the `nonReentrant` modifier, if
-    /// the function being called is also guarded by the `nonReentrant` modifier,
-    /// it will revert when it returns.
-    function testReentrantFunction(bytes calldata fnCallData)
-        external
-        nonReentrant
+    /// @dev Overridden to revert on unsuccessful fillOrder call.
+    function fillOrderNoThrow(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults)
     {
-        address(this).delegatecall(fnCallData);
+        // ABI encode calldata for `fillOrder`
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            IExchangeCore(address(0)).fillOrder.selector,
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+
+        (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
+        if (didSucceed) {
+            assert(returnData.length == 128);
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
+            return fillResults;
+        }
+        // Revert and rethrow error if unsuccessful
+        assembly {
+            revert(add(returnData, 32), mload(returnData))
+        }
     }
 
-    /// @dev Overriden to always succeed.
+    /// @dev Overridden to always succeed.
     function _fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
@@ -87,7 +105,7 @@ contract ReentrancyTester is
         fillResults.takerFeePaid = order.takerFee;
     }
 
-    /// @dev Overriden to always succeed.
+    /// @dev Overridden to always succeed.
     function _fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
@@ -114,7 +132,7 @@ contract ReentrancyTester is
         return resultData;
     }
 
-    /// @dev Overriden to always succeed.
+    /// @dev Overridden to always succeed.
     function _batchMatchOrders(
         LibOrder.Order[] memory leftOrders,
         LibOrder.Order[] memory rightOrders,
@@ -144,7 +162,7 @@ contract ReentrancyTester is
         }
     }
 
-    /// @dev Overriden to always succeed.
+    /// @dev Overridden to always succeed.
     function _matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
@@ -169,7 +187,7 @@ contract ReentrancyTester is
         });
     }
 
-    /// @dev Overriden to do nothing.
+    /// @dev Overridden to do nothing.
     function _cancelOrder(LibOrder.Order memory order)
         internal
     {}
