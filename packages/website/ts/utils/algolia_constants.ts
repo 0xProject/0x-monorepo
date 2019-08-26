@@ -2,10 +2,10 @@ const algoliasearch = require('algoliasearch/lite');
 
 import { ObjectMap } from '@0x/types';
 
-const ALGOLIA_APP_ID = 'Z5HRK3F1BK';
-const ALGOLIA_CLIENT_API_KEY = '53793d35f5e6b0583d273c4015373c3b';
+const ALGOLIA_APP_ID = 'HWXKQZ6EUX';
+const ALGOLIA_CLIENT_API_KEY = '15a66580bc61181a2ee45931f3d35994';
 // @TODO: Move the following somewhere safe / out of the repo
-const ALGOLIA_ADMIN_API_KEY = 'b158fad22eba28a2660ae045c5766378';
+const ALGOLIA_ADMIN_API_KEY = 'c3a86b92c9309e8474498aa6a24e64ee';
 
 const ALGOLIA_MAX_NUMBER_HITS = 1000; // Limit set by algolia
 

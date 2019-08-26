@@ -156,3 +156,6 @@ python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 
 # Doc README copy
 packages/*/docs/README.md
+
+# Tool MDX files authoritatively live on S3
+packages/website/mdx/tools/*
