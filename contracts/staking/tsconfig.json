@@ -15,7 +15,7 @@
         "generated-artifacts/LibFeeMath.json",
         "generated-artifacts/LibFeeMathTest.json",
         "generated-artifacts/LibRewardMath.json",
-        "generated-artifacts/LibSafeMath.json",
+        "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibSafeMath64.json",
         "generated-artifacts/LibSafeMath96.json",
         "generated-artifacts/LibSignatureValidator.json",

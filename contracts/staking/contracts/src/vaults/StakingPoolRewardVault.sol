@@ -19,7 +19,8 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "../libs/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "../libs/LibSafeDowncast.sol";
 import "../libs/LibSafeMath96.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "./MixinVaultCore.sol";
@@ -44,6 +45,7 @@ contract StakingPoolRewardVault is
     MixinVaultCore
 {
 
+    using LibSafeDowncast for uint256;
     using LibSafeMath for uint256;
     using LibSafeMath96 for uint96;
 
@@ -115,7 +117,7 @@ contract StakingPoolRewardVault is
         }
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].operatorBalance -= amount._downcastToUint96();
+        balanceByPoolId[poolId].operatorBalance -= amount.downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -140,7 +142,7 @@ contract StakingPoolRewardVault is
         }
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].membersBalance -= amount._downcastToUint96();
+        balanceByPoolId[poolId].membersBalance -= amount.downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -225,14 +227,14 @@ contract StakingPoolRewardVault is
         pure
     {
         // balances are stored as uint96; safely downscale.
-        uint96 amount = amount256Bit._downcastToUint96();
+        uint96 amount = amount256Bit.downcastToUint96();
 
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
         uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
-        uint96 poolPortion = amount._sub(operatorPortion);
+        uint96 poolPortion = amount.safeSub(operatorPortion);
 
         // update balances
-        balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
-        balance.membersBalance = balance.membersBalance._add(poolPortion);
+        balance.operatorBalance = balance.operatorBalance.safeAdd(operatorPortion);
+        balance.membersBalance = balance.membersBalance.safeAdd(poolPortion);
     }
 }

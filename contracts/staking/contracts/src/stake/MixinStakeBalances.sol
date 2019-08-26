@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../libs/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
@@ -84,7 +84,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return getTotalStake(owner)._sub(getActivatedStake(owner));
+        return getTotalStake(owner).safeSub(getActivatedStake(owner));
     }
 
     /// @dev Returns the activated & undelegated stake for a given owner.
@@ -96,7 +96,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return activatedStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
+        return activatedStakeByOwner[owner].safeSub(getStakeDelegatedByOwner(owner));
     }
 
     /// @dev Returns the stake that can be activated for a given owner.
@@ -108,7 +108,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return getDeactivatedStake(owner)._sub(getTimeLockedStake(owner));
+        return getDeactivatedStake(owner).safeSub(getTimeLockedStake(owner));
     }
 
     /// @dev Returns the stake that can be withdrawn for a given owner.

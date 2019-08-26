@@ -18,7 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "../libs/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "../libs/LibSafeDowncast.sol";
 import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
@@ -84,6 +85,7 @@ contract MixinTimeLockedStake is
     MixinScheduler
 {
     
+    using LibSafeDowncast for uint256;
     using LibSafeMath for uint256;
 
     /// @dev Forces the timeLock data structure to sync to state.
@@ -103,7 +105,7 @@ contract MixinTimeLockedStake is
         internal
     {
         (IStructs.TimeLock memory ownerTimeLock,) = _getSynchronizedTimeLock(owner);
-        uint96 downcastAmount = amount._downcastToUint96();
+        uint96 downcastAmount = amount.downcastToUint96();
         ownerTimeLock.total += downcastAmount;
         timeLockedStakeByOwner[owner] = ownerTimeLock;
     }
@@ -133,7 +135,7 @@ contract MixinTimeLockedStake is
         uint64 currentTimeLockPeriod = getCurrentTimeLockPeriod();
         ownerTimeLock = timeLockedStakeByOwner[owner];
         isOutOfSync = false;
-        if (currentTimeLockPeriod == ownerTimeLock.lockedAt._add(1)) {
+        if (currentTimeLockPeriod == ownerTimeLock.lockedAt.safeAdd(1)) {
             // shift n periods
             ownerTimeLock.pending = ownerTimeLock.total;
             isOutOfSync = true;

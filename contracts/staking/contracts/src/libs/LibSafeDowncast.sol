@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMathRihErrors.sol";
 
 library LibSafeDowncast {
 
@@ -29,10 +31,12 @@ library LibSafeDowncast {
         returns (uint96 b)
     {
         b = uint96(a);
-        require(
-            uint256(b) == a,
-            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96"
-        );
+        if (uint256(b) != a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96,
+                a
+            ));
+        }
         return b;
     }
 
@@ -44,10 +48,12 @@ library LibSafeDowncast {
         returns (uint64 b)
     {
         b = uint64(a);
-        require(
-            uint256(b) == a,
-            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96"
-        );
+        if (uint256(b) != a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64,
+                a
+            ));
+        }
         return b;
     }
 }

@@ -15,7 +15,7 @@ export * from '../generated-wrappers/lib_e_i_p712_hash';
 export * from '../generated-wrappers/lib_fee_math';
 export * from '../generated-wrappers/lib_fee_math_test';
 export * from '../generated-wrappers/lib_reward_math';
-export * from '../generated-wrappers/lib_safe_math';
+export * from '../generated-wrappers/lib_safe_downcast';
 export * from '../generated-wrappers/lib_safe_math64';
 export * from '../generated-wrappers/lib_safe_math96';
 export * from '../generated-wrappers/lib_signature_validator';

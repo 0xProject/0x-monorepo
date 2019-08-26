@@ -18,8 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "../libs/LibSafeMath.sol";
 import "../interfaces/IZrxVault.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
@@ -105,7 +105,7 @@ contract ZrxVault is
         onlyNotInCatastrophicFailure
     {
         // update balance
-        balances[owner] = balances[owner]._add(amount);
+        balances[owner] = balances[owner].safeAdd(amount);
 
         // notify
         emit ZrxDepositedIntoVault(msg.sender, owner, amount);
@@ -167,7 +167,7 @@ contract ZrxVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner]._sub(amount);
+        balances[owner] = balances[owner].safeSub(amount);
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);

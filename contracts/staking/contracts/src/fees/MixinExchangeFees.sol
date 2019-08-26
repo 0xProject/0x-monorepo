@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "../libs/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibFeeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
@@ -69,7 +69,7 @@ contract MixinExchangeFees is
         uint256 amount = msg.value;
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
+        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
         if (_feesCollectedThisEpoch == 0) {
             activePoolsThisEpoch.push(poolId);
         }
@@ -174,10 +174,10 @@ contract MixinExchangeFees is
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
             uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getStakingPoolOperator(poolId));
-            uint256 weightedStake = stakeHeldByPoolOperator._add(
+            uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
-                ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
-                ._div(100)
+                .safeMul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
+                .safeDiv(100)
             );
 
             // store pool stats
@@ -186,8 +186,8 @@ contract MixinExchangeFees is
             activePools[i].weightedStake = weightedStake;
 
             // update cumulative amounts
-            totalFeesCollected = totalFeesCollected._add(activePools[i].feesCollected);
-            totalWeightedStake = totalWeightedStake._add(activePools[i].weightedStake);
+            totalFeesCollected = totalFeesCollected.safeAdd(activePools[i].feesCollected);
+            totalWeightedStake = totalWeightedStake.safeAdd(activePools[i].weightedStake);
         }
 
         // sanity check - this is a gas optimization that can be used because we assume a non-zero
@@ -216,7 +216,7 @@ contract MixinExchangeFees is
 
             // record reward in vault
             _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
-            totalRewardsPaid = totalRewardsPaid._add(reward);
+            totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;

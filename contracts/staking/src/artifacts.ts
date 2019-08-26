@@ -17,7 +17,7 @@ import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
 import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
 import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
-import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
+import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSafeMath64 from '../generated-artifacts/LibSafeMath64.json';
 import * as LibSafeMath96 from '../generated-artifacts/LibSafeMath96.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
@@ -61,7 +61,7 @@ export const artifacts = {
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFeeMath: LibFeeMath as ContractArtifact,
     LibRewardMath: LibRewardMath as ContractArtifact,
-    LibSafeMath: LibSafeMath as ContractArtifact,
+    LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSafeMath64: LibSafeMath64 as ContractArtifact,
     LibSafeMath96: LibSafeMath96 as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
