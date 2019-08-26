@@ -119,7 +119,6 @@ library LibStakingRichErrors {
         0x2a5e4dcf;
 
     // solhint-disable func-name-mixedcase
-
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
         uint256 initialContractBalance
