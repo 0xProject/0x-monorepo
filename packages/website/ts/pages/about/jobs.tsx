@@ -57,17 +57,22 @@ export const NextAboutJobs: React.FC = () => {
     const [jobs, setJobs] = React.useState<WebsiteBackendJobInfo[]>([]);
 
     React.useEffect(() => {
-        void fetchJobs();
-    }, []);
+        let isUnmounted = false;
 
-    const fetchJobs = async (): Promise<void> => {
-        try {
+        const fetchJobs = async (): Promise<void> => {
             const fetchedJobs = await backendClient.getJobInfosAsync();
-            setJobs(fetchedJobs);
-        } catch (error) {
-            setJobs([]);
-        }
-    };
+
+            if (!isUnmounted) {
+                setJobs(fetchedJobs);
+            }
+        };
+
+        void fetchJobs();
+
+        return () => {
+            isUnmounted = true;
+        };
+    }, []);
 
     const mapJobToPosition = (job: WebsiteBackendJobInfo): PositionProps => {
         return {
