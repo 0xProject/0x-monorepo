@@ -1,8 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { IThemeInterface } from 'ts/style/theme';
 import LogoIcon from 'ts/icons/logo-with-type.svg';
+import { IThemeInterface } from 'ts/style/theme';
 
 import { zIndex } from 'ts/style/z_index';
 

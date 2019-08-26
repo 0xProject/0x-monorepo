@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { docs } from 'ts/style/docs';
 
-const AnimationLoader = React.lazy(async () =>
+const AnimationLoaderLazy = React.lazy(async () =>
     import('ts/components/docs/animations/animation_loader').then(({ AnimationLoader }) => ({
         default: AnimationLoader,
     })),
@@ -28,7 +28,7 @@ export const Animation: React.FC<IAnimationProps> = ({ name, ...props }) => {
     return (
         <React.Suspense fallback={<React.Fragment />}>
             <AnimationWrapper {...props}>
-                <AnimationLoader name={name} />
+                <AnimationLoaderLazy name={name} />
             </AnimationWrapper>
         </React.Suspense>
     );

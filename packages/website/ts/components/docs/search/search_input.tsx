@@ -3,7 +3,7 @@ import { Configure, Index, InstantSearch } from 'react-instantsearch-dom';
 
 import { AutoComplete } from 'ts/components/docs/search/autocomplete';
 
-import { hitsPerPage, searchClient, getNameToSearchIndex } from 'ts/utils/algolia_constants';
+import { getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
 import { environments } from 'ts/utils/environments';
 
 interface ISearchInputProps {

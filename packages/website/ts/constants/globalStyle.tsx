@@ -85,7 +85,7 @@ const GlobalStyles = withTheme(
         width: 1px !important;
         overflow: hidden;
     }
-    
+
     img, svg {
         max-width: 100%;
         object-fit: contain;

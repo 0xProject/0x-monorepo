@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { Button } from 'ts/components/button';
 import { SearchInput } from 'ts/components/docs/search/search_input';
 

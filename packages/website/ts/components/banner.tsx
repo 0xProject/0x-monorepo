@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { Button } from 'ts/components/button';
-import { IThemeInterface } from 'ts/style/theme';
 import { Paragraph } from 'ts/components/text';
+import { IThemeInterface } from 'ts/style/theme';
 
 import { Column, Section } from 'ts/components/newLayout';
 

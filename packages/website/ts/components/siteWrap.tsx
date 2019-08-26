@@ -2,8 +2,8 @@ import * as React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Header as DocsHeader } from 'ts/components/docs/header/header';
-import { Header as MainHeader } from 'ts/components/header';
 import { Footer } from 'ts/components/footer';
+import { Header as MainHeader } from 'ts/components/header';
 
 import { GlobalStyles } from 'ts/constants/globalStyle';
 import { GLOBAL_THEMES } from 'ts/style/theme';

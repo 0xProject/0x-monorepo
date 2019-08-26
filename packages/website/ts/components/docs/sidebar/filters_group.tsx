@@ -39,15 +39,15 @@ const FiltersList: React.FC<IFilterListProps> = ({
     //    then visually disabling filters. That way the user is still able to see all filters, even those that do not apply to
     //    the current state of filtering.
 
-    const sortAlphabetically = (items: IFilterProps[]) => _.orderBy(items, 'label', 'asc');
+    const sortAlphabetically = (_items: IFilterProps[]) => _.orderBy(_items, 'label', 'asc');
 
-    const sortByDifficulty = (items: IFilterProps[]) => {
+    const sortByDifficulty = (_items: IFilterProps[]) => {
         const order = ['Beginner', 'Intermediate', 'Advanced'];
-        return items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
+        return _items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
     };
 
-    const sortFilters = (items: IFilterProps[]) =>
-        attribute === 'difficulty' ? sortByDifficulty(items) : sortAlphabetically(items);
+    const sortFilters = (_items: IFilterProps[]) =>
+        attribute === 'difficulty' ? sortByDifficulty(_items) : sortAlphabetically(_items);
 
     React.useEffect(() => {
         // This happens on mount when filters are empty or on clearing all filters, when the items number exceeds that of filters

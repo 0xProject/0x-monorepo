@@ -28,7 +28,7 @@ declare module '*.json' {
 }
 
 declare module '*.mdx' {
-    let MDXComponent: (props) => JSX.Element;
+    let MDXComponent: (props: any) => JSX.Element;
     export default MDXComponent;
 }
 
@@ -44,7 +44,9 @@ declare module '@mdx-js/react' {
 
 declare module '*.svg' {
     import { PureComponent, SVGProps } from 'react';
+    /* tslint:disable */
     export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
+    /* tslint:enable */
 }
 
 declare module 'web3-provider-engine/subproviders/filters';
