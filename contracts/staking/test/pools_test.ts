@@ -1,10 +1,8 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -13,11 +11,8 @@ import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { constants as stakingConstants } from './utils/constants';
 import { StakingWrapper } from './utils/staking_wrapper';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking Pool Management', () => {
+blockchainTests.only('Staking Pool Management', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -31,33 +26,21 @@ describe('Staking Pool Management', () => {
     let erc20Wrapper: ERC20Wrapper;
     // tests
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // create accounts
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        accounts = await env.web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         users = accounts.slice(1);
         // deploy erc20 proxy
-        erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    describe('Staking Pool Management', () => {
+    blockchainTests.resets('Staking Pool Management', () => {
         it('Should successfully create a pool', async () => {
             // test parameters
             const operatorAddress = users[0];

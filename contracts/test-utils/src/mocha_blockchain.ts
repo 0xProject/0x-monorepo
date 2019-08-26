@@ -164,7 +164,7 @@ function defineBlockchainSuite<T>(
     const env = BlockchainTestsEnvironmentSingleton.create();
     return describeCall(description, function(this: ISuiteCallbackContext): void {
         before(async () => env.blockchainLifecycle.startAsync());
-        before(async () => env.blockchainLifecycle.revertAsync());
+        after(async () => env.blockchainLifecycle.revertAsync());
         callback.call(this, env);
     });
 }

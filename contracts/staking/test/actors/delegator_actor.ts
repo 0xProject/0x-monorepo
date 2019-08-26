@@ -1,16 +1,11 @@
-import { chaiSetup } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
+import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, RevertError } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { DelegatorBalances, StakerBalances } from '../utils/types';
 
 import { StakerActor } from './staker_actor';
-
-chaiSetup.configure();
-const expect = chai.expect;
 
 export class DelegatorActor extends StakerActor {
     constructor(owner: string, stakingWrapper: StakingWrapper) {
