@@ -46,7 +46,8 @@ export class EthWethConversionDialog extends React.Component<
         };
     }
     public componentDidMount(): void {
-        void this._fetchEthTokenBalanceAsync();
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchEthTokenBalanceAsync();
     }
     public componentWillUnmount(): void {
         this._isUnmounted = true;
