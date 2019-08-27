@@ -40,8 +40,7 @@ export function useDimensions({ isLiveMeasure = true }: UseDimensionsArgs = {}):
         setNode(_node);
     }, []);
 
-    React.useLayoutEffect(// @ts-ignore
-    () => {
+    React.useLayoutEffect(() => {
         if (node) {
             const measure = () => window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
             measure();
@@ -55,7 +54,9 @@ export function useDimensions({ isLiveMeasure = true }: UseDimensionsArgs = {}):
                     window.removeEventListener('scroll', measure);
                 };
             }
+            return undefined;
         }
+        return undefined;
     }, [node]);
 
     return [ref, dimensions, node];
