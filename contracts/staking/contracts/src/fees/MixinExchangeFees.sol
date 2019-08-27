@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibFeeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "../libs/LibFixedMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
@@ -56,6 +57,26 @@ contract MixinExchangeFees is
 {
     using LibSafeMath for uint256;
 
+    /// @dev Set the cobb douglas alpha value used when calculating rewards.
+    ///      Valid inputs: 0 <= `numerator` / `denominator` <= 1.0
+    /// @param numerator The alpha numerator.
+    /// @param denominator The alpha denominator.
+    function setCobbDouglasAlpha(
+        uint256 numerator,
+        uint256 denominator
+    )
+        external
+        onlyOwner
+    {
+        if (int256(numerator) < 0 ||
+            int256(denominator) <= 0 ||
+            numerator > denominator) {
+            revert("INVALID_ALPHA");
+        }
+        cobbDouglasAlphaNumerator = numerator;
+        cobbDouglasAlphaDenomintor = denominator;
+    }
+
     /// TODO(jalextowle): Add WETH to protocol fees. Should this be unwrapped?
     /// @dev Pays a protocol fee in ETH.
     ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
@@ -71,10 +92,19 @@ contract MixinExchangeFees is
     {
         uint256 amount = msg.value;
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
-        if (_feesCollectedThisEpoch == 0) {
-            activePoolsThisEpoch.push(poolId);
+        if (poolId != 0x0) {
+            // There is a pool associated with `makerAddress`.
+            // TODO(dorothy-zbornak): When we have epoch locks on delegating, we could
+            // preclude pools that have no delegated stake, since they will never have
+            // stake in this epoch.
+            uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
+            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
+            if (_feesCollectedThisEpoch == 0) {
+                activePoolsThisEpoch.push(poolId);
+            }
+        } else {
+            // No pool associated with `makerAddress`. Refund the fee.
+            msg.sender.transfer(amount);
         }
     }
 
@@ -125,7 +155,7 @@ contract MixinExchangeFees is
     }
 
     /// @dev Pays rewards to market making pools that were active this epoch.
-    /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
+    /// Each pool receives a portion of the fees generated this epoch (see _cobbDouglas) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
     /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
@@ -176,7 +206,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getStakingPoolOperator(poolId));
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId);
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                 .safeMul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
@@ -209,12 +239,14 @@ contract MixinExchangeFees is
         // step 2/3 - record reward for each pool
         for (uint256 i = 0; i != totalActivePools; i++) {
             // compute reward using cobb-douglas formula
-            uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
+            uint256 reward = _cobbDouglas(
                 initialContractBalance,
                 activePools[i].feesCollected,
                 totalFeesCollected,
                 activePools[i].weightedStake,
-                totalWeightedStake
+                totalWeightedStake,
+                cobbDouglasAlphaNumerator,
+                cobbDouglasAlphaDenomintor
             );
 
             // record reward in vault
@@ -248,6 +280,56 @@ contract MixinExchangeFees is
             totalRewardsPaid,
             initialContractBalance,
             finalContractBalance
+        );
+    }
+
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note that in this function there is no limitation on alpha; we tend to get better rounding
+    /// on the simplified versions below.
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @param alphaNumerator Numerator of `alpha` in the cobb-dougles function.
+    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
+    /// @return ownerRewards Rewards for the owner.
+    function _cobbDouglas(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake,
+        uint256 alphaNumerator,
+        uint256 alphaDenominator
+    )
+        internal
+        pure
+        returns (uint256 ownerRewards)
+    {
+        assert(ownerFees <= totalFees);
+        assert(ownerStake <= totalStake);
+        assert(alphaNumerator <= alphaDenominator);
+        int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
+        int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
+        int256 alpha = LibFixedMath._toFixed(alphaNumerator, alphaDenominator);
+
+        // The cobb-doublas function has the form:
+        // totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)
+        // We instead use:
+        // totalRewards * stakeRatio * e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
+
+        // Compute e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
+        int256 n = LibFixedMath._exp(
+            LibFixedMath._mul(
+                alpha,
+                LibFixedMath._ln(feeRatio) - LibFixedMath._ln(stakeRatio)
+            )
+        );
+        // Multiply the above with totalRewards * stakeRatio
+        ownerRewards = LibFixedMath._uintMul(
+            LibFixedMath._mul(n, stakeRatio),
+            totalRewards
         );
     }
 }

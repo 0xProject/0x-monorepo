@@ -106,4 +106,10 @@ contract MixinStorage is
 
     // Rebate Vault
     IStakingPoolRewardVault internal rewardVault;
+
+    // Numerator for cobb douglas alpha factor.
+    uint256 internal cobbDouglasAlphaNumerator = 1;
+
+    // Denominator for cobb douglas alpha factor.
+    uint256 internal cobbDouglasAlphaDenomintor = 6;
 }

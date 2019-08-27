@@ -41,6 +41,14 @@ interface IStakingEvents {
         uint256 earliestEndTimeInSeconds
     );
 
+    /// @dev Emitted by MixinExchangeFees when the cobb douglas alpha is updated.
+    /// @param numerator The alpha numerator.
+    /// @param denominator The alpha denominator.
+    event CobbDouglasAlphaChanged(
+        uint256 numerator,
+        uint256 denominator
+    );
+
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.
      /// @param timeLockPeriod The timeLock period we changed to.
      /// @param startEpoch The epoch this period started.
