@@ -22,7 +22,7 @@ const CONFIGURATOR_MIN_WIDTH_PX = 1050;
 
 export const getStartedClick = () => {
     if (window.innerWidth < CONFIGURATOR_MIN_WIDTH_PX) {
-        utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
+        utils.openUrl(`${WebsitePaths.DocsGuides}/integrate-instant`);
     } else {
         utils.setUrlHash('configurator');
         utils.scrollToHash('configurator', '');
@@ -43,7 +43,7 @@ const featuresData = [
             },
             {
                 label: 'Explore the Docs',
-                url: `${WebsitePaths.Wiki}#Get-Started-With-Instant`,
+                url: `${WebsitePaths.DocsGuides}/integrate-instant`,
             },
         ],
     },
@@ -55,7 +55,7 @@ const featuresData = [
         links: [
             {
                 label: 'Learn about affiliate fees',
-                url: `${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`,
+                url: `${WebsitePaths.DocsGuides}/integrate-instant#learn-about-affiliate-fees`,
             },
         ],
     },
@@ -140,7 +140,7 @@ export class Next0xInstant extends React.Component<Props> {
                 <Banner
                     heading="Need more flexibility?"
                     subline="Dive into our docs, or contact us if needed"
-                    mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.Wiki}#Get-Started-With-Instant` }}
+                    mainCta={{ text: 'Explore the Docs', href: `${WebsitePaths.DocsGuides}/integrate-instant` }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />

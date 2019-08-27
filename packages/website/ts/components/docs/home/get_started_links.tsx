@@ -14,7 +14,9 @@ interface IGetStartedLinksProps {
 export interface IGetStartedLinkProps {
     heading: string;
     description: string;
-    url: string;
+    url?: string;
+    target?: string;
+    href?: string;
 }
 
 export const GetStartedLinks: React.FC<IGetStartedLinksProps> = ({ heading, links }) => (
@@ -28,7 +30,13 @@ export const GetStartedLinks: React.FC<IGetStartedLinksProps> = ({ heading, link
 
 export const GetStartedLink: React.FC<IGetStartedLinkProps> = props => (
     <>
-        <GetStartedButton color={colors.brandDark} to={props.url} isWithArrow={true}>
+        <GetStartedButton
+            color={colors.brandDark}
+            to={props.url}
+            href={props.href}
+            target={props.target}
+            isWithArrow={true}
+        >
             {props.heading}
         </GetStartedButton>
         <GetStartedParagraph color={colors.textDarkPrimary} isMuted={1}>

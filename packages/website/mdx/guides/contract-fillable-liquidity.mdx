@@ -16,14 +16,14 @@ There are two key concepts that will be good to understand in order to make best
 
 ## 0x order
 
-The 0x order is a message with a [specific structure](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format). Conceptually, you can think of a 0x order as a promise from one user (the maker) to swap their token (the makerAsset) with another token (the takerAsset) at a specified rate. These orders can be fulfilled by interacting with the [0x exchange contract](https://etherscan.io/address/0x4f833a24e1f95d70f028921e27040ca56e09ab0b).
+The 0x order is a message with a [specific structure](https://0x.org/docs/guides/v2-specification#orders). Conceptually, you can think of a 0x order as a promise from one user (the maker) to swap their token (the makerAsset) with another token (the takerAsset) at a specified rate. These orders can be fulfilled by interacting with the [0x exchange contract](https://etherscan.io/address/0x4f833a24e1f95d70f028921e27040ca56e09ab0b).
 
 ## 0x exchange contract
 
-The 0x exchange contract is a smart contract deployed on the [Ethereum mainnet](https://etherscan.io/address/0x4f833a24e1f95d70f028921e27040ca56e09ab0b) and most [testnets](https://0x.org/wiki#Deployed-Addresses). Users send transactions to this smart contract in order to fulfill 0x orders. There are many options for filling orders using the contract, they are listed [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#filling-orders).
+The 0x exchange contract is a smart contract deployed on the [Ethereum mainnet](https://etherscan.io/address/0x4f833a24e1f95d70f028921e27040ca56e09ab0b) and most [testnets](https://0x.org/docs/guides/0x-cheat-sheet#deployed-contract-addresses). Users send transactions to this smart contract in order to fulfill 0x orders. There are many options for filling orders using the contract, they are listed [here](https://0x.org/docs/guides/v2-specification#fillorder).
 
 ## 0x extension contracts
-The 0x exchange contract is designed to be easily extendible through varying smart contracts that are referred to as extension contracts. Users can send their orders to an extension contract and expect augmented behavior that is not provided by the core 0x exchange contract. While any developer can develop and leverage extension contracts, the 0x core team has built, audited, and deployed a number of open source extension contracts. Learn more about them [here](https://0x.org/wiki#0x-Extensions).
+The 0x exchange contract is designed to be easily extendible through varying smart contracts that are referred to as extension contracts. Users can send their orders to an extension contract and expect augmented behavior that is not provided by the core 0x exchange contract. While any developer can develop and leverage extension contracts, the 0x core team has built, audited, and deployed a number of open source extension contracts. Learn more about them [here](https://0x.org/docs/guides/0x-extensions-explained).
 
 ---
 
@@ -131,7 +131,7 @@ contract MyContract {
 
 *Note:* Contract fillable liquidity integrations will be filling 0x orders “on behalf” of the user. Smart contract’s integrating 0x CFL would need to set an allowance for 0x exchange contracts before hand in the constructor or through an admin operated function.
 
-There are many different ways to fill orders; developers in the 0x ecosystem have built a number of ways to interact with 0x protocol on-chain. For a complete list of options for filling 0x orders, check out the [0x protocol specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#filling-orders). A non-exhaustive list of great 0x integrations can be found here:
+There are many different ways to fill orders; developers in the 0x ecosystem have built a number of ways to interact with 0x protocol on-chain. For a complete list of options for filling 0x orders, check out the [0x protocol specification](https://0x.org/docs/guides/v2-specification#fillorder). A non-exhaustive list of great 0x integrations can be found here:
 
 * dYdX's exchange wrappers repo: https://github.com/dydxprotocol/exchange-wrappers
 * Set protocol’s exchange wrappers repo: https://github.com/SetProtocol/set-protocol-contracts/tree/master/contracts/core/exchange-wrappers
@@ -188,9 +188,9 @@ The two main 0x smart contract interfaces are:
 
 * *Exchange*: The main 0x exchange protocol smart contract interface
     * Specifically asset-swapper interacts with `marketBuyNoThrow` and `marketSellNoThrow` functions
-* *Forwarder*: An extension contract that abstracts wrapping ether and a number of other computations; only supports WETH/ERCXX pairs. Read more about forwarder [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md)
+* *Forwarder*: An extension contract that abstracts wrapping ether and a number of other computations; only supports WETH/ERCXX pairs. Read more about forwarder [here](https://0x.org/docs/guides/v2-forwarder-specification)
     * Specifically asset-swapper interacts with `marketBuyWithEth` and `marketSellWithEth` functions
-* (Future) *Coordinator*: An extension contract that enables the filling of coordinator orders; read more about coordinator 0x orders [here](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md).
+* (Future) *Coordinator*: An extension contract that enables the filling of coordinator orders; read more about coordinator 0x orders [here](https://0x.org/docs/guides/v2-coordinatior-specification).
 
 SwapQuoteConsumer has a router logic that, dependent on the takerAddress and asset trading pair, determine the best 0x interface to provide output for.
 

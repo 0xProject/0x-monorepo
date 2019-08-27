@@ -56,7 +56,7 @@ const shortcutLinks = [
 const usefulLinks = [
     {
         title: '0x Cheat Sheet',
-        url: `${WebsitePaths.Docs}/guides`,
+        url: `${WebsitePaths.Docs}/guides/0x-cheat-sheet`,
     },
     {
         title: 'Code Sandbox',
@@ -74,24 +74,25 @@ const usefulLinks = [
 
 const getStartedLinks = [
     {
-        heading: 'Launch an exchange in 30 seconds',
+        heading: 'Launch an exchange in a few minutes',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
-        url: WebsitePaths.DocsCoreConcepts,
+        href: constants.URL_LAUNCH_KIT_TUTORIAL_YOUTUBE,
+        target: '_blank',
     },
     {
         heading: 'Tap into contract-fillable liquidity',
         description: 'Source contract-fillable liquidity at the best prices from 0x.',
-        url: WebsitePaths.DocsApiExplorer,
+        url: `${WebsitePaths.DocsGuides}/contract-fillable-liquidity`,
     },
     {
-        heading: 'Launch your in-game marketplace',
-        description: 'Make your in-game items tradable with minimal effort.',
-        url: WebsitePaths.DocsGuides,
+        heading: 'Start market-making on 0x',
+        description: 'A primer on how to market-make successfully on 0x.',
+        url: `${WebsitePaths.DocsGuides}/market-making-on-0x`,
     },
     {
-        heading: 'Predict the future with 0x',
-        description: 'Build a prediction market end-to-end using 0x and Augur.',
-        url: WebsitePaths.DocsTools,
+        heading: 'Add 0x Instant to your website / mobile app',
+        description: 'Add a free and simple crypto purchasing flow to your website or mobile app.',
+        url: `${WebsitePaths.DocsGuides}/integrate-instant`,
     },
 ];
 

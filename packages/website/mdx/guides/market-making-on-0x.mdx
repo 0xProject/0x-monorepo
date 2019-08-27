@@ -1,0 +1,192 @@
+This tutorial will attempt to bridge the knowledge-gap between market-making on centralized cryptocurrency exchanges (e.g Binance) and market-making on 0x, a decentralised exchange protocol built on Ethereum (see: [technical protocol specification](/guides/v2-specification)).
+
+## High-level primer
+
+There are three core activities all centralized exchanges perform:
+
+1. Custody user funds
+2. Host and distribute orders
+3. Settle trades
+
+Within the 0x protocol, these tasks are not all undertaken by a single entity nor in the same way.
+
+### 1. Custody of user funds
+
+Trading on a CEX (centralized exchange) requires that you deposit your assets into an Ethereum addresses the exchange controls. After that point, they have full custody over your funds and must secure them from hackers, rogue employees and other attackers. When trading on 0x, your assets never need to leave your Ethereum address until a trade is settled.
+
+### 2. Host and distribute orders
+
+0x orders can be hosted by anyone, rather than there being a single entity hosting the orders. Any entity that hosts and distributes 0x orders is called a "relayer". Currently most relayers are centralized entities hosting an API from which orders can be retrieved.
+
+A 0x order is any data packet that contains an [order's details](https://0x.org/docs/guides/v2-specification#order-message-format) together with a [valid signature](https://0x.org/docs/guides/v2-specification#signature-types) (e.g. a valid elliptic curve signature generated from the traders Ethereum address) of it's contents.
+
+### 3. Settlement of trades
+
+When two entities agree on the terms of a trade, the 0x order is submitted to the Ethereum blockchain and settled via the 0x protocol smart contract.
+
+In order for the 0x smart contracts to move funds on the behalf of traders, the traders must first give the contracts explicit permission. This is done by setting an ["allowance"](https://tokenallowance.io/) for a certain number of assets that 0x can then transfer from their Ethereum address. Then, in the event that the trader cryptographically agrees to a trade by creating an order with a valid signature, the order can be filled and settled through the 0x smart contracts. These rules are all enforced by the open-source smart contracts deployed to the Ethereum blockchain. At no point does 0x protocol have control over the private key of the trader's Ethereum address, and the allowance can be revoked by the trader at any time.
+
+### What about order matching?
+
+There are two dominant relayer strategies in existence today: [matching](https://0x.org/docs/guides/relayer-strategies#matching) and [open orderbook](https://0x.org/docs/guides/relayer-strategies#open-orderbook). Open orderbook relayers host orders that anyone can fill by directly sending a transaction (with the order details and desired fill amount) to the Ethereum blockchain. Using this model, the order in which transactions are filled is determined by the same algorithm used by miners to decide which transactions to include in the next block (more on this later).
+
+Matching relayers require traders to create the inverse 0x order to the one they wish to fill and submit it back to the matcher. The matching relayer will then fill both orders in one atomic transaction to Ethereum on the trader's behalf.
+
+In both models, the relayer never has custody over a trader's assets.
+
+## Creating orders
+
+0x orders only exist off-chain and are completely free to create. In order to create a valid 0x order, you can use the [@0x/order-utils](https://0xproject.com/docs/order-utils) Typescript/Javascript library, or alternatively the [0x-order-utils.py](http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/) Python library. These libraries will help you:
+
+1. Generate an order in the proper format (e.g encoding/decoding [`assetData`](https://0x.org/docs/guides/v2-specification#assetdata))
+2. Generating a proper hash for the order contents
+3. Sign the order with your elliptic curve signature
+
+For a set of scenarios show-casing the above steps, as well as allowance setting, take a look at the [0x Starter Project](https://github.com/0xProject/0x-starter-project).
+
+Note that the `salt` field of an order should be set to the current unix timestamp in milliseconds for full compatibility with the [`cancelOrdersUpTo`](#cancelling-orders) function. For low level details of how an order is created, please reference the [orders](https://0x.org/docs/guides/v2-specification#orders) section of the protocol specification.
+
+Once you have a valid 0x order, it can be submitted to a relayer. You can use the [POST /v2/order](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md#post-v2order) endpoint of the Standard Relayer API for this purpose (see: [submitOrderAsync in 0x Connect](https://0xproject.com/docs/connect#HttpClient-submitOrderAsync)).
+
+If you want to be notified whenever the order is filled by a trader, you should also submit the order to an [OrderWatcher](https://0xproject.com/docs/order-watcher) instance you are running.
+
+## Filling orders
+
+Orders may be filled by calling various methods on the [Exchange contract](https://0x.org/docs/guides/v2-specification#exchange), as described in the [filling orders](https://0x.org/docs/guides/v2-specification#filling-orders) section of the protocol specification. In general, these methods can be broken down into 3 categories:
+
+### Single order fills
+
+These methods are useful for filling single orders. All of these methods have slightly different failure conditions:
+
+-   [fillOrder](https://0x.org/docs/guides/v2-specification#fillorder)
+-   [fillOrKillOrder](https://0x.org/docs/guides/v2-specification#fillorkillorder)
+-   [fillOrderNoThrow](https://0x.org/docs/guides/v2-specification#fillordernothrow)
+
+### Multiple order fills
+
+These methods are useful for filling multiple orders in a single transaction. Each method has different conditions around transaction failures and execution:
+
+-   [batchFillOrders](https://0x.org/docs/guides/v2-specification#batchfillorders)
+-   [batchFillOrKillOrders](https://0x.org/docs/guides/v2-specification#batchfillorkillorders)
+-   [batchFillOrdersNoThrow](https://0x.org/docs/guides/v2-specification#batchfillordersnothrow)
+-   [marketSellOrders](https://0x.org/docs/guides/v2-specification#marketsellorders)
+-   [marketSellOrdersNoThrow](https://0x.org/docs/guides/v2-specification#marketsellordersnothrow)
+-   [marketBuyOrders](https://0x.org/docs/guides/v2-specification#marketbuyorders)
+-   [marketBuyOrdersNoThrow](https://0x.org/docs/guides/v2-specification#marketbuyordersnothrow)
+
+### Matching order fills
+
+A special case exists when filling both a buy and sell order of the same asset pair where the price of the sell order is less than or equal to the price of the buy order. These 2 orders can be simultaneously filled with no capital requirements by calling the [matchOrders](https://0x.org/docs/guides/v2-specification#matchorders) function.
+
+### Interacting with different relayer models
+
+Note that the process for filling orders differs when interacting with an [open orderbook](https://0x.org/docs/guides/relayer-strategies#open-orderbook) relayer or a [matching](https://0x.org/docs/guides/relayer-strategies#matching) relayer. These orders can be differentiated by looking at an order's [senderAddress](https://0x.org/docs/guides/v2-specification#senderaddress) and [takerAddress](https://0x.org/docs/guides/v2-specification#order-message-format) fields.
+
+When both fields are set to 0 (as in the open orderbook model), the order can be filled directly by calling the desired fill function on the Exchange contract. The taker filling an order in this way benefits from [Ethereum transaction atomicity](#transaction-atomicity) and more granular control over [transaction failures](#transaction-failures). However, the onus of paying gas and choosing which specific orders to be matched with falls on the taker in this scenario.
+
+In the matching model, the taker first submits a signed order to the matcher (where either the order's `senderAddress` or `takerAddress` are set to the address of the matcher). The matcher than chooses which order(s) to match against the taker's signed order and fills the orders simultaneously (usually by calling `batchFillOrKillOrders` or `matchOrders`). In this scenario, the matcher is responsible for paying gas and choosing the specific orders to be matched.
+
+## Cancelling orders
+
+There are multiple ways to cancel 0x orders by interacting with the [Exchange contract](https://0x.org/docs/guides/v2-specification#exchange), each of which is described in the [cancelling orders](https://0x.org/docs/guides/v2-specification#cancelling-orders) section of the protocol specification.
+
+The `cancelOrdersUpTo` approach is perhaps the least straight forward but also the most powerful for a market maker. It allows for the cancellation of an arbitrary number of orders for a fixed amount of gas. By creating orders where the `salt` field is equal to the current unix timestamp in milliseconds, you can cancel all orders that were created at or before a certain time in a single `cancelOrdersUpTo` call (a fixed size transaction). Note that any future orders created with a `salt` that is below the largest `salt` argument of a `cancelOrdersUpTo` call by your address will automatically be invalid.
+
+Explicitly cancelling orders always requires an on-chain transaction. However, you may create short lived orders and replace the expired orders without any on-chain transactions. Due to the variability of transaction inclusion times in blocks, it is not recommended to set extremely aggressive expiration times for orders (empirically, most market makers set order expirations to ~5 minutes). Many relayers using the matching model also offer "soft" cancels. In this case, since the matcher is the only address that can fill the order, the matcher can promise not to fill the order without creating any on-chain transactions. Traders should always be aware that these orders can still technically be filled by the matcher without the trader's permission and should consider periodically "hard" cancelling orders that have previously been cancelled in this way.
+
+## Fetching off-chain orders
+
+Since 0x orders live off-chain, they must be fetched from relayers. All relayers host APIs that allow you to pull orders from their orderbook. In order to make life easier for traders, many implement the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/), allowing you to use a single client to fetch orders from multiple relayers. Standard Relayer API clients exist in [Python](https://pypi.org/project/0x-sra-client/) and [Typescript/Javascript](https://0xproject.com/docs/connect).
+
+To learn more about fetching orders from relayers, check out our [How to use the Standard Relayer API tutorial](https://0x.org/docs/guides/using-the-standard-relayer-api).
+
+## Trading on Ethereum
+
+When trading on a centralized exchange, you must integrate exclusively with the CEX's trading API in order to know the state of the world (e.g orderbook, filled/cancellation state). When trading on 0x, your sources of truth are the Ethereum blockchain and the off-chain orders in existence. This section will dive deeper into the on-chain state you'll need.
+
+### Ethereum node management
+
+In order to monitor the Ethereum blockchain, you must interface with an Ethereum node. You can either integrate your market maker with a hosted node service such as [Infura.io](https://infura.io/) or you can host your own node. While developing your market maker, you might want to [setup Ganache](https://0x.org/docs/guides/ganache-setup), a fake Ethereum node used for testing purposes.
+
+### Probabilistic finality
+
+Since trades on 0x are settled by being included my miners into a block, settlement is subject to the same probabalistic finality as any other state-transition in Ethereum. Probabilistic finality means that no trade settlement is ever 100% final. It becomes exponentially more final with every additional Ethereum block that is mined ontop of the one it was included in.
+
+What this means is that for a period of time settlement can still revert. This happens when there is a block re-organization, causing a valid next block to become "uncled" (i.e. no longer part of the main chain). It does not happen often, but it is an important edge-case to handle. [0x Mesh](https://0x-org.gitbook.io/mesh) can help you handle all possible state changes related to the 0x orders you care about (including state reversions).
+
+### Block timestamps
+
+In Ethereum, the only requirement on a block's `timestamp` is that it is greater then the previous block timestamp. What this means is that the `timestamp` of the next block could be before or after the current unix timestamp.
+
+Because the 0x Protocol checks order expiration using block timestamps, the order will only be considered expired once a block timestamp exists that is larger then the order expiration. You can use the current time as an approximation of the block time, however there is still a chance the "expired" order gets filled if the next block timestamp falls between the last block timestamp and the current timestamp.
+
+### Miner discretion
+
+In most blockchains, the miner decides which valid transactions to include in the next block they attempt to mine. They are expected to be economically rational agents who will prioritize transactions that pay them the most fees, however they have full discretion over transaction ordering.
+
+Let's say a trader submits an order cancellation transaction; there are no guarantees about the order in which this transaction will be included in the blockchain. You can try and incentize miners to include it sooner by increasing the `gasPrice` (read: fee) paid for the transaction, but so can any other trader attempting to fill the order (read more about this problem in our [front-running, griefing and the perils of virtual settlement](https://blog.0xproject.com/front-running-griefing-and-the-perils-of-virtual-settlement-part-1-8554ab283e97) blog post series). Because of this race-condition, we recommend you use shorter expiration times on your orders rather than relying heavily on on-chain cancellations. Alternatively, you can use our [cancelOrdersUpTo](https://0x.org/docs/guides/v2-specification#cancelordersupto) feature to cancel multiple orders in a single transaction.
+
+### Transaction failures
+
+In general, an Ethereum transaction will either execute or fail entirely. This allows the transactor to update blockchain state knowing that the state changes will be reverted unless some later condition is met within the same transaction.
+
+### Transaction atomicity
+
+All function calls that occur within a single Ethereum transaction are executed sequentially and atomically. This allows a transactor to take advantage of how [transaction failures](#transaction-failures) occur and call multiple functions within a transaction without taking the risk that only a part of the transaction will succeed. This is very useful for arbitraging or purchasing/consuming tokens simultaneously.
+
+## Managing risk
+
+Market makers may hedge risk when an order is filled by taking opposing positions in the same or correlated asset using either centralized or decentralized exchanges.
+
+### Shorting, derivatives, and margin trading
+
+The following non-comprehensive list of protocols may be used for borrowing, lending, shorting, margin trading, and creating synthetic assets or derivatives. It is highly recommended to only use these protocols with a full understanding of their mechanics and risks:
+
+-   [Augur](https://www.augur.net/)
+-   [bZx](https://bzx.network/)
+-   [Compound](https://compound.finance/)
+-   [Dharma](https://dharma.io/)
+-   [dYdX](https://dydx.exchange/)
+-   [Maker](https://makerdao.com/)
+
+### Hedging asynchronicity
+
+While taking orders benefits from the [atomicity](#transaction-atomicity) of Ethereum transactions, hedging one of your own orders that has been taken will always be asynchronous. Because Ethereum transactions currently have [probabilistic finality](#probabilistic-finality), market makers should be careful to monitor the state of their own filled orders before and after executing the hedge. For example, the following scenario is possible (though unlikely):
+
+1. A market maker sees a pending fill of her own order in the mempool.
+1. The market maker hedges by taking the opposite position of the same asset on a CEX.
+1. The original fill fails due to an insufficient balance or allowance of the taker, and the maker is left with only the hedge leg of their position.
+
+Similar scenarios can arise due to block re-orgs. There are ways to reduce the risk of this by using specialized smart contracts if executing hedges on other DEX platforms. For example, the smart contract can conditionally execute a hedge only if a given order has been filled. This would mean that the hedge would not execute if the original fill failed, and the resulting state would even be reverted in the case of a block re-org that excluded the initial fill transaction.
+
+### Capital allocation
+
+The 0x protocol expects a user's assets to be located in their own wallet, rather than deposited in a DEX-specific contract. This allows market makers to place orders accross multiple 0x relayers without needing to split their capital in multiple different locations.
+
+## Developer tooling
+
+### What is the state of 0x developer tooling?
+
+Currently we have the best tooling support for Javascript/Typescript and are actively improving support for Python. Visit the [developers section](https://0xproject.com/docs) of our site for a full-list of developer tools avaiable.
+
+If you plan on implementing custom infrastructure, you will need the following functionality at a bare minimum:
+
+-   Interacting with relayers over Websockets or HTTPS
+-   Encoding the [`assetData`](https://0x.org/docs/guides/v2-specification#assetdata) of an order using [ABIv2](https://solidity.readthedocs.io/en/latest/abi-spec.html)
+-   Hashing orders
+-   Cryptographically signing orders with the address you wish to trade with
+
+In addition, it is highly recommended to be connected to an Ethereum node so that you can:
+
+-   Read the state of orders
+-   Be notified when the state of an order changes (by subscribing to the relevant events)
+-   Set allowances to the 0x smart contracts for assets you wish to sell
+-   Fill or cancel orders
+
+### Example projects
+
+Here is a short list of example market making projects built on 0x:
+
+-   [Maker's market making bot in Python](https://github.com/makerdao/market-maker-keeper)
+-   [Hummingbot -- open-source market making bot](https://www.hummingbot.io/)
+-   [RadarRelay bot example](https://github.com/RadarRelay/sdk-bot-example)

@@ -43,7 +43,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 links: [
                     {
                         label: 'Explore the Docs',
-                        url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
+                        url: `${WebsitePaths.DocsGuides}/market-making-on-0x`,
                     },
                 ],
             },
@@ -134,7 +134,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 <Banner
                     heading="Start trading today."
                     subline="Check out our Market Making tutorials to get started"
-                    mainCta={{ text: 'Tutorials', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
+                    mainCta={{ text: 'Tutorials', href: `${WebsitePaths.DocsGuides}/market-making-on-0x` }}
                     secondaryCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
                 />
                 <ModalContact
@@ -158,7 +158,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
 
     private readonly _renderHeroActions = () => (
         <>
-            <Button href={`${WebsitePaths.Wiki}#Market-Making-on-0x`} bgColor="dark" isInline={true}>
+            <Button href={`${WebsitePaths.DocsGuides}/market-making-on-0x`} bgColor="dark" isInline={true}>
                 Get Started
             </Button>
             <Button

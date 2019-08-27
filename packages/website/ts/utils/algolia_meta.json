@@ -134,6 +134,22 @@
             "topics": ["Relayer", "Trader"],
             "difficulty": "Beginner",
             "path": "guides/web3-provider-explained.mdx"
+        },
+        "market-making-on-0x": {
+            "title": "Market-making on 0x",
+            "description": "Learn how to market-make on 0x, and what the differences are between trading on a CEX vs. DEX",
+            "tags": ["Trader"],
+            "topics": ["Trader"],
+            "difficulty": "Beginner",
+            "path": "guides/market-making-on-0x.mdx"
+        },
+        "0x-extensions-explained": {
+            "title": "0x Extensions explained",
+            "description": "Learn about how you can extend 0x protocol with your own custom extensions adding white-listing, dutch auction mechanics and much more to 0x.",
+            "tags": ["Relayer", "Trader", "Extensions"],
+            "topics": ["Relayer", "Trader", "Extensions"],
+            "difficulty": "Advanced",
+            "path": "guides/0x-extensions-explained.mdx"
         }
     },
     "tools": {

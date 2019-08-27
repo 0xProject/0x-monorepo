@@ -2,7 +2,7 @@
 
 A few useful web3 subproviders including a LedgerSubprovider useful for adding Ledger Nano S support.
 
-We have written up a [Wiki](https://0xproject.com/wiki#Web3-Provider-Examples) article detailing some use cases of this subprovider package.
+We have written up a [guide](https://0x.org/docs/guides/web3-provider-explained#web3-provider-examples) article detailing some use cases of this subprovider package.
 
 ### Read the [Documentation](https://0xproject.com/docs/subproviders).
 
