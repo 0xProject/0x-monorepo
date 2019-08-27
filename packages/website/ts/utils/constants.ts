@@ -110,6 +110,7 @@ export const constants = {
     URL_LAUNCH_KIT: 'https://github.com/0xProject/0x-launch-kit',
     URL_LAUNCH_KIT_ERC20_DEMO: 'https://demo.0x.org/erc20/',
     URL_LAUNCH_KIT_ERC721_DEMO: 'https://demo.0x.org/marketplace/',
+    URL_LAUNCH_KIT_TUTORIAL_YOUTUBE: 'https://www.youtube.com/watch?v=NX_Iag0OCS4',
     URL_WEB3_DOCS: 'https://github.com/ethereum/wiki/wiki/JavaScript-API',
     URL_WEB3_DECODED_LOG_ENTRY_EVENT:
         'https://github.com/0xProject/web3-typescript-typings/blob/f5bcb96/index.d.ts#L123',
