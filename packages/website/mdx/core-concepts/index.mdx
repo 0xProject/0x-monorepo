@@ -1,6 +1,6 @@
 # Introduction
 
-0x is a protocol that facilitates the peer-to-peer exchange of [Ethereum](TODO-Link-to-Ethereum-primer-section)-based assets. The protocol serves as an open standard and common building block for any developer needing exchange functionality. 0x provides secure [smart contracts](TODO-Link-to-smart-contract-section) that are externally audited; [developer tools](TODO-Link-to-Tools-explorer) tailored to the 0x ecosystem; and open access to a [pool of shared liquidity](TODO-Link-to-shared-liquidity-section). Developers can integrate with 0x at the smart contract or application layer. 
+0x is a protocol that facilitates the peer-to-peer exchange of [Ethereum](#ethereum-primer)-based assets. The protocol serves as an open standard and common building block for any developer needing exchange functionality. 0x provides secure [smart contracts](#ethereum-accounts-types) that are externally audited; [developer tools](/docs/tools) tailored to the 0x ecosystem; and open access to a [pool of shared liquidity](#networked-liquidity). Developers can integrate with 0x at the smart contract or application layer. 
 
 ## What can I build on 0x?
 
@@ -52,10 +52,11 @@ The 0x order message format is rigid enough to enforce the conditions under whic
     
 | Utility Tokens                                                  | Stable coins                       | Fiat-backed tokens                                                                  | Crypto-backed tokens                                                           | In-game currencies                                | Securities |
 |-----------------------------------------------------------------|------------------------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------------------------------------------|------------|
-| [Ether](https://blog.0xproject.com/canonical-weth-a9aa7d0279dd) | [Dai](https://makerdao.com/en/dai) | [USDC](https://www.coinbase.com/usdc)                                               | [WBTC](https://www.wbtc.network/)                                              | [MANA in Decentraland](https://decentraland.org/) | TODO       |
-| [Basic attention tokens](https://basicattentiontoken.org/)      |                                    | [Gemini Dollar](https://gemini.com/dollar/)                                         | [vAtom](https://etherscan.io/token/0xc5637328da2e0a3400274a4088cea2e25fb91446) |                                                   |            |
+| [Ether](https://blog.0xproject.com/canonical-weth-a9aa7d0279dd) | [Dai](https://makerdao.com/en/dai) | [USDC](https://www.coinbase.com/usdc)                                               | [WBTC](https://www.wbtc.network/)                                              | [MANA in Decentraland](https://decentraland.org/) | TBA        |
+| [Basic attention tokens](https://basicattentiontoken.org/)      |                                    | [Gemini Dollar](https://gemini.com/dollar/)                                         | [TBTC](https://tbtc.network/)                                                  |                                                   |            |
 | [Augur REP](https://www.augur.net/)                             |                                    | [Tether EUR](https://etherscan.io/token/0xabdf147870235fcfc34153828c769a70b3fae01f) | [vEOS](https://etherscan.io/token/0x8055f300b7d209ace52dc16a49352d301b2fcce2)  |                                                   |            |
-| [Livepeer Token](https://livepeer.org/)                         |                                    | [XCHF](https://etherscan.io/token/0xb4272071ecadd69d933adcd19ca99fe80664fc08)       |                                                                                |                                                   |            |
+| [Livepeer Token](https://livepeer.org/)                         |                                    | [XCHF](https://etherscan.io/token/0xb4272071ecadd69d933adcd19ca99fe80664fc08)       | [vAtom](https://etherscan.io/token/0xc5637328da2e0a3400274a4088cea2e25fb91446) |                                                   |            |
+
     
 ### 2. [Non-fungible]() tokens (Those conforming to the [ERC721 standard](http://erc721.org/))
 
@@ -63,10 +64,10 @@ The 0x order message format is rigid enough to enforce the conditions under whic
 
 | Crypto-collectibles     | In-game items                | Real-world assets   |
 |-------------------------|------------------------------|---------------------|
-| [God's Unchained](TODO) | [Land in Decentraland](TODO) | [Real-estate](TODO) |
-| [Axie Infinity](TODO)   |                              | [Artwork](TODO)     |
-| [Cryptokitties](TODO)   |                              |                     |
-| [CryptoPunks](TODO)     |                              |                     |
+| [God's Unchained](https://godsunchained.com/) | [Land in Decentraland](https://decentraland.org/) | [Real-estate](https://centrifuge.io/technology/tinlake/) |
+| [Axie Infinity](https://axieinfinity.com/)   |                              | [Artwork](https://www.superrare.co/)     |
+| [Cryptokitties](https://www.cryptokitties.co/)   |                              |                     |
+| [CryptoPunks](https://thecryptopunks.com/)     |                              |                     |
 
 ### 3. Bundles of assets (trade one-to-many, many-to-one or many-to-many funglible & non-fungible assets in a single order)
 
@@ -121,19 +122,19 @@ Because the 0x protocol is non-custodial and a shared standard used by many rela
 
 In order to help relayers share liquidity, the 0x core team has published [a standard relayer API](https://github.com/0xProject/standard-relayer-api/) any relayer can implement in order to make it easier for other relayers to pull orders from their orderbook. In this way, relayers can tap into each others liquidity.
 
-In addition to an API standard, the 0x core team is also building  [0x Mesh](https://blog.0xproject.com/0x-roadmap-2019-part-3-networked-liquidity-0x-mesh-9a24026202b3), a peer-to-peer network for sharing 0x orders. Anyone can [spin up a Mesh node](https://github.com/0xProject/0x-mesh/) and immediately start sharing 0x orders with others in the ecosystem. We hope to enable the creation of a globally accessible, physically distributed orderbook with more liquidity then any single centralized exchange.
+In addition to an API standard, the 0x core team is also building  [0x Mesh](https://0x-org.gitbook.io/mesh/), a peer-to-peer network for sharing 0x orders. Anyone can [spin up a Mesh node](https://github.com/0xProject/0x-mesh/) and immediately start sharing 0x orders with others in the ecosystem. We hope to enable the creation of a globally accessible, physically distributed orderbook with more liquidity then any single centralized exchange.
 
 <Animation name="mesh" />
 
 ## Extending the 0x protocol
 
-By design, the 0x protocol is built to be highly modular and extensible. Some changes to the protocol require approval from the ZRX token holders, such as the addition of an [assetProxy](https://0x.org/guide/v2-specification#assetproxy) (e.g., to support trading of a new token standard). Proposals for these types of changes are discussed in [ZEIPs](https://github.com/0xProject/zeips/issues) (0x improvement proposals).
+By design, the 0x protocol is built to be highly modular and extensible. Some changes to the protocol require approval from the ZRX token holders, such as the addition of an [assetProxy](https://0x.org/docs/guides/v2-specification#assetproxy) (e.g., to support trading of a new token standard). Proposals for these types of changes are discussed in [ZEIPs](https://github.com/0xProject/zeips/issues) (0x improvement proposals).
 
 Another type of the 0x protocol extension that does not require any kind of approval to be used are aptly called [0x extensions](https://0x.org/extensions). 0x extensions add arbitrary logic that 0x orders must flow through before they can get filled or cancelled.
 
 ![Extension](/images/docs/extension.png "Extension")
 
-Examples of the types of features this enables are trading whitelists (KYC, invite-only, etc...), Dutch auctions and [trade coordinators](https://0x.org/docs/guides/v2-coordinatior-specification) to name a few. We are just beginning to see the innovation this ability to permissionlessly extend the 0x protocol will unleash.
+Examples of the types of features this enables are trading whitelists (KYC, invite-only, etc...), [Dutch auctions](https://0x.org/docs/guides/0x-extensions-explained#dutch-auction-contract) and [trade coordinators](https://0x.org/docs/guides/v2-coordinatior-specification) to name a few. We are just beginning to see the innovation this ability to permissionlessly extend the 0x protocol will unleash.
 
 ## Up next
 
@@ -143,27 +144,27 @@ We hope this conceptual overview of 0x was helpful in giving you a better unders
 
 Although 0x has ambitions to enable trading on and between all major blockchains, the current version of 0x supports the trading of Ethereum-based assets. Because of this, building on 0x currently means building on Ethereum. This section will give you a technical introduction to the Ethereum concepts you will need to understand to build on the 0x protocol.
 
-### Ethereum primer
+## Ethereum primer
 
 Ethereum is a [proof-of-work](https://en.bitcoin.it/wiki/Proof_of_work) blockchain that mines new blocks every ~12 seconds. It's native currency is called Ether, and it is paid to miners in return for the inclusion of transactions into a block. A transaction can be a simple transfer of value from one account to another (like in Bitcoin), or it can trigger a function invocation in a small program that has been stored on the blockchain. These small programs are called "smart contracts" and they can execute any arbitrary logic. The 0x protocol is a system of smart contracts that has been deployed on Ethereum. Interacting with 0x involves invoking the various functions exposed by the 0x smart contracts (e.g., `fillOrder()`, `cancelOrder()`, etc...).
 
-### Ethereum accounts types
+## Ethereum accounts types
 
 In Ethereum, there are two types of accounts:
 
-#### Externally owned accounts (EOA)
+### Externally owned accounts (EOA)
 
 An EOA is an Ethereum account that is directly controlled by a human being. Both Ethereum and 0x use the [digital signatures](https://en.wikipedia.org/wiki/Digital_signature) building block mentioned in the previous section to verify identity and by proxy ownership of specific accounts on the Ethereum blockchain. The specific digital signature both platforms use involve [public key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography). In public key cryptography, someone generates two keys, a public key that is widely distributed and a private key that is kept secret by the owner. By signing a message with the private key, the owner can prove to the world that they know the private key corresponding to a specific public key, without ever revealing the private key itself. Ethereum uses this construction by supporting externally owned accounts (EOA), accounts where the account id (or address) is derived from a public key. Anyone with the corresponding private key, can sign Ethereum transactions that prove ownership over the account and therefore can make value transfers and invoke smart contract functions. Since 0x is a smart contract on Ethereum, the owner of the private key can trade the assets in the corresponding Ethereum account by signing a transaction instructing 0x to fill an order.
 
 0x also leverages this existing authentication setup to allow order makers to sign 0x orders off-chain. They must sign the order with the private key associated with their Ethereum account that holds the assets they wish to trade. This way, takers can verify on Ethereum that the maker really has the assets they claim to have and can fulfill the order.
 
-#### Smart contract accounts
+### Smart contract accounts
 
 A smart contract account is generated everytime a smart contract program is deployed to the blockchain. The contract code lives at this address. In order to invoke a function defined within a smart contract program, one must send a transaction to it's address. The transaction will also specify which function of this program the caller wishes to invoke, along with which parameters to supply. E.g., when filling an order using 0x, the taker will send an Etherem transaction to the 0x exchange contract address, specifying it should invoke the `fillOrder` function, and supply as parameters the order they want filled, and how much they want to fill it for.
 
 ![EOA vs smart contract](/images/docs/eoa_smart_contract.svg "EOA vs smart contract")
 
-### Gas
+## Gas
 
 Blockchain transactions cost a fee to get mined and this fee is paid to the miner. The fee should correspond to the amount of work the transaction will require the miner to do. Since smart contracts can involve arbitrary logic, Ethereum invented a system of accounting that sets a price for every  program instruction available to smart contract developers. This accounting unit is called "gas" and anyone can figure out how much gas a transaction will cost by adding up the gas cost of all the instructions a particular transaction will execute. Since fees are paid to miners in Ether, there needs to be an exchange rate between a unit of gas and Ether. Instead of setting a fixed exchange rate, the Ethereum core developers decided to let the transaction sender specify the amount they are willing to pay per unit of gas consumed by their transaction.
 
@@ -173,7 +174,7 @@ transactionCost = gasUsedByTransaction * gasPriceSenderIsWillingToPay
 
 In this way, miners can optimize their reward by including the transactions that pay them the highest fee, and users can pick the gas price they are willing to pay based on the urgency with which they want their transaction included into a block. This dynamic around what is effectively a gas auction has some interesting [consequences for all DEX's built on Ethereum](https://blog.0xproject.com/front-running-griefing-and-the-perils-of-virtual-settlement-part-1-8554ab283e97). There is a limit to the amount of gas that a block may consume and this is called the block gas limit. To learn more about gas, [read through this in-depth blog post](https://media.consensys.net/ethereum-gas-fuel-and-fees-3333e17fe1dc).
 
-### Ethereum clients
+## Ethereum clients
 
 Ethereum is a peer-to-peer network of nodes that all keep a record of the blocks mined, and many of which participate in mining the blocks as well. By sending a transaction to any one node, it will quickly propogate to all other nodes through the networks gossip channels. Once a transaction is mined, the block it was included in will also be gossiped to all the nodes. In order to send an Ethereum transaction to a miner, all one has to do is send it to a single Ethereum node that is part of the P2P network. This node will take care of propogating it to the rest of the network.
 
@@ -188,7 +189,7 @@ The main functions of an Ethereum client are to:
 
 There are two main Ethereum clients that most developers use: [Parity](https://www.parity.io/ethereum/) and [Geth](https://geth.ethereum.org/). Anyone can spin up one of these clients, have it join the Ethereum network and then use it to submit Ethereum transactions to the network. There are several caveats to this approach however. The Ethereum blockchain has grown to take up a lot of disk space, so you must make sure you have sufficient space to sync the entire chain (>1TB recommended). Ethereum clients were expertly designed as nodes of a peer-to-peer network, however they perform very poorly as backend services for heavily trafficked applications. Sending all your 0x dApp transactions through a single node will likely cause it to crash. Because of these issues, many 0x developers use a third-party, hosted Ethereum node that has been optimized for handling requests from high-traffic applications. An example of such services is [Infura](https://infura.io/). Lastly, there are some efforts to create open-source tools that help developers deploy their own swarm of Ethereum nodes such as [EtherCattle](https://github.com/openrelayxyz/ethercattle-deployment).
 
-#### Ethereum JSON-RPC
+### Ethereum JSON-RPC
 
 Every Ethereum node exposes an API that let's the outside world interact with it (e.g., submit transactions, call smart contract functions, etc...). This API adheres to the [JSON-RPC 2.0 standard](https://www.jsonrpc.org/specification) and has many [standardized methods](https://github.com/ethereum/wiki/wiki/JSON-RPC). Most Ethereum libraries come bundled with an Ethereum JSON-RPC client, including the following:
 
@@ -200,32 +201,30 @@ In addition to being the API for interacting with Ethereum nodes, Ethereum JSON-
 
 ### Interacting with 0x on Ethereum
 
-As mentioned earlier, the part of the 0x protocol that lives on-chain is deployed as a system of smart contracts on the main Ethereum blockchain and it's various [test networks](https://blog.monetha.io/testnet/). [Here](https://0x.org/wiki#Deployed-Addresses) is a list of the contracts that make up the 0x protocol and the addresses of where they live on various networks.
+As mentioned earlier, the part of the 0x protocol that lives on-chain is deployed as a system of smart contracts on the main Ethereum blockchain and it's various [test networks](https://blog.monetha.io/testnet/). [Here](https://0x.org/docs/guides/0x-cheat-sheet) is a list of the contracts that make up the 0x protocol and the addresses of where they live on various networks.
 
 In Ethereum, there are two main ways that a user can interact with any smart contract and therefore the 0x smart contracts:
 
-#### Calls
+### Calls
 
 A call is a read-only function call that does not cost the caller any gas. It is able to read blockchain state but cannot modify it. Some examples of read-only 0x contract calls are `cancelled(bytes32 orderHash)`, `filled(bytes32 orderHash)` which return whether a 0x order has been cancelled and how much of it has already been filled, respectively.
 
 ```typescript
 import { ExchangeContract } from '0x.js';
-import { provider, networkId, order } from '@0x/browser-examples';
 
 const exchange = new ExchangeContract(provider, networkId);
 
 const filledAmount = await exchange.filled.callAsync(order);
 ```
 
-Since the Ethereum client processing these requests has a copy of the blockchain's state, it is able to compute the value itself and return the result without involving any other nodes from the network. Calls are considered cheap, but 0x developers should still try to batch multiple state requests into a single call. We expose several methods to help you do this such as `getOrdersInfo(Order[]  orders)`, which returns on-chain information for a batch of 0x orders (TODO: Update this once we have better helper methods).
+Since the Ethereum client processing these requests has a copy of the blockchain's state, it is able to compute the value itself and return the result without involving any other nodes from the network. Calls are considered cheap, but 0x developers should still try to batch multiple state requests into a single call. We expose several methods in the `DevUtils` contract to help you do this such as `getOrderRelevantStates(LibOrder.Order[] memory orders, bytes[] memory signatures)`, which returns on-chain information for a batch of 0x orders.
 
-#### Transactions
+### Transactions
 
 A transaction sent to a smart contract is a read-write function invocation that will cost the caller gas. It is able to both read and modify blockchain state. Because of it's ability to modify state, transactions must be mined into a block, distributed to all nodes in the network, and they must each apply the changes to their local copy of the state. Some examples of 0x functions that must be executed as transactions include `fillOrder(Order order, uint256 takerAssetFillAmount, bytes signature)` and `cancelOrder(Order order)` since both of these operations change the state of a 0x order.
 
 ```typescript
 import { ExchangeContract } from '0x.js';
-import { provider, networkId, order, orderSignature, makerAddress } from '@0x/browser-examples';
 
 const exchange = new ExchangeContract(provider, networkId);
 
@@ -234,7 +233,7 @@ const txnReceipt = await exchange.cancelOrder.awaitTransactionSuccessAsync(order
 });
 ```
 
-### Anatomy of an Ethereum transaction
+## Anatomy of an Ethereum transaction
 
 Every Ethereum transaction must include the following information:
 
@@ -250,7 +249,7 @@ Every Ethereum transaction must include the following information:
 
 Once all these fields are gathered, they are [hashed](https://en.wikipedia.org/wiki/Cryptographic_hash_function) together into what is called an Ethereum transaction hash. The last step required to make this a valid Ethereum transaction is to sign it with the private key corresponding to the `From` address. Our 0x libraries will generate Ethereum transactions, hash them, request their signature and then send them to an Ethereum node for you.
 
-### Subscribing to smart contract events
+## Subscribing to smart contract events
 
 As a 0x developer, there might be times when you need to get notified when a state change occurs on-chain. For example, you might want to get an update as soon as orders from a specific maker get filled or cancelled. Ethereum let's smart contracts emit events during execution. These events can then be subscribed to and processed by your application. 
 
@@ -276,7 +275,6 @@ The 0x libraries expose easy ways for you to subscribe to events emitted by a sp
 
 ```typescript
 import { exchangeContract } from '0x.js';
-import { provider, networkId, ExchangeEvents, makerAddress } from '@0x/browser-examples';
 
 const exchange = new ExchangeContract(provider, networkId);
 
@@ -293,14 +291,13 @@ const txnReceipt = await exchange.subscribe(
 
 This method let's you register a callback that will receive the events as they occur. Note that you can only filter events by parameters that have been flagged with the `indexed` keyword in the event declaration. If you want to filter by another value, you will need to listen for all events and do the filtering client-side.
 
-The reason why the `callback` parameter description mentioned events being added and removed is because unlike a traditional web application, our backend is a blockchain and blocks do sometimes get removed from the canonical chain. To learn more about [when and why block re-orgs happen](#TODO), read our more advanced tutorial on the subject.
+The reason why the `callback` parameter description mentioned events being added and removed is because unlike a traditional web application, our backend is a blockchain and blocks do sometimes get removed from the canonical chain (this is called a [chain reorganization](https://en.bitcoin.it/wiki/Chain_Reorganization) or simply "block re-org").
 
-### Conclusion
+## Conclusion
 
 You have now been introduced to all the Ethereum development concepts you will need to know when building on 0x. You are now ready to dive into a more advanced tutorial about the specific application you wish to build ontop of 0x. Pick the tutorial below that best describes what you want to build on 0x:
 
-- [How to build a DEX or NFT marketplace ontop of 0x](TODO)
-- [How to add exchange functionality into my dApp](TODO)
-- [How to integrate 0x liquidity into my Ethereum-based protocol](TODO)
-- [How to trade on 0x](TODO)
-- [How to add 0x Instant to my website or mobile app](TODO)
+- [Launch an exchange in a few minutes](https://www.youtube.com/watch?v=NX_Iag0OCS4)
+- [Tap into contract-fillable liquidity](https://0x.org/docs/guides/contract-fillable-liquidity)
+- [Start market-making on 0x](https://0x.org/docs/guides/market-making-on-0x)
+- [Add 0x Instant to your website / mobile app](https://0x.org/docs/guides/integrate-instant)
