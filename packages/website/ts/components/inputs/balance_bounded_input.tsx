@@ -46,28 +46,28 @@ export class BalanceBoundedInput extends React.Component<BalanceBoundedInputProp
             amountString,
         };
     }
-    public componentWillReceiveProps(nextProps: BalanceBoundedInputProps): void {
-        if (nextProps === this.props) {
+    public componentDidUpdate(prevProps: BalanceBoundedInputProps, prevState: BalanceBoundedInputState): void {
+        if (this.props === prevProps) {
             return;
         }
-        const isCurrentAmountNumeric = utils.isNumeric(this.state.amountString);
-        if (nextProps.amount !== undefined) {
+        const isCurrentAmountNumeric = utils.isNumeric(prevState.amountString);
+        if (this.props.amount !== undefined) {
             let shouldResetState = false;
             if (!isCurrentAmountNumeric) {
                 shouldResetState = true;
             } else {
-                const currentAmount = new BigNumber(this.state.amountString);
-                if (!currentAmount.eq(nextProps.amount) || !nextProps.balance.eq(this.props.balance)) {
+                const currentAmount = new BigNumber(prevState.amountString);
+                if (!currentAmount.eq(this.props.amount) || !this.props.balance.eq(prevProps.balance)) {
                     shouldResetState = true;
                 }
             }
             if (shouldResetState) {
-                const amountString = nextProps.amount.toString();
-                this._setAmountState(amountString, nextProps.balance);
+                const amountString = this.props.amount.toString();
+                this._setAmountState(amountString, this.props.balance);
             }
         } else if (isCurrentAmountNumeric) {
             const amountString = '';
-            this._setAmountState(amountString, nextProps.balance);
+            this._setAmountState(amountString, this.props.balance);
         }
     }
     public render(): React.ReactNode {
