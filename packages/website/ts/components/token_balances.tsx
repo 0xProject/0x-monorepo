@@ -98,10 +98,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
-    public componentWillReceiveProps(nextProps: TokenBalancesProps): void {
-        if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
-            if (this.state.isBalanceSpinnerVisible) {
-                const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
+    public componentDidMount(): void {
+        window.scrollTo(0, 0);
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+    }
+    public componentDidUpdate(prevProps: TokenBalancesProps, prevState: TokenBalancesState): void {
+        if (prevProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
+            if (prevState.isBalanceSpinnerVisible) {
+                const receivedAmountInWei = this.props.userEtherBalanceInWei.minus(prevProps.userEtherBalanceInWei);
                 const receivedAmountInEth = Web3Wrapper.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
                 const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
                 this.props.dispatcher.showFlashMessage(
@@ -114,21 +120,21 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
         }
 
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
-            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+            prevProps.userAddress !== this.props.userAddress ||
+            prevProps.networkId !== this.props.networkId ||
+            prevProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
-            const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+            const trackedTokenAddresses = _.keys(prevState.trackedTokenStateByAddress);
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
         }
 
-        if (!_.isEqual(nextProps.trackedTokens, this.props.trackedTokens)) {
-            const newTokens = _.difference(nextProps.trackedTokens, this.props.trackedTokens);
+        if (!_.isEqual(this.props.trackedTokens, prevProps.trackedTokens)) {
+            const newTokens = _.difference(this.props.trackedTokens, prevProps.trackedTokens);
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = this.state.trackedTokenStateByAddress;
+            const trackedTokenStateByAddress = prevState.trackedTokenStateByAddress;
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
@@ -143,12 +149,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(newTokenAddresses);
         }
-    }
-    public componentDidMount(): void {
-        window.scrollTo(0, 0);
-        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
     }
     public componentWillUnmount(): void {
         this._isUnmounted = true;
