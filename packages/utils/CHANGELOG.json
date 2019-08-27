@@ -7,6 +7,10 @@
                 "pr": 2075
             },
             {
+                "note": "Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector.",
+                "pr": "TODO"
+            },
+            {
                 "note": "Add `LibFixedMath` `RevertError` types.",
                 "pr": "TODO"
             }

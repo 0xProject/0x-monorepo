@@ -67,7 +67,7 @@ export function coerceThrownErrorAsRevertError(error: Error): RevertError {
         return decodeThrownErrorAsRevertError(error);
     } catch (err) {
         if (isGanacheTransactionRevertError(error)) {
-            return new AnyRevertError();
+            return err;
         }
         // Handle geth transaction reverts.
         if (isGethTransactionRevertError(error)) {

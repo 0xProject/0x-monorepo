@@ -35,7 +35,7 @@ export class FixedMathUnsignedValueError extends RevertError {
 
 export class FixedMathBinOpError extends RevertError {
     constructor(error?: BinOpErrorCodes, a?: BigNumber | number | string, b?: BigNumber | number | string) {
-        super('FixedMathBinOpError', 'FixedMathBinOpError(uint8 error, uint256 a, uint256 b)', {
+        super('FixedMathBinOpError', 'FixedMathBinOpError(uint8 error, int256 a, int256 b)', {
             error,
             a,
             b,
