@@ -37,6 +37,7 @@ import "../immutable/MixinConstants.sol";
 contract StakingPoolRewardVault is
     Authorizable,
     IStakingPoolRewardVault,
+    IVaultCore,
     MixinDeploymentConstants,
     MixinConstants,
     MixinVaultCore

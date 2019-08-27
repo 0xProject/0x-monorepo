@@ -28,6 +28,7 @@ import "../sys/MixinOwnable.sol";
 contract MixinZrxVault is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
     MixinOwnable
@@ -68,5 +69,15 @@ contract MixinZrxVault is
         internal
     {
         zrxVault.withdrawFrom(owner, amount);
+    }
+
+    /// @dev Returns balance of `owner` in the ZRX ault.
+    /// @param owner of deposited Zrx Tokens.
+    function _balanceOfOwnerInZrxVault(address owner)
+        internal
+        view
+        returns (uint256)
+    {
+        zrxVault.balanceOf(owner);
     }
 }

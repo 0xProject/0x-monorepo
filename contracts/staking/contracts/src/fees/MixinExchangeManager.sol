@@ -31,6 +31,7 @@ import "../sys/MixinOwnable.sol";
 contract MixinExchangeManager is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
     MixinOwnable

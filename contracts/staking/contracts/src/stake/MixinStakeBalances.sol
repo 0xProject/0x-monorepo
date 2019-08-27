@@ -24,7 +24,7 @@ import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
-import "./MixinTimeLockedStake.sol";
+import "./MixinZrxVault.sol";
 
 
 /// @dev This mixin contains logic for querying stake balances.
@@ -32,10 +32,12 @@ import "./MixinTimeLockedStake.sol";
 contract MixinStakeBalances is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
     MixinScheduler,
-    MixinTimeLockedStake
+    MixinOwnable,
+    MixinZrxVault
 {
 
     using LibSafeMath for uint256;
@@ -60,55 +62,31 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return stakeByOwner[owner];
+        return _balanceOfOwnerInZrxVault(owner);
     }
 
     /// @dev Returns the activated stake for a given owner.
     /// This stake is in the "Activated" OR "Activated & Delegated" states.
     /// @param owner to query.
     /// @return Activated stake for owner.
-    function getActivatedStake(address owner)
+    function getActiveStake(address owner)
         public
         view
         returns (uint256)
     {
-        return activatedStakeByOwner[owner];
+        return _syncBalanceDestructive(activeStakeByOwner[owner]).current;
     }
 
     /// @dev Returns the deactivated stake for a given owner.
     /// This stake is in the "Deactivated & TimeLocked" OR "Deactivated & Withdrawable" states.
     /// @param owner to query.
     /// @return Deactivated stake for owner.
-    function getDeactivatedStake(address owner)
+    function getInactiveStake(address owner)
         public
         view
         returns (uint256)
     {
-        return getTotalStake(owner)._sub(getActivatedStake(owner));
-    }
-
-    /// @dev Returns the activated & undelegated stake for a given owner.
-    /// This stake is in the "Activated" state.
-    /// @param owner to query.
-    /// @return Activated stake for owner.
-    function getActivatedAndUndelegatedStake(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        return activatedStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
-    }
-
-    /// @dev Returns the stake that can be activated for a given owner.
-    /// This stake is in the "Deactivated & Withdrawable" state.
-    /// @param owner to query.
-    /// @return Activatable stake for owner.
-    function getActivatableStake(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        return getDeactivatedStake(owner)._sub(getTimeLockedStake(owner));
+        return _syncBalanceDestructive(inactiveStakeByOwner[owner]).current;
     }
 
     /// @dev Returns the stake that can be withdrawn for a given owner.
@@ -120,7 +98,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return getActivatableStake(owner);
+        return uint256(withdrawableStake[owner]);
     }
 
     /// @dev Returns the stake delegated by a given owner.
@@ -132,7 +110,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeByOwner[owner];
+        return _syncBalanceDestructive(delegatedStakeByOwner[owner]).current;
     }
 
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
@@ -145,7 +123,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeToPoolByOwner[owner][poolId];
+        return _syncBalanceDestructive(delegatedStakeToPoolByOwner[owner][poolId]).current;
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool, across all members.
@@ -157,33 +135,53 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeByPoolId[poolId];
+        return _syncBalanceDestructive(delegatedStakeByPoolId[poolId]).current;
     }
 
-    /// @dev Returns the timeLocked stake for a given owner.
-    /// This stake is in the "Deactivated & TimeLocked" state.
-    /// @param owner to query.
-    /// @return TimeLocked stake for owner.
-    function getTimeLockedStake(address owner)
-        public
+    function _syncBalanceDestructive(IStructs.StakeBalance memory balance)
+        internal
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory)
     {
-        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
-        return timeLock.total;
+        uint64 currentEpoch = getCurrentEpoch();
+        if (currentEpoch > balance.lastStored) {
+            balance.lastStored = currentEpoch;
+            balance.current = balance.next;
+        }
+        return balance;
     }
 
-    /// @dev Returns the starting TimeLock Period of timeLocked state for a given owner.
-    /// This stake is in the "Deactivated & TimeLocked" state.
-    /// See MixinScheduling and MixinTimeLock.
-    /// @param owner to query.
-    /// @return Start of timeLock for owner's timeLocked stake.
-    function getTimeLockStart(address owner)
-        public
-        view
-        returns (uint256)
+    function _moveStake(
+        IStructs.StakeBalance storage fromPtr,
+        IStructs.StakeBalance storage toPtr,
+        uint96 amount
+    )
+        internal
     {
-        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
-        return timeLock.lockedAt;
+        IStructs.StakeBalance memory from = _syncBalanceDestructive(fromPtr);
+        IStructs.StakeBalance memory to = _syncBalanceDestructive(toPtr);
+
+        if (amount > from.next) {
+            revert("@TODO - INSERT RICH REVERT");
+        }
+
+        from.next -= amount;
+        to.next += amount;
+
+        // update state
+        _storeBalance(fromPtr, from);
+        _storeBalance(toPtr, to);
+    }
+
+    function _storeBalance(
+        IStructs.StakeBalance storage balancePtr,
+        IStructs.StakeBalance memory balance
+    )
+        private
+    {
+        // @Note this is the cost of one sstore.
+        balancePtr.lastStored = balance.lastStored;
+        balancePtr.next = balance.next;
+        balancePtr.current = balance.current;
     }
 }

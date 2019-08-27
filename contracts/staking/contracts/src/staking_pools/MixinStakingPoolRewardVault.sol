@@ -30,6 +30,7 @@ import "../sys/MixinOwnable.sol";
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
     MixinOwnable

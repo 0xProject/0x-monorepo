@@ -33,7 +33,7 @@ import "./MixinExchangeManager.sol";
 
 /// @dev This mixin contains the logic for 0x protocol fees.
 /// Protocol fees are sent by 0x exchanges every time there is a trade.
-/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
+/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then
 /// the fee will be attributed to their pool. At the end of an epoch the maker and
 /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
 /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
@@ -43,14 +43,15 @@ import "./MixinExchangeManager.sol";
 contract MixinExchangeFees is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
+    MixinScheduler,
     MixinOwnable,
     MixinExchangeManager,
-    MixinScheduler,
     MixinStakingPoolRewardVault,
+    MixinZrxVault,
     MixinStakingPool,
-    MixinTimeLockedStake,
     MixinStakeBalances
 {
 
@@ -121,7 +122,7 @@ contract MixinExchangeFees is
 
     /// @dev Pays rewards to market making pools that were active this epoch.
     /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
-    /// proportional to (i) the fee volume attributed to their pool over the epoch, and 
+    /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
     /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
     /// the members of their pool. There will be a small amount of ETH leftover in this contract
@@ -171,7 +172,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getStakingPoolOperator(poolId));
+            uint256 stakeHeldByPoolOperator = getActiveStake(getStakingPoolOperator(poolId)); // @TODO Update
             uint256 weightedStake = stakeHeldByPoolOperator._add(
                 totalStakeDelegatedToPool
                 ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)

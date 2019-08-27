@@ -26,7 +26,6 @@ import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinTimeLockedStake.sol";
 import "./MixinStake.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 
@@ -41,20 +40,23 @@ import "../staking_pools/MixinStakingPoolRewards.sol";
 contract MixinDelegatedStake is
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinScheduler,
+    MixinOwnable,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakingPool,
-    MixinTimeLockedStake,
     MixinStakeBalances,
     MixinStake,
     MixinStakingPoolRewards
 {
 
     using LibSafeMath for uint256;
+
+
+    /*
 
     /// @dev Deposit Zrx and mint stake in the "Activated & Delegated" state.
     /// Note that the sender must be payable, as they may receive rewards in ETH from their staking pool.
@@ -165,4 +167,5 @@ contract MixinDelegatedStake is
         // decrement how much stake has been delegated to pool
         delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._sub(amount);
     }
+    */
 }

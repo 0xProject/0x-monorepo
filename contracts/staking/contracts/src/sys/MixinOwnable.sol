@@ -11,9 +11,9 @@ import "../immutable/MixinStorage.sol";
 /// in `immutable/MixinStorage.sol` and its value is set
 /// by the delegating proxy (StakingProxy.sol)
 contract MixinOwnable is
-    Ownable,
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage
 {

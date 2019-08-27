@@ -24,8 +24,10 @@ import "./sys/MixinOwnable.sol";
 
 
 contract StakingProxy is
+    IStakingEvents,
     IStakingProxy,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
     MixinOwnable

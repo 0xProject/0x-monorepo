@@ -36,23 +36,23 @@ contract MixinStorage is
     // address of staking contract
     address internal stakingContract;
 
-    // mapping from Owner to Amount Staked
-    mapping (address => uint256) internal stakeByOwner;
+    // mapping from Owner to Amount of Active Stake
+    mapping (address => IStructs.StakeBalance) internal activeStakeByOwner;
 
-    // mapping from Owner to Amount of Instactive Stake
-    mapping (address => uint256) internal activatedStakeByOwner;
-
-    // mapping from Owner to Amount TimeLocked
-    mapping (address => IStructs.TimeLock) internal timeLockedStakeByOwner;
+    // mapping from Owner to Amount of Inactive Stake
+    mapping (address => IStructs.StakeBalance) internal inactiveStakeByOwner;
 
     // mapping from Owner to Amount Delegated
-    mapping (address => uint256) internal delegatedStakeByOwner;
+    mapping (address => IStructs.StakeBalance) internal delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
-    mapping (address => mapping (bytes32 => uint256)) internal delegatedStakeToPoolByOwner;
+    mapping (address => mapping (bytes32 => IStructs.StakeBalance)) internal delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) internal delegatedStakeByPoolId;
+    mapping (bytes32 => IStructs.StakeBalance) internal delegatedStakeByPoolId;
+
+    // mapping from Owner to Amount of Withdrawable Stake
+    mapping (address => uint96) internal withdrawableStake;
 
     // total activated stake in the system
     uint256 internal totalActivatedStake;
@@ -75,12 +75,6 @@ contract MixinStorage is
 
     // current epoch start time
     uint64 internal currentEpochStartTimeInSeconds;
-
-    // current withdrawal period
-    uint64 internal currentTimeLockPeriod = INITIAL_TIMELOCK_PERIOD;
-
-    // current epoch start time
-    uint64 internal currentTimeLockPeriodStartEpoch = INITIAL_EPOCH;
 
     // fees collected this epoch
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;

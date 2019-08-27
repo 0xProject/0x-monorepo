@@ -34,6 +34,7 @@ import "./MixinVaultCore.sol";
 /// corruption of related state in the staking contract.
 contract ZrxVault is
     Authorizable,
+    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {

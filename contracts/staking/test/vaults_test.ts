@@ -11,7 +11,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 chaiSetup.configure();
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking Vaults', () => {
+describe.only('Staking Vaults', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -52,7 +52,7 @@ describe('Staking Vaults', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('Reward Vault', () => {
-        it.skip('basic management', async () => {
+        it.only('basic management', async () => {
             // 1 setup test parameters
             const poolOperator = users[0];
             const operatorShare = 39;
