@@ -90,14 +90,13 @@ export class FillOrder extends React.Component<FillOrderProps, FillOrderState> {
             tokensToTrack: [],
         };
     }
-    public componentWillMount(): void {
+    public componentDidMount(): void {
+        window.scrollTo(0, 0);
+
         if (!_.isEmpty(this.state.orderJSON)) {
             // tslint:disable-next-line:no-floating-promises
             this._validateFillOrderFireAndForgetAsync(this.state.orderJSON);
         }
-    }
-    public componentDidMount(): void {
-        window.scrollTo(0, 0);
     }
     public componentWillUnmount(): void {
         this._isUnmounted = true;
