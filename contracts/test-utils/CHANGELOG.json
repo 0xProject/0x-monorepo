@@ -65,6 +65,10 @@
             {
                 "note": "`web3Wrapper` is created with `shouldAllowUnlimitedContractSize` if `UNLIMITED_CONTRACT_SIZE` environment variable is set.",
                 "pr": 2075
+            },
+            {
+                "note": "Add `toHex()`, `hexLeftPad()`, `hexRightPad()`, and 'hexInvert()' hex utils",
+                "pr": "TODO"
             }
         ]
     },
