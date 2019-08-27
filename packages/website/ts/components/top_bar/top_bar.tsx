@@ -95,8 +95,8 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
             isDrawerOpen: false,
         };
     }
-    public componentWillReceiveProps(nextProps: TopBarProps): void {
-        if (nextProps.location.pathname !== this.props.location.pathname) {
+    public componentDidUpdate(prevProps: TopBarProps): void {
+        if (this.props.location.pathname !== prevProps.location.pathname) {
             this.setState({
                 isDrawerOpen: false,
             });
