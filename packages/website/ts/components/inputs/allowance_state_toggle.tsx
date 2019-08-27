@@ -75,14 +75,14 @@ export class AllowanceStateToggle extends React.Component<AllowanceStateTogglePr
             </Container>
         );
     }
-    public componentWillReceiveProps(nextProps: AllowanceStateToggleProps): void {
-        const nextTokenState = nextProps.tokenState;
-        const prevTokenState = this.state.prevTokenState;
+    public componentDidUpdate(_prevProps: AllowanceStateToggleProps, prevState: AllowanceStateToggleState): void {
+        const nextTokenState = this.props.tokenState;
+        const prevTokenState = prevState.prevTokenState;
         if (
             !nextTokenState.allowance.eq(prevTokenState.allowance) ||
             nextTokenState.isLoaded !== prevTokenState.isLoaded
         ) {
-            const tokenState = nextProps.tokenState;
+            const tokenState = this.props.tokenState;
             this.setState({
                 prevTokenState: tokenState,
                 allowanceState: AllowanceStateToggle._getAllowanceState(nextTokenState),
