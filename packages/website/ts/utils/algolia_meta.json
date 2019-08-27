@@ -13,127 +13,126 @@
         }
     },
     "guides": {
-        "build-a-relayer": {
-            "title": "Build a relayer",
-            "description": "A relayer is any party or entity which hosts an off-chain orderbook.",
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Coordinator Model", "Mesh"],
-            "difficulty": "Advanced",
-            "path": "guides/build-a-relayer.mdx"
+        "mesh-beta-participation-guide": {
+            "title": "0x Mesh beta participation guide",
+            "description": "Learn how to spin up a telemetry-enabled Mesh node and participate in the Beta!",
+            "tags": ["Mesh"],
+            "topics": ["Mesh"],
+            "difficulty": "Intermediate",
+            "externalUrl": "https://0x-org.gitbook.io/mesh/getting-started/beta_telemetry_node"
+        },
+        "mesh-json-rpc-usage-guide": {
+            "title": "0x Mesh JSON-RPC usage guide",
+            "description": "Learn how to connect to your Mesh node over Websockets using JSON-RPC",
+            "tags": ["Mesh"],
+            "topics": ["Mesh"],
+            "difficulty": "Intermediate",
+            "externalUrl": "https://0x-org.gitbook.io/mesh/getting-started/usage"
+        },
+        "mesh-db-sync": {
+            "title": "How to sync 0x Mesh with an external database",
+            "description": "Learn the necessary steps to sync a 0x Mesh node with an external database. In syncing the two, you will be able to query Mesh liquidity in the querying language of your choice (e.g., SQL, GraphQL, etc...) either for yourself or your users.",
+            "tags": ["Mesh"],
+            "topics": ["Mesh"],
+            "difficulty": "Intermediate",
+            "externalUrl": "https://0x-org.gitbook.io/mesh/advanced-topics/db_syncing"
+        },
+        "mesh-deployment-guide": {
+            "title": "How to deploy a 0x Mesh node",
+            "description": "Learn how to spin up a non-browser Mesh node using Docker",
+            "tags": ["Mesh"],
+            "topics": ["Mesh"],
+            "difficulty": "Beginner",
+            "externalUrl": "https://0x-org.gitbook.io/mesh/getting-started/deployment"
         },
         "contract-fillable-liquidity": {
             "title": "Contract-fillable Liquidity",
             "subtitle": "Swap tokens by tapping into 0x's networked liquidity",
-            "description": "Use Asset-Swapper to programmatically exchange assets with a single line of code or build custom integrations for more advanced token trades.",
-            "tags": [""],
-            "topics": [""],
+            "description": "Want to tap into 0x liquidity for your DeFi Dapp or protocol? Learn how to use @0x/asset-swapper to find the best priced 0x orders and format them so they can be filled by a smart contract.",
+            "tags": ["CFL"],
+            "topics": ["CFL"],
             "difficulty": "Intermediate",
             "path": "guides/contract-fillable-liquidity.mdx"
         },
-        "develop-on-ethereum": {
-            "title": "Develop on Ethereum",
-            "description": "Welcome to the exciting world of building applications on the Ethereum Blockchain",
-            "tags": ["Relayer", "Trader"],
-            "topics": ["Mesh", "Protocol Developer"],
+        "0x-cheat-sheet": {
+            "title": "0x cheat sheet",
+            "description": "All the information you look up often when building on 0x (e.g., deployed contract addresses)",
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "topics": ["Relayer", "Trader", "Protocol Developer"],
             "difficulty": "Beginner",
-            "path": "guides/develop-on-ethereum.mdx"
-        },
-        "deployed-addresses": {
-            "title": "Deployed Addresses",
-            "description": "",
-            "tags": [""],
-            "topics": [""],
-            "difficulty": "Beginner",
-            "path": "guides/deployed-addresses.mdx"
+            "path": "guides/0x-cheat-sheet.mdx"
         },
         "ganache-setup": {
             "title": "How to Set Up Ganache",
             "description": "",
-            "topics": ["Ganache"],
-            "difficulty": "Intermediate",
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Protocol developer"],
+            "tags": ["Testing", "Relayer", "Protocol Developer", "Trader"],
+            "topics": ["Testing", "Relayer", "Protocol Developer", "Trader"],
+            "difficulty": "Beginner",
             "path": "guides/ganache-setup.mdx"
         },
         "integrate-instant": {
-            "title": "Integrate 0x Instant",
+            "title": "Get started with 0x Instant",
             "subtitle": "A free and flexible way to offer simple crypto purchasing in any app or website",
-            "description": "A convenient way to offer your users access to a wide variety of tokens and other crypto-assets in just a few clicks",
+            "description": "Learn how to embed 0x Instant into your website or mobile app, allowing your users to seemlessly buy any digital asset with Ether",
+            "tags": ["Instant"],
             "topics": ["Instant"],
             "difficulty": "Beginner",
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Instant"],
             "path": "guides/integrate-instant.mdx"
         },
         "relayer-strategies": {
             "title": "Relayer Strategies",
-            "description": "",
+            "description": "Relayers can choose between multiple strategies when building on 0x. This guide will walk you through several options and they relative trade-offs.",
+            "tags": ["Relayers"],
             "topics": ["Relayers"],
             "difficulty": "Beginner",
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Relayers"],
             "path": "guides/relayer-strategies.mdx"
         },
         "legal-guide": {
             "title": "0x Legal Guide",
-            "description": "",
+            "description": "A legal guide that will walk you through some of the relevant laws and regulations that developers building on 0x should be aware of.",
+            "tags": ["Legal"],
             "topics": ["Legal"],
             "difficulty": "Beginner",
-            "isCommunity": false,
-            "isFeatured": true,
-            "tags": ["Legal"],
             "path": "guides/legal-guide.mdx"
         },
-        "page-template": {
-            "title": "Page template",
-            "description": "A relayer is any party or entity which hosts an off-chain orderbook.",
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Coordinator Model", "Mesh"],
-            "difficulty": "Advanced",
-            "path": "guides/page-template.mdx"
-        },
-        "use-networked-liquidity": {
-            "title": "Use networked liquidity",
-            "description": "In this tutorial, we will show you how you can use the @0x/connect package in conjunction with 0x.js in order to",
-            "tags": ["Protocol Developer"],
-            "topics": ["Mesh"],
+        "using-the-standard-relayer-api": {
+            "title": "How to use the Standard Relayer API",
+            "description": "This guide will show you how to use the @0x/connect package to connect to a Relayer adhering to the Standard Relayer API",
+            "tags": ["Relayer", "Trader"],
+            "topics": ["Relayer", "Trader"],
             "difficulty": "Intermediate",
-            "path": "guides/use-networked-liquidity.mdx"
+            "path": "guides/using-the-standard-relayer-api.mdx"
         },
         "v2-coordinatior-specification": {
-            "title": "0x 2.0.0 Coordinator Specification",
-            "description": "",
-            "tags": [""],
-            "topics": [""],
+            "title": "0x Coordinator Specification (v2)",
+            "description": "A comprehensive technical spec of the first coordinator model developer by the 0x core team (soft-cancel variant)",
+            "tags": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
+            "topics": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
             "difficulty": "Advanced",
             "path": "guides/v2-coordinatior-specification.mdx"
         },
         "v2-forwarder-specification": {
-            "title": "0x 2.0.0 Forwarder Specification",
-            "description": "",
-            "tags": [""],
-            "topics": [""],
+            "title": "0x Forwarder Specification (v2)",
+            "description": "The technical spec for the Forwarder 0x extension contract that is used by 0x Instant to abstract away wrapping ETH, setting allowances and paying fees. Learn how it works and how you can use it directly in your own projects.",
+            "tags": ["Instant", "Relayer"],
+            "topics": ["Instant", "Relayer"],
             "difficulty": "Advanced",
             "path": "guides/v2-forwarder-specification.mdx"
         },
         "v2-specification": {
-            "title": "0x Protocol 2.0.0 Specification",
-            "description": "",
-            "tags": [""],
-            "topics": [""],
+            "title": "0x Protocol Specification (v2)",
+            "description": "A comprehensive, technical specification of the 0x protocol useful for anyone trying to understand how the protocol works in precise detail.",
+            "tags": ["Specs", "Relayer", "Trader", "Protocol Developer"],
+            "topics": ["Specs", "Relayer", "Trader", "Protocol Developer"],
             "difficulty": "Advanced",
             "path": "guides/v2-specification.mdx"
         },
         "web3-provider-explained": {
-            "title": "Web3 Provider Explained",
-            "subtitle": "Allow your application to communicate with an Ethereum Node",
-            "description": "Allow your application to request signatures, estimate gas and gas price, and submit transactions to an Ethereum node.",
-            "tags": [""],
-            "topics": [""],
-            "difficulty": "Intermediate",
+            "title": "Web3 Providers Explained",
+            "description": "Learn more about what an Web3 Provider is and how it enables your dApp to communicate with the Ethereum blockchain and request transaction signatures from users.",
+            "tags": ["Relayer", "Trader"],
+            "topics": ["Relayer", "Trader"],
+            "difficulty": "Beginner",
             "path": "guides/web3-provider-explained.mdx"
         }
     },
