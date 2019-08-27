@@ -423,7 +423,6 @@ export enum Docs {
 }
 
 export enum WebsiteLegacyPaths {
-    Deployer = '/docs/deployer',
     Wiki = '/wiki',
     Jobs = '/jobs',
     ZeroExJs = '/docs/0x.js',
@@ -462,7 +461,6 @@ export enum WebsitePaths {
     Ecosystem = '/eap',
     MarketMaker = '/market-maker',
     Governance = '/governance',
-    SmartContracts = '/docs/contracts',
     Why = '/why',
     PrivacyPolicy = '/privacy',
     TermsOfService = '/terms',
