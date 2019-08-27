@@ -118,6 +118,10 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
 
+    // bytes4(keccak256("InvalidCobbDouglasAlphaError(uint256,uint256)"))
+    bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
+        0x8f8e73de;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -441,6 +445,21 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             POOL_ALREADY_EXISTS_ERROR_SELECTOR,
             poolId
+        );
+    }
+
+    function InvalidCobbDouglasAlphaError(
+        uint256 numerator,
+        uint256 denominator
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR,
+            numerator,
+            denominator
         );
     }
 }

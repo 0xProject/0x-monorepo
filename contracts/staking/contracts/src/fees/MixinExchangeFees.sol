@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -68,10 +68,11 @@ contract MixinExchangeFees is
         external
         onlyOwner
     {
-        if (int256(numerator) < 0 ||
-            int256(denominator) <= 0 ||
-            numerator > denominator) {
-            revert("INVALID_ALPHA");
+        if (int256(numerator) < 0 || int256(denominator) <= 0 || numerator > denominator) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidCobbDouglasAlphaError(
+                numerator,
+                denominator
+            ));
         }
         cobbDouglasAlphaNumerator = numerator;
         cobbDouglasAlphaDenomintor = denominator;
@@ -307,9 +308,7 @@ contract MixinExchangeFees is
         pure
         returns (uint256 ownerRewards)
     {
-        assert(ownerFees <= totalFees);
-        assert(ownerStake <= totalStake);
-        assert(alphaNumerator <= alphaDenominator);
+        assert(alphaNumerator > alphaDenominator);
         int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
         int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
         int256 alpha = LibFixedMath._toFixed(alphaNumerator, alphaDenominator);
@@ -323,7 +322,7 @@ contract MixinExchangeFees is
         int256 n = LibFixedMath._exp(
             LibFixedMath._mul(
                 alpha,
-                LibFixedMath._ln(feeRatio) - LibFixedMath._ln(stakeRatio)
+                LibFixedMath._sub(LibFixedMath._ln(feeRatio), LibFixedMath._ln(stakeRatio))
             )
         );
         // Multiply the above with totalRewards * stakeRatio

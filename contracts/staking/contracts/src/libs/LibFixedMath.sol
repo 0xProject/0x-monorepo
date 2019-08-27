@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "./LibFixedMathRichErrors.sol";
 
 /// @dev Signed, fixed-point, 127-bit precision math library.
 library LibFixedMath {
@@ -31,8 +32,18 @@ library LibFixedMath {
     int256 private constant EXP_MIN_VAL = int256(0xffffffffffffffffffffffffffffffdd7612c00c0077ada1b83518e8cafc0e90);
 
     /// @dev Get one as a fixed-point number.
-    function _one() internal pure returns (int256 c) {
-        c = FIXED_1;
+    function _one() internal pure returns (int256 f) {
+        f = FIXED_1;
+    }
+
+    /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
+    function _add(int256 a, int256 b) internal pure returns (int256 c) {
+        c = __add(a, -b, LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW);
+    }
+
+    /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
+    function _sub(int256 a, int256 b) internal pure returns (int256 c) {
+        c = __add(a, -b, LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW);
     }
 
     /// @dev Returns the multiplication of two fixed point numbers, reverting on overflow.
@@ -49,7 +60,12 @@ library LibFixedMath {
     ///      number with an integer, reverting if the multiplication overflows.
     ///      Negative results are clamped to zero.
     function _uintMul(int256 f, uint256 u) internal pure returns (uint256) {
-        require(int256(u) >= int256(0), "FIXED_MATH_INTEGER_TOO_LARGE");
+        if (int256(u) < int256(0)) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                u
+            ));
+        }
         int256 c = __mul(f, int256(u));
         if (c <= 0) {
             return 0;
@@ -79,14 +95,30 @@ library LibFixedMath {
     /// @dev Convert unsigned `n` / 1 to a fixed-point number.
     ///      Reverts if `n` is too large to fit in a fixed-point number.
     function _toFixed(uint256 n) internal pure returns (int256 f) {
-        require(int256(n) >= 0, "FIXED_MATH_INTEGER_TOO_LARGE");
+        if (int256(n) < int256(0)) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                n
+            ));
+        }
         f = __mul(int256(n), FIXED_1);
     }
 
     /// @dev Convert unsigned `n` / `d` to a fixed-point number.
     ///      Reverts if `n` / `d` is too large to fit in a fixed-point number.
     function _toFixed(uint256 n, uint256 d) internal pure returns (int256 f) {
-        require(int256(n) >= 0 && int256(d) >= 0, "FIXED_MATH_INTEGER_TOO_LARGE");
+        if (int256(n) < int256(0)) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                n
+            ));
+        }
+        if (int256(d) < int256(0)) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                d
+            ));
+        }
         f = __div(__mul(int256(n), FIXED_1), int256(d));
     }
 
@@ -100,7 +132,18 @@ library LibFixedMath {
         if (x == FIXED_1) {
             return 0;
         }
-        assert(x < LN_MAX_VAL && x > 0);
+        if (x > LN_MAX_VAL) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                x
+            ));
+        }
+        if (x <= 0) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_SMALL,
+                x
+            ));
+        }
 
         int256 y;
         int256 z;
@@ -177,7 +220,12 @@ library LibFixedMath {
         if (x == 0) {
             return FIXED_1;
         }
-        assert(x < 0);
+        if (x > 0) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
+                x
+            ));
+        }
 
         // Rewrite the input as a product of positive natural exponents and a
         // single residual q, where q is a number of small magnitude.
@@ -269,12 +317,44 @@ library LibFixedMath {
             return 0;
         }
         c = a * b;
-        require(c / a == b, "FIXED_MATH_MULTIPLICATION_OVERFLOW");
+        if (c / a != b) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+                LibFixedMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
+                a,
+                b
+            ));
+        }
     }
 
     /// @dev Returns the division of two numbers, reverting on division by zero.
     function __div(int256 a, int256 b) private pure returns (int256 c) {
-        require(b != 0, "FIXED_MATH_DIVISION_BY_ZERO");
+        if (b == 0) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+                LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
+                a,
+                b
+            ));
+        }
         c = a / b;
+    }
+
+    /// @dev Adds two numbers, reverting on overflow.
+    function __add(
+        int256 a,
+        int256 b,
+        LibFixedMathRichErrors.BinOpErrorCodes errorCode
+    )
+        private
+        pure
+        returns (int256 c)
+    {
+        c = a + b;
+        if ((c > 0 && a < 0 && b < 0) || (c < 0 && a > 0 && b > 0)) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+                errorCode,
+                a,
+                b
+            ));
+        }
     }
 }

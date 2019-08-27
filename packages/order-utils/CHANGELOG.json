@@ -69,6 +69,10 @@
             {
                 "note": "Add EIP712 types for Staking",
                 "pr": 1910
+            },
+            {
+                "note": "Add `InvalidCobbDouglasAlphaError` `RevertError` type to `StakingRevertErrors`",
+                "pr": "TODO"
             }
         ]
     },

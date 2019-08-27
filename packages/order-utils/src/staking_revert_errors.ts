@@ -195,6 +195,16 @@ export class PoolAlreadyExistsError extends RevertError {
     }
 }
 
+export class InvalidCobbDouglasAlphaError extends RevertError {
+    constructor(numerator: BigNumber | number | string, denominator: BigNumber | number | string) {
+        super(
+            'InvalidCobbDouglasAlphaError',
+            'InvalidCobbDouglasAlphaError(uint256 numerator, uint256 denominator)',
+            { numerator, denominator },
+        );
+    }
+}
+
 const types = [
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
@@ -220,6 +230,7 @@ const types = [
     AmountExceedsBalanceOfPoolError,
     OperatorShareMustBeBetween0And100Error,
     PoolAlreadyExistsError,
+    InvalidCobbDouglasAlphaError,
 ];
 
 // Register the types we've defined.

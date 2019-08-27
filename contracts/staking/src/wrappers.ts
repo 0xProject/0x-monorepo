@@ -13,6 +13,7 @@ export * from '../generated-wrappers/i_wallet';
 export * from '../generated-wrappers/i_zrx_vault';
 export * from '../generated-wrappers/lib_e_i_p712_hash';
 export * from '../generated-wrappers/lib_fixed_math';
+export * from '../generated-wrappers/lib_fixed_math_rich_errors';
 export * from '../generated-wrappers/lib_reward_math';
 export * from '../generated-wrappers/lib_safe_downcast';
 export * from '../generated-wrappers/lib_signature_validator';

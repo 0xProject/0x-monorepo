@@ -5,6 +5,10 @@
             {
                 "note": "Allow for array types in `RevertError`s.",
                 "pr": 2075
+            },
+            {
+                "note": "Add `LibFixedMath` `RevertError` types.",
+                "pr": "TODO"
             }
         ]
     },

@@ -15,6 +15,7 @@ import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
+import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
 import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
@@ -28,8 +29,8 @@ import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
-import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
+import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
 import * as MixinTimeLockedStake from '../generated-artifacts/MixinTimeLockedStake.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
@@ -57,6 +58,7 @@ export const artifacts = {
     IZrxVault: IZrxVault as ContractArtifact,
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
+    LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
     LibRewardMath: LibRewardMath as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
