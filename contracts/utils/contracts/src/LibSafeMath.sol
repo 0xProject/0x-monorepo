@@ -16,8 +16,8 @@ library LibSafeMath {
         }
         uint256 c = a * b;
         if (c / a != b) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
-                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_MULTIPLICATION_OVERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
                 a,
                 b
             ));
@@ -31,8 +31,8 @@ library LibSafeMath {
         returns (uint256)
     {
         if (b == 0) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
-                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_DIVISION_BY_ZERO,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
                 a,
                 b
             ));
@@ -47,8 +47,8 @@ library LibSafeMath {
         returns (uint256)
     {
         if (b > a) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
-                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_SUBTRACTION_UNDERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.SUBTRACTION_UNDERFLOW,
                 a,
                 b
             ));
@@ -63,8 +63,8 @@ library LibSafeMath {
     {
         uint256 c = a + b;
         if (c < a) {
-            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
-                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_ADDITION_OVERFLOW,
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
                 a,
                 b
             ));

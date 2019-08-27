@@ -19,6 +19,8 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
@@ -32,7 +34,7 @@ import "./MixinStakingPoolRewardVault.sol";
 /// @dev This mixin contains logic for staking pools.
 /// A pool has a single operator and any number of delegators (members).
 /// Any staker can create a pool, although at present it is only beneficial
-/// for market makers to create staking pools. A market maker *must* create a 
+/// for market makers to create staking pools. A market maker *must* create a
 /// pool in order to receive fee-based rewards at the end of each epoch (see MixinExchangeFees).
 /// Moreover, creating a staking pool leverages the delegated stake within the pool,
 /// which is counted towards a maker's total stake when computing rewards. A market maker
@@ -66,10 +68,13 @@ contract MixinStakingPool is
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
     modifier onlyStakingPoolOperator(bytes32 poolId) {
-        require(
-            msg.sender == getStakingPoolOperator(poolId),
-            "ONLY_CALLABLE_BY_POOL_OPERATOR"
-        );
+        address poolOperator = getStakingPoolOperator(poolId);
+        if (msg.sender != poolOperator) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByPoolOperatorError(
+                msg.sender,
+                poolOperator
+            ));
+        }
 
         _;
     }
@@ -78,10 +83,16 @@ contract MixinStakingPool is
     /// @param poolId Pool sender must be operator of.
     /// @param makerAddress Address of a maker in the pool.
     modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        require(
-            msg.sender == getStakingPoolOperator(poolId) || msg.sender == makerAddress,
-            "ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER"
-        );
+        address poolOperator = getStakingPoolOperator(poolId);
+        if (msg.sender != poolOperator && msg.sender != makerAddress) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(
+                    msg.sender,
+                    poolOperator,
+                    makerAddress
+                )
+            );
+        }
 
         _;
     }
@@ -129,14 +140,19 @@ contract MixinStakingPool is
         onlyStakingPoolOperator(poolId)
     {
         // sanity check - did maker agree to join this pool?
-        require(
-            isValidMakerSignature(poolId, makerAddress, makerSignature),
-            "INVALID_MAKER_SIGNATURE"
-        );
-        require(
-            !isMakerAssignedToStakingPool(makerAddress),
-            "MAKER_ADDRESS_ALREADY_REGISTERED"
-        );
+        if (!isValidMakerSignature(poolId, makerAddress, makerSignature)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidMakerSignatureError(
+                poolId,
+                makerAddress,
+                makerSignature
+            ));
+        }
+        if (isMakerAssignedToStakingPool(makerAddress)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerAddressAlreadyRegisteredError(
+                makerAddress
+            ));
+        }
+
         poolIdByMakerAddress[makerAddress] = poolId;
         makerAddressesByPoolId[poolId].push(makerAddress);
 
@@ -159,10 +175,14 @@ contract MixinStakingPool is
         external
         onlyStakingPoolOperatorOrMaker(poolId, makerAddress)
     {
-        require(
-            getStakingPoolIdOfMaker(makerAddress) == poolId,
-            "MAKER_ADDRESS_NOT_REGISTERED"
-        );
+        bytes32 makerPoolId = getStakingPoolIdOfMaker(makerAddress);
+        if (makerPoolId != poolId) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerAddressNotRegisteredError(
+                makerAddress,
+                makerPoolId,
+                poolId
+            ));
+        }
 
         // load list of makers for the input pool.
         address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];

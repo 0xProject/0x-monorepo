@@ -18,27 +18,42 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMathRichErrors.sol";
+
 
 library LibSafeMath {
 
     uint256 constant internal MAX_UINT_96 = 79228162514264337593543950335; // 2**96-1
-    
     uint256 constant internal MAX_UINT_64 = 18446744073709551615; // 2**64-1
 
     /// @dev Returns the addition of two unsigned integers, reverting on overflow.
     /// Note that this reverts on overflow.
     function _add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
-        require(c >= a, "OVERFLOW");
+        if (c < a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
+                a,
+                b
+            ));
+        }
+
         return c;
     }
 
     /// @dev Returns the subtraction of two unsigned integers.
     /// Note that this reverts on underflow.
     function _sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a, "UNDEROVERFLOW");
-        uint256 c = a - b;
+        if (b > a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.SUBTRACTION_UNDERFLOW,
+                a,
+                b
+            ));
+        }
 
+        uint256 c = a - b;
         return c;
     }
 
@@ -53,7 +68,13 @@ library LibSafeMath {
         }
 
         uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
+        if (c / a != b) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
+                a,
+                b
+            ));
+        }
 
         return c;
     }
@@ -61,7 +82,14 @@ library LibSafeMath {
     /// @dev Returns the integer division of two unsigned integers.
     /// Note that this reverts on division by zero. The result is rounded towards zero.
     function _div(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b > 0, "DIVISION_BY_ZERO");
+        if (b == 0) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256BinOpError(
+                LibSafeMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
+                a,
+                b
+            ));
+        }
+
         uint256 c = a / b;
         return c;
     }
@@ -73,10 +101,12 @@ library LibSafeMath {
         pure
         returns (uint96)
     {
-        require(
-            a <= MAX_UINT_96,
-            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96"
-        );
+        if (a > MAX_UINT_96) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96,
+                a
+            ));
+        }
         return uint96(a);
     }
 
@@ -87,10 +117,12 @@ library LibSafeMath {
         pure
         returns (uint64)
     {
-        require(
-            a <= MAX_UINT_64,
-            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64"
-        );
+        if (a > MAX_UINT_64) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64,
+                a
+            ));
+        }
         return uint64(a);
     }
 }

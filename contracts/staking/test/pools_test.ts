@@ -1,10 +1,8 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -13,11 +11,8 @@ import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { constants as stakingConstants } from './utils/constants';
 import { StakingWrapper } from './utils/staking_wrapper';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking Pool Management', () => {
+blockchainTests('Staking Pool Management', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -31,33 +26,21 @@ describe('Staking Pool Management', () => {
     let erc20Wrapper: ERC20Wrapper;
     // tests
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // create accounts
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        accounts = await env.web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         users = accounts.slice(1);
         // deploy erc20 proxy
-        erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    describe('Staking Pool Management', () => {
+    blockchainTests.resets('Staking Pool Management', () => {
         it('Should successfully create a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
@@ -128,13 +111,9 @@ describe('Staking Pool Management', () => {
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
             await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
+            const revertError = new StakingRevertErrors.MakerAddressAlreadyRegisteredError(makerAddress);
             // add same maker to pool again
-            await poolOperator.addMakerToStakingPoolAsync(
-                poolId,
-                makerAddress,
-                makerApproval.signature,
-                RevertReason.MakerAddressAlreadyRegistered,
-            );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to remove a maker that does not exist', async () => {
             // test parameters
@@ -145,12 +124,13 @@ describe('Staking Pool Management', () => {
             // create pool
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-            // remove non-existent maker from pool
-            await poolOperator.removeMakerFromStakingPoolAsync(
-                poolId,
+            const revertError = new StakingRevertErrors.MakerAddressNotRegisteredError(
                 makerAddress,
-                RevertReason.MakerAddressNotRegistered,
+                stakingConstants.NIL_POOL_ID,
+                poolId,
             );
+            // remove non-existent maker from pool
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress, revertError);
         });
         it('Should fail to add a maker who signed with the wrong private key', async () => {
             // test parameters
@@ -165,14 +145,14 @@ describe('Staking Pool Management', () => {
             // create pool
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-            // add maker to pool
+            // add maker to poolxx
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToStakingPoolAsync(
+            const revertError = new StakingRevertErrors.InvalidMakerSignatureError(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
-                RevertReason.InvalidMakerSignature,
             );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker who signed with the wrong staking contract address', async () => {
             // test parameters
@@ -188,12 +168,12 @@ describe('Staking Pool Management', () => {
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToStakingPoolAsync(
+            const revertError = new StakingRevertErrors.InvalidMakerSignatureError(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
-                RevertReason.InvalidMakerSignature,
             );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker who signed with the wrong chain id', async () => {
             // test parameters
@@ -216,12 +196,12 @@ describe('Staking Pool Management', () => {
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToStakingPoolAsync(
+            const revertError = new StakingRevertErrors.InvalidMakerSignatureError(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
-                RevertReason.InvalidMakerSignature,
             );
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, revertError);
         });
         it('Should fail to add a maker when called by someone other than the pool operator', async () => {
             // test parameters
@@ -236,15 +216,17 @@ describe('Staking Pool Management', () => {
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToStakingPoolAsync(
-                    poolId,
-                    makerAddress,
-                    makerApproval.signature,
-                    notOperatorAddress,
-                ),
-                RevertReason.OnlyCallableByPoolOperator,
+            const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorError(
+                notOperatorAddress,
+                operatorAddress,
             );
+            const tx = stakingWrapper.addMakerToStakingPoolAsync(
+                poolId,
+                makerAddress,
+                makerApproval.signature,
+                notOperatorAddress,
+            );
+            await expect(tx).to.revertWith(revertError);
         });
         it('Should fail to remove a maker when called by someone other than the pool operator', async () => {
             // test parameters
@@ -261,10 +243,13 @@ describe('Staking Pool Management', () => {
             const makerApproval = maker.signApprovalForStakingPool(poolId);
             await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
             // try to remove the maker address from an address other than the operator
-            await expectTransactionFailedAsync(
-                stakingWrapper.removeMakerFromStakingPoolAsync(poolId, makerAddress, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperatorOrMaker,
+            const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(
+                notOperatorAddress,
+                operatorAddress,
+                makerAddress,
             );
+            const tx = stakingWrapper.removeMakerFromStakingPoolAsync(poolId, makerAddress, notOperatorAddress);
+            await expect(tx).to.revertWith(revertError);
         });
     });
 });

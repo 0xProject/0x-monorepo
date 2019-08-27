@@ -21,6 +21,7 @@ import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
 import * as LibSafeMath64 from '../generated-artifacts/LibSafeMath64.json';
 import * as LibSafeMath96 from '../generated-artifacts/LibSafeMath96.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
+import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinDelegatedStake from '../generated-artifacts/MixinDelegatedStake.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
@@ -64,6 +65,7 @@ export const artifacts = {
     LibSafeMath64: LibSafeMath64 as ContractArtifact,
     LibSafeMath96: LibSafeMath96 as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
+    LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
     MixinDelegatedStake: MixinDelegatedStake as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,

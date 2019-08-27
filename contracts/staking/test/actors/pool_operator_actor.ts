@@ -1,6 +1,5 @@
-import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
-import { RevertReason } from '@0x/types';
-import * as chai from 'chai';
+import { expect } from '@0x/contracts-test-utils';
+import { RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../utils/constants';
@@ -8,20 +7,18 @@ import { StakingWrapper } from '../utils/staking_wrapper';
 
 import { BaseActor } from './base_actor';
 
-const expect = chai.expect;
-
 export class PoolOperatorActor extends BaseActor {
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
 
-    public async createStakingPoolAsync(operatorShare: number, revertReason?: RevertReason): Promise<string> {
+    public async createStakingPoolAsync(operatorShare: number, revertError?: RevertError): Promise<string> {
         // query next pool id
         const nextPoolId = await this._stakingWrapper.getNextStakingPoolIdAsync();
         // create pool
         const poolIdPromise = this._stakingWrapper.createStakingPoolAsync(this._owner, operatorShare);
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(poolIdPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(poolIdPromise).to.revertWith(revertError);
             return '';
         }
         const poolId = await poolIdPromise;
@@ -33,7 +30,7 @@ export class PoolOperatorActor extends BaseActor {
         poolId: string,
         makerAddress: string,
         makerSignature: string,
-        revertReason?: RevertReason,
+        revertError?: RevertError,
     ): Promise<void> {
         // add maker
         const txReceiptPromise = this._stakingWrapper.addMakerToStakingPoolAsync(
@@ -42,8 +39,8 @@ export class PoolOperatorActor extends BaseActor {
             makerSignature,
             this._owner,
         );
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
             return;
         }
         await txReceiptPromise;
@@ -57,7 +54,7 @@ export class PoolOperatorActor extends BaseActor {
     public async removeMakerFromStakingPoolAsync(
         poolId: string,
         makerAddress: string,
-        revertReason?: RevertReason,
+        revertError?: RevertError,
     ): Promise<void> {
         // remove maker
         const txReceiptPromise = this._stakingWrapper.removeMakerFromStakingPoolAsync(
@@ -65,8 +62,8 @@ export class PoolOperatorActor extends BaseActor {
             makerAddress,
             this._owner,
         );
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
             return;
         }
         await txReceiptPromise;

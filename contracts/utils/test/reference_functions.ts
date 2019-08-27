@@ -21,8 +21,8 @@ describe('Reference Functions', () => {
             it('reverts on overflow', () => {
                 const a = MAX_UINT256.dividedToIntegerBy(2);
                 const b = MAX_UINT256.dividedToIntegerBy(2).plus(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a,
                     b,
                 );
@@ -41,8 +41,8 @@ describe('Reference Functions', () => {
             it('reverts on underflow', () => {
                 const a = MAX_UINT256.dividedToIntegerBy(2);
                 const b = MAX_UINT256.dividedToIntegerBy(2).plus(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256SubtractionUnderflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                     a,
                     b,
                 );
@@ -61,8 +61,8 @@ describe('Reference Functions', () => {
             it('reverts on overflow', () => {
                 const a = MAX_UINT256.dividedToIntegerBy(2);
                 const b = MAX_UINT256.dividedToIntegerBy(2).plus(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     a,
                     b,
                 );
@@ -81,8 +81,8 @@ describe('Reference Functions', () => {
             it('reverts if denominator is zero', () => {
                 const a = MAX_UINT256.dividedToIntegerBy(2);
                 const b = ZERO_AMOUNT;
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     a,
                     b,
                 );

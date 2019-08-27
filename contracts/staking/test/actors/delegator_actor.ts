@@ -1,15 +1,11 @@
-import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
+import { expect } from '@0x/contracts-test-utils';
+import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { DelegatorBalances, StakerBalances } from '../utils/types';
 
 import { StakerActor } from './staker_actor';
-
-const expect = chai.expect;
 
 export class DelegatorActor extends StakerActor {
     constructor(owner: string, stakingWrapper: StakingWrapper) {
@@ -18,7 +14,7 @@ export class DelegatorActor extends StakerActor {
     public async depositZrxAndDelegateToStakingPoolAsync(
         poolId: string,
         amount: BigNumber,
-        revertReason?: RevertReason,
+        revertError?: RevertError,
     ): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
@@ -29,8 +25,8 @@ export class DelegatorActor extends StakerActor {
             poolId,
             amount,
         );
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
             return;
         }
         await txReceiptPromise;
@@ -54,14 +50,14 @@ export class DelegatorActor extends StakerActor {
     public async activateAndDelegateStakeAsync(
         poolId: string,
         amount: BigNumber,
-        revertReason?: RevertReason,
+        revertError?: RevertError,
     ): Promise<void> {
         // query init balances
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // activate and delegate
         const txReceiptPromise = this._stakingWrapper.activateAndDelegateStakeAsync(this._owner, poolId, amount);
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
             return;
         }
         await txReceiptPromise;
@@ -89,7 +85,7 @@ export class DelegatorActor extends StakerActor {
     public async deactivateAndTimeLockDelegatedStakeAsync(
         poolId: string,
         amount: BigNumber,
-        revertReason?: RevertReason,
+        revertError?: RevertError,
     ): Promise<void> {
         // query init balances
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
@@ -99,8 +95,8 @@ export class DelegatorActor extends StakerActor {
             poolId,
             amount,
         );
-        if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
             return;
         }
         await txReceiptPromise;

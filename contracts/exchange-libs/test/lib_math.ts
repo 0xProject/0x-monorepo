@@ -71,8 +71,8 @@ blockchainTests('LibMath', env => {
                 const numerator = ONE_ETHER;
                 const denominator = ZERO_AMOUNT;
                 const target = ONE_ETHER.times(0.01);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     numerator.times(target),
                     denominator,
                 );
@@ -85,8 +85,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );
@@ -131,8 +131,8 @@ blockchainTests('LibMath', env => {
                 const denominator = ZERO_AMOUNT;
                 const target = ONE_ETHER.times(0.01);
                 // This will actually manifest as a subtraction underflow.
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256SubtractionUnderflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                     denominator,
                     new BigNumber(1),
                 );
@@ -145,8 +145,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );
@@ -210,8 +210,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );
@@ -275,8 +275,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );
@@ -341,8 +341,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );
@@ -407,8 +407,8 @@ blockchainTests('LibMath', env => {
                 const numerator = MAX_UINT256;
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = MAX_UINT256_ROOT.times(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     numerator,
                     target,
                 );

@@ -660,7 +660,7 @@ export class StakingWrapper {
     public async rewardVaultEnterCatastrophicFailureModeAsync(
         zeroExMultisigAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingPoolRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
+        const calldata = this.getStakingPoolRewardVaultContract().enterCatastrophicFailure.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
         return txReceipt;
     }

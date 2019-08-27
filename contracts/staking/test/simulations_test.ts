@@ -1,17 +1,14 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { Simulation } from './utils/Simulation';
 import { StakingWrapper } from './utils/staking_wrapper';
-chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('End-To-End Simulations', () => {
+blockchainTests('End-To-End Simulations', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -26,36 +23,24 @@ describe('End-To-End Simulations', () => {
     let erc20Wrapper: ERC20Wrapper;
     // tests
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // create accounts
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        accounts = await env.web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         exchange = accounts[1];
         users = accounts.slice(2);
         users = [...users, ...users]; // @TODO figure out how to get more addresses from `web3Wrapper`
 
         // deploy erc20 proxy
-        erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    describe('Simulations', () => {
+    blockchainTests.resets('Simulations', () => {
         it('Should successfully simulate (no delegators / no shadow balances)', async () => {
             // @TODO - get computations more accurate
             const simulationParams = {
@@ -348,10 +333,9 @@ describe('End-To-End Simulations', () => {
         it('Should not be able to record a protocol fee from an unknown exchange', async () => {
             const makerAddress = users[1];
             const protocolFee = new BigNumber(1);
-            await expectTransactionFailedAsync(
-                stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner),
-                RevertReason.OnlyCallableByExchange,
-            );
+            const revertError = new StakingRevertErrors.OnlyCallableByExchangeError(owner);
+            const tx = stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner);
+            await expect(tx).to.revertWith(revertError);
         });
     });
 });

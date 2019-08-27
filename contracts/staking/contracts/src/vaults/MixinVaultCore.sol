@@ -19,6 +19,8 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IVaultCore.sol";
 
 
@@ -30,7 +32,7 @@ import "../interfaces/IVaultCore.sol";
 /// Vaults should only be set to Catastrophic Failure Mode iff there is
 /// non-recoverable corruption of the staking contracts. If there is a
 /// recoverable flaw/bug/vulnerability, simply detach the staking contract
-/// by setting its address to `address(0)`. Once in Catostrophic Failure Mode,
+/// by setting its address to `address(0)`. Once in Catastrophic Failure Mode,
 /// a vault cannot be reset to normal mode; this prevents corruption of related
 /// state in the staking contract.
 contract MixinVaultCore is
@@ -41,39 +43,38 @@ contract MixinVaultCore is
     // Address of staking contract
     address payable internal stakingContractAddress;
 
-    // True iff vault has been set to Catostrophic Failure Mode
-    bool internal isInCatostrophicFailure;
+    // True iff vault has been set to Catastrophic Failure Mode
+    bool internal isInCatastrophicFailure;
 
     /// @dev Constructor.
     constructor() public {
         stakingContractAddress = 0x0000000000000000000000000000000000000000;
-        isInCatostrophicFailure = false;
+        isInCatastrophicFailure = false;
     }
 
     /// @dev Asserts that the sender (`msg.sender`) is the staking contract.
     modifier onlyStakingContract {
-        require(
-            msg.sender == stakingContractAddress,
-            "ONLY_CALLABLE_BY_STAKING_CONTRACT"
-        );
+        if (msg.sender != stakingContractAddress) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByStakingContractError(
+                msg.sender
+            ));
+        }
         _;
     }
 
-    /// @dev Asserts that this contract *is in* Catostrophic Failure Mode.
-    modifier onlyInCatostrophicFailure {
-        require(
-            isInCatostrophicFailure,
-            "ONLY_CALLABLE_IN_CATOSTROPHIC_FAILURE"
-        );
+    /// @dev Asserts that this contract *is in* Catastrophic Failure Mode.
+    modifier onlyInCatastrophicFailure {
+        if (!isInCatastrophicFailure) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfInCatastrophicFailureError());
+        }
         _;
     }
 
-    /// @dev Asserts that this contract *is not in* Catostrophic Failure Mode.
-    modifier onlyNotInCatostrophicFailure {
-        require(
-            !isInCatostrophicFailure,
-            "ONLY_CALLABLE_NOT_IN_CATOSTROPHIC_FAILURE"
-        );
+    /// @dev Asserts that this contract *is not in* Catastrophic Failure Mode.
+    modifier onlyNotInCatastrophicFailure {
+        if (isInCatastrophicFailure) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfNotInCatastrophicFailureError());
+        }
         _;
     }
 
@@ -88,14 +89,14 @@ contract MixinVaultCore is
         emit StakingContractChanged(stakingContractAddress);
     }
 
-    /// @dev Vault enters into Catostrophic Failure Mode.
+    /// @dev Vault enters into Catastrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
     /// Note that only the contract owner can call this function.
-    function enterCatostrophicFailure()
+    function enterCatastrophicFailure()
         external
         onlyOwner
     {
-        isInCatostrophicFailure = true;
-        emit InCatostrophicFailureMode(msg.sender);
+        isInCatastrophicFailure = true;
+        emit InCatastrophicFailureMode(msg.sender);
     }
 }

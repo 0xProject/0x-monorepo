@@ -27,7 +27,7 @@ pragma solidity ^0.5.9;
 /// Vaults should only be set to Catastrophic Failure Mode iff there is
 /// non-recoverable corruption of the staking contracts. If there is a
 /// recoverable flaw/bug/vulnerability, simply detach the staking contract
-/// by setting its address to `address(0)`. Once in Catostrophic Failure Mode,
+/// by setting its address to `address(0)`. Once in Catastrophic Failure Mode,
 /// a vault cannot be reset to normal mode; this prevents corruption of related
 /// state in the staking contract.
 interface IVaultCore {
@@ -38,9 +38,9 @@ interface IVaultCore {
         address stakingContractAddress
     );
 
-    /// @dev Emitted when the Staking contract is put into Catostrophic Failure Mode
+    /// @dev Emitted when the Staking contract is put into Catastrophic Failure Mode
     /// @param sender Address of sender (`msg.sender`)
-    event InCatostrophicFailureMode(
+    event InCatastrophicFailureMode(
         address sender
     );
 
@@ -50,9 +50,9 @@ interface IVaultCore {
     function setStakingContract(address payable _stakingContractAddress)
         external;
 
-    /// @dev Vault enters into Catostrophic Failure Mode.
+    /// @dev Vault enters into Catastrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
     /// Note that only the contract owner can call this function.
-    function enterCatostrophicFailure()
+    function enterCatastrophicFailure()
         external;
 }

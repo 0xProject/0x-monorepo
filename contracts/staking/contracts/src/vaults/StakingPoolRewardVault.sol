@@ -18,8 +18,10 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath96.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinConstants.sol";
@@ -28,7 +30,7 @@ import "../immutable/MixinConstants.sol";
 /// @dev This vault manages staking pool rewards.
 /// Rewards can be deposited and withdraw by the staking contract.
 /// There is a "Catastrophic Failure Mode" that, when invoked, only
-/// allows withdrawals to be made. Once this vault is in catostrophic
+/// allows withdrawals to be made. Once this vault is in catastrophic
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 ///
@@ -53,7 +55,7 @@ contract StakingPoolRewardVault is
         external
         payable
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
     }
@@ -66,7 +68,7 @@ contract StakingPoolRewardVault is
         external
         payable
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         // update balance of pool
         uint256 amount = msg.value;
@@ -87,7 +89,7 @@ contract StakingPoolRewardVault is
     function recordDepositFor(bytes32 poolId, uint256 amount)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         // update balance of pool
         Balance memory balance = balanceByPoolId[poolId];
@@ -105,11 +107,13 @@ contract StakingPoolRewardVault is
         onlyStakingContract
     {
         // sanity check - sufficient balance?
-        require(
-            amount <= balanceByPoolId[poolId].operatorBalance,
-            "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
-        );
-        
+        if (amount > balanceByPoolId[poolId].operatorBalance) {
+            LibRichErrors.rrevert(LibStakingRichErrors.AmountExceedsBalanceOfPoolError(
+                amount,
+                balanceByPoolId[poolId].operatorBalance
+            ));
+        }
+
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance -= amount._downcastToUint96();
         stakingContractAddress.transfer(amount);
@@ -128,10 +132,12 @@ contract StakingPoolRewardVault is
         onlyStakingContract
     {
         // sanity check - sufficient balance?
-        require(
-            amount <= balanceByPoolId[poolId].membersBalance,
-            "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
-        );
+        if (amount > balanceByPoolId[poolId].membersBalance) {
+            LibRichErrors.rrevert(LibStakingRichErrors.AmountExceedsBalanceOfPoolError(
+                amount,
+                balanceByPoolId[poolId].membersBalance
+            ));
+        }
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance -= amount._downcastToUint96();
@@ -149,20 +155,23 @@ contract StakingPoolRewardVault is
     function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
+        onlyNotInCatastrophicFailure
     {
         // operator share must be a valid percentage
-        require(
-            poolOperatorShare <= 100,
-            "OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100"
-        );
+        if (poolOperatorShare > 100) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareMustBeBetween0And100Error(
+                poolId,
+                poolOperatorShare
+            ));
+        }
 
         // pool must not exist
         Balance memory balance = balanceByPoolId[poolId];
-        require(
-            !balance.initialized,
-            "POOL_ALREADY_EXISTS"
-        );
+        if (balance.initialized) {
+            LibRichErrors.rrevert(LibStakingRichErrors.PoolAlreadyExistsError(
+                poolId
+            ));
+        }
 
         // set initial balance
         balance.initialized = true;

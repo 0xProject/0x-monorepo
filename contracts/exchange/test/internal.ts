@@ -77,8 +77,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: constants.MAX_UINT256_ROOT,
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
             });
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 leftOrder.makerAssetAmount,
                 rightOrder.makerAssetAmount,
             );
@@ -94,8 +94,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
                 takerAssetAmount: constants.MAX_UINT256_ROOT,
             });
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 leftOrder.takerAssetAmount,
                 rightOrder.takerAssetAmount,
             );
@@ -228,8 +228,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeePaid: constants.ZERO_AMOUNT,
                 takerFeePaid: constants.ZERO_AMOUNT,
             };
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 orderTakerAssetFilledAmount,
                 takerAssetFillAmount,
             );
@@ -357,8 +357,8 @@ blockchainTests('Exchange core internal functions', env => {
             rightOrder.takerFeeAssetData = leftOrder.takerFeeAssetData;
 
             // The expected error that should be thrown by the function.
-            const expectedError = new SafeMathRevertErrors.SafeMathError(
-                SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 matchedFillResults.left.takerFeePaid,
                 matchedFillResults.right.takerFeePaid,
             );
