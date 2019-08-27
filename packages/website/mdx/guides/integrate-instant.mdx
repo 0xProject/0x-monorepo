@@ -8,7 +8,7 @@ Check out a live example on [mainnet](http://0x-instant-staging.s3-website-us-ea
 
 ## Libraries
 
-0x Instant has two main libraries: the `0x Instant UI component` that users will see and the `Asset Buyer` library, a JavaScript / TypeScript library that abstracts out many of the complexities of sourcing orders and performing market buys. Most developers who want to add simple token access will just use the out-of-the-box package that includes the UI and Asset Buyer, but teams may also write their own custom UI and just plug into the Asset Buyer as they see fit. Check out the `@0x/asset-buyer` documentation [here](https://0x.org/docs/asset-buyer).
+0x Instant has two main libraries: the `0x Instant UI component` that users will see and the `Asset Buyer` library, a JavaScript / TypeScript library that abstracts out many of the complexities of sourcing orders and performing market buys. Most developers who want to add simple token access will just use the out-of-the-box package that includes the UI and Asset Buyer, but teams may also write their own custom UI and just plug into the Asset Buyer as they see fit. Check out the `@0x/asset-buyer` documentation [here](https://0x.org/docs/tools/asset-buyer).
 
 ## Orders
 
@@ -55,7 +55,7 @@ Codepen [example](https://codepen.io/bmillman19/pen/qQzQQK)
 
 | Option      | Description                                                                                                                                                                       |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| orderSource | Accepts either a [Standard Relayer API HTTP endpoint](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md) or an array of signed 0x [orders](https://0x.org/docs/order-utils#types-SignedOrder) |
+| orderSource | Accepts either a [Standard Relayer API HTTP endpoint](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md) or an array of signed 0x [orders](https://0x.org/docs/tools/order-utils#types-SignedOrder) |
 
 ## Optional
 
@@ -161,7 +161,7 @@ zeroExInstant.render(
 
 ## Providing a Custom Token
 
-Your token may not be currently supported by Instant by default. Check [here](https://github.com/0xProject/0x-monorepo/blob/development/packages/instant/src/data/asset_meta_data_map.ts) for a list of tokens supported by default. Check "What is assetMetaData?" in [the questions section](#faqs), but teams may optionally source liquidity themselves and pass in specific [SignedOrders](#faqs) for more information about the object being passed in. For the `orderSource` parameter you will likely need to pass in an array of [`SignedOrder`](https://0x.org/docs/order-utils#types-SignedOrder)s, unless you are running your own relayer, or know of a relayer that has liquidity for your custom token.
+Your token may not be currently supported by Instant by default. Check [here](https://github.com/0xProject/0x-monorepo/blob/development/packages/instant/src/data/asset_meta_data_map.ts) for a list of tokens supported by default. Check "What is assetMetaData?" in [the questions section](#faqs), but teams may optionally source liquidity themselves and pass in specific [SignedOrders](#faqs) for more information about the object being passed in. For the `orderSource` parameter you will likely need to pass in an array of [`SignedOrder`](https://0x.org/docs/tools/order-utils#types-SignedOrder)s, unless you are running your own relayer, or know of a relayer that has liquidity for your custom token.
 
 ```javascript
 const erc20TokenAddress = '0xe41d2489571d322189246dafa5ebde1f4699f498';
@@ -188,7 +188,7 @@ zeroExInstant.render(
 
 ## Providing a NFT / ERC721
 
-Instant does not come bundled with any NFT data, so you must provide the `additionalAssetMetaDataMap` parameter to make the integration work (Check "What is assetMetaData?" in [the questions section](#faqs), but teams may optionally source liquidity themselves and pass in specific [SignedOrders](#faqs) for more information about the object being passed in.) You must also provide the `defaultSelectedAssetData` parameter to open instant with the NFT you are selling. For the `orderSource` parameter you will likely need to pass in an array of [`SignedOrder`](https://0x.org/docs/order-utils#types-SignedOrder)s, unless you are running your own relayer, or know of a relayer that has liquidity for your custom token.
+Instant does not come bundled with any NFT data, so you must provide the `additionalAssetMetaDataMap` parameter to make the integration work (Check "What is assetMetaData?" in [the questions section](#faqs), but teams may optionally source liquidity themselves and pass in specific [SignedOrders](#faqs) for more information about the object being passed in.) You must also provide the `defaultSelectedAssetData` parameter to open instant with the NFT you are selling. For the `orderSource` parameter you will likely need to pass in an array of [`SignedOrder`](https://0x.org/docs/tools/order-utils#types-SignedOrder)s, unless you are running your own relayer, or know of a relayer that has liquidity for your custom token.
 
 ```javascript
 const erc721TokenAddress = '0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d';
@@ -367,7 +367,7 @@ zeroExInstant.render(
 
 ### Q: What is a SignedOrder?
 
-A SignedOrder is a basic primitive of the 0x protocol. You can think of the SignedOrder as a set of parameters that define the terms of a trade, plus a signature that proves that the creator (also known as the 'maker') of an order has approved the trade. For example, a SignedOrder can specify: address A wants to trade 5 REP tokens in exchange for 1 WETH token. The order also includes signature produced by address A's private key and a hash of the order parameters. For exact JavaScript / TypeScript definition of a SignedOrder, refer to our [docs](https://0x.org/docs/0x.js#types-SignedOrder).
+A SignedOrder is a basic primitive of the 0x protocol. You can think of the SignedOrder as a set of parameters that define the terms of a trade, plus a signature that proves that the creator (also known as the 'maker') of an order has approved the trade. For example, a SignedOrder can specify: address A wants to trade 5 REP tokens in exchange for 1 WETH token. The order also includes signature produced by address A's private key and a hash of the order parameters. For exact JavaScript / TypeScript definition of a SignedOrder, refer to our [docs](https://github.com/0xProject/0x-monorepo/blob/development/packages/types/src/index.ts#L40).
 
 ### Q: What is the Standard Relayer API?
 
@@ -485,7 +485,7 @@ To prevent massive price ranges, 0x Instant calculates a maximum amount of asset
 
 ### Q: Can Instant be used to sell tokens that are not available on a relayer?
 
-Even if an ERC20 token is not listed on a relayer, 0x Instant can be configured to source liquidity from a static set of orders, by providing an array of [`SignedOrder`](https://0x.org/docs/order-utils#types-SignedOrder)s as the `orderSource`.
+Even if an ERC20 token is not listed on a relayer, 0x Instant can be configured to source liquidity from a static set of orders, by providing an array of [`SignedOrder`](https://0x.org/docs/tools/order-utils#types-SignedOrder)s as the `orderSource`.
 
 ### Q: How can I get help integrating Instant?
 

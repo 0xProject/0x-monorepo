@@ -36,7 +36,7 @@ In both models, the relayer never has custody over a trader's assets.
 
 ## Creating orders
 
-0x orders only exist off-chain and are completely free to create. In order to create a valid 0x order, you can use the [@0x/order-utils](https://0xproject.com/docs/order-utils) Typescript/Javascript library, or alternatively the [0x-order-utils.py](http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/) Python library. These libraries will help you:
+0x orders only exist off-chain and are completely free to create. In order to create a valid 0x order, you can use the [@0x/order-utils](https://0xproject.com/docs/tools/order-utils) Typescript/Javascript library, or alternatively the [0x-order-utils.py](http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/) Python library. These libraries will help you:
 
 1. Generate an order in the proper format (e.g encoding/decoding [`assetData`](https://0x.org/docs/guides/v2-specification#assetdata))
 2. Generating a proper hash for the order contents
@@ -46,9 +46,9 @@ For a set of scenarios show-casing the above steps, as well as allowance setting
 
 Note that the `salt` field of an order should be set to the current unix timestamp in milliseconds for full compatibility with the [`cancelOrdersUpTo`](#cancelling-orders) function. For low level details of how an order is created, please reference the [orders](https://0x.org/docs/guides/v2-specification#orders) section of the protocol specification.
 
-Once you have a valid 0x order, it can be submitted to a relayer. You can use the [POST /v2/order](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md#post-v2order) endpoint of the Standard Relayer API for this purpose (see: [submitOrderAsync in 0x Connect](https://0xproject.com/docs/connect#HttpClient-submitOrderAsync)).
+Once you have a valid 0x order, it can be submitted to a relayer. You can use the [POST /v2/order](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md#post-v2order) endpoint of the Standard Relayer API for this purpose (see: [submitOrderAsync in 0x Connect](https://0xproject.com/docs/tools/connect#HttpClient-submitOrderAsync)).
 
-If you want to be notified whenever the order is filled by a trader, you should also submit the order to an [OrderWatcher](https://0xproject.com/docs/order-watcher) instance you are running.
+If you want to be notified whenever the order is filled by a trader, you should also submit the order to a [0x Mesh node](https://0x-org.gitbook.io/mesh/) instance you are running.
 
 ## Filling orders
 
@@ -96,7 +96,7 @@ Explicitly cancelling orders always requires an on-chain transaction. However, y
 
 ## Fetching off-chain orders
 
-Since 0x orders live off-chain, they must be fetched from relayers. All relayers host APIs that allow you to pull orders from their orderbook. In order to make life easier for traders, many implement the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/), allowing you to use a single client to fetch orders from multiple relayers. Standard Relayer API clients exist in [Python](https://pypi.org/project/0x-sra-client/) and [Typescript/Javascript](https://0xproject.com/docs/connect).
+Since 0x orders live off-chain, they must be fetched from relayers. All relayers host APIs that allow you to pull orders from their orderbook. In order to make life easier for traders, many implement the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/), allowing you to use a single client to fetch orders from multiple relayers. Standard Relayer API clients exist in [Python](https://pypi.org/project/0x-sra-client/) and [Typescript/Javascript](https://0xproject.com/docs/tools/connect).
 
 To learn more about fetching orders from relayers, check out our [How to use the Standard Relayer API tutorial](https://0x.org/docs/guides/using-the-standard-relayer-api).
 

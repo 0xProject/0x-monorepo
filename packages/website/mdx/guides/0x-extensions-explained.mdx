@@ -33,7 +33,7 @@ The 0x Core team have deployed the Forwarder contract on all networks, though th
 **Related Links**
 
 -   [0x Instant](https://0x.org/instant)
--   [AssetBuyer](https://0x.org/docs/asset-buyer)
+-   [AssetBuyer](https://0x.org/docs/tools/asset-buyer)
 -   [0x Starter Project](https://github.com/0xProject/0x-starter-project/blob/master/src/scenarios/forwarder_buy_erc20_tokens.ts#L19)
 -   [Forwarder Source Code](https://github.com/0xProject/0x-monorepo/blob/development/contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol)
 
@@ -41,7 +41,7 @@ The 0x Core team have deployed the Forwarder contract on all networks, though th
 
 The price of an asset decreases over time and the buyer submits a matching order when they believe the asset is appropriately priced. The Dutch Auction contract guarantees the asset is exchanged for the current price, given the block time. The Dutch Auction contract is an example of an extension which validates some state before matching two orders.
 
-The Dutch Auction contract is powered by the 0x Exchange contracts [matchOrders function](https://0x.org/docs/contracts#Exchange-matchOrders) and extends the order format to include additional data. When using match orders, two orders are passed in as parameters, known as the sell order and the buy order. The seller of the asset creates an order for the asset at the lowest price. When a buyer decides the asset is at an acceptable price, they create a matching order for that amount. The buyer submits both the sell order and the buy order to the Dutch Auction contract.
+The Dutch Auction contract is powered by the 0x Exchange contracts `matchOrders` function and extends the order format to include additional data. When using match orders, two orders are passed in as parameters, known as the sell order and the buy order. The seller of the asset creates an order for the asset at the lowest price. When a buyer decides the asset is at an acceptable price, they create a matching order for that amount. The buyer submits both the sell order and the buy order to the Dutch Auction contract.
 
 <img width="825" src="https://user-images.githubusercontent.com/27389/53460197-4a2c1e00-3a0a-11e9-9cbe-1a143d31cd01.png" />
 
@@ -55,7 +55,7 @@ The Dutch Auction encodes additional parameters into the maker asset data, param
 
 <img width="624" src="https://user-images.githubusercontent.com/27389/53460005-99be1a00-3a09-11e9-8f6b-d446672887f7.png" />
 
-Encoding of the additional parameters is provided on the [Dutch Auction contract wrapper](https://0x.org/docs/contract-wrappers#DutchAuctionWrapper-encodeDutchAuctionAssetData).
+Encoding of the additional parameters is provided on the [Dutch Auction contract wrapper](https://0x.org/docs/tools/contract-wrappers#DutchAuctionWrapper-encodeDutchAuctionAssetData).
 
 ```typescript
 // Additional data is encoded in the maker asset data, this includes the begin time and begin amount
@@ -100,7 +100,7 @@ require(isWhitelisted[takerAddress], 'TAKER_NOT_WHITELISTED');
 EXCHANGE.executeTransaction(salt, signerAddress, signedExchangeTransaction, signature);
 ```
 
-In order to implement an on-chain whitelist, the contract would first query if the user is present in a list, if the user is present then the 0x transaction is executed. Our contract wrappers package exposes a [transaction encoder](https://0x.org/docs/contract-wrappers#TransactionEncoder) to encode 0x transactions. An detailed example of encoding and executing 0x transactions can be found in our [0x-starter-project](https://github.com/0xProject/0x-starter-project/blob/master/src/scenarios/execute_transaction.ts#L20).
+In order to implement an on-chain whitelist, the contract would first query if the user is present in a list, if the user is present then the 0x transaction is executed. Our contract wrappers package exposes a [transaction encoder](https://0x.org/docs/tools/contract-wrappers#TransactionEncoder) to encode 0x transactions. An detailed example of encoding and executing 0x transactions can be found in our [0x-starter-project](https://github.com/0xProject/0x-starter-project/blob/master/src/scenarios/execute_transaction.ts#L20).
 
 ```typescript
 // The transaction encoder provides helpers in encoding 0x Exchange transactions to allow

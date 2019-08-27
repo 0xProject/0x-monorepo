@@ -5,7 +5,7 @@ import { ContextInterface } from './index';
 export const context: ContextInterface = {
     title: 'sol-compiler',
     name: 'compiler',
-    docLink: 'https://0x.org/docs/sol-compiler',
+    docLink: 'https://0x.org/docs/tools/sol-compiler',
     subtitle: 'Solidity compilation that just works',
     tagline: 'Seamlessly compile an entire solidity project and generate customisable artifacts',
     icon: Icon,

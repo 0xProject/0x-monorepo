@@ -194,7 +194,7 @@ async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<
     _.each(packagesWithDocs, pkg => {
         const name = pkg.packageJson.name;
         const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0x/')[1] : name;
-        const link = `${constants.stagingWebsite}/docs/${nameWithoutPrefix}`;
+        const link = `${constants.stagingWebsite}/docs/tools/${nameWithoutPrefix}`;
         // tslint:disable-next-line:no-floating-promises
         opn(link);
     });

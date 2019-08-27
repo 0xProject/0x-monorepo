@@ -4,7 +4,7 @@ A few useful web3 subproviders including a LedgerSubprovider useful for adding L
 
 We have written up a [guide](https://0x.org/docs/guides/web3-provider-explained#web3-provider-examples) article detailing some use cases of this subprovider package.
 
-### Read the [Documentation](https://0xproject.com/docs/subproviders).
+### Read the [Documentation](https://0xproject.com/docs/tools/subproviders).
 
 ## Installation
 
