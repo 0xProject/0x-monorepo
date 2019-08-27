@@ -98,14 +98,6 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             trackedTokenStateByAddress: initialTrackedTokenStateByAddress,
         };
     }
-    public componentWillMount(): void {
-        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
-        // tslint:disable-next-line:no-floating-promises
-        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
-    }
-    public componentWillUnmount(): void {
-        this._isUnmounted = true;
-    }
     public componentWillReceiveProps(nextProps: TokenBalancesProps): void {
         if (nextProps.userEtherBalanceInWei !== this.props.userEtherBalanceInWei) {
             if (this.state.isBalanceSpinnerVisible) {
@@ -154,6 +146,12 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     public componentDidMount(): void {
         window.scrollTo(0, 0);
+        const trackedTokenAddresses = _.keys(this.state.trackedTokenStateByAddress);
+        // tslint:disable-next-line:no-floating-promises
+        this._fetchBalancesAndAllowancesAsync(trackedTokenAddresses);
+    }
+    public componentWillUnmount(): void {
+        this._isUnmounted = true;
     }
     public render(): React.ReactNode {
         const errorDialogActions = [
