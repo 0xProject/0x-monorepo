@@ -70,20 +70,20 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
             },
         };
     }
-    public componentWillReceiveProps(nextProps: EthWrappersProps): void {
-        if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
-            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
-        ) {
-            // tslint:disable-next-line:no-floating-promises
-            this._fetchWETHStateAsync();
-        }
-    }
     public componentDidMount(): void {
         window.scrollTo(0, 0);
         // tslint:disable-next-line:no-floating-promises
         this._fetchWETHStateAsync();
+    }
+    public componentDidUpdate(prevProps: EthWrappersProps): void {
+        if (
+            prevProps.userAddress !== this.props.userAddress ||
+            prevProps.networkId !== this.props.networkId ||
+            prevProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+        ) {
+            // tslint:disable-next-line:no-floating-promises
+            this._fetchWETHStateAsync();
+        }
     }
     public componentWillUnmount(): void {
         this._isUnmounted = true;
