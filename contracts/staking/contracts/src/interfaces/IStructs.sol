@@ -58,9 +58,25 @@ interface IStructs {
         uint256 weightedStake;
     }
 
-    struct StakeBalance {
+    struct StoredStakeBalance {
         uint64 lastStored;
         uint96 next;
         uint96 current;
+    }
+
+    struct StakeBalance {
+        uint256 next;
+        uint256 current;
+    }
+
+    enum StakeStateId {
+        ACTIVE,
+        INACTIVE,
+        DELEGATED
+    }
+
+    struct StakeState {
+        StakeStateId id;
+        bytes32 poolId;
     }
 }

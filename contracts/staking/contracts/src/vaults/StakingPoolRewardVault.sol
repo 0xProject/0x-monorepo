@@ -110,7 +110,7 @@ contract StakingPoolRewardVault is
             amount <= balanceByPoolId[poolId].operatorBalance,
             "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
         );
-        
+
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance -= amount._downcastToUint96();
         stakingContractAddress.transfer(amount);

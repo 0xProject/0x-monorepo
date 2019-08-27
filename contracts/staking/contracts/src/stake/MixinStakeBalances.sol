@@ -72,9 +72,13 @@ contract MixinStakeBalances is
     function getActiveStake(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return _syncBalanceDestructive(activeStakeByOwner[owner]).current;
+        IStructs.StoredStakeBalance memory storedBalance = _syncBalanceDestructive(activeStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            current: storedBalance.current,
+            next: storedBalance.next
+        });
     }
 
     /// @dev Returns the deactivated stake for a given owner.
@@ -84,9 +88,13 @@ contract MixinStakeBalances is
     function getInactiveStake(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return _syncBalanceDestructive(inactiveStakeByOwner[owner]).current;
+        IStructs.StoredStakeBalance memory storedBalance = _syncBalanceDestructive(inactiveStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            current: storedBalance.current,
+            next: storedBalance.next
+        });
     }
 
     /// @dev Returns the stake that can be withdrawn for a given owner.
@@ -98,7 +106,17 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return uint256(withdrawableStake[owner]);
+        // Stake cannot be withdrawn if it has been reallocated for the `next` epoch.
+        // So the upper bound of withdrawable stake is always limited by the value of `next`.
+        IStructs.StoredStakeBalance memory storedBalance = inactiveStakeByOwner[owner];
+        uint256 storedWithdrawableBalance = withdrawableStakeByOwner[owner];
+        if (storedBalance.lastStored == currentEpoch) {
+            return storedBalance.next < storedWithdrawableBalance ? storedBalance.next : storedWithdrawableBalance;
+        } else if(storedBalance.lastStored + 1 == currentEpoch) {
+            return storedBalance.next < storedBalance.current ? storedBalance.next : storedBalance.current;
+        } else {
+            return storedBalance.next;
+        }
     }
 
     /// @dev Returns the stake delegated by a given owner.
@@ -108,9 +126,13 @@ contract MixinStakeBalances is
     function getStakeDelegatedByOwner(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return _syncBalanceDestructive(delegatedStakeByOwner[owner]).current;
+        IStructs.StoredStakeBalance memory storedBalance = _syncBalanceDestructive(delegatedStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            current: storedBalance.current,
+            next: storedBalance.next
+        });
     }
 
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
@@ -121,9 +143,13 @@ contract MixinStakeBalances is
     function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return _syncBalanceDestructive(delegatedStakeToPoolByOwner[owner][poolId]).current;
+        IStructs.StoredStakeBalance memory storedBalance = _syncBalanceDestructive(delegatedStakeToPoolByOwner[owner][poolId]);
+        return IStructs.StakeBalance({
+            current: storedBalance.current,
+            next: storedBalance.next
+        });
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool, across all members.
@@ -133,15 +159,19 @@ contract MixinStakeBalances is
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return _syncBalanceDestructive(delegatedStakeByPoolId[poolId]).current;
+        IStructs.StoredStakeBalance memory storedBalance = _syncBalanceDestructive(delegatedStakeByPoolId[poolId]);
+        return IStructs.StakeBalance({
+            current: storedBalance.current,
+            next: storedBalance.next
+        });
     }
 
-    function _syncBalanceDestructive(IStructs.StakeBalance memory balance)
+    function _syncBalanceDestructive(IStructs.StoredStakeBalance memory balance)
         internal
         view
-        returns (IStructs.StakeBalance memory)
+        returns (IStructs.StoredStakeBalance memory)
     {
         uint64 currentEpoch = getCurrentEpoch();
         if (currentEpoch > balance.lastStored) {
@@ -152,34 +182,59 @@ contract MixinStakeBalances is
     }
 
     function _moveStake(
-        IStructs.StakeBalance storage fromPtr,
-        IStructs.StakeBalance storage toPtr,
-        uint96 amount
+        IStructs.StoredStakeBalance storage fromPtr,
+        IStructs.StoredStakeBalance storage toPtr,
+        uint256 amount
     )
         internal
     {
-        IStructs.StakeBalance memory from = _syncBalanceDestructive(fromPtr);
-        IStructs.StakeBalance memory to = _syncBalanceDestructive(toPtr);
+        IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
+        IStructs.StoredStakeBalance memory to = _syncBalanceDestructive(toPtr);
 
         if (amount > from.next) {
             revert("@TODO - INSERT RICH REVERT");
         }
 
-        from.next -= amount;
-        to.next += amount;
+        from.next = LibSafeMath._downcastToUint96(amount._sub(from.next));
+        to.next = LibSafeMath._downcastToUint96(amount._add(to.next));
 
         // update state
         _storeBalance(fromPtr, from);
         _storeBalance(toPtr, to);
     }
 
+    function _incrementBalance(IStructs.StoredStakeBalance storage fromPtr, uint256 amount)
+        internal
+    {
+        // Remove stake from balance
+        IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
+        from.next = LibSafeMath._downcastToUint96(amount._add(from.next));
+        from.current = LibSafeMath._downcastToUint96(amount._add(from.current));
+
+        // update state
+        _storeBalance(fromPtr, from);
+    }
+
+    function _decrementBalance(IStructs.StoredStakeBalance storage fromPtr, uint256 amount)
+        internal
+    {
+        // Remove stake from balance
+        IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
+        from.next = LibSafeMath._downcastToUint96(amount._sub(from.next));
+        from.current = LibSafeMath._downcastToUint96(amount._sub(from.current));
+
+        // update state
+        _storeBalance(fromPtr, from);
+    }
+
     function _storeBalance(
-        IStructs.StakeBalance storage balancePtr,
-        IStructs.StakeBalance memory balance
+        IStructs.StoredStakeBalance storage balancePtr,
+        IStructs.StoredStakeBalance memory balance
     )
         private
     {
-        // @Note this is the cost of one sstore.
+        // This is compressed into a single `sstore` when optimizations are enabled,
+        // since the StakeBalance struct occupies a single word of storage.
         balancePtr.lastStored = balance.lastStored;
         balancePtr.next = balance.next;
         balancePtr.current = balance.current;

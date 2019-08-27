@@ -20,7 +20,6 @@ export * from '../generated-wrappers/lib_safe_math64';
 export * from '../generated-wrappers/lib_safe_math96';
 export * from '../generated-wrappers/lib_signature_validator';
 export * from '../generated-wrappers/mixin_constants';
-export * from '../generated-wrappers/mixin_delegated_stake';
 export * from '../generated-wrappers/mixin_deployment_constants';
 export * from '../generated-wrappers/mixin_exchange_fees';
 export * from '../generated-wrappers/mixin_exchange_manager';

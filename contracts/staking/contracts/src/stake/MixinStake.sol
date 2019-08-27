@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
@@ -25,6 +26,7 @@ import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
+import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
 
@@ -40,12 +42,12 @@ contract MixinStake is
     MixinOwnable,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinStakeBalances
+    MixinStakingPool,
+    MixinStakeBalances,
+    MixinStakingPoolRewards
 {
 
     using LibSafeMath for uint256;
-
-    /*
 
     /// @dev Deposit Zrx and mint stake in the activated stake.
     /// This is a convenience function, and can be used in-place of
@@ -55,73 +57,11 @@ contract MixinStake is
     function mintStake(uint256 amount)
         external
     {
-        _mintStake(msg.sender, amount);
-        activateStake(amount);
-    }
-
-    function burnStake(uint256 amount)
-        external
-    {
-
-        _burnStake(owner, amount);
-    }
-
-    /// @dev Burns deactivated stake and withdraws the corresponding amount of Zrx.
-    /// @param amount of Stake to burn / Zrx to withdraw
-    function burnDeactivatedStakeAndWithdrawZrx(uint256 amount)
-        external
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        require(
-            amount <= getDeactivatedStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
-
-    }
-
-    /// @dev Activates stake that is presently in the Deactivated & Withdrawable state.
-    /// @param amount of Stake to activate.
-    function activateStake(uint256 amount)
-        public
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        require(
-            amount <= getActivatableStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._add(amount);
-        totalActivatedStake = totalActivatedStake._add(amount);
-    }
-
-    /// @dev Deactivate & TimeLock stake that is currently in the Activated state.
-    /// @param amount of Stake to deactivate and timeLock.
-    function deactivateAndTimeLockStake(uint256 amount)
-        public
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        require(
-            amount <= getActivatedStake(owner),
-            "INSUFFICIENT_BALANCE"
-        );
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);
-        totalActivatedStake = totalActivatedStake._sub(amount);
-        _timeLockStake(owner, amount);
-    }
-
-    /// @dev Mints Stake in the Deactivated & Withdrawable state.
-    /// @param owner to mint Stake for.
-    /// @param amount of Stake to mint.
-    function _mintStake(address owner, uint256 amount)
-        internal
-    {
-        // deposit equivalent amount of ZRX into vault
+         // deposit equivalent amount of ZRX into vault
         _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
-        stakeByOwner[owner] = stakeByOwner[owner]._add(amount);
+        _incrementBalance(activeStakeByOwner[owner], amount);
 
         // emit stake event
         emit StakeMinted(
@@ -130,14 +70,21 @@ contract MixinStake is
         );
     }
 
-    /// @dev Burns Stake in the Deactivated & Withdrawable state.
-    /// @param owner to mint Stake for.
-    /// @param amount of Stake to mint.
-    function _burnStake(address owner, uint256 amount)
-        internal
+    function burnStake(uint256 amount)
+        external
     {
+        // sanity check
+        uint256 currentWithdrawableStake = getWithdrawableStake(owner);
+        require(
+            amount <= currentWithdrawableStake,
+            "CANNOT_WITHDRAW"
+        );
+
         // burn stake
-        stakeByOwner[owner] = stakeByOwner[owner]._sub(amount);
+        _decrementBalance(inactiveStakeByOwner[owner], amount);
+
+        // update withdrawable field
+        withdrawableStakeByOwner[owner] = currentWithdrawableStake._sub(amount);
 
         // withdraw equivalent amount of ZRX from vault
         _withdrawToOwnerFromZrxVault(owner, amount);
@@ -149,5 +96,100 @@ contract MixinStake is
         );
     }
 
-    */
+    function moveStake(IStructs.StakeState calldata from, IStructs.StakeState calldata to, uint256 amount)
+        external
+    {
+        if (from.id == IStructs.StakeStateId.DELEGATED) {
+            _undelegateStake(
+                from.poolId,
+                msg.sender,
+                amount
+            );
+        } else if (from.id == IStructs.StakeStateId.INACTIVE) {
+            // update withdrawable field
+            uint256 currentWithdrawableStake = getWithdrawableStake(owner);
+            withdrawableStakeByOwner[owner] = currentWithdrawableStake._sub(amount);
+        }
+
+        if (to.id == IStructs.StakeStateId.DELEGATED) {
+            _delegateStake(
+                from.poolId,
+                msg.sender,
+                amount
+            );
+        }
+
+        IStructs.StoredStakeBalance storage fromPtr = _getBalancePtrFromState(from);
+        IStructs.StoredStakeBalance storage toPtr = _getBalancePtrFromState(to);
+        _moveStake(fromPtr, toPtr, amount);
+
+        /*
+            emit StakeMoved(
+                getCurrentEpoch(),
+                owner,
+                fromState.id,
+                toState.id,
+            );
+        */
+    }
+
+    function _getBalancePtrFromState(IStructs.StakeState memory state)
+        private
+        returns (IStructs.StoredStakeBalance storage)
+    {
+        if (state.id == IStructs.StakeStateId.ACTIVE) {
+            return activeStakeByOwner[msg.sender];
+        } else if(state.id == IStructs.StakeStateId.INACTIVE) {
+            return inactiveStakeByOwner[msg.sender];
+        } else if(state.id == IStructs.StakeStateId.DELEGATED) {
+            return delegatedStakeByOwner[msg.sender];
+        } else {
+            revert("Illegal State");
+        }
+    }
+
+    function _delegateStake(
+        bytes32 poolId,
+        address payable owner,
+        uint256 amount
+    )
+        private
+    {
+        // join staking pool
+        _joinStakingPool(
+            poolId,
+            owner,
+            amount,
+            getTotalStakeDelegatedToPool(poolId).next
+        );
+
+        // decrement how much stake the owner has delegated to the input pool
+        _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // increment how much stake has been delegated to pool
+        _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+    }
+
+    function _undelegateStake(
+        bytes32 poolId,
+        address payable owner,
+        uint256 amount
+    )
+        private
+    {
+        // leave the staking pool
+        _leaveStakingPool(
+            poolId,
+            owner,
+            amount,
+            getStakeDelegatedToPoolByOwner(owner, poolId).next,
+            getTotalStakeDelegatedToPool(poolId).next
+        );
+
+        // decrement how much stake the owner has delegated to the input pool
+        _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // decrement how much stake has been delegated to pool
+        _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+    }
 }

@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
 import "./fees/MixinExchangeManager.sol";
@@ -25,7 +26,6 @@ import "./staking_pools/MixinStakingPoolRewardVault.sol";
 import "./sys/MixinScheduler.sol";
 import "./stake/MixinStakeBalances.sol";
 import "./stake/MixinStake.sol";
-import "./stake/MixinDelegatedStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
 import "./staking_pools/MixinStakingPoolRewards.sol";
@@ -45,10 +45,9 @@ contract Staking is
     MixinZrxVault,
     MixinStakingPool,
     MixinStakeBalances,
-    MixinStake,
     MixinStakingPoolRewards,
     MixinExchangeFees,
-    MixinDelegatedStake
+    MixinStake
 {
 
     // this contract can receive ETH

@@ -20,7 +20,6 @@
         "generated-artifacts/LibSafeMath96.json",
         "generated-artifacts/LibSignatureValidator.json",
         "generated-artifacts/MixinConstants.json",
-        "generated-artifacts/MixinDelegatedStake.json",
         "generated-artifacts/MixinDeploymentConstants.json",
         "generated-artifacts/MixinExchangeFees.json",
         "generated-artifacts/MixinExchangeManager.json",

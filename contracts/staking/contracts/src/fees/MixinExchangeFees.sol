@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "../libs/LibSafeMath.sol";
 import "../libs/LibFeeMath.sol";
@@ -171,8 +172,8 @@ contract MixinExchangeFees is
             bytes32 poolId = activePoolsThisEpoch[i];
 
             // compute weighted stake
-            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getActiveStake(getStakingPoolOperator(poolId)); // @TODO Update
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).current;
+            uint256 stakeHeldByPoolOperator = getActiveStake(getStakingPoolOperator(poolId)).current; // @TODO Update
             uint256 weightedStake = stakeHeldByPoolOperator._add(
                 totalStakeDelegatedToPool
                 ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
