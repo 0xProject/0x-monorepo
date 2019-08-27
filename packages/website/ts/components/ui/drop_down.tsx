@@ -51,10 +51,7 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
             this._checkIfShouldClosePopover();
         }, CHECK_CLOSE_POPOVER_INTERVAL_MS);
     }
-    public componentWillUnmount(): void {
-        window.clearInterval(this._popoverCloseCheckIntervalId);
-    }
-    public componentWillReceiveProps(_nextProps: DropDownProps): void {
+    public componentDidUpdate(_prevProps: DropDownProps): void {
         // HACK: If the popoverContent is updated to a different dimension and the users
         // mouse is no longer above it, the dropdown can enter an inconsistent state where
         // it believes the user is still hovering over it. In order to remedy this, we
@@ -62,6 +59,9 @@ export class DropDown extends React.Component<DropDownProps, DropDownState> {
         // because it will effectively close the dropdown on any prop update, barring
         // dropdowns from having dynamic content.
         this._onHoverOff();
+    }
+    public componentWillUnmount(): void {
+        window.clearInterval(this._popoverCloseCheckIntervalId);
     }
     public render(): React.ReactNode {
         return (
