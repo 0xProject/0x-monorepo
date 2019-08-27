@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
 import { NotFound } from 'ts/containers/not_found';
-import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { DocsGuides } from 'ts/pages/docs/guides';
@@ -50,14 +49,17 @@ import { constants } from 'ts/utils/constants';
 // At the same time webpack statically parses for import() to determine bundle chunk split points
 // so each lazy import needs it's own `import()` declaration.
 
-const LazyPortal = createLazyComponent('Portal', async () =>
-    import(/* webpackChunkName: "portal" */ 'ts/containers/portal'),
+const LazyPortal = React.lazy(async () =>
+    import(/* webpackChunkName: "portal" */ 'ts/containers/portal').then(({ Portal }) => ({
+        default: Portal,
+    })),
 );
+
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
 const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
 
 render(
-    <>
+    <React.Suspense fallback={React.Fragment}>
         <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
         <Router>
             <MuiThemeProvider muiTheme={muiTheme}>
@@ -158,6 +160,6 @@ render(
                 </Provider>
             </MuiThemeProvider>
         </Router>
-    </>,
+    </React.Suspense>,
     document.getElementById('app'),
 );
