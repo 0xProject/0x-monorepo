@@ -58,19 +58,19 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
     }
-    public componentWillUnmount(): void {
-        this._isUnmounted = true;
-    }
-    public componentWillReceiveProps(nextProps: TokenAmountInputProps): void {
+    public componentDidUpdate(prevProps: TokenAmountInputProps): void {
         if (
-            nextProps.userAddress !== this.props.userAddress ||
-            nextProps.networkId !== this.props.networkId ||
-            nextProps.token.address !== this.props.token.address ||
-            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+            prevProps.userAddress !== this.props.userAddress ||
+            prevProps.networkId !== this.props.networkId ||
+            prevProps.token.address !== this.props.token.address ||
+            prevProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
         ) {
             // tslint:disable-next-line:no-floating-promises
-            this._fetchBalanceAndAllowanceAsync(nextProps.token.address, nextProps.userAddress);
+            this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
         }
+    }
+    public componentWillUnmount(): void {
+        this._isUnmounted = true;
     }
     public render(): React.ReactNode {
         const amount = this.props.amount
