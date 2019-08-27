@@ -152,48 +152,46 @@ export class Portal extends React.Component<PortalProps, PortalState> {
         // become disconnected from their backing Ethereum node, changed user accounts, etc...)
         this.props.dispatcher.resetState();
     }
-    public componentDidUpdate(prevProps: PortalProps): void {
+    public componentDidUpdate(prevProps: PortalProps, prevState: PortalState): void {
         if (!prevProps.blockchainIsLoaded && this.props.blockchainIsLoaded) {
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
-    }
-    public componentWillReceiveProps(nextProps: PortalProps): void {
-        if (nextProps.networkId !== this.state.prevNetworkId) {
+        if (this.props.networkId !== prevState.prevNetworkId) {
             // tslint:disable-next-line:no-floating-promises
-            this._blockchain.networkIdUpdatedFireAndForgetAsync(nextProps.networkId);
+            this._blockchain.networkIdUpdatedFireAndForgetAsync(this.props.networkId);
             this.setState({
-                prevNetworkId: nextProps.networkId,
+                prevNetworkId: this.props.networkId,
             });
         }
-        if (nextProps.userAddress !== this.state.prevUserAddress) {
-            const newUserAddress = _.isEmpty(nextProps.userAddress) ? undefined : nextProps.userAddress;
+        if (this.props.userAddress !== prevState.prevUserAddress) {
+            const newUserAddress = _.isEmpty(this.props.userAddress) ? undefined : this.props.userAddress;
             // tslint:disable-next-line:no-floating-promises
             this._blockchain.userAddressUpdatedFireAndForgetAsync(newUserAddress);
             this.setState({
-                prevUserAddress: nextProps.userAddress,
+                prevUserAddress: this.props.userAddress,
             });
         }
-        if (nextProps.nodeVersion !== this.state.prevNodeVersion) {
+        if (this.props.nodeVersion !== prevState.prevNodeVersion) {
             // tslint:disable-next-line:no-floating-promises
-            this._blockchain.nodeVersionUpdatedFireAndForgetAsync(nextProps.nodeVersion);
+            this._blockchain.nodeVersionUpdatedFireAndForgetAsync(this.props.nodeVersion);
         }
-        if (nextProps.location.pathname !== this.state.prevPathname) {
+        if (this.props.location.pathname !== prevState.prevPathname) {
             this.setState({
-                prevPathname: nextProps.location.pathname,
+                prevPathname: this.props.location.pathname,
             });
         }
 
         // If the address changed, but the network did not, we can just refetch the currently tracked tokens.
         if (
-            (nextProps.userAddress !== this.props.userAddress && nextProps.networkId === this.props.networkId) ||
-            nextProps.lastForceTokenStateRefetch !== this.props.lastForceTokenStateRefetch
+            (this.props.userAddress !== prevProps.userAddress && this.props.networkId === prevProps.networkId) ||
+            this.props.lastForceTokenStateRefetch !== prevProps.lastForceTokenStateRefetch
         ) {
             // tslint:disable-next-line:no-floating-promises
             this._fetchBalancesAndAllowancesAsync(this._getCurrentTrackedTokensAddresses());
         }
 
-        const nextTrackedTokens = utils.getTrackedTokens(nextProps.tokenByAddress);
+        const nextTrackedTokens = utils.getTrackedTokens(this.props.tokenByAddress);
         const trackedTokens = this._getCurrentTrackedTokens();
 
         if (!_.isEqual(nextTrackedTokens, trackedTokens)) {
@@ -201,7 +199,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
             const newTokenAddresses = _.map(newTokens, token => token.address);
             // Add placeholder entry for this token to the state, since fetching the
             // balance/allowance is asynchronous
-            const trackedTokenStateByAddress = { ...this.state.trackedTokenStateByAddress };
+            const trackedTokenStateByAddress = { ...prevState.trackedTokenStateByAddress };
             for (const tokenAddress of newTokenAddresses) {
                 trackedTokenStateByAddress[tokenAddress] = {
                     balance: new BigNumber(0),
