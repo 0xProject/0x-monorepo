@@ -119,6 +119,7 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     private readonly _throttledScreenWidthUpdate: () => void;
     constructor(props: PortalProps) {
         super(props);
+        this._blockchain = new Blockchain(this.props.dispatcher);
         this._sharedOrderIfExists = orderParser.parseQueryString(window.location.search);
         this._throttledScreenWidthUpdate = _.throttle(this._updateScreenWidth.bind(this), THROTTLE_TIMEOUT);
         const didAcceptPortalDisclaimer = localStorage.getItemIfExists(constants.LOCAL_STORAGE_KEY_ACCEPT_DISCLAIMER);
@@ -141,9 +142,6 @@ export class Portal extends React.Component<PortalProps, PortalState> {
     public componentDidMount(): void {
         window.addEventListener('resize', this._throttledScreenWidthUpdate);
         window.scrollTo(0, 0);
-    }
-    public componentWillMount(): void {
-        this._blockchain = new Blockchain(this.props.dispatcher);
     }
     public componentWillUnmount(): void {
         this._blockchain.destroy();
