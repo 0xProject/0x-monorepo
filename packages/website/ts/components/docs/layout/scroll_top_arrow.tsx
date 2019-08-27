@@ -11,14 +11,11 @@ export const ScrollTopArrow = () => {
     const [scrollY, setScrollY] = React.useState<number>(window.scrollY);
     const isArrowVisible = scrollY > 100;
 
-    React.useEffect(
-        () => {
-            const handleScroll = () => setScrollY(window.scrollY);
-            window.addEventListener('scroll', debounce(handleScroll));
-            return () => window.removeEventListener('scroll', debounce(handleScroll));
-        },
-        [debounce],
-    );
+    React.useEffect(() => {
+        const handleScroll = () => setScrollY(window.scrollY);
+        window.addEventListener('scroll', debounce(handleScroll));
+        return () => window.removeEventListener('scroll', debounce(handleScroll));
+    }, [debounce]);
 
     return (
         <ArrowWrapper isArrowVisible={isArrowVisible} onClick={animateScroll.scrollToTop}>

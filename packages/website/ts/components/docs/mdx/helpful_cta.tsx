@@ -7,7 +7,7 @@ import { Button } from 'ts/components/button';
 import { Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
-import { docs} from 'ts/style/docs';
+import { docs } from 'ts/style/docs';
 import { fadeIn } from 'ts/style/keyframes';
 
 interface IHelpfulCtaProps {
@@ -62,7 +62,7 @@ HelpfulCta.defaultProps = {
 const HelpfulCtaWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin-bottom:  ${docs.marginBottom};
+    margin-bottom: ${docs.marginBottom};
 
     @media (max-width: 500px) {
         flex-direction: column;

@@ -40,26 +40,23 @@ export function useDimensions({ isLiveMeasure = true }: UseDimensionsArgs = {}):
         setNode(_node);
     }, []);
 
-    React.useLayoutEffect(
-        // @ts-ignore
-        () => {
-            if (node) {
-                const measure = () => window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
-                measure();
+    React.useLayoutEffect(// @ts-ignore
+    () => {
+        if (node) {
+            const measure = () => window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
+            measure();
 
-                if (isLiveMeasure) {
-                    window.addEventListener('resize', measure);
-                    window.addEventListener('scroll', measure);
+            if (isLiveMeasure) {
+                window.addEventListener('resize', measure);
+                window.addEventListener('scroll', measure);
 
-                    return () => {
-                        window.removeEventListener('resize', measure);
-                        window.removeEventListener('scroll', measure);
-                    };
-                }
+                return () => {
+                    window.removeEventListener('resize', measure);
+                    window.removeEventListener('scroll', measure);
+                };
             }
-        },
-        [node],
-    );
+        }
+    }, [node]);
 
     return [ref, dimensions, node];
 }
