@@ -4,7 +4,7 @@ export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponseP
 
 /**
  * Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
- * Read more about Providers in the 0x wiki.
+ * Read more about Providers in the guides section of the 0x docs.
  */
 export type SupportedProvider = Web3JsProvider | GanacheProvider | EIP1193Provider | ZeroExProvider;
 

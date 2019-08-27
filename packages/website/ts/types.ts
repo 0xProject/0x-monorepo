@@ -424,6 +424,7 @@ export enum Docs {
 
 export enum WebsiteLegacyPaths {
     Deployer = '/docs/deployer',
+    Wiki = '/wiki',
     Jobs = '/jobs',
     ZeroExJs = '/docs/0x.js',
     Connect = '/docs/connect',
@@ -444,7 +445,6 @@ export enum WebsiteLegacyPaths {
 
 export enum WebsitePaths {
     Portal = '/portal',
-    Wiki = '/wiki',
     Docs = '/docs',
     DocsApiExplorer = '/docs/api-explorer',
     DocsCoreConcepts = '/docs/core-concepts',

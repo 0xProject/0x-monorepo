@@ -150,7 +150,7 @@ render(
                         <Route path={`${WebsitePaths.Docs}/:type/:page?/:version?`} component={DocsPage as any} />
 
                         {/* Legacy endpoints */}
-                        <Redirect from={WebsitePaths.Wiki} to={WebsitePaths.DocsGuides} />
+                        <Redirect from={WebsiteLegacyPaths.Wiki} to={WebsitePaths.DocsGuides} />
                         <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
                         <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
                         <Route component={NotFound as any} />

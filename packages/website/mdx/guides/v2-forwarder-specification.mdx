@@ -1,14 +1,14 @@
 # Architecture
 
-<Image src="https://github.com/0xProject/0x-protocol-specification/raw/master/v2/img/0x_v2_forwarder.png" align="center" marginBottom="4rem"/>
+<Image src="https://0x-wiki-images.s3.eu-west-2.amazonaws.com/0x_v2_forwarder.png" align="center" marginBottom="4rem"/>
 
 The Forwarding contract acts as a middleman between the user and the 0x Exchange contract. Its purpose is to perform a number of useful actions on the users behalf. Conveniently reducing the number of steps and transactions.
 
-The 0x protocol [AssetProxy](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy) contracts work as operators that are authorized to move tokens on behalf of users if an order with a valid signature can be produced. Since ETH is not a token and cannot be moved natively by a third party operator, Wrapped ETH (WETH) is introduced to adapt ETH to work in this environment. WETH requires a user to deposit ETH into the WETH contract (transaction) and approve (transaction) the AssetProxy operator to transfer the WETH on the user's behalf.
+The 0x protocol [AssetProxy](https://0x.org/docs/guides/v2-specification#assetproxy) contracts work as operators that are authorized to move tokens on behalf of users if an order with a valid signature can be produced. Since ETH is not a token and cannot be moved natively by a third party operator, Wrapped ETH (WETH) is introduced to adapt ETH to work in this environment. WETH requires a user to deposit ETH into the WETH contract (transaction) and approve (transaction) the AssetProxy operator to transfer the WETH on the user's behalf.
 
 When performing an exchange on 0x, fees may be required to be paid by the maker and takers in ZRX token. The AssetProxy needs approval to move these tokens (transaction) and ZRX tokens need to be pre-purchased (transaction).
 
-A user is then able to find an order and perform a TokenA/WETH `fillOrder` on the 0x [Exchange contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange) (transaction).
+A user is then able to find an order and perform a TokenA/WETH `fillOrder` on the 0x [Exchange contract](https://0x.org/docs/guides/v2-specification#exchange) (transaction).
 
 For first time purchasers of tokens, this is non-trivial setup that is unavoidable due to the design of the ERC20 standard. The Forwarding contracts purpose is to enable users to buy tokens in one transaction.
 
@@ -18,7 +18,7 @@ For first time purchasers of tokens, this is non-trivial setup that is unavoidab
 
 The Forwarder contains all of the following logic:
 
-- Presets approval to the [ERC20Proxy](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#erc20proxy) and the [ERC721Proxy](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#erc721proxy)
+- Presets approval to the [ERC20Proxy](https://0x.org/docs/guides/v2-specification#erc20proxy) and the [ERC721Proxy](https://0x.org/docs/guides/v2-specification#erc721proxy)
 - Converts ETH into WETH on behalf of the user
 - Performs the exchange via the 0x Exchange contract
 - Purchases ZRX on behalf of the user (ZRX fee abstraction)
@@ -41,7 +41,7 @@ This function buys a specific amount of assets (ERC20 or ERC721) given a set of 
 This function will revert under the following conditions:
 
 - No ETH value was included in the transaction
-- The `makerAssetData` contains an [`assetProxyId`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetdata) that is not supported (currently ERC20 and ERC721 only)
+- The `makerAssetData` contains an [`assetProxyId`](https://0x.org/docs/guides/v2-specification#assetdata) that is not supported (currently ERC20 and ERC721 only)
 - The entire `makerAssetFillAmount` cannot be filled
 - The amount of ZRX paid in fees cannot be repurchased
 - The supplied `feePercentage` is greater than 5% (represented as 0.05 \* 10^18)
@@ -89,7 +89,7 @@ This function attempts to buy as many ERC20 tokens as possible given the amount 
 This function will revert under the following conditions:
 
 - No ETH value was included in the transaction
-- The `makerAssetData` contains an [`assetProxyId`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetdata) that is not supported (currently ERC20 and ERC721 only)
+- The `makerAssetData` contains an [`assetProxyId`](https://0x.org/docs/guides/v2-specification#assetdata) that is not supported (currently ERC20 and ERC721 only)
 - The amount of ZRX paid in fees cannot be repurchased
 - The supplied `feePercentage` is greater than 5% (represented as 0.05 \* 10^18)
 - The required ETH fee cannot be paid

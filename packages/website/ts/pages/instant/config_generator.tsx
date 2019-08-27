@@ -126,7 +126,7 @@ export class ConfigGenerator extends React.Component<ConfigGeneratorProps, Confi
         }));
     };
     private readonly _handleAffiliatePercentageLearnMoreClick = (): void => {
-        window.open(`${WebsitePaths.Wiki}#Learn-About-Affiliate-Fees`, '_blank');
+        window.open(`${WebsitePaths.DocsGuides}/integrate-instant#learn-about-affiliate-fees`, '_blank');
     };
     private readonly _handleSRASelection = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const sraEndpoint = event.target.value;

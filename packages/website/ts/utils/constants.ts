@@ -86,8 +86,6 @@ export const constants = {
     URL_GITHUB_ORG: 'https://github.com/0xProject',
     URL_GITHUB_WIKI: 'https://github.com/0xProject/wiki',
     URL_FORUM,
-    URL_PROTOCOL_SPECIFICATION:
-        'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md',
     URL_METAMASK_CHROME_STORE: 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
     URL_METAMASK_FIREFOX_STORE: 'https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/',
     URL_COINBASE_WALLET_IOS_APP_STORE: 'https://itunes.apple.com/us/app/coinbase-wallet/id1278383455?mt=8',
@@ -123,22 +121,6 @@ export const constants = {
     URL_VOTE_FAQ:
         'https://blog.0xproject.com/vote-with-zrx-to-add-support-for-erc-1155-and-the-staticcallassetproxy-49a855807bcd#967f',
     URL_ZEIP_REPO: 'https://github.com/0xProject/ZEIPs/',
-    DEVELOPER_TOPBAR_LINKS: [
-        {
-            title: Key.Wiki,
-            to: WebsitePaths.Wiki,
-        },
-        {
-            title: Key.Forum,
-            to: URL_FORUM,
-            shouldOpenInNewTab: true,
-        },
-        {
-            title: Key.LiveChat,
-            to: URL_ZEROEX_CHAT,
-            shouldOpenInNewTab: true,
-        },
-    ] as ALink[],
     TYPES_SECTION_NAME: 'types',
     EXTERNAL_EXPORTS_SECTION_NAME: 'external exports',
     TYPE_TO_SYNTAX: {
@@ -148,7 +130,7 @@ export const constants = {
     DOCS_SCROLL_DURATION_MS: 0,
     SCROLL_CONTAINER_ID: 'scroll_container',
     SCROLL_TOP_ID: 'pageScrollTop',
-    CFL_DOCS: `${WebsitePaths.Wiki}#Contract-Fillable-Liquidity`,
+    CFL_DOCS: `${WebsitePaths.DocsGuides}/contract-fillable-liquidity`,
     NETWORK_NAME_BY_ID: {
         1: Networks.Mainnet,
         3: Networks.Ropsten,

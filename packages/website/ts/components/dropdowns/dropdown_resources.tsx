@@ -27,7 +27,7 @@ const introData: LinkConfig[] = [
     },
     {
         label: 'Legal Wiki',
-        url: `${WebsitePaths.Wiki}#Legal-Wiki`,
+        url: `${WebsitePaths.DocsGuides}/legal-guide`,
         shouldOpenInNewTab: true,
     },
 ];

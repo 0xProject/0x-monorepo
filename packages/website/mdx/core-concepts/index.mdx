@@ -36,7 +36,7 @@ A 0x order has the following fields:
 | makerAssetData        | Contains all the identifying information about the asset(s) the order maker is trying to sell.    |
 | takerAssetData        | Identifying information of the asset(s) the taker must trade in exchange for the maker's asset(s).                                                                                                                                                                                                              |
 | makerAssetAmount      | Amount of the maker's asset(s) being offered by the maker.                                                                                                                                                                                                                       |
-| takerAssetAmount      | Amount of the taker's asset(s) the maker will accept in exchange for their maker asset(s). In order to calculate the price the maker is offering, one can divide the `makerAssetAmount` by the `takerAssetAmount` (the calculation is [a bit more complex](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#multiassetproxy) if multiple assets are involved).                                                                                |
+| takerAssetAmount      | Amount of the taker's asset(s) the maker will accept in exchange for their maker asset(s). In order to calculate the price the maker is offering, one can divide the `makerAssetAmount` by the `takerAssetAmount` (the calculation is [a bit more complex](https://0x.org/docs/guides/v2-specification#assetproxy) if multiple assets are involved).                                                                                |
 | expirationTimeSeconds | Timestamp in seconds of when the order expires. Expired orders cannot be filled.                                                                                                                                                                                                                                                         |
 | salt                  | A value that can be used to guarentee order uniqueness. Typically it is set to a random number.                                                                                                                                                                                                         |
 | feeRecipientAddress   | The entity that will receive any fees stipulated by the order. This is typically used to incentivize off-chain order relay.                                                                                                                                                                            |
@@ -127,13 +127,13 @@ In addition to an API standard, the 0x core team is also building  [0x Mesh](htt
 
 ## Extending the 0x protocol
 
-By design, the 0x protocol is built to be highly modular and extensible. Some changes to the protocol require approval from the ZRX token holders, such as the addition of an [assetProxy](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy) (e.g., to support trading of a new token standard). Proposals for these types of changes are discussed in [ZEIPs](https://github.com/0xProject/zeips/issues) (0x improvement proposals).
+By design, the 0x protocol is built to be highly modular and extensible. Some changes to the protocol require approval from the ZRX token holders, such as the addition of an [assetProxy](https://0x.org/guide/v2-specification#assetproxy) (e.g., to support trading of a new token standard). Proposals for these types of changes are discussed in [ZEIPs](https://github.com/0xProject/zeips/issues) (0x improvement proposals).
 
 Another type of the 0x protocol extension that does not require any kind of approval to be used are aptly called [0x extensions](https://0x.org/extensions). 0x extensions add arbitrary logic that 0x orders must flow through before they can get filled or cancelled.
 
 ![Extension](/images/docs/extension.png "Extension")
 
-Examples of the types of features this enables are trading whitelists (KYC, invite-only, etc...), Dutch auctions and [trade coordinators](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md) to name a few. We are just beginning to see the innovation this ability to permissionlessly extend the 0x protocol will unleash.
+Examples of the types of features this enables are trading whitelists (KYC, invite-only, etc...), Dutch auctions and [trade coordinators](https://0x.org/docs/guides/v2-coordinatior-specification) to name a few. We are just beginning to see the innovation this ability to permissionlessly extend the 0x protocol will unleash.
 
 ## Up next
 
