@@ -2,6 +2,16 @@ https://0x.org/
 https://0x.org/explore
 https://0x.org/portal
 https://0x.org/docs/guides
+https://0x.org/docs/guides/v2-coordinatior-specification
+https://0x.org/docs/guides/v2-forwarder-specification
+https://0x.org/docs/guides/legal-guide
+https://0x.org/docs/guides/v2-specification
+https://0x.org/docs/guides/0x-cheat-sheet
+https://0x.org/docs/guides/contract-fillable-liquidity
+https://0x.org/docs/guides/integrate-instant
+https://0x.org/docs/guides/ganache-setup
+https://0x.org/docs/guides/using-the-standard-relayer-api
+https://0x.org/docs/guides/web3-provider-explained
 https://0x.org/docs
 https://0x.org/about
 https://0x.org/about/mission
