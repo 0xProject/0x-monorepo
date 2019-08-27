@@ -23,9 +23,9 @@ contract MixinDeploymentConstants {
 
     // @TODO SET THESE VALUES FOR DEPLOYMENT
 
-    uint64 constant internal EPOCH_DURATION_IN_SECONDS = 1000;
+    uint256 constant internal EPOCH_DURATION_IN_SECONDS = 1000;
 
-    uint64 constant internal TIMELOCK_DURATION_IN_EPOCHS = 3;
+    uint256 constant internal TIMELOCK_DURATION_IN_EPOCHS = 3;
 
     uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
 
