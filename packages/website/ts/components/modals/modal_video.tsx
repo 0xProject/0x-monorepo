@@ -131,18 +131,15 @@ export class ModalVideo extends React.Component<ModalVideoProps, ModalVideoState
         document.addEventListener('keydown', this.keydownHandler.bind(this));
     }
 
-    public componentWillUnmount(): void {
-        document.removeEventListener('keydown', this.keydownHandler.bind(this));
-    }
-
-    public componentWillReceiveProps(nextProps: ModalVideoProps): void {
-        this.setState({ isOpen: nextProps.isOpen });
-    }
-
     public componentDidUpdate(): void {
-        if (this.state.isOpen && this.modal) {
+        if (this.props.isOpen && this.modal) {
             this.modal.focus();
         }
+        this.setState({ isOpen: this.props.isOpen });
+    }
+
+    public componentWillUnmount(): void {
+        document.removeEventListener('keydown', this.keydownHandler.bind(this));
     }
 
     public updateFocus = (e: any): void => {
