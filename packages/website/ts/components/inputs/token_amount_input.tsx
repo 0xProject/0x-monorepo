@@ -54,7 +54,7 @@ export class TokenAmountInput extends React.Component<TokenAmountInputProps, Tok
             isBalanceAndAllowanceLoaded: false,
         };
     }
-    public componentWillMount(): void {
+    public componentDidMount(): void {
         // tslint:disable-next-line:no-floating-promises
         this._fetchBalanceAndAllowanceAsync(this.props.token.address, this.props.userAddress);
     }
