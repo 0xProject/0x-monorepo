@@ -24,22 +24,26 @@ import "./LibRichErrors.sol";
 
 contract ReentrancyGuard {
 
-    // Mutex counter.
-    // Starts at 1 and increases whenever a nonReentrant function is called.
-    uint256 private reentrancyGuardCounter = 1;
+    // Locked state of mutex.
+    bool private locked = false;
 
-    /// @dev Functions with this modifer cannot be reentered.
+    /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
+    ///      before function execution and unlocked after.
     modifier nonReentrant() {
-        // Increment and remember the current counter value.
-        uint256 localCounter = ++reentrancyGuardCounter;
-        // Call the function.
-        _;
-        // If the counter value is different from what we remember, the function
-        // was called more than once and an illegal reentrancy occured.
-        if (localCounter != reentrancyGuardCounter) {
+        // Ensure mutex is unlocked.
+        if (locked) {
             LibRichErrors.rrevert(
                 LibReentrancyGuardRichErrors.IllegalReentrancyError()
             );
         }
+
+        // Lock mutex before function call
+        locked = true;
+
+        // Perform function call
+        _;
+
+        // Unlock mutex after function call
+        locked = false;
     }
 }

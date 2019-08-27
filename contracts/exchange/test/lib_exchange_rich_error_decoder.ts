@@ -14,6 +14,7 @@ import * as _ from 'lodash';
 import { artifacts, TestLibExchangeRichErrorDecoderContract } from '../src';
 
 blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
+    const ASSET_PROXY_ID_LENGTH = 4;
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;
     const ERROR_DATA_LENGTH = 100;
@@ -103,7 +104,10 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
 
     (() => {
         const assetProxyAddress = addressUtils.generatePseudoRandomAddress();
-        createDecodeTest(ExchangeRevertErrors.AssetProxyExistsError, [assetProxyAddress]);
+        createDecodeTest(ExchangeRevertErrors.AssetProxyExistsError, [
+            hexRandom(ASSET_PROXY_ID_LENGTH),
+            assetProxyAddress,
+        ]);
     })();
 
     (() => {

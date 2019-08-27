@@ -618,12 +618,7 @@ blockchainTests.resets('Exchange core', () => {
                     salt: new BigNumber(3),
                 }),
             ];
-            await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
-                // HACK(albrow): We need to hardcode the gas estimate here because
-                // the Geth gas estimator doesn't work with the way we use
-                // delegatecall and swallow errors.
-                gas: 600000,
-            });
+            await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress);
 
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const fillMakerAssetAmount = signedOrders[2].makerAssetAmount.plus(signedOrders[3].makerAssetAmount);

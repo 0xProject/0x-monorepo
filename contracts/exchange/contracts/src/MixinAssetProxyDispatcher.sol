@@ -46,7 +46,10 @@ contract MixinAssetProxyDispatcher is
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
         if (currentAssetProxy != address(0)) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyExistsError(currentAssetProxy));
+            LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyExistsError(
+                assetProxyId,
+                currentAssetProxy
+            ));
         }
 
         // Add asset proxy and log registration.

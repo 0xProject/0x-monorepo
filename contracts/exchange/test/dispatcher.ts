@@ -131,7 +131,7 @@ describe('AssetProxyDispatcher', () => {
                 txDefaults,
                 dependencyArtifacts,
             );
-            const expectedError = new ExchangeRevertErrors.AssetProxyExistsError(proxyAddress);
+            const expectedError = new ExchangeRevertErrors.AssetProxyExistsError(AssetProxyId.ERC20, proxyAddress);
             const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(newErc20TransferProxy.address, {
                 from: owner,
             });

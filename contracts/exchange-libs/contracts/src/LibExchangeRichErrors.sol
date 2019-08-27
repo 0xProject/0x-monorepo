@@ -103,9 +103,9 @@ library LibExchangeRichErrors {
     bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
         0x4ad31275;
 
-    // bytes4(keccak256("AssetProxyExistsError(address)"))
+    // bytes4(keccak256("AssetProxyExistsError(bytes4,address)"))
     bytes4 internal constant ASSET_PROXY_EXISTS_ERROR_SELECTOR =
-        0xcc8b3b53;
+        0x11c7b720;
 
     // bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"))
     bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
@@ -308,6 +308,14 @@ library LibExchangeRichErrors {
         return TRANSACTION_GAS_PRICE_ERROR_SELECTOR;
     }
 
+    function TransactionInvalidContextErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return TRANSACTION_INVALID_CONTEXT_ERROR_SELECTOR;
+    }
+
     function BatchMatchOrdersError(
         BatchMatchOrdersErrorCodes errorCode
     )
@@ -488,7 +496,8 @@ library LibExchangeRichErrors {
     }
 
     function AssetProxyExistsError(
-        address proxyAddress
+        bytes4 assetProxyId,
+        address assetProxyAddress
     )
         internal
         pure
@@ -496,7 +505,8 @@ library LibExchangeRichErrors {
     {
         return abi.encodeWithSelector(
             ASSET_PROXY_EXISTS_ERROR_SELECTOR,
-            proxyAddress
+            assetProxyId,
+            assetProxyAddress
         );
     }
 

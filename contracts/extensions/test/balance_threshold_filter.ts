@@ -427,10 +427,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmounts,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses
@@ -699,10 +695,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses
@@ -951,10 +943,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmount: cumulativeTakerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses

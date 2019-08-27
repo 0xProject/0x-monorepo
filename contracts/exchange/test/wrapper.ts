@@ -223,10 +223,6 @@ blockchainTests.resets('Exchange wrappers', env => {
             );
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
-                // HACK(albrow): We need to hardcode the gas estimate here because
-                // the Geth gas estimator doesn't work with the way we use
-                // delegatecall and swallow errors.
-                gas: 250000,
             });
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -450,10 +446,6 @@ blockchainTests.resets('Exchange wrappers', env => {
             );
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
-                // HACK(albrow): We need to hardcode the gas estimate here because
-                // the Geth gas estimator doesn't work with the way we use
-                // delegatecall and swallow errors.
-                gas: 280000,
             });
 
             // Verify post-conditions
@@ -688,10 +680,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -763,10 +751,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.batchFillOrdersNoThrowAsync(newOrders, takerAddress, {
                     takerAssetFillAmounts,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 450000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -789,10 +773,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 6000000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -864,10 +844,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -938,10 +914,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -985,10 +957,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -1060,10 +1028,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -1135,10 +1099,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                 );
                 await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 

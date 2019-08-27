@@ -145,8 +145,11 @@ export class OrderEpochError extends RevertError {
 }
 
 export class AssetProxyExistsError extends RevertError {
-    constructor(proxy?: string) {
-        super('AssetProxyExistsError', 'AssetProxyExistsError(address proxy)', { proxy });
+    constructor(assetProxyId?: string, assetProxy?: string) {
+        super('AssetProxyExistsError', 'AssetProxyExistsError(bytes4 assetProxyId, address assetProxy)', {
+            assetProxyId,
+            assetProxy,
+        });
     }
 }
 

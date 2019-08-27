@@ -45,7 +45,7 @@ contract IsolatedExchange is
         Exchange(1337)
     {}
 
-    /// @dev Overriden to only log arguments and revert on certain assetDatas.
+    /// @dev Overridden to only log arguments and revert on certain assetDatas.
     function _dispatchTransferFrom(
         bytes32 orderHash,
         bytes memory assetData,
@@ -69,7 +69,7 @@ contract IsolatedExchange is
         }
     }
 
-    /// @dev Overriden to simplify signature validation.
+    /// @dev Overridden to simplify signature validation.
     ///      Unfortunately, this is `view`, so it can't log arguments.
     function _isValidOrderWithHashSignature(
         LibOrder.Order memory order,
