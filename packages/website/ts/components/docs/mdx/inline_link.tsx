@@ -9,7 +9,7 @@ interface IInlineLinkProps {
 }
 
 export const InlineLink: React.FC<IInlineLinkProps> = ({ children, href }) => {
-    const to = href.replace(/#/, ''); // Remove hash from internal links so that react-scroll can find the target
+    const to = href.replace(/^#/, ''); // Remove initial hash from internal links so that react-scroll can find the target
 
     return (
         <Link containerId="" offset={-docs.headerOffset} shouldOpenInNewTab={true} to={to} textDecoration="underline">
