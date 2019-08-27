@@ -64,9 +64,7 @@ export {
     MetamaskSubprovider,
 } from '@0x/subproviders';
 
-export { AbiDecoder, DecodedCalldata } from '@0x/utils';
-
-export { BigNumber } from '@0x/utils';
+export { AbiDecoder, DecodedCalldata, BigNumber } from '@0x/utils';
 
 export {
     Order,

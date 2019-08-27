@@ -1,1 +1,0 @@
-Welcome to the [Web3Wrapper](https://github.com/0xProject/0x-monorepo/tree/development/packages/web3-wrapper) documentation! Web3-wrapper is a JSON-RPC client for Ethereum nodes. It is a type-safe alternative to [Web3.js](https://github.com/ethereum/web3.js/) written in TypeScript.

@@ -56,7 +56,7 @@ const shortcutLinks = [
 const usefulLinks = [
     {
         title: '0x Cheat Sheet',
-        url: constants.URL_SANDBOX,
+        url: `${WebsitePaths.Docs}/guides`,
     },
     {
         title: 'Code Sandbox',

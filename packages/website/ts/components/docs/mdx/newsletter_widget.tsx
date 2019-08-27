@@ -5,7 +5,7 @@ import { NewsletterForm } from 'ts/components/newsletter_form';
 import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
-import { docs} from 'ts/style/docs';
+import { docs } from 'ts/style/docs';
 
 export interface INewsletterWidgetProps {
     heading?: string;
@@ -35,7 +35,7 @@ const NewsletterSignupWrapper = styled.a`
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    margin-bottom:  ${docs.marginBottom};
+    margin-bottom: ${docs.marginBottom};
 
     @media (max-width: 768px) {
         padding: 40px 80px 50px;
