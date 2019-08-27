@@ -134,6 +134,14 @@
             "topics": ["Relayer", "Trader"],
             "difficulty": "Beginner",
             "path": "guides/web3-provider-explained.mdx"
+        },
+        "market-making-on-0x": {
+            "title": "Market-making on 0x",
+            "description": "Learn how to market-make on 0x, and what the differences are between trading on a CEX vs. DEX",
+            "tags": ["Trader"],
+            "topics": ["Trader"],
+            "difficulty": "Beginner",
+            "path": "guides/market-making-on-0x.mdx"
         }
     },
     "tools": {
