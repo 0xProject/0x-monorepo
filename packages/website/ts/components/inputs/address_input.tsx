@@ -29,8 +29,8 @@ export class AddressInput extends React.Component<AddressInputProps, AddressInpu
             errMsg: '',
         };
     }
-    public componentWillReceiveProps(nextProps: AddressInputProps): void {
-        if (nextProps.shouldShowIncompleteErrs && this.props.isRequired && this.state.address === '') {
+    public componentDidUpdate(prevProps: AddressInputProps, prevState: AddressInputState): void {
+        if (this.props.shouldShowIncompleteErrs && prevProps.isRequired && prevState.address === '') {
             this.setState({
                 errMsg: 'Address is required',
             });
