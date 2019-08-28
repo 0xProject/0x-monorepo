@@ -171,7 +171,7 @@ contract MixinStake is
         internal
     {
         // deposit equivalent amount of ZRX into vault
-        _depositFromOwnerIntoZrxVault(owner, amount);
+        zrxVault.depositFrom(owner, amount);
 
         // mint stake
         stakeByOwner[owner] = stakeByOwner[owner].safeAdd(amount);
@@ -193,7 +193,7 @@ contract MixinStake is
         stakeByOwner[owner] = stakeByOwner[owner].safeSub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        _withdrawToOwnerFromZrxVault(owner, amount);
+        zrxVault.withdrawFrom(owner, amount);
 
         // emit stake event
         emit StakeBurned(
