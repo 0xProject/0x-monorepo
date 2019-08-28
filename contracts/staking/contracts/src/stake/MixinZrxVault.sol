@@ -78,6 +78,6 @@ contract MixinZrxVault is
         view
         returns (uint256)
     {
-        zrxVault.balanceOf(owner);
+        return zrxVault.balanceOf(owner);
     }
 }
