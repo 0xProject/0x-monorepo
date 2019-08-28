@@ -18,8 +18,6 @@ import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
 import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
 import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
-import * as LibSafeMath64 from '../generated-artifacts/LibSafeMath64.json';
-import * as LibSafeMath96 from '../generated-artifacts/LibSafeMath96.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
@@ -40,6 +38,7 @@ import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
+import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     Staking: Staking as ContractArtifact,
@@ -61,8 +60,6 @@ export const artifacts = {
     LibFeeMath: LibFeeMath as ContractArtifact,
     LibRewardMath: LibRewardMath as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
-    LibSafeMath64: LibSafeMath64 as ContractArtifact,
-    LibSafeMath96: LibSafeMath96 as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
     MixinDelegatedStake: MixinDelegatedStake as ContractArtifact,
@@ -78,4 +75,5 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     LibFeeMathTest: LibFeeMathTest as ContractArtifact,
+    TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

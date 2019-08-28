@@ -16,8 +16,6 @@
         "generated-artifacts/LibFeeMathTest.json",
         "generated-artifacts/LibRewardMath.json",
         "generated-artifacts/LibSafeDowncast.json",
-        "generated-artifacts/LibSafeMath64.json",
-        "generated-artifacts/LibSafeMath96.json",
         "generated-artifacts/LibSignatureValidator.json",
         "generated-artifacts/LibStakingRichErrors.json",
         "generated-artifacts/MixinConstants.json",
@@ -38,6 +36,7 @@
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingPoolRewardVault.json",
         "generated-artifacts/StakingProxy.json",
+        "generated-artifacts/TestStorageLayout.json",
         "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
