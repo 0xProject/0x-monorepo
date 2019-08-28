@@ -279,20 +279,20 @@ const types = [
     SignatureValidatorNotApprovedError,
     SignatureWalletError,
     EIP1271SignatureError,
+    ExchangeInvalidContextError,
     FillError,
     OrderEpochError,
     AssetProxyExistsError,
     AssetProxyDispatchError,
     AssetProxyTransferError,
     NegativeSpreadError,
+    PayProtocolFeeError,
     TransactionError,
     TransactionGasPriceError,
     TransactionInvalidContextError,
     TransactionSignatureError,
     TransactionExecutionError,
     IncompleteFillError,
-    PayProtocolFeeError,
-    ExchangeInvalidContextError,
 ];
 
 // Register the types we've defined.
