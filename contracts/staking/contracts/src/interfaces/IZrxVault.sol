@@ -77,7 +77,7 @@ interface IZrxVault {
     function withdrawFrom(address owner, uint256 amount)
         external;
 
-    /// @dev Withdraw all of sender's ZRX from vault from the vault.
+    /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
     /// Note that this can only be called when *in* Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     function withdrawAllFrom(address owner)
