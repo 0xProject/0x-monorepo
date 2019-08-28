@@ -82,8 +82,8 @@
         "relayer-strategies": {
             "title": "Relayer Strategies",
             "description": "Relayers can choose between multiple strategies when building on 0x. This guide will walk you through several options and they relative trade-offs.",
-            "tags": ["Relayers"],
-            "topics": ["Relayers"],
+            "tags": ["Relayer"],
+            "topics": ["Relayer"],
             "difficulty": "Beginner",
             "path": "guides/relayer-strategies.mdx"
         },
