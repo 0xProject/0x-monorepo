@@ -154,7 +154,7 @@
     },
     "tools": {
         "asset-swapper": {
-            "title": "@0x/asset-swapper",
+            "title": "0x Asset Swapper",
             "description": "Convenience package for discovering and performing swaps for any ERC20 Assets",
             "difficulty": "Intermediate",
             "isCommunity": false,
@@ -175,7 +175,7 @@
             "externalUrl": "https://www.npmjs.com/package/0x.js"
         },
         "connect": {
-            "title": "@0x/connect",
+            "title": "0x Connect",
             "description": "An HTTP/WS client for interacting with the Standard Relayer API",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -197,7 +197,7 @@
             "versions": ["v5.0.2"]
         },
         "asset-buyer": {
-            "title": "@0x/asset-buyer",
+            "title": "0x Asset Buyer (Deprecated)",
             "description": "Convenience package for discovering and buying assets with Ether",
             "difficulty": "Intermediate",
             "isCommunity": false,
@@ -330,7 +330,7 @@
             "type": "Typescript Libraries"
         },
         "radar-relay-sdk": {
-            "title": "RadarRelay SDK",
+            "title": "Radar Relay SDK",
             "description": "The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs",
             "difficulty": "Beginner",
             "externalUrl": "https://developers.radarrelay.com/libraries/sdk",
@@ -350,7 +350,7 @@
             "type": "Typescript Libraries"
         },
         "ganache-cli": {
-            "title": "0xorg/ganache-cli",
+            "title": "Ganache CLI",
             "description": "Spin up a Ganache test Ethereum node with the 0x smart contracts pre-deployed",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -360,7 +360,7 @@
             "externalUrl": "https://hub.docker.com/r/0xorg/ganache-cli"
         },
         "launch-kit-backend-docker": {
-            "title": "0xorg/launch-kit-backend",
+            "title": "0x Launch Kit Backend",
             "description": "A pre-built Standard Relayer API backend server",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -370,7 +370,7 @@
             "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-backend"
         },
         "launch-kit-frontend-docker": {
-            "title": "0xorg/launch-kit-frontend",
+            "title": "0x Launch Kit Front-end",
             "description": "An ERC20 exchange and ERC721 marketplace React front-end to use with any SRA API backend",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -380,7 +380,7 @@
             "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-frontend"
         },
         "launch-kit-demo": {
-            "title": "0xorg/launch-kit-demo",
+            "title": "0x Launch Kit Demo",
             "description": "A demo of the front-end and backend Launch Kits running together",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -390,7 +390,7 @@
             "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-demo"
         },
         "mesh": {
-            "title": "0xorg/mesh",
+            "title": "0x Mesh",
             "description": "A peer-to-peer network for sharing 0x orders",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -410,7 +410,7 @@
             "externalUrl": "https://pypi.org/project/0x-contract-wrappers/"
         },
         "0x-order-utils": {
-            "title": "0x-order-utils",
+            "title": "0x Order Utilities",
             "description": "A set of utilities for generating, parsing, signing and validating 0x orders in Python",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -420,7 +420,7 @@
             "externalUrl": "https://pypi.org/project/0x-order-utils/"
         },
         "0x-sra-client": {
-            "title": "0x-sra-client",
+            "title": "0x SRA Client",
             "description": "A Python client for interacting with servers conforming to the Standard Relayer API specification",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -456,7 +456,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Relayer"],
-            "type": "Starter projects",
+            "type": "Starter Projects",
             "externalUrl": "https://github.com/0xProject/0x-launch-kit-frontend/"
         },
         "launch-kit-backend": {
@@ -466,7 +466,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Relayer"],
-            "type": "Starter projects",
+            "type": "Starter Projects",
             "externalUrl": "https://github.com/0xProject/0x-launch-kit-backend/"
         },
         "starter-project": {
@@ -476,7 +476,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Relayer", "Trader", "Protocol Developer"],
-            "type": "Starter projects",
+            "type": "Starter Projects",
             "externalUrl": "https://github.com/0xProject/0x-starter-project"
         },
         "code-sandbox": {
@@ -486,7 +486,7 @@
             "isCommunity": false,
             "isFeatured": true,
             "tags": ["Relayer", "Trader", "Protocol Developer"],
-            "type": "Starter projects",
+            "type": "Starter Projects",
             "externalUrl": "https://codesandbox.io/s/github/0xproject/0x-codesandbox"
         },
         "migrations": {
@@ -501,7 +501,7 @@
             "versions": ["v4.3.0"]
         },
         "launch-kit-wizard": {
-            "title": "@0x/launch-kit-wizard",
+            "title": "Launch Kit Wizard",
             "description": "A “create-react-app”-style CLI for spinning up a 0x Relayer",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -527,7 +527,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Relayer"],
-            "type": "Starter projects",
+            "type": "Starter Projects",
             "externalUrl": "https://github.com/0xProject/0x-coordinator-server"
         }
     }
