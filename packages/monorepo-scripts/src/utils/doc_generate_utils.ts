@@ -328,6 +328,17 @@ export class DocGenerateUtils {
                     delete modifiedTypedocOutput.children[i].children[j];
                     return;
                 }
+
+                const innerChildren = typedocOutput.children[i].children[j].children;
+                _.each(innerChildren, (innerChild, k) => {
+                    const isPrivate = _.startsWith(innerChild.name, '_');
+                    if (isPrivate) {
+                        delete modifiedTypedocOutput.children[i].children[j].children[k];
+                    }
+                });
+                modifiedTypedocOutput.children[i].children[j].children = _.compact(
+                    modifiedTypedocOutput.children[i].children[j].children,
+                );
             });
             modifiedTypedocOutput.children[i].children = _.compact(modifiedTypedocOutput.children[i].children);
         });
