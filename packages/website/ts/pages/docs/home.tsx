@@ -34,8 +34,8 @@ const shortcutLinks = [
         url: WebsitePaths.DocsCoreConcepts,
     },
     {
-        heading: 'API Explorer',
-        description: 'Explore the core 0x library and learn how to use it',
+        heading: 'On-chain API Explorer',
+        description: 'Explore the 0x smart contract methods and how to call them in every language',
         icon: 'apiExplorer',
         url: WebsitePaths.DocsApiExplorer,
     },

@@ -1,7 +1,7 @@
 {
     "api-explorer": {
         "api-explorer": {
-            "title": "API Explorer",
+            "title": "On-chain API Explorer",
             "path": "api-explorer/index.mdx"
         }
     },
@@ -164,7 +164,7 @@
             "path": "tools/@0x/asset-swapper/v1.0.2/reference.mdx",
             "versions": ["v1.0.2"]
         },
-        "0x-js": {
+        "0x.js": {
             "title": "0x.js",
             "description": "An umbrella package that exports all the 0x tools you need to start building on 0x. Includes: @0x/order-utils, @0x/contract-wrappers and @0x/contract-addresses.",
             "difficulty": "Beginner",
@@ -172,7 +172,8 @@
             "isFeatured": false,
             "tags": ["Trader", "Relayer", "Protocol Developer"],
             "type": "Typescript Libraries",
-            "externalUrl": "https://www.npmjs.com/package/0x.js"
+            "path": "tools/0x.js/v7.0.0/reference.mdx",
+            "versions": ["v7.0.0"]
         },
         "connect": {
             "title": "0x Connect",
@@ -186,7 +187,7 @@
             "versions": ["v5.0.17"]
         },
         "subproviders": {
-            "title": "@0x/subproviders",
+            "title": "Subproviders",
             "description": "Web3 provider middlewares (e.g. LedgerSubprovider)",
             "difficulty": "Intermediate",
             "isCommunity": false,
@@ -221,7 +222,7 @@
             "isHidden": true
         },
         "contract-wrappers": {
-            "title": "@0x/contract-wrappers",
+            "title": "0x Contract Wrappers",
             "description": "0x smart contract wrappers",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -233,7 +234,7 @@
             "versions": ["v11.1.0"]
         },
         "json-schemas": {
-            "title": "@0x/json-schemas",
+            "title": "0x JSON Schemas",
             "description": "0x-related JSON schemas",
             "difficulty": "Intermediate",
             "isCommunity": false,
@@ -245,7 +246,7 @@
             "versions": ["v4.0.0"]
         },
         "order-utils": {
-            "title": "@0x/order-utils",
+            "title": "0x Order Utils",
             "description": "A set of utilities for generating, parsing, signing and validating 0x orders",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -257,7 +258,7 @@
             "versions": ["v8.3.0"]
         },
         "sol-compiler": {
-            "title": "@0x/sol-compiler",
+            "title": "sol-compiler",
             "description": "A wrapper around solc-js that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.",
             "difficulty": "Advanced",
             "isCommunity": false,
@@ -269,7 +270,7 @@
             "versions": ["v3.1.13"]
         },
         "sol-coverage": {
-            "title": "@0x/sol-coverage",
+            "title": "sol-coverage",
             "description": "A solidity test coverage tool",
             "difficulty": "Advanced",
             "topics": [],
@@ -282,7 +283,7 @@
             "versions": ["v3.0.10"]
         },
         "sol-profiler": {
-            "title": "@0x/sol-profiler",
+            "title": "sol-profiler",
             "description": "A solidity gas cost profiler",
             "difficulty": "Advanced",
             "topics": [],
@@ -295,7 +296,7 @@
             "versions": ["v3.1.12"]
         },
         "sol-trace": {
-            "title": "@0x/sol-trace",
+            "title": "sol-trace",
             "description": "A solidity stack trace tool",
             "difficulty": "Advanced",
             "topics": [],
@@ -308,7 +309,7 @@
             "versions": ["v2.0.18"]
         },
         "web3-wrapper": {
-            "title": "@0x/web3-wrapper",
+            "title": "Web3Wrapper",
             "description": "An Ethereum JSON RPC client",
             "difficulty": "Intermediate",
             "isCommunity": false,
@@ -320,13 +321,13 @@
             "versions": ["v6.0.11"]
         },
         "mesh-ts-client": {
+            "title": "TS/JS Mesh RPC Client",
             "description": "A Typescript/Javascript library for interacting with the Mesh JSON-RPC API over WebSockets",
             "difficulty": "Intermediate",
             "externalUrl": "https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript",
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Relayer", "Trader"],
-            "title": "@0x/ts-mesh-client",
             "type": "Typescript Libraries"
         },
         "radar-relay-sdk": {
@@ -359,26 +360,6 @@
             "type": "Docker Images",
             "externalUrl": "https://hub.docker.com/r/0xorg/ganache-cli"
         },
-        "launch-kit-backend-docker": {
-            "title": "0x Launch Kit Backend",
-            "description": "A pre-built Standard Relayer API backend server",
-            "difficulty": "Beginner",
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Relayer"],
-            "type": "Docker Images",
-            "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-backend"
-        },
-        "launch-kit-frontend-docker": {
-            "title": "0x Launch Kit Front-end",
-            "description": "An ERC20 exchange and ERC721 marketplace React front-end to use with any SRA API backend",
-            "difficulty": "Beginner",
-            "isCommunity": false,
-            "isFeatured": false,
-            "tags": ["Relayer"],
-            "type": "Docker Images",
-            "externalUrl": "https://hub.docker.com/r/0xorg/launch-kit-frontend"
-        },
         "launch-kit-demo": {
             "title": "0x Launch Kit Demo",
             "description": "A demo of the front-end and backend Launch Kits running together",
@@ -400,7 +381,7 @@
             "externalUrl": "https://hub.docker.com/r/0xorg/mesh"
         },
         "contract-wrappers-py": {
-            "title": "contract-wrappers-py",
+            "title": "0x Contract Wrappers (Python)",
             "description": "0x smart contract Python wrappers",
             "difficulty": "Beginner",
             "isCommunity": false,
@@ -490,7 +471,7 @@
             "externalUrl": "https://codesandbox.io/s/github/0xproject/0x-codesandbox"
         },
         "migrations": {
-            "title": "@0x/migrations",
+            "title": "0x Migrations",
             "description": "A package to deploy the 0x protocol's system of smart contracts to the testnet of your choice",
             "difficulty": "Advanced",
             "isCommunity": false,

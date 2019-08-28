@@ -71,7 +71,7 @@ const Hits: React.FC<IHitsProps> = ({ hits }) => {
             )}
 
             {contentTypes.map(type => {
-                const filteredHits = hits.filter((hit: any) => hit.type === type);
+                const filteredHits = hits.filter((hit: any) => hit.type === type && !hit.isHidden);
                 const sortedHits = _.orderBy(filteredHits, ['isCommunity', 'title'], ['asc', 'asc']);
 
                 return (
