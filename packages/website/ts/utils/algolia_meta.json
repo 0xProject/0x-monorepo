@@ -107,7 +107,12 @@
             "title": "0x Coordinator Specification (v2)",
             "description": "A comprehensive technical spec of the first coordinator model developer by the 0x core team (soft-cancel variant)",
             "tags": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
+            "topics": [
+                "Coordinator",
+                "Relayer",
+                "Trader",
+                "Protocol Developer"
+            ],
             "difficulty": "Advanced",
             "path": "guides/v2-coordinatior-specification.mdx"
         },
