@@ -24,6 +24,7 @@ import { DelegatorActor } from './actors/delegator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeStateId } from './utils/types';
+import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets.only('Stake States', () => {
@@ -169,7 +170,7 @@ blockchainTests.resets.only('Stake States', () => {
                 expect(balance).to.be.bignumber.equal(amountToDeactivate);
             }
         });
-        it('should be able to withdraw stake', async () => {
+        it('should reflect correct withdrawable stake after withdrawing stake ', async () => {
             const staker = stakers[0];
             const amountToStake = new BigNumber(10);
             const amountToDeactivate = new BigNumber(6);
@@ -191,6 +192,57 @@ blockchainTests.resets.only('Stake States', () => {
                 expect(balance.next).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
             }
         });
+        it('should reflect correct withdrawable stake one epoch after withdrawingstake ', async () => {
+            const staker = stakers[0];
+            const amountToStake = new BigNumber(10);
+            const amountToDeactivate = new BigNumber(6);
+            const amountToUnstake = new BigNumber(5);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            // skip until we can withdraw this stake
+            await stakingWrapper.skipToNextEpochAsync();
+            await stakingWrapper.skipToNextEpochAsync();
+            // perform withdrawal
+            await stakingWrapper.unstakeAsync(staker, amountToUnstake);
+            // check inactive stake afte next epoch
+            await stakingWrapper.skipToNextEpochAsync();
+            {
+                const balance = await stakingWrapper.getWithdrawableStakeAsync(staker);
+                expect(balance).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+            }
+            {
+                const balance = await stakingWrapper.getInactiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+                expect(balance.next).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+            }
+        });
+        it('should reflect correct withdrawable stake two epochs after withdrawingstake ', async () => {
+            const staker = stakers[0];
+            const amountToStake = new BigNumber(10);
+            const amountToDeactivate = new BigNumber(6);
+            const amountToUnstake = new BigNumber(5);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            // skip until we can withdraw this stake
+            await stakingWrapper.skipToNextEpochAsync();
+            await stakingWrapper.skipToNextEpochAsync();
+            // perform withdrawal
+            await stakingWrapper.unstakeAsync(staker, amountToUnstake);
+            // check inactive stake afte next epoch
+            await stakingWrapper.skipToNextEpochAsync();
+            await stakingWrapper.skipToNextEpochAsync();
+            {
+                const balance = await stakingWrapper.getWithdrawableStakeAsync(staker);
+                expect(balance).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+            }
+            {
+                const balance = await stakingWrapper.getInactiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+                expect(balance.next).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
+            }
+        });
+    });
+    describe('Delegated Stake', () => {
     });
     describe('Total Stake', () => {
         it('should return zero as initial total stake', async () => {
@@ -231,6 +283,34 @@ blockchainTests.resets.only('Stake States', () => {
         it('delegated -> inactive', async () => {});
         it('delegated -> delegated', async () => {});
     });
+    describe.only('Stake Simulation', () => {
+        it('Simulation (I)', async () => {
+            const staker = stakers[0];
+            {
+                const amount = StakingWrapper.toBaseUnitAmount(4);
+                await stakingWrapper.stakeAsync(staker, amount);
+                const balance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amount);
+                expect(balance.next).to.be.bignumber.equal(amount);
+            }
+            {
+                const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+                const poolId = stakingConstants.INITIAL_POOL_ID
+                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                const balanceDelegated = await stakingWrapper.getStakeDelegatedByOwnerAsync(staker);
+                expect(balanceDelegated.current).to.be.bignumber.equal(new BigNumber(0));
+                expect(balanceDelegated.next).to.be.bignumber.equal(amountToDelegate);
+                const totalBalanceDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, staker);
+                expect(totalBalanceDelegatedToPool.current).to.be.bignumber.equal(new BigNumber(0));
+                expect(totalBalanceDelegatedToPool.next).to.be.bignumber.equal(amountToDelegate);
+                const balanceDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, staker);
+                expect(balanceDelegatedToPool.current).to.be.bignumber.equal(new BigNumber(0));
+                expect(balanceDelegatedToPool.next, 'delegated to pool').to.be.bignumber.equal(amountToDelegate);
+            }
+        });
+    });
+
+
 
         /*
 

@@ -243,7 +243,7 @@ contract MixinStakeBalances is
     {
         // Remove stake from balance
         IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
-        from.current = LibSafeMath._downcastToUint96(uint256(from.next)._sub(amount));
+        from.next = LibSafeMath._downcastToUint96(uint256(from.next)._sub(amount));
 
         // update state
         _storeBalance(fromPtr, from);

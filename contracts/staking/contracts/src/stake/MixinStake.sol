@@ -100,7 +100,6 @@ contract MixinStake is
         external
     {
         if (from.id == IStructs.StakeStateId.DELEGATED) {
-            revert('asd');
             _undelegateStake(
                 from.poolId,
                 msg.sender,
@@ -108,15 +107,13 @@ contract MixinStake is
             );
         } else if (from.id == IStructs.StakeStateId.INACTIVE) {
             // update withdrawable field
-            revert('asd');
             uint256 currentWithdrawableStake = getWithdrawableStake(msg.sender);
             withdrawableStakeByOwner[msg.sender] = currentWithdrawableStake._sub(amount);
         }
 
         if (to.id == IStructs.StakeStateId.DELEGATED) {
-            revert('asd');
             _delegateStake(
-                from.poolId,
+                to.poolId,
                 msg.sender,
                 amount
             );
@@ -170,7 +167,7 @@ contract MixinStake is
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
         // increment how much stake has been delegated to pool
-        _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+        _incrementBalance(delegatedStakeByPoolId[poolId], amount);
     }
 
     function _undelegateStake(
@@ -193,6 +190,6 @@ contract MixinStake is
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
         // decrement how much stake has been delegated to pool
-        _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+        _decrementBalance(delegatedStakeByPoolId[poolId], amount);
     }
 }
