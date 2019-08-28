@@ -121,6 +121,23 @@ blockchainTests.resets.only('Stake States', () => {
             expect(inactiveBalance.current, 'inactive current').to.be.bignumber.equal(new BigNumber(0));
             expect(inactiveBalance.next, 'inactive next').to.be.bignumber.equal(amountToDeactivate);
         });
+        it('should retain inactivate stake across epochs', async () => {
+            const staker = stakers[0];
+            const amountToStake = new BigNumber(10);
+            const amountToDeactivate = new BigNumber(6);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            // skip to next epoch
+            await stakingWrapper.goToNextEpochAsync();
+            // check active balance
+            const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(activeBalance.current, 'active current').to.be.bignumber.equal(amountToStake.minus(amountToDeactivate));
+            expect(activeBalance.next, 'active next').to.be.bignumber.equal(amountToStake.minus(amountToDeactivate));
+            // check inactive balance
+            const inactiveBalance = await stakingWrapper.getInactiveStakeAsync(staker);
+            expect(inactiveBalance.current, 'inactive current').to.be.bignumber.equal(amountToDeactivate);
+            expect(inactiveBalance.next, 'inactive next').to.be.bignumber.equal(amountToDeactivate);
+        });
         /*
         it('should successfully stake zero ZRX', async () => {
             const staker = stakers[0];
