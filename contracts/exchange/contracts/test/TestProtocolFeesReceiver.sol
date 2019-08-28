@@ -68,19 +68,58 @@ contract TestProtocolFeesReceiver {
             shouldSetProtocolFeeCollector
         );
 
-       // Forward all of the value sent to the contract to `fillOrder()` with empty arguments.
-       LibOrder.Order memory order;
-       order.makerAddress = makerAddress1;
-       order.makerAssetAmount = 1;
-       order.takerAssetAmount = 1;
-       testProtocolFees.fillOrder.value(msg.value)(order, 0, new bytes(0));
+        // Construct an of order with distinguishing information.
+        LibOrder.Order memory order;
+        order.makerAddress = makerAddress1;
+        order.makerAssetAmount = 1;
+        order.takerAssetAmount = 1;
+
+        // Forward all of the value sent to the contract to `fillOrder()`.
+        testProtocolFees.fillOrder.value(msg.value)(order, 0, new bytes(0));
+
+        // Ensure that the results of the test were correct.
+        verifyFillOrderTestResults(protocolFeeMultiplier, shouldSetProtocolFeeCollector);
+
+        // Clear all state that was set to ensure that future tests are unaffected by this one.
+        clearState(testProtocolFees);
+    }
+
+    function testMatchOrdersProtocolFees(
+        TestProtocolFees testProtocolFees,
+        uint256 protocolFeeMultiplier,
+        bool shouldSetProtocolFeeCollector
+    )
+        external
+        payable
+    {
+        // Set up the exchange state for the test.
+        setExchangeState(
+            testProtocolFees,
+            protocolFeeMultiplier,
+            shouldSetProtocolFeeCollector
+        );
+
+        // Construct a pair of orders with distinguishing information.
+        LibOrder.Order memory leftOrder;
+        leftOrder.makerAddress = makerAddress1;
+        leftOrder.makerAssetAmount = 1;
+        leftOrder.takerAssetAmount = 1;
+        LibOrder.Order memory rightOrder;
+        rightOrder.makerAddress = makerAddress2;
+        rightOrder.makerAssetAmount = 1;
+        rightOrder.takerAssetAmount = 1;
+
+       // Forward all of the value sent to the contract to `matchOrders()`.
+       testProtocolFees.matchOrders.value(msg.value)(leftOrder, rightOrder, new bytes(0), new bytes(0));
 
        // Ensure that the results of the test were correct.
-       verifyFillOrderTestResults(protocolFeeMultiplier, shouldSetProtocolFeeCollector);
+       verifyMatchOrdersTestResults(protocolFeeMultiplier, shouldSetProtocolFeeCollector);
 
        // Clear all state that was set to ensure that future tests are unaffected by this one.
        clearState(testProtocolFees);
     }
+
+    /* Verification Functions */
 
     function verifyFillOrderTestResults(
         uint256 protocolFeeMultiplier,
@@ -108,7 +147,7 @@ contract TestProtocolFeesReceiver {
                     "Incorrect eth was received during fillOrder test when adequate ETH was sent"
                 );
             } else {
-                // Ensure that the protocolFee was forwarded to this contract.
+                // Ensure that no ether was forwarded to this contract.
                 require(
                     log.loggedValue == 0,
                     "Incorrect eth was received during fillOrder test when inadequate ETH was sent"
@@ -124,6 +163,55 @@ contract TestProtocolFeesReceiver {
             require(testLogs.length == 0, "protocolFeePaid was called");
         }
     }
+
+    function verifyMatchOrdersTestResults(
+        uint256 protocolFeeMultiplier,
+        bool shouldSetProtocolFeeCollector
+    )
+        internal
+    {
+        // If the `protocolFeeCollector` was set, then this contract should have been called.
+        if (shouldSetProtocolFeeCollector) {
+            // Calculate the protocol fee that should be paid.
+            uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
+
+            // Ensure that one TestLog was recorded.
+            require(testLogs.length == 2, "Incorrect TestLog length for matchOrders test");
+
+            // Get an alias to the test logs.
+            TestLog memory log1 = testLogs[0];
+            TestLog memory log2 = testLogs[1];
+
+            // If the forwarded value was greater than the protocol fee, the protocol fee should
+            // have been sent back to this contract.
+            if (msg.value >= 2 * protocolFee) {
+                // Ensure that the protocolFee was forwarded to this contract.
+                require(
+                    log1.loggedValue == protocolFee && log2.loggedValue == protocolFee,
+                    "Incorrect eth was received during matchOrders test when adequate ETH was sent"
+                );
+            } else {
+                // Ensure that no ether was forwarded to this contract.
+                require(
+                    log1.loggedValue == 0 && log2.loggedValue == 0,
+                    "Incorrect eth was received during fillOrder test when inadequate ETH was sent"
+                );
+            }
+
+            // Ensure that the correct data was logged during this test.
+            require(log1.loggedMaker == makerAddress1, "Incorrect maker address was logged for matchOrders test");
+            require(log1.loggedPayer == address(this), "Incorrect taker address was logged for matchOrders test");
+            require(log1.loggedProtocolFeePaid == protocolFee, "Incorrect protocol fee was logged for matchOrders test");
+            require(log2.loggedMaker == makerAddress2, "Incorrect maker address was logged for matchOrders test");
+            require(log2.loggedPayer == address(this), "Incorrect taker address was logged for matchOrders test");
+            require(log2.loggedProtocolFeePaid == protocolFee, "Incorrect protocol fee was logged for matchOrders test");
+        } else {
+            // Ensure that `protocolFeePaid()` was not called.
+            require(testLogs.length == 0, "protocolFeePaid was called");
+        }
+    }
+
+    /* State setup and teardown functions */
 
     function setExchangeState(
         TestProtocolFees testProtocolFees,
