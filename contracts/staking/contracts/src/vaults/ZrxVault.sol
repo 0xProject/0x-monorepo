@@ -18,9 +18,10 @@
 
 pragma solidity ^0.5.9;
 
-import "../libs/LibSafeMath.sol";
 import "../interfaces/IZrxVault.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
 
@@ -37,7 +38,6 @@ contract ZrxVault is
     IZrxVault,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
@@ -55,17 +55,18 @@ contract ZrxVault is
     /// @dev Constructor.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     /// @param zrxTokenAddress Address of the Zrx Token.
-    /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
     constructor(
         address erc20ProxyAddress,
-        address zrxTokenAddress,
-        bytes memory _zrxAssetData
+        address zrxTokenAddress
     )
         public
     {
         erc20Proxy = IAssetProxy(erc20ProxyAddress);
         zrxToken = IERC20Token(zrxTokenAddress);
-        zrxAssetData = _zrxAssetData;
+        zrxAssetData = abi.encodeWithSelector(
+            IAssetData(address(0)).ERC20Token.selector,
+            zrxTokenAddress
+        );
     }
 
     /// @dev Sets the ERC20 proxy.
@@ -81,19 +82,6 @@ contract ZrxVault is
         emit Erc20ProxyChanged(erc20ProxyAddress);
     }
 
-    /// @dev Sets the Zrx Asset Data.
-    /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
-    function setZrxAssetData(bytes calldata _zrxAssetData)
-        external
-        onlyOwner
-        onlyNotInCatastrophicFailure
-    {
-        zrxAssetData = _zrxAssetData;
-        emit ZrxAssetDataChanged(_zrxAssetData);
-    }
-
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
@@ -105,7 +93,7 @@ contract ZrxVault is
         onlyNotInCatastrophicFailure
     {
         // update balance
-        balances[owner] = balances[owner]._add(amount);
+        balances[owner] = balances[owner].safeAdd(amount);
 
         // notify
         emit ZrxDepositedIntoVault(msg.sender, owner, amount);
@@ -167,7 +155,7 @@ contract ZrxVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner]._sub(amount);
+        balances[owner] = balances[owner].safeSub(amount);
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);

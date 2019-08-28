@@ -17,9 +17,7 @@ import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
 import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
 import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
-import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
-import * as LibSafeMath64 from '../generated-artifacts/LibSafeMath64.json';
-import * as LibSafeMath96 from '../generated-artifacts/LibSafeMath96.json';
+import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
@@ -27,7 +25,6 @@ import * as MixinDelegatedStake from '../generated-artifacts/MixinDelegatedStake
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
-import * as MixinOwnable from '../generated-artifacts/MixinOwnable.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
@@ -41,6 +38,7 @@ import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
+import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     Staking: Staking as ContractArtifact,
@@ -61,9 +59,7 @@ export const artifacts = {
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFeeMath: LibFeeMath as ContractArtifact,
     LibRewardMath: LibRewardMath as ContractArtifact,
-    LibSafeMath: LibSafeMath as ContractArtifact,
-    LibSafeMath64: LibSafeMath64 as ContractArtifact,
-    LibSafeMath96: LibSafeMath96 as ContractArtifact,
+    LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
     MixinDelegatedStake: MixinDelegatedStake as ContractArtifact,
@@ -74,10 +70,10 @@ export const artifacts = {
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
-    MixinOwnable: MixinOwnable as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     LibFeeMathTest: LibFeeMathTest as ContractArtifact,
+    TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

@@ -18,20 +18,24 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
-import "./MixinConstants.sol";
 import "../interfaces/IStructs.sol";
 
 
 // solhint-disable max-states-count
 contract MixinStorage is
     MixinDeploymentConstants,
-    MixinConstants
+    MixinConstants,
+    Ownable
 {
 
-    // address of owner
-    address internal owner;
+    constructor()
+        public
+        Ownable()
+    {}
 
     // address of staking contract
     address internal stakingContract;
@@ -71,16 +75,16 @@ contract MixinStorage is
     mapping (bytes32 => address[]) internal makerAddressesByPoolId;
 
     // current epoch
-    uint64 internal currentEpoch = INITIAL_EPOCH;
+    uint256 internal currentEpoch = INITIAL_EPOCH;
 
     // current epoch start time
-    uint64 internal currentEpochStartTimeInSeconds;
+    uint256 internal currentEpochStartTimeInSeconds;
 
     // current withdrawal period
-    uint64 internal currentTimeLockPeriod = INITIAL_TIMELOCK_PERIOD;
+    uint256 internal currentTimeLockPeriod = INITIAL_TIMELOCK_PERIOD;
 
     // current epoch start time
-    uint64 internal currentTimeLockPeriodStartEpoch = INITIAL_EPOCH;
+    uint256 internal currentTimeLockPeriodStartEpoch = INITIAL_EPOCH;
 
     // fees collected this epoch
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
@@ -94,7 +98,7 @@ contract MixinStorage is
     // shadow balances by
     mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
 
-    // registrered 0x exchanges
+    // registered 0x Exchange contracts
     mapping (address => bool) internal validExchanges;
 
     // ZRX vault

@@ -1,7 +1,6 @@
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { SignatureType } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -100,7 +99,6 @@ export class StakingWrapper {
     }
     public async deployAndConfigureContractsAsync(): Promise<void> {
         // deploy zrx vault
-        const zrxAssetData = assetDataUtils.encodeERC20AssetData(this._zrxTokenContract.address);
         this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
             artifacts.ZrxVault,
             this._provider,
@@ -108,7 +106,6 @@ export class StakingWrapper {
             artifacts,
             this._erc20ProxyContract.address,
             this._zrxTokenContract.address,
-            zrxAssetData,
         );
         // deploy reward vault
         this._rewardVaultContractIfExists = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(

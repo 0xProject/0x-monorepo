@@ -90,9 +90,9 @@ library LibStakingRichErrors {
     bytes4 internal constant WITHDRAW_AMOUNT_EXCEEDS_MEMBER_BALANCE_ERROR_SELECTOR =
         0xfc9c065f;
 
-    // bytes4(keccak256("BlockTimestampTooLowError(uint64,uint64)"))
+    // bytes4(keccak256("BlockTimestampTooLowError(uint256,uint256)"))
     bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR =
-        0x887225f7;
+        0xa6bcde47;
 
     // bytes4(keccak256("OnlyCallableByStakingContractError(address)"))
     bytes4 internal constant ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR =
@@ -358,8 +358,8 @@ library LibStakingRichErrors {
     }
 
     function BlockTimestampTooLowError(
-        uint64 epochEndTime,
-        uint64 currentBlockTimestamp
+        uint256 epochEndTime,
+        uint256 currentBlockTimestamp
     )
         internal
         pure

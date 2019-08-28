@@ -20,8 +20,8 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibSafeMath.sol";
 import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
 import "../interfaces/IStructs.sol";
@@ -59,10 +59,8 @@ contract MixinStakingPool is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinStakingPoolRewardVault
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Asserts that the sender is the operator of the input pool.
@@ -327,6 +325,6 @@ contract MixinStakingPool is
         pure
         returns (bytes32)
     {
-        return bytes32(uint256(poolId)._add(POOL_ID_INCREMENT_AMOUNT));
+        return bytes32(uint256(poolId).safeAdd(POOL_ID_INCREMENT_AMOUNT));
     }
 }

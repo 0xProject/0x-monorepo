@@ -36,9 +36,9 @@ interface IStakingEvents {
     /// @param startTimeInSeconds The start time of the epoch.
     /// @param earliestEndTimeInSeconds The earliest this epoch can end.
     event EpochChanged(
-        uint64 epoch,
-        uint64 startTimeInSeconds,
-        uint64 earliestEndTimeInSeconds
+        uint256 epoch,
+        uint256 startTimeInSeconds,
+        uint256 earliestEndTimeInSeconds
     );
 
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.
@@ -46,9 +46,9 @@ interface IStakingEvents {
      /// @param startEpoch The epoch this period started.
      /// @param endEpoch The epoch this period ends.
     event TimeLockPeriodChanged(
-        uint64 timeLockPeriod,
-        uint64 startEpoch,
-        uint64 endEpoch
+        uint256 timeLockPeriod,
+        uint256 startEpoch,
+        uint256 endEpoch
     );
 
     /// @dev Emitted by MixinExchangeFees when rewards are paid out.
@@ -65,12 +65,6 @@ interface IStakingEvents {
         uint256 totalRewardsPaid,
         uint256 initialContractBalance,
         uint256 finalContractBalance
-    );
-
-    /// @dev Emitted by MixinOwnable when the contract's ownership changes
-    /// @param newOwner New owner of the contract
-    event OwnershipTransferred(
-        address newOwner
     );
 
     /// @dev Emitted by MixinStakingPool when a new pool is created.

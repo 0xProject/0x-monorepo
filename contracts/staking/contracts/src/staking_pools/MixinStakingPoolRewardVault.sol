@@ -21,7 +21,6 @@ pragma solidity ^0.5.9;
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
-import "../sys/MixinOwnable.sol";
 
 
 /// @dev This mixin contains logic for interfacing with the Staking Pool Reward Vault (vaults/StakingPoolRewardVault.sol)
@@ -31,8 +30,7 @@ contract MixinStakingPoolRewardVault is
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage,
-    MixinOwnable
+    MixinStorage
 {
 
     /// @dev Sets the address of the reward vault.

@@ -54,24 +54,11 @@ interface IZrxVault {
         address erc20ProxyAddress
     );
 
-    /// @dev Emitted when the Zrx Asset Data is changed.
-    /// @param zrxAssetData New Zrx Asset Data. 
-    event ZrxAssetDataChanged(
-        bytes zrxAssetData
-    );
-
     /// @dev Sets the ERC20 proxy.
     /// Note that only the contract owner can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     function setErc20Proxy(address erc20ProxyAddress)
-        external;
-
-    /// @dev Sets the Zrx Asset Data.
-    /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
-    function setZrxAssetData(bytes calldata _zrxAssetData)
         external;
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.

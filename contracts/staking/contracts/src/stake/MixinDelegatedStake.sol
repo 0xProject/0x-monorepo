@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "../libs/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
@@ -43,7 +43,6 @@ contract MixinDelegatedStake is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
@@ -122,13 +121,13 @@ contract MixinDelegatedStake is
         );
 
         // increment how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._add(amount);
+        delegatedStakeByOwner[owner] = _delegatedStakeByOwner.safeAdd(amount);
 
         // increment how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._add(amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner.safeAdd(amount);
 
         // increment how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._add(amount);
+        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId.safeAdd(amount);
     }
 
     /// @dev Undelegates stake of `owner` from the staking pool with id `poolId`
@@ -157,12 +156,12 @@ contract MixinDelegatedStake is
         );
 
         // decrement how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._sub(amount);
+        delegatedStakeByOwner[owner] = _delegatedStakeByOwner.safeSub(amount);
 
         // decrement how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._sub(amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner.safeSub(amount);
 
         // decrement how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._sub(amount);
+        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId.safeSub(amount);
     }
 }

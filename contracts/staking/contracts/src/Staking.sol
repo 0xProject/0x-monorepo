@@ -38,7 +38,6 @@ contract Staking is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinOwnable,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
@@ -51,7 +50,6 @@ contract Staking is
     MixinExchangeFees,
     MixinDelegatedStake
 {
-
     // this contract can receive ETH
     // solhint-disable no-empty-blocks
     function ()

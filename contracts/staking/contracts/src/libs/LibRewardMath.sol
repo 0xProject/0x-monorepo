@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "./LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
 /// @dev This library contains logic for computing the reward balances of staking pool members.
@@ -47,8 +47,8 @@ library LibRewardMath {
         returns (uint256)
     {
         uint256 combinedPayout = amountDelegatedByOwner
-            ._mul(totalAmountOfShadowAsset._add(totalAmountOfRealAsset))
-            ._div(totalAmountDelegated);
+            .safeMul(totalAmountOfShadowAsset.safeAdd(totalAmountOfRealAsset))
+            .safeDiv(totalAmountDelegated);
 
         // we round up the amount of shadow assets when computing buy-ins.
         // the result is that sometimes the amount of actual assets in the pool
@@ -85,8 +85,8 @@ library LibRewardMath {
         )
     {
         payoutInShadowAsset = amountOfShadowAssetHeldByOwner
-            ._mul(partialAmountDelegatedByOwner)
-            ._div(amountDelegatedByOwner);
+            .safeMul(partialAmountDelegatedByOwner)
+            .safeDiv(amountDelegatedByOwner);
 
         payoutInRealAsset = _computePayoutDenominatedInRealAsset(
             partialAmountDelegatedByOwner,
@@ -120,8 +120,8 @@ library LibRewardMath {
             return 0;
         }
         return amountToDelegateByOwner
-            ._mul(totalAmountOfShadowAsset._add(totalAmountOfRealAsset))
-            ._add(totalAmountDelegated._sub(1)) // we round up when computing shadow asset
-            ._div(totalAmountDelegated);
+            .safeMul(totalAmountOfShadowAsset.safeAdd(totalAmountOfRealAsset))
+            .safeAdd(totalAmountDelegated.safeSub(1)) // we round up when computing shadow asset
+            .safeDiv(totalAmountDelegated);
     }
 }
