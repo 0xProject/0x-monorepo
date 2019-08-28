@@ -132,7 +132,10 @@ function updateMetaFile(file: File, indexName: string): void {
         meta[indexName][file.name].versions = versionsSortedDesc;
     }
 
-    fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), stringify(meta, { replacer: null, indent: 4 }));
+    fs.writeFileSync(
+        path.join(__dirname, '../ts/utils/', 'algolia_meta.json'),
+        stringify(meta, { replacer: null, indent: 4 }),
+    );
 }
 
 async function processMdxAsync(algoliaIndex: any, file: File, indexName: string): Promise<void> {
