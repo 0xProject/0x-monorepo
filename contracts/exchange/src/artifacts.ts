@@ -34,6 +34,8 @@ import * as ReentrancyTester from '../generated-artifacts/ReentrancyTester.json'
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
+import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
+import * as TestProtocolFeesReceiver from '../generated-artifacts/TestProtocolFeesReceiver.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestTransactions from '../generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
@@ -70,6 +72,8 @@ export const artifacts = {
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
+    TestProtocolFees: TestProtocolFees as ContractArtifact,
+    TestProtocolFeesReceiver: TestProtocolFeesReceiver as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestTransactions: TestTransactions as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
