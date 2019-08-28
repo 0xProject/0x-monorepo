@@ -203,9 +203,21 @@ export class StakingWrapper {
     }
     public async moveStakeAsync(
         owner: string,
+        fromState: {
+            id: number,
+            poolId?: string
+        },
+        toState: {
+            id: number,
+            poolId?: string
+        },
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().unstake.getABIEncodedTransactionData(
+        fromState.poolId = fromState.poolId !== undefined ? fromState.poolId : constants.NIL_POOL_ID;
+        toState.poolId = fromState.poolId !== undefined ? toState.poolId : constants.NIL_POOL_ID;
+        const calldata = this.getStakingContract().moveStake.getABIEncodedTransactionData(
+            fromState as any,
+            toState as any,
             amount,
         );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);

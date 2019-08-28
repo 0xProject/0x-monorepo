@@ -1,6 +1,20 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    describe,
+    ERC20BalancesByOwner,
+    expect,
+    getLatestBlockTimestampAsync,
+    hexConcat,
+    increaseTimeAndMineBlockAsync,
+    OrderFactory,
+    OrderStatus,
+    provider,
+    txDefaults,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -9,11 +23,10 @@ import * as _ from 'lodash';
 import { DelegatorActor } from './actors/delegator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
+import { StakeStateId } from './utils/types';
 
-chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking & Delegating', () => {
+blockchainTests.resets.only('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -26,12 +39,6 @@ describe('Staking & Delegating', () => {
     let stakingWrapper: StakingWrapper;
     let erc20Wrapper: ERC20Wrapper;
     // tests
-    before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
     before(async () => {
         // create accounts
         accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -47,69 +54,144 @@ describe('Staking & Delegating', () => {
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    describe('Staking', () => {
-        it('basic staking/unstaking', async () => {
-            /**
-            // setup test parameters
-            const amountToStake = StakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = StakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = StakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
-            // run test - this actor will validate its own state
-            const staker = new StakerActor(stakers[0], stakingWrapper);
-            await staker.depositZrxAndMintActivatedStakeAsync(amountToStake);
-            await staker.deactivateAndTimeLockStakeAsync(amountToDeactivate);
-            // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
-            //        attempting to do so should revert.
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimeLockPeriodAsync();
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimeLockPeriodAsync();
-            // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timeLock period rolls over.
-            await staker.forceTimeLockSyncAsync();
-            // now we can activate stake
-            await staker.activateStakeAsync(amountToReactivate);
-            await staker.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);
-            */
+    describe('Active Stake', () => {
+        it('should return zero as initial stake', async () => {
+            const staker = stakers[0];
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(new BigNumber(0));
+            expect(balance.next).to.be.bignumber.equal(new BigNumber(0));
         });
+        it('should successfully stake zero ZRX', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(0);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(amount);
+            expect(balance.next).to.be.bignumber.equal(amount);
+        });
+        it('should successfully stake non-zero ZRX', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+        });
+        it('should retain active stake balance across epochs', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const initEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(initEpoch).to.be.bignumber.equal(new BigNumber(0));
+            await stakingWrapper.goToNextEpochAsync();
+            const finalEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(finalEpoch).to.be.bignumber.equal(new BigNumber(1));
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+        });
+    });
+    describe('Inactive Stake', () => {
+        it('should return zero as initial inactive', async () => {
+            const staker = stakers[0];
+            const balance = await stakingWrapper.getInactiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(new BigNumber(0));
+            expect(balance.next).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('should successfully deactivate zero stake', async () => {
+            const staker = stakers[0];
+            const amount = new BigNumber(0);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amount);
+            const balance = await stakingWrapper.getInactiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(new BigNumber(0));
+            expect(balance.next).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('should successfully deactivate non-zero stake', async () => {
+            const staker = stakers[0];
+            const amountToStake = new BigNumber(10);
+            const amountToDeactivate = new BigNumber(6);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            // check active balance
+            const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(activeBalance.current, 'active current').to.be.bignumber.equal(amountToStake);
+            expect(activeBalance.next, 'active next').to.be.bignumber.equal(amountToStake.minus(amountToDeactivate));
+            // check inactive balance
+            const inactiveBalance = await stakingWrapper.getInactiveStakeAsync(staker);
+            expect(inactiveBalance.current, 'inactive current').to.be.bignumber.equal(new BigNumber(0));
+            expect(inactiveBalance.next, 'inactive next').to.be.bignumber.equal(amountToDeactivate);
+        });
+        /*
+        it('should successfully stake zero ZRX', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(0);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(amount);
+            expect(balance.next).to.be.bignumber.equal(amount);
+        });
+        it('should successfully stake non-zero ZRX', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+        });
+        it('should retain active stake balance across epochs', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const initEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(initEpoch).to.be.bignumber.equal(new BigNumber(0));
+            await stakingWrapper.goToNextEpochAsync();
+            const finalEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(finalEpoch).to.be.bignumber.equal(new BigNumber(1));
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+        });
+        */
     });
 
-    describe('Delegating', () => {
-        it('basic delegating/undelegating', async () => {
-            /**
-            // setup test parameters
-            const amountToDelegate = StakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = StakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = StakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
-            const poolOperator = stakers[1];
-            const operatorShare = 39;
-            const poolId = await stakingWrapper.createStakingPoolAsync(poolOperator, operatorShare);
-            // run test
-            const delegator = new DelegatorActor(stakers[0], stakingWrapper);
-            await delegator.depositZrxAndDelegateToStakingPoolAsync(poolId, amountToDelegate);
-            await delegator.deactivateAndTimeLockDelegatedStakeAsync(poolId, amountToDeactivate);
-            // note - we cannot re-activate this timeLocked stake until at least one full timeLock period has passed.
-            //        attempting to do so should revert.
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimeLockPeriodAsync();
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimeLockPeriodAsync();
-            // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timeLock period rolls over.
-            await delegator.forceTimeLockSyncAsync();
-            // now we can activate stake
-            await delegator.activateAndDelegateStakeAsync(poolId, amountToReactivate);
-            await delegator.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);
-            */
+    /*
+    describe('Unstake', () => {
+        it('should successfully unstake zero ZRX', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(0);
+            await stakingWrapper.unstakeAsync(staker, amount);
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current).to.be.bignumber.equal(amount);
+            expect(balance.next).to.be.bignumber.equal(amount);
         });
+
+        it('should successfully unstake non-zero ZRX', async () => {
+            const staker = stakers[0];
+            const amountToStake = StakingWrapper.toBaseUnitAmount(10);
+            const amountToUnstake = StakingWrapper.toBaseUnitAmount(6);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.unstakeAsync(staker, amountToStake);
+            // assert active stake
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+            // assert
+        });
+        it('should retain active stake balance across epochs', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const initEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(initEpoch).to.be.bignumber.equal(new BigNumber(0));
+            await stakingWrapper.goToNextEpochAsync();
+            const finalEpoch = await stakingWrapper.getCurrentEpochAsync();
+            expect(finalEpoch).to.be.bignumber.equal(new BigNumber(1));
+            const balance = await stakingWrapper.getActiveStakeAsync(staker);
+            expect(balance.current, 'current').to.be.bignumber.equal(amount);
+            expect(balance.next, 'next').to.be.bignumber.equal(amount);
+        });
+
     });
+    */
 });
 // tslint:enable:no-unnecessary-type-assertion

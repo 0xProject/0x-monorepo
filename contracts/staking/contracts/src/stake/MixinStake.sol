@@ -57,15 +57,15 @@ contract MixinStake is
     function stake(uint256 amount)
         external
     {
-         // deposit equivalent amount of ZRX into vault
-        _depositFromOwnerIntoZrxVault(owner, amount);
+        // deposit equivalent amount of ZRX into vault
+        _depositFromOwnerIntoZrxVault(msg.sender, amount);
 
         // mint stake
-        _incrementBalance(activeStakeByOwner[owner], amount);
+        _mintBalance(activeStakeByOwner[msg.sender], amount);
 
         // emit stake event
         emit StakeMinted(
-            owner,
+            msg.sender,
             amount
         );
     }
@@ -74,24 +74,24 @@ contract MixinStake is
         external
     {
         // sanity check
-        uint256 currentWithdrawableStake = getWithdrawableStake(owner);
+        uint256 currentWithdrawableStake = getWithdrawableStake(msg.sender);
         require(
             amount <= currentWithdrawableStake,
             "CANNOT_WITHDRAW"
         );
 
         // burn stake
-        _decrementBalance(inactiveStakeByOwner[owner], amount);
+        _burnBalance(inactiveStakeByOwner[msg.sender], amount);
 
         // update withdrawable field
-        withdrawableStakeByOwner[owner] = currentWithdrawableStake._sub(amount);
+        withdrawableStakeByOwner[msg.sender] = currentWithdrawableStake._sub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        _withdrawToOwnerFromZrxVault(owner, amount);
+        _withdrawToOwnerFromZrxVault(msg.sender, amount);
 
         // emit stake event
         emit StakeBurned(
-            owner,
+            msg.sender,
             amount
         );
     }
@@ -100,6 +100,7 @@ contract MixinStake is
         external
     {
         if (from.id == IStructs.StakeStateId.DELEGATED) {
+            revert('asd');
             _undelegateStake(
                 from.poolId,
                 msg.sender,
@@ -107,11 +108,13 @@ contract MixinStake is
             );
         } else if (from.id == IStructs.StakeStateId.INACTIVE) {
             // update withdrawable field
-            uint256 currentWithdrawableStake = getWithdrawableStake(owner);
-            withdrawableStakeByOwner[owner] = currentWithdrawableStake._sub(amount);
+            revert('asd');
+            uint256 currentWithdrawableStake = getWithdrawableStake(msg.sender);
+            withdrawableStakeByOwner[msg.sender] = currentWithdrawableStake._sub(amount);
         }
 
         if (to.id == IStructs.StakeStateId.DELEGATED) {
+            revert('asd');
             _delegateStake(
                 from.poolId,
                 msg.sender,

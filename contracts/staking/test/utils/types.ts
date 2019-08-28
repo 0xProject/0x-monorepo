@@ -53,3 +53,9 @@ export interface StakeBalance {
     current: BigNumber,
     next: BigNumber,
 }
+
+export enum StakeStateId {
+    ACTIVE,
+    INACTIVE,
+    DELEGATED
+};
