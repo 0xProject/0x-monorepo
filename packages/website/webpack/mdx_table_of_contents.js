@@ -61,11 +61,14 @@ function isSlugifiedSection(node) {
 }
 
 function toFragment(nodes) {
-    if (nodes.length === 1 && nodes[0].type === 'text') {
-        return JSON.stringify(nodes[0].value);
-    } else {
-        return '<React.Fragment>' + nodes.map(toJSX).join('') + '</React.Fragment>';
+    // Because of autolinking headings earlier (at remark stage), the headings (nodes)
+    // contain an anchor tag next to the title, we only want to render the text.
+    // Unless there is no text, then we render whatever nodes we get in a Fragment
+    const textNode = nodes.find(node => node.type === 'text');
+    if (textNode) {
+        return JSON.stringify(textNode.value);
     }
+    return '<React.Fragment>' + nodes.map(toJSX).join('') + '</React.Fragment>';
 }
 
 function tableOfContentsListSerializer(nodes, indent = 0) {
