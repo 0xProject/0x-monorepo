@@ -816,24 +816,10 @@
   optionalDependencies:
     "@ledgerhq/hw-transport-node-hid" "^4.3.0"
 
-"@0x/ts-doc-gen@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.17.tgz#2c3c8e96aad4476e3a13608d3f1b516b87e17665"
-  integrity sha512-0+ErnVixm804BkYHt7sYe10rc8w9Nf4qO2Ecp9ljzNliEVgwMV7zBSOFFk1CUSbTPYXqDSLuP79y7CxlWXmxdA==
-  dependencies:
-    "@0x/typescript-typings" "^4.2.2"
-    "@0x/utils" "^4.3.3"
-    glob "^7.1.4"
-    promisify-child-process "^3.1.1"
-    rimraf "^2.6.3"
-    typedoc "^0.15.0"
-    typedoc-plugin-markdown "^2.1.0"
-    yargs "^10.0.3"
-
-"@0x/ts-doc-gen@^0.0.18":
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.18.tgz#e7b6aef76e561e19e66aaee04ebdbaaebd4348a0"
-  integrity sha512-RFOhQscntaihrRlAu+MTN6l5aBG3cnqVIDM91/GfqNY99roeFB7drZLtZwQfjPdPPoHN25R/w2iw12zcYVS7uw==
+"@0x/ts-doc-gen@^0.0.19":
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.19.tgz#9530a3f88a1577058beaf0492e81fc8165263c9d"
+  integrity sha512-KVO+Ppx/UhzH4ItTOD9YSUkQvCW2iruvjRxxIT3QJUnz83ySx9Kas9nSns9NDwa9otMS429I3NedQ0gAtYmCwg==
   dependencies:
     "@0x/typescript-typings" "^4.2.2"
     "@0x/utils" "^4.3.3"

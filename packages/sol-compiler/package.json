@@ -25,7 +25,7 @@
         "diff_docs": "git diff --exit-code ./docs",
         "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -47,7 +47,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
         "@0x/dev-utils": "^2.3.1",
-        "@0x/ts-doc-gen": "^0.0.18",
+        "@0x/ts-doc-gen": "^0.0.19",
         "@0x/tslint-config": "^3.0.1",
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^5.2.7",
