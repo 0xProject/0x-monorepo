@@ -150,7 +150,7 @@ describe('RevertError', () => {
         });
         it('should decode an unknown selector as a `RawRevertError`', () => {
             const _encoded = encoded.substr(0, 2) + '00' + encoded.substr(4);
-            const decoded = RevertError.decode(_encoded);
+            const decoded = RevertError.decode(_encoded, true);
             expect(decoded instanceof RawRevertError).to.be.true();
         });
         it('should fail to decode a malformed ABI encoded revert error', () => {

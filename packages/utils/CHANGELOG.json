@@ -15,7 +15,7 @@
                 "pr": "TODO"
             },
             {
-                "note": "Make `RevertError.decode()` return a `RawRevertError` if the selector is unknown.",
+                "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
                 "pr": "TODO"
             }
         ]

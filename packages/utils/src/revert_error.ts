@@ -35,23 +35,25 @@ export function registerRevertErrorType(revertClass: RevertErrorType): void {
  * Decode an ABI encoded revert error.
  * Throws if the data cannot be decoded as a known RevertError type.
  * @param bytes The ABI encoded revert error. Either a hex string or a Buffer.
+ * @param coerce Coerce unknown selectors into a `RawRevertError` type.
  * @return A RevertError object.
  */
-export function decodeBytesAsRevertError(bytes: string | Buffer): RevertError {
-    return RevertError.decode(bytes);
+export function decodeBytesAsRevertError(bytes: string | Buffer, coerce: boolean = false): RevertError {
+    return RevertError.decode(bytes, coerce);
 }
 
 /**
  * Decode a thrown error.
  * Throws if the data cannot be decoded as a known RevertError type.
  * @param error Any thrown error.
+ * @param coerce Coerce unknown selectors into a `RawRevertError` type.
  * @return A RevertError object.
  */
-export function decodeThrownErrorAsRevertError(error: Error): RevertError {
+export function decodeThrownErrorAsRevertError(error: Error, coerce: boolean = false): RevertError {
     if (error instanceof RevertError) {
         return error;
     }
-    return RevertError.decode(getThrownErrorRevertErrorBytes(error));
+    return RevertError.decode(getThrownErrorRevertErrorBytes(error), coerce);
 }
 
 /**
@@ -64,7 +66,7 @@ export function coerceThrownErrorAsRevertError(error: Error): RevertError {
         return error;
     }
     try {
-        return decodeThrownErrorAsRevertError(error);
+        return decodeThrownErrorAsRevertError(error, true);
     } catch (err) {
         if (isGanacheTransactionRevertError(error)) {
             throw err;
@@ -94,14 +96,18 @@ export abstract class RevertError extends Error {
      * Decode an ABI encoded revert error.
      * Throws if the data cannot be decoded as a known RevertError type.
      * @param bytes The ABI encoded revert error. Either a hex string or a Buffer.
+     * @param coerce Whether to coerce unknown selectors into a `RawRevertError` type.
      * @return A RevertError object.
      */
-    public static decode(bytes: string | Buffer): RevertError {
+    public static decode(bytes: string | Buffer, coerce: boolean = false): RevertError {
         const _bytes = bytes instanceof Buffer ? ethUtil.bufferToHex(bytes) : ethUtil.addHexPrefix(bytes);
         // tslint:disable-next-line: custom-no-magic-numbers
         const selector = _bytes.slice(2, 10);
         if (!(selector in RevertError._typeRegistry)) {
-            return new RawRevertError(bytes);
+            if (coerce) {
+                return new RawRevertError(bytes);
+            }
+            throw new Error(`Unknown selector: ${selector}`);
         }
         const { type, decoder } = RevertError._typeRegistry[selector];
         const instance = new type();
