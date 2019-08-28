@@ -1,237 +1,74 @@
-# Class: HttpClient
+<hr />
 
-This class includes all the functionality related to interacting with a set of HTTP endpoints
-that implement the standard relayer API v2
+<hr />
 
-### Hierarchy
+<hr />
 
-* **HttpClient**
+<hr />
 
-### Implements
+<hr />
 
-* [Client](#interface-client)
+<hr />
 
-###  Constructors
+<hr />
 
-##  constructer
+<hr />
 
-\+ **new HttpClient**(`url`: string): *[HttpClient](#class-httpclient)*
+<hr />
 
-*Defined in [connect/src/http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L44)*
+<hr />
 
-Instantiates a new HttpClient instance
+<hr />
 
-**Parameters:**
+<hr />
 
-Name | Type | Description |
------- | ------ | ------ |
-`url` | string | The relayer API base HTTP url you would like to interact with |
+# External module: "types/src/index"
 
-**Returns:** *[HttpClient](#class-httpclient)*
+###  Type aliases
 
-An instance of HttpClient
+#___
 
-### Methods
+#___
 
-##  getAssetPairsAsync
+##  AssetPairsResponse
 
-▸ **getAssetPairsAsync**(`requestOpts?`: `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts`): *`Promise<AssetPairsResponse>`*
+Ƭ **AssetPairsResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*[AssetPairsItem](#interface-assetpairsitem)*›*
 
-*Defined in [connect/src/http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L59)*
-
-Retrieve assetData pair info from the API
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`requestOpts?` | `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts` | Options specifying assetData information to retrieve, page information, and network id. |
-
-**Returns:** *`Promise<AssetPairsResponse>`*
-
-The resulting AssetPairsResponse that match the request
+*Defined in [types/src/index.ts:403](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L403)*
 
 ___
 
-##  getFeeRecipientsAsync
+#___
 
-▸ **getFeeRecipientsAsync**(`requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<FeeRecipientsResponse>`*
+#___
 
-*Defined in [connect/src/http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L160)*
+##  FeeRecipientsResponse
 
-Retrieve the list of fee recipient addresses used by the relayer.
+Ƭ **FeeRecipientsResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*string*›*
 
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`requestOpts?` | `RequestOpts` & `PagedRequestOpts` | Options specifying page information, and network id. |
-
-**Returns:** *`Promise<FeeRecipientsResponse>`*
-
-The resulting FeeRecipientsResponse
+*Defined in [types/src/index.ts:467](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L467)*
 
 ___
 
-##  getOrderAsync
+#___
 
-▸ **getOrderAsync**(`orderHash`: string, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<APIOrder>`*
+#___
 
-*Defined in [connect/src/http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L99)*
+##  OrdersResponse
 
-Retrieve a specific order from the API
+Ƭ **OrdersResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*[APIOrder](#interface-apiorder)*›*
 
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`orderHash` | string | An orderHash generated from the desired order |
-`requestOpts?` | [RequestOpts](#interface-requestopts) | - |
-
-**Returns:** *`Promise<APIOrder>`*
-
-The APIOrder that matches the supplied orderHash
+*Defined in [types/src/index.ts:391](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L391)*
 
 ___
 
-##  getOrderConfigAsync
-
-▸ **getOrderConfigAsync**(`request`: `OrderConfigRequest`, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<OrderConfigResponse>`*
-
-*Defined in [connect/src/http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L139)*
-
-Retrieve fee information from the API
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`request` | `OrderConfigRequest` | A OrderConfigRequest instance describing the specific fees to retrieve |
-`requestOpts?` | [RequestOpts](#interface-requestopts) | Options specifying network id. |
-
-**Returns:** *`Promise<OrderConfigResponse>`*
-
-The resulting OrderConfigResponse that matches the request
-
-___
-
-##  getOrderbookAsync
-
-▸ **getOrderbookAsync**(`request`: `OrderbookRequest`, `requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<OrderbookResponse>`*
-
-*Defined in [connect/src/http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L117)*
-
-Retrieve an orderbook from the API
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`request` | `OrderbookRequest` | An OrderbookRequest instance describing the specific orderbook to retrieve |
-`requestOpts?` | `RequestOpts` & `PagedRequestOpts` | Options specifying page information, and network id. |
-
-**Returns:** *`Promise<OrderbookResponse>`*
-
-The resulting OrderbookResponse that matches the request
-
-___
-
-##  getOrdersAsync
-
-▸ **getOrdersAsync**(`requestOpts?`: `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts`): *`Promise<OrdersResponse>`*
-
-*Defined in [connect/src/http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L79)*
-
-Retrieve orders from the API
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`requestOpts?` | `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts` | Options specifying orders to retrieve and page information, page information, and network id. |
-
-**Returns:** *`Promise<OrdersResponse>`*
-
-The resulting OrdersResponse that match the request
-
-___
-
-##  submitOrderAsync
-
-▸ **submitOrderAsync**(`signedOrder`: `SignedOrder`, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<void>`*
-
-*Defined in [connect/src/http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/http_client.ts#L177)*
-
-Submit a signed order to the API
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`signedOrder` | `SignedOrder` | A SignedOrder instance to submit |
-`requestOpts?` | [RequestOpts](#interface-requestopts) | Options specifying network id.  |
-
-**Returns:** *`Promise<void>`*
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-<hr />
-
-# Interface: Client
-
-### Hierarchy
-
-* **Client**
-
-### Implemented by
-
-* [HttpClient](#class-httpclient)
-
-###  Properties
-
-##  getAssetPairsAsync
-
-• **getAssetPairsAsync**: *function*
-
-*Defined in [connect/src/types.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L18)*
-
-#### Type declaration:
-
-▸ (`requestOpts?`: `AssetPairsRequestOpts` & `PagedRequestOpts`): *`Promise<PaginatedCollection<AssetPairsItem>>`*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`requestOpts?` | `AssetPairsRequestOpts` & `PagedRequestOpts` |
-
-___
+#___
 
 ##  getFeeRecipientsAsync
 
 • **getFeeRecipientsAsync**: *function*
 
-*Defined in [connect/src/types.ts:25](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L25)*
+*Defined in [connect/src/types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L25)*
 
 #### Type declaration:
 
@@ -249,7 +86,7 @@ ___
 
 • **getOrderAsync**: *function*
 
-*Defined in [connect/src/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L22)*
+*Defined in [connect/src/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L22)*
 
 #### Type declaration:
 
@@ -267,7 +104,7 @@ ___
 
 • **getOrderConfigAsync**: *function*
 
-*Defined in [connect/src/types.ts:24](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L24)*
+*Defined in [connect/src/types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L24)*
 
 #### Type declaration:
 
@@ -285,7 +122,7 @@ ___
 
 • **getOrderbookAsync**: *function*
 
-*Defined in [connect/src/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L23)*
+*Defined in [connect/src/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L23)*
 
 #### Type declaration:
 
@@ -304,7 +141,7 @@ ___
 
 • **getOrdersAsync**: *function*
 
-*Defined in [connect/src/types.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L21)*
+*Defined in [connect/src/types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L21)*
 
 #### Type declaration:
 
@@ -322,7 +159,7 @@ ___
 
 • **submitOrderAsync**: *function*
 
-*Defined in [connect/src/types.ts:26](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/types.ts#L26)*
+*Defined in [connect/src/types.ts:26](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/types.ts#L26)*
 
 #### Type declaration:
 
@@ -354,7 +191,7 @@ Name | Type |
 
 • **metaData**: *object*
 
-*Defined in [types/src/index.ts:395](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L395)*
+*Defined in [types/src/index.ts:395](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L395)*
 
 ___
 
@@ -362,7 +199,7 @@ ___
 
 • **order**: *[SignedOrder](#class-signedorder)*
 
-*Defined in [types/src/index.ts:394](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L394)*
+*Defined in [types/src/index.ts:394](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L394)*
 
 <hr />
 
@@ -427,6 +264,181 @@ ___
 <hr />
 
 <hr />
+
+# Class: HttpClient
+
+This class includes all the functionality related to interacting with a set of HTTP endpoints
+that implement the standard relayer API v2
+
+### Hierarchy
+
+* **HttpClient**
+
+### Implements
+
+* [Client](#interface-client)
+
+###  Constructors
+
+##  constructer
+
+\+ **new HttpClient**(`url`: string): *[HttpClient](#class-httpclient)*
+
+*Defined in [connect/src/http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L44)*
+
+Instantiates a new HttpClient instance
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`url` | string | The relayer API base HTTP url you would like to interact with |
+
+**Returns:** *[HttpClient](#class-httpclient)*
+
+An instance of HttpClient
+
+### Methods
+
+##  getAssetPairsAsync
+
+▸ **getAssetPairsAsync**(`requestOpts?`: `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts`): *`Promise<AssetPairsResponse>`*
+
+*Defined in [connect/src/http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L59)*
+
+Retrieve assetData pair info from the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`requestOpts?` | `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts` | Options specifying assetData information to retrieve, page information, and network id. |
+
+**Returns:** *`Promise<AssetPairsResponse>`*
+
+The resulting AssetPairsResponse that match the request
+
+___
+
+##  getFeeRecipientsAsync
+
+▸ **getFeeRecipientsAsync**(`requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<FeeRecipientsResponse>`*
+
+*Defined in [connect/src/http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L160)*
+
+Retrieve the list of fee recipient addresses used by the relayer.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`requestOpts?` | `RequestOpts` & `PagedRequestOpts` | Options specifying page information, and network id. |
+
+**Returns:** *`Promise<FeeRecipientsResponse>`*
+
+The resulting FeeRecipientsResponse
+
+___
+
+##  getOrderAsync
+
+▸ **getOrderAsync**(`orderHash`: string, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<APIOrder>`*
+
+*Defined in [connect/src/http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L99)*
+
+Retrieve a specific order from the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | An orderHash generated from the desired order |
+`requestOpts?` | [RequestOpts](#interface-requestopts) | - |
+
+**Returns:** *`Promise<APIOrder>`*
+
+The APIOrder that matches the supplied orderHash
+
+___
+
+##  getOrderConfigAsync
+
+▸ **getOrderConfigAsync**(`request`: `OrderConfigRequest`, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<OrderConfigResponse>`*
+
+*Defined in [connect/src/http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L139)*
+
+Retrieve fee information from the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`request` | `OrderConfigRequest` | A OrderConfigRequest instance describing the specific fees to retrieve |
+`requestOpts?` | [RequestOpts](#interface-requestopts) | Options specifying network id. |
+
+**Returns:** *`Promise<OrderConfigResponse>`*
+
+The resulting OrderConfigResponse that matches the request
+
+___
+
+##  getOrderbookAsync
+
+▸ **getOrderbookAsync**(`request`: `OrderbookRequest`, `requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<OrderbookResponse>`*
+
+*Defined in [connect/src/http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L117)*
+
+Retrieve an orderbook from the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`request` | `OrderbookRequest` | An OrderbookRequest instance describing the specific orderbook to retrieve |
+`requestOpts?` | `RequestOpts` & `PagedRequestOpts` | Options specifying page information, and network id. |
+
+**Returns:** *`Promise<OrderbookResponse>`*
+
+The resulting OrderbookResponse that matches the request
+
+___
+
+##  getOrdersAsync
+
+▸ **getOrdersAsync**(`requestOpts?`: `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts`): *`Promise<OrdersResponse>`*
+
+*Defined in [connect/src/http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L79)*
+
+Retrieve orders from the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`requestOpts?` | `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts` | Options specifying orders to retrieve and page information, page information, and network id. |
+
+**Returns:** *`Promise<OrdersResponse>`*
+
+The resulting OrdersResponse that match the request
+
+___
+
+##  submitOrderAsync
+
+▸ **submitOrderAsync**(`signedOrder`: `SignedOrder`, `requestOpts?`: [RequestOpts](#interface-requestopts)): *`Promise<void>`*
+
+*Defined in [connect/src/http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/http_client.ts#L177)*
+
+Submit a signed order to the API
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | A SignedOrder instance to submit |
+`requestOpts?` | [RequestOpts](#interface-requestopts) | Options specifying network id.  |
+
+**Returns:** *`Promise<void>`*
 
 <hr />
 
@@ -472,7 +484,7 @@ ___
 
 • **page**? : *undefined | number*
 
-*Defined in [types/src/index.ts:474](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L474)*
+*Defined in [types/src/index.ts:474](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L474)*
 
 ___
 
@@ -480,7 +492,7 @@ ___
 
 • **perPage**? : *undefined | number*
 
-*Defined in [types/src/index.ts:475](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L475)*
+*Defined in [types/src/index.ts:475](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L475)*
 
 <hr />
 
@@ -500,7 +512,7 @@ ___
 
 • **page**: *number*
 
-*Defined in [types/src/index.ts:444](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L444)*
+*Defined in [types/src/index.ts:444](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L444)*
 
 ___
 
@@ -508,7 +520,7 @@ ___
 
 • **perPage**: *number*
 
-*Defined in [types/src/index.ts:445](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L445)*
+*Defined in [types/src/index.ts:445](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L445)*
 
 ___
 
@@ -516,7 +528,7 @@ ___
 
 • **records**: *`T`[]*
 
-*Defined in [types/src/index.ts:446](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L446)*
+*Defined in [types/src/index.ts:446](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L446)*
 
 ___
 
@@ -524,7 +536,7 @@ ___
 
 • **total**: *number*
 
-*Defined in [types/src/index.ts:443](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L443)*
+*Defined in [types/src/index.ts:443](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L443)*
 
 <hr />
 
@@ -544,7 +556,7 @@ ___
 
 • **networkId**? : *undefined | number*
 
-*Defined in [types/src/index.ts:470](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L470)*
+*Defined in [types/src/index.ts:470](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L470)*
 
 <hr />
 
@@ -564,7 +576,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[exchangeAddress](#exchangeaddress)*
 
-*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L20)*
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L20)*
 
 ___
 
@@ -574,7 +586,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[expirationTimeSeconds](#expirationtimeseconds)*
 
-*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L22)*
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L22)*
 
 ___
 
@@ -584,7 +596,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[feeRecipientAddress](#feerecipientaddress)*
 
-*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L21)*
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L21)*
 
 ___
 
@@ -594,7 +606,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[makerAddress](#makeraddress)*
 
-*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L11)*
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L11)*
 
 ___
 
@@ -604,7 +616,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[makerAssetAmount](#makerassetamount)*
 
-*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L15)*
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L15)*
 
 ___
 
@@ -614,7 +626,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[makerAssetData](#makerassetdata)*
 
-*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L17)*
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L17)*
 
 ___
 
@@ -624,7 +636,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[makerFee](#makerfee)*
 
-*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L13)*
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L13)*
 
 ___
 
@@ -634,7 +646,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[salt](#salt)*
 
-*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L19)*
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L19)*
 
 ___
 
@@ -644,7 +656,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[senderAddress](#senderaddress)*
 
-*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L10)*
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L10)*
 
 ___
 
@@ -652,7 +664,7 @@ ___
 
 • **signature**: *string*
 
-*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L41)*
+*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L41)*
 
 ___
 
@@ -662,7 +674,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[takerAddress](#takeraddress)*
 
-*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L12)*
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L12)*
 
 ___
 
@@ -672,7 +684,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[takerAssetAmount](#takerassetamount)*
 
-*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L16)*
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L16)*
 
 ___
 
@@ -682,7 +694,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[takerAssetData](#takerassetdata)*
 
-*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L18)*
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L18)*
 
 ___
 
@@ -692,7 +704,7 @@ ___
 
 *Inherited from [Order](_types_src_index_.order.md).[takerFee](#takerfee)*
 
-*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L14)*
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/types/src/index.ts#L14)*
 
 <hr />
 
@@ -743,6 +755,10 @@ ___
 <hr />
 
 <hr />
+
+# External module: "connect/src/types"
+
+<hr /> 
 
 # External module: "connect/src/http_client"
 
@@ -756,13 +772,13 @@ ___
 
 ## ▪ **ordersChannelFactory**: *object*
 
-*Defined in [connect/src/orders_channel_factory.ts:7](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/orders_channel_factory.ts#L7)*
+*Defined in [connect/src/orders_channel_factory.ts:7](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/orders_channel_factory.ts#L7)*
 
 ##  createWebSocketOrdersChannelAsync
 
 ▸ **createWebSocketOrdersChannelAsync**(`url`: string, `handler`: [OrdersChannelHandler](#interface-orderschannelhandler)): *`Promise<OrdersChannel>`*
 
-*Defined in [connect/src/orders_channel_factory.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/connect/src/orders_channel_factory.ts#L15)*
+*Defined in [connect/src/orders_channel_factory.ts:15](https://github.com/0xProject/0x-monorepo/blob/6b20c9a54/packages/connect/src/orders_channel_factory.ts#L15)*
 
 Instantiates a new WebSocketOrdersChannel instance
 
@@ -776,58 +792,6 @@ Name | Type | Description |
 **Returns:** *`Promise<OrdersChannel>`*
 
 An OrdersChannel Promise
-
-<hr />
-
-# External module: "connect/src/types"
-
-<hr /> 
-
-# External module: "types/src/index"
-
-###  Type aliases
-
-#___
-
-#___
-
-##  AssetPairsResponse
-
-Ƭ **AssetPairsResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*[AssetPairsItem](#interface-assetpairsitem)*›*
-
-*Defined in [types/src/index.ts:403](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L403)*
-
-___
-
-#___
-
-#___
-
-##  FeeRecipientsResponse
-
-Ƭ **FeeRecipientsResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*string*›*
-
-*Defined in [types/src/index.ts:467](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L467)*
-
-___
-
-#___
-
-#___
-
-##  OrdersResponse
-
-Ƭ **OrdersResponse**: *[PaginatedCollection](#interface-paginatedcollection)‹*[APIOrder](#interface-apiorder)*›*
-
-*Defined in [types/src/index.ts:391](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L391)*
-
-___
-
-##  SingleAssetData
-
-Ƭ **SingleAssetData**: *[ERC20AssetData](#interface-erc20assetdata) | [ERC721AssetData](#interface-erc721assetdata) | [ERC1155AssetData](#interface-erc1155assetdata) | [StaticCallAssetData](#interface-staticcallassetdata)*
-
-*Defined in [types/src/index.ts:208](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L208)*
 
 <hr />
 
