@@ -55,7 +55,7 @@
             "path": "guides/contract-fillable-liquidity.mdx"
         },
         "0x-cheat-sheet": {
-            "title": "0x cheat sheet",
+            "title": "0x Cheat Sheet",
             "description": "All the information you look up often when building on 0x (e.g., deployed contract addresses)",
             "tags": ["Relayer", "Trader", "Protocol Developer"],
             "topics": ["Relayer", "Trader", "Protocol Developer"],
@@ -71,7 +71,7 @@
             "path": "guides/ganache-setup.mdx"
         },
         "integrate-instant": {
-            "title": "Get started with 0x Instant",
+            "title": "Get Started with 0x Instant",
             "subtitle": "A free and flexible way to offer simple crypto purchasing in any app or website",
             "description": "Learn how to embed 0x Instant into your website or mobile app, allowing your users to seemlessly buy any digital asset with Ether",
             "tags": ["Instant"],
@@ -149,7 +149,7 @@
             "path": "guides/market-making-on-0x.mdx"
         },
         "0x-extensions-explained": {
-            "title": "0x Extensions explained",
+            "title": "0x Extensions Explained",
             "description": "Learn about how you can extend 0x protocol with your own custom extensions adding white-listing, dutch auction mechanics and much more to 0x.",
             "tags": ["Relayer", "Trader", "Extensions"],
             "topics": ["Relayer", "Trader", "Extensions"],
