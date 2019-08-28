@@ -164,7 +164,7 @@
             "path": "tools/@0x/asset-swapper/v1.0.2/reference.mdx",
             "versions": ["v1.0.2"]
         },
-        "0x-js": {
+        "0x.js": {
             "title": "0x.js",
             "description": "An umbrella package that exports all the 0x tools you need to start building on 0x. Includes: @0x/order-utils, @0x/contract-wrappers and @0x/contract-addresses.",
             "difficulty": "Beginner",
@@ -172,7 +172,8 @@
             "isFeatured": false,
             "tags": ["Trader", "Relayer", "Protocol Developer"],
             "type": "Typescript Libraries",
-            "externalUrl": "https://www.npmjs.com/package/0x.js"
+            "path": "tools/0x.js/v7.0.0/reference.mdx",
+            "versions": ["v7.0.0"]
         },
         "connect": {
             "title": "0x Connect",
