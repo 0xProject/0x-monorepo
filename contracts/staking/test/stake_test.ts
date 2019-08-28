@@ -286,18 +286,20 @@ blockchainTests.resets.only('Stake States', () => {
     describe.only('Stake Simulation', () => {
         it('Simulation (I)', async () => {
             const staker = stakers[0];
-            {
-                const amount = StakingWrapper.toBaseUnitAmount(4);
-                await stakingWrapper.stakeAsync(staker, amount);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+            { // Epoch 1: Stake some ZRX
+
+                await stakingWrapper.stakeAsync(staker, amountToStake);
                 const balance = await stakingWrapper.getActiveStakeAsync(staker);
-                expect(balance.current).to.be.bignumber.equal(amount);
-                expect(balance.next).to.be.bignumber.equal(amount);
+                expect(balance.current).to.be.bignumber.equal(amountToStake);
+                expect(balance.next).to.be.bignumber.equal(amountToStake);
             }
-            {
-                const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
-                const poolId = stakingConstants.INITIAL_POOL_ID
+            { // Later in Epoch 1: Delegate some stake
+                const poolId = stakingConstants.INITIAL_POOL_ID;
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
                 const balanceDelegated = await stakingWrapper.getStakeDelegatedByOwnerAsync(staker);
+                // check delegated stake balances
                 expect(balanceDelegated.current).to.be.bignumber.equal(new BigNumber(0));
                 expect(balanceDelegated.next).to.be.bignumber.equal(amountToDelegate);
                 const totalBalanceDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, staker);
@@ -306,6 +308,22 @@ blockchainTests.resets.only('Stake States', () => {
                 const balanceDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, staker);
                 expect(balanceDelegatedToPool.current).to.be.bignumber.equal(new BigNumber(0));
                 expect(balanceDelegatedToPool.next, 'delegated to pool').to.be.bignumber.equal(amountToDelegate);
+                // check active stake balance
+                const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(activeBalance.current).to.be.bignumber.equal(amountToStake);
+                expect(activeBalance.next).to.be.bignumber.equal(amountToStake.minus(amountToDelegate));
+            }
+            { // Later in Epoch 1: Deactivate some stake
+                const amountToDeactivate = StakingWrapper.toBaseUnitAmount(1);
+                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+                // check inactive balance
+                const inactiveBalance = await stakingWrapper.getInactiveStakeAsync(staker);
+                expect(inactiveBalance.current).to.be.bignumber.equal(new BigNumber(0));
+                expect(inactiveBalance.next).to.be.bignumber.equal(amountToDeactivate);
+                // check active stake balance
+                const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(activeBalance.current).to.be.bignumber.equal(amountToStake);
+                expect(activeBalance.next).to.be.bignumber.equal(amountToStake.minus(amountToDelegate).minus(amountToDeactivate));
             }
         });
     });
