@@ -27,6 +27,7 @@ export {
     decodeBytesAsRevertError,
     decodeThrownErrorAsRevertError,
     coerceThrownErrorAsRevertError,
+    RawRevertError,
     registerRevertErrorType,
     RevertError,
     StringRevertError,

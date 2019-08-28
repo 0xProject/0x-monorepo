@@ -1,7 +1,12 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { AnyRevertError, RevertError, StringRevertError } from '../src/revert_error';
+import {
+    AnyRevertError,
+    RawRevertError,
+    RevertError,
+    StringRevertError,
+} from '../src/revert_error';
 
 import { chaiSetup } from './utils/chai_setup';
 
@@ -107,6 +112,16 @@ describe('RevertError', () => {
             const revert2 = new DescendantRevertError(message);
             expect(revert1.equals(revert2)).to.be.false();
         });
+        it('should equate two `RawRevertError` types with the same raw data', () => {
+            const revert1 = new RawRevertError('0x0123456789');
+            const revert2 = new RawRevertError(revert1.encode());
+            expect(revert1.equals(revert2)).to.be.true();
+        });
+        it('should not equate two `RawRevertError` types with the different raw data', () => {
+            const revert1 = new RawRevertError('0x0123456789');
+            const revert2 = new RawRevertError(`${revert1.encode()}00`);
+            expect(revert1.equals(revert2)).to.be.false();
+        });
     });
     describe('registering', () => {
         it('should throw when registering an already registered signature', () => {
@@ -133,15 +148,15 @@ describe('RevertError', () => {
             const decoded = RevertError.decode(encoded);
             expect(decoded.equals(expected)).to.be.true();
         });
-        it('should fail to decode an ABI encoded revert error with an unknown selector', () => {
+        it('should decode an unknown selector as a `RawRevertError`', () => {
             const _encoded = encoded.substr(0, 2) + '00' + encoded.substr(4);
-            const decode = () => RevertError.decode(_encoded);
-            expect(decode).to.be.throw();
+            const decoded = RevertError.decode(_encoded);
+            expect(decoded instanceof RawRevertError).to.be.true();
         });
         it('should fail to decode a malformed ABI encoded revert error', () => {
-            const _encoded = encoded.substr(0, encoded.substr.length - 1);
+            const _encoded = encoded.substr(0, encoded.length - 1);
             const decode = () => RevertError.decode(_encoded);
-            expect(decode).to.be.throw();
+            expect(decode).to.throw();
         });
     });
     describe('encoding', () => {

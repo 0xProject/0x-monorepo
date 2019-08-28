@@ -67,7 +67,7 @@ export function coerceThrownErrorAsRevertError(error: Error): RevertError {
         return decodeThrownErrorAsRevertError(error);
     } catch (err) {
         if (isGanacheTransactionRevertError(error)) {
-            return err;
+            throw err;
         }
         // Handle geth transaction reverts.
         if (isGethTransactionRevertError(error)) {
@@ -88,6 +88,7 @@ export abstract class RevertError extends Error {
     private static readonly _typeRegistry: ObjectMap<RevertErrorRegistryItem> = {};
     public readonly abi?: RevertErrorAbi;
     public readonly values: ValueMap = {};
+    protected readonly _raw?: string;
 
     /**
      * Decode an ABI encoded revert error.
@@ -99,7 +100,10 @@ export abstract class RevertError extends Error {
         const _bytes = bytes instanceof Buffer ? ethUtil.bufferToHex(bytes) : ethUtil.addHexPrefix(bytes);
         // tslint:disable-next-line: custom-no-magic-numbers
         const selector = _bytes.slice(2, 10);
-        const { decoder, type } = this._lookupType(selector);
+        if (!(selector in RevertError._typeRegistry)) {
+            return new RawRevertError(bytes);
+        }
+        const { type, decoder } = RevertError._typeRegistry[selector];
         const instance = new type();
         try {
             const values = decoder(_bytes);
@@ -130,21 +134,13 @@ export abstract class RevertError extends Error {
         };
     }
 
-    // Ge tthe registry info given a selector.
-    private static _lookupType(selector: string): RevertErrorRegistryItem {
-        if (selector in RevertError._typeRegistry) {
-            return RevertError._typeRegistry[selector];
-        }
-        throw new Error(`Unknown revert error selector "${selector}"`);
-    }
-
     /**
      * Create a RevertError instance with optional parameter values.
      * Parameters that are left undefined will not be tested in equality checks.
      * @param declaration Function-style declaration of the revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
      */
-    protected constructor(name: string, declaration?: string, values?: ValueMap) {
+    protected constructor(name: string, declaration?: string, values?: ValueMap, raw?: string) {
         super(createErrorMessage(name, values));
         if (declaration !== undefined) {
             this.abi = declarationToAbi(declaration);
@@ -152,6 +148,7 @@ export abstract class RevertError extends Error {
                 _.assign(this.values, _.cloneDeep(values));
             }
         }
+        this._raw = raw;
         // Extending Error is tricky; we need to explicitly set the prototype.
         Object.setPrototypeOf(this, new.target.prototype);
     }
@@ -180,6 +177,10 @@ export abstract class RevertError extends Error {
     get selector(): string {
         if (!_.isNil(this.abi)) {
             return toSelector(this.abi);
+        }
+        if (this._isRawType) {
+            // tslint:disable-next-line: custom-no-magic-numbers
+            return (this._raw as string).slice(2, 10);
         }
         return '';
     }
@@ -230,6 +231,10 @@ export abstract class RevertError extends Error {
         if (this._isAnyType || _other._isAnyType) {
             return true;
         }
+        // If either are raw types, they must match their raw data.
+        if (this._isRawType || _other._isRawType) {
+            return this._raw === _other._raw;
+        }
         // Must be of same type.
         if (this.constructor !== _other.constructor) {
             return false;
@@ -252,6 +257,9 @@ export abstract class RevertError extends Error {
     }
 
     public encode(): string {
+        if (this._raw !== undefined) {
+            return this._raw;
+        }
         if (!this._hasAllArgumentValues) {
             throw new Error(`Instance of ${this.typeName} does not have all its parameter values set.`);
         }
@@ -260,6 +268,9 @@ export abstract class RevertError extends Error {
     }
 
     public toString(): string {
+        if (this._isRawType) {
+            return `${this.constructor.name}(${this._raw})`;
+        }
         const values = _.omitBy(this.values, (v: any) => _.isNil(v));
         const inner = _.isEmpty(values) ? '' : inspect(values);
         return `${this.constructor.name}(${inner})`;
@@ -274,7 +285,11 @@ export abstract class RevertError extends Error {
     }
 
     private get _isAnyType(): boolean {
-        return _.isNil(this.abi);
+        return _.isNil(this.abi) && _.isNil(this._raw);
+    }
+
+    private get _isRawType(): boolean {
+        return !_.isNil(this._raw);
     }
 
     private get _hasAllArgumentValues(): boolean {
@@ -358,6 +373,20 @@ export class StringRevertError extends RevertError {
 export class AnyRevertError extends RevertError {
     constructor() {
         super('AnyRevertError');
+    }
+}
+
+/**
+ * Special RevertError type that is not decoded.
+ */
+export class RawRevertError extends RevertError {
+    constructor(encoded: string | Buffer) {
+        super(
+            'RawRevertError',
+            undefined,
+            undefined,
+            typeof encoded === 'string' ? encoded : ethUtil.bufferToHex(encoded),
+        );
     }
 }
 
@@ -488,3 +517,4 @@ function toSelector(abi: RevertErrorAbi): string {
 
 // Register StringRevertError
 RevertError.registerType(StringRevertError);
+// tslint:disable-next-line max-file-line-count
