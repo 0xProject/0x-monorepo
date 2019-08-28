@@ -156,7 +156,17 @@
             "difficulty": "Advanced",
             "path": "guides/0x-extensions-explained.mdx"
         }
-    },
+      },
+      "bug-bounty-program": {
+          "title": "Bug Bounty Program",
+          "subtitle": "An ongoing bug bounty for the 0x protocol smart contracts.",
+          "description": "An ongoing bug bounty for the 0x protocol smart contracts.",
+          "tags": ["Protocol Developer"],
+          "topics": ["Protocol Developer"],
+          "difficulty": "Advanced",
+          "path": "guides/bug-bounty-program.mdx"
+      }
+  },
     "tools": {
         "asset-swapper": {
             "title": "0x Asset Swapper",
