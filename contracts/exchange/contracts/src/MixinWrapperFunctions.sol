@@ -164,7 +164,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        // disableRefundUntilEnd
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -290,6 +290,8 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
@@ -313,6 +315,8 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
+        payable
+        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);

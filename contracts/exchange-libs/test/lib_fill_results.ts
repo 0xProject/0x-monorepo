@@ -96,7 +96,6 @@ blockchainTests('LibFillResults', env => {
                 );
             }
 
-            // TODO(jalextowle): We might want to add combinatorial testing for protocol fees
             async function testCalculateFillResultsAsync(
                 orderTakerAssetAmount: BigNumber,
                 takerAssetFilledAmount: BigNumber,
@@ -252,49 +251,6 @@ blockchainTests('LibFillResults', env => {
                     expectedError,
                 );
             });
-
-            it('reverts if there is a rounding error computing `takerFeePaid`', async () => {
-                const order = makeOrder({
-                    makerAssetAmount: ONE_ETHER,
-                    takerAssetAmount: ONE_ETHER,
-                    takerFee: new BigNumber(100),
-                });
-                const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
-                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
-                    takerAssetFilledAmount,
-                    order.takerAssetAmount,
-                    order.makerAssetAmount,
-                );
-                const expectedError = new LibMathRevertErrors.RoundingError(
-                    makerAssetFilledAmount,
-                    order.makerAssetAmount,
-                    order.takerFee,
-                );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
-            });
-
-            it('reverts if there is an overflow when computing `protocolFeePaid`', async () => {
-                // All values need to be large to ensure we don't trigger a RoundingError.
-                const order = makeOrder({
-                    makerAssetAmount: ONE_ETHER,
-                    takerAssetAmount: ONE_ETHER.times(2),
-                    makerFee: ONE_ETHER.times(0.0023),
-                    takerFee: ONE_ETHER.times(0.0025),
-                });
-                const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
-                const protocolFeeMultiplier = MAX_UINT256;
-                const gasPrice = new BigNumber(2);
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
-                    gasPrice,
-                    protocolFeeMultiplier,
-                );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
-            });
         });
     });
 
@@ -371,8 +327,8 @@ blockchainTests('LibFillResults', env => {
             it('reverts if computing `protocolFeePaid` overflows', async () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.protocolFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.protocolFeePaid,
                     b.protocolFeePaid,
                 );

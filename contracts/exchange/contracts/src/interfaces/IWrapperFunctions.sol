@@ -121,6 +121,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
@@ -134,6 +135,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.

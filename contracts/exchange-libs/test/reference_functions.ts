@@ -81,8 +81,8 @@ describe('Reference Functions', () => {
             it('reverts if computing `protocolFeePaid` overflows', () => {
                 const [a, b] = _.cloneDeep(DEFAULT_FILL_RESULTS);
                 b.protocolFeePaid = MAX_UINT256;
-                const expectedError = new SafeMathRevertErrors.SafeMathError(
-                    SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                     a.protocolFeePaid,
                     b.protocolFeePaid,
                 );

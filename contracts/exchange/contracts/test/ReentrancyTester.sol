@@ -71,6 +71,7 @@ contract ReentrancyTester is
         bytes memory signature
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
@@ -154,13 +155,15 @@ contract ReentrancyTester is
                 makerAssetFilledAmount: leftOrders[i].makerAssetAmount,
                 takerAssetFilledAmount: leftOrders[i].takerAssetAmount,
                 makerFeePaid: leftOrders[i].makerFee,
-                takerFeePaid: leftOrders[i].takerFee
+                takerFeePaid: leftOrders[i].takerFee,
+                protocolFeePaid: 0
             });
             batchMatchedFillResults.right[i] = LibFillResults.FillResults({
                 makerAssetFilledAmount: rightOrders[i].makerAssetAmount,
                 takerAssetFilledAmount: rightOrders[i].takerAssetAmount,
                 makerFeePaid: rightOrders[i].makerFee,
-                takerFeePaid: rightOrders[i].takerFee
+                takerFeePaid: rightOrders[i].takerFee,
+                protocolFeePaid: 0
             });
         }
     }
@@ -180,13 +183,15 @@ contract ReentrancyTester is
             makerAssetFilledAmount: leftOrder.makerAssetAmount,
             takerAssetFilledAmount: leftOrder.takerAssetAmount,
             makerFeePaid: leftOrder.makerFee,
-            takerFeePaid: leftOrder.takerFee
+            takerFeePaid: leftOrder.takerFee,
+            protocolFeePaid: 0
         });
         matchedFillResults.right = LibFillResults.FillResults({
             makerAssetFilledAmount: rightOrder.makerAssetAmount,
             takerAssetFilledAmount: rightOrder.takerAssetAmount,
             makerFeePaid: rightOrder.makerFee,
-            takerFeePaid: rightOrder.takerFee
+            takerFeePaid: rightOrder.takerFee,
+            protocolFeePaid: 0
         });
     }
 
