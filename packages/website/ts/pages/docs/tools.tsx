@@ -16,7 +16,7 @@ import { Separator } from 'ts/components/docs/shared/separator';
 
 import { IHit } from 'ts/components/docs/search/autocomplete';
 
-import { getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
+import { difficultyOrder, getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
 import { environments } from 'ts/utils/environments';
 
 interface IHitsProps {
@@ -41,6 +41,65 @@ export const DocsTools: React.FC = () => {
     );
 };
 
+const Hits: React.FC<IHitsProps> = ({ hits }) => (
+    <>
+        <FeaturedTools hits={hits} />
+        <GroupedTools hits={hits} />
+    </>
+);
+
+const CustomHits = connectHits(Hits);
+
+const FeaturedTools: React.FC<IHitsProps> = ({ hits }) => {
+    const featuredTools = hits.filter((hit: IHit) => hit.isFeatured);
+
+    if (featuredTools.length === 0) {
+        return null;
+    } else {
+        const sortedFeaturedTools = _.orderBy(featuredTools, [hit => hit.title.toLowerCase()], ['asc']);
+
+        return (
+            <FeaturedToolsWrapper>
+                <Heading asElement="h2" size="default">
+                    Featured Tools
+                </Heading>
+                {sortedFeaturedTools.map((hit: IHit, index: number) => (
+                    <FeatureLink key={`featuredLink-${index}`} {...hit} />
+                ))}
+            </FeaturedToolsWrapper>
+        );
+    }
+};
+
+const GroupedTools: React.FC<IHitsProps> = ({ hits }) => {
+    const contentTypes = getUniqueContentTypes(hits);
+
+    return (
+        <>
+            {contentTypes.map(type => {
+                const filteredByType = hits.filter((hit: any) => hit.type === type && !hit.isHidden);
+
+                return (
+                    <ResourcesWrapper key={type}>
+                        <Heading asElement="h2" size="default">
+                            {type}
+                        </Heading>
+
+                        {difficultyOrder.map(difficulty => {
+                            const filteredHits = filteredByType.filter((hit: any) => hit.difficulty === difficulty);
+                            const sortedHits = _.orderBy(filteredHits, [hit => hit.title.toLowerCase()], ['asc']);
+
+                            return sortedHits.map((hit: any, index: number) => (
+                                <Resource key={`resource-${index}`} hit={hit} />
+                            ));
+                        })}
+                    </ResourcesWrapper>
+                );
+            })}
+        </>
+    );
+};
+
 function getUniqueContentTypes(hits: IHit[]): string[] {
     const contentTypes: string[] = [];
 
@@ -52,44 +111,6 @@ function getUniqueContentTypes(hits: IHit[]): string[] {
 
     return contentTypes;
 }
-
-const Hits: React.FC<IHitsProps> = ({ hits }) => {
-    const contentTypes = getUniqueContentTypes(hits);
-    const featuredTools = hits.filter((hit: IHit) => hit.isFeatured);
-
-    return (
-        <>
-            {featuredTools.length > 0 && (
-                <FeaturedToolsWrapper>
-                    <Heading asElement="h2" size="default">
-                        Featured Tools
-                    </Heading>
-                    {featuredTools.map((hit: IHit, index: number) => (
-                        <FeatureLink key={`featuredLink-${index}`} {...hit} />
-                    ))}
-                </FeaturedToolsWrapper>
-            )}
-
-            {contentTypes.map(type => {
-                const filteredHits = hits.filter((hit: any) => hit.type === type && !hit.isHidden);
-                const sortedHits = _.orderBy(filteredHits, ['isCommunity', 'title'], ['asc', 'asc']);
-
-                return (
-                    <ResourcesWrapper key={type}>
-                        <Heading asElement="h2" size="default">
-                            {type}
-                        </Heading>
-                        {sortedHits.map((hit: any, index: number) => (
-                            <Resource key={`resource-${index}`} hit={hit} />
-                        ))}
-                    </ResourcesWrapper>
-                );
-            })}
-        </>
-    );
-};
-
-const CustomHits = connectHits(Hits);
 
 const FeaturedToolsWrapper = styled.div`
     margin-bottom: 50px;
