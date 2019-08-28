@@ -40,7 +40,7 @@ const Hits: React.FC<IHitsProps> = ({ hits }) => {
         <div>
             {DIFFICULTY_ORDER.map(difficulty => {
                 const filteredHits = hits.filter((hit: any) => hit.difficulty === difficulty);
-                const sortedHits = _.orderBy(filteredHits, ['title'], ['asc']);
+                const sortedHits = _.orderBy(filteredHits, [hit => hit.title.toLowerCase()], ['asc']);
 
                 return sortedHits.map((hit: any, index: number) => <Resource key={`resource-${index}`} hit={hit} />);
             })}
