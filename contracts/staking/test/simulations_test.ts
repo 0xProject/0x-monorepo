@@ -333,8 +333,9 @@ blockchainTests('End-To-End Simulations', env => {
         it('Should not be able to record a protocol fee from an unknown exchange', async () => {
             const makerAddress = users[1];
             const protocolFee = new BigNumber(1);
+            // TODO(jalextowle) I need to update this test when I make my PR on adding protocol fees to the Staking contracts
             const revertError = new StakingRevertErrors.OnlyCallableByExchangeError(owner);
-            const tx = stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner);
+            const tx = stakingWrapper.payProtocolFeeAsync(makerAddress, makerAddress, protocolFee, protocolFee, owner);
             await expect(tx).to.revertWith(revertError);
         });
     });
