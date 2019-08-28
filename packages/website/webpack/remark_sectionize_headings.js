@@ -1,7 +1,7 @@
 const findAfter = require('unist-util-find-after');
 const visit = require('unist-util-visit-parents');
 
-const MAX_HEADING_DEPTH = 6;
+const MAX_HEADING_DEPTH = 2;
 
 module.exports = plugin;
 
@@ -19,14 +19,18 @@ function sectionize(node, ancestors) {
     const start = node;
     const parent = ancestors[ancestors.length - 1];
 
-    const isEnd = node => node.type === 'heading' && node.depth <= start.depth;
+    const isEnd = node => {
+        if (start.depth < MAX_HEADING_DEPTH) {
+            return node.type === 'section' || (node.type === 'heading' && node.depth <= start.depth);
+        }
+        return node.type === 'heading' && node.depth <= start.depth;
+    };
     const end = findAfter(parent, start, isEnd);
 
     const startIndex = parent.children.indexOf(start);
     const endIndex = parent.children.indexOf(end);
 
     const between = parent.children.slice(startIndex, endIndex > 0 ? endIndex : undefined);
-
     // We want to grab the ids created by remark-slug based on heading values
     // node (heading) data has this shape now:
     // { hProperties: { id: 'some-id' }, id: 'some-id' } }
