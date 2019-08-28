@@ -1,8 +1,11 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
 import { BigNumber, FixedMathRevertErrors } from '@0x/utils';
+import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
 import { artifacts, TestLibFixedMathContract } from '../src/';
+
+Decimal.set({ precision: 128 });
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('LibFixedMath', env => {
@@ -10,8 +13,8 @@ blockchainTests('LibFixedMath', env => {
     const FIXED_POINT_DIVISOR = new BigNumber(2).pow(BITS_OF_PRECISION);
     const MAX_FIXED_VALUE = new BigNumber(2).pow(255).minus(1);
     const MIN_FIXED_VALUE = new BigNumber(2).pow(255).times(-1);
-    const MAX_SIGNED_NUMBER = fromFixed(MAX_FIXED_VALUE);
-    const MIN_SIGNED_NUMBER = fromFixed(MIN_FIXED_VALUE);
+    const MIN_EXP_NUMBER = new BigNumber('-69.07755278982137043720332303294494434957608235919531845909733017243007692132225692604324818191230406');
+    const FUZZ_COUNT = 1024;
 
     type Numberish = BigNumber | string | number;
 
@@ -43,11 +46,49 @@ blockchainTests('LibFixedMath', env => {
         return fromFixed(toFixed(a).times(FIXED_POINT_DIVISOR).dividedBy(toFixed(b)));
     }
 
+    function ln(x: Numberish): BigNumber {
+        return new BigNumber(toDecimal(x).ln().toFixed(128));
+    }
+
+    function exp(x: Numberish): BigNumber {
+        return new BigNumber(toDecimal(x).exp().toFixed(128));
+    }
+
+    function toDecimal(x: Numberish): Decimal {
+        if (BigNumber.isBigNumber(x)) {
+            return new Decimal(x.toString(10));
+        }
+        return new Decimal(x);
+    }
+
+    function getRandomNumber(min: Numberish, max: Numberish): BigNumber {
+        const range = new BigNumber(max).minus(min);
+        const random = fromFixed(new BigNumber(hexRandom().substr(2), 16));
+        return random.mod(range).plus(min);
+    }
+
+    function toPrecision(n: Numberish, precision: number = 13): BigNumber {
+        const _n = new BigNumber(n);
+        const integerDigits = _n.integerValue().sd(true);
+        const base = 10 ** (precision - integerDigits);
+        return _n.times(base).integerValue(BigNumber.ROUND_HALF_FLOOR).dividedBy(base);
+    }
+
     function assertFixedEquals(
         actual: BigNumber | string | number,
         expected: BigNumber | string | number,
     ): void {
         expect(fromFixed(actual)).to.bignumber.eq(numberToFixedToNumber(expected));
+    }
+
+    function assertFixedRoughlyEquals(
+        actual: BigNumber | string | number,
+        expected: BigNumber | string | number,
+        precision: number = 13,
+    ): void {
+        // SD is not what we want.
+        expect(toPrecision(fromFixed(actual), precision))
+            .to.bignumber.eq(toPrecision(numberToFixedToNumber(expected), precision));
     }
 
     let testContract: TestLibFixedMathContract;
@@ -466,51 +507,122 @@ blockchainTests('LibFixedMath', env => {
         });
     });
 
-    // describe('LibFeesMath', () => {
-    //     it('nth root', async () => {
-    //         const base = new BigNumber(1419857);
-    //         const n = new BigNumber(5);
-    //         const root = await stakingWrapper.nthRootAsync(base, n);
-    //         expect(root).to.be.bignumber.equal(17);
-    //     });
-    //
-    //     it('nth root #2', async () => {
-    //         const base = new BigNumber(3375);
-    //         const n = new BigNumber(3);
-    //         const root = await stakingWrapper.nthRootAsync(base, n);
-    //         expect(root).to.be.bignumber.equal(15);
-    //     });
-    //
-    //     it('nth root #3 with fixed point', async () => {
-    //         const decimals = 18;
-    //         const base = StakingWrapper.toFixedPoint(4.234, decimals);
-    //         const n = new BigNumber(2);
-    //         const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
-    //         const rootAsFloatingPoint = StakingWrapper.toFloatingPoint(root, decimals);
-    //         const expectedResult = new BigNumber(2.057668584);
-    //         expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-    //     });
-    //
-    //     it('nth root #3 with fixed point (integer nth root would fail here)', async () => {
-    //         const decimals = 18;
-    //         const base = StakingWrapper.toFixedPoint(5429503678976, decimals);
-    //         const n = new BigNumber(9);
-    //         const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
-    //         const rootAsFloatingPoint = StakingWrapper.toFloatingPoint(root, decimals);
-    //         const expectedResult = new BigNumber(26);
-    //         expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-    //     });
-    //
-    //     it.skip('nth root #4 with fixed point (integer nth root would fail here) (max number of decimals - currently does not retain)', async () => {
-    //         // @TODO This is the gold standard for nth root. Retain all these decimals :)
-    //         const decimals = 18;
-    //         const base = StakingWrapper.toFixedPoint(new BigNumber('5429503678976.295036789761543678', 10), decimals);
-    //         const n = new BigNumber(9);
-    //         const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
-    //         const rootAsFloatingPoint = StakingWrapper.toFloatingPoint(root, decimals);
-    //         const expectedResult = new BigNumber(26);
-    //         expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-    //     });
-    //
-    // });
+    describe('ln()', () => {
+        it('ln(x = 0) throws', async () => {
+            const x = toFixed(0);
+            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+                FixedMathRevertErrors.ValueErrorCodes.TooSmall,
+                x,
+            );
+            const tx = testContract.ln.callAsync(x);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('ln(x > 1) throws', async () => {
+            const x = toFixed(1.000001);
+            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+                FixedMathRevertErrors.ValueErrorCodes.TooLarge,
+                x,
+            );
+            const tx = testContract.ln.callAsync(x);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('ln(x < 0) throws', async () => {
+            const x = toFixed(-0.000001);
+            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+                FixedMathRevertErrors.ValueErrorCodes.TooSmall,
+                x,
+            );
+            const tx = testContract.ln.callAsync(x);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('ln(x = 1) == 0', async () => {
+            const x = toFixed(1);
+            const r = await testContract.ln.callAsync(x);
+            assertFixedEquals(r, 0);
+        });
+
+        it('ln(x), where x is close to 0', async () => {
+            const x = new BigNumber('1e-27');
+            const r = await testContract.ln.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, ln(x));
+        });
+
+        it('ln(x), where x is close to 1', async () => {
+            const x = new BigNumber(1).minus('1e-27');
+            const r = await testContract.ln.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, ln(x));
+        });
+
+        it('ln(x = 0.5)', async () => {
+            const x = 0.5;
+            const r = await testContract.ln.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, ln(x));
+        });
+
+        blockchainTests.optional('fuzzing', () => {
+            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(0, 1));
+            for (const x of inputs) {
+                it(`ln(${x.toString(10)})`, async () => {
+                    const r = await testContract.ln.callAsync(toFixed(x));
+                    assertFixedRoughlyEquals(r, ln(x), 11);
+                });
+            }
+        });
+    });
+
+    describe('exp()', () => {
+        it('exp(x = 0) == 1', async () => {
+            const x = toFixed(0);
+            const r = await testContract.exp.callAsync(x);
+            assertFixedEquals(r, 1);
+        });
+
+        it('exp(x > 0) throws', async () => {
+            const x = toFixed(1e-18);
+            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+                FixedMathRevertErrors.ValueErrorCodes.TooLarge,
+                x,
+            );
+            const tx = testContract.exp.callAsync(x);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('exp(x < EXP_MIN_VAL) == 0', async () => {
+            const x = toFixed(MIN_EXP_NUMBER).minus(1);
+            const r = await testContract.exp.callAsync(x);
+            assertFixedEquals(r, 0);
+        });
+
+        it('exp(x), where x is close to 0', async () => {
+            const x = new BigNumber('-1e-27');
+            const r = await testContract.exp.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, exp(x));
+        });
+
+        it('exp(x), where x is close to EXP_MIN_VAL', async () => {
+            const x = MIN_EXP_NUMBER.plus('1e-27');
+            const r = await testContract.exp.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, exp(x));
+        });
+
+        it('exp(x = -0.5)', async () => {
+            const x = -0.5;
+            const r = await testContract.exp.callAsync(toFixed(x));
+            assertFixedRoughlyEquals(r, exp(x));
+        });
+
+        blockchainTests.optional('fuzzing', () => {
+            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(MIN_EXP_NUMBER, 0));
+            for (const x of inputs) {
+                it(`exp(${x.toString(10)})`, async () => {
+                    const r = await testContract.exp.callAsync(toFixed(x));
+                    assertFixedRoughlyEquals(r, exp(x), 11);
+                });
+            }
+        });
+    });
 });
+// tslint:disable-next-line: max-file-line-count
