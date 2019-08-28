@@ -52,7 +52,6 @@ contract MixinDelegatedStake is
     MixinStake,
     MixinStakingPoolRewards
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Deposit Zrx and mint stake in the "Activated & Delegated" state.

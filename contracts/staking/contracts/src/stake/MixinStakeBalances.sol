@@ -110,18 +110,6 @@ contract MixinStakeBalances is
         return getDeactivatedStake(owner).safeSub(getTimeLockedStake(owner));
     }
 
-    /// @dev Returns the stake that can be withdrawn for a given owner.
-    /// This stake is in the "Deactivated & Withdrawable" state.
-    /// @param owner to query.
-    /// @return Withdrawable stake for owner.
-    function getWithdrawableStake(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        return getActivatableStake(owner);
-    }
-
     /// @dev Returns the stake delegated by a given owner.
     /// This stake is in the "Activated & Delegated" state.
     /// @param owner to query.

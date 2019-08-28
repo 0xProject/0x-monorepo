@@ -81,7 +81,7 @@ contract MixinStakingPoolRewards is
         external
         onlyStakingPoolOperator(poolId)
     {
-        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
+        rewardVault.withdrawForOperator(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
     }
 
@@ -93,8 +93,8 @@ contract MixinStakingPoolRewards is
         onlyStakingPoolOperator(poolId)
         returns (uint256)
     {
-        uint256 amount = getBalanceOfOperatorInStakingPoolRewardVault(poolId);
-        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
+        uint256 amount = rewardVault.balanceOfOperator(poolId);
+        rewardVault.withdrawForOperator(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
 
         return amount;
@@ -121,7 +121,7 @@ contract MixinStakingPoolRewards is
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId].safeAdd(amount);
 
         // perform withdrawal
-        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
+        rewardVault.withdrawForMember(poolId, amount);
         member.transfer(amount);
     }
 
@@ -141,42 +141,9 @@ contract MixinStakingPoolRewards is
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId].safeAdd(amount);
 
         // perform withdrawal and return amount withdrawn
-        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
+        rewardVault.withdrawForMember(poolId, amount);
         member.transfer(amount);
         return amount;
-    }
-
-    /// @dev Returns the sum total reward balance in ETH of a staking pool, across all members and the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getTotalRewardBalanceOfStakingPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getTotalBalanceInStakingPoolRewardVault(poolId);
-    }
-
-    /// @dev Returns the reward balance in ETH of the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getRewardBalanceOfStakingPoolOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
-    }
-
-    /// @dev Returns the reward balance in ETH co-owned by the members of a pool.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getRewardBalanceOfStakingPoolMembers(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfMembersInStakingPoolRewardVault(poolId);
     }
 
     /// @dev Returns the shadow balance of a specific member of a staking pool.
@@ -211,7 +178,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = rewardVault.balanceOfMembers(poolId);
         return LibRewardMath._computePayoutDenominatedInRealAsset(
             delegatedStakeToPoolByOwner[member][poolId],
             delegatedStakeByPoolId[poolId],
@@ -239,7 +206,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         // update delegator's share of reward pool
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = rewardVault.balanceOfMembers(poolId);
         uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
             amountOfStakeToDelegate,
             totalStakeDelegatedToPool,
@@ -275,7 +242,7 @@ contract MixinStakingPoolRewards is
         internal
     {
          // get payout
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = rewardVault.balanceOfMembers(poolId);
         uint256 payoutInRealAsset = 0;
         uint256 payoutInShadowAsset = 0;
         if (totalStakeDelegatedToPoolByMember == amountOfStakeToUndelegate) {
@@ -306,7 +273,7 @@ contract MixinStakingPoolRewards is
 
         // withdraw payout for member
         if (payoutInRealAsset > 0) {
-            _withdrawFromMemberInStakingPoolRewardVault(poolId, payoutInRealAsset);
+            rewardVault.withdrawForMember(poolId, payoutInRealAsset);
             member.transfer(payoutInRealAsset);
         }
     }

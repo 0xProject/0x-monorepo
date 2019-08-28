@@ -118,7 +118,7 @@ contract MixinStakingPool is
         poolById[poolId] = pool;
 
         // register pool in reward vault
-        _registerStakingPoolInRewardVault(poolId, operatorShare);
+        rewardVault.registerStakingPool(poolId, operatorShare);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
