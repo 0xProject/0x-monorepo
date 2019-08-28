@@ -4,14 +4,13 @@
 
 * **AssetBuyer**
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new AssetBuyer**(`supportedProvider`: `SupportedProvider`, `orderProvider`: [OrderProvider](#interface-orderprovider), `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
+\+ **new AssetBuyer**(`supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider), `orderProvider`: [OrderProvider](#interface-orderprovider), `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
 
-*Defined in [asset_buyer.ts:83](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L83)*
+*Defined in [asset-buyer/src/asset_buyer.ts:83](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L83)*
 
 Instantiates a new AssetBuyer instance
 
@@ -19,7 +18,7 @@ Instantiates a new AssetBuyer instance
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`supportedProvider` | `SupportedProvider` | - | The Provider instance you would like to use for interacting with the Ethereum network. |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
 `orderProvider` | [OrderProvider](#interface-orderprovider) | - | An object that conforms to OrderProvider, see type for definition. |
 `options` | `Partial<AssetBuyerOpts>` |  {} | Initialization options for the AssetBuyer. See type definition for details.  |
 
@@ -33,7 +32,7 @@ An instance of AssetBuyer
 
 • **expiryBufferSeconds**: *number*
 
-*Defined in [asset_buyer.ts:40](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L40)*
+*Defined in [asset-buyer/src/asset_buyer.ts:40](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L40)*
 
 ___
 
@@ -41,7 +40,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [asset_buyer.ts:38](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L38)*
+*Defined in [asset-buyer/src/asset_buyer.ts:38](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L38)*
 
 ___
 
@@ -49,7 +48,7 @@ ___
 
 • **orderProvider**: *[OrderProvider](#interface-orderprovider)*
 
-*Defined in [asset_buyer.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L37)*
+*Defined in [asset-buyer/src/asset_buyer.ts:37](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L37)*
 
 ___
 
@@ -57,7 +56,7 @@ ___
 
 • **orderRefreshIntervalMs**: *number*
 
-*Defined in [asset_buyer.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L39)*
+*Defined in [asset-buyer/src/asset_buyer.ts:39](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L39)*
 
 ___
 
@@ -65,7 +64,7 @@ ___
 
 • **provider**: *`ZeroExProvider`*
 
-*Defined in [asset_buyer.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L36)*
+*Defined in [asset-buyer/src/asset_buyer.ts:36](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L36)*
 
 ### Methods
 
@@ -73,7 +72,7 @@ ___
 
 ▸ **executeBuyQuoteAsync**(`buyQuote`: [BuyQuote](#interface-buyquote), `options`: `Partial<BuyQuoteExecutionOpts>`): *`Promise<string>`*
 
-*Defined in [asset_buyer.ts:226](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L226)*
+*Defined in [asset-buyer/src/asset_buyer.ts:226](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L226)*
 
 Given a BuyQuote and desired rate, attempt to execute the buy.
 
@@ -94,7 +93,7 @@ ___
 
 ▸ **getAvailableAssetDatasAsync**(): *`Promise<string[]>`*
 
-*Defined in [asset_buyer.ts:302](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L302)*
+*Defined in [asset-buyer/src/asset_buyer.ts:302](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L302)*
 
 Get the asset data of all assets that are purchaseable with ether token (wETH) in the order provider passed in at init.
 
@@ -108,7 +107,7 @@ ___
 
 ▸ **getBuyQuoteAsync**(`assetData`: string, `assetBuyAmount`: `BigNumber`, `options`: `Partial<BuyQuoteRequestOpts>`): *`Promise<BuyQuote>`*
 
-*Defined in [asset_buyer.ts:125](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L125)*
+*Defined in [asset-buyer/src/asset_buyer.ts:125](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L125)*
 
 Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired assetData.
 You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
@@ -131,7 +130,7 @@ ___
 
 ▸ **getBuyQuoteForERC20TokenAddressAsync**(`tokenAddress`: string, `assetBuyAmount`: `BigNumber`, `options`: `Partial<BuyQuoteRequestOpts>`): *`Promise<BuyQuote>`*
 
-*Defined in [asset_buyer.ts:173](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L173)*
+*Defined in [asset-buyer/src/asset_buyer.ts:173](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L173)*
 
 Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired ERC20 token address.
 You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
@@ -154,7 +153,7 @@ ___
 
 ▸ **getLiquidityForAssetDataAsync**(`assetData`: string, `options`: `Partial<LiquidityRequestOpts>`): *`Promise<LiquidityForAssetData>`*
 
-*Defined in [asset_buyer.ts:192](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L192)*
+*Defined in [asset-buyer/src/asset_buyer.ts:192](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L192)*
 
 Returns information about available liquidity for an asset
 Does not factor in slippage or fees
@@ -176,7 +175,7 @@ ___
 
 ▸ **getOrdersAndFillableAmountsAsync**(`assetData`: string, `shouldForceOrderRefresh`: boolean): *`Promise<OrdersAndFillableAmounts>`*
 
-*Defined in [asset_buyer.ts:311](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L311)*
+*Defined in [asset-buyer/src/asset_buyer.ts:311](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L311)*
 
 Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
 
@@ -193,9 +192,9 @@ ___
 
 ## `Static` getAssetBuyerForProvidedOrders
 
-▸ **getAssetBuyerForProvidedOrders**(`supportedProvider`: `SupportedProvider`, `orders`: `SignedOrder`[], `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
+▸ **getAssetBuyerForProvidedOrders**(`supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider), `orders`: `SignedOrder`[], `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
 
-*Defined in [asset_buyer.ts:53](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L53)*
+*Defined in [asset-buyer/src/asset_buyer.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L53)*
 
 Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
 
@@ -203,7 +202,7 @@ Instantiates a new AssetBuyer instance given existing liquidity in the form of o
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`supportedProvider` | `SupportedProvider` | - | The Provider instance you would like to use for interacting with the Ethereum network. |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
 `orders` | `SignedOrder`[] | - | A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH). |
 `options` | `Partial<AssetBuyerOpts>` |  {} | Initialization options for the AssetBuyer. See type definition for details.  |
 
@@ -215,9 +214,9 @@ ___
 
 ## `Static` getAssetBuyerForStandardRelayerAPIUrl
 
-▸ **getAssetBuyerForStandardRelayerAPIUrl**(`supportedProvider`: `SupportedProvider`, `sraApiUrl`: string, `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
+▸ **getAssetBuyerForStandardRelayerAPIUrl**(`supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider), `sraApiUrl`: string, `options`: `Partial<AssetBuyerOpts>`): *[AssetBuyer](#class-assetbuyer)*
 
-*Defined in [asset_buyer.ts:72](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/asset_buyer.ts#L72)*
+*Defined in [asset-buyer/src/asset_buyer.ts:72](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/asset_buyer.ts#L72)*
 
 Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
 
@@ -225,7 +224,7 @@ Instantiates a new AssetBuyer instance given a [Standard Relayer API](https://gi
 
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
-`supportedProvider` | `SupportedProvider` | - | The Provider instance you would like to use for interacting with the Ethereum network. |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
 `sraApiUrl` | string | - | The standard relayer API base HTTP url you would like to source orders from. |
 `options` | `Partial<AssetBuyerOpts>` |  {} | Initialization options for the AssetBuyer. See type definition for details.  |
 
@@ -245,14 +244,13 @@ Error class representing insufficient asset liquidity
 
   * **InsufficientAssetLiquidityError**
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
 \+ **new InsufficientAssetLiquidityError**(`amountAvailableToFill`: `BigNumber`): *[InsufficientAssetLiquidityError](#class-insufficientassetliquidityerror)*
 
-*Defined in [errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/errors.ts#L12)*
+*Defined in [asset-buyer/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/errors.ts#L12)*
 
 **Parameters:**
 
@@ -268,7 +266,7 @@ Name | Type | Description |
 
 • **amountAvailableToFill**: *`BigNumber`*
 
-*Defined in [errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/errors.ts#L12)*
+*Defined in [asset-buyer/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/errors.ts#L12)*
 
 The amount availabe to fill (in base units) factoring in slippage.
 
@@ -324,14 +322,13 @@ ___
 
 * [OrderProvider](#interface-orderprovider)
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
 \+ **new BasicOrderProvider**(`orders`: `SignedOrder`[]): *[BasicOrderProvider](#class-basicorderprovider)*
 
-*Defined in [order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L9)*
+*Defined in [asset-buyer/src/order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L9)*
 
 Instantiates a new BasicOrderProvider instance
 
@@ -351,7 +348,7 @@ An instance of BasicOrderProvider
 
 • **orders**: *`SignedOrder`[]*
 
-*Defined in [order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L9)*
+*Defined in [asset-buyer/src/order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L9)*
 
 ### Methods
 
@@ -359,7 +356,7 @@ An instance of BasicOrderProvider
 
 ▸ **getAvailableMakerAssetDatasAsync**(`takerAssetData`: string): *`Promise<string[]>`*
 
-*Defined in [order_providers/basic_order_provider.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L37)*
+*Defined in [asset-buyer/src/order_providers/basic_order_provider.ts:37](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L37)*
 
 Given a taker asset data string, return all availabled paired maker asset data strings.
 
@@ -379,7 +376,7 @@ ___
 
 ▸ **getOrdersAsync**(`orderProviderRequest`: [OrderProviderRequest](#interface-orderproviderrequest)): *`Promise<OrderProviderResponse>`*
 
-*Defined in [order_providers/basic_order_provider.ts:24](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L24)*
+*Defined in [asset-buyer/src/order_providers/basic_order_provider.ts:24](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/basic_order_provider.ts#L24)*
 
 Given an object that conforms to OrderFetcherRequest, return the corresponding OrderProviderResponse that satisfies the request.
 
@@ -405,14 +402,13 @@ An instance of OrderProviderResponse. See type for more information.
 
 * [OrderProvider](#interface-orderprovider)
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
 \+ **new StandardRelayerAPIOrderProvider**(`apiUrl`: string, `networkId`: number): *[StandardRelayerAPIOrderProvider](#class-standardrelayerapiorderprovider)*
 
-*Defined in [order_providers/standard_relayer_api_order_provider.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L48)*
+*Defined in [asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts:48](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L48)*
 
 Instantiates a new StandardRelayerAPIOrderProvider instance
 
@@ -433,7 +429,7 @@ An instance of StandardRelayerAPIOrderProvider
 
 • **apiUrl**: *string*
 
-*Defined in [order_providers/standard_relayer_api_order_provider.ts:17](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L17)*
+*Defined in [asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L17)*
 
 ___
 
@@ -441,7 +437,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [order_providers/standard_relayer_api_order_provider.ts:18](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L18)*
+*Defined in [asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L18)*
 
 ### Methods
 
@@ -449,7 +445,7 @@ ___
 
 ▸ **getAvailableMakerAssetDatasAsync**(`takerAssetData`: string): *`Promise<string[]>`*
 
-*Defined in [order_providers/standard_relayer_api_order_provider.ts:91](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L91)*
+*Defined in [asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts:91](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L91)*
 
 Given a taker asset data string, return all availabled paired maker asset data strings.
 
@@ -469,7 +465,7 @@ ___
 
 ▸ **getOrdersAsync**(`orderProviderRequest`: [OrderProviderRequest](#interface-orderproviderrequest)): *`Promise<OrderProviderResponse>`*
 
-*Defined in [order_providers/standard_relayer_api_order_provider.ts:67](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L67)*
+*Defined in [asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts:67](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/order_providers/standard_relayer_api_order_provider.ts#L67)*
 
 Given an object that conforms to OrderProviderRequest, return the corresponding OrderProviderResponse that satisfies the request.
 
@@ -489,14 +485,13 @@ An instance of OrderProviderResponse. See type for more information.
 
 Possible error messages thrown by an AssetBuyer instance or associated static methods.
 
-
-### Enumeration members
+###  Enumeration members
 
 ##  AssetUnavailable
 
 • **AssetUnavailable**: = "ASSET_UNAVAILABLE"
 
-*Defined in [types.ts:122](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L122)*
+*Defined in [asset-buyer/src/types.ts:122](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L122)*
 
 ___
 
@@ -504,7 +499,7 @@ ___
 
 • **InsufficientAssetLiquidity**: = "INSUFFICIENT_ASSET_LIQUIDITY"
 
-*Defined in [types.ts:118](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L118)*
+*Defined in [asset-buyer/src/types.ts:118](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L118)*
 
 ___
 
@@ -512,7 +507,7 @@ ___
 
 • **InsufficientZrxLiquidity**: = "INSUFFICIENT_ZRX_LIQUIDITY"
 
-*Defined in [types.ts:119](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L119)*
+*Defined in [asset-buyer/src/types.ts:119](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L119)*
 
 ___
 
@@ -520,7 +515,7 @@ ___
 
 • **InvalidOrderProviderResponse**: = "INVALID_ORDER_PROVIDER_RESPONSE"
 
-*Defined in [types.ts:121](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L121)*
+*Defined in [asset-buyer/src/types.ts:121](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L121)*
 
 ___
 
@@ -528,7 +523,7 @@ ___
 
 • **NoAddressAvailable**: = "NO_ADDRESS_AVAILABLE"
 
-*Defined in [types.ts:120](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L120)*
+*Defined in [asset-buyer/src/types.ts:120](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L120)*
 
 ___
 
@@ -536,7 +531,7 @@ ___
 
 • **NoEtherTokenContractFound**: = "NO_ETHER_TOKEN_CONTRACT_FOUND"
 
-*Defined in [types.ts:115](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L115)*
+*Defined in [asset-buyer/src/types.ts:115](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L115)*
 
 ___
 
@@ -544,7 +539,7 @@ ___
 
 • **NoZrxTokenContractFound**: = "NO_ZRX_TOKEN_CONTRACT_FOUND"
 
-*Defined in [types.ts:116](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L116)*
+*Defined in [asset-buyer/src/types.ts:116](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L116)*
 
 ___
 
@@ -552,7 +547,7 @@ ___
 
 • **SignatureRequestDenied**: = "SIGNATURE_REQUEST_DENIED"
 
-*Defined in [types.ts:123](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L123)*
+*Defined in [asset-buyer/src/types.ts:123](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L123)*
 
 ___
 
@@ -560,7 +555,7 @@ ___
 
 • **StandardRelayerApiError**: = "STANDARD_RELAYER_API_ERROR"
 
-*Defined in [types.ts:117](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L117)*
+*Defined in [asset-buyer/src/types.ts:117](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L117)*
 
 ___
 
@@ -568,44 +563,37 @@ ___
 
 • **TransactionValueTooLow**: = "TRANSACTION_VALUE_TOO_LOW"
 
-*Defined in [types.ts:124](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L124)*
+*Defined in [asset-buyer/src/types.ts:124](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L124)*
 
 <hr />
 
-# Interface: AssetBuyerOpts
+<hr />
 
-networkId: The ethereum network id. Defaults to 1 (mainnet).
-orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
-expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
+<hr />
 
-### Hierarchy
+<hr />
 
-* **AssetBuyerOpts**
+<hr />
 
+<hr />
 
-### Properties
+<hr />
 
-##  expiryBufferSeconds
+<hr />
 
-• **expiryBufferSeconds**: *number*
+<hr />
 
-*Defined in [types.ts:108](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L108)*
+<hr />
 
-___
+<hr />
 
-##  networkId
+<hr />
 
-• **networkId**: *number*
+<hr />
 
-*Defined in [types.ts:106](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L106)*
+<hr />
 
-___
-
-##  orderRefreshIntervalMs
-
-• **orderRefreshIntervalMs**: *number*
-
-*Defined in [types.ts:107](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L107)*
+<hr />
 
 <hr />
 
@@ -623,14 +611,13 @@ worstCaseQuoteInfo: Info about the worst case price for the asset.
 
 * **BuyQuote**
 
-
-### Properties
+###  Properties
 
 ##  assetBuyAmount
 
 • **assetBuyAmount**: *`BigNumber`*
 
-*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L48)*
+*Defined in [asset-buyer/src/types.ts:48](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L48)*
 
 ___
 
@@ -638,15 +625,15 @@ ___
 
 • **assetData**: *string*
 
-*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L47)*
+*Defined in [asset-buyer/src/types.ts:47](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L47)*
 
 ___
 
 ##  bestCaseQuoteInfo
 
-• **bestCaseQuoteInfo**: *[BuyQuoteInfo](#interface-buyquoteinfo)*
+• **bestCaseQuoteInfo**: *[BuyQuoteInfo](#class-buyquoteinfo)*
 
-*Defined in [types.ts:52](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L52)*
+*Defined in [asset-buyer/src/types.ts:52](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L52)*
 
 ___
 
@@ -654,7 +641,7 @@ ___
 
 • **feeOrders**: *`SignedOrder`[]*
 
-*Defined in [types.ts:50](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L50)*
+*Defined in [asset-buyer/src/types.ts:50](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L50)*
 
 ___
 
@@ -662,7 +649,7 @@ ___
 
 • **feePercentage**? : *undefined | number*
 
-*Defined in [types.ts:51](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L51)*
+*Defined in [asset-buyer/src/types.ts:51](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L51)*
 
 ___
 
@@ -670,15 +657,15 @@ ___
 
 • **orders**: *`SignedOrder`[]*
 
-*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L49)*
+*Defined in [asset-buyer/src/types.ts:49](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L49)*
 
 ___
 
 ##  worstCaseQuoteInfo
 
-• **worstCaseQuoteInfo**: *[BuyQuoteInfo](#interface-buyquoteinfo)*
+• **worstCaseQuoteInfo**: *[BuyQuoteInfo](#class-buyquoteinfo)*
 
-*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L53)*
+*Defined in [asset-buyer/src/types.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L53)*
 
 <hr />
 
@@ -694,14 +681,13 @@ feeRecipient: The address where affiliate fees are sent. Defaults to null addres
 
 * **BuyQuoteExecutionOpts**
 
-
-### Properties
+###  Properties
 
 ## `Optional` ethAmount
 
 • **ethAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:93](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L93)*
+*Defined in [asset-buyer/src/types.ts:93](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L93)*
 
 ___
 
@@ -709,7 +695,7 @@ ___
 
 • **feeRecipient**: *string*
 
-*Defined in [types.ts:97](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L97)*
+*Defined in [asset-buyer/src/types.ts:97](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L97)*
 
 ___
 
@@ -717,7 +703,7 @@ ___
 
 • **gasLimit**? : *undefined | number*
 
-*Defined in [types.ts:95](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L95)*
+*Defined in [asset-buyer/src/types.ts:95](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L95)*
 
 ___
 
@@ -725,7 +711,7 @@ ___
 
 • **gasPrice**? : *`BigNumber`*
 
-*Defined in [types.ts:96](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L96)*
+*Defined in [asset-buyer/src/types.ts:96](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L96)*
 
 ___
 
@@ -733,7 +719,7 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Defined in [types.ts:94](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L94)*
+*Defined in [asset-buyer/src/types.ts:94](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L94)*
 
 <hr />
 
@@ -747,14 +733,13 @@ totalEthAmount: The total amount of eth required to complete the buy (filling or
 
 * **BuyQuoteInfo**
 
-
-### Properties
+###  Properties
 
 ##  assetEthAmount
 
 • **assetEthAmount**: *`BigNumber`*
 
-*Defined in [types.ts:62](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L62)*
+*Defined in [asset-buyer/src/types.ts:62](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L62)*
 
 ___
 
@@ -762,7 +747,7 @@ ___
 
 • **feeEthAmount**: *`BigNumber`*
 
-*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L63)*
+*Defined in [asset-buyer/src/types.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L63)*
 
 ___
 
@@ -770,7 +755,7 @@ ___
 
 • **totalEthAmount**: *`BigNumber`*
 
-*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L64)*
+*Defined in [asset-buyer/src/types.ts:64](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L64)*
 
 <hr />
 
@@ -784,14 +769,13 @@ slippagePercentage: The percentage buffer to add to account for slippage. Affect
 
 * **BuyQuoteRequestOpts**
 
-
-### Properties
+###  Properties
 
 ##  feePercentage
 
 • **feePercentage**: *number*
 
-*Defined in [types.ts:73](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L73)*
+*Defined in [asset-buyer/src/types.ts:73](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L73)*
 
 ___
 
@@ -799,7 +783,7 @@ ___
 
 • **shouldForceOrderRefresh**: *boolean*
 
-*Defined in [types.ts:74](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L74)*
+*Defined in [asset-buyer/src/types.ts:74](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L74)*
 
 ___
 
@@ -807,7 +791,7 @@ ___
 
 • **slippagePercentage**: *number*
 
-*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L75)*
+*Defined in [asset-buyer/src/types.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L75)*
 
 <hr />
 
@@ -819,14 +803,13 @@ Represents available liquidity for a given assetData
 
 * **LiquidityForAssetData**
 
-
-### Properties
+###  Properties
 
 ##  ethValueAvailableInWei
 
 • **ethValueAvailableInWei**: *`BigNumber`*
 
-*Defined in [types.ts:141](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L141)*
+*Defined in [asset-buyer/src/types.ts:141](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L141)*
 
 ___
 
@@ -834,136 +817,15 @@ ___
 
 • **tokensAvailableInBaseUnits**: *`BigNumber`*
 
-*Defined in [types.ts:140](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L140)*
+*Defined in [asset-buyer/src/types.ts:140](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L140)*
 
 <hr />
 
-# Interface: OrderProvider
-
-gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
-getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
-
-### Hierarchy
-
-* **OrderProvider**
-
-### Implemented by
-
-* [BasicOrderProvider](#class-basicorderprovider)
-* [StandardRelayerAPIOrderProvider](#class-standardrelayerapiorderprovider)
-
-
-### Properties
-
-##  getAvailableMakerAssetDatasAsync
-
-• **getAvailableMakerAssetDatasAsync**: *function*
-
-*Defined in [types.ts:34](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L34)*
-
-#### Type declaration:
-
-▸ (`takerAssetData`: string): *`Promise<string[]>`*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`takerAssetData` | string |
-
-___
-
-##  getOrdersAsync
-
-• **getOrdersAsync**: *function*
-
-*Defined in [types.ts:33](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L33)*
-
-#### Type declaration:
-
-▸ (`orderProviderRequest`: [OrderProviderRequest](#interface-orderproviderrequest)): *`Promise<OrderProviderResponse>`*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`orderProviderRequest` | [OrderProviderRequest](#interface-orderproviderrequest) |
+<hr />
 
 <hr />
 
-# Interface: OrderProviderRequest
-
-makerAssetData: The assetData representing the desired makerAsset.
-takerAssetData: The assetData representing the desired takerAsset.
-networkId: The networkId that the desired orders should be for.
-
-### Hierarchy
-
-* **OrderProviderRequest**
-
-
-### Properties
-
-##  makerAssetData
-
-• **makerAssetData**: *string*
-
-*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L10)*
-
-___
-
-##  takerAssetData
-
-• **takerAssetData**: *string*
-
-*Defined in [types.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L11)*
-
 <hr />
-
-# Interface: OrderProviderResponse
-
-orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
-
-### Hierarchy
-
-* **OrderProviderResponse**
-
-
-### Properties
-
-##  orders
-
-• **orders**: *[SignedOrderWithRemainingFillableMakerAssetAmount](#interface-signedorderwithremainingfillablemakerassetamount)[]*
-
-*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L18)*
-
-<hr />
-
-# Interface: OrdersAndFillableAmounts
-
-orders: An array of signed orders
-remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
-
-### Hierarchy
-
-* **OrdersAndFillableAmounts**
-
-
-### Properties
-
-##  orders
-
-• **orders**: *`SignedOrder`[]*
-
-*Defined in [types.ts:132](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L132)*
-
-___
-
-##  remainingFillableMakerAssetAmounts
-
-• **remainingFillableMakerAssetAmounts**: *`BigNumber`[]*
-
-*Defined in [types.ts:133](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L133)*
 
 <hr />
 
@@ -978,8 +840,7 @@ remainingFillableMakerAssetAmount: The amount of the makerAsset that is availabl
 
   * **SignedOrderWithRemainingFillableMakerAssetAmount**
 
-
-### Properties
+###  Properties
 
 ##  exchangeAddress
 
@@ -987,7 +848,7 @@ remainingFillableMakerAssetAmount: The amount of the makerAsset that is availabl
 
 
 
-
+Defined in types/lib/index.d.ts:14
 
 ___
 
@@ -997,7 +858,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:16
 
 ___
 
@@ -1007,7 +868,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:15
 
 ___
 
@@ -1017,7 +878,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:5
 
 ___
 
@@ -1027,7 +888,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:9
 
 ___
 
@@ -1037,7 +898,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:11
 
 ___
 
@@ -1047,7 +908,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:7
 
 ___
 
@@ -1055,7 +916,7 @@ ___
 
 • **remainingFillableMakerAssetAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/asset-buyer/src/types.ts#L26)*
+*Defined in [asset-buyer/src/types.ts:26](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L26)*
 
 ___
 
@@ -1065,7 +926,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:13
 
 ___
 
@@ -1075,7 +936,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:4
 
 ___
 
@@ -1085,7 +946,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:33
 
 ___
 
@@ -1095,7 +956,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:6
 
 ___
 
@@ -1105,7 +966,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:10
 
 ___
 
@@ -1115,7 +976,7 @@ ___
 
 
 
-
+Defined in types/lib/index.d.ts:12
 
 ___
 
@@ -1125,7 +986,910 @@ ___
 
 
 
+Defined in types/lib/index.d.ts:8
 
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: EIP1193Provider
+
+### Hierarchy
+
+* **EIP1193Provider**
+
+###  Properties
+
+##  isEIP1193
+
+• **isEIP1193**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L73)*
+
+### Methods
+
+##  on
+
+▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
+
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L75)*
+
+**Parameters:**
+
+▪ **event**: *[EIP1193Event](#eip1193event)*
+
+▪ **listener**: *function*
+
+▸ (`result`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`result` | any |
+
+**Returns:** *this*
+
+___
+
+##  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L74)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: GanacheProvider
+
+### Hierarchy
+
+* **GanacheProvider**
+
+###  Methods
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L14)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+<hr />
+
+# Interface: JSONRPCRequestPayload
+
+### Hierarchy
+
+* **JSONRPCRequestPayload**
+
+###  Properties
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L324)*
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L325)*
+
+___
+
+##  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L323)*
+
+___
+
+##  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L322)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+### Hierarchy
+
+* **JSONRPCResponseError**
+
+###  Properties
+
+##  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+##  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L329)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+### Hierarchy
+
+* **JSONRPCResponsePayload**
+
+###  Properties
+
+## `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L337)*
+
+___
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L335)*
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+##  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L334)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: Web3JsV1Provider
+
+Web3.js version 1 provider interface
+This provider interface was implemented in the pre-1.0Beta releases for Web3.js.
+This interface allowed sending synchonous requests, support for which was later dropped.
+
+### Hierarchy
+
+* **Web3JsV1Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L45)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+
+**Returns:** *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L44)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV2Provider
+
+Web3.js version 2 provider interface
+This provider interface was used in a couple of Web3.js 1.0 beta releases
+before the first attempts to conform to EIP1193
+
+### Hierarchy
+
+* **Web3JsV2Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L54)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV3Provider
+
+Web3.js version 3 provider interface
+This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+however it does not conform entirely.
+
+### Hierarchy
+
+* **Web3JsV3Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L63)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+# Interface: ZeroExProvider
+
+The interface for the provider used internally by 0x libraries
+Any property we use from any SupportedProvider should we explicitly
+add here
+
+### Hierarchy
+
+* **ZeroExProvider**
+
+###  Properties
+
+## `Optional` isMetaMask
+
+• **isMetaMask**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L31)*
+
+___
+
+## `Optional` isParity
+
+• **isParity**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L32)*
+
+___
+
+## `Optional` isZeroExProvider
+
+• **isZeroExProvider**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L30)*
+
+### Methods
+
+## `Optional` enable
+
+▸ **enable**(): *`Promise<void>`*
+
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L34)*
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L35)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+___
+
+## `Optional` stop
+
+▸ **stop**(): *void*
+
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L33)*
+
+**Returns:** *void*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr /> 
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: SignedOrder
+
+### Hierarchy
+
+* [Order](#class-order)
+
+  * **SignedOrder**
+
+###  Properties
+
+##  exchangeAddress
+
+• **exchangeAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[exchangeAddress](#exchangeaddress)*
+
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L20)*
+
+___
+
+##  expirationTimeSeconds
+
+• **expirationTimeSeconds**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[expirationTimeSeconds](#expirationtimeseconds)*
+
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L22)*
+
+___
+
+##  feeRecipientAddress
+
+• **feeRecipientAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[feeRecipientAddress](#feerecipientaddress)*
+
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L21)*
+
+___
+
+##  makerAddress
+
+• **makerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAddress](#makeraddress)*
+
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L11)*
+
+___
+
+##  makerAssetAmount
+
+• **makerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetAmount](#makerassetamount)*
+
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L15)*
+
+___
+
+##  makerAssetData
+
+• **makerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetData](#makerassetdata)*
+
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L17)*
+
+___
+
+##  makerFee
+
+• **makerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerFee](#makerfee)*
+
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L13)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[salt](#salt)*
+
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L19)*
+
+___
+
+##  senderAddress
+
+• **senderAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[senderAddress](#senderaddress)*
+
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L10)*
+
+___
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L41)*
+
+___
+
+##  takerAddress
+
+• **takerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAddress](#takeraddress)*
+
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L12)*
+
+___
+
+##  takerAssetAmount
+
+• **takerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetAmount](#takerassetamount)*
+
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L16)*
+
+___
+
+##  takerAssetData
+
+• **takerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetData](#takerassetdata)*
+
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L18)*
+
+___
+
+##  takerFee
+
+• **takerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerFee](#takerfee)*
+
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L14)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# External module: "asset-buyer/src/asset_buyer"
+
+<hr /> 
+
+# External module: "asset-buyer/src/errors"
+
+<hr /> 
+
+# External module: "asset-buyer/src/order_providers/basic_order_provider"
+
+<hr /> 
+
+# External module: "asset-buyer/src/order_providers/standard_relayer_api_order_provider"
+
+<hr /> 
+
+# External module: "asset-buyer/src/types"
+
+###  Type aliases
+
+##  LiquidityRequestOpts
+
+Ƭ **LiquidityRequestOpts**: *`Pick<BuyQuoteRequestOpts, "shouldForceOrderRefresh">`*
+
+*Defined in [asset-buyer/src/types.ts:83](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/asset-buyer/src/types.ts#L83)*
+
+<hr />
+
+# External module: "ethereum-types/src/index"
+
+###  Type aliases
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+##  EIP1193Event
+
+Ƭ **EIP1193Event**: *"accountsChanged" | "networkChanged" | "close" | "connect" | "notification"*
+
+*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L70)*
+
+Interface for providers that conform to EIP 1193
+Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
+
+___
+
+#___
+
+#___
+
+#___
+
+##  JSONRPCErrorCallback
+
+Ƭ **JSONRPCErrorCallback**: *function*
+
+*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L3)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `result?`: [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`result?` | [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload) |
+
+___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+##  SupportedProvider
+
+Ƭ **SupportedProvider**: *[Web3JsProvider](_ethereum_types_src_index_.md#web3jsprovider) | [GanacheProvider](#interface-ganacheprovider) | [EIP1193Provider](#interface-eip1193provider) | [ZeroExProvider](#interface-zeroexprovider)*
+
+*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L9)*
+
+Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
+Read more about Providers in the guides section of the 0x docs.
+
+___
+
+#___
+
+#___
+
+##  Web3JsProvider
+
+Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
+
+*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L11)*
+
+<hr />
+
+# External module: "types/src/index"
+
+###  Type aliases
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+##  SingleAssetData
+
+Ƭ **SingleAssetData**: *[ERC20AssetData](#interface-erc20assetdata) | [ERC721AssetData](#interface-erc721assetdata) | [ERC1155AssetData](#interface-erc1155assetdata) | [StaticCallAssetData](#interface-staticcallassetdata)*
+
+*Defined in [types/src/index.ts:208](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L208)*
+
+<hr />
+
+# External module: "utils/src/configured_bignumber"
 
 <hr />
 

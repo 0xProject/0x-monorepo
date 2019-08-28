@@ -1,0 +1,3458 @@
+# Class: ContractWrappers
+
+The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
+
+### Hierarchy
+
+* **ContractWrappers**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new ContractWrappers**(`supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider), `config`: [ContractWrappersConfig](#interface-contractwrappersconfig)): *[ContractWrappers](#class-contractwrappers)*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:78](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L78)*
+
+Instantiates a new ContractWrappers instance.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | The Provider instance you would like the contract-wrappers library to use for interacting with                      the Ethereum network. |
+`config` | [ContractWrappersConfig](#interface-contractwrappersconfig) | The configuration object. Look up the type for the description. |
+
+**Returns:** *[ContractWrappers](#class-contractwrappers)*
+
+An instance of the ContractWrappers class.
+
+### Properties
+
+##  contractAddresses
+
+• **contractAddresses**: *`ContractAddresses`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L41)*
+
+An index of the default contract addresses for this network.
+
+___
+
+##  coordinator
+
+• **coordinator**: *[CoordinatorWrapper](#class-coordinatorwrapper)*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:76](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L76)*
+
+An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
+
+___
+
+##  dutchAuction
+
+• **dutchAuction**: *`DutchAuctionContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:72](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L72)*
+
+An instance of the DutchAuctionContract class containing methods for interacting with any DutchAuction smart contract.
+
+___
+
+##  erc20Proxy
+
+• **erc20Proxy**: *`ERC20ProxyContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:50](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L50)*
+
+An instance of the ERC20ProxyContract class containing methods for interacting with the
+erc20Proxy smart contract.
+
+___
+
+##  erc721Proxy
+
+• **erc721Proxy**: *`ERC721ProxyContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L55)*
+
+An instance of the ERC721ProxyContract class containing methods for interacting with the
+erc721Proxy smart contract.
+
+___
+
+##  exchange
+
+• **exchange**: *`ExchangeContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:45](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L45)*
+
+An instance of the ExchangeContract class containing methods for interacting with the 0x Exchange smart contract.
+
+___
+
+##  forwarder
+
+• **forwarder**: *`ForwarderContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:64](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L64)*
+
+An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
+
+___
+
+##  orderValidator
+
+• **orderValidator**: *`OrderValidatorContract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:68](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L68)*
+
+An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
+
+___
+
+##  weth9
+
+• **weth9**: *`WETH9Contract`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:60](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L60)*
+
+An instance of the WETH9Contract class containing methods for interacting with the
+WETH9 smart contract.
+
+### Methods
+
+##  getAbiDecoder
+
+▸ **getAbiDecoder**(): *`AbiDecoder`*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:147](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L147)*
+
+Get the abi decoder instance currently used by contract-wrappers
+
+**Returns:** *`AbiDecoder`*
+
+AbiDecoder instance
+
+___
+
+##  getProvider
+
+▸ **getProvider**(): *[SupportedProvider](#supportedprovider)*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:140](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L140)*
+
+Get the provider instance currently used by contract-wrappers
+
+**Returns:** *[SupportedProvider](#supportedprovider)*
+
+Web3 provider instance
+
+___
+
+##  unsubscribeAll
+
+▸ **unsubscribeAll**(): *void*
+
+*Defined in [contract-wrappers/src/contract_wrappers.ts:130](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/contract_wrappers.ts#L130)*
+
+Unsubscribes from all subscriptions for all contracts.
+
+**Returns:** *void*
+
+<hr />
+
+# Class: CoordinatorWrapper
+
+This class includes all the functionality related to filling or cancelling orders through
+the 0x V2 Coordinator extension contract.
+
+### Hierarchy
+
+* **CoordinatorWrapper**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new CoordinatorWrapper**(`provider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider), `networkId`: number, `address?`: undefined | string, `exchangeAddress?`: undefined | string, `registryAddress?`: undefined | string): *[CoordinatorWrapper](#class-coordinatorwrapper)*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:43](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L43)*
+
+Instantiate CoordinatorWrapper
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`provider` | [SupportedProvider](#supportedprovider) | - |
+`networkId` | number | Desired networkId. |
+`address?` | undefined \| string | The address of the Coordinator contract. If undefined, will default to the known address corresponding to the networkId. |
+`exchangeAddress?` | undefined \| string | The address of the Exchange contract. If undefined, will default to the known address corresponding to the networkId. |
+`registryAddress?` | undefined \| string | The address of the CoordinatorRegistry contract. If undefined, will default to the known address corresponding to the networkId.  |
+
+**Returns:** *[CoordinatorWrapper](#class-coordinatorwrapper)*
+
+### Properties
+
+##  abi
+
+• **abi**: *[ContractAbi](#contractabi)* =  Coordinator.compilerOutput.abi
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:34](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L34)*
+
+___
+
+##  address
+
+• **address**: *string*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:36](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L36)*
+
+___
+
+##  exchangeAddress
+
+• **exchangeAddress**: *string*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:37](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L37)*
+
+___
+
+##  networkId
+
+• **networkId**: *number*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L35)*
+
+___
+
+##  registryAddress
+
+• **registryAddress**: *string*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:38](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L38)*
+
+### Methods
+
+##  assertValidCoordinatorApprovalsOrThrowAsync
+
+▸ **assertValidCoordinatorApprovalsOrThrowAsync**(`transaction`: `ZeroExTransaction`, `txOrigin`: string, `transactionSignature`: string, `approvalExpirationTimeSeconds`: `BigNumber`[], `approvalSignatures`: string[]): *`Promise<void>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:637](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L637)*
+
+Validates that the 0x transaction has been approved by all of the feeRecipients that correspond to each order in the transaction's Exchange calldata.
+Throws an error if the transaction approvals are not valid. Will not detect failures that would occur when the transaction is executed on the Exchange contract.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`transaction` | `ZeroExTransaction` | 0x transaction containing salt, signerAddress, and data. |
+`txOrigin` | string | Required signer of Ethereum transaction calling this function. |
+`transactionSignature` | string | Proof that the transaction has been signed by the signer. |
+`approvalExpirationTimeSeconds` | `BigNumber`[] | Array of expiration times in seconds for which each corresponding approval signature expires. |
+`approvalSignatures` | string[] | Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  batchFillOrKillOrdersAsync
+
+▸ **batchFillOrKillOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:273](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L273)*
+
+Batch version of fillOrKillOrderAsync. Executes multiple fills atomically in a single transaction.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`takerAssetFillAmounts` | `BigNumber`[] | - | The amounts of the orders (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                                Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  batchFillOrdersAsync
+
+▸ **batchFillOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:203](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L203)*
+
+Batch version of fillOrderAsync. Executes multiple fills atomically in a single transaction.
+Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+registered in the coordinator registry contract. It requests a signature from each coordinator server before
+submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
+signatures and then fills the order through the Exchange contract.
+If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`takerAssetFillAmounts` | `BigNumber`[] | - | The amounts of the orders (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                                Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  batchFillOrdersNoThrowAsync
+
+▸ **batchFillOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:238](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L238)*
+
+No throw version of batchFillOrdersAsync
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`takerAssetFillAmounts` | `BigNumber`[] | - | The amounts of the orders (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                                Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  batchHardCancelOrdersAsync
+
+▸ **batchHardCancelOrdersAsync**(`orders`: `SignedOrder`[], `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:568](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L568)*
+
+Batch version of hardCancelOrderAsync. Cancels orders on-chain by submitting an Ethereum transaction.
+Executes multiple cancels atomically in a single transaction.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`orders` | `SignedOrder`[] | - | An array of orders to cancel. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  batchSoftCancelOrdersAsync
+
+▸ **batchSoftCancelOrdersAsync**(`orders`: `SignedOrder`[]): *`Promise<CoordinatorServerCancellationResponse[]>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:482](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L482)*
+
+Batch version of softCancelOrderAsync. Requests multiple soft cancels
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orders` | `SignedOrder`[] | An array of orders to cancel. |
+
+**Returns:** *`Promise<CoordinatorServerCancellationResponse[]>`*
+
+CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
+
+___
+
+##  fillOrKillOrderAsync
+
+▸ **fillOrKillOrderAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:166](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L166)*
+
+Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
+the fill order is abandoned.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | - | An object that conforms to the SignedOrder interface. |
+`takerAssetFillAmount` | `BigNumber` | - | The amount of the order (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill this order. Must be available via the supplied                               Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  fillOrderAsync
+
+▸ **fillOrderAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:101](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L101)*
+
+Fills a signed order with an amount denominated in baseUnits of the taker asset. Under-the-hood, this
+method uses the `feeRecipientAddress` of the order to look up the coordinator server endpoint registered in the
+coordinator registry contract. It requests a signature from that coordinator server before
+submitting the order and signature as a 0x transaction to the coordinator extension contract. The coordinator extension
+contract validates signatures and then fills the order via the Exchange contract.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | - | An object that conforms to the SignedOrder interface. |
+`takerAssetFillAmount` | `BigNumber` | - | The amount of the order (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill this order. Must be available via the supplied                                Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  fillOrderNoThrowAsync
+
+▸ **fillOrderNoThrowAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:133](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L133)*
+
+No-throw version of fillOrderAsync. This version will not throw if the fill fails. This allows the caller to save gas at the expense of not knowing the reason the fill failed.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrder` | `SignedOrder` | - | An object that conforms to the SignedOrder interface. |
+`takerAssetFillAmount` | `BigNumber` | - | The amount of the order (in taker asset baseUnits) that you wish to fill. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill this order.                               Must be available via the supplied Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  getSignerAddressAsync
+
+▸ **getSignerAddressAsync**(`hash`: string, `signature`: string): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:669](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L669)*
+
+Recovers the address of a signer given a hash and signature.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`hash` | string | Any 32 byte hash. |
+`signature` | string | Proof that the hash has been signed by signer. |
+
+**Returns:** *`Promise<string>`*
+
+Signer address.
+
+___
+
+##  hardCancelOrderAsync
+
+▸ **hardCancelOrderAsync**(`order`: `Order` | `SignedOrder`, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:536](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L536)*
+
+Cancels an order on-chain by submitting an Ethereum transaction.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`order` | `Order` \| `SignedOrder` | - | An object that conforms to the Order or SignedOrder interface. The order you would like to cancel. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  hardCancelOrdersUpToAsync
+
+▸ **hardCancelOrdersUpToAsync**(`targetOrderEpoch`: `BigNumber`, `senderAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:603](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L603)*
+
+Cancels orders on-chain by submitting an Ethereum transaction.
+Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
+and senderAddress equal to coordinator extension contract address.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`targetOrderEpoch` | `BigNumber` | - | Target order epoch. |
+`senderAddress` | string | - | Address that should send the transaction. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  marketBuyOrdersAsync
+
+▸ **marketBuyOrdersAsync**(`signedOrders`: `SignedOrder`[], `makerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:313](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L313)*
+
+Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
+Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+registered in the coordinator registry contract. It requests a signature from each coordinator server before
+submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
+signatures and then fills the order through the Exchange contract.
+If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`makerAssetFillAmount` | `BigNumber` | - | Maker asset fill amount. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                               Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  marketBuyOrdersNoThrowAsync
+
+▸ **marketBuyOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `makerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:384](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L384)*
+
+No throw version of marketBuyOrdersAsync
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`makerAssetFillAmount` | `BigNumber` | - | Maker asset fill amount. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                               Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  marketSellOrdersAsync
+
+▸ **marketSellOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:351](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L351)*
+
+Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
+Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
+registered in the coordinator registry contract. It requests a signature from each coordinator server before
+submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
+signatures and then fills the order through the Exchange contract.
+If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`takerAssetFillAmount` | `BigNumber` | - | Taker asset fill amount. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                               Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  marketSellOrdersNoThrowAsync
+
+▸ **marketSellOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:417](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L417)*
+
+No throw version of marketSellOrdersAsync
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`signedOrders` | `SignedOrder`[] | - | An array of signed orders to fill. |
+`takerAssetFillAmount` | `BigNumber` | - | Taker asset fill amount. |
+`takerAddress` | string | - | The user Ethereum address who would like to fill these orders. Must be available via the supplied                               Provider provided at instantiation. |
+`orderTransactionOpts` | [OrderTransactionOpts](#interface-ordertransactionopts) |  { shouldValidate: true } | Optional arguments this method accepts. |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash.
+
+___
+
+##  softCancelOrderAsync
+
+▸ **softCancelOrderAsync**(`order`: `Order` | `SignedOrder`): *`Promise<CoordinatorServerCancellationResponse>`*
+
+*Defined in [contract-wrappers/src/coordinator_wrapper.ts:447](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/coordinator_wrapper.ts#L447)*
+
+Soft cancel a given order.
+Soft cancels are recorded only on coordinator operator servers and do not involve an Ethereum transaction.
+See [soft cancels](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#soft-cancels).
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` \| `SignedOrder` | An object that conforms to the Order or SignedOrder interface. The order you would like to cancel. |
+
+**Returns:** *`Promise<CoordinatorServerCancellationResponse>`*
+
+CoordinatorServerCancellationResponse. See [Cancellation Response](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/coordinator-specification.md#response).
+
+<hr />
+
+# Class: MetamaskSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine)
+subprovider interface and the provider sendAsync interface.
+It handles inconsistencies with Metamask implementations of various JSON RPC methods.
+It forwards JSON RPC requests involving the domain of a signer (getAccounts,
+sendTransaction, signMessage etc...) to the provider instance supplied at instantiation. All other requests
+are passed onwards for subsequent subproviders to handle.
+
+### Hierarchy
+
+* `Subprovider`
+
+  * **MetamaskSubprovider**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new MetamaskSubprovider**(`supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider)): *[MetamaskSubprovider](#class-metamasksubprovider)*
+
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/metamask_subprovider.ts#L19)*
+
+Instantiates a new MetamaskSubprovider
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider that should handle  all user account related requests  |
+
+**Returns:** *[MetamaskSubprovider](#class-metamasksubprovider)*
+
+### Methods
+
+##  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+
+
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+##  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](../modules/_subproviders_src_types_.md#callback), `end`: [ErrorCallback](#errorcallback)): *`Promise<void>`*
+
+*Overrides void*
+
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:39](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/metamask_subprovider.ts#L39)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: `JSONRPCRequestPayload`, `callback`: [ErrorCallback](#errorcallback)): *void*
+
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:117](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/metamask_subprovider.ts#L117)*
+
+This method conforms to the provider sendAsync interface.
+Allowing the MetamaskSubprovider to be used as a generic provider (outside of Web3ProviderEngine) with the
+addition of wrapping the inconsistent Metamask behaviour
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`callback` | [ErrorCallback](#errorcallback) | - |
+
+**Returns:** *void*
+
+The contents nested under the result key of the response body
+
+___
+
+##  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+
+
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+# Class: RPCSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It forwards on JSON RPC requests to the supplied `rpcUrl` endpoint
+
+### Hierarchy
+
+* `Subprovider`
+
+  * **RPCSubprovider**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new RPCSubprovider**(`rpcUrl`: string, `requestTimeoutMs`: number): *[RPCSubprovider](#class-rpcsubprovider)*
+
+*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/rpc_subprovider.ts#L17)*
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`rpcUrl` | string | - | URL to the backing Ethereum node to which JSON RPC requests should be sent |
+`requestTimeoutMs` | number | 20000 | Amount of miliseconds to wait before timing out the JSON RPC request  |
+
+**Returns:** *[RPCSubprovider](#class-rpcsubprovider)*
+
+### Methods
+
+##  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+
+
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+##  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `_next`: [Callback](../modules/_subproviders_src_types_.md#callback), `end`: [ErrorCallback](#errorcallback)): *`Promise<void>`*
+
+*Overrides void*
+
+*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:38](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/rpc_subprovider.ts#L38)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`_next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+
+
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+# Class: AbiDecoder
+
+AbiDecoder allows you to decode event logs given a set of supplied contract ABI's. It takes the contract's event
+signature from the ABI and attempts to decode the logs using it.
+
+### Hierarchy
+
+* **AbiDecoder**
+
+
+### Constructors
+
+##  constructer
+
+\+ **new AbiDecoder**(`abiArrays`: [AbiDefinition](../modules/_ethereum_types_src_index_.md#abidefinition)[][]): *[AbiDecoder](#class-abidecoder)*
+
+*Defined in [utils/src/abi_decoder.ts:42](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/utils/src/abi_decoder.ts#L42)*
+
+Instantiate an AbiDecoder
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`abiArrays` | [AbiDefinition](#abidefinition)[][] | An array of contract ABI's |
+
+**Returns:** *[AbiDecoder](#class-abidecoder)*
+
+AbiDecoder instance
+
+### Methods
+
+##  addABI
+
+▸ **addABI**(`abiArray`: [AbiDefinition](#abidefinition)[], `contractName?`: undefined | string): *void*
+
+*Defined in [utils/src/abi_decoder.ts:158](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/utils/src/abi_decoder.ts#L158)*
+
+Adds a set of ABI definitions, after which calldata and logs targeting these ABI's can be decoded.
+Additional properties can be included to disambiguate similar ABI's. For example, if two functions
+have the same signature but different parameter names, then their ABI definitions can be disambiguated
+by specifying a contract name.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`abiArray` | [AbiDefinition](#abidefinition)[] | - |
+`contractName?` | undefined \| string | Name of contract that encapsulates the ABI definitions (optional).                     This can be used when decoding calldata to disambiguate methods with                     the same signature but different parameter names.  |
+
+**Returns:** *void*
+
+___
+
+##  decodeCalldataOrThrow
+
+▸ **decodeCalldataOrThrow**(`calldata`: string, `contractName?`: undefined | string): *`DecodedCalldata`*
+
+*Defined in [utils/src/abi_decoder.ts:118](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/utils/src/abi_decoder.ts#L118)*
+
+Decodes calldata for a known ABI.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`calldata` | string | hex-encoded calldata. |
+`contractName?` | undefined \| string | used to disambiguate similar ABI's (optional). |
+
+**Returns:** *`DecodedCalldata`*
+
+Decoded calldata. Includes: function name and signature, along with the decoded arguments.
+
+___
+
+##  tryToDecodeLogOrNoop
+
+▸ **tryToDecodeLogOrNoop**<**ArgsType**>(`log`: `LogEntry`): *`LogWithDecodedArgs<ArgsType>` | [RawLog](#rawlog)*
+
+*Defined in [utils/src/abi_decoder.ts:58](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/utils/src/abi_decoder.ts#L58)*
+
+Attempt to decode a log given the ABI's the AbiDecoder knows about.
+
+**Type parameters:**
+
+▪ **ArgsType**: *`DecodedLogArgs`*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`log` | `LogEntry` | The log to attempt to decode |
+
+**Returns:** *`LogWithDecodedArgs<ArgsType>` | [RawLog](#rawlog)*
+
+The decoded log if the requisite ABI was available. Otherwise the log unaltered.
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Enumeration: OrderStatus
+
+
+### Enumeration members
+
+##  Cancelled
+
+• **Cancelled**:
+
+*Defined in [contract-wrappers/src/types.ts:91](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L91)*
+
+___
+
+##  Expired
+
+• **Expired**:
+
+*Defined in [contract-wrappers/src/types.ts:89](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L89)*
+
+___
+
+##  Fillable
+
+• **Fillable**:
+
+*Defined in [contract-wrappers/src/types.ts:88](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L88)*
+
+___
+
+##  FullyFilled
+
+• **FullyFilled**:
+
+*Defined in [contract-wrappers/src/types.ts:90](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L90)*
+
+___
+
+##  Invalid
+
+• **Invalid**: = 0
+
+*Defined in [contract-wrappers/src/types.ts:85](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L85)*
+
+___
+
+##  InvalidMakerAssetAmount
+
+• **InvalidMakerAssetAmount**:
+
+*Defined in [contract-wrappers/src/types.ts:86](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L86)*
+
+___
+
+##  InvalidTakerAssetAmount
+
+• **InvalidTakerAssetAmount**:
+
+*Defined in [contract-wrappers/src/types.ts:87](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L87)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Enumeration: AssetProxyId
+
+
+### Enumeration members
+
+##  ERC1155
+
+• **ERC1155**: = "0xa7cb5fb7"
+
+*Defined in [types/src/index.ts:171](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L171)*
+
+___
+
+##  ERC20
+
+• **ERC20**: = "0xf47261b0"
+
+*Defined in [types/src/index.ts:168](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L168)*
+
+___
+
+##  ERC721
+
+• **ERC721**: = "0x02571792"
+
+*Defined in [types/src/index.ts:169](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L169)*
+
+___
+
+##  MultiAsset
+
+• **MultiAsset**: = "0x94cfcdd7"
+
+*Defined in [types/src/index.ts:170](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L170)*
+
+___
+
+##  StaticCall
+
+• **StaticCall**: = "0xc339d10a"
+
+*Defined in [types/src/index.ts:172](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L172)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Enumeration: SignatureType
+
+
+### Enumeration members
+
+##  EIP712
+
+• **EIP712**:
+
+*Defined in [types/src/index.ts:159](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L159)*
+
+___
+
+##  EthSign
+
+• **EthSign**:
+
+*Defined in [types/src/index.ts:160](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L160)*
+
+___
+
+##  Illegal
+
+• **Illegal**:
+
+*Defined in [types/src/index.ts:157](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L157)*
+
+___
+
+##  Invalid
+
+• **Invalid**:
+
+*Defined in [types/src/index.ts:158](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L158)*
+
+___
+
+##  NSignatureTypes
+
+• **NSignatureTypes**:
+
+*Defined in [types/src/index.ts:164](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L164)*
+
+___
+
+##  PreSigned
+
+• **PreSigned**:
+
+*Defined in [types/src/index.ts:163](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L163)*
+
+___
+
+##  Validator
+
+• **Validator**:
+
+*Defined in [types/src/index.ts:162](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L162)*
+
+___
+
+##  Wallet
+
+• **Wallet**:
+
+*Defined in [types/src/index.ts:161](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L161)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: ContractAddresses
+
+### Hierarchy
+
+* **ContractAddresses**
+
+
+### Properties
+
+##  assetProxyOwner
+
+• **assetProxyOwner**: *string*
+
+*Defined in [contract-addresses/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L9)*
+
+___
+
+##  coordinator
+
+• **coordinator**: *string*
+
+*Defined in [contract-addresses/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L14)*
+
+___
+
+##  coordinatorRegistry
+
+• **coordinatorRegistry**: *string*
+
+*Defined in [contract-addresses/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L13)*
+
+___
+
+##  devUtils
+
+• **devUtils**: *string*
+
+*Defined in [contract-addresses/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L18)*
+
+___
+
+##  dutchAuction
+
+• **dutchAuction**: *string*
+
+*Defined in [contract-addresses/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L12)*
+
+___
+
+##  erc1155Proxy
+
+• **erc1155Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L17)*
+
+___
+
+##  erc20Proxy
+
+• **erc20Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:4](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L4)*
+
+___
+
+##  erc721Proxy
+
+• **erc721Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:5](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L5)*
+
+___
+
+##  etherToken
+
+• **etherToken**: *string*
+
+*Defined in [contract-addresses/src/index.ts:7](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L7)*
+
+___
+
+##  exchange
+
+• **exchange**: *string*
+
+*Defined in [contract-addresses/src/index.ts:8](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L8)*
+
+___
+
+##  forwarder
+
+• **forwarder**: *string*
+
+*Defined in [contract-addresses/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L10)*
+
+___
+
+##  multiAssetProxy
+
+• **multiAssetProxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L15)*
+
+___
+
+##  orderValidator
+
+• **orderValidator**: *string*
+
+*Defined in [contract-addresses/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L11)*
+
+___
+
+##  staticCallProxy
+
+• **staticCallProxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L16)*
+
+___
+
+##  zrxToken
+
+• **zrxToken**: *string*
+
+*Defined in [contract-addresses/src/index.ts:6](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-addresses/src/index.ts#L6)*
+
+<hr />
+
+# Interface: ContractWrappersConfig
+
+networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
+gasPrice: Gas price to use with every transaction
+contractAddresses: The address of all contracts to use. Defaults to the known addresses based on networkId.
+blockPollingIntervalMs: The interval to use for block polling in event watching methods (defaults to 1000)
+
+### Hierarchy
+
+* **ContractWrappersConfig**
+
+
+### Properties
+
+## `Optional` blockPollingIntervalMs
+
+• **blockPollingIntervalMs**? : *undefined | number*
+
+*Defined in [contract-wrappers/src/types.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L56)*
+
+___
+
+## `Optional` contractAddresses
+
+• **contractAddresses**? : *[ContractAddresses](#class-contractaddresses)*
+
+*Defined in [contract-wrappers/src/types.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L55)*
+
+___
+
+## `Optional` gasPrice
+
+• **gasPrice**? : *`BigNumber`*
+
+*Defined in [contract-wrappers/src/types.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L54)*
+
+___
+
+##  networkId
+
+• **networkId**: *number*
+
+*Defined in [contract-wrappers/src/types.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L53)*
+
+<hr />
+
+<hr />
+
+# Interface: DecodedLogEvent <**ArgsType**>
+
+### Type parameters
+
+▪ **ArgsType**: *`DecodedLogArgs`*
+
+### Hierarchy
+
+* **DecodedLogEvent**
+
+
+### Properties
+
+##  isRemoved
+
+• **isRemoved**: *boolean*
+
+*Defined in [contract-wrappers/src/types.ts:7](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L7)*
+
+___
+
+##  log
+
+• **log**: *`LogWithDecodedArgs<ArgsType>`*
+
+*Defined in [contract-wrappers/src/types.ts:8](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L8)*
+
+<hr />
+
+# Interface: IndexedFilterValues
+
+### Hierarchy
+
+* **IndexedFilterValues**
+
+
+### Hierarchy
+
+* **OrderAndTraderInfo**
+
+
+### Properties
+
+##  orderInfo
+
+• **orderInfo**: *[OrderInfo](#class-orderinfo)*
+
+*Defined in [contract-wrappers/src/types.ts:106](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L106)*
+
+___
+
+##  traderInfo
+
+• **traderInfo**: *[TraderInfo](#class-traderinfo)*
+
+*Defined in [contract-wrappers/src/types.ts:107](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L107)*
+
+<hr />
+
+# Interface: OrderInfo
+
+### Hierarchy
+
+* **OrderInfo**
+
+
+### Properties
+
+##  orderHash
+
+• **orderHash**: *string*
+
+*Defined in [contract-wrappers/src/types.ts:80](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L80)*
+
+___
+
+##  orderStatus
+
+• **orderStatus**: *[OrderStatus](#enumeration-orderstatus)*
+
+*Defined in [contract-wrappers/src/types.ts:79](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L79)*
+
+___
+
+##  orderTakerAssetFilledAmount
+
+• **orderTakerAssetFilledAmount**: *`BigNumber`*
+
+*Defined in [contract-wrappers/src/types.ts:81](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L81)*
+
+<hr />
+
+# Interface: OrderTransactionOpts
+
+shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+
+### Hierarchy
+
+* [TransactionOpts](#class-transactionopts)
+
+  * **OrderTransactionOpts**
+
+
+### Properties
+
+## `Optional` gasLimit
+
+• **gasLimit**? : *undefined | number*
+
+*Inherited from [TransactionOpts](_contract_wrappers_src_types_.transactionopts.md).[gasLimit](#optional-gaslimit)*
+
+*Defined in [contract-wrappers/src/types.ts:66](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L66)*
+
+___
+
+## `Optional` gasPrice
+
+• **gasPrice**? : *`BigNumber`*
+
+*Inherited from [TransactionOpts](_contract_wrappers_src_types_.transactionopts.md).[gasPrice](#optional-gasprice)*
+
+*Defined in [contract-wrappers/src/types.ts:65](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L65)*
+
+___
+
+## `Optional` nonce
+
+• **nonce**? : *undefined | number*
+
+*Inherited from [TransactionOpts](_contract_wrappers_src_types_.transactionopts.md).[nonce](#optional-nonce)*
+
+*Defined in [contract-wrappers/src/types.ts:67](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L67)*
+
+___
+
+## `Optional` shouldValidate
+
+• **shouldValidate**? : *undefined | false | true*
+
+*Defined in [contract-wrappers/src/types.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/contract-wrappers/src/types.ts#L75)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: ConstructorAbi
+
+### Hierarchy
+
+* **ConstructorAbi**
+
+
+### Properties
+
+##  inputs
+
+• **inputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:103](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L103)*
+
+___
+
+##  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:104](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L104)*
+
+___
+
+##  stateMutability
+
+• **stateMutability**: *[ConstructorStateMutability](#constructorstatemutability)*
+
+*Defined in [ethereum-types/src/index.ts:105](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L105)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:102](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L102)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: DataItem
+
+### Hierarchy
+
+* **DataItem**
+
+  * [EventParameter](#class-eventparameter)
+
+  * [TupleDataItem](#class-tupledataitem)
+
+
+### Properties
+
+## `Optional` components
+
+• **components**? : *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L131)*
+
+___
+
+##  name
+
+• **name**: *string*
+
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L129)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L130)*
+
+<hr />
+
+# Interface: DecodedLogArgs
+
+### Hierarchy
+
+* **DecodedLogArgs**
+
+
+### Type parameters
+
+▪ **A**
+
+### Hierarchy
+
+* [LogEntry](#class-logentry)
+
+  * **DecodedLogEntry**
+
+  * [DecodedLogEntryEvent](#class-decodedlogentryevent)
+
+  * [LogWithDecodedArgs](#class-logwithdecodedargs)
+
+
+### Properties
+
+##  address
+
+• **address**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[address](#address)*
+
+*Defined in [ethereum-types/src/index.ts:428](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L428)*
+
+___
+
+##  args
+
+• **args**: *`A`*
+
+*Defined in [ethereum-types/src/index.ts:411](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L411)*
+
+___
+
+##  blockHash
+
+• **blockHash**: *string | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockHash](#blockhash)*
+
+*Defined in [ethereum-types/src/index.ts:426](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L426)*
+
+___
+
+##  blockNumber
+
+• **blockNumber**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockNumber](#blocknumber)*
+
+*Defined in [ethereum-types/src/index.ts:427](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L427)*
+
+___
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[data](#data)*
+
+*Defined in [ethereum-types/src/index.ts:429](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L429)*
+
+___
+
+##  event
+
+• **event**: *string*
+
+*Defined in [ethereum-types/src/index.ts:410](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L410)*
+
+___
+
+##  logIndex
+
+• **logIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[logIndex](#logindex)*
+
+*Defined in [ethereum-types/src/index.ts:423](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L423)*
+
+___
+
+##  topics
+
+• **topics**: *string[]*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[topics](#topics)*
+
+*Defined in [ethereum-types/src/index.ts:430](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L430)*
+
+___
+
+##  transactionHash
+
+• **transactionHash**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionHash](#transactionhash)*
+
+*Defined in [ethereum-types/src/index.ts:425](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L425)*
+
+___
+
+##  transactionIndex
+
+• **transactionIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionIndex](#transactionindex)*
+
+*Defined in [ethereum-types/src/index.ts:424](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L424)*
+
+<hr />
+
+# Interface: DecodedLogEntryEvent <**A**>
+
+### Type parameters
+
+▪ **A**
+
+### Hierarchy
+
+  * [DecodedLogEntry](#class-decodedlogentry)‹*`A`*›
+
+  * **DecodedLogEntryEvent**
+
+
+### Properties
+
+##  address
+
+• **address**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[address](#address)*
+
+*Defined in [ethereum-types/src/index.ts:428](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L428)*
+
+___
+
+##  args
+
+• **args**: *`A`*
+
+*Inherited from [DecodedLogEntry](_ethereum_types_src_index_.decodedlogentry.md).[args](#args)*
+
+*Defined in [ethereum-types/src/index.ts:411](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L411)*
+
+___
+
+##  blockHash
+
+• **blockHash**: *string | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockHash](#blockhash)*
+
+*Defined in [ethereum-types/src/index.ts:426](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L426)*
+
+___
+
+##  blockNumber
+
+• **blockNumber**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockNumber](#blocknumber)*
+
+*Defined in [ethereum-types/src/index.ts:427](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L427)*
+
+___
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[data](#data)*
+
+*Defined in [ethereum-types/src/index.ts:429](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L429)*
+
+___
+
+##  event
+
+• **event**: *string*
+
+*Inherited from [DecodedLogEntry](_ethereum_types_src_index_.decodedlogentry.md).[event](#event)*
+
+*Defined in [ethereum-types/src/index.ts:410](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L410)*
+
+___
+
+##  logIndex
+
+• **logIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[logIndex](#logindex)*
+
+*Defined in [ethereum-types/src/index.ts:423](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L423)*
+
+___
+
+##  removed
+
+• **removed**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:415](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L415)*
+
+___
+
+##  topics
+
+• **topics**: *string[]*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[topics](#topics)*
+
+*Defined in [ethereum-types/src/index.ts:430](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L430)*
+
+___
+
+##  transactionHash
+
+• **transactionHash**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionHash](#transactionhash)*
+
+*Defined in [ethereum-types/src/index.ts:425](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L425)*
+
+___
+
+##  transactionIndex
+
+• **transactionIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionIndex](#transactionindex)*
+
+*Defined in [ethereum-types/src/index.ts:424](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L424)*
+
+<hr />
+
+<hr />
+
+# Interface: EIP1193Provider
+
+### Hierarchy
+
+* **EIP1193Provider**
+
+
+### Properties
+
+##  isEIP1193
+
+• **isEIP1193**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L73)*
+
+### Methods
+
+##  on
+
+▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
+
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L75)*
+
+**Parameters:**
+
+▪ **event**: *[EIP1193Event](#eip1193event)*
+
+▪ **listener**: *function*
+
+▸ (`result`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`result` | any |
+
+**Returns:** *this*
+
+___
+
+##  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L74)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: FallbackAbi
+
+### Hierarchy
+
+* **FallbackAbi**
+
+
+### Properties
+
+##  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:112](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L112)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:111](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L111)*
+
+<hr />
+
+<hr />
+
+# Interface: GanacheProvider
+
+### Hierarchy
+
+* **GanacheProvider**
+
+
+### Methods
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L14)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+<hr />
+
+# Interface: JSONRPCRequestPayload
+
+### Hierarchy
+
+* **JSONRPCRequestPayload**
+
+
+### Properties
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L324)*
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L325)*
+
+___
+
+##  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L323)*
+
+___
+
+##  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L322)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+### Hierarchy
+
+* **JSONRPCResponseError**
+
+
+### Properties
+
+##  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+##  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L329)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+### Hierarchy
+
+* **JSONRPCResponsePayload**
+
+
+### Properties
+
+## `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L337)*
+
+___
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L335)*
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+##  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L334)*
+
+<hr />
+
+# Interface: LogEntry
+
+### Hierarchy
+
+* **LogEntry**
+
+  * [DecodedLogEntry](#class-decodedlogentry)
+
+  * [LogEntryEvent](#class-logentryevent)
+
+
+### Properties
+
+##  address
+
+• **address**: *string*
+
+*Defined in [ethereum-types/src/index.ts:428](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L428)*
+
+___
+
+##  blockHash
+
+• **blockHash**: *string | null*
+
+*Defined in [ethereum-types/src/index.ts:426](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L426)*
+
+___
+
+##  blockNumber
+
+• **blockNumber**: *number | null*
+
+*Defined in [ethereum-types/src/index.ts:427](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L427)*
+
+___
+
+##  data
+
+• **data**: *string*
+
+*Defined in [ethereum-types/src/index.ts:429](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L429)*
+
+___
+
+##  logIndex
+
+• **logIndex**: *number | null*
+
+*Defined in [ethereum-types/src/index.ts:423](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L423)*
+
+___
+
+##  topics
+
+• **topics**: *string[]*
+
+*Defined in [ethereum-types/src/index.ts:430](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L430)*
+
+___
+
+##  transactionHash
+
+• **transactionHash**: *string*
+
+*Defined in [ethereum-types/src/index.ts:425](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L425)*
+
+___
+
+##  transactionIndex
+
+• **transactionIndex**: *number | null*
+
+*Defined in [ethereum-types/src/index.ts:424](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L424)*
+
+<hr />
+
+# Interface: LogEntryEvent
+
+### Hierarchy
+
+* [LogEntry](#class-logentry)
+
+  * **LogEntryEvent**
+
+
+### Properties
+
+##  address
+
+• **address**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[address](#address)*
+
+*Defined in [ethereum-types/src/index.ts:428](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L428)*
+
+___
+
+##  blockHash
+
+• **blockHash**: *string | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockHash](#blockhash)*
+
+*Defined in [ethereum-types/src/index.ts:426](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L426)*
+
+___
+
+##  blockNumber
+
+• **blockNumber**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockNumber](#blocknumber)*
+
+*Defined in [ethereum-types/src/index.ts:427](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L427)*
+
+___
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[data](#data)*
+
+*Defined in [ethereum-types/src/index.ts:429](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L429)*
+
+___
+
+##  logIndex
+
+• **logIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[logIndex](#logindex)*
+
+*Defined in [ethereum-types/src/index.ts:423](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L423)*
+
+___
+
+##  removed
+
+• **removed**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:419](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L419)*
+
+___
+
+##  topics
+
+• **topics**: *string[]*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[topics](#topics)*
+
+*Defined in [ethereum-types/src/index.ts:430](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L430)*
+
+___
+
+##  transactionHash
+
+• **transactionHash**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionHash](#transactionhash)*
+
+*Defined in [ethereum-types/src/index.ts:425](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L425)*
+
+___
+
+##  transactionIndex
+
+• **transactionIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionIndex](#transactionindex)*
+
+*Defined in [ethereum-types/src/index.ts:424](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L424)*
+
+<hr />
+
+# Interface: LogWithDecodedArgs <**ArgsType**>
+
+### Type parameters
+
+▪ **ArgsType**: *[DecodedLogArgs](#class-decodedlogargs)*
+
+### Hierarchy
+
+  * [DecodedLogEntry](#class-decodedlogentry)‹*`ArgsType`*›
+
+  * **LogWithDecodedArgs**
+
+
+### Properties
+
+##  address
+
+• **address**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[address](#address)*
+
+*Defined in [ethereum-types/src/index.ts:428](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L428)*
+
+___
+
+##  args
+
+• **args**: *`ArgsType`*
+
+*Inherited from [DecodedLogEntry](_ethereum_types_src_index_.decodedlogentry.md).[args](#args)*
+
+*Defined in [ethereum-types/src/index.ts:411](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L411)*
+
+___
+
+##  blockHash
+
+• **blockHash**: *string | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockHash](#blockhash)*
+
+*Defined in [ethereum-types/src/index.ts:426](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L426)*
+
+___
+
+##  blockNumber
+
+• **blockNumber**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[blockNumber](#blocknumber)*
+
+*Defined in [ethereum-types/src/index.ts:427](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L427)*
+
+___
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[data](#data)*
+
+*Defined in [ethereum-types/src/index.ts:429](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L429)*
+
+___
+
+##  event
+
+• **event**: *string*
+
+*Inherited from [DecodedLogEntry](_ethereum_types_src_index_.decodedlogentry.md).[event](#event)*
+
+*Defined in [ethereum-types/src/index.ts:410](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L410)*
+
+___
+
+##  logIndex
+
+• **logIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[logIndex](#logindex)*
+
+*Defined in [ethereum-types/src/index.ts:423](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L423)*
+
+___
+
+##  topics
+
+• **topics**: *string[]*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[topics](#topics)*
+
+*Defined in [ethereum-types/src/index.ts:430](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L430)*
+
+___
+
+##  transactionHash
+
+• **transactionHash**: *string*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionHash](#transactionhash)*
+
+*Defined in [ethereum-types/src/index.ts:425](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L425)*
+
+___
+
+##  transactionIndex
+
+• **transactionIndex**: *number | null*
+
+*Inherited from [LogEntry](_ethereum_types_src_index_.logentry.md).[transactionIndex](#transactionindex)*
+
+*Defined in [ethereum-types/src/index.ts:424](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L424)*
+
+<hr />
+
+# Interface: MethodAbi
+
+### Hierarchy
+
+* **MethodAbi**
+
+
+### Properties
+
+##  constant
+
+• **constant**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L94)*
+
+___
+
+##  inputs
+
+• **inputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L92)*
+
+___
+
+##  name
+
+• **name**: *string*
+
+*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L91)*
+
+___
+
+##  outputs
+
+• **outputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L93)*
+
+___
+
+##  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L96)*
+
+___
+
+##  stateMutability
+
+• **stateMutability**: *[StateMutability](#statemutability)*
+
+*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L95)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L90)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: TupleDataItem
+
+### Hierarchy
+
+* [DataItem](#class-dataitem)
+
+  * **TupleDataItem**
+
+
+### Properties
+
+##  components
+
+• **components**: *[DataItem](#class-dataitem)[]*
+
+*Overrides [DataItem](_ethereum_types_src_index_.dataitem.md).[components](#optional-components)*
+
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L135)*
+
+___
+
+##  name
+
+• **name**: *string*
+
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[name](#name)*
+
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L129)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[type](#type)*
+
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L130)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: Web3JsV1Provider
+
+Web3.js version 1 provider interface
+This provider interface was implemented in the pre-1.0Beta releases for Web3.js.
+This interface allowed sending synchonous requests, support for which was later dropped.
+
+### Hierarchy
+
+* **Web3JsV1Provider**
+
+
+### Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L45)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+
+**Returns:** *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L44)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV2Provider
+
+Web3.js version 2 provider interface
+This provider interface was used in a couple of Web3.js 1.0 beta releases
+before the first attempts to conform to EIP1193
+
+### Hierarchy
+
+* **Web3JsV2Provider**
+
+
+### Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L54)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV3Provider
+
+Web3.js version 3 provider interface
+This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+however it does not conform entirely.
+
+### Hierarchy
+
+* **Web3JsV3Provider**
+
+
+### Methods
+
+##  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L63)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+# Interface: ZeroExProvider
+
+The interface for the provider used internally by 0x libraries
+Any property we use from any SupportedProvider should we explicitly
+add here
+
+### Hierarchy
+
+* **ZeroExProvider**
+
+
+### Properties
+
+## `Optional` isMetaMask
+
+• **isMetaMask**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L31)*
+
+___
+
+## `Optional` isParity
+
+• **isParity**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L32)*
+
+___
+
+## `Optional` isZeroExProvider
+
+• **isZeroExProvider**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L30)*
+
+### Methods
+
+## `Optional` enable
+
+▸ **enable**(): *`Promise<void>`*
+
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L34)*
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L35)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+___
+
+## `Optional` stop
+
+▸ **stop**(): *void*
+
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L33)*
+
+**Returns:** *void*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: JSONRPCRequestPayloadWithMethod
+
+### Hierarchy
+
+* `JSONRPCRequestPayload`
+
+  * **JSONRPCRequestPayloadWithMethod**
+
+
+### Properties
+
+##  id
+
+• **id**: *number*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:262
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:263
+
+___
+
+##  method
+
+• **method**: *string*
+
+*Overrides void*
+
+*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/subproviders/src/types.ts#L136)*
+
+___
+
+##  params
+
+• **params**: *any[]*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:260
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: DutchAuctionData
+
+### Hierarchy
+
+* **DutchAuctionData**
+
+
+### Properties
+
+##  assetData
+
+• **assetData**: *[AssetData](#assetdata)*
+
+*Defined in [types/src/index.ts:223](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L223)*
+
+___
+
+##  beginAmount
+
+• **beginAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:225](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L225)*
+
+___
+
+##  beginTimeSeconds
+
+• **beginTimeSeconds**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:224](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L224)*
+
+<hr />
+
+<hr />
+
+# Interface: ECSignature
+
+Elliptic Curve signature
+
+### Hierarchy
+
+* **ECSignature**
+
+
+### Properties
+
+##  r
+
+• **r**: *string*
+
+*Defined in [types/src/index.ts:68](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L68)*
+
+___
+
+##  s
+
+• **s**: *string*
+
+*Defined in [types/src/index.ts:69](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L69)*
+
+___
+
+##  v
+
+• **v**: *number*
+
+*Defined in [types/src/index.ts:67](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L67)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: ERC1155AssetData
+
+### Hierarchy
+
+* **ERC1155AssetData**
+
+
+### Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:187](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L187)*
+
+___
+
+##  callbackData
+
+• **callbackData**: *string*
+
+*Defined in [types/src/index.ts:191](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L191)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:188](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L188)*
+
+___
+
+##  tokenIds
+
+• **tokenIds**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:189](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L189)*
+
+___
+
+##  tokenValues
+
+• **tokenValues**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:190](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L190)*
+
+<hr />
+
+<hr />
+
+# Interface: ERC20AssetData
+
+### Hierarchy
+
+* **ERC20AssetData**
+
+
+### Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:176](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L176)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:177](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L177)*
+
+<hr />
+
+# Interface: ERC721AssetData
+
+### Hierarchy
+
+* **ERC721AssetData**
+
+
+### Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:181](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L181)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:182](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L182)*
+
+___
+
+##  tokenId
+
+• **tokenId**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:183](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L183)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: MultiAssetData
+
+### Hierarchy
+
+* **MultiAssetData**
+
+
+### Properties
+
+##  amounts
+
+• **amounts**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:212](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L212)*
+
+___
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:211](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L211)*
+
+___
+
+##  nestedAssetData
+
+• **nestedAssetData**: *string[]*
+
+*Defined in [types/src/index.ts:213](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L213)*
+
+<hr />
+
+# Interface: MultiAssetDataWithRecursiveDecoding
+
+### Hierarchy
+
+* **MultiAssetDataWithRecursiveDecoding**
+
+
+### Properties
+
+##  amounts
+
+• **amounts**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:218](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L218)*
+
+___
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:217](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L217)*
+
+___
+
+##  nestedAssetData
+
+• **nestedAssetData**: *[SingleAssetData](#singleassetdata)[]*
+
+*Defined in [types/src/index.ts:219](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L219)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: SignedOrder
+
+### Hierarchy
+
+* [Order](#class-order)
+
+  * **SignedOrder**
+
+
+### Properties
+
+##  exchangeAddress
+
+• **exchangeAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[exchangeAddress](#exchangeaddress)*
+
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L20)*
+
+___
+
+##  expirationTimeSeconds
+
+• **expirationTimeSeconds**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[expirationTimeSeconds](#expirationtimeseconds)*
+
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L22)*
+
+___
+
+##  feeRecipientAddress
+
+• **feeRecipientAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[feeRecipientAddress](#feerecipientaddress)*
+
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L21)*
+
+___
+
+##  makerAddress
+
+• **makerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAddress](#makeraddress)*
+
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L11)*
+
+___
+
+##  makerAssetAmount
+
+• **makerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetAmount](#makerassetamount)*
+
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L15)*
+
+___
+
+##  makerAssetData
+
+• **makerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetData](#makerassetdata)*
+
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L17)*
+
+___
+
+##  makerFee
+
+• **makerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerFee](#makerfee)*
+
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L13)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[salt](#salt)*
+
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L19)*
+
+___
+
+##  senderAddress
+
+• **senderAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[senderAddress](#senderaddress)*
+
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L10)*
+
+___
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L41)*
+
+___
+
+##  takerAddress
+
+• **takerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAddress](#takeraddress)*
+
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L12)*
+
+___
+
+##  takerAssetAmount
+
+• **takerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetAmount](#takerassetamount)*
+
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L16)*
+
+___
+
+##  takerAssetData
+
+• **takerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetData](#takerassetdata)*
+
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L18)*
+
+___
+
+##  takerFee
+
+• **takerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerFee](#takerfee)*
+
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L14)*
+
+<hr />
+
+# Interface: SignedZeroExTransaction
+
+### Hierarchy
+
+* [ZeroExTransaction](#class-zeroextransaction)
+
+  * **SignedZeroExTransaction**
+
+
+### Properties
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[data](#data)*
+
+*Defined in [types/src/index.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L56)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[salt](#salt)*
+
+*Defined in [types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L54)*
+
+___
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:60](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L60)*
+
+___
+
+##  signerAddress
+
+• **signerAddress**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[signerAddress](#signeraddress)*
+
+*Defined in [types/src/index.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L55)*
+
+___
+
+##  verifyingContractAddress
+
+• **verifyingContractAddress**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[verifyingContractAddress](#verifyingcontractaddress)*
+
+*Defined in [types/src/index.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L53)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: StaticCallAssetData
+
+### Hierarchy
+
+* **StaticCallAssetData**
+
+
+### Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:195](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L195)*
+
+___
+
+##  callResultHash
+
+• **callResultHash**: *string*
+
+*Defined in [types/src/index.ts:198](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L198)*
+
+___
+
+##  callTarget
+
+• **callTarget**: *string*
+
+*Defined in [types/src/index.ts:196](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L196)*
+
+___
+
+##  staticCallData
+
+• **staticCallData**: *string*
+
+*Defined in [types/src/index.ts:197](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L197)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: ValidatorSignature
+
+Validator signature components
+
+### Hierarchy
+
+* **ValidatorSignature**
+
+
+### Properties
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:77](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L77)*
+
+___
+
+##  validatorAddress
+
+• **validatorAddress**: *string*
+
+*Defined in [types/src/index.ts:76](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L76)*
+
+<hr />
+
+# Interface: ZeroExTransaction
+
+ZeroExTransaction for use with 0x Exchange executeTransaction
+
+### Hierarchy
+
+* **ZeroExTransaction**
+
+  * [SignedZeroExTransaction](#class-signedzeroextransaction)
+
+
+### Properties
+
+##  data
+
+• **data**: *string*
+
+*Defined in [types/src/index.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L56)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L54)*
+
+___
+
+##  signerAddress
+
+• **signerAddress**: *string*
+
+*Defined in [types/src/index.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L55)*
+
+___
+
+##  verifyingContractAddress
+
+• **verifyingContractAddress**: *string*
+
+*Defined in [types/src/index.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L53)*
+
+<hr />
+

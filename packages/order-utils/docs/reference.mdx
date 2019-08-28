@@ -8,14 +8,13 @@ for an Ethereum address and assetData
 
 * **AbstractBalanceAndProxyAllowanceFetcher**
 
-
-### Methods
+###  Methods
 
 ## `Abstract` getBalanceAsync
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L15)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L15)*
 
 Get balance of assetData for userAddress
 
@@ -36,7 +35,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L22)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L22)*
 
 Get the 0x asset proxy allowance of assetData for userAddress
 
@@ -63,14 +62,13 @@ Allowance amount in base units
 
 * [BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)
 
-
-### Methods
+###  Methods
 
 ## `Abstract` deleteAll
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L10)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L10)*
 
 **Returns:** *void*
 
@@ -80,7 +78,7 @@ ___
 
 ▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L7)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L7)*
 
 **Parameters:**
 
@@ -97,7 +95,7 @@ ___
 
 ▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L9)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L9)*
 
 **Parameters:**
 
@@ -114,7 +112,7 @@ ___
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L4)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:4](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L4)*
 
 **Parameters:**
 
@@ -131,7 +129,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L5)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L5)*
 
 **Parameters:**
 
@@ -148,7 +146,7 @@ ___
 
 ▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L6)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L6)*
 
 **Parameters:**
 
@@ -166,7 +164,7 @@ ___
 
 ▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L8)*
+*Defined in [order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L8)*
 
 **Parameters:**
 
@@ -190,14 +188,13 @@ and whether it's been cancelled.
 
 * **AbstractOrderFilledCancelledFetcher**
 
-
-### Methods
+###  Methods
 
 ## `Abstract` getFilledTakerAmountAsync
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L15)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L15)*
 
 Get the amount of the order's takerToken amount already filled
 
@@ -217,7 +214,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L22)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L22)*
 
 **Returns:** *string*
 
@@ -227,7 +224,7 @@ ___
 
 ▸ **isOrderCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L21)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L21)*
 
 Whether an order is cancelled
 
@@ -253,14 +250,13 @@ Whether or not the order is cancelled
 
 * [OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)
 
-
-### Methods
+###  Methods
 
 ## `Abstract` deleteAll
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L11)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L11)*
 
 **Returns:** *void*
 
@@ -270,7 +266,7 @@ ___
 
 ▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L8)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L8)*
 
 **Parameters:**
 
@@ -286,7 +282,7 @@ ___
 
 ▸ **deleteIsCancelled**(`orderHash`: string): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L10)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L10)*
 
 **Parameters:**
 
@@ -302,7 +298,7 @@ ___
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L5)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L5)*
 
 **Parameters:**
 
@@ -318,7 +314,7 @@ ___
 
 ▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L6)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L6)*
 
 **Parameters:**
 
@@ -334,7 +330,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L12)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L12)*
 
 **Returns:** *string*
 
@@ -344,7 +340,7 @@ ___
 
 ▸ **setFilledTakerAmount**(`orderHash`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L7)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L7)*
 
 **Parameters:**
 
@@ -361,7 +357,7 @@ ___
 
 ▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L9)*
+*Defined in [order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L9)*
 
 **Parameters:**
 
@@ -383,14 +379,13 @@ An exchange transfer simulator which simulates asset transfers exactly how the
 
 * **ExchangeTransferSimulator**
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new ExchangeTransferSimulator**(`store`: [AbstractBalanceAndProxyAllowanceLazyStore](_abstract_abstract_balance_and_proxy_allowance_lazy_store_.abstractbalanceandproxyallowancelazystore.md)): *[ExchangeTransferSimulator](#class-exchangetransfersimulator)*
+\+ **new ExchangeTransferSimulator**(`store`: [AbstractBalanceAndProxyAllowanceLazyStore](_order_utils_src_abstract_abstract_balance_and_proxy_allowance_lazy_store_.abstractbalanceandproxyallowancelazystore.md)): *[ExchangeTransferSimulator](#class-exchangetransfersimulator)*
 
-*Defined in [exchange_transfer_simulator.ts:50](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/exchange_transfer_simulator.ts#L50)*
+*Defined in [order-utils/src/exchange_transfer_simulator.ts:50](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/exchange_transfer_simulator.ts#L50)*
 
 Instantiate a ExchangeTransferSimulator
 
@@ -410,7 +405,7 @@ an instance of ExchangeTransferSimulator
 
 ▸ **transferFromAsync**(`assetData`: string, `from`: string, `to`: string, `amountInBaseUnits`: `BigNumber`, `tradeSide`: [TradeSide](#enumeration-tradeside), `transferType`: [TransferType](#enumeration-transfertype)): *`Promise<void>`*
 
-*Defined in [exchange_transfer_simulator.ts:70](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/exchange_transfer_simulator.ts#L70)*
+*Defined in [order-utils/src/exchange_transfer_simulator.ts:70](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/exchange_transfer_simulator.ts#L70)*
 
 Simulates transferFrom call performed by a proxy
 
@@ -435,14 +430,13 @@ Name | Type | Description |
 
 * **OrderStateUtils**
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new OrderStateUtils**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md), `orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderStateUtils](#class-orderstateutils)*
+\+ **new OrderStateUtils**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_order_utils_src_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md), `orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_order_utils_src_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderStateUtils](#class-orderstateutils)*
 
-*Defined in [order_state_utils.ts:98](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L98)*
+*Defined in [order-utils/src/order_state_utils.ts:98](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_state_utils.ts#L98)*
 
 Instantiate OrderStateUtils
 
@@ -463,7 +457,7 @@ Instance of OrderStateUtils
 
 ▸ **getMaxFillableTakerAssetAmountAsync**(`signedOrder`: `SignedOrder`, `takerAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [order_state_utils.ts:192](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L192)*
+*Defined in [order-utils/src/order_state_utils.ts:192](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_state_utils.ts#L192)*
 
 Get the max amount of the supplied order's takerAmount that could still be filled
 
@@ -484,7 +478,7 @@ ___
 
 ▸ **getOpenOrderRelevantStateAsync**(`signedOrder`: `SignedOrder`): *`Promise<OrderRelevantState>`*
 
-*Defined in [order_state_utils.ts:162](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L162)*
+*Defined in [order-utils/src/order_state_utils.ts:162](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_state_utils.ts#L162)*
 
 Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
 
@@ -504,7 +498,7 @@ ___
 
 ▸ **getOpenOrderStateAsync**(`signedOrder`: `SignedOrder`, `transactionHash?`: undefined | string): *`Promise<OrderState>`*
 
-*Defined in [order_state_utils.ts:122](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_state_utils.ts#L122)*
+*Defined in [order-utils/src/order_state_utils.ts:122](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_state_utils.ts#L122)*
 
 Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
 This method will only check the maker's balance/allowance to calculate the
@@ -532,14 +526,13 @@ A utility class for validating orders
 
 * **OrderValidationUtils**
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new OrderValidationUtils**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md), `supportedProvider`: `SupportedProvider`): *[OrderValidationUtils](#class-ordervalidationutils)*
+\+ **new OrderValidationUtils**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_order_utils_src_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md), `supportedProvider`: [SupportedProvider](../modules/_ethereum_types_src_index_.md#supportedprovider)): *[OrderValidationUtils](#class-ordervalidationutils)*
 
-*Defined in [order_validation_utils.ts:159](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L159)*
+*Defined in [order-utils/src/order_validation_utils.ts:159](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L159)*
 
 Instantiate OrderValidationUtils
 
@@ -548,7 +541,7 @@ Instantiate OrderValidationUtils
 Name | Type | Description |
 ------ | ------ | ------ |
 `orderFilledCancelledFetcher` | [AbstractOrderFilledCancelledFetcher](#class-abstractorderfilledcancelledfetcher) | A module that implements the AbstractOrderFilledCancelledFetcher |
-`supportedProvider` | `SupportedProvider` | Web3 provider to use for JSON RPC calls |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for JSON RPC calls |
 
 **Returns:** *[OrderValidationUtils](#class-ordervalidationutils)*
 
@@ -558,9 +551,9 @@ An instance of OrderValidationUtils
 
 ##  validateFillOrderThrowIfInvalidAsync
 
-▸ **validateFillOrderThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `takerAddress`: string, `zrxAssetData`: string): *`Promise<BigNumber>`*
+▸ **validateFillOrderThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](_order_utils_src_exchange_transfer_simulator_.exchangetransfersimulator.md), `supportedProvider`: [SupportedProvider](#supportedprovider), `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `takerAddress`: string, `zrxAssetData`: string): *`Promise<BigNumber>`*
 
-*Defined in [order_validation_utils.ts:237](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L237)*
+*Defined in [order-utils/src/order_validation_utils.ts:237](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L237)*
 
 Validate a call to FillOrder and throw if it wouldn't succeed
 
@@ -569,7 +562,7 @@ Validate a call to FillOrder and throw if it wouldn't succeed
 Name | Type | Description |
 ------ | ------ | ------ |
 `exchangeTradeEmulator` | [ExchangeTransferSimulator](#class-exchangetransfersimulator) | ExchangeTradeEmulator to use |
-`supportedProvider` | `SupportedProvider` | Web3 provider to use for JSON RPC requests |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for JSON RPC requests |
 `signedOrder` | `SignedOrder` | SignedOrder of interest |
 `fillTakerAssetAmount` | `BigNumber` | Amount we'd like to fill the order for |
 `takerAddress` | string | The taker of the order |
@@ -583,7 +576,7 @@ ___
 
 ▸ **validateOrderFillableOrThrowAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `zrxAssetData`: string, `expectedFillTakerTokenAmount?`: `BigNumber`): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:185](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L185)*
+*Defined in [order-utils/src/order_validation_utils.ts:185](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L185)*
 
 Validate if the supplied order is fillable, and throw if it isn't
 
@@ -604,7 +597,7 @@ ___
 
 ▸ **isRoundingErrorFloor**(`numerator`: `BigNumber`, `denominator`: `BigNumber`, `target`: `BigNumber`): *boolean*
 
-*Defined in [order_validation_utils.ts:34](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L34)*
+*Defined in [order-utils/src/order_validation_utils.ts:34](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L34)*
 
 A Typescript implementation mirroring the implementation of isRoundingError in the
 Exchange smart contract
@@ -625,7 +618,7 @@ ___
 
 ▸ **validateFillOrderBalancesAllowancesThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `senderAddress`: string, `zrxAssetData`: string): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:61](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L61)*
+*Defined in [order-utils/src/order_validation_utils.ts:61](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L61)*
 
 Validate that the maker & taker have sufficient balances/allowances
 to fill the supplied order to the fillTakerAssetAmount amount
@@ -646,9 +639,9 @@ ___
 
 ## `Static` validateMakerTransferThrowIfInvalidAsync
 
-▸ **validateMakerTransferThrowIfInvalidAsync**(`networkId`: `NetworkId`, `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `makerAssetAmount`: `BigNumber`, `takerAddress?`: undefined | string): *`Promise<void>`*
+▸ **validateMakerTransferThrowIfInvalidAsync**(`networkId`: `NetworkId`, `supportedProvider`: [SupportedProvider](#supportedprovider), `signedOrder`: `SignedOrder`, `makerAssetAmount`: `BigNumber`, `takerAddress?`: undefined | string): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:127](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/order_validation_utils.ts#L127)*
+*Defined in [order-utils/src/order_validation_utils.ts:127](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_validation_utils.ts#L127)*
 
 Validate the transfer from the maker to the taker. This is simulated on-chain
 via an eth_call. If this call fails, the asset is currently nontransferable.
@@ -658,52 +651,12 @@ via an eth_call. If this call fails, the asset is currently nontransferable.
 Name | Type | Description |
 ------ | ------ | ------ |
 `networkId` | `NetworkId` | - |
-`supportedProvider` | `SupportedProvider` | - |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - |
 `signedOrder` | `SignedOrder` | SignedOrder of interest |
 `makerAssetAmount` | `BigNumber` | Amount to transfer from the maker |
 `takerAddress?` | undefined \| string | The address to transfer to, defaults to signedOrder.takerAddress  |
 
 **Returns:** *`Promise<void>`*
-
-<hr />
-
-# Class: RemainingFillableCalculator
-
-### Hierarchy
-
-* **RemainingFillableCalculator**
-
-
-### Constructors
-
-##  constructer
-
-\+ **new RemainingFillableCalculator**(`orderFee`: `BigNumber`, `orderAssetAmount`: `BigNumber`, `isTraderAssetZRX`: boolean, `transferrableAssetAmount`: `BigNumber`, `transferrableFeeAmount`: `BigNumber`, `remainingOrderAssetAmount`: `BigNumber`): *[RemainingFillableCalculator](#class-remainingfillablecalculator)*
-
-*Defined in [remaining_fillable_calculator.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/remaining_fillable_calculator.ts#L11)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`orderFee` | `BigNumber` |
-`orderAssetAmount` | `BigNumber` |
-`isTraderAssetZRX` | boolean |
-`transferrableAssetAmount` | `BigNumber` |
-`transferrableFeeAmount` | `BigNumber` |
-`remainingOrderAssetAmount` | `BigNumber` |
-
-**Returns:** *[RemainingFillableCalculator](#class-remainingfillablecalculator)*
-
-### Methods
-
-##  computeRemainingFillable
-
-▸ **computeRemainingFillable**(): *`BigNumber`*
-
-*Defined in [remaining_fillable_calculator.ts:30](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/remaining_fillable_calculator.ts#L30)*
-
-**Returns:** *`BigNumber`*
 
 <hr />
 
@@ -719,14 +672,13 @@ Copy on read store for balances/proxyAllowances of tokens/accounts
 
 * [AbstractBalanceAndProxyAllowanceLazyStore](#class-abstractbalanceandproxyallowancelazystore)
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new BalanceAndProxyAllowanceLazyStore**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md)): *[BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)*
+\+ **new BalanceAndProxyAllowanceLazyStore**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](_order_utils_src_abstract_abstract_balance_and_proxy_allowance_fetcher_.abstractbalanceandproxyallowancefetcher.md)): *[BalanceAndProxyAllowanceLazyStore](#class-balanceandproxyallowancelazystore)*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L23)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:23](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L23)*
 
 Instantiates a BalanceAndProxyAllowanceLazyStore
 
@@ -746,7 +698,7 @@ Instance of BalanceAndProxyAllowanceLazyStore
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:136](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L136)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:136](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L136)*
 
 Delete all balances & allowances
 
@@ -758,7 +710,7 @@ ___
 
 ▸ **deleteAllERC721ProxyAllowance**(`tokenAddress`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:119](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L119)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:119](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L119)*
 
 Clear all ERC721 0x proxy allowances a user has on all items of a specific ERC721 contract
 
@@ -777,7 +729,7 @@ ___
 
 ▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L63)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L63)*
 
 Clear the balance of an asset for a user
 
@@ -796,7 +748,7 @@ ___
 
 ▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:106](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L106)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:106](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L106)*
 
 Clear the 0x asset proxy allowance
 
@@ -815,7 +767,7 @@ ___
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L39)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:39](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L39)*
 
 Get a users balance of an asset
 
@@ -834,7 +786,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:76](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L76)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:76](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L76)*
 
 Get the 0x asset proxy allowance
 
@@ -853,7 +805,7 @@ ___
 
 ▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:52](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L52)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:52](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L52)*
 
 Set the balance of an asset for a user
 
@@ -873,7 +825,7 @@ ___
 
 ▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:95](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L95)*
+*Defined in [order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts:95](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L95)*
 
 Set the 0x asset proxy allowance
 
@@ -901,14 +853,13 @@ Copy on read store for balances/proxyAllowances of tokens/accounts
 
 * [AbstractOrderFilledCancelledLazyStore](#class-abstractorderfilledcancelledlazystore)
 
-
-### Constructors
+###  Constructors
 
 ##  constructer
 
-\+ **new OrderFilledCancelledLazyStore**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)*
+\+ **new OrderFilledCancelledLazyStore**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](_order_utils_src_abstract_abstract_order_filled_cancelled_fetcher_.abstractorderfilledcancelledfetcher.md)): *[OrderFilledCancelledLazyStore](#class-orderfilledcancelledlazystore)*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L19)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L19)*
 
 Instantiate a OrderFilledCancelledLazyStore
 
@@ -928,7 +879,7 @@ An instance of OrderFilledCancelledLazyStore
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:90](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L90)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:90](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L90)*
 
 Clear all filled/cancelled state
 
@@ -940,7 +891,7 @@ ___
 
 ▸ **deleteAllFilled**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:103](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L103)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:103](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L103)*
 
 Clear all filled state
 
@@ -952,7 +903,7 @@ ___
 
 ▸ **deleteAllIsCancelled**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:97](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L97)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:97](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L97)*
 
 Clear all cancelled state
 
@@ -964,7 +915,7 @@ ___
 
 ▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:55](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L55)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L55)*
 
 Clear the filledTakerAssetAmount of an order
 
@@ -982,7 +933,7 @@ ___
 
 ▸ **deleteIsCancelled**(`orderHash`: string): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:84](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L84)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:84](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L84)*
 
 Clear whether the order has been cancelled if already set
 
@@ -1000,7 +951,7 @@ ___
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:35](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L35)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L35)*
 
 Get the filledTakerAssetAmount of an order
 
@@ -1020,7 +971,7 @@ ___
 
 ▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L63)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L63)*
 
 Check if an order has been cancelled
 
@@ -1040,7 +991,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:109](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L109)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:109](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L109)*
 
 Get the ZRX assetData
 
@@ -1052,7 +1003,7 @@ ___
 
 ▸ **setFilledTakerAmount**(`orderHash`: string, `filledTakerAmount`: `BigNumber`): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L48)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:48](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L48)*
 
 Set the filledTakerAssetAmount of an order
 
@@ -1071,7 +1022,7 @@ ___
 
 ▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:77](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L77)*
+*Defined in [order-utils/src/store/order_filled_cancelled_lazy_store.ts:77](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L77)*
 
 Set whether an order has been cancelled or not
 
@@ -1086,16 +1037,23 @@ Name | Type | Description |
 
 <hr />
 
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
 # Enumeration: TradeSide
 
-
-### Enumeration members
+###  Enumeration members
 
 ##  Maker
 
 • **Maker**: = "maker"
 
-*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L9)*
+*Defined in [order-utils/src/types.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L9)*
 
 ___
 
@@ -1103,20 +1061,19 @@ ___
 
 • **Taker**: = "taker"
 
-*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L10)*
+*Defined in [order-utils/src/types.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L10)*
 
 <hr />
 
 # Enumeration: TransferType
 
-
-### Enumeration members
+###  Enumeration members
 
 ##  Fee
 
 • **Fee**: = "fee"
 
-*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L15)*
+*Defined in [order-utils/src/types.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L15)*
 
 ___
 
@@ -1124,20 +1081,19 @@ ___
 
 • **Trade**: = "trade"
 
-*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L14)*
+*Defined in [order-utils/src/types.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L14)*
 
 <hr />
 
 # Enumeration: TypedDataError
 
-
-### Enumeration members
+###  Enumeration members
 
 ##  InvalidMetamaskSigner
 
 • **InvalidMetamaskSigner**: = "MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0x/subproviders' package) in order to work with this method."
 
-*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L5)*
+*Defined in [order-utils/src/types.ts:5](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L5)*
 
 ___
 
@@ -1145,72 +1101,765 @@ ___
 
 • **InvalidSignature**: = "INVALID_SIGNATURE"
 
-*Defined in [types.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L4)*
+*Defined in [order-utils/src/types.ts:4](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L4)*
 
 <hr />
 
-# Interface: CreateOrderOpts
+# Enumeration: AssetProxyId
+
+###  Enumeration members
+
+##  ERC1155
+
+• **ERC1155**: = "0xa7cb5fb7"
+
+*Defined in [types/src/index.ts:171](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L171)*
+
+___
+
+##  ERC20
+
+• **ERC20**: = "0xf47261b0"
+
+*Defined in [types/src/index.ts:168](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L168)*
+
+___
+
+##  ERC721
+
+• **ERC721**: = "0x02571792"
+
+*Defined in [types/src/index.ts:169](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L169)*
+
+___
+
+##  MultiAsset
+
+• **MultiAsset**: = "0x94cfcdd7"
+
+*Defined in [types/src/index.ts:170](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L170)*
+
+___
+
+##  StaticCall
+
+• **StaticCall**: = "0xc339d10a"
+
+*Defined in [types/src/index.ts:172](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L172)*
+
+<hr />
+
+# Enumeration: ExchangeContractErrs
+
+Errors originating from the 0x exchange contract
+
+###  Enumeration members
+
+##  BatchOrdersMustHaveAtLeastOneItem
+
+• **BatchOrdersMustHaveAtLeastOneItem**: = "BATCH_ORDERS_MUST_HAVE_AT_LEAST_ONE_ITEM"
+
+*Defined in [types/src/index.ts:104](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L104)*
+
+___
+
+##  BatchOrdersMustHaveSameExchangeAddress
+
+• **BatchOrdersMustHaveSameExchangeAddress**: = "BATCH_ORDERS_MUST_HAVE_SAME_EXCHANGE_ADDRESS"
+
+*Defined in [types/src/index.ts:103](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L103)*
+
+___
+
+##  FillBalanceAllowanceError
+
+• **FillBalanceAllowanceError**: = "FILL_BALANCE_ALLOWANCE_ERROR"
+
+*Defined in [types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L90)*
+
+___
+
+##  InsufficientMakerAllowance
+
+• **InsufficientMakerAllowance**: = "INSUFFICIENT_MAKER_ALLOWANCE"
+
+*Defined in [types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L94)*
+
+___
+
+##  InsufficientMakerBalance
+
+• **InsufficientMakerBalance**: = "INSUFFICIENT_MAKER_BALANCE"
+
+*Defined in [types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L93)*
+
+___
+
+##  InsufficientMakerFeeAllowance
+
+• **InsufficientMakerFeeAllowance**: = "INSUFFICIENT_MAKER_FEE_ALLOWANCE"
+
+*Defined in [types/src/index.ts:98](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L98)*
+
+___
+
+##  InsufficientMakerFeeBalance
+
+• **InsufficientMakerFeeBalance**: = "INSUFFICIENT_MAKER_FEE_BALANCE"
+
+*Defined in [types/src/index.ts:97](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L97)*
+
+___
+
+##  InsufficientRemainingFillAmount
+
+• **InsufficientRemainingFillAmount**: = "INSUFFICIENT_REMAINING_FILL_AMOUNT"
+
+*Defined in [types/src/index.ts:101](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L101)*
+
+___
+
+##  InsufficientTakerAllowance
+
+• **InsufficientTakerAllowance**: = "INSUFFICIENT_TAKER_ALLOWANCE"
+
+*Defined in [types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L92)*
+
+___
+
+##  InsufficientTakerBalance
+
+• **InsufficientTakerBalance**: = "INSUFFICIENT_TAKER_BALANCE"
+
+*Defined in [types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L91)*
+
+___
+
+##  InsufficientTakerFeeAllowance
+
+• **InsufficientTakerFeeAllowance**: = "INSUFFICIENT_TAKER_FEE_ALLOWANCE"
+
+*Defined in [types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L96)*
+
+___
+
+##  InsufficientTakerFeeBalance
+
+• **InsufficientTakerFeeBalance**: = "INSUFFICIENT_TAKER_FEE_BALANCE"
+
+*Defined in [types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L95)*
+
+___
+
+##  MultipleMakersInSingleCancelBatchDisallowed
+
+• **MultipleMakersInSingleCancelBatchDisallowed**: = "MULTIPLE_MAKERS_IN_SINGLE_CANCEL_BATCH_DISALLOWED"
+
+*Defined in [types/src/index.ts:100](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L100)*
+
+___
+
+##  MultipleTakerTokensInFillUpToDisallowed
+
+• **MultipleTakerTokensInFillUpToDisallowed**: = "MULTIPLE_TAKER_TOKENS_IN_FILL_UP_TO_DISALLOWED"
+
+*Defined in [types/src/index.ts:102](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L102)*
+
+___
+
+##  OrderCancelExpired
+
+• **OrderCancelExpired**: = "ORDER_CANCEL_EXPIRED"
+
+*Defined in [types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L85)*
+
+___
+
+##  OrderCancelled
+
+• **OrderCancelled**: = "ORDER_CANCELLED"
+
+*Defined in [types/src/index.ts:86](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L86)*
+
+___
+
+##  OrderFillAmountZero
+
+• **OrderFillAmountZero**: = "ORDER_FILL_AMOUNT_ZERO"
+
+*Defined in [types/src/index.ts:87](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L87)*
+
+___
+
+##  OrderFillExpired
+
+• **OrderFillExpired**: = "ORDER_FILL_EXPIRED"
+
+*Defined in [types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L84)*
+
+___
+
+##  OrderFillRoundingError
+
+• **OrderFillRoundingError**: = "ORDER_FILL_ROUNDING_ERROR"
+
+*Defined in [types/src/index.ts:89](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L89)*
+
+___
+
+##  OrderRemainingFillAmountZero
+
+• **OrderRemainingFillAmountZero**: = "ORDER_REMAINING_FILL_AMOUNT_ZERO"
+
+*Defined in [types/src/index.ts:88](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L88)*
+
+___
+
+##  TransactionSenderIsNotFillOrderTaker
+
+• **TransactionSenderIsNotFillOrderTaker**: = "TRANSACTION_SENDER_IS_NOT_FILL_ORDER_TAKER"
+
+*Defined in [types/src/index.ts:99](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L99)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Enumeration: SignatureType
+
+###  Enumeration members
+
+##  EIP712
+
+• **EIP712**:
+
+*Defined in [types/src/index.ts:159](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L159)*
+
+___
+
+##  EthSign
+
+• **EthSign**:
+
+*Defined in [types/src/index.ts:160](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L160)*
+
+___
+
+##  Illegal
+
+• **Illegal**:
+
+*Defined in [types/src/index.ts:157](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L157)*
+
+___
+
+##  Invalid
+
+• **Invalid**:
+
+*Defined in [types/src/index.ts:158](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L158)*
+
+___
+
+##  NSignatureTypes
+
+• **NSignatureTypes**:
+
+*Defined in [types/src/index.ts:164](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L164)*
+
+___
+
+##  PreSigned
+
+• **PreSigned**:
+
+*Defined in [types/src/index.ts:163](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L163)*
+
+___
+
+##  Validator
+
+• **Validator**:
+
+*Defined in [types/src/index.ts:162](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L162)*
+
+___
+
+##  Wallet
+
+• **Wallet**:
+
+*Defined in [types/src/index.ts:161](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L161)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: EIP1193Provider
 
 ### Hierarchy
 
-* **CreateOrderOpts**
+* **EIP1193Provider**
 
+###  Properties
 
-### Properties
+##  isEIP1193
 
-## `Optional` expirationTimeSeconds
+• **isEIP1193**: *boolean*
 
-• **expirationTimeSeconds**? : *`BigNumber`*
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L73)*
 
-*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L25)*
+### Methods
 
-___
+##  on
 
-## `Optional` feeRecipientAddress
+▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
 
-• **feeRecipientAddress**? : *undefined | string*
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L75)*
 
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L23)*
+**Parameters:**
 
-___
+▪ **event**: *[EIP1193Event](#eip1193event)*
 
-## `Optional` makerFee
+▪ **listener**: *function*
 
-• **makerFee**? : *`BigNumber`*
+▸ (`result`: any): *void*
 
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L21)*
+**Parameters:**
 
-___
+Name | Type |
+------ | ------ |
+`result` | any |
 
-## `Optional` salt
-
-• **salt**? : *`BigNumber`*
-
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L24)*
-
-___
-
-## `Optional` senderAddress
-
-• **senderAddress**? : *undefined | string*
-
-*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L20)*
+**Returns:** *this*
 
 ___
 
-## `Optional` takerAddress
+##  send
 
-• **takerAddress**? : *undefined | string*
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L19)*
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L74)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: GanacheProvider
+
+### Hierarchy
+
+* **GanacheProvider**
+
+###  Methods
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L14)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+<hr />
+
+# Interface: JSONRPCRequestPayload
+
+### Hierarchy
+
+* **JSONRPCRequestPayload**
+
+###  Properties
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L324)*
 
 ___
 
-## `Optional` takerFee
+##  jsonrpc
 
-• **takerFee**? : *`BigNumber`*
+• **jsonrpc**: *string*
 
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L22)*
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L325)*
+
+___
+
+##  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L323)*
+
+___
+
+##  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L322)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+### Hierarchy
+
+* **JSONRPCResponseError**
+
+###  Properties
+
+##  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+##  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L329)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+### Hierarchy
+
+* **JSONRPCResponsePayload**
+
+###  Properties
+
+## `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L337)*
+
+___
+
+##  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L335)*
+
+___
+
+##  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+##  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L334)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: Web3JsV1Provider
+
+Web3.js version 1 provider interface
+This provider interface was implemented in the pre-1.0Beta releases for Web3.js.
+This interface allowed sending synchonous requests, support for which was later dropped.
+
+### Hierarchy
+
+* **Web3JsV1Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L45)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+
+**Returns:** *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L44)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV2Provider
+
+Web3.js version 2 provider interface
+This provider interface was used in a couple of Web3.js 1.0 beta releases
+before the first attempts to conform to EIP1193
+
+### Hierarchy
+
+* **Web3JsV2Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L54)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV3Provider
+
+Web3.js version 3 provider interface
+This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+however it does not conform entirely.
+
+### Hierarchy
+
+* **Web3JsV3Provider**
+
+###  Methods
+
+##  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L63)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+# Interface: ZeroExProvider
+
+The interface for the provider used internally by 0x libraries
+Any property we use from any SupportedProvider should we explicitly
+add here
+
+### Hierarchy
+
+* **ZeroExProvider**
+
+###  Properties
+
+## `Optional` isMetaMask
+
+• **isMetaMask**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L31)*
+
+___
+
+## `Optional` isParity
+
+• **isParity**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L32)*
+
+___
+
+## `Optional` isZeroExProvider
+
+• **isZeroExProvider**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L30)*
+
+### Methods
+
+## `Optional` enable
+
+▸ **enable**(): *`Promise<void>`*
+
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L34)*
+
+**Returns:** *`Promise<void>`*
+
+___
+
+##  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L35)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+___
+
+## `Optional` stop
+
+▸ **stop**(): *void*
+
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L33)*
+
+**Returns:** *void*
+
+<hr />
 
 <hr />
 
@@ -1224,14 +1873,13 @@ ___
 
 * **FeeOrdersAndRemainingFeeAmount**
 
-
-### Properties
+###  Properties
 
 ##  feeOrdersRemainingFillableMakerAssetAmounts
 
 • **feeOrdersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:70](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L70)*
+*Defined in [order-utils/src/types.ts:70](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L70)*
 
 ___
 
@@ -1239,7 +1887,7 @@ ___
 
 • **remainingFeeAmount**: *`BigNumber`*
 
-*Defined in [types.ts:71](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L71)*
+*Defined in [order-utils/src/types.ts:71](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L71)*
 
 ___
 
@@ -1247,7 +1895,7 @@ ___
 
 • **resultFeeOrders**: *`T`[]*
 
-*Defined in [types.ts:69](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L69)*
+*Defined in [order-utils/src/types.ts:69](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L69)*
 
 <hr />
 
@@ -1266,14 +1914,13 @@ Defaults to 0
 
 * **FindFeeOrdersThatCoverFeesForTargetOrdersOpts**
 
-
-### Properties
+###  Properties
 
 ## `Optional` remainingFillableFeeAmounts
 
 • **remainingFillableFeeAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L64)*
+*Defined in [order-utils/src/types.ts:64](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L64)*
 
 ___
 
@@ -1281,7 +1928,7 @@ ___
 
 • **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L63)*
+*Defined in [order-utils/src/types.ts:63](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L63)*
 
 ___
 
@@ -1289,7 +1936,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L65)*
+*Defined in [order-utils/src/types.ts:65](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L65)*
 
 <hr />
 
@@ -1305,14 +1952,13 @@ Defaults to 0
 
 * **FindOrdersThatCoverMakerAssetFillAmountOpts**
 
-
-### Properties
+###  Properties
 
 ## `Optional` remainingFillableMakerAssetAmounts
 
 • **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L36)*
+*Defined in [order-utils/src/types.ts:36](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L36)*
 
 ___
 
@@ -1320,7 +1966,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L37)*
+*Defined in [order-utils/src/types.ts:37](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L37)*
 
 <hr />
 
@@ -1336,14 +1982,13 @@ Defaults to 0
 
 * **FindOrdersThatCoverTakerAssetFillAmountOpts**
 
-
-### Properties
+###  Properties
 
 ## `Optional` remainingFillableTakerAssetAmounts
 
 • **remainingFillableTakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L48)*
+*Defined in [order-utils/src/types.ts:48](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L48)*
 
 ___
 
@@ -1351,7 +1996,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L49)*
+*Defined in [order-utils/src/types.ts:49](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L49)*
 
 <hr />
 
@@ -1365,14 +2010,13 @@ ___
 
 * **OrdersAndRemainingMakerFillAmount**
 
-
-### Properties
+###  Properties
 
 ##  ordersRemainingFillableMakerAssetAmounts
 
 • **ordersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L76)*
+*Defined in [order-utils/src/types.ts:76](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L76)*
 
 ___
 
@@ -1380,7 +2024,7 @@ ___
 
 • **remainingFillAmount**: *`BigNumber`*
 
-*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L77)*
+*Defined in [order-utils/src/types.ts:77](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L77)*
 
 ___
 
@@ -1388,7 +2032,7 @@ ___
 
 • **resultOrders**: *`T`[]*
 
-*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L75)*
+*Defined in [order-utils/src/types.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L75)*
 
 <hr />
 
@@ -1402,14 +2046,13 @@ ___
 
 * **OrdersAndRemainingTakerFillAmount**
 
-
-### Properties
+###  Properties
 
 ##  ordersRemainingFillableTakerAssetAmounts
 
 • **ordersRemainingFillableTakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:82](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L82)*
+*Defined in [order-utils/src/types.ts:82](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L82)*
 
 ___
 
@@ -1417,7 +2060,7 @@ ___
 
 • **remainingFillAmount**: *`BigNumber`*
 
-*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L83)*
+*Defined in [order-utils/src/types.ts:83](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L83)*
 
 ___
 
@@ -1425,7 +2068,2675 @@ ___
 
 • **resultOrders**: *`T`[]*
 
-*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/order-utils/src/types.ts#L81)*
+*Defined in [order-utils/src/types.ts:81](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/types.ts#L81)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+# Interface: DutchAuctionData
+
+### Hierarchy
+
+* **DutchAuctionData**
+
+###  Properties
+
+##  assetData
+
+• **assetData**: *[AssetData](#assetdata)*
+
+*Defined in [types/src/index.ts:223](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L223)*
+
+___
+
+##  beginAmount
+
+• **beginAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:225](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L225)*
+
+___
+
+##  beginTimeSeconds
+
+• **beginTimeSeconds**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:224](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L224)*
+
+<hr />
+
+<hr />
+
+# Interface: ECSignature
+
+Elliptic Curve signature
+
+### Hierarchy
+
+* **ECSignature**
+
+###  Properties
+
+##  r
+
+• **r**: *string*
+
+*Defined in [types/src/index.ts:68](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L68)*
+
+___
+
+##  s
+
+• **s**: *string*
+
+*Defined in [types/src/index.ts:69](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L69)*
+
+___
+
+##  v
+
+• **v**: *number*
+
+*Defined in [types/src/index.ts:67](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L67)*
+
+<hr />
+
+# Interface: EIP712DomainWithDefaultSchema
+
+### Hierarchy
+
+* **EIP712DomainWithDefaultSchema**
+
+###  Properties
+
+## `Optional` name
+
+• **name**? : *undefined | string*
+
+*Defined in [types/src/index.ts:783](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L783)*
+
+___
+
+##  verifyingContractAddress
+
+• **verifyingContractAddress**: *string*
+
+*Defined in [types/src/index.ts:785](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L785)*
+
+___
+
+## `Optional` version
+
+• **version**? : *undefined | string*
+
+*Defined in [types/src/index.ts:784](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L784)*
+
+<hr />
+
+# Interface: EIP712Object
+
+### Hierarchy
+
+* **EIP712Object**
+
+<hr /> 
+
+# Interface: EIP712Parameter
+
+### Hierarchy
+
+* **EIP712Parameter**
+
+###  Properties
+
+##  name
+
+• **name**: *string*
+
+*Defined in [types/src/index.ts:703](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L703)*
+
+___
+
+##  type
+
+• **type**: *string*
+
+*Defined in [types/src/index.ts:704](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L704)*
+
+<hr />
+
+# Interface: EIP712TypedData
+
+### Hierarchy
+
+* **EIP712TypedData**
+
+###  Properties
+
+##  domain
+
+• **domain**: *[EIP712Object](#class-eip712object)*
+
+*Defined in [types/src/index.ts:719](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L719)*
+
+___
+
+##  message
+
+• **message**: *[EIP712Object](#class-eip712object)*
+
+*Defined in [types/src/index.ts:720](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L720)*
+
+___
+
+##  primaryType
+
+• **primaryType**: *string*
+
+*Defined in [types/src/index.ts:721](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L721)*
+
+___
+
+##  types
+
+• **types**: *[EIP712Types](#class-eip712types)*
+
+*Defined in [types/src/index.ts:718](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L718)*
+
+<hr />
+
+# Interface: EIP712Types
+
+### Hierarchy
+
+* **EIP712Types**
+
+<hr /> 
+
+<hr />
+
+# Interface: ERC1155AssetData
+
+### Hierarchy
+
+* **ERC1155AssetData**
+
+###  Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:187](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L187)*
+
+___
+
+##  callbackData
+
+• **callbackData**: *string*
+
+*Defined in [types/src/index.ts:191](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L191)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:188](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L188)*
+
+___
+
+##  tokenIds
+
+• **tokenIds**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:189](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L189)*
+
+___
+
+##  tokenValues
+
+• **tokenValues**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:190](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L190)*
+
+<hr />
+
+<hr />
+
+# Interface: ERC20AssetData
+
+### Hierarchy
+
+* **ERC20AssetData**
+
+###  Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:176](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L176)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:177](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L177)*
+
+<hr />
+
+# Interface: ERC721AssetData
+
+### Hierarchy
+
+* **ERC721AssetData**
+
+###  Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:181](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L181)*
+
+___
+
+##  tokenAddress
+
+• **tokenAddress**: *string*
+
+*Defined in [types/src/index.ts:182](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L182)*
+
+___
+
+##  tokenId
+
+• **tokenId**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:183](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L183)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr /> 
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: MultiAssetData
+
+### Hierarchy
+
+* **MultiAssetData**
+
+###  Properties
+
+##  amounts
+
+• **amounts**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:212](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L212)*
+
+___
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:211](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L211)*
+
+___
+
+##  nestedAssetData
+
+• **nestedAssetData**: *string[]*
+
+*Defined in [types/src/index.ts:213](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L213)*
+
+<hr />
+
+# Interface: MultiAssetDataWithRecursiveDecoding
+
+### Hierarchy
+
+* **MultiAssetDataWithRecursiveDecoding**
+
+###  Properties
+
+##  amounts
+
+• **amounts**: *`BigNumber`[]*
+
+*Defined in [types/src/index.ts:218](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L218)*
+
+___
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:217](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L217)*
+
+___
+
+##  nestedAssetData
+
+• **nestedAssetData**: *[SingleAssetData](#singleassetdata)[]*
+
+*Defined in [types/src/index.ts:219](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L219)*
+
+<hr />
+
+# Interface: ObjectMap <**T**>
+
+### Type parameters
+
+▪ **T**
+
+### Hierarchy
+
+* **ObjectMap**
+
+<hr /> 
+
+# Interface: Order
+
+### Hierarchy
+
+* **Order**
+
+  * [SignedOrder](#class-signedorder)
+
+###  Properties
+
+##  exchangeAddress
+
+• **exchangeAddress**: *string*
+
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L20)*
+
+___
+
+##  expirationTimeSeconds
+
+• **expirationTimeSeconds**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L22)*
+
+___
+
+##  feeRecipientAddress
+
+• **feeRecipientAddress**: *string*
+
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L21)*
+
+___
+
+##  makerAddress
+
+• **makerAddress**: *string*
+
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L11)*
+
+___
+
+##  makerAssetAmount
+
+• **makerAssetAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L15)*
+
+___
+
+##  makerAssetData
+
+• **makerAssetData**: *string*
+
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L17)*
+
+___
+
+##  makerFee
+
+• **makerFee**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L13)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L19)*
+
+___
+
+##  senderAddress
+
+• **senderAddress**: *string*
+
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L10)*
+
+___
+
+##  takerAddress
+
+• **takerAddress**: *string*
+
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L12)*
+
+___
+
+##  takerAssetAmount
+
+• **takerAssetAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L16)*
+
+___
+
+##  takerAssetData
+
+• **takerAssetData**: *string*
+
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L18)*
+
+___
+
+##  takerFee
+
+• **takerFee**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L14)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: OrderRelevantState
+
+### Hierarchy
+
+* **OrderRelevantState**
+
+###  Properties
+
+##  filledTakerAssetAmount
+
+• **filledTakerAssetAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:128](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L128)*
+
+___
+
+##  makerBalance
+
+• **makerBalance**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:122](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L122)*
+
+___
+
+##  makerFeeBalance
+
+• **makerFeeBalance**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:126](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L126)*
+
+___
+
+##  makerFeeProxyAllowance
+
+• **makerFeeProxyAllowance**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:127](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L127)*
+
+___
+
+##  makerIndividualBalances
+
+• **makerIndividualBalances**: *[ObjectMap](#class-objectmap)‹*`BigNumber`*›*
+
+*Defined in [types/src/index.ts:123](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L123)*
+
+___
+
+##  makerIndividualProxyAllowances
+
+• **makerIndividualProxyAllowances**: *[ObjectMap](#class-objectmap)‹*`BigNumber`*›*
+
+*Defined in [types/src/index.ts:125](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L125)*
+
+___
+
+##  makerProxyAllowance
+
+• **makerProxyAllowance**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:124](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L124)*
+
+___
+
+##  remainingFillableMakerAssetAmount
+
+• **remainingFillableMakerAssetAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L129)*
+
+___
+
+##  remainingFillableTakerAssetAmount
+
+• **remainingFillableTakerAssetAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L130)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: OrderStateInvalid
+
+### Hierarchy
+
+* **OrderStateInvalid**
+
+###  Properties
+
+##  error
+
+• **error**: *[ExchangeContractErrs](#enumeration-exchangecontracterrs)*
+
+*Defined in [types/src/index.ts:143](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L143)*
+
+___
+
+##  isValid
+
+• **isValid**: *false*
+
+*Defined in [types/src/index.ts:141](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L141)*
+
+___
+
+##  orderHash
+
+• **orderHash**: *string*
+
+*Defined in [types/src/index.ts:142](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L142)*
+
+___
+
+## `Optional` transactionHash
+
+• **transactionHash**? : *undefined | string*
+
+*Defined in [types/src/index.ts:144](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L144)*
+
+<hr />
+
+# Interface: OrderStateValid
+
+### Hierarchy
+
+* **OrderStateValid**
+
+###  Properties
+
+##  isValid
+
+• **isValid**: *true*
+
+*Defined in [types/src/index.ts:134](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L134)*
+
+___
+
+##  orderHash
+
+• **orderHash**: *string*
+
+*Defined in [types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L135)*
+
+___
+
+##  orderRelevantState
+
+• **orderRelevantState**: *[OrderRelevantState](#class-orderrelevantstate)*
+
+*Defined in [types/src/index.ts:136](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L136)*
+
+___
+
+## `Optional` transactionHash
+
+• **transactionHash**? : *undefined | string*
+
+*Defined in [types/src/index.ts:137](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L137)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: SignedOrder
+
+### Hierarchy
+
+* [Order](#class-order)
+
+  * **SignedOrder**
+
+###  Properties
+
+##  exchangeAddress
+
+• **exchangeAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[exchangeAddress](#exchangeaddress)*
+
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L20)*
+
+___
+
+##  expirationTimeSeconds
+
+• **expirationTimeSeconds**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[expirationTimeSeconds](#expirationtimeseconds)*
+
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L22)*
+
+___
+
+##  feeRecipientAddress
+
+• **feeRecipientAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[feeRecipientAddress](#feerecipientaddress)*
+
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L21)*
+
+___
+
+##  makerAddress
+
+• **makerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAddress](#makeraddress)*
+
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L11)*
+
+___
+
+##  makerAssetAmount
+
+• **makerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetAmount](#makerassetamount)*
+
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L15)*
+
+___
+
+##  makerAssetData
+
+• **makerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerAssetData](#makerassetdata)*
+
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L17)*
+
+___
+
+##  makerFee
+
+• **makerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[makerFee](#makerfee)*
+
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L13)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[salt](#salt)*
+
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L19)*
+
+___
+
+##  senderAddress
+
+• **senderAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[senderAddress](#senderaddress)*
+
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L10)*
+
+___
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L41)*
+
+___
+
+##  takerAddress
+
+• **takerAddress**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAddress](#takeraddress)*
+
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L12)*
+
+___
+
+##  takerAssetAmount
+
+• **takerAssetAmount**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetAmount](#takerassetamount)*
+
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L16)*
+
+___
+
+##  takerAssetData
+
+• **takerAssetData**: *string*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerAssetData](#takerassetdata)*
+
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L18)*
+
+___
+
+##  takerFee
+
+• **takerFee**: *`BigNumber`*
+
+*Inherited from [Order](_types_src_index_.order.md).[takerFee](#takerfee)*
+
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L14)*
+
+<hr />
+
+# Interface: SignedZeroExTransaction
+
+### Hierarchy
+
+* [ZeroExTransaction](#class-zeroextransaction)
+
+  * **SignedZeroExTransaction**
+
+###  Properties
+
+##  data
+
+• **data**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[data](#data)*
+
+*Defined in [types/src/index.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L56)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[salt](#salt)*
+
+*Defined in [types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L54)*
+
+___
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:60](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L60)*
+
+___
+
+##  signerAddress
+
+• **signerAddress**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[signerAddress](#signeraddress)*
+
+*Defined in [types/src/index.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L55)*
+
+___
+
+##  verifyingContractAddress
+
+• **verifyingContractAddress**: *string*
+
+*Inherited from [ZeroExTransaction](_types_src_index_.zeroextransaction.md).[verifyingContractAddress](#verifyingcontractaddress)*
+
+*Defined in [types/src/index.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L53)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: StaticCallAssetData
+
+### Hierarchy
+
+* **StaticCallAssetData**
+
+###  Properties
+
+##  assetProxyId
+
+• **assetProxyId**: *string*
+
+*Defined in [types/src/index.ts:195](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L195)*
+
+___
+
+##  callResultHash
+
+• **callResultHash**: *string*
+
+*Defined in [types/src/index.ts:198](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L198)*
+
+___
+
+##  callTarget
+
+• **callTarget**: *string*
+
+*Defined in [types/src/index.ts:196](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L196)*
+
+___
+
+##  staticCallData
+
+• **staticCallData**: *string*
+
+*Defined in [types/src/index.ts:197](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L197)*
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr /> 
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+<hr />
+
+# Interface: ValidatorSignature
+
+Validator signature components
+
+### Hierarchy
+
+* **ValidatorSignature**
+
+###  Properties
+
+##  signature
+
+• **signature**: *string*
+
+*Defined in [types/src/index.ts:77](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L77)*
+
+___
+
+##  validatorAddress
+
+• **validatorAddress**: *string*
+
+*Defined in [types/src/index.ts:76](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L76)*
+
+<hr />
+
+# Interface: ZeroExTransaction
+
+ZeroExTransaction for use with 0x Exchange executeTransaction
+
+### Hierarchy
+
+* **ZeroExTransaction**
+
+  * [SignedZeroExTransaction](#class-signedzeroextransaction)
+
+###  Properties
+
+##  data
+
+• **data**: *string*
+
+*Defined in [types/src/index.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L56)*
+
+___
+
+##  salt
+
+• **salt**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L54)*
+
+___
+
+##  signerAddress
+
+• **signerAddress**: *string*
+
+*Defined in [types/src/index.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L55)*
+
+___
+
+##  verifyingContractAddress
+
+• **verifyingContractAddress**: *string*
+
+*Defined in [types/src/index.ts:53](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L53)*
+
+<hr />
+
+# External module: "abi-gen-wrappers/src/index"
+
+<hr />
+
+# External module: "ethereum-types/src/index"
+
+###  Type aliases
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+##  EIP1193Event
+
+Ƭ **EIP1193Event**: *"accountsChanged" | "networkChanged" | "close" | "connect" | "notification"*
+
+*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L70)*
+
+Interface for providers that conform to EIP 1193
+Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
+
+___
+
+#___
+
+#___
+
+#___
+
+##  JSONRPCErrorCallback
+
+Ƭ **JSONRPCErrorCallback**: *function*
+
+*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L3)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `result?`: [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`result?` | [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload) |
+
+___
+
+#___
+
+#___
+
+#___
+
+#___
+
+#___
+
+##  SupportedProvider
+
+Ƭ **SupportedProvider**: *[Web3JsProvider](_ethereum_types_src_index_.md#web3jsprovider) | [GanacheProvider](#interface-ganacheprovider) | [EIP1193Provider](#interface-eip1193provider) | [ZeroExProvider](#interface-zeroexprovider)*
+
+*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L9)*
+
+Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
+Read more about Providers in the guides section of the 0x docs.
+
+___
+
+#___
+
+#___
+
+##  Web3JsProvider
+
+Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
+
+*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/ethereum-types/src/index.ts#L11)*
+
+<hr />
+
+# External module: "order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher"
+
+<hr /> 
+
+# External module: "order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store"
+
+<hr /> 
+
+# External module: "order-utils/src/abstract/abstract_order_filled_cancelled_fetcher"
+
+<hr /> 
+
+# External module: "order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store"
+
+<hr /> 
+
+# External module: "order-utils/src/asset_data_utils"
+
+###  Object literals
+
+## `Const` assetDataUtils
+
+## ▪ **assetDataUtils**: *object*
+
+*Defined in [order-utils/src/asset_data_utils.ts:23](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L23)*
+
+##  assertIsERC1155AssetData
+
+▸ **assertIsERC1155AssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:397](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L397)*
+
+Throws if the assetData is not ERC1155.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  assertIsERC20AssetData
+
+▸ **assertIsERC20AssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:353](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L353)*
+
+Throws if the length or assetProxyId are invalid for the ERC20Proxy.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  assertIsERC721AssetData
+
+▸ **assertIsERC721AssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:375](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L375)*
+
+Throws if the length or assetProxyId are invalid for the ERC721Proxy.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  assertIsMultiAssetData
+
+▸ **assertIsMultiAssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:419](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L419)*
+
+Throws if the length or assetProxyId are invalid for the MultiAssetProxy.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  assertIsStaticCallAssetData
+
+▸ **assertIsStaticCallAssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:441](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L441)*
+
+Throws if the assetData is not StaticCallData.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  assertWordAlignedAssetData
+
+▸ **assertWordAlignedAssetData**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:463](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L463)*
+
+Throws if the assetData is not padded to 32 bytes.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+##  decodeAssetDataOrThrow
+
+▸ **decodeAssetDataOrThrow**(`assetData`: string): *[SingleAssetData](#singleassetdata) | `MultiAssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:502](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L502)*
+
+Decode any assetData into its corresponding assetData object
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *[SingleAssetData](#singleassetdata) | `MultiAssetData`*
+
+Either a ERC20, ERC721, ERC1155, or MultiAsset assetData object
+
+##  decodeAssetProxyId
+
+▸ **decodeAssetProxyId**(`assetData`: string): *`AssetProxyId`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:294](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L294)*
+
+Decode and return the assetProxyId from the assetData
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`AssetProxyId`*
+
+The assetProxyId
+
+##  decodeDutchAuctionData
+
+▸ **decodeDutchAuctionData**(`dutchAuctionData`: string): *`DutchAuctionData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:263](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L263)*
+
+Dutch auction details are encoded with the asset data for a 0x order. This function decodes a hex
+encoded assetData string, containing information both about the asset being traded and the
+dutch auction.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`dutchAuctionData` | string | Hex encoded assetData string for the asset being auctioned. |
+
+**Returns:** *`DutchAuctionData`*
+
+An object containing the auction asset, auction begin time and auction begin amount.
+
+##  decodeERC1155AssetData
+
+▸ **decodeERC1155AssetData**(`assetData`: string): *`ERC1155AssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:107](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L107)*
+
+Decodes an ERC1155 assetData hex string into its corresponding ERC1155 components.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`ERC1155AssetData`*
+
+An object containing the decoded tokenAddress, tokenIds, tokenValues, callbackData & assetProxyId
+
+##  decodeERC20AssetData
+
+▸ **decodeERC20AssetData**(`assetData`: string): *`ERC20AssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L41)*
+
+Decodes an ERC20 assetData hex string into its corresponding ERC20 tokenAddress & assetProxyId
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`ERC20AssetData`*
+
+An object containing the decoded tokenAddress & assetProxyId
+
+##  decodeERC721AssetData
+
+▸ **decodeERC721AssetData**(`assetData`: string): *`ERC721AssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:70](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L70)*
+
+Decodes an ERC721 assetData hex string into its corresponding ERC721 tokenAddress, tokenId & assetProxyId
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`ERC721AssetData`*
+
+An object containing the decoded tokenAddress, tokenId & assetProxyId
+
+##  decodeMultiAssetData
+
+▸ **decodeMultiAssetData**(`assetData`: string): *`MultiAssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:149](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L149)*
+
+Decodes a MultiAsset assetData hex string into its corresponding amounts and nestedAssetData
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`MultiAssetData`*
+
+An object containing the decoded amounts and nestedAssetData
+
+##  decodeMultiAssetDataRecursively
+
+▸ **decodeMultiAssetDataRecursively**(`assetData`: string): *`MultiAssetDataWithRecursiveDecoding`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:175](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L175)*
+
+Decodes a MultiAsset assetData hex string into its corresponding amounts and decoded nestedAssetData elements (all nested elements are flattened)
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`MultiAssetDataWithRecursiveDecoding`*
+
+An object containing the decoded amounts and nestedAssetData
+
+##  decodeStaticCallAssetData
+
+▸ **decodeStaticCallAssetData**(`assetData`: string): *`StaticCallAssetData`*
+
+*Defined in [order-utils/src/asset_data_utils.ts:225](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L225)*
+
+Decoded StaticCall assetData into its corresponding callTarget, staticCallData, and expected callResultHash
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string to decode |
+
+**Returns:** *`StaticCallAssetData`*
+
+An object containing the decoded callTarget, staticCallData, and expected callResultHash
+
+##  encodeDutchAuctionAssetData
+
+▸ **encodeDutchAuctionAssetData**(`assetData`: string, `beginTimeSeconds`: `BigNumber`, `beginAmount`: `BigNumber`): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:245](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L245)*
+
+Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
+encoded assetData string, containing information both about the asset being traded and the
+dutch auction; which is usable in the makerAssetData or takerAssetData fields in a 0x order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string for the asset being auctioned. |
+`beginTimeSeconds` | `BigNumber` | Begin time of the dutch auction. |
+`beginAmount` | `BigNumber` | Starting amount being sold in the dutch auction. |
+
+**Returns:** *string*
+
+The hex encoded assetData string.
+
+##  encodeERC1155AssetData
+
+▸ **encodeERC1155AssetData**(`tokenAddress`: string, `tokenIds`: `BigNumber`[], `tokenValues`: `BigNumber`[], `callbackData`: string): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:91](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L91)*
+
+Encodes a set of ERC1155 assets into an assetData string, usable in the makerAssetData or
+takerAssetData fields of a 0x order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tokenAddress` | string | The token address of the ERC1155 contract |
+`tokenIds` | `BigNumber`[] | The Id's of the ERC1155 tokens to transfer |
+`tokenValues` | `BigNumber`[] | The values of each respective token Id to transfer |
+`callbackData` | string | The data forwarded to a receiver, if receiver is a contract. |
+
+**Returns:** *string*
+
+The hex encoded assetData string
+
+##  encodeERC20AssetData
+
+▸ **encodeERC20AssetData**(`tokenAddress`: string): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:30](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L30)*
+
+Encodes an ERC20 token address into a hex encoded assetData string, usable in the makerAssetData or
+takerAssetData fields in a 0x order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tokenAddress` | string | The ERC20 token address to encode |
+
+**Returns:** *string*
+
+The hex encoded assetData string
+
+##  encodeERC721AssetData
+
+▸ **encodeERC721AssetData**(`tokenAddress`: string, `tokenId`: `BigNumber`): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:59](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L59)*
+
+Encodes an ERC721 token address into a hex encoded assetData string, usable in the makerAssetData or
+takerAssetData fields in a 0x order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`tokenAddress` | string | The ERC721 token address to encode |
+`tokenId` | `BigNumber` | The ERC721 tokenId to encode |
+
+**Returns:** *string*
+
+The hex encoded assetData string
+
+##  encodeMultiAssetData
+
+▸ **encodeMultiAssetData**(`amounts`: `BigNumber`[], `nestedAssetData`: string[]): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:130](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L130)*
+
+Encodes assetData for multiple AssetProxies into a single hex encoded assetData string, usable in the makerAssetData or
+takerAssetData fields in a 0x order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`amounts` | `BigNumber`[] | Amounts of each asset that correspond to a single unit within an order. |
+`nestedAssetData` | string[] | assetData strings that correspond to a valid assetProxyId. |
+
+**Returns:** *string*
+
+The hex encoded assetData string
+
+##  encodeStaticCallAssetData
+
+▸ **encodeStaticCallAssetData**(`callTarget`: string, `staticCallData`: string, `callResultHash`: string): *string*
+
+*Defined in [order-utils/src/asset_data_utils.ts:214](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L214)*
+
+Encodes StaticCallProxy data into an assetData hex string
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`callTarget` | string | Address of contract to call from StaticCallProxy |
+`staticCallData` | string | The function data that will be called on the callTarget contract |
+`callResultHash` | string | The keccak256 hash of the ABI encoded expected output of the static call |
+
+**Returns:** *string*
+
+The hex encoded assetData string
+
+##  isERC1155AssetData
+
+▸ **isERC1155AssetData**(`decodedAssetData`: [SingleAssetData](#singleassetdata) | `MultiAssetData`): *boolean*
+
+*Defined in [order-utils/src/asset_data_utils.ts:332](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L332)*
+
+Checks if the decoded asset data is valid ERC1155 data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`decodedAssetData` | [SingleAssetData](#singleassetdata) \| `MultiAssetData` | The decoded asset data to check  |
+
+**Returns:** *boolean*
+
+##  isERC20AssetData
+
+▸ **isERC20AssetData**(`decodedAssetData`: [SingleAssetData](#singleassetdata) | `MultiAssetData`): *boolean*
+
+*Defined in [order-utils/src/asset_data_utils.ts:318](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L318)*
+
+Checks if the decoded asset data is valid ERC20 data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`decodedAssetData` | [SingleAssetData](#singleassetdata) \| `MultiAssetData` | The decoded asset data to check  |
+
+**Returns:** *boolean*
+
+##  isERC721AssetData
+
+▸ **isERC721AssetData**(`decodedAssetData`: [SingleAssetData](#singleassetdata) | `MultiAssetData`): *boolean*
+
+*Defined in [order-utils/src/asset_data_utils.ts:325](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L325)*
+
+Checks if the decoded asset data is valid ERC721 data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`decodedAssetData` | [SingleAssetData](#singleassetdata) \| `MultiAssetData` | The decoded asset data to check  |
+
+**Returns:** *boolean*
+
+##  isMultiAssetData
+
+▸ **isMultiAssetData**(`decodedAssetData`: [SingleAssetData](#singleassetdata) | `MultiAssetData`): *boolean*
+
+*Defined in [order-utils/src/asset_data_utils.ts:339](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L339)*
+
+Checks if the decoded asset data is valid MultiAsset data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`decodedAssetData` | [SingleAssetData](#singleassetdata) \| `MultiAssetData` | The decoded asset data to check  |
+
+**Returns:** *boolean*
+
+##  isStaticCallAssetData
+
+▸ **isStaticCallAssetData**(`decodedAssetData`: [SingleAssetData](#singleassetdata) | `MultiAssetData`): *boolean*
+
+*Defined in [order-utils/src/asset_data_utils.ts:346](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L346)*
+
+Checks if the decoded asset data is valid StaticCall data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`decodedAssetData` | [SingleAssetData](#singleassetdata) \| `MultiAssetData` | The decoded asset data to check  |
+
+**Returns:** *boolean*
+
+##  validateAssetDataOrThrow
+
+▸ **validateAssetDataOrThrow**(`assetData`: string): *void*
+
+*Defined in [order-utils/src/asset_data_utils.ts:475](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/asset_data_utils.ts#L475)*
+
+Throws if the length or assetProxyId are invalid for the corresponding AssetProxy.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`assetData` | string | Hex encoded assetData string  |
+
+**Returns:** *void*
+
+<hr />
+
+# External module: "order-utils/src/eip712_utils"
+
+###  Object literals
+
+## `Const` eip712Utils
+
+## ▪ **eip712Utils**: *object*
+
+*Defined in [order-utils/src/eip712_utils.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/eip712_utils.ts#L18)*
+
+##  createCoordinatorApprovalTypedData
+
+▸ **createCoordinatorApprovalTypedData**(`transaction`: `SignedZeroExTransaction`, `verifyingContractAddress`: string, `txOrigin`: string, `approvalExpirationTimeSeconds`: `BigNumber`): *`EIP712TypedData`*
+
+*Defined in [order-utils/src/eip712_utils.ts:103](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/eip712_utils.ts#L103)*
+
+Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`transaction` | `SignedZeroExTransaction` | A 0x transaction |
+`verifyingContractAddress` | string | The coordinator extension contract address that will be verifying the typedData |
+`txOrigin` | string | The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction |
+`approvalExpirationTimeSeconds` | `BigNumber` | The approvals expiration time |
+
+**Returns:** *`EIP712TypedData`*
+
+A typed data object
+
+##  createOrderTypedData
+
+▸ **createOrderTypedData**(`order`: `Order`): *`EIP712TypedData`*
+
+*Defined in [order-utils/src/eip712_utils.ts:56](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/eip712_utils.ts#L56)*
+
+Creates an Order EIP712TypedData object for use with signTypedData.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`order` | `Order` |
+
+**Returns:** *`EIP712TypedData`*
+
+A typed data object
+
+##  createTypedData
+
+▸ **createTypedData**(`primaryType`: string, `types`: `EIP712Types`, `message`: `EIP712Object`, `domain`: `EIP712DomainWithDefaultSchema`): *`EIP712TypedData`*
+
+*Defined in [order-utils/src/eip712_utils.ts:27](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/eip712_utils.ts#L27)*
+
+Creates a EIP712TypedData object specific to the 0x protocol for use with signTypedData.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`primaryType` | string | The primary type found in message |
+`types` | `EIP712Types` | The additional types for the data in message |
+`message` | `EIP712Object` | The contents of the message |
+`domain` | `EIP712DomainWithDefaultSchema` | Domain containing a name (optional), version (optional), and verifying contract address |
+
+**Returns:** *`EIP712TypedData`*
+
+A typed data object
+
+##  createZeroExTransactionTypedData
+
+▸ **createZeroExTransactionTypedData**(`zeroExTransaction`: `ZeroExTransaction`): *`EIP712TypedData`*
+
+*Defined in [order-utils/src/eip712_utils.ts:78](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/eip712_utils.ts#L78)*
+
+Creates an ExecuteTransaction EIP712TypedData object for use with signTypedData and
+0x Exchange executeTransaction.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`zeroExTransaction` | `ZeroExTransaction` | the 0x transaction |
+
+**Returns:** *`EIP712TypedData`*
+
+A typed data object
+
+<hr />
+
+# External module: "order-utils/src/exchange_transfer_simulator"
+
+<hr /> 
+
+# External module: "order-utils/src/market_utils"
+
+###  Object literals
+
+## `Const` marketUtils
+
+## ▪ **marketUtils**: *object*
+
+*Defined in [order-utils/src/market_utils.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/market_utils.ts#L17)*
+
+##  findFeeOrdersThatCoverFeesForTargetOrders
+
+▸ **findFeeOrdersThatCoverFeesForTargetOrders**<**T**>(`orders`: `T`[], `feeOrders`: `T`[], `opts?`: [FindFeeOrdersThatCoverFeesForTargetOrdersOpts](#interface-findfeeordersthatcoverfeesfortargetordersopts)): *[FeeOrdersAndRemainingFeeAmount](#interface-feeordersandremainingfeeamount)‹*`T`*›*
+
+*Defined in [order-utils/src/market_utils.ts:64](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/market_utils.ts#L64)*
+
+Takes an array of orders and an array of feeOrders. Returns a subset of the feeOrders that has enough ZRX
+in order to fill the takerFees required by orders plus a slippageBufferAmount.
+Iterates from first feeOrder to last. Sort the feeOrders by ascending rate in order to get the subset of
+feeOrders that will cost the least ETH.
+
+**Type parameters:**
+
+▪ **T**: *`Order`*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orders` | `T`[] | An array of objects that extend the Order interface. All orders should specify ZRX as                      the makerAsset and WETH as the takerAsset. |
+`feeOrders` | `T`[] | An array of objects that extend the Order interface. All orders should specify ZRX as                      the makerAsset and WETH as the takerAsset. |
+`opts?` | [FindFeeOrdersThatCoverFeesForTargetOrdersOpts](#interface-findfeeordersthatcoverfeesfortargetordersopts) | Optional arguments this function accepts. |
+
+**Returns:** *[FeeOrdersAndRemainingFeeAmount](#interface-feeordersandremainingfeeamount)‹*`T`*›*
+
+Resulting orders and remaining fee amount that could not be covered by the input.
+
+##  findOrdersThatCoverMakerAssetFillAmount
+
+▸ **findOrdersThatCoverMakerAssetFillAmount**<**T**>(`orders`: `T`[], `makerAssetFillAmount`: `BigNumber`, `opts?`: [FindOrdersThatCoverMakerAssetFillAmountOpts](#interface-findordersthatcovermakerassetfillamountopts)): *[OrdersAndRemainingMakerFillAmount](#interface-ordersandremainingmakerfillamount)‹*`T`*›*
+
+*Defined in [order-utils/src/market_utils.ts:40](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/market_utils.ts#L40)*
+
+Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount
+in order to fill the input makerAssetFillAmount plus slippageBufferAmount. Iterates from first order to last order.
+Sort the input by ascending rate in order to get the subset of orders that will cost the least ETH.
+
+**Type parameters:**
+
+▪ **T**: *`Order`*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orders` | `T`[] | An array of objects that extend the Order interface. All orders should specify the same makerAsset.                                      All orders should specify WETH as the takerAsset. |
+`makerAssetFillAmount` | `BigNumber` | The amount of makerAsset desired to be filled. |
+`opts?` | [FindOrdersThatCoverMakerAssetFillAmountOpts](#interface-findordersthatcovermakerassetfillamountopts) | Optional arguments this function accepts. |
+
+**Returns:** *[OrdersAndRemainingMakerFillAmount](#interface-ordersandremainingmakerfillamount)‹*`T`*›*
+
+Resulting orders and remaining fill amount that could not be covered by the input.
+
+##  findOrdersThatCoverTakerAssetFillAmount
+
+▸ **findOrdersThatCoverTakerAssetFillAmount**<**T**>(`orders`: `T`[], `takerAssetFillAmount`: `BigNumber`, `opts?`: [FindOrdersThatCoverTakerAssetFillAmountOpts](#interface-findordersthatcovertakerassetfillamountopts)): *[OrdersAndRemainingTakerFillAmount](#interface-ordersandremainingtakerfillamount)‹*`T`*›*
+
+*Defined in [order-utils/src/market_utils.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/market_utils.ts#L18)*
+
+**Type parameters:**
+
+▪ **T**: *`Order`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `T`[] |
+`takerAssetFillAmount` | `BigNumber` |
+`opts?` | [FindOrdersThatCoverTakerAssetFillAmountOpts](#interface-findordersthatcovertakerassetfillamountopts) |
+
+**Returns:** *[OrdersAndRemainingTakerFillAmount](#interface-ordersandremainingtakerfillamount)‹*`T`*›*
+
+<hr />
+
+# External module: "order-utils/src/order_calculation_utils"
+
+###  Object literals
+
+## `Const` orderCalculationUtils
+
+## ▪ **orderCalculationUtils**: *object*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:6](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L6)*
+
+##  getMakerFeeAmount
+
+▸ **getMakerFeeAmount**(`order`: `Order`, `makerFillAmount`: `BigNumber`): *`BigNumber`*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:75](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L75)*
+
+Given an amount of maker asset, calculate the fee amount required for the maker
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order |
+`makerFillAmount` | `BigNumber` | the amount of maker asset  |
+
+**Returns:** *`BigNumber`*
+
+##  getMakerFillAmount
+
+▸ **getMakerFillAmount**(`order`: `Order`, `takerFillAmount`: `BigNumber`): *`BigNumber`*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:36](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L36)*
+
+Given an amount of taker asset, calculate the the amount of maker asset
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order |
+`takerFillAmount` | `BigNumber` | - |
+
+**Returns:** *`BigNumber`*
+
+##  getTakerFeeAmount
+
+▸ **getTakerFeeAmount**(`order`: `Order`, `takerFillAmount`: `BigNumber`): *`BigNumber`*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:62](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L62)*
+
+Given an amount of taker asset, calculate the fee amount required for the taker
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order |
+`takerFillAmount` | `BigNumber` | the amount of taker asset  |
+
+**Returns:** *`BigNumber`*
+
+##  getTakerFillAmount
+
+▸ **getTakerFillAmount**(`order`: `Order`, `makerFillAmount`: `BigNumber`): *`BigNumber`*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:49](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L49)*
+
+Given an amount of maker asset, calculate the equivalent amount in taker asset
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order |
+`makerFillAmount` | `BigNumber` | the amount of maker asset  |
+
+**Returns:** *`BigNumber`*
+
+##  getTakerFillAmountForFeeOrder
+
+▸ **getTakerFillAmountForFeeOrder**(`order`: `Order`, `makerFillAmount`: `BigNumber`): *[`BigNumber`, `BigNumber`]*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:89](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L89)*
+
+Given a desired amount of ZRX from a fee order, calculate the amount of taker asset required to fill.
+Also calculate how much ZRX needs to be purchased in order to fill the desired amount plus the taker fee amount
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order |
+`makerFillAmount` | `BigNumber` | the amount of maker asset  |
+
+**Returns:** *[`BigNumber`, `BigNumber`]*
+
+##  isOpenOrder
+
+▸ **isOpenOrder**(`order`: `Order`): *boolean*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:28](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L28)*
+
+Determines if the order is open and fillable by any taker.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order  |
+
+**Returns:** *boolean*
+
+##  isOrderExpired
+
+▸ **isOrderExpired**(`order`: `Order`): *boolean*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:11](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L11)*
+
+Determines if the order is expired given the current time
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order for expiry calculation  |
+
+**Returns:** *boolean*
+
+##  willOrderExpire
+
+▸ **willOrderExpire**(`order`: `Order`, `secondsFromNow`: number): *boolean*
+
+*Defined in [order-utils/src/order_calculation_utils.ts:19](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_calculation_utils.ts#L19)*
+
+Calculates if the order will expire in the future.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `Order` | The order for expiry calculation |
+`secondsFromNow` | number | The amount of seconds from current time  |
+
+**Returns:** *boolean*
+
+<hr />
+
+# External module: "order-utils/src/order_hash"
+
+###  Object literals
+
+## `Const` orderHashUtils
+
+## ▪ **orderHashUtils**: *object*
+
+*Defined in [order-utils/src/order_hash.ts:12](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_hash.ts#L12)*
+
+##  getOrderHashBuffer
+
+▸ **getOrderHashBuffer**(`order`: `SignedOrder` | `Order`): *`Buffer`*
+
+*Defined in [order-utils/src/order_hash.ts:55](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_hash.ts#L55)*
+
+Computes the orderHash for a supplied order
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `SignedOrder` \| `Order` | An object that conforms to the Order or SignedOrder interface definitions. |
+
+**Returns:** *`Buffer`*
+
+A Buffer containing the resulting orderHash from hashing the supplied order
+
+##  getOrderHashHex
+
+▸ **getOrderHashHex**(`order`: `SignedOrder` | `Order`): *string*
+
+*Defined in [order-utils/src/order_hash.ts:33](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_hash.ts#L33)*
+
+Computes the orderHash for a supplied order.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`order` | `SignedOrder` \| `Order` | An object that conforms to the Order or SignedOrder interface definitions. |
+
+**Returns:** *string*
+
+Hex encoded string orderHash from hashing the supplied order.
+
+##  isValidOrderHash
+
+▸ **isValidOrderHash**(`orderHash`: string): *boolean*
+
+*Defined in [order-utils/src/order_hash.ts:20](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/order_hash.ts#L20)*
+
+Checks if the supplied hex encoded order hash is valid.
+Note: Valid means it has the expected format, not that an order with the orderHash exists.
+Use this method when processing orderHashes submitted as user input.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderHash` | string | Hex encoded orderHash. |
+
+**Returns:** *boolean*
+
+Whether the supplied orderHash has the expected format.
+
+<hr />
+
+# External module: "order-utils/src/order_state_utils"
+
+<hr /> 
+
+# External module: "order-utils/src/order_validation_utils"
+
+<hr /> 
+
+# External module: "order-utils/src/parsing_utils"
+
+###  Object literals
+
+## `Const` orderParsingUtils
+
+## ▪ **orderParsingUtils**: *object*
+
+*Defined in [order-utils/src/parsing_utils.ts:4](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/parsing_utils.ts#L4)*
+
+##  convertOrderStringFieldsToBigNumber
+
+▸ **convertOrderStringFieldsToBigNumber**(`order`: any): *any*
+
+*Defined in [order-utils/src/parsing_utils.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/parsing_utils.ts#L17)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`order` | any |
+
+**Returns:** *any*
+
+##  convertStringsFieldsToBigNumbers
+
+▸ **convertStringsFieldsToBigNumbers**(`obj`: any, `fields`: string[]): *any*
+
+*Defined in [order-utils/src/parsing_utils.ts:5](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/parsing_utils.ts#L5)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`obj` | any |
+`fields` | string[] |
+
+**Returns:** *any*
+
+<hr />
+
+# External module: "order-utils/src/rate_utils"
+
+###  Object literals
+
+## `Const` rateUtils
+
+## ▪ **rateUtils**: *object*
+
+*Defined in [order-utils/src/rate_utils.ts:8](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/rate_utils.ts#L8)*
+
+##  getFeeAdjustedRateOfFeeOrder
+
+▸ **getFeeAdjustedRateOfFeeOrder**(`feeOrder`: `Order`): *`BigNumber`*
+
+*Defined in [order-utils/src/rate_utils.ts:36](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/rate_utils.ts#L36)*
+
+Takes a fee order (makerAssetData corresponds to ZRX and takerAssetData corresponds to WETH) and calculates
+the fee adjusted rate (WETH/ZRX) by dividing the takerAssetAmount by the makerAmount minus the takerFee
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`feeOrder` | `Order` | An object that conforms to the order interface |
+
+**Returns:** *`BigNumber`*
+
+The rate (WETH/ZRX) of the fee order adjusted for fees
+
+##  getFeeAdjustedRateOfOrder
+
+▸ **getFeeAdjustedRateOfOrder**(`order`: `Order`, `feeRate`: `BigNumber`): *`BigNumber`*
+
+*Defined in [order-utils/src/rate_utils.ts:18](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/rate_utils.ts#L18)*
+
+Takes an order and calculates the fee adjusted rate (takerAsset/makerAsset) by calculating how much takerAsset
+is required to cover the fees (feeRate * takerFee), adding the takerAssetAmount and dividing by makerAssetAmount
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`order` | `Order` | - | An object that conforms to the order interface |
+`feeRate` | `BigNumber` |  constants.ZERO_AMOUNT | The market rate of ZRX denominated in takerAssetAmount                      (ex. feeRate is 0.1 takerAsset/ZRX if it takes 1 unit of takerAsset to buy 10 ZRX)                      Defaults to 0 |
+
+**Returns:** *`BigNumber`*
+
+The rate (takerAsset/makerAsset) of the order adjusted for fees
+
+<hr />
+
+# External module: "order-utils/src/salt"
+
+###  Functions
+
+##  generatePseudoRandomSalt
+
+▸ **generatePseudoRandomSalt**(): *`BigNumber`*
+
+*Defined in [order-utils/src/salt.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/salt.ts#L9)*
+
+Generates a pseudo-random 256-bit salt.
+The salt can be included in a 0x order, ensuring that the order generates a unique orderHash
+and will not collide with other outstanding orders that are identical in all other parameters.
+
+**Returns:** *`BigNumber`*
+
+A pseudo-random 256-bit number that can be used as a salt.
+
+<hr />
+
+# External module: "order-utils/src/signature_utils"
+
+###  Object literals
+
+## `Const` signatureUtils
+
+## ▪ **signatureUtils**: *object*
+
+*Defined in [order-utils/src/signature_utils.ts:27](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L27)*
+
+##  addSignedMessagePrefix
+
+▸ **addSignedMessagePrefix**(`message`: string): *string*
+
+*Defined in [order-utils/src/signature_utils.ts:500](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L500)*
+
+Adds the relevant prefix to the message being signed.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`message` | string | Message to sign |
+
+**Returns:** *string*
+
+Prefixed message
+
+##  convertECSignatureToSignatureHex
+
+▸ **convertECSignatureToSignatureHex**(`ecSignature`: `ECSignature`): *string*
+
+*Defined in [order-utils/src/signature_utils.ts:474](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L474)*
+
+Combines ECSignature with V,R,S and the EthSign signature type for use in 0x protocol
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`ecSignature` | `ECSignature` | The ECSignature of the signed data |
+
+**Returns:** *string*
+
+Hex encoded string of signature (v,r,s) with Signature Type
+
+##  convertToSignatureWithType
+
+▸ **convertToSignatureWithType**(`signature`: string, `signatureType`: `SignatureType`): *string*
+
+*Defined in [order-utils/src/signature_utils.ts:490](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L490)*
+
+Combines the signature proof and the Signature Type.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signature` | string | The hex encoded signature proof |
+`signatureType` | `SignatureType` | The signature type, i.e EthSign, Wallet etc. |
+
+**Returns:** *string*
+
+Hex encoded string of signature proof with Signature Type
+
+##  ecSignHashAsync
+
+▸ **ecSignHashAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `msgHash`: string, `signerAddress`: string): *`Promise<string>`*
+
+*Defined in [order-utils/src/signature_utils.ts:417](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L417)*
+
+Signs a hash using `eth_sign` and returns its elliptic curve signature and signature type.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`msgHash` | string | Hex encoded message to sign. |
+`signerAddress` | string | The hex encoded Ethereum address you wish to sign it with. This address          must be available via the supplied Provider. |
+
+**Returns:** *`Promise<string>`*
+
+A hex encoded string containing the Elliptic curve signature generated by signing the msgHash and the Signature Type.
+
+##  ecSignOrderAsync
+
+▸ **ecSignOrderAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `order`: `Order`, `signerAddress`: string): *`Promise<SignedOrder>`*
+
+*Defined in [order-utils/src/signature_utils.ts:252](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L252)*
+
+Signs an order and returns a SignedOrder. First `eth_signTypedData` is requested
+then a fallback to `eth_sign` if not available on the supplied provider.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`order` | `Order` | The Order to sign. |
+`signerAddress` | string | The hex encoded Ethereum address you wish to sign it with. This address          must be available via the supplied Provider. |
+
+**Returns:** *`Promise<SignedOrder>`*
+
+A SignedOrder containing the order and Elliptic curve signature with Signature Type.
+
+##  ecSignTransactionAsync
+
+▸ **ecSignTransactionAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `transaction`: `ZeroExTransaction`, `signerAddress`: string): *`Promise<SignedZeroExTransaction>`*
+
+*Defined in [order-utils/src/signature_utils.ts:331](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L331)*
+
+Signs a transaction and returns a SignedZeroExTransaction. First `eth_signTypedData` is requested
+then a fallback to `eth_sign` if not available on the supplied provider.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`transaction` | `ZeroExTransaction` | The ZeroExTransaction to sign. |
+`signerAddress` | string | The hex encoded Ethereum address you wish to sign it with. This address          must be available via the supplied Provider. |
+
+**Returns:** *`Promise<SignedZeroExTransaction>`*
+
+A SignedTransaction containing the order and Elliptic curve signature with Signature Type.
+
+##  ecSignTypedDataOrderAsync
+
+▸ **ecSignTypedDataOrderAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `order`: `Order`, `signerAddress`: string): *`Promise<SignedOrder>`*
+
+*Defined in [order-utils/src/signature_utils.ts:287](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L287)*
+
+Signs an order using `eth_signTypedData` and returns a SignedOrder.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`order` | `Order` | The Order to sign. |
+`signerAddress` | string | The hex encoded Ethereum address you wish to sign it with. This address          must be available via the supplied Provider. |
+
+**Returns:** *`Promise<SignedOrder>`*
+
+A SignedOrder containing the order and Elliptic curve signature with Signature Type.
+
+##  ecSignTypedDataTransactionAsync
+
+▸ **ecSignTypedDataTransactionAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `transaction`: `ZeroExTransaction`, `signerAddress`: string): *`Promise<SignedZeroExTransaction>`*
+
+*Defined in [order-utils/src/signature_utils.ts:374](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L374)*
+
+Signs a ZeroExTransaction using `eth_signTypedData` and returns a SignedZeroExTransaction.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`transaction` | `ZeroExTransaction` | The ZeroEx Transaction to sign. |
+`signerAddress` | string | The hex encoded Ethereum address you wish to sign it with. This address          must be available via the supplied Provider. |
+
+**Returns:** *`Promise<SignedZeroExTransaction>`*
+
+A SignedZeroExTransaction containing the ZeroExTransaction and Elliptic curve signature with Signature Type.
+
+##  isValidECSignature
+
+▸ **isValidECSignature**(`data`: string, `signature`: `ECSignature`, `signerAddress`: string): *boolean*
+
+*Defined in [order-utils/src/signature_utils.ts:222](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L222)*
+
+Checks if the supplied elliptic curve signature corresponds to signing `data` with
+the private key corresponding to `signerAddress`
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | string | The hex encoded data signed by the supplied signature. |
+`signature` | `ECSignature` | An object containing the elliptic curve signature parameters. |
+`signerAddress` | string | The hex encoded address that signed the data, producing the supplied signature. |
+
+**Returns:** *boolean*
+
+Whether the ECSignature is valid.
+
+##  isValidPresignedSignatureAsync
+
+▸ **isValidPresignedSignatureAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `data`: string, `signerAddress`: string, `exchangeAddress?`: undefined | string): *`Promise<boolean>`*
+
+*Defined in [order-utils/src/signature_utils.ts:107](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L107)*
+
+Verifies that the provided presigned signature is valid according to the 0x Protocol smart contracts
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`data` | string | The hex encoded data signed by the supplied signature |
+`signerAddress` | string | The hex encoded address that signed the data, producing the supplied signature. |
+`exchangeAddress?` | undefined \| string | The address of the Exchange contract to validate the signature against. |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the data was preSigned by the supplied signerAddress
+
+##  isValidSignatureAsync
+
+▸ **isValidSignatureAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `data`: string, `signature`: string, `signerAddress`: string, `exchangeAddress?`: undefined | string): *`Promise<boolean>`*
+
+*Defined in [order-utils/src/signature_utils.ts:38](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L38)*
+
+Verifies that the provided signature is valid according to the 0x Protocol smart contracts
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`data` | string | The hex encoded data signed by the supplied signature. |
+`signature` | string | A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].          E.g [vrs][SignatureType.EIP712] |
+`signerAddress` | string | The hex encoded address that signed the data, producing the supplied signature. |
+`exchangeAddress?` | undefined \| string | Optional address of the Exchange contract to validate the signature against. |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the signature is valid for the supplied signerAddress and data.
+
+##  isValidValidatorSignatureAsync
+
+▸ **isValidValidatorSignatureAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `data`: string, `signature`: string, `signerAddress`: string, `exchangeAddress?`: undefined | string): *`Promise<boolean>`*
+
+*Defined in [order-utils/src/signature_utils.ts:168](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L168)*
+
+Verifies that the provided validator signature is valid according to the 0x Protocol smart contracts
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`data` | string | The hex encoded data signed by the supplied signature. |
+`signature` | string | A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned] |
+`signerAddress` | string | The hex encoded address that signed the data, producing the supplied signature. |
+`exchangeAddress?` | undefined \| string | The address of the Exchange contract to validate the signature against. |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the data was preSigned by the supplied signerAddress.
+
+##  isValidWalletSignatureAsync
+
+▸ **isValidWalletSignatureAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `data`: string, `signature`: string, `signerAddress`: string): *`Promise<boolean>`*
+
+*Defined in [order-utils/src/signature_utils.ts:139](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L139)*
+
+Verifies that the provided wallet signature is valid according to the 0x Protocol smart contracts
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider to use for all JSON RPC requests |
+`data` | string | The hex encoded data signed by the supplied signature. |
+`signature` | string | A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned] |
+`signerAddress` | string | The hex encoded address that signed the data, producing the supplied signature. |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the data was preSigned by the supplied signerAddress.
+
+##  parseECSignature
+
+▸ **parseECSignature**(`signature`: string): *`ECSignature`*
+
+*Defined in [order-utils/src/signature_utils.ts:512](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L512)*
+
+Parse a 0x protocol hex-encoded signature string into its ECSignature components
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signature` | string | A hex encoded ecSignature 0x Protocol signature |
+
+**Returns:** *`ECSignature`*
+
+An ECSignature object with r,s,v parameters
+
+##  parseValidatorSignature
+
+▸ **parseValidatorSignature**(`signature`: string): *`ValidatorSignature`*
+
+*Defined in [order-utils/src/signature_utils.ts:529](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/signature_utils.ts#L529)*
+
+Parse a hex-encoded Validator signature into validator address and signature components
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`signature` | string | A hex encoded Validator 0x Protocol signature |
+
+**Returns:** *`ValidatorSignature`*
+
+A ValidatorSignature with validatorAddress and signature parameters
+
+<hr />
+
+# External module: "order-utils/src/sorting_utils"
+
+###  Object literals
+
+## `Const` sortingUtils
+
+## ▪ **sortingUtils**: *object*
+
+*Defined in [order-utils/src/sorting_utils.ts:10](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/sorting_utils.ts#L10)*
+
+##  sortFeeOrdersByFeeAdjustedRate
+
+▸ **sortFeeOrdersByFeeAdjustedRate**<**T**>(`feeOrders`: `T`[]): *`T`[]*
+
+*Defined in [order-utils/src/sorting_utils.ts:35](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/sorting_utils.ts#L35)*
+
+Takes an array of fee orders (makerAssetData corresponds to ZRX and takerAssetData corresponds to WETH)
+and sorts them by rate in ascending order (best rate first). Adjusts the rate according to the takerFee.
+
+**Type parameters:**
+
+▪ **T**: *`Order`*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`feeOrders` | `T`[] | An array of objects that extend the Order interface. All orders should specify ZRX as                          the makerAsset and WETH as the takerAsset. |
+
+**Returns:** *`T`[]*
+
+The input orders sorted by rate in ascending order
+
+##  sortOrdersByFeeAdjustedRate
+
+▸ **sortOrdersByFeeAdjustedRate**<**T**>(`orders`: `T`[], `feeRate`: `BigNumber`): *`T`[]*
+
+*Defined in [order-utils/src/sorting_utils.ts:21](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/sorting_utils.ts#L21)*
+
+Takes an array of orders and sorts them by takerAsset/makerAsset rate in ascending order (best rate first).
+Adjusts the rate of each order according to the feeRate and takerFee for that order.
+
+**Type parameters:**
+
+▪ **T**: *`Order`*
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`orders` | `T`[] | - | An array of objects that extend the Order interface. All orders should specify ZRX as                      the makerAsset and WETH as the takerAsset. |
+`feeRate` | `BigNumber` |  constants.ZERO_AMOUNT | The market rate of ZRX denominated in takerAssetAmount                      (ex. feeRate is 0.1 takerAsset/ZRX if it takes 1 unit of takerAsset to buy 10 ZRX)                      Defaults to 0 |
+
+**Returns:** *`T`[]*
+
+The input orders sorted by rate in ascending order
+
+<hr />
+
+# External module: "order-utils/src/store/balance_and_proxy_allowance_lazy_store"
+
+<hr /> 
+
+# External module: "order-utils/src/store/order_filled_cancelled_lazy_store"
+
+<hr /> 
+
+# External module: "order-utils/src/transaction_hash"
+
+###  Object literals
+
+## `Const` transactionHashUtils
+
+## ▪ **transactionHashUtils**: *object*
+
+*Defined in [order-utils/src/transaction_hash.ts:9](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/transaction_hash.ts#L9)*
+
+##  getTransactionHashBuffer
+
+▸ **getTransactionHashBuffer**(`transaction`: `ZeroExTransaction` | `SignedZeroExTransaction`): *`Buffer`*
+
+*Defined in [order-utils/src/transaction_hash.ts:41](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/transaction_hash.ts#L41)*
+
+Computes the transactionHash for a supplied 0x transaction.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`transaction` | `ZeroExTransaction` \| `SignedZeroExTransaction` | An object that conforms to the ZeroExTransaction or SignedZeroExTransaction interface definitions. |
+
+**Returns:** *`Buffer`*
+
+A Buffer containing the resulting transactionHash from hashing the supplied 0x transaction.
+
+##  getTransactionHashHex
+
+▸ **getTransactionHashHex**(`transaction`: `ZeroExTransaction` | `SignedZeroExTransaction`): *string*
+
+*Defined in [order-utils/src/transaction_hash.ts:30](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/transaction_hash.ts#L30)*
+
+Computes the transactionHash for a supplied 0x transaction.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`transaction` | `ZeroExTransaction` \| `SignedZeroExTransaction` | An object that conforms to the ZeroExTransaction or SignedZeroExTransaction interface definitions. |
+
+**Returns:** *string*
+
+Hex encoded string transactionHash from hashing the supplied order.
+
+##  isValidTransactionHash
+
+▸ **isValidTransactionHash**(`transactionHash`: string): *boolean*
+
+*Defined in [order-utils/src/transaction_hash.ts:17](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/order-utils/src/transaction_hash.ts#L17)*
+
+Checks if the supplied hex encoded 0x transaction hash is valid.
+Note: Valid means it has the expected format, not that a transaction with the transactionHash exists.
+Use this method when processing transactionHashes submitted as user input.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`transactionHash` | string | Hex encoded transactionHash. |
+
+**Returns:** *boolean*
+
+Whether the supplied transactionHash has the expected format.
+
+<hr />
+
+# External module: "order-utils/src/types"
+
+<hr /> 
+
+# External module: "types/src/index"
+
+###  Type aliases
+
+#___
+
+##  AssetData
+
+Ƭ **AssetData**: *[SingleAssetData](_types_src_index_.md#singleassetdata) | [MultiAssetData](#interface-multiassetdata) | [MultiAssetDataWithRecursiveDecoding](#interface-multiassetdatawithrecursivedecoding)*
+
+*Defined in [types/src/index.ts:228](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L228)*
+
+___
+
+#___
+
+#___
+
+##  EIP712ObjectValue
+
+Ƭ **EIP712ObjectValue**: *string | number | [EIP712Object](#interface-eip712object)*
+
+*Defined in [types/src/index.ts:711](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L711)*
+
+___
+
+#___
+
+##  OrderState
+
+Ƭ **OrderState**: *[OrderStateValid](#interface-orderstatevalid) | [OrderStateInvalid](#interface-orderstateinvalid)*
+
+*Defined in [types/src/index.ts:147](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L147)*
+
+___
+
+#___
+
+#___
+
+##  SingleAssetData
+
+Ƭ **SingleAssetData**: *[ERC20AssetData](#interface-erc20assetdata) | [ERC721AssetData](#interface-erc721assetdata) | [ERC1155AssetData](#interface-erc1155assetdata) | [StaticCallAssetData](#interface-staticcallassetdata)*
+
+*Defined in [types/src/index.ts:208](https://github.com/0xProject/0x-monorepo/blob/30946ac11/packages/types/src/index.ts#L208)*
 
 <hr />
 
