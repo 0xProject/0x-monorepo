@@ -405,6 +405,41 @@ blockchainTests.resets.only('Stake States', () => {
                 expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
             }
+
+            // Later in Epoch 3: User reactivates half of their inactive stake; this becomes Active next epoch
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.INACTIVE}, {id: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(0.5));
+            {
+                const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
+                expect(totalBalance).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(4));
+
+                const amountActive = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(amountActive.current).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
+                expect(amountActive.next).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1.5));
+
+                const amountInactivate = await stakingWrapper.getInactiveStakeAsync(staker);
+                expect(amountInactivate.current).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
+                expect(amountInactivate.next).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0.5));
+                const amountWithdrawable = await stakingWrapper.getWithdrawableStakeAsync(staker);
+                expect(amountWithdrawable).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0.5));
+
+                const amountDelegated = await stakingWrapper.getStakeDelegatedByOwnerAsync(staker);
+                expect(amountDelegated.current).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+                expect(amountDelegated.next).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+
+                const totalBalanceDelegatedToPool_1 = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolIds[0], staker);
+                expect(totalBalanceDelegatedToPool_1.current).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+                expect(totalBalanceDelegatedToPool_1.next).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+                const balanceDelegatedToPool_1 = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolIds[0], staker);
+                expect(balanceDelegatedToPool_1.current).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+                expect(balanceDelegatedToPool_1.next).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(2));
+
+                const totalBalanceDelegatedToPool_2 = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolIds[1], staker);
+                expect(totalBalanceDelegatedToPool_2.current, '2c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
+                expect(totalBalanceDelegatedToPool_2.next, '2n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
+                const balanceDelegatedToPool_2 = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolIds[1], staker);
+                expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
+                expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
+            }
         });
     });
 
