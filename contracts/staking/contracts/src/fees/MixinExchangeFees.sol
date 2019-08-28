@@ -175,7 +175,7 @@ contract MixinExchangeFees is
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                 .safeMul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
-                .safeDiv(100)
+                .safeDiv(PERCENTAGE_DENOMINATOR)
             );
 
             // store pool stats

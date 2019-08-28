@@ -160,7 +160,7 @@ contract StakingPoolRewardVault is
         onlyNotInCatastrophicFailure
     {
         // operator share must be a valid percentage
-        if (poolOperatorShare > 100) {
+        if (poolOperatorShare > PERCENTAGE_DENOMINATOR) {
             LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareMustBeBetween0And100Error(
                 poolId,
                 poolOperatorShare
@@ -229,7 +229,7 @@ contract StakingPoolRewardVault is
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
         uint256 operatorPortion = LibMath.getPartialAmountCeil(
             uint256(balance.operatorShare),  // Operator share out of 100
-            100,
+            PERCENTAGE_DENOMINATOR,
             amount
         );
 
