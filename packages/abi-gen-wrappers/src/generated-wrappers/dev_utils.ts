@@ -56,19 +56,9 @@ export class DevUtilsContract extends BaseContract {
             }
             const self = (this as any) as DevUtilsContract;
             const encodedData = self._strictEncodeArguments('decodeERC721AssetData(bytes)', [assetData]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeERC721AssetData(bytes)');
             // tslint:disable boolean-naming
@@ -457,19 +447,9 @@ export class DevUtilsContract extends BaseContract {
             const encodedData = self._strictEncodeArguments('encodeERC20AssetData(address)', [
                 tokenAddress.toLowerCase(),
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('encodeERC20AssetData(address)');
             // tslint:disable boolean-naming
@@ -555,19 +535,9 @@ export class DevUtilsContract extends BaseContract {
             }
             const self = (this as any) as DevUtilsContract;
             const encodedData = self._strictEncodeArguments('decodeZeroExTransactionData(bytes)', [transactionData]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeZeroExTransactionData(bytes)');
             // tslint:disable boolean-naming
@@ -1041,19 +1011,9 @@ export class DevUtilsContract extends BaseContract {
             }
             const self = (this as any) as DevUtilsContract;
             const encodedData = self._strictEncodeArguments('decodeERC20AssetData(bytes)', [assetData]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeERC20AssetData(bytes)');
             // tslint:disable boolean-naming
@@ -1250,19 +1210,9 @@ export class DevUtilsContract extends BaseContract {
             }
             const self = (this as any) as DevUtilsContract;
             const encodedData = self._strictEncodeArguments('decodeERC1155AssetData(bytes)', [assetData]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeERC1155AssetData(bytes)');
             // tslint:disable boolean-naming
@@ -1474,19 +1424,9 @@ export class DevUtilsContract extends BaseContract {
                 tokenAddress.toLowerCase(),
                 tokenId,
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('encodeERC721AssetData(address,uint256)');
             // tslint:disable boolean-naming
@@ -1630,19 +1570,9 @@ export class DevUtilsContract extends BaseContract {
                 'encodeERC1155AssetData(address,uint256[],uint256[],bytes)',
                 [tokenAddress.toLowerCase(), tokenIds, tokenValues, callbackData],
             );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('encodeERC1155AssetData(address,uint256[],uint256[],bytes)');
             // tslint:disable boolean-naming
@@ -1805,19 +1735,9 @@ export class DevUtilsContract extends BaseContract {
             }
             const self = (this as any) as DevUtilsContract;
             const encodedData = self._strictEncodeArguments('decodeMultiAssetData(bytes)', [assetData]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeMultiAssetData(bytes)');
             // tslint:disable boolean-naming
@@ -2062,19 +1982,9 @@ export class DevUtilsContract extends BaseContract {
                 amounts,
                 nestedAssetData,
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('encodeMultiAssetData(uint256[],bytes[])');
             // tslint:disable boolean-naming

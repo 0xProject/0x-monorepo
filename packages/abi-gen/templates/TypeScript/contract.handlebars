@@ -55,13 +55,18 @@ export class {{contractName}}Contract extends BaseContract {
     /**
      * {{formatDocstringForMethodTs this.devdoc.details}}
      */
-     {{/if}}
-    {{#this.constant}}
-    {{> call contractName=../contractName}}
-    {{/this.constant}}
-    {{^this.constant}}
-    {{> tx contractName=../contractName}}
-    {{/this.constant}}
+    {{/if}}
+    public {{languageSpecificName}} = {
+        {{^this.constant}}
+        {{> method_tx contractName=../contractName}}
+        {{/this.constant}}
+        {{#ifEquals this.stateMutability "pure"}}
+        {{> method_call_pure contractName=../contractName}}
+        {{else}}
+        {{> method_call contractName=../contractName}}
+        {{/ifEquals}}
+        {{> method_abi_helper contractName=../contractName}}
+    };
 {{/each}}
 {{#if events}}private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
 {{/if}}public static async deployFrom0xArtifactAsync(

@@ -75,22 +75,22 @@ describe('AbiGenDummy Contract', () => {
     });
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.simpleRevert.callAsync(), 'SIMPLE_REVERT');
+            expect(abiGenDummy.simpleRevert.callAsync()).to.be.rejectedWith('SIMPLE_REVERT');
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.revertWithConstant.callAsync(), 'REVERT_WITH_CONSTANT');
+            expect(abiGenDummy.revertWithConstant.callAsync()).to.be.rejectedWith('REVERT_WITH_CONSTANT');
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.simpleRequire.callAsync(), 'SIMPLE_REQUIRE');
+            expect(abiGenDummy.simpleRequire.callAsync()).to.be.rejectedWith('SIMPLE_REQUIRE');
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.requireWithConstant.callAsync(), 'REQUIRE_WITH_CONSTANT');
+            expect(abiGenDummy.requireWithConstant.callAsync()).to.be.rejectedWith('REQUIRE_WITH_CONSTANT');
         });
     });
 
@@ -267,16 +267,3 @@ describe('Lib dummy contract', () => {
         expect(result).to.deep.equal(new BigNumber(1235));
     });
 });
-
-// HACK(xianny): copied from @0x/contracts-test-utils to avoid circular dependency
-/**
- * Resolves if the the contract call fails with the given revert reason.
- * @param p a Promise resulting from a contract call
- * @param reason a specific revert reason
- * @returns a new Promise which will reject if the conditions are not met and
- * otherwise resolve with no value.
- */
-function expectContractCallFailedAsync<T>(p: Promise<T>, reason: string): Chai.PromisedAssertion {
-    const rejectionMessageRegex = new RegExp(`^VM Exception while processing transaction: revert ${reason}$`);
-    return expect(p).to.be.rejectedWith(rejectionMessageRegex);
-}

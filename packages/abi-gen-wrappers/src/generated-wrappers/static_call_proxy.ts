@@ -147,19 +147,9 @@ export class StaticCallProxyContract extends BaseContract {
             }
             const self = (this as any) as StaticCallProxyContract;
             const encodedData = self._strictEncodeArguments('getProxyId()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming

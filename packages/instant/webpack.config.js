@@ -135,6 +135,9 @@ const generateConfig = (dischargeTarget, heapConfigOptions, rollbarConfigOptions
         resolve: {
             extensions: ['.js', '.json', '.ts', '.tsx'],
         },
+        node: {
+            fs: 'empty',
+        },
         module: {
             rules: [
                 {
