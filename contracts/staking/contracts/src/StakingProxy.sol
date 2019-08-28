@@ -33,8 +33,10 @@ contract StakingProxy is
     /// @param _stakingContract Staking contract to delegate calls to.
     constructor(address _stakingContract)
         public
-        MixinStorage(_stakingContract)
-    {}
+        MixinStorage()
+    {
+        stakingContract = _stakingContract;
+    }
 
     /// @dev Delegates calls to the staking contract, if it is set.
     // solhint-disable no-complex-fallback

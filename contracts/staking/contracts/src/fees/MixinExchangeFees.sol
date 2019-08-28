@@ -54,7 +54,6 @@ contract MixinExchangeFees is
     MixinTimeLockedStake,
     MixinStakeBalances
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH.

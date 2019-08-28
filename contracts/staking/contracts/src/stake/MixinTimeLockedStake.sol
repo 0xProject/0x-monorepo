@@ -84,9 +84,8 @@ contract MixinTimeLockedStake is
     MixinStorage,
     MixinScheduler
 {
-    
-    using LibSafeDowncast for uint256;
     using LibSafeMath for uint256;
+    using LibSafeDowncast for uint256;
 
     /// @dev Forces the timeLock data structure to sync to state.
     /// This is not necessary but may optimize some subsequent calls.
@@ -105,8 +104,8 @@ contract MixinTimeLockedStake is
         internal
     {
         (IStructs.TimeLock memory ownerTimeLock,) = _getSynchronizedTimeLock(owner);
-        uint96 downcastAmount = amount.downcastToUint96();
-        ownerTimeLock.total += downcastAmount;
+        uint256 total = uint256(ownerTimeLock.total);
+        ownerTimeLock.total = total.safeAdd(amount).downcastToUint96();
         timeLockedStakeByOwner[owner] = ownerTimeLock;
     }
 
@@ -132,14 +131,15 @@ contract MixinTimeLockedStake is
             bool isOutOfSync
         )
     {
-        uint64 currentTimeLockPeriod = getCurrentTimeLockPeriod();
+        uint256 currentTimeLockPeriod = getCurrentTimeLockPeriod();
         ownerTimeLock = timeLockedStakeByOwner[owner];
         isOutOfSync = false;
-        if (currentTimeLockPeriod == ownerTimeLock.lockedAt.safeAdd(1)) {
+        uint256 ownerLockedAt = uint256(ownerTimeLock.lockedAt);
+        if (currentTimeLockPeriod == ownerLockedAt.safeAdd(1)) {
             // shift n periods
             ownerTimeLock.pending = ownerTimeLock.total;
             isOutOfSync = true;
-        } else if (currentTimeLockPeriod > ownerTimeLock.lockedAt) {
+        } else if (currentTimeLockPeriod > ownerLockedAt) {
             // TimeLock has expired - zero out
             ownerTimeLock.lockedAt = 0;
             ownerTimeLock.total = 0;

@@ -61,7 +61,6 @@ contract MixinStakingPool is
     MixinStorage,
     MixinStakingPoolRewardVault
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Asserts that the sender is the operator of the input pool.

@@ -88,7 +88,6 @@ contract MixinStake is
     MixinTimeLockedStake,
     MixinStakeBalances
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Deposit Zrx. This mints stake for the sender that is in the "Deactivated & Withdrawable" state.

@@ -21,8 +21,6 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibSafeMath64.sol";
-import "../libs/LibSafeDowncast.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
@@ -41,17 +39,14 @@ contract MixinScheduler is
     MixinConstants,
     MixinStorage
 {
-
-    using LibSafeDowncast for uint256;
     using LibSafeMath for uint256;
-    using LibSafeMath64 for uint64;
 
     /// @dev Returns the current epoch.
     /// @return Epoch.
     function getCurrentEpoch()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return currentEpoch;
     }
@@ -62,7 +57,7 @@ contract MixinScheduler is
     function getEpochDurationInSeconds()
         public
         pure
-        returns (uint64)
+        returns (uint256)
     {
         return EPOCH_DURATION_IN_SECONDS;
     }
@@ -73,7 +68,7 @@ contract MixinScheduler is
     function getCurrentEpochStartTimeInSeconds()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return currentEpochStartTimeInSeconds;
     }
@@ -85,7 +80,7 @@ contract MixinScheduler is
     function getCurrentEpochEarliestEndTimeInSeconds()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return getCurrentEpochStartTimeInSeconds().safeAdd(getEpochDurationInSeconds());
     }
@@ -95,7 +90,7 @@ contract MixinScheduler is
     function getCurrentTimeLockPeriod()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return currentTimeLockPeriod;
     }
@@ -106,7 +101,7 @@ contract MixinScheduler is
     function getTimeLockDurationInEpochs()
         public
         pure
-        returns (uint64)
+        returns (uint256)
     {
         return TIMELOCK_DURATION_IN_EPOCHS;
     }
@@ -117,7 +112,7 @@ contract MixinScheduler is
     function getCurrentTimeLockPeriodStartEpoch()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return currentTimeLockPeriodStartEpoch;
     }
@@ -128,7 +123,7 @@ contract MixinScheduler is
     function getCurrentTimeLockPeriodEndEpoch()
         public
         view
-        returns (uint64)
+        returns (uint256)
     {
         return getCurrentTimeLockPeriodStartEpoch().safeAdd(getTimeLockDurationInEpochs());
     }
@@ -141,10 +136,10 @@ contract MixinScheduler is
     {
         // get current timestamp
         // solhint-disable-next-line not-rely-on-time
-        uint64 currentBlockTimestamp = block.timestamp.downcastToUint64();
+        uint256 currentBlockTimestamp = block.timestamp;
 
         // validate that we can increment the current epoch
-        uint64 epochEndTime = getCurrentEpochEarliestEndTimeInSeconds();
+        uint256 epochEndTime = getCurrentEpochEarliestEndTimeInSeconds();
         if (epochEndTime > currentBlockTimestamp) {
             LibRichErrors.rrevert(LibStakingRichErrors.BlockTimestampTooLowError(
                 epochEndTime,
@@ -153,10 +148,10 @@ contract MixinScheduler is
         }
 
         // incremment epoch
-        uint64 nextEpoch = currentEpoch.safeAdd(1);
+        uint256 nextEpoch = currentEpoch.safeAdd(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(getEpochDurationInSeconds());
+        uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(getEpochDurationInSeconds());
         
         // notify of epoch change
         emit EpochChanged(
@@ -169,7 +164,7 @@ contract MixinScheduler is
         if (getCurrentTimeLockPeriodEndEpoch() <= nextEpoch) {
             currentTimeLockPeriod = currentTimeLockPeriod.safeAdd(1);
             currentTimeLockPeriodStartEpoch = currentEpoch;
-            uint64 endEpoch = currentEpoch.safeAdd(getTimeLockDurationInEpochs());
+            uint256 endEpoch = currentEpoch.safeAdd(getTimeLockDurationInEpochs());
             
             // notify
             emit TimeLockPeriodChanged(

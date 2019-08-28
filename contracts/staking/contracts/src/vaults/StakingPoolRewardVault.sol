@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../libs/LibSafeDowncast.sol";
-import "../libs/LibSafeMath96.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinConstants.sol";
@@ -44,10 +44,8 @@ contract StakingPoolRewardVault is
     MixinConstants,
     MixinVaultCore
 {
-
-    using LibSafeDowncast for uint256;
     using LibSafeMath for uint256;
-    using LibSafeMath96 for uint96;
+    using LibSafeDowncast for uint256;
 
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
@@ -109,7 +107,8 @@ contract StakingPoolRewardVault is
         onlyStakingContract
     {
         // sanity check - sufficient balance?
-        if (amount > balanceByPoolId[poolId].operatorBalance) {
+        uint256 operatorBalance = uint256(balanceByPoolId[poolId].operatorBalance);
+        if (amount > operatorBalance) {
             LibRichErrors.rrevert(LibStakingRichErrors.AmountExceedsBalanceOfPoolError(
                 amount,
                 balanceByPoolId[poolId].operatorBalance
@@ -117,7 +116,7 @@ contract StakingPoolRewardVault is
         }
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].operatorBalance -= amount.downcastToUint96();
+        balanceByPoolId[poolId].operatorBalance = operatorBalance.safeSub(amount).downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -134,7 +133,8 @@ contract StakingPoolRewardVault is
         onlyStakingContract
     {
         // sanity check - sufficient balance?
-        if (amount > balanceByPoolId[poolId].membersBalance) {
+        uint256 membersBalance = uint256(balanceByPoolId[poolId].membersBalance);
+        if (amount > membersBalance) {
             LibRichErrors.rrevert(LibStakingRichErrors.AmountExceedsBalanceOfPoolError(
                 amount,
                 balanceByPoolId[poolId].membersBalance
@@ -142,7 +142,7 @@ contract StakingPoolRewardVault is
         }
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].membersBalance -= amount.downcastToUint96();
+        balanceByPoolId[poolId].membersBalance = membersBalance.safeSub(amount).downcastToUint96();
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -221,20 +221,22 @@ contract StakingPoolRewardVault is
     /// @dev Increments a balance struct, splitting the input amount between the
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param balance Balance struct to increment.
-    /// @param amount256Bit Amount to add to balance.
-    function _incrementBalanceStruct(Balance memory balance, uint256 amount256Bit)
+    /// @param amount Amount to add to balance.
+    function _incrementBalanceStruct(Balance memory balance, uint256 amount)
         private
         pure
     {
-        // balances are stored as uint96; safely downscale.
-        uint96 amount = amount256Bit.downcastToUint96();
-
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
-        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
-        uint96 poolPortion = amount.safeSub(operatorPortion);
+        uint256 operatorPortion = LibMath.getPartialAmountCeil(
+            uint256(balance.operatorShare),  // Operator share out of 100
+            100,
+            amount
+        );
+
+        uint256 poolPortion = amount.safeSub(operatorPortion);
 
         // update balances
-        balance.operatorBalance = balance.operatorBalance.safeAdd(operatorPortion);
-        balance.membersBalance = balance.membersBalance.safeAdd(poolPortion);
+        balance.operatorBalance = uint256(balance.operatorBalance).safeAdd(operatorPortion).downcastToUint96();
+        balance.membersBalance = uint256(balance.membersBalance).safeAdd(poolPortion).downcastToUint96();
     }
 }
