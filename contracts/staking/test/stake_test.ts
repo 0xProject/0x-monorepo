@@ -54,20 +54,6 @@ blockchainTests.resets.only('Stake States', () => {
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
-    describe('Total Stake', () => {
-        it('should return zero as initial total stake', async () => {
-            const staker = stakers[0];
-            const balance = await stakingWrapper.getTotalStakeAsync(staker);
-            expect(balance).to.be.bignumber.equal(new BigNumber(0));
-        });
-        it('should return correct value after staking', async () => {
-            const staker = stakers[0];
-            const amount = StakingWrapper.toBaseUnitAmount(10);
-            await stakingWrapper.stakeAsync(staker, amount);
-            const balance = await stakingWrapper.getTotalStakeAsync(staker);
-            expect(balance).to.be.bignumber.equal(amount);
-        });
-    });
     describe('Active Stake', () => {
         it('should return zero as initial stake', async () => {
             const staker = stakers[0];
@@ -199,15 +185,39 @@ blockchainTests.resets.only('Stake States', () => {
                 const balance = await stakingWrapper.getWithdrawableStakeAsync(staker);
                 expect(balance).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
             }
-           /* {
-                const balance = await stakingWrapper.getTotalStakeAsync(staker);
-                expect(balance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake));
-            }*/
             {
                 const balance = await stakingWrapper.getInactiveStakeAsync(staker);
                 expect(balance.current).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
                 expect(balance.next).to.be.bignumber.equal(amountToDeactivate.minus(amountToUnstake));
             }
+        });
+    });
+    describe('Total Stake', () => {
+        it('should return zero as initial total stake', async () => {
+            const staker = stakers[0];
+            const balance = await stakingWrapper.getTotalStakeAsync(staker);
+            expect(balance).to.be.bignumber.equal(new BigNumber(0));
+        });
+        it('should return correct value after staking', async () => {
+            const staker = stakers[0];
+            const amount = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.stakeAsync(staker, amount);
+            const balance = await stakingWrapper.getTotalStakeAsync(staker);
+            expect(balance).to.be.bignumber.equal(amount);
+        });
+        it('should return correct value after unstaking', async () => {
+            const staker = stakers[0];
+            const amountToStake = StakingWrapper.toBaseUnitAmount(10);
+            const amountToUnstake = new BigNumber(8);
+            await stakingWrapper.stakeAsync(staker, amountToStake);
+            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToUnstake);
+            // skip until we can withdraw this stake
+            await stakingWrapper.skipToNextEpochAsync();
+            await stakingWrapper.skipToNextEpochAsync();
+            // perform withdrawal
+            await stakingWrapper.unstakeAsync(staker, amountToUnstake);
+            const balance = await stakingWrapper.getTotalStakeAsync(staker);
+            expect(balance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake));
         });
     });
         /*
