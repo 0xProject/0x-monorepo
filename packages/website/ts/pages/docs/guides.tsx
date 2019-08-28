@@ -10,14 +10,12 @@ import { Filters } from 'ts/components/docs/sidebar/filters';
 
 import { IHit } from 'ts/components/docs/search/autocomplete';
 
-import { getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
+import { difficultyOrder, getNameToSearchIndex, hitsPerPage, searchClient } from 'ts/utils/algolia_constants';
 import { environments } from 'ts/utils/environments';
 
 interface IHitsProps {
     hits: IHit[];
 }
-
-const DIFFICULTY_ORDER = ['Beginner', 'Intermediate', 'Advanced'];
 
 export const DocsGuides: React.FC = () => {
     const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
@@ -38,7 +36,7 @@ export const DocsGuides: React.FC = () => {
 const Hits: React.FC<IHitsProps> = ({ hits }) => {
     return (
         <div>
-            {DIFFICULTY_ORDER.map(difficulty => {
+            {difficultyOrder.map(difficulty => {
                 const filteredHits = hits.filter((hit: any) => hit.difficulty === difficulty);
                 const sortedHits = _.orderBy(filteredHits, [hit => hit.title.toLowerCase()], ['asc']);
 

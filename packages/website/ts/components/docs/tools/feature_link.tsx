@@ -22,7 +22,6 @@ export const FeatureLink: React.FC<IFeatureLinkProps> = ({ description, external
 
     return (
         <FeatureLinkWrapper shouldOpenInNewTab={externalUrl ? true : false} to={to}>
-            <StyledIcon color={colors.brandLight} name="flexibleIntegration" size={60} />
             <Content>
                 <div>
                     <Heading asElement="h3" size="small" marginBottom="6px">
@@ -47,15 +46,6 @@ export const FeatureLink: React.FC<IFeatureLinkProps> = ({ description, external
         </FeatureLinkWrapper>
     );
 };
-
-const StyledIcon = styled(Icon)`
-    margin-bottom: 12px;
-
-    @media (min-width: 500px) {
-        margin-bottom: 0;
-        margin-right: 30px;
-    }
-`;
 
 const FeatureLinkWrapper = styled(Link)`
     border: 1px solid #dbdfdd;

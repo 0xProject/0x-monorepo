@@ -6,6 +6,7 @@ import { Filter, IFilterProps } from 'ts/components/docs/sidebar/filter';
 import { Heading } from 'ts/components/text';
 
 import { styled } from 'ts/style/theme';
+import { difficultyOrder } from 'ts/utils/algolia_constants';
 
 interface IFilterListProps {
     attribute: string;
@@ -42,8 +43,7 @@ const FiltersList: React.FC<IFilterListProps> = ({
     const sortAlphabetically = (_items: IFilterProps[]) => _.orderBy(_items, 'label', 'asc');
 
     const sortByDifficulty = (_items: IFilterProps[]) => {
-        const order = ['Beginner', 'Intermediate', 'Advanced'];
-        return _items.sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
+        return _items.sort((a, b) => difficultyOrder.indexOf(a.label) - difficultyOrder.indexOf(b.label));
     };
 
     const sortFilters = (_items: IFilterProps[]) =>

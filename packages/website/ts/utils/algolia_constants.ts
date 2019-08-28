@@ -8,6 +8,8 @@ export const ALGOLIA_APP_ID = 'HWXKQZ6EUX';
 const ALGOLIA_CLIENT_API_KEY = '15a66580bc61181a2ee45931f3d35994';
 export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY);
 
+export const difficultyOrder = ['Beginner', 'Intermediate', 'Advanced'];
+
 export const hitsPerPage = {
     autocomplete: 5,
     pages: ALGOLIA_MAX_NUMBER_HITS, // Maximum set by algolia
