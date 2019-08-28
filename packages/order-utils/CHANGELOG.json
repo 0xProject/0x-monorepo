@@ -75,7 +75,7 @@
                 "pr": "TODO"
             },
             {
-                "note": "Add `TransactionGasPriceError` to error registry.",
+                "note": "Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry.",
                 "pr": "TODO"
             }
         ]
