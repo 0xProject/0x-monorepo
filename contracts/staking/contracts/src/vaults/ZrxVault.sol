@@ -21,6 +21,7 @@ pragma solidity ^0.5.9;
 import "../interfaces/IZrxVault.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
 
@@ -37,7 +38,6 @@ contract ZrxVault is
     IZrxVault,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
@@ -55,17 +55,18 @@ contract ZrxVault is
     /// @dev Constructor.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     /// @param zrxTokenAddress Address of the Zrx Token.
-    /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
     constructor(
         address erc20ProxyAddress,
-        address zrxTokenAddress,
-        bytes memory _zrxAssetData
+        address zrxTokenAddress
     )
         public
     {
         erc20Proxy = IAssetProxy(erc20ProxyAddress);
         zrxToken = IERC20Token(zrxTokenAddress);
-        zrxAssetData = _zrxAssetData;
+        zrxAssetData = abi.encodeWithSelector(
+            IAssetData(address(0)).ERC20Token.selector,
+            zrxTokenAddress
+        );
     }
 
     /// @dev Sets the ERC20 proxy.
@@ -79,19 +80,6 @@ contract ZrxVault is
     {
         erc20Proxy = IAssetProxy(erc20ProxyAddress);
         emit Erc20ProxyChanged(erc20ProxyAddress);
-    }
-
-    /// @dev Sets the Zrx Asset Data.
-    /// Note that only the contract owner can call this.
-    /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param _zrxAssetData Zrx asset data for the ERC20 Proxy.
-    function setZrxAssetData(bytes calldata _zrxAssetData)
-        external
-        onlyOwner
-        onlyNotInCatastrophicFailure
-    {
-        zrxAssetData = _zrxAssetData;
-        emit ZrxAssetDataChanged(_zrxAssetData);
     }
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
@@ -132,7 +120,7 @@ contract ZrxVault is
         _withdrawFrom(owner, amount);
     }
 
-    /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
+    /// @dev Withdraw all of sender's ZRX from vault from the vault.
     /// Note that this can only be called when *in* Catastrophic Failure mode.
     /// @param owner of Zrx Tokens.
     function withdrawAllFrom(address owner)

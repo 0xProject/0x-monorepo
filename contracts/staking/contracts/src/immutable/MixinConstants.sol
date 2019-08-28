@@ -25,7 +25,7 @@ contract MixinConstants is
     MixinDeploymentConstants
 {
     // TODO: Reevaluate this variable
-    uint96 constant internal PERCENTAGE_DENOMINATOR = 100; // 10**18
+    uint8 constant internal PERCENTAGE_DENOMINATOR = 100;
 
     // The upper 16 bytes represent the pool id, so this would be pool id 1. See MixinStakinPool for more information.
     bytes32 constant internal INITIAL_POOL_ID = 0x0000000000000000000000000000000100000000000000000000000000000000;
