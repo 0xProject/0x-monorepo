@@ -107,8 +107,7 @@ contract MixinStake is
             );
         } else if (from.id == IStructs.StakeStateId.INACTIVE) {
             // update withdrawable field
-            uint256 currentWithdrawableStake = getWithdrawableStake(msg.sender);
-            withdrawableStakeByOwner[msg.sender] = currentWithdrawableStake._sub(amount);
+            withdrawableStakeByOwner[msg.sender] = getWithdrawableStake(msg.sender);
         }
 
         if (to.id == IStructs.StakeStateId.DELEGATED) {
@@ -122,6 +121,12 @@ contract MixinStake is
         IStructs.StoredStakeBalance storage fromPtr = _getBalancePtrFromState(from);
         IStructs.StoredStakeBalance storage toPtr = _getBalancePtrFromState(to);
         _moveStake(fromPtr, toPtr, amount);
+
+        if (from.id == IStructs.StakeStateId.INACTIVE) {
+            // update withdrawable field
+            withdrawableStakeByOwner[msg.sender] = getWithdrawableStake(msg.sender);
+        }
+
 
         /*
             emit StakeMoved(
