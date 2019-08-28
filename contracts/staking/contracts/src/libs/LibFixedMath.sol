@@ -38,12 +38,12 @@ library LibFixedMath {
 
     /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
     function _add(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __add(a, -b, LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW);
+        c = __add(a, b);
     }
 
     /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
     function _sub(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __add(a, -b, LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW);
+        c = __add(a, -b);
     }
 
     /// @dev Returns the multiplication of two fixed point numbers, reverting on overflow.
@@ -124,7 +124,7 @@ library LibFixedMath {
 
     /// @dev Convert a fixed-point number to an integer.
     function _toInteger(int256 f) internal pure returns (int256 n) {
-        return f >> 127;
+        return f / FIXED_1;
     }
 
     /// @dev Get the natural logarithm of a fixed-point number 0 < `x` <= LN_MAX_VAL
@@ -339,19 +339,18 @@ library LibFixedMath {
     }
 
     /// @dev Adds two numbers, reverting on overflow.
-    function __add(
-        int256 a,
-        int256 b,
-        LibFixedMathRichErrors.BinOpErrorCodes errorCode
-    )
-        private
-        pure
-        returns (int256 c)
-    {
+    function __add(int256 a, int256 b) private pure returns (int256 c) {
         c = a + b;
-        if ((c > 0 && a < 0 && b < 0) || (c < 0 && a > 0 && b > 0)) {
+        if (c > 0 && a < 0 && b < 0) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
-                errorCode,
+                LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW,
+                a,
+                b
+            ));
+        }
+        if (c < 0 && a > 0 && b > 0) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+                LibFixedMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
                 a,
                 b
             ));

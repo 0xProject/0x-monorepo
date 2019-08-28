@@ -9,7 +9,6 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    LibFeeMathTestContract,
     StakingContract,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
@@ -32,7 +31,6 @@ export class StakingWrapper {
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _rewardVaultContractIfExists?: StakingPoolRewardVaultContract;
-    private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
     public static toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
@@ -92,10 +90,6 @@ export class StakingWrapper {
     public getStakingPoolRewardVaultContract(): StakingPoolRewardVaultContract {
         this._validateDeployedOrThrow();
         return this._rewardVaultContractIfExists as StakingPoolRewardVaultContract;
-    }
-    public getLibFeeMathTestContract(): LibFeeMathTestContract {
-        this._validateDeployedOrThrow();
-        return this._LibFeeMathTestContractIfExists as LibFeeMathTestContract;
     }
     public async deployAndConfigureContractsAsync(): Promise<void> {
         // deploy zrx vault
@@ -164,13 +158,6 @@ export class StakingWrapper {
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._web3Wrapper.sendTransactionAsync(setStakingPoolRewardVaultTxData),
-        );
-        // deploy libmath test
-        this._LibFeeMathTestContractIfExists = await LibFeeMathTestContract.deployFrom0xArtifactAsync(
-            artifacts.LibFeeMathTest,
-            this._provider,
-            txDefaults,
-            artifacts,
         );
     }
     public async getEthBalanceAsync(owner: string): Promise<BigNumber> {
@@ -703,88 +690,6 @@ export class StakingWrapper {
     public async getZrxTokenBalanceOfZrxVaultAsync(): Promise<BigNumber> {
         const balance = await this._zrxTokenContract.balanceOf.callAsync(this.getZrxVaultContract().address);
         return balance;
-    }
-    ///// MATH /////
-    public async nthRootAsync(value: BigNumber, n: BigNumber): Promise<BigNumber> {
-        // const txReceipt = await this.getLibFeeMathTestContract().nthRoot.await(value, n);
-        const output = await this.getLibFeeMathTestContract().nthRoot.callAsync(value, n);
-        return output;
-    }
-    public async nthRootFixedPointAsync(value: BigNumber, n: BigNumber): Promise<BigNumber> {
-        const output = await this.getLibFeeMathTestContract().nthRootFixedPoint.callAsync(value, n);
-        return output;
-    }
-    public async cobbDouglasAsync(
-        totalRewards: BigNumber,
-        ownerFees: BigNumber,
-        totalFees: BigNumber,
-        ownerStake: BigNumber,
-        totalStake: BigNumber,
-        alphaNumerator: BigNumber,
-        alphaDenominator: BigNumber,
-    ): Promise<BigNumber> {
-        const output = await this.getLibFeeMathTestContract().cobbDouglas.callAsync(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaNumerator,
-            alphaDenominator,
-        );
-        return output;
-    }
-    public async cobbDouglasSimplifiedAsync(
-        totalRewards: BigNumber,
-        ownerFees: BigNumber,
-        totalFees: BigNumber,
-        ownerStake: BigNumber,
-        totalStake: BigNumber,
-        alphaDenominator: BigNumber,
-    ): Promise<BigNumber> {
-        await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator,
-        );
-        const output = await this.getLibFeeMathTestContract().cobbDouglasSimplified.callAsync(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator,
-        );
-        return output;
-    }
-    public async cobbDouglasSimplifiedInverseAsync(
-        totalRewards: BigNumber,
-        ownerFees: BigNumber,
-        totalFees: BigNumber,
-        ownerStake: BigNumber,
-        totalStake: BigNumber,
-        alphaDenominator: BigNumber,
-    ): Promise<BigNumber> {
-        await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator,
-        );
-        const output = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaDenominator,
-        );
-        return output;
     }
     private async _executeTransactionAsync(
         calldata: string,

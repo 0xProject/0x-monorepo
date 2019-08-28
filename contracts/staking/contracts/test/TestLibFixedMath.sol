@@ -42,7 +42,7 @@ contract TestLibFixedMath {
         return LibFixedMath._sub(a, b);
     }
 
-    function uintMul(int256 f, uint256 u) internal pure returns (uint256) {
+    function uintMul(int256 f, uint256 u) external pure returns (uint256) {
         return LibFixedMath._uintMul(f, u);
     }
 
@@ -70,11 +70,11 @@ contract TestLibFixedMath {
         return LibFixedMath._toInteger(f);
     }
 
-    function ln(int256 x) internal pure returns (int256 r) {
+    function ln(int256 x) external pure returns (int256 r) {
         return LibFixedMath._ln(x);
     }
 
-    function exp(int256 x) internal pure returns (int256 r) {
+    function exp(int256 x) external pure returns (int256 r) {
         return LibFixedMath._exp(x);
     }
 }
