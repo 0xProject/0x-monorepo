@@ -17,6 +17,8 @@ interface IHitsProps {
     hits: IHit[];
 }
 
+const DIFFICULTY_ORDER = ['Beginner', 'Intermediate', 'Advanced'];
+
 export const DocsGuides: React.FC = () => {
     const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
     return (
@@ -34,13 +36,14 @@ export const DocsGuides: React.FC = () => {
 };
 
 const Hits: React.FC<IHitsProps> = ({ hits }) => {
-    const sortedHits = _.orderBy(hits, ['title'], ['asc']);
-
     return (
         <div>
-            {sortedHits.map((hit: any, index: number) => (
-                <Resource key={`resource-${index}`} hit={hit} />
-            ))}
+            {DIFFICULTY_ORDER.map(difficulty => {
+                const filteredHits = hits.filter((hit: any) => hit.difficulty === difficulty);
+                const sortedHits = _.orderBy(filteredHits, ['title'], ['asc']);
+
+                return sortedHits.map((hit: any, index: number) => <Resource key={`resource-${index}`} hit={hit} />);
+            })}
         </div>
     );
 };
