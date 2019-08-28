@@ -12,6 +12,7 @@ import { BaseActor } from './base_actor';
 const expect = chai.expect;
 
 export class StakerActor extends BaseActor {
+    /**
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
@@ -151,19 +152,11 @@ export class StakerActor extends BaseActor {
     public async skipToNextTimeLockPeriodAsync(): Promise<void> {
         // query some initial values
         const initBalances = await this.getBalancesAsync();
-        const timeLockStart = await this._stakingWrapper.getTimeLockStartAsync(this._owner);
         // skip to next period
         await this._stakingWrapper.skipToNextTimeLockPeriodAsync();
         // validate new balances
         const expectedBalances = initBalances;
-        const currentTimeLockPeriod = await this._stakingWrapper.getCurrentTimeLockPeriodAsync();
-        if (currentTimeLockPeriod.minus(timeLockStart).isGreaterThan(1)) {
-            expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(
-                initBalances.timeLockedStakeBalance,
-            );
-            expectedBalances.withdrawableStakeBalance = expectedBalances.activatableStakeBalance;
-            expectedBalances.timeLockedStakeBalance = new BigNumber(0);
-        }
         await this.assertBalancesAsync(expectedBalances);
     }
+    */
 }

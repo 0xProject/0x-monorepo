@@ -48,3 +48,8 @@ export interface SimulationParams {
     delegateInNextEpoch: boolean;
     withdrawByUndelegating: boolean;
 }
+
+export interface StakeBalance {
+    current: BigNumber,
+    next: BigNumber,
+}

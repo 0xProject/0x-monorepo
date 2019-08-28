@@ -15,6 +15,9 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 export class Simulation {
+    /*
+
+
     private readonly _stakingWrapper: StakingWrapper;
     private readonly _p: SimulationParams;
     private _userQueue: Queue<string>;
@@ -271,4 +274,5 @@ export class Simulation {
             );
         }
     }
+    */
 }

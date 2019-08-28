@@ -54,7 +54,7 @@ contract MixinStake is
     /// calling `depositZrxAndMintDeactivatedStake` and `activateStake`.
     /// This mints stake for the sender that is in the "Activated" state.
     /// @param amount of Zrx to deposit / Stake to mint.
-    function mintStake(uint256 amount)
+    function stake(uint256 amount)
         external
     {
          // deposit equivalent amount of ZRX into vault
@@ -70,7 +70,7 @@ contract MixinStake is
         );
     }
 
-    function burnStake(uint256 amount)
+    function unstake(uint256 amount)
         external
     {
         // sanity check
