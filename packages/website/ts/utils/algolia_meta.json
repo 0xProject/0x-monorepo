@@ -482,7 +482,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Protocol Developer", "Relayer"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "path": "tools/@0x/migrations/v4.3.0/reference.mdx",
             "versions": ["v4.3.0"]
         },
@@ -493,7 +493,7 @@
             "isCommunity": false,
             "isFeatured": true,
             "tags": ["Relayer"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "externalUrl": "https://github.com/0xProject/0x-launch-kit"
         },
         "massive": {
@@ -503,7 +503,7 @@
             "isCommunity": true,
             "isFeatured": false,
             "tags": ["Relayer", "Trader"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "externalUrl": "https://github.com/NoteGio/massive"
         },
         "coordinator-server": {
