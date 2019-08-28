@@ -19,7 +19,7 @@ import { Package, PackageToNextVersion, VersionChangelog } from './types';
 import { changelogUtils } from './utils/changelog_utils';
 import { configs } from './utils/configs';
 import { alertDiscordAsync } from './utils/discord';
-import { DocGenerateAndUploadUtils } from './utils/doc_generate_and_upload_utils';
+import { DocGenerateUtils } from './utils/doc_generate_utils';
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
@@ -50,7 +50,6 @@ async function confirmAsync(message: string): Promise<void> {
         await confirmAsync(
             'THIS IS NOT A TEST PUBLISH! You are about to publish one or more packages to npm. Are you sure you want to continue? (y/n)',
         );
-        await confirmDocPagesRenderAsync(packagesWithDocs);
     }
 
     // Update CHANGELOGs
@@ -72,7 +71,8 @@ async function confirmAsync(message: string): Promise<void> {
     });
 
     // Generate markdown docs for packages
-    await execAsync(`yarn generate_md_docs`, { cwd: constants.monorepoRootPath });
+    const isStaging = true;
+    await generateDocMDAsync(packagesWithDocs);
 
     // Push changelogs changes and markdown docs to Github
     if (!configs.IS_LOCAL_PUBLISH) {
@@ -91,10 +91,6 @@ async function confirmAsync(message: string): Promise<void> {
     if (!isDryRun) {
         // Publish docker images to DockerHub
         await publishImagesToDockerHubAsync(allPackagesToPublish);
-
-        const isStaging = false;
-        const shouldUploadDocs = true;
-        await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
 
         // Upload markdown docs to S3 bucket
         await execAsync(`yarn upload_md_docs`, { cwd: constants.monorepoRootPath });
@@ -167,39 +163,12 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     return updatedPackagesWithDocPages;
 }
 
-async function generateAndUploadDocJsonsAsync(
-    packagesWithDocs: Package[],
-    isStaging: boolean,
-    shouldUploadDocs: boolean,
-): Promise<void> {
+async function generateDocMDAsync(packagesWithDocs: Package[]): Promise<void> {
     for (const pkg of packagesWithDocs) {
         const nameWithoutPrefix = pkg.packageJson.name.replace('@0x/', '');
-        const docGenerateAndUploadUtils = new DocGenerateAndUploadUtils(nameWithoutPrefix, isStaging, shouldUploadDocs);
+        const docGenerateAndUploadUtils = new DocGenerateUtils(nameWithoutPrefix);
         await docGenerateAndUploadUtils.generateAndUploadDocsAsync();
     }
-}
-
-async function confirmDocPagesRenderAsync(packagesWithDocs: Package[]): Promise<void> {
-    // push docs to staging
-    utils.log("Upload all docJson's to S3 staging...");
-    const isStaging = true;
-    const shouldUploadDocs = true;
-    await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
-
-    // deploy website to staging
-    utils.log('Deploy website to staging...');
-    const pathToWebsite = `${constants.monorepoRootPath}/packages/website`;
-    await execAsync(`yarn deploy_staging`, { cwd: pathToWebsite });
-
-    _.each(packagesWithDocs, pkg => {
-        const name = pkg.packageJson.name;
-        const nameWithoutPrefix = _.startsWith(name, NPM_NAMESPACE) ? name.split('@0x/')[1] : name;
-        const link = `${constants.stagingWebsite}/docs/tools/${nameWithoutPrefix}`;
-        // tslint:disable-next-line:no-floating-promises
-        opn(link);
-    });
-
-    await confirmAsync('Do all the doc pages render? (y/n)');
 }
 
 async function pushChangelogsAndMDDocsToGithubAsync(): Promise<void> {

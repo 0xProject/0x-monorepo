@@ -1,5 +1,5 @@
 import { PackageJSON } from '@0x/types';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
 import { exec as execAsync } from 'promisify-child-process';
@@ -11,9 +11,7 @@ import { ExportInfo, ExportNameToTypedocNames, ExportPathToExportedItems } from 
 
 import { utils } from './utils';
 
-export class DocGenerateAndUploadUtils {
-    private readonly _isStaging: boolean;
-    private readonly _shouldUploadDocs: boolean;
+export class DocGenerateUtils {
     private readonly _packageName: string;
     private readonly _omitExports: string[];
     private readonly _packagePath: string;
@@ -36,10 +34,10 @@ export class DocGenerateAndUploadUtils {
         _.each(node, nodeValue => {
             if (_.isArray(nodeValue)) {
                 _.each(nodeValue, aNode => {
-                    updatedTypeNames = DocGenerateAndUploadUtils._getAllTypeNames(aNode, updatedTypeNames);
+                    updatedTypeNames = DocGenerateUtils._getAllTypeNames(aNode, updatedTypeNames);
                 });
             } else if (_.isObject(nodeValue)) {
-                updatedTypeNames = DocGenerateAndUploadUtils._getAllTypeNames(nodeValue, updatedTypeNames);
+                updatedTypeNames = DocGenerateUtils._getAllTypeNames(nodeValue, updatedTypeNames);
             }
         });
         return updatedTypeNames;
@@ -71,14 +69,14 @@ export class DocGenerateAndUploadUtils {
         _.each(node, (nodeValue, innerPropertyName) => {
             if (_.isArray(nodeValue)) {
                 _.each(nodeValue, aNode => {
-                    updatedReferenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
+                    updatedReferenceNames = DocGenerateUtils._getAllReferenceNames(
                         innerPropertyName,
                         aNode,
                         updatedReferenceNames,
                     );
                 });
             } else if (_.isObject(nodeValue)) {
-                updatedReferenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
+                updatedReferenceNames = DocGenerateUtils._getAllReferenceNames(
                     innerPropertyName,
                     nodeValue,
                     updatedReferenceNames,
@@ -161,10 +159,8 @@ export class DocGenerateAndUploadUtils {
         };
         return exportInfo;
     }
-    constructor(packageName: string, isStaging: boolean, shouldUploadDocs: boolean) {
-        this._isStaging = isStaging;
+    constructor(packageName: string) {
         this._packageName = packageName;
-        this._shouldUploadDocs = shouldUploadDocs;
         this._packagePath = `${constants.monorepoRootPath}/packages/${packageName}`;
 
         this._monoRepoPkgNameToPath = {};
@@ -181,7 +177,7 @@ export class DocGenerateAndUploadUtils {
         this._omitExports = _.get(this._packageJson, 'config.postpublish.docOmitExports', []);
 
         const indexPath = `${this._packagePath}/src/index.ts`;
-        const exportInfo = DocGenerateAndUploadUtils._getExportPathToExportedItems(indexPath, this._omitExports);
+        const exportInfo = DocGenerateUtils._getExportPathToExportedItems(indexPath, this._omitExports);
         this._exportPathToExportedItems = exportInfo.exportPathToExportedItems;
         this._exportPathOrder = exportInfo.exportPathOrder;
     }
@@ -198,8 +194,10 @@ export class DocGenerateAndUploadUtils {
             typeDocExtraFileIncludes.push(globalTypeDefinitionsPath);
         }
 
-        utils.log(`GENERATE_UPLOAD_DOCS: Generating Typedoc JSON for ${this._packageName}...`);
+        utils.log(`GENERATE_DOCS: Generating Typedoc JSON for ${this._packageName}...`);
         const jsonFilePath = path.join(this._packagePath, 'generated_docs', 'index.json');
+        const mdFileDir = path.join(this._packagePath, 'docs');
+        const mdReferencePath = `${mdFileDir}/reference.mdx`;
         const projectFiles = typeDocExtraFileIncludes.join(' ');
         const cwd = path.join(constants.monorepoRootPath, 'packages', this._packageName);
         // HACK: For some reason calling `typedoc` command directly from here, even with `cwd` set to the
@@ -208,45 +206,26 @@ export class DocGenerateAndUploadUtils {
         await execAsync(`JSON_FILE_PATH=${jsonFilePath} PROJECT_FILES="${projectFiles}" yarn docs:json`, {
             cwd,
         });
+        utils.log(`GENERATE_DOCS: Generating Typedoc Markdown for ${this._packageName}...`);
+        await execAsync(`MD_FILE_DIR=${mdFileDir} PROJECT_FILES="${projectFiles}" yarn docs:md`, {
+            cwd,
+        });
 
-        utils.log('GENERATE_UPLOAD_DOCS: Modifying Typedoc JSON to our custom format...');
+        utils.log('GENERATE_DOCS: Modifying Markdown To Exclude Unexported Items...');
         const typedocOutputString = readFileSync(jsonFilePath).toString();
+        const markdownOutputString = readFileSync(mdReferencePath).toString();
         const typedocOutput = JSON.parse(typedocOutputString);
         const standardizedTypedocOutput = this._standardizeTypedocOutputTopLevelChildNames(typedocOutput);
-        const modifiedTypedocOutput = this._pruneTypedocOutput(standardizedTypedocOutput);
+        const { modifiedTypedocOutput, modifiedMarkdownOutput } = this._pruneTypedocOutput(
+            standardizedTypedocOutput,
+            markdownOutputString,
+        );
 
         if (!_.includes(docGenConfigs.TYPES_ONLY_LIBRARIES, this._packageName)) {
             const propertyName = ''; // Root has no property name
-            const referenceNames = DocGenerateAndUploadUtils._getAllReferenceNames(
-                propertyName,
-                modifiedTypedocOutput,
-                [],
-            );
+            const referenceNames = DocGenerateUtils._getAllReferenceNames(propertyName, modifiedTypedocOutput, []);
             this._lookForUnusedExportedTypesThrowIfExists(referenceNames, modifiedTypedocOutput);
             this._lookForMissingReferenceExportsThrowIfExists(referenceNames);
-        }
-
-        // Some of our packages re-export external package exports in their index.ts
-        // Typedoc is incapable of rendering these packages, so we need to special-case them
-        const externalExportToLink: { [externalExport: string]: string } = {};
-        const externalExportsWithoutLinks: string[] = [];
-        const externalExports: string[] = this._getAllExternalExports();
-        _.each(externalExports, externalExport => {
-            const linkIfExists = docGenConfigs.EXTERNAL_EXPORT_TO_LINK[externalExport];
-            if (linkIfExists === undefined) {
-                externalExportsWithoutLinks.push(externalExport);
-                return;
-            }
-            externalExportToLink[externalExport] = linkIfExists;
-        });
-        if (!_.isEmpty(externalExportsWithoutLinks)) {
-            throw new Error(
-                `Found the following external exports in ${
-                    this._packageName
-                }'s index.ts:\n ${externalExportsWithoutLinks.join(
-                    '\n',
-                )}\nThey are missing from the EXTERNAL_EXPORT_TO_LINK mapping. Add them and try again.`,
-            );
         }
 
         const exportPathToTypedocNames: ExportNameToTypedocNames = {};
@@ -258,45 +237,12 @@ export class DocGenerateAndUploadUtils {
                     : [...exportPathToTypedocNames[exportPath], file.name];
         });
 
-        // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
-        // within our own custom, versioned docsJson format.
-        const docJson = {
-            version: docGenConfigs.DOC_JSON_VERSION,
-            metadata: {
-                exportPathToTypedocNames,
-                exportPathOrder: this._exportPathOrder,
-                externalTypeToLink: docGenConfigs.EXTERNAL_TYPE_TO_LINK,
-                externalExportToLink,
-            },
-            typedocJson: modifiedTypedocOutput,
-        };
-        utils.log(`GENERATE_UPLOAD_DOCS: Saving Doc JSON to: ${jsonFilePath}`);
-        writeFileSync(jsonFilePath, JSON.stringify(docJson, null, 2));
+        utils.log(`GENERATE_DOCS: Delete Doc JSON in: ${jsonFilePath}`);
+        unlinkSync(jsonFilePath);
+        utils.log(`GENERATE_DOCS: Saving Doc MD to: ${mdReferencePath}`);
+        writeFileSync(mdReferencePath, modifiedMarkdownOutput);
 
-        if (this._shouldUploadDocs) {
-            await this._uploadDocsAsync(jsonFilePath, cwd);
-        }
-        utils.log(`GENERATE_UPLOAD_DOCS: Doc generation done for ${this._packageName}`);
-    }
-    private async _uploadDocsAsync(jsonFilePath: string, cwd: string): Promise<void> {
-        const fileName = `v${this._packageJson.version}.json`;
-        utils.log(`GENERATE_UPLOAD_DOCS: Doc generation successful, uploading docs... as ${fileName}`);
-
-        const S3BucketPath = this._isStaging
-            ? `s3://staging-doc-jsons/${this._packageName}/`
-            : `s3://doc-jsons/${this._packageName}/`;
-        const s3Url = `${S3BucketPath}${fileName}`;
-        await execAsync(
-            `aws s3 cp ${jsonFilePath} ${s3Url} --profile 0xproject --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --content-type application/json`,
-            {
-                cwd,
-            },
-        );
-        utils.log(`GENERATE_UPLOAD_DOCS: Docs uploaded to S3 bucket: ${S3BucketPath}`);
-        // Remove the generated docs directory
-        await execAsync(`rm -rf ${jsonFilePath}`, {
-            cwd,
-        });
+        utils.log(`GENERATE_DOCS: Doc generation done for ${this._packageName}`);
     }
     /**
      *  Look for types that are used by the public interface but are missing from a package's index.ts
@@ -324,7 +270,7 @@ export class DocGenerateAndUploadUtils {
      * Look for exported types that are not used by the package's public interface
      */
     private _lookForUnusedExportedTypesThrowIfExists(referenceNames: string[], typedocOutput: any): void {
-        const exportedTypes = DocGenerateAndUploadUtils._getAllTypeNames(typedocOutput, []);
+        const exportedTypes = DocGenerateUtils._getAllTypeNames(typedocOutput, []);
         const excessiveReferences = _.difference(exportedTypes, referenceNames);
         const excessiveReferencesExceptIgnored = _.difference(
             excessiveReferences,
@@ -344,36 +290,51 @@ export class DocGenerateAndUploadUtils {
      * - the constructor is to be ignored
      * - it begins with an underscore (i.e is private)
      */
-    private _pruneTypedocOutput(typedocOutput: any): any {
+    private _pruneTypedocOutput(typedocOutput: any, markdownOutput: string): any {
         const modifiedTypedocOutput = _.cloneDeep(typedocOutput);
+        let modifiedMarkdownOutput = markdownOutput;
         _.each(typedocOutput.children, (file, i) => {
             const exportPath = this._findExportPathGivenTypedocName(file.name);
             const exportItems = this._exportPathToExportedItems[exportPath];
             _.each(file.children, (child, j) => {
                 const isNotExported = !_.includes(exportItems, child.name);
                 if (isNotExported) {
+                    const item = typedocOutput.children[i].children[j];
+                    let regexp;
+                    switch (item.kindString) {
+                        case 'Interface':
+                            regexp = new RegExp(`# Interface: ${item.name}[\\s\\S]*?(<hr \\/>)`, 'g');
+                            modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '$1');
+                            break;
+
+                        case 'Enumeration':
+                            regexp = new RegExp(`# Enumeration: ${item.name}[\\s\\S]*?(<hr \\/>)`, 'g');
+                            modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '$1');
+                            break;
+
+                        case 'Class':
+                            regexp = new RegExp(`# Class: ${item.name}[\\s\\S]*?(<hr \\/>)`, 'g');
+                            modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '$1');
+                            break;
+
+                        case 'Type alias':
+                            regexp = new RegExp(`#  ${item.name}[\\s\\S]*?(___)`, 'g');
+                            modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '$1');
+                            break;
+
+                        default:
+                        // Noop
+                    }
                     delete modifiedTypedocOutput.children[i].children[j];
                     return;
                 }
-
-                const innerChildren = typedocOutput.children[i].children[j].children;
-                _.each(innerChildren, (innerChild, k) => {
-                    const isHiddenConstructor =
-                        child.kindString === 'Class' &&
-                        _.includes(docGenConfigs.CLASSES_WITH_HIDDEN_CONSTRUCTORS, child.name) &&
-                        innerChild.kindString === 'Constructor';
-                    const isPrivate = _.startsWith(innerChild.name, '_');
-                    if (isHiddenConstructor || isPrivate) {
-                        delete modifiedTypedocOutput.children[i].children[j].children[k];
-                    }
-                });
-                modifiedTypedocOutput.children[i].children[j].children = _.compact(
-                    modifiedTypedocOutput.children[i].children[j].children,
-                );
             });
             modifiedTypedocOutput.children[i].children = _.compact(modifiedTypedocOutput.children[i].children);
         });
-        return modifiedTypedocOutput;
+        return {
+            modifiedTypedocOutput,
+            modifiedMarkdownOutput,
+        };
     }
     /**
      * Unfortunately TypeDoc children names will only be prefixed with the name of the package _if_ we passed
@@ -459,7 +420,7 @@ export class DocGenerateAndUploadUtils {
 
             const typeDocSourceIncludes = new Set();
             const pathToIndex = `${pathIfExists}/src/index.ts`;
-            const exportInfo = DocGenerateAndUploadUtils._getExportPathToExportedItems(pathToIndex);
+            const exportInfo = DocGenerateUtils._getExportPathToExportedItems(pathToIndex);
             const innerExportPathToExportedItems = exportInfo.exportPathToExportedItems;
             _.each(exportedItems, exportName => {
                 _.each(innerExportPathToExportedItems, (innerExportItems, innerExportPath) => {
@@ -468,7 +429,7 @@ export class DocGenerateAndUploadUtils {
                     }
                     if (!_.startsWith(innerExportPath, './')) {
                         throw new Error(
-                            `GENERATE_UPLOAD_DOCS: WARNING - ${
+                            `GENERATE_DOCS: WARNING - ${
                                 this._packageName
                             } is exporting one of ${innerExportItems} which is
                             itself exported from an external package. To fix this, export the external dependency directly,

@@ -29,30 +29,6 @@ export const docGenConfigs: DocGenConfigs = {
         Buy: 'https://github.com/0xProject/0x-monorepo/blob/development/packages/types/src/index.ts',
         Sell: 'https://github.com/0xProject/0x-monorepo/blob/development/packages/types/src/index.ts',
     },
-    // If a 0x package re-exports an external package, we should add a link to it's exported items here
-    EXTERNAL_EXPORT_TO_LINK: {
-        Web3ProviderEngine: 'https://www.npmjs.com/package/web3-provider-engine',
-        BigNumber: 'https://www.npmjs.com/package/bignumber.js',
-        Schema: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/index.d.ts#L49',
-        ValidatorResult: 'https://github.com/tdegrunt/jsonschema/blob/v1.2.4/lib/helpers.js#L31',
-    },
-    // Sometimes we want to hide a constructor from rendering in our docs. An example is when our library has a
-    // factory method which instantiates an instance of a class, but we don't want users instantiating it themselves
-    // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
-    CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
-        'SwapQuoter',
-        'CoordinatorWrapper',
-        'DutchAuctionWrapper',
-        'ERC20ProxyWrapper',
-        'ERC20TokenWrapper',
-        'ERC721ProxyWrapper',
-        'ERC721TokenWrapper',
-        'EtherTokenWrapper',
-        'ExchangeWrapper',
-        'ForwarderWrapper',
-        'OrderValidatorWrapper',
-        'TransactionEncoder',
-    ],
     // Some types are not explicitly part of the public interface like params, return values, etc... But we still
     // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
     // config

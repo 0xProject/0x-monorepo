@@ -20,7 +20,7 @@
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
         "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
-        "script:doc_generate_and_upload": "node ./lib/doc_generate_and_upload.js",
+        "script:doc_generate": "node ./lib/doc_generate.js",
         "script:publish_release_notes": "node ./lib/publish_release_notes.js"
     },
     "repository": {
