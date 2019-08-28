@@ -5,6 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
 const remarkSlug = require('remark-slug');
+const remarkAutolinkHeadings = require('./webpack/remark_autolink_headings');
 const remarkSectionizeHeadings = require('./webpack/remark_sectionize_headings');
 const mdxTableOfContents = require('./webpack/mdx_table_of_contents');
 
@@ -65,7 +66,7 @@ const config = {
                     {
                         loader: '@mdx-js/loader',
                         options: {
-                            remarkPlugins: [remarkSlug, remarkSectionizeHeadings],
+                            remarkPlugins: [remarkSlug, remarkAutolinkHeadings, remarkSectionizeHeadings],
                             compilers: [mdxTableOfContents],
                         },
                     },

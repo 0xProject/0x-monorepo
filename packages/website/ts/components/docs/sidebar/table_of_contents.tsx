@@ -38,7 +38,7 @@ export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents, ver
 
 const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
     return (
-        <ContentsList>
+        <ul>
             {contents.map(content => {
                 const { children, id, level, title } = content;
 
@@ -58,15 +58,9 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
                     </li>
                 );
             })}
-        </ContentsList>
+        </ul>
     );
 };
-
-const ContentsList = styled.ul`
-    ul {
-        margin-bottom: 1rem;
-    }
-`;
 
 const ContentLink = styled(Link)<{ level: number }>`
     display: inline-block;
@@ -91,8 +85,7 @@ const ContentLink = styled(Link)<{ level: number }>`
         `
         font-size: 0.8333rem;
         line-height: 1.5;
-        margin-bottom: .5rem;
-
+        margin: .4rem 0;
     `}
 
     ${({ level }) =>
