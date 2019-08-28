@@ -220,6 +220,18 @@ blockchainTests.resets.only('Stake States', () => {
             expect(balance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake));
         });
     });
+    describe('Move Stake', () => {
+        it('active -> active', async () => {});
+        it('active -> inactive', async () => {});
+        it('active -> delegated', async () => {});
+        it('inactive -> active', async () => {});
+        it('inactive -> inactive', async () => {});
+        it('inactive -> delegated', async () => {});
+        it('delegated -> active', async () => {});
+        it('delegated -> inactive', async () => {});
+        it('delegated -> delegated', async () => {});
+    });
+
         /*
 
         it('should successfully deactivate non-zero stake', async () => {
