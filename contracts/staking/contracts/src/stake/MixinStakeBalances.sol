@@ -188,6 +188,9 @@ contract MixinStakeBalances is
     )
         internal
     {
+        if (_arePointersEqual(fromPtr, toPtr)) {
+            return;
+        }
         IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
         IStructs.StoredStakeBalance memory to = _syncBalanceDestructive(toPtr);
 
@@ -226,6 +229,20 @@ contract MixinStakeBalances is
         // update state
         _storeBalance(fromPtr, from);
     }
+
+    function _arePointersEqual(
+        IStructs.StoredStakeBalance storage fromPtr,
+        IStructs.StoredStakeBalance storage toPtr
+    )
+        private
+        returns (bool areEqual)
+    {
+        assembly {
+            areEqual := and(eq(fromPtr_slot, toPtr_slot), eq(fromPtr_offset, toPtr_offset))
+        }
+        return areEqual;
+    }
+
 
     function _incrementBalance(IStructs.StoredStakeBalance storage fromPtr, uint256 amount)
         internal
