@@ -33,8 +33,6 @@ export class FillOrderWrapper {
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
     private readonly _web3Wrapper: Web3Wrapper;
 
-    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-    //         should be revisited when the protocol fee testing has been unit tested well.
     /**
      * Simulates matching two orders by transferring amounts defined in
      * `transferAmounts` and returns the results.
@@ -90,20 +88,6 @@ export class FillOrderWrapper {
             fillResults.makerFeePaid,
             signedOrder.makerFeeAssetData,
         );
-        // FIXME - Punting on these tests for now since no staking contract will be registered. This
-        //         should be revisited when the protocol fee testing has been unit tested well.
-        // if (stakingOpts.messageValue.isGreaterThanOrEqualTo(fillResults.protocolFeePaid)) {
-        //     // Pay the protocol fee in ETH.
-        //     balanceStore.transferAsset(takerAddress, stakingOpts.stakingAddress, fillResults.protocolFeePaid, '');
-        // } else {
-        //     // Pay the protocol fee in WETH.
-        //     balanceStore.transferAsset(
-        //         takerAddress,
-        //         stakingOpts.stakingAddress,
-        //         fillResults.protocolFeePaid,
-        //         AssetProxyId.ERC20,
-        //     );
-        // }
         return [fillResults, fillEvent, balanceStore];
     }
 
@@ -167,8 +151,6 @@ export class FillOrderWrapper {
         return this._blockchainBalanceStore;
     }
 
-    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-    //         should be revisited when the protocol fee testing has been unit tested well.
     /**
      * Fills an order and asserts the effects. This includes
      * 1. The order info (via `getOrderInfo`)

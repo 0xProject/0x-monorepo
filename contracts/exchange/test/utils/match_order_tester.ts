@@ -235,7 +235,6 @@ export class MatchOrderTester {
         return expectedBatchMatchResults;
     }
 
-    // FIXME - Punting on protocol fees until later
     /**
      * Matches two complementary orders and asserts results.
      * @param orders The matched orders and filled states.
@@ -267,7 +266,7 @@ export class MatchOrderTester {
                 orders.leftOrder,
                 orders.rightOrder,
                 takerAddress,
-                {}, // FIXME
+                {},
             );
             transactionReceipt = await this._executeMatchOrdersWithMaximalFillAsync(
                 orders.leftOrder,
@@ -1200,14 +1199,14 @@ function convertToMatchResults(result: MatchResults): MatchedFillResults {
             takerAssetFilledAmount: result.fills[0].takerAssetFilledAmount,
             makerFeePaid: result.fills[0].makerFeePaid,
             takerFeePaid: result.fills[0].takerFeePaid,
-            protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+            protocolFeePaid: constants.ZERO_AMOUNT,
         },
         right: {
             makerAssetFilledAmount: result.fills[1].makerAssetFilledAmount,
             takerAssetFilledAmount: result.fills[1].takerAssetFilledAmount,
             makerFeePaid: result.fills[1].makerFeePaid,
             takerFeePaid: result.fills[1].takerFeePaid,
-            protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+            protocolFeePaid: constants.ZERO_AMOUNT,
         },
         profitInLeftMakerAsset,
         profitInRightMakerAsset,
@@ -1226,7 +1225,7 @@ function convertToFillResults(result: FillEventArgs): FillResults {
         takerAssetFilledAmount: result.takerAssetFilledAmount,
         makerFeePaid: result.makerFeePaid,
         takerFeePaid: result.takerFeePaid,
-        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
     return fillResults;
 }

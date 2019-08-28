@@ -505,10 +505,18 @@ contract MixinMatchOrders is
             uint256 valuePaid = 0;
 
             // Pay the left order's protocol fee.
-            if (address(this).balance >= 2 * protocolFee) {
-                valuePaid = 2 * protocolFee;
+            if (address(this).balance >= protocolFee) {
+                valuePaid = protocolFee;
             }
             IStaking(feeCollector).payProtocolFee.value(valuePaid)(leftOrder.makerAddress, takerAddress, protocolFee);
+
+            // Clear value paid for the next call to `payProtocolFee()`.
+            valuePaid = 0;
+
+            // Pay the right order's protocol fee.
+            if (address(this).balance >= protocolFee) {
+                valuePaid = protocolFee;
+            }
             IStaking(feeCollector).payProtocolFee.value(valuePaid)(rightOrder.makerAddress, takerAddress, protocolFee);
         }
 

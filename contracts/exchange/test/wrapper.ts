@@ -501,8 +501,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
-                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
@@ -534,8 +532,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                     ].plus(makerFee.plus(takerFee));
                 });
 
-                // FIXME - Punting on these tests for now since no staking contract will be registered. This
-                //         should be revisited when the protocol fee testing has been unit tested well.
                 const fillResults = await exchange.batchFillOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmounts,
@@ -573,8 +569,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
-                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
@@ -659,8 +653,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
-                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
@@ -732,8 +724,6 @@ blockchainTests.resets('Exchange wrappers', env => {
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
 
                     takerAssetFillAmounts.push(takerAssetFillAmount);
-                    // FIXME - Punting on these tests for now since no staking contract will be registered. This
-                    //         should be revisited when the protocol fee testing has been unit tested well.
                     expectedFillResults.push({
                         takerAssetFilledAmount: takerAssetFillAmount,
                         makerAssetFilledAmount,
@@ -876,7 +866,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME - This is what is being used now.
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -948,7 +938,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1064,7 +1054,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1137,7 +1127,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({

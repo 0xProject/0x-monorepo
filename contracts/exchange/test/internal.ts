@@ -164,7 +164,6 @@ blockchainTests('Exchange core internal functions', env => {
             return _.assign({}, ORDER_DEFAULTS, details);
         }
 
-        // FIXME - This test definitely needs to be updated
         async function testUpdateFilledStateAsync(
             order: OrderWithoutDomain,
             orderTakerAssetFilledAmount: BigNumber,
@@ -190,7 +189,7 @@ blockchainTests('Exchange core internal functions', env => {
                     orderHash,
                     orderTakerAssetFilledAmount,
                     fillResults,
-                    // opts, // FIXME
+                    // opts,
                 ),
             );
             // Grab the new `filled` state for this order.
@@ -242,7 +241,6 @@ blockchainTests('Exchange core internal functions', env => {
             const order = makeOrder();
             const orderTakerAssetFilledAmount = constants.MAX_UINT256.dividedToIntegerBy(2);
             const takerAssetFillAmount = constants.MAX_UINT256.dividedToIntegerBy(2).plus(2);
-            // FIXME
             const fillResults = {
                 makerAssetFilledAmount: constants.ZERO_AMOUNT,
                 takerAssetFilledAmount: takerAssetFillAmount,
@@ -289,7 +287,6 @@ blockchainTests('Exchange core internal functions', env => {
             const order = DEFAULT_ORDER;
             const orderHash = randomHash();
             const takerAddress = randomAddress();
-            // FIXME
             const fillResults = {
                 makerAssetFilledAmount: ONE_ETHER.times(2),
                 takerAssetFilledAmount: ONE_ETHER.times(10),
@@ -365,14 +362,14 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount: ONE_ETHER.times(10),
                     makerFeePaid: ONE_ETHER.times(0.01),
                     takerFeePaid: constants.MAX_UINT256,
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 right: {
                     takerAssetFilledAmount: ONE_ETHER.times(20),
                     makerAssetFilledAmount: ONE_ETHER.times(4),
                     makerFeePaid: ONE_ETHER.times(0.02),
                     takerFeePaid: constants.MAX_UINT256_ROOT,
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 profitInLeftMakerAsset: ONE_ETHER,
                 profitInRightMakerAsset: ONE_ETHER.times(2),
@@ -414,14 +411,14 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount: ONE_ETHER.times(10),
                     makerFeePaid: ONE_ETHER.times(0.01),
                     takerFeePaid: constants.MAX_UINT256,
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 right: {
                     takerAssetFilledAmount: ONE_ETHER.times(20),
                     makerAssetFilledAmount: ONE_ETHER.times(4),
                     makerFeePaid: ONE_ETHER.times(0.02),
                     takerFeePaid: constants.MAX_UINT256_ROOT,
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 profitInLeftMakerAsset: ONE_ETHER,
                 profitInRightMakerAsset: ONE_ETHER.times(2),
@@ -452,14 +449,14 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount: ONE_ETHER.times(10),
                     makerFeePaid: ONE_ETHER.times(0.01),
                     takerFeePaid: ONE_ETHER.times(0.025),
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 right: {
                     takerAssetFilledAmount: ONE_ETHER.times(20),
                     makerAssetFilledAmount: ONE_ETHER.times(4),
                     makerFeePaid: ONE_ETHER.times(0.02),
                     takerFeePaid: ONE_ETHER.times(0.05),
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 profitInLeftMakerAsset: ONE_ETHER,
                 profitInRightMakerAsset: ONE_ETHER.times(2),
@@ -550,14 +547,14 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount: ONE_ETHER.times(10),
                     makerFeePaid: ONE_ETHER.times(0.01),
                     takerFeePaid: ONE_ETHER.times(0.025),
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 right: {
                     takerAssetFilledAmount: ONE_ETHER.times(20),
                     makerAssetFilledAmount: ONE_ETHER.times(4),
                     makerFeePaid: ONE_ETHER.times(0.02),
                     takerFeePaid: ONE_ETHER.times(0.05),
-                    protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+                    protocolFeePaid: constants.ZERO_AMOUNT,
                 },
                 profitInLeftMakerAsset: ONE_ETHER,
                 profitInRightMakerAsset: ONE_ETHER.times(2),

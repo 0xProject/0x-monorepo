@@ -20,7 +20,6 @@ export enum FillOrderError {
     TransferFailed = 'TRANSFER_FAILED',
 }
 
-// FIXME - Punting on protocol fees for now
 /**
  * Simplified fill order simulator.
  */
@@ -122,7 +121,7 @@ export class FillOrderSimulator {
             makerAssetFilledAmount: makerAssetFillAmount,
             makerFeePaid,
             takerFeePaid,
-            protocolFeePaid: constants.ZERO_AMOUNT, // FIXME
+            protocolFeePaid: constants.ZERO_AMOUNT,
         };
     }
 }
