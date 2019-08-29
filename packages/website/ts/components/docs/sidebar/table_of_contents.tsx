@@ -93,7 +93,8 @@ const ContentLink = styled(Link)<{ level: number }>`
         `
         line-height: 2;
         padding-left: 0.7rem;
-        transition: all 250ms ease-in-out;
+        border-left: 1px solid #efefef;
+        transition: all 150ms ease-in-out;
 
         &:hover,
         &.active {
@@ -111,6 +112,5 @@ const ContentLink = styled(Link)<{ level: number }>`
         level === 3 &&
         `
         font-size: 0.61rem;
-        margin-left: 0.7rem;
     `}
 `;
