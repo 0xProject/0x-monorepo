@@ -55,8 +55,9 @@ const config = {
                 test: /\.mdx$/,
                 include: path.join(__dirname, '/mdx'),
                 use: [
+                    'cache-loader',
                     {
-                        loader: 'babel-loader',
+                        loader: 'babel-loader?cacheDirectory',
                         options: {
                             plugins: ['@babel/plugin-syntax-object-rest-spread'],
                             presets: ['@babel/preset-env', '@babel/preset-react'],
