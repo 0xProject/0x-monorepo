@@ -17,6 +17,7 @@ export const getSignedOrdersWithNoFeesAsync = async (
     takerAddress: string,
     fillableAmounts: BigNumber[],
     exchangeAddress?: string,
+    senderAddress?: string,
 ): Promise<SignedOrder[]> => {
     const promises = _.map(fillableAmounts, async (fillableAmount: BigNumber) =>
         orderFactory.createSignedOrderAsync(

@@ -7,7 +7,7 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { SwapQuote } from '../src';
+import { SwapQuote, SwapQuoteConsumer } from '../src';
 import { ConsumerType } from '../src/types';
 import { swapQuoteConsumerUtils } from '../src/utils/swap_quote_consumer_utils';
 
@@ -208,6 +208,16 @@ describe('swapQuoteConsumerUtils', () => {
                 { takerAddress },
             );
             expect(consumerType).to.equal(ConsumerType.Coordinator);
+        });
+        it('should return forwarder consumer if takerAsset is wEth and taker has enough weth and the override is provided', async () => {
+            const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
+            await contractWrappers.weth9.deposit.sendTransactionAsync({ value: etherInWei, from: takerAddress });
+            const swapQuoteConsumer = new SwapQuoteConsumer(provider, { networkId });
+            const callData = await swapQuoteConsumer.getCalldataOrThrowAsync(forwarderSwapQuote, {
+                useConsumerType: ConsumerType.Forwarder,
+                takerAddress,
+            });
+            expect(callData.toAddress).to.equal(contractAddresses.forwarder);
         });
     });
 });
