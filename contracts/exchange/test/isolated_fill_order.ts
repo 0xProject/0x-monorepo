@@ -37,6 +37,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
         makerFeeAssetData: createGoodAssetData(),
         takerFeeAssetData: createGoodAssetData(),
     };
+    const DEFAULT_GAS_PRICE = new BigNumber(20000);
+    const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(15000);
     let takerAddress: string;
     let notTakerAddress: string;
     let exchange: IsolatedExchangeWrapper;
@@ -69,7 +71,13 @@ blockchainTests('Isolated fillOrder() tests', env => {
         signature?: string,
     ): Promise<FillOrderAndAssertResultsResults> {
         const orderInfo = await exchange.getOrderInfoAsync(order);
-        const efr = calculateExpectedFillResults(order, orderInfo, takerAssetFillAmount);
+        const efr = calculateExpectedFillResults(
+            order,
+            orderInfo,
+            takerAssetFillAmount,
+            DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+            DEFAULT_GAS_PRICE,
+        );
         const eoi = calculateExpectedOrderInfo(order, orderInfo, efr);
         const efb = calculateExpectedFillBalances(order, efr);
         // Fill the order.
@@ -106,11 +114,15 @@ blockchainTests('Isolated fillOrder() tests', env => {
         order: Order,
         orderInfo: OrderInfo,
         takerAssetFillAmount: BigNumber,
+        protocolFeeMultiplier: BigNumber,
+        gasPrice: BigNumber,
     ): FillResults {
         const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
         return LibReferenceFunctions.calculateFillResults(
             order,
             BigNumber.min(takerAssetFillAmount, remainingTakerAssetAmount),
+            protocolFeeMultiplier,
+            gasPrice,
         );
     }
 

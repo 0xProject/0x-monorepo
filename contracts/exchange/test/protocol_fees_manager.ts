@@ -1,18 +1,17 @@
-import { blockchainTests, constants, expect, LogDecoder } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import {
     artifacts,
     ExchangeContract,
-    ExchangeUpdatedProtocolFeeCollectorAddressEventArgs,
-    ExchangeUpdatedProtocolFeeMultiplierEventArgs,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
 } from '../src';
 
 blockchainTests.resets('MixinProtocolFees', env => {
     let accounts: string[];
     let exchange: ExchangeContract;
-    let logDecoder: LogDecoder;
     let nonOwner: string;
     let owner: string;
     let protocolFeeCollector: string;
@@ -37,60 +36,59 @@ blockchainTests.resets('MixinProtocolFees', env => {
             {},
             new BigNumber(1337),
         );
-
-        // Configure the log decoder
-        logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
     });
 
-    blockchainTests.resets('updateProtocolFeeMultiplier', () => {
+    blockchainTests.resets('setProtocolFeeMultiplier', () => {
         it('should revert if msg.sender != owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
 
             // Ensure that the transaction reverts with the expected rich error.
-            const tx = exchange.updateProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
+            const tx = exchange.setProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
                 from: nonOwner,
             });
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should succeed and emit an UpdatedProtocolFeeMultiplier event if msg.sender == owner', async () => {
-            // Call the `updateProtocolFeeMultiplier()` function and get the receipt.
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await exchange.updateProtocolFeeMultiplier.sendTransactionAsync(protocolFeeMultiplier, {
+        it('should succeed and emit an ProtocolFeeMultiplier event if msg.sender == owner', async () => {
+            // Call the `setProtocolFeeMultiplier()` function and get the receipt.
+            const receipt = await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(
+                protocolFeeMultiplier,
+                {
                     from: owner,
-                }),
+                },
             );
 
             // Verify that the protocolFeeCollector address was actually updated to the correct address.
             const updated = await exchange.protocolFeeMultiplier.callAsync();
             expect(updated).bignumber.to.be.eq(protocolFeeMultiplier);
 
-            // Ensure that the correct `UpdatedProtocolFeeCollectorAddress` event was logged.
+            // Ensure that the correct `ProtocolFeeCollectorAddress` event was logged.
             // tslint:disable:no-unnecessary-type-assertion
-            const updatedEvent = receipt.logs[0] as LogWithDecodedArgs<ExchangeUpdatedProtocolFeeMultiplierEventArgs>;
-            expect(updatedEvent.event).to.be.eq('UpdatedProtocolFeeMultiplier');
+            const updatedEvent = receipt.logs[0] as LogWithDecodedArgs<ExchangeProtocolFeeMultiplierEventArgs>;
+            expect(updatedEvent.event).to.be.eq('ProtocolFeeMultiplier');
             expect(updatedEvent.args.oldProtocolFeeMultiplier).bignumber.to.be.eq(constants.ZERO_AMOUNT);
             expect(updatedEvent.args.updatedProtocolFeeMultiplier).bignumber.to.be.eq(protocolFeeMultiplier);
         });
     });
 
-    blockchainTests.resets('updateProtocolFeeCollectorAddress', () => {
+    blockchainTests.resets('setProtocolFeeCollectorAddress', () => {
         it('should revert if msg.sender != owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
 
             // Ensure that the transaction reverts with the expected rich error.
-            const tx = exchange.updateProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
+            const tx = exchange.setProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
                 from: nonOwner,
             });
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should succeed and emit an UpdatedProtocolFeeCollectorAddress event if msg.sender == owner', async () => {
-            // Call the `updateProtocolFeeCollectorAddress()` function and get the receipt.
-            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await exchange.updateProtocolFeeCollectorAddress.sendTransactionAsync(protocolFeeCollector, {
+        it('should succeed and emit an ProtocolFeeCollectorAddress event if msg.sender == owner', async () => {
+            // Call the `setProtocolFeeCollectorAddress()` function and get the receipt.
+            const receipt = await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(
+                protocolFeeCollector,
+                {
                     from: owner,
-                }),
+                },
             );
 
             // Verify that the protocolFeeCollector address was actually updated to the correct address.
@@ -99,10 +97,8 @@ blockchainTests.resets('MixinProtocolFees', env => {
 
             // Ensure that the correct `UpdatedProtocolFeeCollectorAddress` event was logged.
             // tslint:disable:no-unnecessary-type-assertion
-            const updatedEvent = receipt.logs[0] as LogWithDecodedArgs<
-                ExchangeUpdatedProtocolFeeCollectorAddressEventArgs
-            >;
-            expect(updatedEvent.event).to.be.eq('UpdatedProtocolFeeCollectorAddress');
+            const updatedEvent = receipt.logs[0] as LogWithDecodedArgs<ExchangeProtocolFeeCollectorAddressEventArgs>;
+            expect(updatedEvent.event).to.be.eq('ProtocolFeeCollectorAddress');
             expect(updatedEvent.args.oldProtocolFeeCollector).to.be.eq(constants.NULL_ADDRESS);
             expect(updatedEvent.args.updatedProtocolFeeCollector).to.be.eq(protocolFeeCollector);
         });

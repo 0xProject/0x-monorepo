@@ -1,4 +1,3 @@
-import { constants } from '@0x/contracts-test-utils';
 import { ReferenceFunctions } from '@0x/contracts-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderWithoutDomain } from '@0x/types';
@@ -94,7 +93,12 @@ export function addFillResults(a: FillResults, b: FillResults): FillResults {
 /**
  * Calculates amounts filled and fees paid by maker and taker.
  */
-export function calculateFillResults(order: OrderWithoutDomain, takerAssetFilledAmount: BigNumber): FillResults {
+export function calculateFillResults(
+    order: OrderWithoutDomain,
+    takerAssetFilledAmount: BigNumber,
+    protocolFeeMultiplier: BigNumber,
+    gasPrice: BigNumber,
+): FillResults {
     const makerAssetFilledAmount = safeGetPartialAmountFloor(
         takerAssetFilledAmount,
         order.takerAssetAmount,
@@ -107,6 +111,6 @@ export function calculateFillResults(order: OrderWithoutDomain, takerAssetFilled
         takerAssetFilledAmount,
         makerFeePaid,
         takerFeePaid,
-        protocolFeePaid: constants.ZERO_AMOUNT, // This field is not calculated in `calculateFillResults` as a gas optimization.
+        protocolFeePaid: safeMul(protocolFeeMultiplier, gasPrice),
     };
 }

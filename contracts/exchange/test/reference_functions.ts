@@ -7,6 +7,8 @@ import * as _ from 'lodash';
 
 describe('Reference functions', () => {
     const ONE_ETHER = constants.ONE_ETHER;
+    const DEFAULT_GAS_PRICE = new BigNumber(2);
+    const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
     const EMPTY_ORDER: Order = {
         senderAddress: constants.NULL_ADDRESS,
         makerAddress: constants.NULL_ADDRESS,
@@ -42,9 +44,14 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if computing `fillResults.makerFeePaid` overflows', () => {
@@ -65,9 +72,14 @@ describe('Reference functions', () => {
                 makerAssetFilledAmount,
                 order.makerFee,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if computing `fillResults.takerFeePaid` overflows', () => {
@@ -83,9 +95,14 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.takerFee,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if `order.makerAssetAmount` is 0', () => {
@@ -95,9 +112,14 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if `order.takerAssetAmount` is 0', () => {
@@ -107,9 +129,14 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', () => {
@@ -123,9 +150,14 @@ describe('Reference functions', () => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerFeePaid`', () => {
@@ -145,9 +177,14 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.makerFee,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
-            );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `takerFeePaid`', () => {
@@ -167,9 +204,36 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.takerFee,
             );
-            return expect(() => LibReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount)).to.throw(
-                expectedError.message,
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                ),
+            ).to.throw(expectedError.message);
+        });
+
+        it('reverts if there is an overflow computing `protocolFeePaid`', () => {
+            const order = makeOrder({
+                makerAssetAmount: ONE_ETHER,
+                takerAssetAmount: ONE_ETHER,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
+            const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
+                MAX_UINT256_ROOT,
+                MAX_UINT256_ROOT,
             );
+            return expect(() =>
+                LibReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    MAX_UINT256_ROOT,
+                    MAX_UINT256_ROOT,
+                ),
+            ).to.throw(expectedError.message);
         });
     });
 });

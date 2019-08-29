@@ -25,9 +25,6 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 
 contract IExchangeCore {
 
-    // keccak256("Fill(address,address,bytes32,address,address,uint256,uint256,uint256,uint256,uint256,bool,bytes,bytes,bytes,bytes)")
-    bytes32 internal constant FILL_EVENT_TOPIC = 0x266de417a663e51231ccdf89b2794cea06fde5e2c433d76473160b32d31fd867;
-
     // Fill event is emitted whenever an order is filled.
     event Fill(
         address indexed makerAddress,         // Address that created the order.
@@ -43,8 +40,7 @@ contract IExchangeCore {
         uint256 takerAssetFilledAmount,       // Amount of takerAsset sold by taker and bought by maker.
         uint256 makerFeePaid,                 // Amount of makerFeeAssetData paid to feeRecipient by maker.
         uint256 takerFeePaid,                 // Amount of takerFeeAssetData paid to feeRecipient by taker.
-        uint256 protocolFeePaid,              // Amount of eth or weth paid to the staking contract.
-        bool isProtocolFeePaidInWei           // Indicates whether the protocol fee is paid in Wei (ETH) or WETH.
+        uint256 protocolFeePaid               // Amount of eth or weth paid to the staking contract.
     );
 
     // Cancel event is emitted whenever an individual order is cancelled.

@@ -42,7 +42,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay protocol fee in WETH when too little value is sent', async () => {
+        it('should not forward ETH when too little value is sent', async () => {
             await testProtocolFeesReceiver.testFillOrderProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -92,7 +92,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay protocol fee in WETH twice when too little value is sent', async () => {
+        it('should not forward ETH twice when too little value is sent', async () => {
             await testProtocolFeesReceiver.testMatchOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -104,7 +104,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay protocol fee in ETH and then WETH when the correct value is sent', async () => {
+        it('should pay protocol fee in ETH and then not forward ETH when exactly one protocol fee is sent', async () => {
             await testProtocolFeesReceiver.testMatchOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -116,7 +116,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay protocol fee in ETH when extra value is sent and then pay in WETH', async () => {
+        it('should pay protocol fee in ETH and then not forward ETH when a bit more than one protocol fee is sent', async () => {
             await testProtocolFeesReceiver.testMatchOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -167,7 +167,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay one protocol fee in WETH when too little ETH is sent and only one order is in the batch', async () => {
+        it('should not forward ETH when less than one protocol fee is sent and only one order is in the batch', async () => {
             await testProtocolFeesReceiver.testBatchFillOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -206,7 +206,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay both protocol fees in WETH when an insuffiecent amount of ETH for one protocol fee is sent', async () => {
+        it('should not forward ETH twice when an insuffiecent amount of ETH for one protocol fee is sent', async () => {
             await testProtocolFeesReceiver.testBatchFillOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -219,7 +219,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay a protocol in ETH and then a fee in WETH when exactly one protocol fee in ETH is sent', async () => {
+        it('should pay a protocol in ETH and not forward ETH for the second when exactly one protocol fee in ETH is sent', async () => {
             await testProtocolFeesReceiver.testBatchFillOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,
@@ -245,7 +245,7 @@ blockchainTests('Protocol Fee Payments', env => {
             );
         });
 
-        it('should pay two protocol fees in ETH and one in WETH when exactly two protocol fees in ETH is sent', async () => {
+        it('should pay two protocol fees in ETH and then not forward ETH for a third when exactly two protocol fees in ETH is sent', async () => {
             await testProtocolFeesReceiver.testBatchFillOrdersProtocolFees.awaitTransactionSuccessAsync(
                 testProtocolFees.address,
                 DEFAULT_PROTOCOL_FEE_MULTIPLIER,

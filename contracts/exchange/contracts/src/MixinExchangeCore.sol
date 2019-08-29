@@ -217,17 +217,9 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier, tx.gasprice);
 
         bytes32 orderHash = orderInfo.orderHash;
-
-        // Settle order
-        _settleOrder(
-            orderHash,
-            order,
-            takerAddress,
-            fillResults
-        );
 
         // Update exchange internal state
         _updateFilledState(
@@ -235,6 +227,14 @@ contract MixinExchangeCore is
             takerAddress,
             orderHash,
             orderInfo.orderTakerAssetFilledAmount,
+            fillResults
+        );
+
+        // Settle order
+        _settleOrder(
+            orderHash,
+            order,
+            takerAddress,
             fillResults
         );
 
@@ -292,8 +292,7 @@ contract MixinExchangeCore is
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
-            fillResults.protocolFeePaid,
-            msg.value >= fillResults.protocolFeePaid
+            fillResults.protocolFeePaid
         );
     }
 
@@ -471,8 +470,7 @@ contract MixinExchangeCore is
             // Calculate the protocol fee that should be paid and populate the `protocolFeePaid` field in `fillResults`.
             // It's worth noting that we leave this calculation until now so that work isn't wasted if a fee collector
             // is not registered in the exchange.
-            uint256 protocolFee = tx.gasprice.safeMul(protocolFeeMultiplier);
-            fillResults.protocolFeePaid = protocolFee;
+            uint256 protocolFee = fillResults.protocolFeePaid;
 
             // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
             // Otherwise the fee should be paid in WETH. Since the exchange doesn't actually handle
@@ -482,6 +480,8 @@ contract MixinExchangeCore is
                 valuePaid = protocolFee;
             }
             IStaking(feeCollector).payProtocolFee.value(valuePaid)(order.makerAddress, takerAddress, protocolFee);
+        } else {
+            fillResults.protocolFeePaid = 0;
         }
     }
 }

@@ -91,7 +91,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
 
         // Set the protocol fee multiplier of the exchange
-        await exchange.updateProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER, {
+        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER, {
             from: owner,
         });
 

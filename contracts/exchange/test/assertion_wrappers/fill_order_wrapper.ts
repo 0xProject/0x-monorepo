@@ -8,6 +8,7 @@ import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
+    constants,
     expect,
     FillEventArgs,
     filterLogsToArguments,
@@ -58,7 +59,13 @@ export class FillOrderWrapper {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        const fillResults = LibReferenceFunctions.calculateFillResults(signedOrder, takerAssetFillAmount);
+        // TODO(jalextowle): Change this if the integration tests take protocol fees into account.
+        const fillResults = LibReferenceFunctions.calculateFillResults(
+            signedOrder,
+            takerAssetFillAmount,
+            constants.ZERO_AMOUNT,
+            constants.ZERO_AMOUNT,
+        );
         const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
         // Taker -> Maker
         balanceStore.transferAsset(

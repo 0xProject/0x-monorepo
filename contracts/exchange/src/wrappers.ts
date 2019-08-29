@@ -13,7 +13,6 @@ export * from '../generated-wrappers/i_exchange_core';
 export * from '../generated-wrappers/i_match_orders';
 export * from '../generated-wrappers/i_protocol_fees';
 export * from '../generated-wrappers/i_signature_validator';
-export * from '../generated-wrappers/i_staking_manager';
 export * from '../generated-wrappers/i_transactions';
 export * from '../generated-wrappers/i_transfer_simulator';
 export * from '../generated-wrappers/i_wallet';

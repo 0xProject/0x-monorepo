@@ -34,21 +34,21 @@ contract MixinProtocolFees is
 
     /// @dev Allows the owner to update the protocol fee multiplier.
     /// @param updatedProtocolFeeMultiplier The updated protocol fee multiplier.
-    function updateProtocolFeeMultiplier(uint256 updatedProtocolFeeMultiplier)
+    function setProtocolFeeMultiplier(uint256 updatedProtocolFeeMultiplier)
         external
         onlyOwner
     {
-        emit UpdatedProtocolFeeMultiplier(protocolFeeMultiplier, updatedProtocolFeeMultiplier);
+        emit ProtocolFeeMultiplier(protocolFeeMultiplier, updatedProtocolFeeMultiplier);
         protocolFeeMultiplier = updatedProtocolFeeMultiplier;
     }
 
     /// @dev Allows the owner to update the protocolFeeCollector address.
     /// @param updatedProtocolFeeCollector The updated protocolFeeCollector contract address.
-    function updateProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
+    function setProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
         external
         onlyOwner
     {
-        emit UpdatedProtocolFeeCollectorAddress(protocolFeeCollector, updatedProtocolFeeCollector);
+        emit ProtocolFeeCollectorAddress(protocolFeeCollector, updatedProtocolFeeCollector);
         protocolFeeCollector = updatedProtocolFeeCollector;
     }
 }

@@ -16,7 +16,6 @@ import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as IProtocolFees from '../generated-artifacts/IProtocolFees.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
-import * as IStakingManager from '../generated-artifacts/IStakingManager.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
 import * as ITransferSimulator from '../generated-artifacts/ITransferSimulator.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
@@ -61,7 +60,6 @@ export const artifacts = {
     IMatchOrders: IMatchOrders as ContractArtifact,
     IProtocolFees: IProtocolFees as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
-    IStakingManager: IStakingManager as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
     ITransferSimulator: ITransferSimulator as ContractArtifact,
     IWallet: IWallet as ContractArtifact,

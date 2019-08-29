@@ -191,7 +191,13 @@ export class Simulation {
             const feeAmount = p.protocolFeesByMaker[i];
             // TODO(jalextowle): I'll need to fix this once I make my PR on protocol fees. The arguments
             // I'm adding are just placeholders for now.
-            await this._stakingWrapper.payProtocolFeeAsync(makerAddress, makerAddress, feeAmount, feeAmount, p.exchangeAddress);
+            await this._stakingWrapper.payProtocolFeeAsync(
+                makerAddress,
+                makerAddress,
+                feeAmount,
+                feeAmount,
+                p.exchangeAddress,
+            );
         }
         // validate fees per pool
         let expectedTotalFeesThisEpoch = new BigNumber(0);

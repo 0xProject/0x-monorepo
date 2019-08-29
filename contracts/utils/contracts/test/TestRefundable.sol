@@ -28,7 +28,7 @@ contract TestRefundable is
         external
         payable
     {
-        refundNonzeroBalance();
+        _refundNonzeroBalance();
     }
 
     function setShouldNotRefund(bool shouldNotRefundNew)

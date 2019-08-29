@@ -27,7 +27,7 @@ contract Refundable {
     modifier refundFinalBalance {
         _;
         if (!shouldNotRefund) {
-            refundNonzeroBalance();
+            _refundNonzeroBalance();
         }
     }
 
@@ -38,11 +38,11 @@ contract Refundable {
             shouldNotRefund = true;
             _;
             shouldNotRefund = false;
-            refundNonzeroBalance();
+            _refundNonzeroBalance();
         }
     }
 
-    function refundNonzeroBalance()
+    function _refundNonzeroBalance()
         internal
     {
         uint256 balance = address(this).balance;

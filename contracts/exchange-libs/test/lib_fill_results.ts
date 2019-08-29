@@ -93,6 +93,8 @@ blockchainTests('LibFillResults', env => {
                 return ReferenceFunctions.calculateFillResults(
                     makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount),
                     takerAssetFilledAmount,
+                    takerAssetFilledAmount, // Using this so that the gas price is distinct from protocolFeeMultiplier
+                    otherAmount,
                 );
             }
 
@@ -102,7 +104,12 @@ blockchainTests('LibFillResults', env => {
                 otherAmount: BigNumber,
             ): Promise<FillResults> {
                 const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-                return libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount);
+                return libsContract.calculateFillResults.callAsync(
+                    order,
+                    takerAssetFilledAmount,
+                    takerAssetFilledAmount, // Using this so that the gas price is distinct from protocolFeeMultiplier
+                    otherAmount,
+                );
             }
 
             testCombinatoriallyWithReferenceFunc(
@@ -115,6 +122,9 @@ blockchainTests('LibFillResults', env => {
 
         describe('explicit tests', () => {
             const MAX_UINT256_ROOT = constants.MAX_UINT256_ROOT;
+            const DEFAULT_GAS_PRICE = new BigNumber(200000);
+            const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
+
             function makeOrder(details?: Partial<Order>): Order {
                 return _.assign({}, EMPTY_ORDER, details);
             }
@@ -127,8 +137,18 @@ blockchainTests('LibFillResults', env => {
                     takerFee: ONE_ETHER.times(0.0025),
                 });
                 const takerAssetFilledAmount = ONE_ETHER.dividedToIntegerBy(3);
-                const expected = ReferenceFunctions.calculateFillResults(order, takerAssetFilledAmount);
-                const actual = await libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount);
+                const expected = ReferenceFunctions.calculateFillResults(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                );
+                const actual = await libsContract.calculateFillResults.callAsync(
+                    order,
+                    takerAssetFilledAmount,
+                    DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                    DEFAULT_GAS_PRICE,
+                );
                 expect(actual).to.deep.eq(expected);
             });
 
@@ -144,9 +164,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount,
                     order.makerAssetAmount,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if computing `fillResults.makerFeePaid` overflows', async () => {
@@ -167,9 +192,14 @@ blockchainTests('LibFillResults', env => {
                     makerAssetFilledAmount,
                     order.makerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if computing `fillResults.takerFeePaid` overflows', async () => {
@@ -185,9 +215,14 @@ blockchainTests('LibFillResults', env => {
                     takerAssetFilledAmount,
                     order.takerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if `order.makerAssetAmount` is 0', async () => {
@@ -197,9 +232,14 @@ blockchainTests('LibFillResults', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if `order.takerAssetAmount` is 0', async () => {
@@ -209,9 +249,14 @@ blockchainTests('LibFillResults', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', async () => {
@@ -225,9 +270,14 @@ blockchainTests('LibFillResults', env => {
                     order.takerAssetAmount,
                     order.makerAssetAmount,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
-                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
 
             it('reverts if there is a rounding error computing `makerFeePaid`', async () => {
@@ -247,9 +297,91 @@ blockchainTests('LibFillResults', env => {
                     order.makerAssetAmount,
                     order.makerFee,
                 );
-                return expect(libsContract.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
-                    expectedError,
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
+            });
+
+            it('reverts if there is a rounding error computing `takerFeePaid`', async () => {
+                const order = makeOrder({
+                    makerAssetAmount: ONE_ETHER,
+                    takerAssetAmount: ONE_ETHER,
+                    takerFee: new BigNumber(100),
+                });
+                const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
+                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                    takerAssetFilledAmount,
+                    order.takerAssetAmount,
+                    order.makerAssetAmount,
                 );
+                const expectedError = new LibMathRevertErrors.RoundingError(
+                    makerAssetFilledAmount,
+                    order.makerAssetAmount,
+                    order.takerFee,
+                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
+            });
+
+            it('reverts if computing `fillResults.protocolFeePaid` overflows', async () => {
+                const order = makeOrder({
+                    makerAssetAmount: ONE_ETHER,
+                    takerAssetAmount: ONE_ETHER.times(2),
+                    makerFee: ONE_ETHER.times(0.0023),
+                    takerFee: ONE_ETHER.times(0.0025),
+                });
+                const takerAssetFilledAmount = ONE_ETHER.dividedToIntegerBy(3);
+                const expectedError = new SafeMathRevertErrors.Uint256BinOpError(
+                    SafeMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
+                    DEFAULT_GAS_PRICE,
+                    MAX_UINT256,
+                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        MAX_UINT256,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
+            });
+
+            it('reverts if there is a rounding error computing `makerFeePaid`', async () => {
+                const order = makeOrder({
+                    makerAssetAmount: ONE_ETHER,
+                    takerAssetAmount: ONE_ETHER,
+                    makerFee: new BigNumber(100),
+                });
+                const takerAssetFilledAmount = order.takerAssetAmount.dividedToIntegerBy(3);
+                const makerAssetFilledAmount = ReferenceFunctions.getPartialAmountFloor(
+                    takerAssetFilledAmount,
+                    order.takerAssetAmount,
+                    order.makerAssetAmount,
+                );
+                const expectedError = new LibMathRevertErrors.RoundingError(
+                    makerAssetFilledAmount,
+                    order.makerAssetAmount,
+                    order.makerFee,
+                );
+                return expect(
+                    libsContract.calculateFillResults.callAsync(
+                        order,
+                        takerAssetFilledAmount,
+                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
+                        DEFAULT_GAS_PRICE,
+                    ),
+                ).to.revertWith(expectedError);
             });
         });
     });
@@ -358,14 +490,14 @@ blockchainTests('LibFillResults', env => {
             takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
             takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-            protocolFeePaid: constants.ZERO_AMOUNT,
+            protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 4),
         },
         right: {
             makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
             takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-            protocolFeePaid: constants.ZERO_AMOUNT,
+            protocolFeePaid: Web3Wrapper.toBaseUnitAmount(15, 4),
         },
         profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
         profitInRightMakerAsset: constants.ZERO_AMOUNT,
@@ -401,6 +533,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 leftOrderTakerAssetFilledAmount,
                 rightOrderTakerAssetFilledAmount,
+                protocolFeeMultiplier,
+                gasPrice,
                 false,
                 { from },
             );
@@ -1072,6 +1206,8 @@ blockchainTests('LibFillResults', env => {
                 rightOrder,
                 leftOrderTakerAssetFilledAmount,
                 rightOrderTakerAssetFilledAmount,
+                protocolFeeMultiplier,
+                gasPrice,
                 true,
                 { from },
             );

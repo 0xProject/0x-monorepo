@@ -32,6 +32,6 @@ export enum ExchangeFunctionName {
     SetSignatureValidatorApproval = 'setSignatureValidatorApproval',
     SimulateDispatchTransferFromCalls = 'simulateDispatchTransferFromCalls',
     TransferOwnership = 'transferOwnership',
-    UpdateProtocolFeeMultiplier = 'updateProtocolFeeMultiplier',
-    UpdateProtocolFeeCollectorAddress = 'updateProtocolFeeCollectorAddress',
+    SetProtocolFeeMultiplier = 'setProtocolFeeMultiplier',
+    SetProtocolFeeCollectorAddress = 'setProtocolFeeCollectorAddress',
 }

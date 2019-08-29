@@ -23,6 +23,8 @@ blockchainTests('Exchange core internal functions', env => {
     let testExchange: TestExchangeInternalsContract;
     let logDecoder: LogDecoder;
     let senderAddress: string;
+    const DEFAULT_PROTOCOL_MULTIPLIER = new BigNumber(150000);
+    const DEFAULT_GAS_PRICE = new BigNumber(200000);
 
     before(async () => {
         const accounts = await env.getAccountAddressesAsync();
@@ -169,12 +171,16 @@ blockchainTests('Exchange core internal functions', env => {
             orderTakerAssetFilledAmount: BigNumber,
             takerAddress: string,
             takerAssetFillAmount: BigNumber,
-            // protocolFeeMultiplier: BigNumber,
-            // gasPrice: BigNumber,
-            // isProtocolFeePaidInEth: boolean,
+            protocolFeeMultiplier: BigNumber,
+            gasPrice: BigNumber,
         ): Promise<void> {
             const orderHash = randomHash();
-            const fillResults = LibReferenceFunctions.calculateFillResults(order, takerAssetFillAmount);
+            const fillResults = LibReferenceFunctions.calculateFillResults(
+                order,
+                takerAssetFillAmount,
+                protocolFeeMultiplier,
+                gasPrice,
+            );
             const expectedFilledState = orderTakerAssetFilledAmount.plus(takerAssetFillAmount);
             // const opts = isProtocolFeePaidInEth
             //    ? { value: fillResults.protocolFeePaid }
@@ -189,7 +195,6 @@ blockchainTests('Exchange core internal functions', env => {
                     orderHash,
                     orderTakerAssetFilledAmount,
                     fillResults,
-                    // opts,
                 ),
             );
             // Grab the new `filled` state for this order.
@@ -209,31 +214,22 @@ blockchainTests('Exchange core internal functions', env => {
             expect(fillEvent.args.takerAssetFilledAmount).to.bignumber.eq(fillResults.takerAssetFilledAmount);
             expect(fillEvent.args.makerFeePaid).to.bignumber.eq(fillResults.makerFeePaid);
             expect(fillEvent.args.takerFeePaid).to.bignumber.eq(fillResults.takerFeePaid);
-            // expect(fillEvent.args.protocolFeePaid).to.bignumber.eq(fillResults.protocolFeePaid);
-            // expect(fillEvent.args.isProtocolFeePaidInEth).to.eq(isProtocolFeePaidInEth);
             expect(fillEvent.args.makerAssetData).to.eq(order.makerAssetData);
             expect(fillEvent.args.takerAssetData).to.eq(order.takerAssetData);
             expect(fillEvent.args.makerFeeAssetData).to.eq(order.makerFeeAssetData);
             expect(fillEvent.args.takerFeeAssetData).to.eq(order.takerFeeAssetData);
+            expect(fillEvent.args.protocolFeePaid).to.bignumber.eq(fillResults.protocolFeePaid);
         }
 
-        it('emits a `Fill` event and updates `filled` state correctly if protocol fee is paid in ETH', async () => {
+        it('emits a `Fill` event and updates `filled` state correctly', async () => {
             const order = makeOrder();
             return testUpdateFilledStateAsync(
                 order,
                 order.takerAssetAmount.times(0.1),
                 randomAddress(),
                 order.takerAssetAmount.times(0.25),
-            );
-        });
-
-        it('emits a `Fill` event and updates `filled` state correctly if protocol fee is paid in WETH', async () => {
-            const order = makeOrder();
-            return testUpdateFilledStateAsync(
-                order,
-                order.takerAssetAmount.times(0.1),
-                randomAddress(),
-                order.takerAssetAmount.times(0.25),
+                DEFAULT_PROTOCOL_MULTIPLIER,
+                DEFAULT_GAS_PRICE,
             );
         });
 

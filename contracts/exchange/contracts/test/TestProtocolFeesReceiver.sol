@@ -15,7 +15,6 @@
   limitations under the License.
 
 */
-
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
@@ -300,14 +299,6 @@ contract TestProtocolFeesReceiver {
 
         // Execute the test.
         _;
-
-        // Clear exchange state
-        testProtocolFees.setProtocolFeeCollector(address(0));
-        testProtocolFees.setProtocolFeeMultiplier(0);
-        msg.sender.transfer(address(this).balance);
-
-        // Clear this contract's state
-        delete testLogs;
     }
 
     /// @dev Constructs an order with a specified maker address.

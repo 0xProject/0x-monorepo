@@ -109,7 +109,7 @@ contract MixinWrapperFunctions is
         public
         payable
         nonReentrant
-        disableRefundUntilEnd
+        refundFinalBalance
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -137,7 +137,7 @@ contract MixinWrapperFunctions is
         public
         payable
         nonReentrant
-        disableRefundUntilEnd
+        refundFinalBalance
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -291,7 +291,6 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = marketSellOrdersNoThrow(orders, takerAssetFillAmount, signatures);
@@ -316,7 +315,6 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = marketBuyOrdersNoThrow(orders, makerAssetFillAmount, signatures);
@@ -339,6 +337,22 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i != ordersLength; i++) {
             _cancelOrder(orders[i]);
         }
+    }
+
+    /// @dev Fetches information for all passed in orders.
+    /// @param orders Array of order specifications.
+    /// @return Array of OrderInfo instances that correspond to each order.
+    function getOrdersInfo(LibOrder.Order[] memory orders)
+        public
+        view
+        returns (LibOrder.OrderInfo[] memory)
+    {
+        uint256 ordersLength = orders.length;
+        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
+        for (uint256 i = 0; i != ordersLength; i++) {
+            ordersInfo[i] = getOrderInfo(orders[i]);
+        }
+        return ordersInfo;
     }
 
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -366,21 +380,5 @@ contract MixinWrapperFunctions is
             ));
         }
         return fillResults;
-    }
-
-    /// @dev Fetches information for all passed in orders.
-    /// @param orders Array of order specifications.
-    /// @return Array of OrderInfo instances that correspond to each order.
-    function getOrdersInfo(LibOrder.Order[] memory orders)
-        public
-        view
-        returns (LibOrder.OrderInfo[] memory)
-    {
-        uint256 ordersLength = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            ordersInfo[i] = getOrderInfo(orders[i]);
-        }
-        return ordersInfo;
     }
 }

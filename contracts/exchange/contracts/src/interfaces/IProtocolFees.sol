@@ -25,18 +25,18 @@ contract IProtocolFees {
     bytes internal constant WETH_ASSET_DATA = hex"f47261b0";
 
     // Logs updates to the protocol fee multiplier.
-    event UpdatedProtocolFeeMultiplier(uint256 oldProtocolFeeMultiplier, uint256 updatedProtocolFeeMultiplier);
+    event ProtocolFeeMultiplier(uint256 oldProtocolFeeMultiplier, uint256 updatedProtocolFeeMultiplier);
 
     // Logs updates to the protocolFeeCollector address.
-    event UpdatedProtocolFeeCollectorAddress(address oldProtocolFeeCollector, address updatedProtocolFeeCollector);
+    event ProtocolFeeCollectorAddress(address oldProtocolFeeCollector, address updatedProtocolFeeCollector);
 
     /// @dev Allows the owner to update the protocol fee multiplier.
     /// @param updatedProtocolFeeMultiplier The updated protocol fee multiplier.
-    function updateProtocolFeeMultiplier(uint256 updatedProtocolFeeMultiplier)
+    function setProtocolFeeMultiplier(uint256 updatedProtocolFeeMultiplier)
         external;
 
     /// @dev Allows the owner to update the protocolFeeCollector address.
     /// @param updatedProtocolFeeCollector The updated protocolFeeCollector contract address.
-    function updateProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
+    function setProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
         external;
 }

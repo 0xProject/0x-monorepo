@@ -13,7 +13,6 @@
         "generated-artifacts/IMatchOrders.json",
         "generated-artifacts/IProtocolFees.json",
         "generated-artifacts/ISignatureValidator.json",
-        "generated-artifacts/IStakingManager.json",
         "generated-artifacts/ITransactions.json",
         "generated-artifacts/ITransferSimulator.json",
         "generated-artifacts/IWallet.json",
