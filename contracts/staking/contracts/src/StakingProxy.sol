@@ -84,24 +84,15 @@ contract StakingProxy is
         }
     }
 
-    /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
+    /// @dev Sets the address of the staking contract; future calls will be delegated to the staking contract.
+    ///      The staking contract address can be set to 0 to detach the contract.
     /// Note that this is callable only by this contract's owner.
     /// @param _stakingContract Address of staking contract.
-    function attachStakingContract(address _stakingContract)
+    function setStakingContract(address _stakingContract)
         external
         onlyOwner
     {
         stakingContract = _stakingContract;
-        emit StakingContractAttachedToProxy(_stakingContract);
-    }
-
-    /// @dev Detach the current staking contract.
-    /// Note that this is callable only by this contract's owner.
-    function detachStakingContract()
-        external
-        onlyOwner
-    {
-        stakingContract = NIL_ADDRESS;
-        emit StakingContractDetachedFromProxy();
+        emit StakingContractSet(_stakingContract);
     }
 }

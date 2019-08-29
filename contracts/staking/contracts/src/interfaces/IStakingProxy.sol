@@ -22,14 +22,11 @@ pragma solidity ^0.5.9;
 interface IStakingProxy /* is IStaking */
 {
 
-    /// @dev Emitted by StakingProxy when a staking contract is attached.
+    /// @dev Emitted by StakingProxy when a staking contract is set.
     /// @param newStakingContractAddress Address of newly attached staking contract.
-    event StakingContractAttachedToProxy(
+    event StakingContractSet(
         address newStakingContractAddress
     );
-
-    /// @dev Emitted by StakingProxy when a staking contract is detached.
-    event StakingContractDetachedFromProxy();
 
     /// @dev Delegates calls to the staking contract, if it is set.
     // solhint-disable no-complex-fallback
@@ -40,11 +37,6 @@ interface IStakingProxy /* is IStaking */
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// Note that this is callable only by this contract's owner.
     /// @param _stakingContract Address of staking contract.
-    function attachStakingContract(address _stakingContract)
-        external;
-
-    /// @dev Detach the current staking contract.
-    /// Note that this is callable only by this contract's owner.
-    function detachStakingContract()
+    function setStakingContract(address _stakingContract)
         external;
 }
