@@ -6,21 +6,16 @@
 
 This repository is a monorepo including the 0x protocol smart contracts and numerous developer tools. Each public sub-package is independently published to NPM.
 
-If you're developing on 0x now or are interested in using 0x infrastructure in the future, please join our [developer mailing list][dev-mailing-list-url] for updates.
-
-[website-url]: https://0xproject.com
-[whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
-[dev-mailing-list-url]: http://eepurl.com/dx4cPf
+[website-url]: https://0x.org
 
 [![CircleCI](https://circleci.com/gh/0xProject/0x-monorepo.svg?style=svg&circle-token=61bf7cd8c9b4e11b132089dfcffdd1be277d1e0c)](https://circleci.com/gh/0xProject/0x-monorepo)
 [![Coverage Status](https://coveralls.io/repos/github/0xProject/0x-monorepo/badge.svg?branch=development)](https://coveralls.io/github/0xProject/0x-monorepo?branch=development)
-[![Discord](https://img.shields.io/badge/chat-rocket.chat-yellow.svg?style=flat)](https://chat.0xproject.com)
-[![Join the chat at https://gitter.im/0xProject/Lobby](https://badges.gitter.im/0xProject/Lobby.svg)](https://gitter.im/0xProject/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Discord](https://img.shields.io/badge/chat-discord.chat-yellow.svg?style=flat)](https://discordapp.com/invite/d3FTX3M)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Packages
 
-Visit our [developer portal](https://0xproject.com/docs/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
+Visit our [developer portal](https://0x.org/docs/tools/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
 
 ### Python Packages
 

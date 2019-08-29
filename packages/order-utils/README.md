@@ -2,7 +2,7 @@
 
 0x order-related utilities for those developing on top of 0x protocol.
 
-### Read the [Documentation](https://0xproject.com/docs/tools/order-utils).
+### Read the [Documentation](https://0x.org/docs/tools/order-utils).
 
 ## Installation
 

@@ -8,7 +8,7 @@ Sol-compiler is a wrapper around [solc-js](https://www.npmjs.com/package/solc) t
 -   Proper parsing of Solidity version ranges
 -   Support for the standard [input description](https://solidity.readthedocs.io/en/develop/using-the-compiler.html#input-description) for what information you'd like added to the resulting `artifacts` file (i.e 100% configurable artifacts content).
 
-### Read the [Documentation](https://0xproject.com/docs/tools/sol-compiler).
+### Read the [Documentation](https://0x.org/docs/tools/sol-compiler).
 
 ## Installation
 

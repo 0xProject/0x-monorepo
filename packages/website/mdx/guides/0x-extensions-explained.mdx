@@ -1,10 +1,12 @@
+# Introduction
+
 <img width="699" src="https://user-images.githubusercontent.com/27389/53459978-87dc7700-3a09-11e9-9b5c-cbff329a74c3.png" />
 
 We designed the 0x protocol to be extensible exchange infrastructure for the entire crypto economy. 0x's functionality can be extended through extension contracts, which broaden how 0x orders can be filled. There are a variety ways to build extension contracts. An Extension contract can perform work on the users behalf. They can validate that users belong to a specific group. Extension contracts can even be written to join multiple Decentralised Finance projects together.
 
 0x allows for contracts to perform 0x operations, though before version 2 of the protocol there was no way to enforce that an order executed via a specific contract. The 0x order format now contains a field `senderAddress`. When this is defaulted to empty it is completely open for any anyone to fill. The Forwarder uses open orders with an unspecified sender address to perform a fill on behalf of the user. When the sender address is specified the 0x protocol ensures the operation originates from this address. For example it's possible to create a KYC (Know Your Customer) orderbook. This orderbook contains orders specifying the sender address as the KYC attestation contract. 0x protocol enforces all operations originate from the KYC contract in which all addresses have been validated by this contract.
 
-## Forwarder Contract
+# Forwarder Contract
 
 Wrapping ETH into ERC-20 compliant wETH has been a large barrier to adoption for the greater Decentralised Finance ecosystem. The 0x core team wrote and deployed a Forwarder contract to address these issues. You have used the Forwarder Contract if you have purchased tokens through [0x Instant](https://0x.org/instant). The Forwarder is an example of an extension which performs work on the users behalf.
 
@@ -37,7 +39,7 @@ The 0x Core team have deployed the Forwarder contract on all networks, though th
 -   [0x Starter Project](https://github.com/0xProject/0x-starter-project/blob/master/src/scenarios/forwarder_buy_erc20_tokens.ts#L19)
 -   [Forwarder Source Code](https://github.com/0xProject/0x-monorepo/blob/development/contracts/exchange-forwarder/contracts/src/MixinForwarderCore.sol)
 
-## Dutch Auction Contract
+# Dutch Auction Contract
 
 The price of an asset decreases over time and the buyer submits a matching order when they believe the asset is appropriately priced. The Dutch Auction contract guarantees the asset is exchanged for the current price, given the block time. The Dutch Auction contract is an example of an extension which validates some state before matching two orders.
 
@@ -83,7 +85,7 @@ Note: In the case of calling `matchOrders` the `takerAddress` can be specified i
 -   [0x Starter Project](https://github.com/0xProject/0x-starter-project/blob/master/src/scenarios/dutch_auction.ts#L20)
 -   [Dutch Auction Source Code](https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/DutchAuction/DutchAuction.sol#L29)
 
-## Whitelist Contract
+# Whitelist Contract
 
 Interacting with a [Whitelist Contract](https://github.com/0xProject/0x-monorepo/blob/69025da2dcb4bded72cbf724c598ee09682d2dfc/contracts/exchange/contracts/examples/Whitelist.sol) is one way to ensure [compliant peer-to-peer trading on 0x](https://blog.0xproject.com/compliant-peer-to-peer-trading-4dab8e5c3162). Relayers intending to offer security tokens or other regulated assets can utilize a whitelist contract to automatically filter through a set of pre-approved Ethereum addresses. The Whitelist contract is an example of an extension which uses the execute transaction functionality of 0x.
 
@@ -125,7 +127,7 @@ The Whitelist template is a simple example of validating addresses before allowi
 -   [Whitelist Source Code](https://github.com/0xProject/0x-monorepo/blob/69025da2dcb4bded72cbf724c598ee09682d2dfc/contracts/exchange/contracts/examples/Whitelist.sol#L27)
 -   [BalanceThresholdFilter Source Code](https://github.com/0xProject/0x-monorepo/blob/development/contracts/extensions/contracts/src/BalanceThresholdFilter/MixinBalanceThresholdFilterCore.sol#L34)
 
-## Differences to an Asset Proxy
+# Differences to an Asset Proxy
 
 While both an Extension contract and an Asset Proxy change the behavior of exchange on the 0x protocol, they are quite different. Extension contracts cannot change the behavior of settlement. For example, it is not possible to add new token standards with an extension contract.
 

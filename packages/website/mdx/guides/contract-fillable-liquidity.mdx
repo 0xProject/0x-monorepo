@@ -143,32 +143,36 @@ There are many different ways to fill orders; developers in the 0x ecosystem hav
 
 At a high level, asset-swapper allows users to execute `marketBuy` or `marketSell` functions on the 0x protocol with relative ease. Analogously you can think of these functions as ‘swap’ functions in other liquidity provider’s interfaces:
 
-### 0x:
+## Market buy
+
+### 0x
 ```
 (exchange || extension).marketBuy(...)
 ```
 
-### Uniswap equivalent:
+### Uniswap equivalent
 ```
 exchange.tokenToTokenSwapOutput(...)
 ```
 
-### Kyber equivalent:
+### Kyber equivalent
 ```
 No direct equivalent
 ```
 
-### 0x:
+## Market sell
+
+### 0x
 ```
 (exchange || extension).marketSell(...)
 ```
 
-###  Uniswap equivalent:
+###  Uniswap equivalent
 ```
 exchange.tokenToTokenSwapInput(...)
 ```
 
-### Kyber equivalent:
+### Kyber equivalent
 ```
 kyberNetworkProxyContract.swapTokenToToken(...)
 ```

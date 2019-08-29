@@ -12,9 +12,7 @@ A user is then able to find an order and perform a TokenA/WETH `fillOrder` on th
 
 For first time purchasers of tokens, this is non-trivial setup that is unavoidable due to the design of the ERC20 standard. The Forwarding contracts purpose is to enable users to buy tokens in one transaction.
 
-# Contracts
-
-## Forwarder
+# Forwarder Contract
 
 The Forwarder contains all of the following logic:
 
@@ -34,7 +32,7 @@ The implementation of these methods follows a 4 step process:
 4.  If `feePercentage` and `feeRecipient` are supplied deduct the fees from the amount traded.
 5.  Transfer any remaining ETH back to sender.
 
-### marketBuyOrdersWithEth
+## marketBuyOrdersWithEth
 
 This function buys a specific amount of assets (ERC20 or ERC721) given a set of TokenA/WETH orders. If fees are required on the orders, then `feeOrders` of ZRX/WETH are supplied and this is used to purchase the fees required. The user specifies the amount of assets they wish to buy with the `makerAssetFillAmount` parameter. `makerAssetFillAmount` must equal 1 if buying unique ERC721 tokens. The `makerAsset` of all supplied `orders` should be equivalent - any orders that contain `makerAssetData` different than the first order supplied will be ignored (gas will still be paid for attempting to fill these orders).
 
@@ -78,11 +76,11 @@ This function will revert under the following conditions:
 
 As filling these orders is a moving target (a partial fill can occur while this transaction is pending) it is safe to send in additional orders and additional ETH. The `makerAssetFillAmount` is the total amount of assets the user wishes to purchase, and any additional ETH is returned to the user. This allows for the possibility of safely sending in 100 orders and 100 ETH to purchase 1 token, with all unspent ETH being returned. Any unused orders will increase the gas cost of the transaction due to additional calldata that must be stored in the blockchain's history.
 
-#### marketBuyOrdersWithEth when ZRX is the makerAsset
+### marketBuyOrdersWithEth when ZRX is the makerAsset
 
 Buying an exact amount of ZRX assets is a special case as fees (paid in ZRX) need to be accounted for. If a user wishes to purchase 100 ZRX and there is a 2 ZRX fee on this order, the Forwarding contract guarantees they will receive the expected amount (100 ZRX). To accomplish this we calculate an adjusted exchange rate (taking into account the fees). There is no need to provide any `feeOrders` since fees can be purchased from the same pool of orders. In this scenario the caller can supply an empty fee orders and fee signatures array.
 
-### marketSellOrdersWithEth
+## marketSellOrdersWithEth
 
 This function attempts to buy as many ERC20 tokens as possible given the amount of ETH sent in by performing a `marketSell`. If fees are required on the orders, then `feeOrders` of ZRX/WETH are supplied and this is used to purchase the fees required. 5% of the ETH included in the transaction are reserved for paying fees (i.e the sum of the value of the fees denominated in ZRX and ETH). The `makerAsset` of all supplied `orders` should be equivalent - any orders that contain `makerAssetData` different than the first order supplied will be ignored (gas will still be paid for attempting to fill these orders).
 
@@ -123,11 +121,11 @@ This function will revert under the following conditions:
         );
 ```
 
-#### marketSellOrdersWithEth when ZRX is the makerAsset
+### marketSellOrdersWithEth when ZRX is the makerAsset
 
 Similar to `marketBuyOrdersWithEth`, there is no need to provide `feeOrders` when the `makerAsset` of the primary orders is ZRX. ZRX fees can be baked into the price of the orders and withheld when transferring the purchased ZRX back to the sender.
 
-### feePercentage and feeRecipient
+## feePercentage and feeRecipient
 
 The `feePercentage` and `feeRecipient` are a feature in the Forwarding contract which is distinct from the ZRX fees of the orders. This incentivizes integrations from wallets and other dApps who are not the feeRecipients in these orders to host front ends for the Forwarder contract and earn revenue. The `feePercentage` is calculated off the total value of ETH traded, not the total amount of ETH sent to the contract when calling the function.
 
@@ -149,17 +147,17 @@ The Forwarding contract assumes that:
 
 This means users may pass in zero values for these parameters and the functions will still execute as if the values had been passed in as calldata.
 
-# Events
+## Events
 
 There are no additional events emitted by the Forwarding contract. However, `Transfer` (ERC20 and ERC721), `Deposit` and `Withdraw` (WETH), and `Fill` (0x Exchange) are emitted in their respective contracts.
 
-## Known Issues
+# Known Issues
 
-### Over buying ZRX
+## Over buying ZRX
 
 In order to avoid any rounding issues when performing ZRX fee abstraction, an additional 1 wei worth of ZRX is purchased per `feeOrder` that is filled. In certain scenarios this is left behind in the contract. It is unlikely this would ever accrue to a value worth extracting and is not worth the gas in transferring per trade.
 
-### feePercentage and feeRecipient modifications
+## feePercentage and feeRecipient modifications
 
 These values are submitted by the user and can therefore be modified. After talking with many projects, we believe this is acceptable for multiple reasons.
 
