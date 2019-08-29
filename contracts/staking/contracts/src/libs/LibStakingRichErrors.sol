@@ -118,6 +118,10 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
 
+    // bytes4(keccak256("ZrxWithdrawalFailedError(address,uint256)"))
+    bytes4 internal constant ZRX_WITHDRAWAL_FAILED_ERROR_SELECTOR =
+        0x09a95f0b;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -441,6 +445,21 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             POOL_ALREADY_EXISTS_ERROR_SELECTOR,
             poolId
+        );
+    }
+
+    function ZrxWithdrawalFailedError(
+        address owner,
+        uint256 amount
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            ZRX_WITHDRAWAL_FAILED_ERROR_SELECTOR,
+            owner,
+            amount
         );
     }
 }

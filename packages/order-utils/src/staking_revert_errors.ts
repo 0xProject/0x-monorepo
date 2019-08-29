@@ -195,6 +195,12 @@ export class PoolAlreadyExistsError extends RevertError {
     }
 }
 
+export class ZrxWithdrawalFailedError extends RevertError {
+    constructor(owner?: string, amount?: BigNumber) {
+        super('ZrxWithdrawalFailedError', 'ZrxWithdrawalFailedError(address owner, uint256 amount)', { owner, amount });
+    }
+}
+
 const types = [
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
@@ -220,6 +226,7 @@ const types = [
     AmountExceedsBalanceOfPoolError,
     OperatorShareMustBeBetween0And100Error,
     PoolAlreadyExistsError,
+    ZrxWithdrawalFailedError,
 ];
 
 // Register the types we've defined.
