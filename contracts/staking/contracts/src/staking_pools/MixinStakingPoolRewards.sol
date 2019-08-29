@@ -180,8 +180,9 @@ contract MixinStakingPoolRewards is
         returns (uint256)
     {
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
-        uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
-        uint256 rewardRatio = rewardRatioSums[uint256(getCurrentEpoch())] - rewardRatioBegin;
+        //uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
+        if (getCurrentEpoch() == 0) return 0;
+        uint256 rewardRatio = rewardRatioSums[uint256(getCurrentEpoch()) - 1] - rewardRatioSums[uint256(delegatedStake.lastStored)];
         return (rewardRatio * delegatedStake.next) / 10**18;
     }
 

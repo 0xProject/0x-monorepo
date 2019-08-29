@@ -1,3 +1,4 @@
+import { BaseContract } from '@0x/base-contract';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
@@ -98,7 +99,7 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._LibFeeMathTestContractIfExists as LibFeeMathTestContract;
     }
-    public async deployAndConfigureContractsAsync(): Promise<void> {
+    public async deployAndConfigureContractsAsync(customStakingArtifact?: any): Promise<void> {
         // deploy zrx vault
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(this._zrxTokenContract.address);
         this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
@@ -123,7 +124,7 @@ export class StakingWrapper {
         );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
-            artifacts.Staking,
+            customStakingArtifact !== undefined ? customStakingArtifact : artifacts.Staking,
             this._provider,
             txDefaults,
             artifacts,
@@ -364,18 +365,31 @@ export class StakingWrapper {
         return signedStakingPoolApproval;
     }
     ///// EPOCHS /////
+
+    public async testFinalizefees(rewards: {reward: BigNumber, poolId: string}[]): Promise<TransactionReceiptWithDecodedLogs> {
+        await this.fastForwardToNextEpochAsync();
+        const calldata = this.getStakingContract().testFinalizeFees.getABIEncodedTransactionData(rewards);
+        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
+        return txReceipt;
+    }
+
+
+
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
         logUtils.log(`Finalization costed ${txReceipt.gasUsed} gas`);
         return txReceipt;
     }
-    public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
-        // increase timestamp of next block
-        const epochDurationInSeconds = await this.getEpochDurationInSecondsAsync();
-        await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
-        // mine next block
+    public async fastForwardToNextEpochAsync(): Promise<void> {
+         // increase timestamp of next block
+         const epochDurationInSeconds = await this.getEpochDurationInSecondsAsync();
+         await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
+         // mine next block
         await this._web3Wrapper.mineBlockAsync();
+    }
+    public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
+        await this.fastForwardToNextEpochAsync();
         // increment epoch in contracts
         const txReceipt = await this.goToNextEpochAsync();
         // mine next block
@@ -675,7 +689,7 @@ export class StakingWrapper {
         );
         return output;
     }
-    private async _executeTransactionAsync(
+    public async _executeTransactionAsync(
         calldata: string,
         from?: string,
         value?: BigNumber,

@@ -251,4 +251,47 @@ contract MixinExchangeFees is
             finalContractBalance
         );
     }
+
+
+
+
+
+
+
+
+    struct Reward {
+        bytes32 poolId;
+        uint256 reward;
+    }
+
+
+    function testFinalizeFees(Reward[] memory rewards)
+        public
+        payable
+    {
+
+        uint256 epoch = getCurrentEpoch();
+        for (uint i = 0; i != rewards.length; i++) {
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
+            if (epoch == 0) {
+                rewardRatioSums[epoch] = totalStakeDelegatedToPool == 0
+                    ? 0
+                    : (10**18) * rewards[i].reward / totalStakeDelegatedToPool;
+            } else {
+                rewardRatioSums[epoch] = totalStakeDelegatedToPool == 0
+                    ? rewardRatioSums[epoch - 1]
+                    : rewardRatioSums[epoch - 1] + (10**18) * rewards[i].reward / totalStakeDelegatedToPool;
+            }
+
+            // record reward in vault
+            _recordDepositInStakingPoolRewardVault(rewards[i].poolId, rewards[i].reward);
+        }
+
+        if (address(this).balance > 0) {
+            _depositIntoStakingPoolRewardVault(address(this).balance);
+        }
+
+        _goToNextEpoch();
+
+    }
 }

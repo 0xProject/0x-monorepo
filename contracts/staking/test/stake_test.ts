@@ -27,7 +27,7 @@ import { StakeStateId } from './utils/types';
 import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Stake States', () => {
+blockchainTests.resets('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -283,7 +283,9 @@ blockchainTests.resets.only('Stake States', () => {
         it('delegated -> inactive', async () => {});
         it('delegated -> delegated', async () => {});
     });
-    describe.only('Stake Simulation', () => {
+
+
+    describe('Stake Simulation', () => {
         it('Simulation (I)', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
