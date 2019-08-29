@@ -83,7 +83,7 @@ contract MixinStorage is
     bytes32[] internal activePoolsThisEpoch;
 
     // reward ratios by epoch
-    mapping (uint256 => uint256) internal rewardRatioSums;
+    mapping (uint256 => IStructs.ND) internal rewardRatioSums;
 
     // registrered 0x exchanges
     mapping (address => bool) internal validExchanges;

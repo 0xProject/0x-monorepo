@@ -182,12 +182,19 @@ contract MixinStakingPoolRewards is
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
         //uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
         if (getCurrentEpoch() == 0) return 0;
-        uint256 rewardRatio = delegatedStake.next * rewardRatioSums[uint256(getCurrentEpoch()) - 1] - delegatedStake.next * rewardRatioSums[uint256(delegatedStake.lastStored)];
 
-       // return //rewardRatioSums[uint256(getCurrentEpoch()) - 1] ;
+        IStructs.ND memory beginRatio = rewardRatioSums[uint256(delegatedStake.lastStored)];
+        IStructs.ND memory endRatio = rewardRatioSums[uint256(getCurrentEpoch()) - 1];
+        uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
+        uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
 
+        return rewardRatio;//(delegatedStake.next * rewardRatio) / 10**18;
 
-        return rewardRatio / 10**18;
+        // beginRation.numerator = 0
+        // beginRatio.denominator
+
+        // endRatio.denominator = 5290000000000000000000000
+        // endRatio.numerator = 4945000000000000000000000
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

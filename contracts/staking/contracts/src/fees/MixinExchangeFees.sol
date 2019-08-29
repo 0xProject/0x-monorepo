@@ -217,9 +217,9 @@ contract MixinExchangeFees is
             );
 
             if (epoch == 0) {
-                rewardRatioSums[0] = (10**18) * reward / activePools[i].delegatedStake;
+                //rewardRatioSums[0] = (10**18) * reward / activePools[i].delegatedStake;
             } else {
-                rewardRatioSums[epoch] = rewardRatioSums[epoch - 1] + (10**18) * reward / activePools[i].delegatedStake;
+                //rewardRatioSums[epoch] = rewardRatioSums[epoch - 1] + (10**18) * reward / activePools[i].delegatedStake;
             }
 
             // record reward in vault
@@ -274,13 +274,23 @@ contract MixinExchangeFees is
         for (uint i = 0; i != rewards.length; i++) {
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
             if (epoch == 0) {
-                rewardRatioSums[epoch] = totalStakeDelegatedToPool == 0
+                rewardRatioSums[epoch].numerator = 0;
+                rewardRatioSums[epoch].denominator = 1 * (10**18);
+
+                /*
+                if (totalStakeDelegatedToPool == 0) {
+
+                }
+                rewardRatioSums[epoch] =
                     ? 0
                     : (10**18) * rewards[i].reward / totalStakeDelegatedToPool;
+                */
+            } else if (totalStakeDelegatedToPool == 0) {
+                // set carryover
+                rewardRatioSums[epoch] = rewardRatioSums[epoch - 1];
             } else {
-                rewardRatioSums[epoch] = totalStakeDelegatedToPool == 0
-                    ? rewardRatioSums[epoch - 1]
-                    : rewardRatioSums[epoch - 1] + ((10**27) * rewards[i].reward) / totalStakeDelegatedToPool;
+                rewardRatioSums[epoch].numerator = (rewardRatioSums[epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[epoch - 1].denominator) / 10**18;
+                rewardRatioSums[epoch].denominator = (rewardRatioSums[epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
             }
 
             // record reward in vault

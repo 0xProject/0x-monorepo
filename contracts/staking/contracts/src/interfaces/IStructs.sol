@@ -76,6 +76,11 @@ interface IStructs {
         DELEGATED
     }
 
+    struct ND {
+        uint256 numerator;
+        uint256 denominator;
+    }
+
     struct StakeState {
         StakeStateId id;
         bytes32 poolId;
