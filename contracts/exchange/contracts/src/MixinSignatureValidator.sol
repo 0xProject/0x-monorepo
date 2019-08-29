@@ -220,7 +220,11 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Validator) {
             // The entire order is verified by a validator contract.
             isValid = _validateBytesWithValidator(
-                abi.encode(order, orderHash),
+                abi.encodeWithSelector(
+                    IEIP1271Wallet(address(0)).OrderWithHash.selector,
+                    order,
+                    orderHash
+                ),
                 orderHash,
                 signerAddress,
                 signature
@@ -228,7 +232,11 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP1271Wallet) {
             // The entire order is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
-                abi.encode(order, orderHash),
+                abi.encodeWithSelector(
+                    IEIP1271Wallet(address(0)).OrderWithHash.selector,
+                    order,
+                    orderHash
+                ),
                 orderHash,
                 signerAddress,
                 signature
@@ -268,7 +276,11 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Validator) {
             // The entire transaction is verified by a validator contract.
             isValid = _validateBytesWithValidator(
-                abi.encode(transaction, transactionHash),
+                abi.encodeWithSelector(
+                    IEIP1271Wallet(address(0)).ZeroExTransactionWithHash.selector,
+                    transaction,
+                    transactionHash
+                ),
                 transactionHash,
                 signerAddress,
                 signature
@@ -276,7 +288,11 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP1271Wallet) {
             // The entire transaction is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
-                abi.encode(transaction, transactionHash),
+                abi.encodeWithSelector(
+                    IEIP1271Wallet(address(0)).ZeroExTransactionWithHash.selector,
+                    transaction,
+                    transactionHash
+                ),
                 transactionHash,
                 signerAddress,
                 signature
