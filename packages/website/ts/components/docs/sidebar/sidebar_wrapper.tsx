@@ -18,14 +18,14 @@ export const SidebarWrapper: React.FC<ISidebarWrapperProps> = ({ children }) => 
     const [maxHeight, setMaxHeight] = React.useState<number>(0);
     const el = React.useRef(null);
 
-    function visibleHeight(el: any) {
+    function visibleHeight(el: HTMLElement) {
         const elementHeight = el.offsetHeight;
         const windowHeight = window.innerHeight;
         const { bottom, top } = el.getBoundingClientRect();
         return Math.max(0, top > 0 ? Math.min(elementHeight, windowHeight - top) : Math.min(bottom, windowHeight));
     }
 
-    const listener = (e: any) => {
+    const listener = (e: Event) => {
         const newMaxHeight = visibleHeight(el.current);
         setMaxHeight(newMaxHeight);
     };
