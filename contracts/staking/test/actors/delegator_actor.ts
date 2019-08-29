@@ -66,9 +66,6 @@ export class DelegatorActor extends StakerActor {
         // check balances
         const expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.plus(amount);
-        expectedDelegatorBalances.withdrawableStakeBalance = expectedDelegatorBalances.withdrawableStakeBalance.minus(
-            amount,
-        );
         expectedDelegatorBalances.activatableStakeBalance = expectedDelegatorBalances.activatableStakeBalance.minus(
             amount,
         );

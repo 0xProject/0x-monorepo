@@ -51,7 +51,6 @@ export class StakerActor extends BaseActor {
         // @TODO check receipt logs and return value via eth_call
         // check balances
         const expectedStakerBalances = initStakerBalances;
-        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
         expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.minus(amount);
         expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.plus(amount);
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
@@ -92,7 +91,6 @@ export class StakerActor extends BaseActor {
         expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
         expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.minus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.minus(amount);
-        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
         expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.minus(amount);
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
@@ -105,7 +103,6 @@ export class StakerActor extends BaseActor {
             zrxBalance: await this._stakingWrapper.getZrxTokenBalanceAsync(this._owner),
             stakeBalance: await this._stakingWrapper.getTotalStakeAsync(this._owner),
             stakeBalanceInVault: await this._stakingWrapper.getZrxVaultBalanceAsync(this._owner),
-            withdrawableStakeBalance: await this._stakingWrapper.getWithdrawableStakeAsync(this._owner),
             activatableStakeBalance: await this._stakingWrapper.getActivatableStakeAsync(this._owner),
             activatedStakeBalance: await this._stakingWrapper.getActivatedStakeAsync(this._owner),
             timeLockedStakeBalance: await this._stakingWrapper.getTimeLockedStakeAsync(this._owner),
@@ -119,9 +116,6 @@ export class StakerActor extends BaseActor {
         expect(balances.stakeBalance, 'stake balance').to.be.bignumber.equal(expectedBalances.stakeBalance);
         expect(balances.stakeBalanceInVault, 'stake balance, recorded in vault').to.be.bignumber.equal(
             expectedBalances.stakeBalanceInVault,
-        );
-        expect(balances.withdrawableStakeBalance, 'withdrawable stake balance').to.be.bignumber.equal(
-            expectedBalances.withdrawableStakeBalance,
         );
         expect(balances.activatableStakeBalance, 'activatable stake balance').to.be.bignumber.equal(
             expectedBalances.activatableStakeBalance,
@@ -154,7 +148,6 @@ export class StakerActor extends BaseActor {
             expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(
                 initBalances.timeLockedStakeBalance,
             );
-            expectedBalances.withdrawableStakeBalance = expectedBalances.activatableStakeBalance;
             expectedBalances.timeLockedStakeBalance = new BigNumber(0);
         }
         await this.assertBalancesAsync(expectedBalances);

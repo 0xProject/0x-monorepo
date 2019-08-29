@@ -224,9 +224,7 @@ export class Simulation {
                 `expected balance in vault for pool with id ${poolId}`,
             ).to.be.bignumber.equal(expectedRewardBalance);
             // check operator's balance
-            const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(
-                poolId,
-            );
+            const poolOperatorVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId);
             const poolOperatorVaultBalanceTrimmed = StakingWrapper.trimFloat(
                 StakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
                 5,
@@ -237,7 +235,7 @@ export class Simulation {
                 `operator balance in vault for pool with id ${poolId}`,
             ).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
             // check balance of pool members
-            const membersVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolMembersAsync(poolId);
+            const membersVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfMembersAsync(poolId);
             const membersVaultBalanceTrimmed = StakingWrapper.trimFloat(
                 StakingWrapper.toFloatingPoint(membersVaultBalance, 18),
                 5,
