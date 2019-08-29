@@ -38,6 +38,8 @@ import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
+import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
@@ -75,6 +77,7 @@ export const artifacts = {
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
-    LibFeeMathTest: LibFeeMathTest as ContractArtifact,
+    TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

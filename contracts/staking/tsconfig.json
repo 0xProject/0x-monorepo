@@ -36,6 +36,8 @@
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingPoolRewardVault.json",
         "generated-artifacts/StakingProxy.json",
+        "generated-artifacts/TestCobbDouglas.json",
+        "generated-artifacts/TestLibFixedMath.json",
         "generated-artifacts/TestStorageLayout.json",
         "generated-artifacts/ZrxVault.json"
     ],

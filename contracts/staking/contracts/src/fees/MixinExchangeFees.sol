@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../libs/LibFeeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
 import "../immutable/MixinStorage.sol";
