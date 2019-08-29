@@ -160,13 +160,7 @@ contract MixinStake is
     )
         private
     {
-        // join staking pool
-        _joinStakingPool(
-            poolId,
-            owner,
-            amount,
-            getTotalStakeDelegatedToPool(poolId).next
-        );
+        syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -182,14 +176,7 @@ contract MixinStake is
     )
         private
     {
-        // leave the staking pool
-        _leaveStakingPool(
-            poolId,
-            owner,
-            amount,
-            getStakeDelegatedToPoolByOwner(owner, poolId).next,
-            getTotalStakeDelegatedToPool(poolId).next
-        );
+        syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);

@@ -115,10 +115,6 @@ contract MixinStakingPoolRewards is
             "INVALID_AMOUNT"
         );
 
-        // update shadow rewards
-        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(amount);
-        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
-
         // perform withdrawal
         _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
         member.transfer(amount);
@@ -134,10 +130,6 @@ contract MixinStakingPoolRewards is
         // sanity checks
         address payable member = msg.sender;
         uint256 amount = computeRewardBalanceOfStakingPoolMember(poolId, member);
-
-        // update shadow rewards
-        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(amount);
-        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
         // perform withdrawal and return amount withdrawn
         _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
@@ -178,29 +170,6 @@ contract MixinStakingPoolRewards is
         return getBalanceOfMembersInStakingPoolRewardVault(poolId);
     }
 
-    /// @dev Returns the shadow balance of a specific member of a staking pool.
-    /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
-    /// @return Balance.
-    function getShadowBalanceOfStakingPoolMember(bytes32 poolId, address member)
-        public
-        view
-        returns (uint256)
-    {
-        return shadowRewardsInPoolByOwner[member][poolId];
-    }
-
-    /// @dev Returns the total shadow balance of a staking pool.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getTotalShadowBalanceOfStakingPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return shadowRewardsByPoolId[poolId];
-    }
-
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
@@ -210,103 +179,26 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
-        return LibRewardMath._computePayoutDenominatedInRealAsset(
-            59059, // @TODO GREG delegatedStakeToPoolByOwner[member][poolId],
-            59059, // @TODO GREG delegatedStakeByPoolId[poolId],
-            shadowRewardsInPoolByOwner[member][poolId],
-            shadowRewardsByPoolId[poolId],
-            poolBalance
-        );
+        IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
+        uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
+        uint256 rewardRatio = rewardRatioSums[uint256(getCurrentEpoch())] - rewardRatioBegin;
+        return (rewardRatio * delegatedStake.next) / 10**18;
     }
 
-    /// @dev A member joins a staking pool.
-    /// This function increments the shadow balance of the member, along
-    /// with the total shadow balance of the pool. This ensures that
-    /// any rewards belonging to existing members will not be diluted.
-    /// @param poolId Unique Id of pool to join.
-    /// @param member The member to join.
-    /// @param amountOfStakeToDelegate The stake to be delegated by `member` upon joining.
-    /// @param totalStakeDelegatedToPool The amount of stake currently delegated to the pool.
-    ///                                  This does not include `amountOfStakeToDelegate`.
-    function _joinStakingPool(
-        bytes32 poolId,
-        address payable member,
-        uint256 amountOfStakeToDelegate,
-        uint256 totalStakeDelegatedToPool
-    )
-        internal
+    /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    /// @param poolId Unique id of pool.
+    /// @param member The member of the pool.
+    /// @return Balance.
+    function syncRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
+        public
+        view
+        returns (uint256)
     {
-        // update delegator's share of reward pool
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
-        uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
-            amountOfStakeToDelegate,
-            totalStakeDelegatedToPool,
-            shadowRewardsByPoolId[poolId],
-            poolBalance
-        );
+        uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
 
-        // the buy-in will be > 0 iff there exists a non-zero reward.
-        if (buyIn > 0) {
-            shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(buyIn);
-            shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(buyIn);
-        }
-    }
+        // Pay the delegator
 
-    /// @dev A member leaves a staking pool.
-    /// This function decrements the shadow balance of the member, along
-    /// with the total shadow balance of the pool. This ensures that
-    /// any rewards belonging to co-members will not be inflated.
-    /// @param poolId Unique Id of pool to leave.
-    /// @param member The member to leave.
-    /// @param amountOfStakeToUndelegate The stake to be undelegated by `member` upon leaving.
-    /// @param totalStakeDelegatedToPoolByMember The amount of stake currently delegated to the pool by the member.
-    ///                                          This includes `amountOfStakeToUndelegate`.
-    /// @param totalStakeDelegatedToPool The total amount of stake currently delegated to the pool, across all members.
-    ///                                  This includes `amountOfStakeToUndelegate`.
-    function _leaveStakingPool(
-        bytes32 poolId,
-        address payable member,
-        uint256 amountOfStakeToUndelegate,
-        uint256 totalStakeDelegatedToPoolByMember,
-        uint256 totalStakeDelegatedToPool
-    )
-        internal
-    {
-        // get payout
-        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
-        uint256 payoutInRealAsset = 0;
-        uint256 payoutInShadowAsset = 0;
-        if (totalStakeDelegatedToPoolByMember == amountOfStakeToUndelegate) {
-            // full payout; this is computed separately to avoid extra computation and rounding.
-            payoutInShadowAsset = shadowRewardsInPoolByOwner[member][poolId];
-            payoutInRealAsset = LibRewardMath._computePayoutDenominatedInRealAsset(
-                amountOfStakeToUndelegate,
-                totalStakeDelegatedToPool,
-                payoutInShadowAsset,
-                shadowRewardsByPoolId[poolId],
-                poolBalance
-            );
-        } else {
-            // partial payout
-            (payoutInRealAsset, payoutInShadowAsset) = LibRewardMath._computePartialPayout(
-                amountOfStakeToUndelegate,
-                totalStakeDelegatedToPoolByMember,
-                totalStakeDelegatedToPool,
-                shadowRewardsInPoolByOwner[member][poolId],
-                shadowRewardsByPoolId[poolId],
-                poolBalance
-            );
-        }
+        // Remove the reference
 
-        // update shadow rewards
-        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._sub(payoutInShadowAsset);
-        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._sub(payoutInShadowAsset);
-
-        // withdraw payout for member
-        if (payoutInRealAsset > 0) {
-            _withdrawFromMemberInStakingPoolRewardVault(poolId, payoutInRealAsset);
-            member.transfer(payoutInRealAsset);
-        }
     }
 }

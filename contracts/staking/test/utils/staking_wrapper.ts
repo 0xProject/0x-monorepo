@@ -495,23 +495,6 @@ export class StakingWrapper {
         );
         return value;
     }
-    public async getTotalShadowBalanceOfStakingPoolAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIEncodedTransactionData(
-            poolId,
-        );
-        const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIDecodedReturnData(returnData);
-        return value;
-    }
-    public async getShadowBalanceOfStakingPoolMemberAsync(owner: string, poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getShadowBalanceOfStakingPoolMember.getABIEncodedTransactionData(
-            owner,
-            poolId,
-        );
-        const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getShadowBalanceOfStakingPoolMember.getABIDecodedReturnData(returnData);
-        return value;
-    }
     public async withdrawRewardForStakingPoolOperatorAsync(
         poolId: string,
         amount: BigNumber,

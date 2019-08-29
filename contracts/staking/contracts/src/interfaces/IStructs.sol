@@ -56,6 +56,7 @@ interface IStructs {
         bytes32 poolId;
         uint256 feesCollected;
         uint256 weightedStake;
+        uint256 delegatedStake;
     }
 
     struct StoredStakeBalance {

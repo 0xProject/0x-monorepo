@@ -147,6 +147,7 @@ contract MixinExchangeFees is
         )
     {
         // initialize return values
+        uint256 epoch = getCurrentEpoch();
         totalActivePools = activePoolsThisEpoch.length;
         totalFeesCollected = 0;
         totalWeightedStake = 0;
@@ -184,6 +185,7 @@ contract MixinExchangeFees is
             activePools[i].poolId = poolId;
             activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
             activePools[i].weightedStake = weightedStake;
+            activePools[i].delegatedStake = totalStakeDelegatedToPool;
 
             // update cumulative amounts
             totalFeesCollected = totalFeesCollected._add(activePools[i].feesCollected);
@@ -213,6 +215,12 @@ contract MixinExchangeFees is
                 activePools[i].weightedStake,
                 totalWeightedStake
             );
+
+            if (epoch == 0) {
+                rewardRatioSums[0] = (10**18) * reward / activePools[i].delegatedStake;
+            } else {
+                rewardRatioSums[epoch] = rewardRatioSums[epoch - 1] + (10**18) * reward / activePools[i].delegatedStake;
+            }
 
             // record reward in vault
             _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);

@@ -82,11 +82,8 @@ contract MixinStorage is
     // pools that were active in the current epoch
     bytes32[] internal activePoolsThisEpoch;
 
-    // mapping from POol Id to Shadow Rewards
-    mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
-
-    // shadow balances by
-    mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
+    // reward ratios by epoch
+    mapping (uint256 => uint256) internal rewardRatioSums;
 
     // registrered 0x exchanges
     mapping (address => bool) internal validExchanges;
