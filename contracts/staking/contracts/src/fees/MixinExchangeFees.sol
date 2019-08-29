@@ -76,6 +76,7 @@ contract MixinExchangeFees is
         }
         cobbDouglasAlphaNumerator = numerator;
         cobbDouglasAlphaDenomintor = denominator;
+        emit CobbDouglasAlphaChanged(numerator, denominator);
     }
 
     /// TODO(jalextowle): Add WETH to protocol fees. Should this be unwrapped?
