@@ -89,31 +89,28 @@ const ContentLink = styled(Link)<{ level: number }>`
     `}
 
     ${({ level }) =>
-        level === 2 &&
+        level !== 1 &&
         `
-        font-size: 0.72rem;
         line-height: 2;
         padding-left: 0.7rem;
-        transition: all 250ms ease-in-out;
-
-        &:hover,
-        &.active {
-        }
-    `}
-
-    ${({ level }) =>
-        level === 3 &&
-        `
-        font-size: 0.61rem;
-        line-height: 2;
-        margin-left: 0.7rem;
-        padding-left: 0.7rem;
-        border-left: 1px solid #e3e3e3;
         transition: all 250ms ease-in-out;
 
         &:hover,
         &.active {
             border-color: ${colors.brandDark};
         }
+    `}
+
+    ${({ level }) =>
+        level === 2 &&
+        `
+        font-size: 0.61rem;
+    `}
+
+    ${({ level }) =>
+        level === 3 &&
+        `
+        font-size: 0.61rem;
+        margin-left: 0.7rem;
     `}
 `;
