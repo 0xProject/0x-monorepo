@@ -403,7 +403,7 @@
             "isFeatured": false,
             "tags": ["Relayer", "Trader", "Protocol Developer"],
             "type": "Python Libraries",
-            "externalUrl": "https://pypi.org/project/0x-contract-wrappers/"
+            "externalUrl": "http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/"
         },
         "0x-order-utils": {
             "title": "0x Order Utilities",
@@ -413,7 +413,7 @@
             "isFeatured": false,
             "tags": ["Relayer", "Trader", "Protocol Developer"],
             "type": "Python Libraries",
-            "externalUrl": "https://pypi.org/project/0x-order-utils/"
+            "externalUrl": "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
         },
         "0x-sra-client": {
             "title": "0x SRA Client",
@@ -423,7 +423,7 @@
             "isFeatured": false,
             "tags": ["Relayer", "Trader"],
             "type": "Python Libraries",
-            "externalUrl": "https://pypi.org/project/0x-sra-client"
+            "externalUrl": "http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/"
         },
         "open-relay": {
             "title": "OpenRelay",
