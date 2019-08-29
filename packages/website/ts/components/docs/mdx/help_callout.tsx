@@ -23,7 +23,7 @@ export const HelpCallout: React.FC<IHelpCalloutProps> = props => (
             </Heading>
             <Paragraph size="default" marginBottom="0">
                 Get in touch{' '}
-                <Link fontColor={colors.brandDark} textDecoration="underline" to={props.url}>
+                <Link fontColor={colors.brandDark} textDecoration="underline" to={props.url} shouldOpenInNewTab={true}>
                     here
                 </Link>{' '}
                 and we'll be happy to help
