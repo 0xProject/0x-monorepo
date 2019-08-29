@@ -56,11 +56,14 @@ contract ZrxVault is
     /// @dev Constructor.
     /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
     /// @param zrxTokenAddress Address of the Zrx Token.
+    /// @param stakingProxyContract Address of StakingProxy contract.
     constructor(
         address erc20ProxyAddress,
-        address zrxTokenAddress
+        address zrxTokenAddress,
+        address payable stakingProxyContract
     )
         public
+        MixinVaultCore(stakingProxyContract)
     {
         erc20Proxy = IAssetProxy(erc20ProxyAddress);
         zrxToken = IERC20Token(zrxTokenAddress);
@@ -90,7 +93,7 @@ contract ZrxVault is
     /// @param amount of Zrx Tokens to deposit.
     function depositFrom(address owner, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // update balance
@@ -115,7 +118,7 @@ contract ZrxVault is
     /// @param amount of Zrx Tokens to withdraw.
     function withdrawFrom(address owner, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         _withdrawFrom(owner, amount);

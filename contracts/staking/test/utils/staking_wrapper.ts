@@ -98,26 +98,6 @@ export class StakingWrapper {
         return this._LibFeeMathTestContractIfExists as LibFeeMathTestContract;
     }
     public async deployAndConfigureContractsAsync(): Promise<void> {
-        // deploy zrx vault
-        this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
-            artifacts.ZrxVault,
-            this._provider,
-            txDefaults,
-            artifacts,
-            this._erc20ProxyContract.address,
-            this._zrxTokenContract.address,
-        );
-        // deploy reward vault
-        this._rewardVaultContractIfExists = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
-            artifacts.StakingPoolRewardVault,
-            this._provider,
-            txDefaults,
-            artifacts,
-        );
-        // configure erc20 proxy to accept calls from zrx vault
-        await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            this._zrxVaultContractIfExists.address,
-        );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
             artifacts.Staking,
@@ -133,9 +113,27 @@ export class StakingWrapper {
             artifacts,
             this._stakingContractIfExists.address,
         );
-        // set staking proxy contract in zrx vault
-        await this._zrxVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(
+        // deploy zrx vault
+        this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
+            artifacts.ZrxVault,
+            this._provider,
+            txDefaults,
+            artifacts,
+            this._erc20ProxyContract.address,
+            this._zrxTokenContract.address,
             this._stakingProxyContractIfExists.address,
+        );
+        // deploy reward vault
+        this._rewardVaultContractIfExists = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
+            artifacts.StakingPoolRewardVault,
+            this._provider,
+            txDefaults,
+            artifacts,
+            this._stakingProxyContractIfExists.address,
+        );
+        // configure erc20 proxy to accept calls from zrx vault
+        await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            this._zrxVaultContractIfExists.address,
         );
         // set zrx vault in staking contract
         const setZrxVaultCalldata = this._stakingContractIfExists.setZrxVault.getABIEncodedTransactionData(
@@ -148,10 +146,6 @@ export class StakingWrapper {
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData),
-        );
-        // set staking proxy contract in reward vault
-        await this._rewardVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(
-            this._stakingProxyContractIfExists.address,
         );
         // set reward vault in staking contract
         const setStakingPoolRewardVaultCalldata = this._stakingContractIfExists.setStakingPoolRewardVault.getABIEncodedTransactionData(

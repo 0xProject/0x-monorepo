@@ -32,23 +32,11 @@ pragma solidity ^0.5.9;
 /// state in the staking contract.
 interface IVaultCore {
 
-    /// @dev Emitted when the Staking contract is changed.
-    /// @param stakingContractAddress Address of the new Staking contract.
-    event StakingContractChanged(
-        address stakingContractAddress
-    );
-
     /// @dev Emitted when the Staking contract is put into Catastrophic Failure Mode
     /// @param sender Address of sender (`msg.sender`)
     event InCatastrophicFailureMode(
         address sender
     );
-
-    /// @dev Sets the address of the Staking Contract.
-    /// Note that only the contract owner can call this function.
-    /// @param _stakingContractAddress Address of Staking contract.
-    function setStakingContract(address payable _stakingContractAddress)
-        external;
 
     /// @dev Vault enters into Catastrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***

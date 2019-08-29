@@ -149,9 +149,9 @@ export class BlockTimestampTooLowError extends RevertError {
     }
 }
 
-export class OnlyCallableByStakingContractError extends RevertError {
+export class OnlyCallableByStakingProxyError extends RevertError {
     constructor(senderAddress?: string) {
-        super('OnlyCallableByStakingContractError', 'OnlyCallableByStakingContractError(address senderAddress)', {
+        super('OnlyCallableByStakingProxyError', 'OnlyCallableByStakingProxyError(address senderAddress)', {
             senderAddress,
         });
     }
@@ -220,7 +220,7 @@ const types = [
     MakerAddressNotRegisteredError,
     WithdrawAmountExceedsMemberBalanceError,
     BlockTimestampTooLowError,
-    OnlyCallableByStakingContractError,
+    OnlyCallableByStakingProxyError,
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,
     AmountExceedsBalanceOfPoolError,

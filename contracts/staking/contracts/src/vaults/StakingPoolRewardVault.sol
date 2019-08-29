@@ -38,9 +38,7 @@ import "../immutable/MixinConstants.sol";
 /// When in Catastrophic Failure Mode, the Staking contract can still
 /// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
-    Authorizable,
     IStakingPoolRewardVault,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinVaultCore
 {
@@ -50,11 +48,18 @@ contract StakingPoolRewardVault is
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
 
+    /// @dev Constructor.
+    /// @param stakingProxyContract Address of StakingProxy contract.
+    constructor(address payable stakingProxyContract)
+        public
+        MixinVaultCore(stakingProxyContract)
+    {}
+
     /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
         external
         payable
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
@@ -67,7 +72,7 @@ contract StakingPoolRewardVault is
     function depositFor(bytes32 poolId)
         external
         payable
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // update balance of pool
@@ -88,7 +93,7 @@ contract StakingPoolRewardVault is
     /// @param amount Amount in ETH to record.
     function recordDepositFor(bytes32 poolId, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // update balance of pool
@@ -104,7 +109,7 @@ contract StakingPoolRewardVault is
     /// @param amount Amount in ETH to record.
     function withdrawForOperator(bytes32 poolId, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
     {
         // sanity check - sufficient balance?
         uint256 operatorBalance = uint256(balanceByPoolId[poolId].operatorBalance);
@@ -117,7 +122,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance = operatorBalance.safeSub(amount).downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        _stakingProxyContract.transfer(amount);
 
         // notify
         emit RewardWithdrawnForOperator(poolId, amount);
@@ -130,7 +135,7 @@ contract StakingPoolRewardVault is
     /// @param amount Amount in ETH to record.
     function withdrawForMember(bytes32 poolId, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
     {
         // sanity check - sufficient balance?
         uint256 membersBalance = uint256(balanceByPoolId[poolId].membersBalance);
@@ -143,7 +148,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance = membersBalance.safeSub(amount).downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        _stakingProxyContract.transfer(amount);
 
         // notify
         emit RewardWithdrawnForMember(poolId, amount);
@@ -156,7 +161,7 @@ contract StakingPoolRewardVault is
     /// @param poolOperatorShare Percentage of rewards given to the pool operator.
     function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // operator share must be a valid percentage

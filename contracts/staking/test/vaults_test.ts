@@ -51,7 +51,7 @@ blockchainTests('Staking Vaults', env => {
             let tx = stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress);
             await expect(tx).to.revertWith(revertError);
             // should fail to create a pool from an address other than the staking contract
-            revertError = new StakingRevertErrors.OnlyCallableByStakingContractError(notStakingContractAddress);
+            revertError = new StakingRevertErrors.OnlyCallableByStakingProxyError(notStakingContractAddress);
             tx = stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, notStakingContractAddress);
             await expect(tx).to.revertWith(revertError);
         });

@@ -94,9 +94,9 @@ library LibStakingRichErrors {
     bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR =
         0xa6bcde47;
 
-    // bytes4(keccak256("OnlyCallableByStakingContractError(address)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR =
-        0xca1d07a2;
+    // bytes4(keccak256("OnlyCallableByStakingProxyError(address)"))
+    bytes4 internal constant ONLY_CALLABLE_BY_STAKING_PROXY_ERROR_SELECTOR =
+        0x821fcc77;
 
     // bytes4(keccak256("OnlyCallableIfInCatastrophicFailureError()"))
     bytes internal constant ONLY_CALLABLE_IF_IN_CATASTROPHIC_FAILURE_ERROR =
@@ -376,7 +376,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function OnlyCallableByStakingContractError(
+    function OnlyCallableByStakingProxyError(
         address senderAddress
     )
         internal
@@ -384,7 +384,7 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            ONLY_CALLABLE_BY_STAKING_CONTRACT_ERROR_SELECTOR,
+            ONLY_CALLABLE_BY_STAKING_PROXY_ERROR_SELECTOR,
             senderAddress
         );
     }
