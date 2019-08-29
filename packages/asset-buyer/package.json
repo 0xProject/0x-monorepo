@@ -54,7 +54,7 @@
         "lodash": "^4.17.11"
     },
     "devDependencies": {
-        "@0x/ts-doc-gen": "^0.0.19",
+        "@0x/ts-doc-gen": "^0.0.20",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
