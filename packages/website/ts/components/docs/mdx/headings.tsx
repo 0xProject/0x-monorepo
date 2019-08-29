@@ -54,18 +54,21 @@ const H3 = styled(MDXHeading).attrs({
 })``;
 
 const H4 = styled(MDXHeading).attrs({
+    size: 18,
     asElement: 'h4',
     fontWeight: '300',
     marginBottom: '1rem',
 })``;
 
 const H5 = styled(MDXHeading).attrs({
+    size: 16,
     asElement: 'h5',
     fontWeight: '300',
     marginBottom: '1rem',
 })``;
 
 const H6 = styled(MDXHeading).attrs({
+    size: 14,
     asElement: 'h6',
     fontWeight: '300',
     marginBottom: '1rem',
