@@ -1,0 +1,163 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "ExchangeWrapper",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "name": "makerToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "takerToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "desiredMakerToken",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "orderData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "getExchangeCost",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "tradeOriginator",
+                        "type": "address"
+                    },
+                    {
+                        "name": "receiver",
+                        "type": "address"
+                    },
+                    {
+                        "name": "makerToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "takerToken",
+                        "type": "address"
+                    },
+                    {
+                        "name": "requestedFillAmount",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "orderData",
+                        "type": "bytes"
+                    }
+                ],
+                "name": "exchange",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ],
+        "devdoc": {
+            "author": "dYdX * Contract interface that Exchange Wrapper smart contracts must implement in order to interface with other smart contracts through a common interface.",
+            "methods": {
+                "exchange(address,address,address,address,uint256,bytes)": {
+                    "params": {
+                        "makerToken": "Address of makerToken, the token to receive",
+                        "orderData": "Arbitrary bytes data for any information to pass to the exchange",
+                        "receiver": "Address to set allowance on once the trade has completed",
+                        "requestedFillAmount": "Amount of takerToken being paid",
+                        "takerToken": "Address of takerToken, the token to pay",
+                        "tradeOriginator": "Address of the initiator of the trade (however, this value                             cannot always be trusted as it is set at the discretion of the                             msg.sender)"
+                    },
+                    "return": "The amount of makerToken received"
+                },
+                "getExchangeCost(address,address,uint256,bytes)": {
+                    "params": {
+                        "desiredMakerToken": "Amount of makerToken requested",
+                        "makerToken": "Address of makerToken, the token to receive",
+                        "orderData": "Arbitrary bytes data for any information to pass to the exchange",
+                        "takerToken": "Address of takerToken, the token to pay"
+                    },
+                    "return": "Amount of takerToken the needed to complete the transaction"
+                }
+            },
+            "title": "ExchangeWrapper"
+        },
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x",
+                "opcodes": "",
+                "sourceMap": ""
+            }
+        }
+    },
+    "sources": {
+        "ExchangeWrapper.sol": {
+            "id": 17
+        }
+    },
+    "sourceCodes": {
+        "ExchangeWrapper.sol": "/* Retrieved from https://raw.githubusercontent.com/dydxprotocol/exchange-wrappers/master/contracts/interfaces/ExchangeWrapper.sol\non August 29, 2019. */\n\n/*\n\n    Copyright 2018 dYdX Trading Inc.\n\n    Licensed under the Apache License, Version 2.0 (the \"License\");\n    you may not use this file except in compliance with the License.\n    You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n    Unless required by applicable law or agreed to in writing, software\n    distributed under the License is distributed on an \"AS IS\" BASIS,\n    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n    See the License for the specific language governing permissions and\n    limitations under the License.\n\n*/\n\npragma solidity 0.5.9;\n\n\n/**\n * @title ExchangeWrapper\n * @author dYdX\n *\n * Contract interface that Exchange Wrapper smart contracts must implement in order to interface\n * with other smart contracts through a common interface.\n */\ninterface ExchangeWrapper {\n\n    // ============ Public Functions ============\n\n    /**\n     * Exchange some amount of takerToken for makerToken.\n     *\n     * @param  tradeOriginator      Address of the initiator of the trade (however, this value\n     *                              cannot always be trusted as it is set at the discretion of the\n     *                              msg.sender)\n     * @param  receiver             Address to set allowance on once the trade has completed\n     * @param  makerToken           Address of makerToken, the token to receive\n     * @param  takerToken           Address of takerToken, the token to pay\n     * @param  requestedFillAmount  Amount of takerToken being paid\n     * @param  orderData            Arbitrary bytes data for any information to pass to the exchange\n     * @return                      The amount of makerToken received\n     */\n    function exchange(\n        address tradeOriginator,\n        address receiver,\n        address makerToken,\n        address takerToken,\n        uint256 requestedFillAmount,\n        bytes calldata orderData\n    )\n        external\n        returns (uint256);\n\n    /**\n     * Get amount of takerToken required to buy a certain amount of makerToken for a given trade.\n     * Should match the takerToken amount used in exchangeForAmount. If the order cannot provide\n     * exactly desiredMakerToken, then it must return the price to buy the minimum amount greater\n     * than desiredMakerToken\n     *\n     * @param  makerToken         Address of makerToken, the token to receive\n     * @param  takerToken         Address of takerToken, the token to pay\n     * @param  desiredMakerToken  Amount of makerToken requested\n     * @param  orderData          Arbitrary bytes data for any information to pass to the exchange\n     * @return                    Amount of takerToken the needed to complete the transaction\n     */\n    function getExchangeCost(\n        address makerToken,\n        address takerToken,\n        uint256 desiredMakerToken,\n        bytes calldata orderData\n    )\n        external\n        view\n        returns (uint256);\n}\n"
+    },
+    "sourceTreeHashHex": "0x82ee6a2777bd5ca519f9e67f0d31d6f7c7e7fd6956cdf78fc6e9b42d78451026",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.9+commit.e560f70d.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap",
+                        "devdoc"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople",
+            "remappings": [
+                "@0x/contracts-exchange=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-exchange",
+                "@0x/contracts-exchange-libs=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-exchange-libs",
+                "@0x/contracts-utils=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-utils",
+                "@0x/contracts-coordinator=/home/gene/dev/0x-monorepo/node_modules/@0x/contracts-coordinator"
+            ]
+        }
+    },
+    "networks": {}
+}

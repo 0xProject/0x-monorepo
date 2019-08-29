@@ -4,15 +4,15 @@ on August 29, 2019. */
 pragma solidity 0.5.9;
 pragma experimental ABIEncoderV2;
 
-import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import { IExchange } from "../external/0x/v2/interfaces/IExchange.sol";
-import { ICoordinatorCore } from "../external/0x/v2/interfaces/ICoordinatorCore.sol";
-import { LibOrder } from "../external/0x/v2/libs/LibOrder.sol";
-import { LibZeroExTransaction } from "../external/0x/v2/libs/LibZeroExTransaction.sol";
-import { ExchangeWrapper } from "../interfaces/ExchangeWrapper.sol";
-import { MathHelpers } from "../lib/MathHelpers.sol";
-import { TokenInteract } from "../lib/TokenInteract.sol";
-import { AdvancedTokenInteract } from "../lib/AdvancedTokenInteract.sol";
+import { SafeMath } from "./SafeMath.sol";
+import { IExchange } from "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import { ICoordinatorCore } from "@0x/contracts-coordinator/contracts/src/interfaces/ICoordinatorCore.sol";
+import { LibOrder } from "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import { LibZeroExTransaction } from "@0x/contracts-coordinator/contracts/src/libs/LibZeroExTransaction.sol";
+import { ExchangeWrapper } from "./ExchangeWrapper.sol";
+import { MathHelpers } from "./MathHelpers.sol";
+import { TokenInteract } from "./TokenInteract.sol";
+import { AdvancedTokenInteract } from "./AdvancedTokenInteract.sol";
 
 /**
  * @title ZeroExV2MultiOrderExchangeWrapper

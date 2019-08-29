@@ -1,0 +1,34 @@
+{
+    "artifactsDir": "./artifacts",
+    "contractsDir": ".",
+    "useDockerisedSolc": false,
+    "isOfflineMode": false,
+    "compilerSettings": {
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap",
+                    "devdoc"
+                ]
+            }
+        }
+    },
+    "contracts": [
+        "AdvancedTokenInteract.sol",
+        "ExchangeWrapper.sol",
+        "MathHelpers.sol",
+        "SafeMath.sol",
+        "TokenInteract.sol",
+        "ZeroExV2CoordinatorMultiOrderExchangeWrapper.sol"
+    ]
+}

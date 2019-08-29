@@ -21,7 +21,7 @@ on August 29, 2019. */
 
 pragma solidity 0.5.9;
 
-import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import { SafeMath } from "./SafeMath.sol";
 
 
 /**
