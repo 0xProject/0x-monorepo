@@ -68,7 +68,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     span {
         color: #939393;
         font-weight: 300;
-        transition: all 250ms ease-in-out;
+        transition: all 150ms ease-in-out;
     }
 
     &:hover span,
@@ -92,7 +92,6 @@ const ContentLink = styled(Link)<{ level: number }>`
         level !== 1 &&
         `
         line-height: 2;
-        padding-left: 0.7rem;
         border-left: 1px solid #efefef;
         transition: all 150ms ease-in-out;
 
@@ -105,12 +104,15 @@ const ContentLink = styled(Link)<{ level: number }>`
     ${({ level }) =>
         level === 2 &&
         `
-        font-size: 0.61rem;
+        font-size: 0.72rem;
+        padding-left: 0.7rem;
+
     `}
 
     ${({ level }) =>
         level === 3 &&
         `
         font-size: 0.61rem;
+        padding-left: 1.4rem;
     `}
 `;
