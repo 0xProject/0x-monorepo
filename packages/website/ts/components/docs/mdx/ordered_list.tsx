@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 
 export const OrderedList = styled.ol`
@@ -12,7 +13,8 @@ export const OrderedList = styled.ol`
         counter-increment: steps;
         padding-left: 48px;
         margin-bottom: 0.8333rem;
-        font-size: 1rem;
+        color: ${colors.brandDark};
+        font-size: ${docs.fontSize.desktop};
         line-height: 30px;
 
         &:before {
@@ -26,6 +28,10 @@ export const OrderedList = styled.ol`
             background-color: rgba(0, 174, 153, 0.1);
             min-width: 30px;
             height: 30px;
+        }
+
+        @media (max-width: 900px) {
+            font-size: ${docs.fontSize.mobile};
         }
     }
 `;

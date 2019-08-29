@@ -18,6 +18,7 @@ import { NewsletterWidget } from 'ts/components/docs/mdx/newsletter_widget';
 import { Note } from 'ts/components/docs/mdx/note';
 import { Notification } from 'ts/components/docs/mdx/notification';
 import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
+import { Paragraph } from 'ts/components/docs/mdx/paragraph';
 import { Table } from 'ts/components/docs/mdx/table';
 import { UnorderedList } from 'ts/components/docs/mdx/unordered_list';
 
@@ -31,8 +32,6 @@ import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
 import { PageNotFound } from 'ts/pages/docs/page_not_found';
-
-import { Paragraph } from 'ts/components/text';
 
 import { docs } from 'ts/style/docs';
 

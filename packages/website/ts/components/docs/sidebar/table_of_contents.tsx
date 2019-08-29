@@ -66,7 +66,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     display: inline-block;
 
     span {
-        color: #999;
+        color: #939393;
         font-weight: 300;
         transition: all 250ms ease-in-out;
     }
