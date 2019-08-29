@@ -7,7 +7,6 @@ import { artifacts, TestLibFixedMathContract } from '../src/';
 
 Decimal.set({ precision: 128 });
 
-// tslint:disable:no-unnecessary-type-assertion
 blockchainTests('LibFixedMath', env => {
     let testContract: TestLibFixedMathContract;
 

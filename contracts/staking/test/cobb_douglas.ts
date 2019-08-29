@@ -8,7 +8,6 @@ import { artifacts, TestCobbDouglasContract } from '../src/';
 Decimal.set({ precision: 128 });
 type Numberish = BigNumber | string | number;
 
-// tslint:disable:no-unnecessary-type-assertion
 blockchainTests('Cobb-Douglas', env => {
     const FUZZ_COUNT = 1024;
 
