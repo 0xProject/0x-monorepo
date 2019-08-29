@@ -55,7 +55,7 @@
             "path": "guides/contract-fillable-liquidity.mdx"
         },
         "0x-cheat-sheet": {
-            "title": "0x cheat sheet",
+            "title": "0x Cheat Sheet",
             "description": "All the information you look up often when building on 0x (e.g., deployed contract addresses)",
             "tags": ["Relayer", "Trader", "Protocol Developer"],
             "topics": ["Relayer", "Trader", "Protocol Developer"],
@@ -71,7 +71,7 @@
             "path": "guides/ganache-setup.mdx"
         },
         "integrate-instant": {
-            "title": "Get started with 0x Instant",
+            "title": "Get Started with 0x Instant",
             "subtitle": "A free and flexible way to offer simple crypto purchasing in any app or website",
             "description": "Learn how to embed 0x Instant into your website or mobile app, allowing your users to seemlessly buy any digital asset with Ether",
             "tags": ["Instant"],
@@ -149,14 +149,24 @@
             "path": "guides/market-making-on-0x.mdx"
         },
         "0x-extensions-explained": {
-            "title": "0x Extensions explained",
+            "title": "0x Extensions Explained",
             "description": "Learn about how you can extend 0x protocol with your own custom extensions adding white-listing, dutch auction mechanics and much more to 0x.",
             "tags": ["Relayer", "Trader", "Extensions"],
             "topics": ["Relayer", "Trader", "Extensions"],
             "difficulty": "Advanced",
             "path": "guides/0x-extensions-explained.mdx"
         }
-    },
+      },
+      "bug-bounty-program": {
+          "title": "Bug Bounty Program",
+          "subtitle": "An ongoing bug bounty for the 0x protocol smart contracts.",
+          "description": "An ongoing bug bounty for the 0x protocol smart contracts.",
+          "tags": ["Protocol Developer"],
+          "topics": ["Protocol Developer"],
+          "difficulty": "Advanced",
+          "path": "guides/bug-bounty-program.mdx"
+      }
+  },
     "tools": {
         "asset-swapper": {
             "title": "0x Asset Swapper",
@@ -482,7 +492,7 @@
             "isCommunity": false,
             "isFeatured": false,
             "tags": ["Protocol Developer", "Relayer"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "path": "tools/@0x/migrations/v4.3.0/reference.mdx",
             "versions": ["v4.3.0"]
         },
@@ -493,7 +503,7 @@
             "isCommunity": false,
             "isFeatured": true,
             "tags": ["Relayer"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "externalUrl": "https://github.com/0xProject/0x-launch-kit"
         },
         "massive": {
@@ -503,7 +513,7 @@
             "isCommunity": true,
             "isFeatured": false,
             "tags": ["Relayer", "Trader"],
-            "type": "Command-line tool",
+            "type": "CLI",
             "externalUrl": "https://github.com/NoteGio/massive"
         },
         "coordinator-server": {
