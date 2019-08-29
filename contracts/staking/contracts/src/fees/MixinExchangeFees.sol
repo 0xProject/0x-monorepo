@@ -276,10 +276,13 @@ contract MixinExchangeFees is
             if (epoch == 0) {
                 rewardRatioSums[epoch].numerator = 0;
                 rewardRatioSums[epoch].denominator = 1 * (10**18);
+                rewardRatioSums[epoch].carry = rewards[i].reward._downcastToUint96();
             } else if (totalStakeDelegatedToPool == 0) {
                 // set carryover
                 rewardRatioSums[epoch] = rewardRatioSums[epoch - 1];
+                rewardRatioSums[epoch].carry = rewards[i].reward._downcastToUint96() + rewardRatioSums[epoch - 1].carry;
             } else {
+                rewards[i].reward += rewardRatioSums[epoch - 1].carry;
                 rewardRatioSums[epoch].numerator = (rewardRatioSums[epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[epoch - 1].denominator) / 10**18;
                 rewardRatioSums[epoch].denominator = (rewardRatioSums[epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
             }

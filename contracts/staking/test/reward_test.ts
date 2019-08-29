@@ -99,8 +99,106 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 expect(balance.next).to.be.bignumber.equal(amountToStake);
             }
             { // Pay a fee
-                const txData = testWrapper.testFinalizeFees.getABIEncodedTransactionData([{poolId, reward}]);
                 await stakingWrapper.testFinalizefees([{reward, poolId}]);
+            }
+            // Check reward balance
+            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
+        });
+
+        it.only('Reward from first epoch should roll over', async () => {
+            const staker = stakers[0];
+            const operator = stakers[1];
+            const operatorShare = 0;
+            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            const operatorReward = new BigNumber(0);
+            const delegatorReward = new BigNumber(0);
+            { // Epoch 1: Stake some ZRX
+                await stakingWrapper.stakeAsync(staker, amountToStake);
+                const balance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amountToStake);
+                expect(balance.next).to.be.bignumber.equal(amountToStake);
+            }
+            { // Pay a fee
+                await stakingWrapper.testFinalizefees([{reward, poolId}]);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            // Check reward balance
+            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
+        });
+
+        it.only('Unclaimed rewards should carry over until we reach an epoch with delegators', async () => {
+            const staker = stakers[0];
+            const operator = stakers[1];
+            const operatorShare = 0;
+            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            const operatorReward = new BigNumber(0);
+            const delegatorReward = new BigNumber(0);
+            { // Skip over first epoch (it's handled differently)
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            { // Pay a fee
+                await stakingWrapper.testFinalizefees([{reward, poolId}]);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            { // Epoch 1: Stake some ZRX
+                await stakingWrapper.stakeAsync(staker, amountToStake);
+                const balance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amountToStake);
+                expect(balance.next).to.be.bignumber.equal(amountToStake);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            // Check reward balance
+            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
+        });
+
+        it.only('Rewards from first epoch should roll over until we reach an epoch with delegators', async () => {
+            const staker = stakers[0];
+            const operator = stakers[1];
+            const operatorShare = 0;
+            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            const operatorReward = new BigNumber(0);
+            const delegatorReward = new BigNumber(0);
+            { // Pay a fee
+                await stakingWrapper.testFinalizefees([{reward, poolId}]);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
+            }
+            { // Epoch 1: Stake some ZRX
+                await stakingWrapper.stakeAsync(staker, amountToStake);
+                const balance = await stakingWrapper.getActiveStakeAsync(staker);
+                expect(balance.current).to.be.bignumber.equal(amountToStake);
+                expect(balance.next).to.be.bignumber.equal(amountToStake);
+            }
+            { // Finish epoch, fees from previous epoch are rolled over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
             }
             // Check reward balance
             expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
@@ -296,6 +394,9 @@ blockchainTests.resets.only('Testing Rewards', () => {
 
         // should carry over balances beteween epochs
 
+        // reference counters
+
+        // test with operator
 
 
         /*
