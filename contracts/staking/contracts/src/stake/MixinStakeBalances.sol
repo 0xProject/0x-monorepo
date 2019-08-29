@@ -21,20 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
-import "../sys/MixinScheduler.sol";
 import "./MixinTimeLockedStake.sol";
 
 
 /// @dev This mixin contains logic for querying stake balances.
 /// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
-    MixinScheduler,
     MixinTimeLockedStake
 {
     using LibSafeMath for uint256;

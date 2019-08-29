@@ -28,11 +28,8 @@ import "../immutable/MixinStorage.sol";
 /// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
     MixinStorage
 {
-
     /// @dev Sets the address of the reward vault.
     /// This can only be called by the owner of this contract.
     function setStakingPoolRewardVault(address payable rewardVaultAddress)

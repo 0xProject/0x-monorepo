@@ -19,16 +19,9 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
-import "../interfaces/IStakingEvents.sol";
-import "./MixinZrxVault.sol";
-import "../staking_pools/MixinStakingPoolRewardVault.sol";
-import "../sys/MixinScheduler.sol";
-import "./MixinStakeBalances.sol";
-import "./MixinTimeLockedStake.sol";
 import "./MixinStake.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
+import "../staking_pools/MixinStakingPool.sol";
 
 
 /// @dev This mixin contains logic for managing delegated stake.
@@ -39,16 +32,7 @@ import "../staking_pools/MixinStakingPoolRewards.sol";
 /// For example, the amount of fee-based rewards a market maker receives
 /// is correlated to how much stake has been delegated to their pool (see MixinExchangeFees).
 contract MixinDelegatedStake is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakingPoolRewardVault,
-    MixinZrxVault,
     MixinStakingPool,
-    MixinTimeLockedStake,
-    MixinStakeBalances,
     MixinStake,
     MixinStakingPoolRewards
 {

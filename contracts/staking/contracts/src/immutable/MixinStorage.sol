@@ -31,7 +31,7 @@ contract MixinStorage is
     MixinConstants,
     Ownable
 {
-
+    // solhint-disable no-empty-blocks
     constructor()
         public
         Ownable()

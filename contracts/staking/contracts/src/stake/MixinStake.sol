@@ -21,15 +21,9 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibRewardMath.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
-import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
-import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinTimeLockedStake.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
@@ -78,14 +72,8 @@ import "./MixinTimeLockedStake.sol";
 /// either be activated, delegated or withdrawn.
 /// See MixinDelegatedStake and MixinTimeLockedStake for more on respective state transitions.
 contract MixinStake is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
-    MixinScheduler,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinTimeLockedStake,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;

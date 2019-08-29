@@ -20,10 +20,6 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibSafeDowncast.sol";
-import "../libs/LibRewardMath.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../sys/MixinScheduler.sol";
 
 
@@ -78,10 +74,6 @@ import "../sys/MixinScheduler.sol";
 /// |             |        8        |     6     |    20    |    0    |       0        |          20             |
 /// -------------------------------------------------------------------------------------------------------------
 contract MixinTimeLockedStake is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
     MixinScheduler
 {
     using LibSafeMath for uint256;

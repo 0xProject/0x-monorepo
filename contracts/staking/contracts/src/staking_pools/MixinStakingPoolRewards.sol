@@ -22,10 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibRewardMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
 import "../stake/MixinStakeBalances.sol";
-import "./MixinStakingPoolRewardVault.sol";
 import "./MixinStakingPool.sol";
 
 
@@ -61,17 +58,9 @@ import "./MixinStakingPool.sol";
 ///    their realized balance *increases* while their ownership of the pool *decreases*. To reflect this, we
 ///    decrease their Shadow Balance, the Total Shadow Balance, their Real Balance, and the Total Real Balance.
 contract MixinStakingPoolRewards is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakingPoolRewardVault,
     MixinStakingPool,
-    MixinTimeLockedStake,
     MixinStakeBalances
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Withdraws an amount in ETH of the reward for the pool operator.

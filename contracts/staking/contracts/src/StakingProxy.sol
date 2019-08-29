@@ -24,11 +24,8 @@ import "./interfaces/IStakingProxy.sol";
 
 contract StakingProxy is
     IStakingProxy,
-    MixinDeploymentConstants,
-    MixinConstants,
     MixinStorage
 {
-
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
     constructor(address _stakingContract)

@@ -50,6 +50,7 @@ contract StakingPoolRewardVault is
 
     /// @dev Constructor.
     /// @param stakingProxyContract Address of StakingProxy contract.
+    // solhint-disable no-empty-blocks
     constructor(address payable stakingProxyContract)
         public
         MixinVaultCore(stakingProxyContract)

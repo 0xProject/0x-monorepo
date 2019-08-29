@@ -25,9 +25,6 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
 import "../interfaces/IStructs.sol";
-import "../interfaces/IStakingEvents.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
 import "./MixinStakingPoolRewardVault.sol";
 
 
@@ -55,10 +52,6 @@ import "./MixinStakingPoolRewardVault.sol";
 /// 2. Add the addresses that you use to market make on 0x.
 /// 3. Leverage the staking power of others by convincing them to delegate to your pool.
 contract MixinStakingPool is
-    IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
-    MixinStorage,
     MixinStakingPoolRewardVault
 {
     using LibSafeMath for uint256;

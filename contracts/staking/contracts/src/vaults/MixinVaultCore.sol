@@ -39,7 +39,6 @@ contract MixinVaultCore is
     Ownable,
     IVaultCore
 {
-
     // Address of staking contract
     address payable internal _stakingProxyContract;
 
