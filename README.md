@@ -9,7 +9,7 @@ This repository is a monorepo including the 0x protocol smart contracts and nume
 If you're developing on 0x now or are interested in using 0x infrastructure in the future, please join our [developer mailing list][dev-mailing-list-url] for updates.
 
 [website-url]: https://0xproject.com
-[whitepaper-url]: https://0xproject.com/pdfs/0x_white_paper.pdf
+[whitepaper-url]: https://0x.org/pdfs/0x_white_paper.pdf
 [dev-mailing-list-url]: http://eepurl.com/dx4cPf
 
 [![CircleCI](https://circleci.com/gh/0xProject/0x-monorepo.svg?style=svg&circle-token=61bf7cd8c9b4e11b132089dfcffdd1be277d1e0c)](https://circleci.com/gh/0xProject/0x-monorepo)
@@ -20,7 +20,7 @@ If you're developing on 0x now or are interested in using 0x infrastructure in t
 
 ## Packages
 
-Visit our [developer portal](https://0xproject.com/docs/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
+Visit our [developer portal](https://0x.org/docs/tools/order-utils) for a comprehensive list of core & community maintained packages. All packages maintained with this monorepo are listed below.
 
 ### Python Packages
 

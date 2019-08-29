@@ -1,6 +1,6 @@
 ## AssetProxy
 
-This package contains the implementations of all of the [`AssetProxy`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy) contracts available within the 0x protocol. These contracts are responsible for decoding the `assetData` sent to them and performing the actual transfer of assets. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains the implementations of all of the [`AssetProxy`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxy) contracts available within the 0x protocol. These contracts are responsible for decoding the `assetData` sent to them and performing the actual transfer of assets. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @0x/contracts-asset-proxy --save
 
 ## Bug bounty
 
-A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0xproject.com/wiki#Bug-Bounty).
+A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0x.org/docs/guides/bug-bounty-program).
 
 ## Contributing
 

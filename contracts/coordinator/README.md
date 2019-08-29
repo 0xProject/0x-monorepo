@@ -1,6 +1,6 @@
 ## Coordinator
 
-This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install @0x/contracts-coordinator --save
 
 ## Bug bounty
 
-A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0xproject.com/wiki#Bug-Bounty).
+A bug bounty for the 2.0.0 contracts is ongoing! Instructions can be found [here](https://0x.org/docs/guides/bug-bounty-program).
 
 ## Contributing
 

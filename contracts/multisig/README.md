@@ -1,6 +1,6 @@
 ## MultiSignature Contracts
 
-This package contains various types of multisignature wallet contracts, including the [`AssetProxyOwner`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxyowner) contract that is responsible for upgrading the 0x protocol smart contracts. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains various types of multisignature wallet contracts, including the [`AssetProxyOwner`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#assetproxyowner) contract that is responsible for upgrading the 0x protocol smart contracts. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 

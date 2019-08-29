@@ -2,7 +2,7 @@
 
 Solidity line-by-line gas profiler.
 
-### Read the [Documentation](https://0xproject.com/docs/tools/sol-profiler).
+### Read the [Documentation](https://0x.org/docs/tools/sol-profiler).
 
 ## Installation
 

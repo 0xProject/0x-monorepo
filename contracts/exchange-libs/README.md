@@ -1,6 +1,6 @@
 ## Exchange Libraries
 
-This package contains the implementations of various libraries and utilities used within the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange) contract. These libraries may be useful when creating external contracts that interact with the `Exchange` contract. Addresses of the deployed contracts can be found in the 0x [wiki](https://0xproject.com/wiki#Deployed-Addresses) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains the implementations of various libraries and utilities used within the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange) contract. These libraries may be useful when creating external contracts that interact with the `Exchange` contract. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 

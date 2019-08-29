@@ -2,7 +2,7 @@
 
 ## Integration
 
-Looking to integrate 0x Instant into your web application or site? Check out the dedicated [instant documentation](https://0x.org/docs/guides/integrate-instant#ui-integration) to get started. The documentation covers instant and related topics in depth. For a more "drag and drop" experience, check out our [configurator tool](https://0xproject.com/instant#configure). For on demand developer support, join our [Discord](https://discordapp.com/invite/d3FTX3M).
+Looking to integrate 0x Instant into your web application or site? Check out the dedicated [instant documentation](https://0x.org/docs/guides/integrate-instant#ui-integration) to get started. The documentation covers instant and related topics in depth. For a more "drag and drop" experience, check out our [configurator tool](https://0x.org/instant#configure). For on demand developer support, join our [Discord](https://discordapp.com/invite/d3FTX3M).
 
 Check out a live sample integration [here](https://www.rexrelay.com/instant).
 
