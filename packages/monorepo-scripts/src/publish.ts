@@ -7,7 +7,6 @@ import * as promisify from 'es6-promisify';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import opn = require('opn');
 import * as path from 'path';
 import { exec as execAsync, spawn as spawnAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
@@ -23,7 +22,6 @@ import { DocGenerateUtils } from './utils/doc_generate_utils';
 import { publishReleaseNotesAsync } from './utils/github_release_utils';
 import { utils } from './utils/utils';
 
-const NPM_NAMESPACE = '@0x/';
 const TODAYS_TIMESTAMP = moment().unix();
 
 async function confirmAsync(message: string): Promise<void> {
@@ -71,7 +69,6 @@ async function confirmAsync(message: string): Promise<void> {
     });
 
     // Generate markdown docs for packages
-    const isStaging = true;
     await generateDocMDAsync(packagesWithDocs);
 
     // Push changelogs changes and markdown docs to Github
