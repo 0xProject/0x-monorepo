@@ -8,11 +8,15 @@ export const UnorderedList = styled.ul`
     padding-left: 1rem;
 
     li {
-        color: ${({ theme }) => theme.paragraphColor};
-        font-size: 1rem;
+        color: ${docs.textColor};
+        font-size: ${docs.fontSize.desktop};
         font-weight: 300;
         line-height: 1.625em;
         margin-bottom: 1rem;
-        line-height: 26px;
+        line-height: 1.4;
+
+        @media (max-width: 900px) {
+            font-size: ${docs.fontSize.mobile};
+        }
     }
 `;
