@@ -83,7 +83,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     ${({ level }) =>
         level === 1 &&
         `
-        font-size: 0.8333rem;
+        font-size: 0.83rem;
         line-height: 1.5;
         margin: .4rem 0;
     `}
@@ -91,8 +91,22 @@ const ContentLink = styled(Link)<{ level: number }>`
     ${({ level }) =>
         level === 2 &&
         `
-        font-size: 0.7222rem;
+        font-size: 0.72rem;
         line-height: 2;
+        padding-left: 0.7rem;
+        transition: all 250ms ease-in-out;
+
+        &:hover,
+        &.active {
+        }
+    `}
+
+    ${({ level }) =>
+        level === 3 &&
+        `
+        font-size: 0.61rem;
+        line-height: 2;
+        margin-left: 0.7rem;
         padding-left: 0.7rem;
         border-left: 1px solid #e3e3e3;
         transition: all 250ms ease-in-out;

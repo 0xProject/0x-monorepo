@@ -1,5 +1,8 @@
 const { toJSX } = require('@mdx-js/mdx/mdx-hast-to-jsx');
 
+const MIN_HEADING_LEVEL = 1;
+const MAX_HEADING_LEVEL = 3;
+
 function mdxTableOfContents(options = {}) {
     let OldCompiler = this.Compiler;
     let tableOfContents;
@@ -19,7 +22,7 @@ function mdxTableOfContents(options = {}) {
     };
 }
 
-function getTableOfContents(root, { minLevel = 0, maxLevel = 2 } = {}) {
+function getTableOfContents(root, { minLevel = MIN_HEADING_LEVEL, maxLevel = MAX_HEADING_LEVEL } = {}) {
     let tableOfContents = [];
 
     addSections(tableOfContents, root.children, minLevel, maxLevel);

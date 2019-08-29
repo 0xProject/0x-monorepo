@@ -1,7 +1,7 @@
 const findAfter = require('unist-util-find-after');
 const visit = require('unist-util-visit-parents');
 
-const MAX_HEADING_DEPTH = 2;
+const MAX_HEADING_DEPTH = 3;
 
 module.exports = plugin;
 
