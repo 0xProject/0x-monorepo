@@ -1,6 +1,6 @@
 ## ERC721 Tokens
 
-This package contains implementations of various [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md) tokens. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains implementations of various [ERC721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md) tokens. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 

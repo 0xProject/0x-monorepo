@@ -1,6 +1,6 @@
 ## Dev-Utils
 
-This package implements various utilities for developers. For example, the `DevUtils` contract can query batches of balances or allowances given some `assetData`, can validate batches of orders, and can decode 0x-specific calldata. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package implements various utilities for developers. For example, the `DevUtils` contract can query batches of balances or allowances given some `assetData`, can validate batches of orders, and can decode 0x-specific calldata. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 

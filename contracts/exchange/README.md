@@ -1,6 +1,6 @@
 ## Exchange
 
-This package contains the implementation of the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange). This contract is responsible for settling trades and is typically the entry point for all transactions that interact with the 0x protocol. Lightweight examples of how external contracts can interct with the `Exchange` contract can be found in the [examples](./contracts/examples) directory. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains the implementation of the [`Exchange`](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#exchange). This contract is responsible for settling trades and is typically the entry point for all transactions that interact with the 0x protocol. Lightweight examples of how external contracts can interct with the `Exchange` contract can be found in the [examples](./contracts/examples) directory. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 

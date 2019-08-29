@@ -1,6 +1,6 @@
 ## Coordinator
 
-This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators. Addresses of the deployed contracts can be found in the 0x [wiki](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
+This package contains a contract that allows users to call arbitrary functions on the Exchange contract with permission from one or more Coordinators. Addresses of the deployed contracts can be found in this 0x [guide](https://0x.org/docs/guides/0x-cheat-sheet) or the [DEPLOYS](./DEPLOYS.json) file within this package.
 
 ## Installation
 
