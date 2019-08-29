@@ -308,10 +308,12 @@ contract MixinExchangeFees is
         pure
         returns (uint256 ownerRewards)
     {
-        assert(alphaNumerator > alphaDenominator);
+        assert(alphaNumerator <= alphaDenominator);
         int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
         int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
-        int256 alpha = LibFixedMath._toFixed(alphaNumerator, alphaDenominator);
+        if (feeRatio == 0 || stakeRatio == 0) {
+            return ownerRewards = 0;
+        }
 
         // The cobb-doublas function has the form:
         // totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)
@@ -319,12 +321,27 @@ contract MixinExchangeFees is
         // totalRewards * stakeRatio * e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
 
         // Compute e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
-        int256 n = LibFixedMath._exp(
-            LibFixedMath._mul(
-                alpha,
-                LibFixedMath._sub(LibFixedMath._ln(feeRatio), LibFixedMath._ln(stakeRatio))
-            )
-        );
+        int256 logFeeRatio = LibFixedMath._ln(feeRatio);
+        int256 logStakeRatio = LibFixedMath._ln(stakeRatio);
+        int256 n;
+        if (logFeeRatio <= logStakeRatio) {
+            n = LibFixedMath._exp(
+                LibFixedMath._mulDiv(
+                    LibFixedMath._sub(logFeeRatio, logStakeRatio),
+                    int256(alphaNumerator),
+                    int256(alphaDenominator)
+                )
+            );
+        } else {
+            n = LibFixedMath._exp(
+                LibFixedMath._mulDiv(
+                    LibFixedMath._sub(logStakeRatio, logFeeRatio),
+                    int256(alphaNumerator),
+                    int256(alphaDenominator)
+                )
+            );
+            n = LibFixedMath._invert(n);
+        }
         // Multiply the above with totalRewards * stakeRatio
         ownerRewards = LibFixedMath._uintMul(
             LibFixedMath._mul(n, stakeRatio),

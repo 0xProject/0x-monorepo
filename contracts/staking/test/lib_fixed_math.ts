@@ -9,11 +9,25 @@ Decimal.set({ precision: 128 });
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('LibFixedMath', env => {
+    let testContract: TestLibFixedMathContract;
+
+    before(async () => {
+        testContract = await TestLibFixedMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibFixedMath,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+        );
+    });
+
     const BITS_OF_PRECISION = 127;
     const FIXED_POINT_DIVISOR = new BigNumber(2).pow(BITS_OF_PRECISION);
     const MAX_FIXED_VALUE = new BigNumber(2).pow(255).minus(1);
     const MIN_FIXED_VALUE = new BigNumber(2).pow(255).times(-1);
-    const MIN_EXP_NUMBER = new BigNumber('-69.07755278982137043720332303294494434957608235919531845909733017243007692132225692604324818191230406');
+    const MIN_EXP_NUMBER = new BigNumber('-63.875');
+    const MAX_EXP_NUMBER = new BigNumber(0);
+    // e ^ MIN_EXP_NUMBER
+    const MIN_LN_NUMBER = new BigNumber(new Decimal(MIN_EXP_NUMBER.toFixed(128)).exp().toFixed(128));
     const FUZZ_COUNT = 1024;
 
     type Numberish = BigNumber | string | number;
@@ -75,32 +89,21 @@ blockchainTests('LibFixedMath', env => {
     }
 
     function assertFixedEquals(
-        actual: BigNumber | string | number,
-        expected: BigNumber | string | number,
+        actual: Numberish,
+        expected: Numberish,
     ): void {
         expect(fromFixed(actual)).to.bignumber.eq(numberToFixedToNumber(expected));
     }
 
     function assertFixedRoughlyEquals(
-        actual: BigNumber | string | number,
-        expected: BigNumber | string | number,
-        precision: number = 13,
+        actual: Numberish,
+        expected: Numberish,
+        precision: number = 18,
     ): void {
         // SD is not what we want.
         expect(toPrecision(fromFixed(actual), precision))
             .to.bignumber.eq(toPrecision(numberToFixedToNumber(expected), precision));
     }
-
-    let testContract: TestLibFixedMathContract;
-
-    before(async () => {
-        testContract = await TestLibFixedMathContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibFixedMath,
-            env.provider,
-            env.txDefaults,
-            artifacts,
-        );
-    });
 
     describe('one()', () => {
         it('equals 1', async () => {
@@ -126,6 +129,75 @@ blockchainTests('LibFixedMath', env => {
             const n = 0;
             const r = await testContract.abs.callAsync(toFixed(n));
             assertFixedEquals(r, n);
+        });
+    });
+
+    describe('invert()', () => {
+        it('invert(1) == 1', async () => {
+            const n = 1;
+            const r = await testContract.invert.callAsync(toFixed(n));
+            assertFixedEquals(r, n);
+        });
+
+        it('invert(n) == 1 / n', async () => {
+            const n = 1337.5912;
+            const r = await testContract.invert.callAsync(toFixed(n));
+            assertFixedRoughlyEquals(r, 1 / n);
+        });
+
+        it('invert(-n) == -1 / n', async () => {
+            const n = -1337.5912;
+            const r = await testContract.invert.callAsync(toFixed(n));
+            assertFixedRoughlyEquals(r, 1 / n);
+        });
+
+        it('invert(0) throws', async () => {
+            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
+            );
+            const tx = testContract.invert.callAsync(toFixed(0));
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('mulDiv()', () => {
+        it('mulDiv(0, 0, 1) == 0', async () => {
+            const [ a, n, d ] = [ 0, 0, 1 ];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, 0);
+        });
+
+        it('mulDiv(0, x, y) == 0', async () => {
+            const [ a, n, d ] = [ 0, 13, 300 ];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, 0);
+        });
+
+        it('mulDiv(x, y, y) == x', async () => {
+            const [ a, n, d ] = [ 1.2345, 149, 149 ];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, a);
+        });
+
+        it('mulDiv(x, -y, y) == -x', async () => {
+            const [ a, n, d ] = [ 1.2345, -149, 149 ];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, -a);
+        });
+
+        it('mulDiv(-x, -y, y) == x', async () => {
+            const [ a, n, d ] = [ -1.2345, -149, 149 ];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, -a);
+        });
+
+        it('mulDiv(x, y, 0) throws', async () => {
+            const [ a, n, d ] = [ 1.2345, 149, 0 ];
+            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
+            );
+            const tx = testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -508,6 +580,8 @@ blockchainTests('LibFixedMath', env => {
     });
 
     describe('ln()', () => {
+        const LN_PRECISION = 13;
+
         it('ln(x = 0) throws', async () => {
             const x = toFixed(0);
             const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
@@ -544,22 +618,28 @@ blockchainTests('LibFixedMath', env => {
             assertFixedEquals(r, 0);
         });
 
+        it('ln(x < LN_MIN_VAL) == EXP_MIN_VAL', async () => {
+            const x = toFixed(MIN_LN_NUMBER).minus(1);
+            const r = await testContract.ln.callAsync(x);
+            assertFixedEquals(r, MIN_EXP_NUMBER);
+        });
+
         it('ln(x), where x is close to 0', async () => {
             const x = new BigNumber('1e-27');
             const r = await testContract.ln.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, ln(x));
+            assertFixedRoughlyEquals(r, ln(x), LN_PRECISION);
         });
 
         it('ln(x), where x is close to 1', async () => {
             const x = new BigNumber(1).minus('1e-27');
             const r = await testContract.ln.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, ln(x));
+            assertFixedRoughlyEquals(r, ln(x), LN_PRECISION);
         });
 
-        it('ln(x = 0.5)', async () => {
-            const x = 0.5;
+        it('ln(x = 0.85)', async () => {
+            const x = 0.85;
             const r = await testContract.ln.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, ln(x));
+            assertFixedRoughlyEquals(r, ln(x), LN_PRECISION);
         });
 
         blockchainTests.optional('fuzzing', () => {
@@ -567,21 +647,23 @@ blockchainTests('LibFixedMath', env => {
             for (const x of inputs) {
                 it(`ln(${x.toString(10)})`, async () => {
                     const r = await testContract.ln.callAsync(toFixed(x));
-                    assertFixedRoughlyEquals(r, ln(x), 11);
+                    assertFixedRoughlyEquals(r, ln(x), LN_PRECISION);
                 });
             }
         });
     });
 
     describe('exp()', () => {
+        const EXP_PRECISION = 18;
+
         it('exp(x = 0) == 1', async () => {
             const x = toFixed(0);
             const r = await testContract.exp.callAsync(x);
             assertFixedEquals(r, 1);
         });
 
-        it('exp(x > 0) throws', async () => {
-            const x = toFixed(1e-18);
+        it('exp(x > EXP_MAX_VAL) throws', async () => {
+            const x = toFixed(MAX_EXP_NUMBER).plus(1);
             const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                 x,
@@ -596,30 +678,30 @@ blockchainTests('LibFixedMath', env => {
             assertFixedEquals(r, 0);
         });
 
-        it('exp(x), where x is close to 0', async () => {
-            const x = new BigNumber('-1e-27');
+        it('exp(x < 0), where x is close to 0', async () => {
+            const x = new BigNumber('-1e-18');
             const r = await testContract.exp.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, exp(x));
+            assertFixedRoughlyEquals(r, exp(x), EXP_PRECISION);
         });
 
         it('exp(x), where x is close to EXP_MIN_VAL', async () => {
-            const x = MIN_EXP_NUMBER.plus('1e-27');
+            const x = MIN_EXP_NUMBER.plus('1e-18');
             const r = await testContract.exp.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, exp(x));
+            assertFixedRoughlyEquals(r, exp(x), EXP_PRECISION);
         });
 
-        it('exp(x = -0.5)', async () => {
-            const x = -0.5;
+        it('exp(x = -0.85)', async () => {
+            const x = -0.85;
             const r = await testContract.exp.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, exp(x));
+            assertFixedRoughlyEquals(r, exp(x), EXP_PRECISION);
         });
 
         blockchainTests.optional('fuzzing', () => {
-            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(MIN_EXP_NUMBER, 0));
+            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(MIN_EXP_NUMBER, MAX_EXP_NUMBER));
             for (const x of inputs) {
                 it(`exp(${x.toString(10)})`, async () => {
                     const r = await testContract.exp.callAsync(toFixed(x));
-                    assertFixedRoughlyEquals(r, exp(x), 11);
+                    assertFixedRoughlyEquals(r, exp(x), EXP_PRECISION);
                 });
             }
         });

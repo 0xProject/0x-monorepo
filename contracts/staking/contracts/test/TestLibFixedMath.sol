@@ -25,6 +25,10 @@ contract TestLibFixedMath {
     function one() external pure returns (int256) {
         return LibFixedMath._one();
     }
+    
+    function mulDiv(int256 a, int256 n, int256 d) external pure returns (int256) {
+        return LibFixedMath._mulDiv(a, n, d);
+    }
 
     function mul(int256 a, int256 b) external pure returns (int256) {
         return LibFixedMath._mul(a, b);
@@ -48,6 +52,10 @@ contract TestLibFixedMath {
 
     function abs(int256 a) external pure returns (int256) {
         return LibFixedMath._abs(a);
+    }
+
+    function invert(int256 a) external pure returns (int256) {
+        return LibFixedMath._invert(a);
     }
 
     function toFixedSigned(int256 n, int256 d) external pure returns (int256) {
