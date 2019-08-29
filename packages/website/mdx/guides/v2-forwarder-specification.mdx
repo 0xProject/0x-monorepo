@@ -137,7 +137,7 @@ The `feePercentage` and `feeRecipient` are a feature in the Forwarding contract 
 
 ## Optimizing calldata
 
-Calldata is expensive. As per Appendix G of the [ETHeum Yellowpaper](#https://ETHeum.github.io/yellowpaper/paper.pdf), every non-zero byte of calldata costs 68 gas, and every zero byte costs 4 gas. There are certain off-chain optimizations that can be made in order to maximize the amount of zeroes included in calldata.
+Calldata is expensive. As per Appendix G of the [Ethereum yellow paper](#https://ETHeum.github.io/yellowpaper/paper.pdf), every non-zero byte of calldata costs 68 gas, and every zero byte costs 4 gas. There are certain off-chain optimizations that can be made in order to maximize the amount of zeroes included in calldata.
 
 ### Assuming order parameters
 

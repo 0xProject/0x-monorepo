@@ -38,14 +38,6 @@ A great use case for custom providers is to support additional ways for your use
 
 Many people use browser extension wallets (e.g [Metamask](https://metamask.io/)). These services inject a web3 provider into the page so that your dApp can relay signing requests. We wrote [SignerSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/signer.ts) so that we could route all signing requests to the injected provider, but have all other requests handled by another backing Ethereum node.
 
-## Updating the provider used by `@0x/contract-wrappers`
-
-If at some point the provider used by your dApp changes (e.g if your user wants to use their Ledger Nano S to sign orders), it is important that you update the provider used by your `@0x/contract-wrappers`. You can do this by calling [setProvider](https://0x.org/docs/tools/contract-wrappers#ContractWrappers-setProvider).
-
-```typescript
-await contractWrappers.setProvider(newProvider, networkId);
-```
-
 # Web3 Provider Examples
 
 As described above, we at 0x have created a number of useful Web3 subproviders. These subproviders aren't only useful for 0x.js, they can be added to any application to provide resiliency, usability and to support hardware wallet functionality.
@@ -88,7 +80,7 @@ Using the configuration above, all account related requests (e.g signing and sen
 
 ## Ledger example
 
-Within the 0x Subprovider package, we have also added a [Ledger Nano S](https://www.ledgerwallet.com/start/ledger-nano-s) subprovider. By adding this subprovider first into the Web3 Provider Engine, we are able to route all account based requests to the Ledger. We again use the RPC Provider for all other requests.
+Within the 0x Subprovider package, we have also added a [Ledger Nano S](https://shop.ledger.com/products/ledger-nano-s) subprovider. By adding this subprovider first into the Web3 Provider Engine, we are able to route all account based requests to the Ledger. We again use the RPC Provider for all other requests.
 
 ```typescript
 import {

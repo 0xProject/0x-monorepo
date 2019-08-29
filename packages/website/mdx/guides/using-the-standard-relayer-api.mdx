@@ -1,4 +1,4 @@
-In this tutorial, we will show you how you can use the [@0x/connect](https://github.com/0xProject/0x.js/tree/development/packages/connect) package in conjunction with [0x.js](https://github.com/0xProject/0x.js/tree/development/packages/0x.js) in order to:
+In this tutorial, we will show you how you can use the [@0x/connect](https://0x.org/docs/tools/connect) package in conjunction with [0x.js](https://0x.org/docs/tools/0x.js) in order to:
 
 - ask a relayer for fee information
 - submit signed orders to a relayer with appropriate fees
@@ -8,7 +8,7 @@ In this tutorial, we will show you how you can use the [@0x/connect](https://git
 
 You can find all the `@0x/connect` documentation [here](https://0x.org/docs/tools/connect).
 
-You can find a list of relayers that comply with the Standard Relayer API [here](https://github.com/0xProject/0x-relayer-registry)
+You can find a list of relayers that comply with the Standard Relayer API [here](https://github.com/0xProject/0x-relayer-registry/blob/master/relayers.json)
 
 # Setup
 
@@ -77,7 +77,7 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 
 ## Instantiating a Provider and ContractWrappers
 
-First, we need to instantiate an instance of ContractWrappers and a Provider. In our case, since we are using our local node (ganache), we will use **http://localhost:8545**. You can read about what providers are [here](#Web3-Provider-Explained).
+First, we need to instantiate an instance of ContractWrappers and a Provider. In our case, since we are using our local node (ganache), we will use **http://localhost:8545**. You can read about what providers are [here](https://0x.org/docs/guides/web3-provider-explained).
 
 ```typescript
 import { RPCSubprovider, Web3ProviderEngine } from '0x.js';
@@ -251,7 +251,7 @@ Now let's actually verify whether the order we created is valid
 await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
 ```
 
-If something was wrong with our order, this function would throw an informative error. If it passes, then the order is currently fillable. A relayer should constantly be [pruning their orderbook](#0x-OrderWatcher) of invalid orders using this method.
+If something was wrong with our order, this function would throw an informative error. If it passes, then the order is currently fillable. A relayer should constantly be [pruning their orderbook](https://0x-org.gitbook.io/mesh/advanced-topics/db_syncing) of invalid orders using this method.
 
 ## Submitting the order to the relayer
 
@@ -282,7 +282,7 @@ if (response.asks.total === 0) {
 
 ## Filling an order
 
-`OrderbookResponse` contains two fields, `bids` and `asks`. `Bids` is a [`PaginatedCollection`](https://0x.org/docs/tools/connect#types-PaginatedCollection) of [`APIOrder`](https://0x.org/docs/connect#types-APIOrder)s where for each order, the `makerAssetData` field is equal to the `quoteAssetData` provided by the `OrderbookRequest` and the `takerAssetData` field is equal to `baseAssetData`. `Asks` is the opposite of `bids`. For each order, the `makerAssetData` field is equal to the `baseAssetData` and the `takerAssetData` field is equal to `quoteAssetData`.
+`OrderbookResponse` contains two fields, `bids` and `asks`. `Bids` is a [`PaginatedCollection`](https://0x.org/docs/tools/connect#interface-paginatedcollection-t) of [`APIOrder`](https://0x.org/docs/tools/connect#interface-apiorder)s where for each order, the `makerAssetData` field is equal to the `quoteAssetData` provided by the `OrderbookRequest` and the `takerAssetData` field is equal to `baseAssetData`. `Asks` is the opposite of `bids`. For each order, the `makerAssetData` field is equal to the `baseAssetData` and the `takerAssetData` field is equal to `quoteAssetData`.
 
 The Standard Relayer API guarantees that the orders are sorted by price, and then by _taker fee price_ which is defined as the `takerFee` divided by `takerAmount`. After _taker fee price_, orders are to be sorted by expiration in ascending order.
 

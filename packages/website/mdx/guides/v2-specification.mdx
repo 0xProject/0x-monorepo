@@ -133,7 +133,7 @@ The `ERC721Proxy` performs the transfer by calling the token's `transferFrom` me
 
 ### MultiAssetProxy
 
-The `MultiAssetProxy` expects an `amounts` (`uint256` array) and a `nestedAssetData` (array of [`asseData`](#assetdata) byte arrays) to be encoded within its own `assetData`. Each element of `amounts` corresponds to an element at the same index of `nestedAssetData`. The `MultiAssetProxy` will multiply each `amounts` element by the `amount` passed into `MultiAssetProxy.transferFrom` and then dispatch the corresponding element of `nestedAssetProxy` to the relevant [`AssetProxy`](#assetproxy) contract with the resulting `totalAmount`. This contract does not perform any `transferFrom` calls to assets directly and therefore does not require any additional user approvals.
+The `MultiAssetProxy` expects an `amounts` (`uint256` array) and a `nestedAssetData` (array of [`assetData`](#assetdata) byte arrays) to be encoded within its own `assetData`. Each element of `amounts` corresponds to an element at the same index of `nestedAssetData`. The `MultiAssetProxy` will multiply each `amounts` element by the `amount` passed into `MultiAssetProxy.transferFrom` and then dispatch the corresponding element of `nestedAssetProxy` to the relevant [`AssetProxy`](#assetproxy) contract with the resulting `totalAmount`. This contract does not perform any `transferFrom` calls to assets directly and therefore does not require any additional user approvals.
 
 This contract expects its `assetData` to be encoded using [ABIv2](http://solidity.readthedocs.io/en/latest/abi-spec.html) with the following 4 byte id:
 

@@ -6,13 +6,13 @@ The coordinator model makes heavy use of this concept in order to add an additio
 
 A coordinator has 2 components that differentiate it from a traditional relayer:
 
-1. The [`Coordinator` contract](#coordinator), which is a [0x extension contract](/docs/guides/v2-specification#filter-contracts) that verifies transactions have been approved by the correct set of coordinators.
+1. The [`Coordinator` contract](#coordinator), which is a [0x extension contract](https://0x.org/docs/guides/0x-extensions-explained) that verifies transactions have been approved by the correct set of coordinators.
 1. A [coordinator server](#reference-coordinator-server) that approves or rejects 0x transactions under different conditions.
 
 This specification will describe a specific implementation of each component that intends to create a market structure that is more favorable for liquidity providers while allowing for liquidity to be consumed by smart contracts. See the reference server [design choices](#design-choices) section for more information. The flow for filling an order with the coordinator model is as follows:
 
 1. A taker selects the desired order(s) and creates a valid signed 0x transaction to fill the order(s) (e.g. `batchFillOrdersNoThrow`).
-2. The taker looks up the Coordinator server endpoint(s) corresponding to the order(s) using the [Coordinator Registry](#CoordinatorRegistry) smart contract.
+2. The taker looks up the Coordinator server endpoint(s) corresponding to the order(s) using the [Coordinator Registry](#coordinatorregistry) smart contract.
 3. The taker sends a fill request with the signed 0x transaction to the coordinator server that corresponds to each order.
 4. After a 1 second delay, the coordinator server responds with a signed approval.
 5. The taker submits the signed 0x transaction and approval to the `Coordinator` extension contract by calling `Coordinator.executeTransaction`.
@@ -30,7 +30,7 @@ For the purposes of this specification, orders that specify the `Coordinator` co
 
 ## Transactions
 
-The `Coordinator` contract processes regular [0x transaction](https://0x.org/docs/guides/v2-specification#transactions) messages, using the `Exchange` 2.0 EIP712 domain header (see the Solidity type [here](#zeroextransaction)). Transactions may be signed with any valid [0x 2.0 signature type](https://0x.org/docs/guides/v2-specification#signature-types).
+The `Coordinator` contract processes regular [0x transaction](https://0x.org/docs/guides/v2-specification#transactions) messages, using the `Exchange` 2.0 EIP712 domain header. Transactions may be signed with any valid [0x 2.0 signature type](https://0x.org/docs/guides/v2-specification#signature-types).
 
 In Solidity, this message is represented as:
 
@@ -44,7 +44,7 @@ struct ZeroExTransaction {
 
 ## Approvals
 
-0x transactions that call any `Exchange` fill methods must be approved by a coordinator. The approval includes the following fields (see the Solidity type [here](#coordinatorapproval)):
+0x transactions that call any `Exchange` fill methods must be approved by a coordinator. The approval includes the following fields:
 
 | Parameter                     | Type    | Description                                                                           |
 | ----------------------------- | ------- | ------------------------------------------------------------------------------------- |
@@ -392,7 +392,7 @@ Fill transaction requests should be rejected under the following conditions:
 
 All other fill requests must be approved by the coordinator server exactly `SELECTIVE_DELAY_MS` after the request is received.
 
-When a valid transaction request has been received, the coordinator server must broadcast a [`FILL_REQUEST_RECEIVED`](#fill_request_received) message to all connected Websocket clients. After a duration of `SELECTIVE_DELAY_MS`, the server should approve the fill request and simultaneously broadcast a [`FILL_REQUEST_APPROVED`](#fill_request_approved) message to all connected Websocket clients (if any orders contained in the transaction have not been soft cancelled in the mean time).
+When a valid transaction request has been received, the coordinator server must broadcast a [`FILL_REQUEST_RECEIVED`](#fill_request_received) message to all connected Websocket clients. After a duration of `SELECTIVE_DELAY_MS`, the server should approve the fill request and simultaneously broadcast a [`FILL_REQUEST_ACCEPTED`](#fill_request_accepted) message to all connected Websocket clients (if any orders contained in the transaction have not been soft cancelled in the mean time).
 
 ## Handling cancels
 
@@ -479,7 +479,7 @@ Some networks and their Ids:
 | 4          | Rinkeby             |
 | 50         | 0x Ganache snapshot |
 
-If a certain network is not supported, the response should **400** as specified in the [error response](#error-response) section. For example:
+If a certain network is not supported, the response should **400** as specified in the [error response](#errors) section. For example:
 
 ```json
 {

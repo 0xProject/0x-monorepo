@@ -53,7 +53,7 @@ Relayer Charlie says that he is willing to buy ZRX at a rate of 1000 ZRX per WET
 
 ## Rationale
 
-Since this strategy does not require any commitments to be made until the trader agrees to a rate, any arbitrary off-chain negotiation process can occur before an order is signed. Once an order is signed, the relayer also has the option of hedging with external liquidity, so the relayer does not necessarily need as large reserves as with the [reserve manager](https://0x.org/docs/guides/relayer-strategies#reserve-manager) strategy.
+Since this strategy does not require any commitments to be made until the trader agrees to a rate, any arbitrary off-chain negotiation process can occur before an order is signed. Once an order is signed, the relayer also has the option of hedging with external liquidity, so the relayer does not necessarily need as large reserves as with the [reserve manager](#reserve-manager) strategy.
 
 ## Limitations
 
@@ -63,7 +63,7 @@ After a trader signs an order, the relayer is in no way obligated to fill that o
 
 # Reserve Manager
 
-A relayer can provide its own liquidity by frequently posting large orders with short expiration times where the `taker` field is equal to `0x0000000000000000000000000000000000000000`. This can be used separately from or in conjunction with the [open orderbook](https://0x.org/docs/guides/relayer-strategies#open-orderbook) strategy.
+A relayer can provide its own liquidity by frequently posting large orders with short expiration times where the `taker` field is equal to `0x0000000000000000000000000000000000000000`. This can be used separately from or in conjunction with the [open orderbook](#open-orderbook) strategy.
 
 ## Example
 
