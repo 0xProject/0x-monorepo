@@ -26,8 +26,6 @@ import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "../sys/MixinScheduler.sol";
-import "./MixinStakingPoolRewardVault.sol";
 import "./MixinStakingPoolRewards.sol";
 
 
@@ -62,38 +60,6 @@ contract MixinStakingPool is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Asserts that the sender is the operator of the input pool.
-    /// @param poolId Pool sender must be operator of.
-    modifier onlyStakingPoolOperator(bytes32 poolId) {
-        address poolOperator = getStakingPoolOperator(poolId);
-        if (msg.sender != poolOperator) {
-            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByPoolOperatorError(
-                msg.sender,
-                poolOperator
-            ));
-        }
-
-        _;
-    }
-
-    /// @dev Asserts that the sender is the operator of the input pool or the input maker.
-    /// @param poolId Pool sender must be operator of.
-    /// @param makerAddress Address of a maker in the pool.
-    modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        address poolOperator = getStakingPoolOperator(poolId);
-        if (msg.sender != poolOperator && msg.sender != makerAddress) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(
-                    msg.sender,
-                    poolOperator,
-                    makerAddress
-                )
-            );
-        }
-
-        _;
-    }
-
     /// @dev Create a new staking pool. The sender will be the operator of this pool.
     /// Note that an operator must be payable.
     /// @param operatorShare Portion of rewards owned by the operator, in ppm.
@@ -110,19 +76,12 @@ contract MixinStakingPool is
         poolId = nextPoolId;
         nextPoolId = _computeNextStakingPoolId(poolId);
 
-        // store metadata about this pool
-        IStructs.Pool memory pool = IStructs.Pool({
-            operatorAddress: operatorAddress,
-            operatorShare: operatorShare
-        });
-        poolById[poolId] = pool;
-
         // initialize cumulative rewards for this pool;
         // this is used to track rewards earned by delegators.
         _initializeCumulativeRewards(poolId);
 
         // register pool in reward vault
-        rewardVault.registerStakingPool(poolId, operatorShare);
+        rewardVault.registerStakingPool(poolId, operatorAddress, operatorShare);
 
         // Staking pool has been created
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
@@ -317,30 +276,6 @@ contract MixinStakingPool is
         returns (bytes32)
     {
         return nextPoolId;
-    }
-
-    /// @dev Returns the pool operator
-    /// @param poolId Unique id of pool
-    /// @return operatorAddress Operator of the pool
-    function getStakingPoolOperator(bytes32 poolId)
-        public
-        view
-        returns (address operatorAddress)
-    {
-        operatorAddress = poolById[poolId].operatorAddress;
-        return operatorAddress;
-    }
-
-    /// @dev Convenience function for loading information on a pool.
-    /// @param poolId Unique id of pool.
-    /// @return pool Pool info.
-    function _getStakingPool(bytes32 poolId)
-        internal
-        view
-        returns (IStructs.Pool memory pool)
-    {
-        pool = poolById[poolId];
-        return pool;
     }
 
     /// @dev Computes the unique id that comes after the input pool id.

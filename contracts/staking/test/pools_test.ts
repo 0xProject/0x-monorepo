@@ -43,10 +43,24 @@ blockchainTests('Staking Pool Management', env => {
             const nextPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
             expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
         });
+        it('Should fail to create a pool with operator share > 100', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (101 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+
+            const revertError = new StakingRevertErrors.OperatorShareError(
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                stakingConstants.INITIAL_POOL_ID,
+                operatorShare,
+            );
+            // create pool
+            await poolOperator.createStakingPoolAsync(operatorShare, false, revertError);
+        });
         it('Should successfully create a pool and add owner as a maker', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             // create pool
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
@@ -55,7 +69,7 @@ blockchainTests('Staking Pool Management', env => {
             const nextPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
             expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
         });
-        it('Should throw if poolOperatorShare is > PPM_DENOMINATOR', async () => {
+        it('Should throw if operatorShare is > PPM_DENOMINATOR', async () => {
             // test parameters
             const operatorAddress = users[0];
             // tslint:disable-next-line
@@ -64,13 +78,17 @@ blockchainTests('Staking Pool Management', env => {
             // create pool
             const tx = poolOperator.createStakingPoolAsync(operatorShare, true);
             const expectedPoolId = stakingConstants.INITIAL_POOL_ID;
-            const expectedError = new StakingRevertErrors.InvalidPoolOperatorShareError(expectedPoolId, operatorShare);
+            const expectedError = new StakingRevertErrors.OperatorShareError(
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                expectedPoolId,
+                operatorShare,
+            );
             return expect(tx).to.revertWith(expectedError);
         });
         it('Should successfully add/remove a maker to a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingApiWrapper);
@@ -87,7 +105,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Maker should successfully remove themselves from a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingApiWrapper);
@@ -104,7 +122,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should successfully add/remove multiple makers to the same pool', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddresses = users.slice(1, 4);
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
@@ -136,7 +154,7 @@ blockchainTests('Staking Pool Management', env => {
         });
         it('Should fail if maker already assigned to another pool tries to join', async () => {
             // test parameters
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const assignedPoolOperator = new PoolOperatorActor(users[0], stakingApiWrapper);
             const otherPoolOperator = new PoolOperatorActor(users[1], stakingApiWrapper);
 
@@ -165,8 +183,9 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to add maker to pool if the maker has not joined any pools', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+
             const makerAddress = users[1];
 
             // create pool
@@ -183,7 +202,7 @@ blockchainTests('Staking Pool Management', env => {
         });
         it('Should fail to add maker to pool if the maker joined a different pool', async () => {
             // test parameters
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const assignedPoolOperator = new PoolOperatorActor(users[0], stakingApiWrapper);
             const otherPoolOperator = new PoolOperatorActor(users[1], stakingApiWrapper);
 
@@ -210,7 +229,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to add the same maker twice', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingApiWrapper);
@@ -231,7 +250,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to remove a maker that does not exist', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             // create pool
@@ -248,7 +267,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to add a maker when called by someone other than the pool operator', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingApiWrapper);
@@ -272,7 +291,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to remove a maker when called by someone other than the pool operator or maker', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingApiWrapper);
@@ -299,7 +318,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should fail to add a maker if the pool is full', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
             const makerAddresses = users.slice(1, stakingConstants.MAX_MAKERS_IN_POOL + 2);
@@ -329,6 +348,38 @@ blockchainTests('Staking Pool Management', env => {
                 poolId,
             );
             await poolOperator.addMakerToStakingPoolAsync(poolId, lastMakerAddress, revertError);
+        });
+        it('Operator should successfully decrease their share of rewards', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+
+            // decrease operator share
+            await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare - 1);
+        });
+        it('Should fail if operator tries to increase their share of rewards', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+
+            const increasedOperatorShare = operatorShare + 1;
+            const revertError = new StakingRevertErrors.OperatorShareError(
+                StakingRevertErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
+                poolId,
+                increasedOperatorShare,
+            );
+            // decrease operator share
+            await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, increasedOperatorShare, revertError);
         });
     });
 });

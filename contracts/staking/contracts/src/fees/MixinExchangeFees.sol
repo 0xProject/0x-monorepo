@@ -254,7 +254,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId).currentEpochBalance;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(rewardVault.operatorOf(poolId), poolId).currentEpochBalance;
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
@@ -300,7 +300,7 @@ contract MixinExchangeFees is
             );
 
             // record reward in vault
-            (, uint256 poolPortion) = rewardVault.recordDepositFor(
+            (, uint256 membersPortion) = rewardVault.recordDepositFor(
                 activePools[i].poolId,
                 reward,
                 activePools[i].delegatedStake == 0 // true -> reward is for operator only
@@ -308,10 +308,10 @@ contract MixinExchangeFees is
             totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
 
             // sync cumulative rewards, if necessary.
-            if (poolPortion > 0) {
+            if (membersPortion > 0) {
                 _recordRewardForDelegators(
                     activePools[i].poolId,
-                    poolPortion,
+                    membersPortion,
                     activePools[i].delegatedStake,
                     currentEpoch
                 );
