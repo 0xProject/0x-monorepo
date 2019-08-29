@@ -142,7 +142,7 @@ describe('CoordinatorWrapper', () => {
                 database: ':memory:',
                 entities: defaultOrmConfig.entities,
                 cli: defaultOrmConfig.cli,
-                logging: defaultOrmConfig.logging,
+                logging: ['error', 'schema', 'warn', 'info', 'log'], // intention: disable 'query'. it's too noisy.
                 synchronize: defaultOrmConfig.synchronize,
             },
         );
@@ -162,7 +162,7 @@ describe('CoordinatorWrapper', () => {
                 database: ':memory:',
                 entities: defaultOrmConfig.entities,
                 cli: defaultOrmConfig.cli,
-                logging: defaultOrmConfig.logging,
+                logging: ['error', 'schema', 'warn', 'info', 'log'], // intention: disable 'query'. it's too noisy.
                 synchronize: defaultOrmConfig.synchronize,
             },
         );
