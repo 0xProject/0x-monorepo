@@ -255,7 +255,7 @@ contract MixinExchangeFees is
 
 
 
-
+    //934782608695652173913043478
 
 
 
@@ -280,7 +280,7 @@ contract MixinExchangeFees is
             } else {
                 rewardRatioSums[epoch] = totalStakeDelegatedToPool == 0
                     ? rewardRatioSums[epoch - 1]
-                    : rewardRatioSums[epoch - 1] + (10**18) * rewards[i].reward / totalStakeDelegatedToPool;
+                    : rewardRatioSums[epoch - 1] + ((10**27) * rewards[i].reward) / totalStakeDelegatedToPool;
             }
 
             // record reward in vault
