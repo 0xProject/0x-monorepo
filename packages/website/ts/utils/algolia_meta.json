@@ -107,12 +107,7 @@
             "title": "0x Coordinator Specification (v2)",
             "description": "A comprehensive technical spec of the first coordinator model developer by the 0x core team (soft-cancel variant)",
             "tags": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
-            "topics": [
-                "Coordinator",
-                "Relayer",
-                "Trader",
-                "Protocol Developer"
-            ],
+            "topics": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
             "difficulty": "Advanced",
             "path": "guides/v2-coordinatior-specification.mdx"
         },
@@ -155,18 +150,17 @@
             "topics": ["Relayer", "Trader", "Extensions"],
             "difficulty": "Advanced",
             "path": "guides/0x-extensions-explained.mdx"
+        },
+        "bug-bounty-program": {
+            "title": "Bug Bounty Program",
+            "subtitle": "An ongoing bug bounty for the 0x protocol smart contracts.",
+            "description": "An ongoing bug bounty for the 0x protocol smart contracts.",
+            "tags": ["Protocol Developer"],
+            "topics": ["Protocol Developer"],
+            "difficulty": "Advanced",
+            "path": "guides/bug-bounty-program.mdx"
         }
-      },
-      "bug-bounty-program": {
-          "title": "Bug Bounty Program",
-          "subtitle": "An ongoing bug bounty for the 0x protocol smart contracts.",
-          "description": "An ongoing bug bounty for the 0x protocol smart contracts.",
-          "tags": ["Protocol Developer"],
-          "topics": ["Protocol Developer"],
-          "difficulty": "Advanced",
-          "path": "guides/bug-bounty-program.mdx"
-      }
-  },
+    },
     "tools": {
         "asset-swapper": {
             "title": "0x Asset Swapper",
