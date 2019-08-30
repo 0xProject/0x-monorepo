@@ -54,7 +54,6 @@ contract StakingPoolRewardVault is
         external
         payable
         onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
     }
@@ -67,7 +66,6 @@ contract StakingPoolRewardVault is
         external
         payable
         onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
         // update balance of pool
         uint256 amount = msg.value;
@@ -88,7 +86,6 @@ contract StakingPoolRewardVault is
     function recordDepositFor(bytes32 poolId, uint256 amount)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
         // update balance of pool
         Balance memory balance = balanceByPoolId[poolId];
@@ -101,7 +98,11 @@ contract StakingPoolRewardVault is
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function withdrawForOperator(bytes32 poolId, uint256 amount)
+    function transferOperatorBalance(
+        bytes32 poolId,
+        address payable to,
+        uint256 amount
+    )
         external
         onlyStakingContract
     {
@@ -124,7 +125,11 @@ contract StakingPoolRewardVault is
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function withdrawForMember(bytes32 poolId, uint256 amount)
+    function transferMemberBalance(
+        bytes32 poolId,
+        address payable to,
+        uint256 amount
+    )
         external
         onlyStakingContract
     {
@@ -150,7 +155,6 @@ contract StakingPoolRewardVault is
     function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
         external
         onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
         // operator share must be a valid percentage
         require(

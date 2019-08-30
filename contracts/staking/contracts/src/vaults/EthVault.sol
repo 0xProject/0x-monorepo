@@ -48,8 +48,6 @@ contract EthVault is
     function depositFor(address owner)
         external
         payable
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
         // update balance
         uint256 amount = msg.value;
@@ -59,28 +57,23 @@ contract EthVault is
         emit EthDepositedIntoVault(msg.sender, owner, amount);
     }
 
-    /// @dev Withdraw an `amount` of ETH to `owner` from the vault.
+    /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param owner of ETH.
     /// @param amount of ETH to withdraw.
-    function withdrawFrom(address payable owner, uint256 amount)
+    function withdraw(uint256 amount)
         external
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
     {
-        _withdrawFrom(owner, amount);
+        _withdrawFrom(msg.sender, amount);
     }
 
-    /// @dev Withdraw ALL ETH to `owner` from the vault.
-    /// Note that this can only be called when *in* Catostrophic Failure mode.
-    /// @param owner of ETH.
-    function withdrawAllFrom(address payable owner)
+    /// @dev Withdraw ALL ETH to `msg.sender` from the vault.
+    function withdrawAll()
         external
-        onlyInCatostrophicFailure
         returns (uint256)
     {
         // get total balance
+        address payable owner = msg.sender;
         uint256 totalBalance = balances[owner];
 
         // withdraw ETH to owner

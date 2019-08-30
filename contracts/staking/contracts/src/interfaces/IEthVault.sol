@@ -42,30 +42,27 @@ interface IEthVault {
         uint256 amount
     );
 
-    /// @dev Deposit an `amount` of Ether from `owner` into the vault.
+    /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param owner of Ether.
+    /// @param owner of ETH Tokens.
     function depositFor(address owner)
         external
         payable;
 
-    /// @dev Withdraw an `amount` of Ether to `owner` from the vault.
+    /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param owner of Ether.
-    /// @param amount of Ether to withdraw.
-    function withdrawFrom(address payable owner, uint256 amount)
+    /// @param amount of ETH to withdraw.
+    function withdraw(uint256 amount)
         external;
 
-    /// @dev Withdraw ALL Ether to `owner` from the vault.
-    /// Note that this can only be called when *in* Catostrophic Failure mode.
-    /// @param owner of Ether.
-    function withdrawAllFrom(address payable owner)
+    /// @dev Withdraw ALL ETH to `msg.sender` from the vault.
+    function withdrawAll()
         external
         returns (uint256);
 
-    /// @dev Returns the balance in Ether of the `owner`
+    /// @dev Returns the balance in ETH of the `owner`
     /// @return Balance in ETH.
     function balanceOf(address owner)
         external
