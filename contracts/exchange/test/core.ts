@@ -47,7 +47,6 @@ import {
     ExchangeWrapper,
     TestValidatorWalletContract,
     ValidatorWalletAction,
-    ValidatorWalletDataType,
 } from '../src';
 
 import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
@@ -267,7 +266,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
                     constants.NULL_BYTES,
                 );
@@ -276,7 +274,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Reject the signature check for the second fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
                     constants.NULL_BYTES,
                 );
@@ -300,7 +297,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
                     constants.NULL_BYTES,
                 );
@@ -309,7 +305,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Reject the signature check for the second fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
                     constants.NULL_BYTES,
                 );
@@ -333,7 +328,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
                     constants.NULL_BYTES,
                 );
@@ -342,7 +336,6 @@ blockchainTests.resets('Exchange core', () => {
                 // Reject the signature check for the second fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
                     constants.NULL_BYTES,
                 );

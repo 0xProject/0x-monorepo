@@ -29,7 +29,7 @@ import {
     TestValidatorWalletContract,
 } from '../src';
 
-import { ValidatorWalletAction, ValidatorWalletDataType } from './utils';
+import { ValidatorWalletAction } from './utils';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('MixinSignatureValidator', env => {
@@ -333,7 +333,6 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             if (validatorAction !== undefined) {
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     _hashHex,
-                    ValidatorWalletDataType.None,
                     validatorAction,
                     expectedSignatureHashHex,
                 );
@@ -458,7 +457,6 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             if (validatorAction !== undefined) {
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
-                    ValidatorWalletDataType.Order,
                     validatorAction,
                     expectedSignatureHashHex,
                 );
@@ -755,7 +753,6 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             if (validatorAction !== undefined) {
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     transactionHashHex,
-                    ValidatorWalletDataType.ZeroExTransaction,
                     validatorAction,
                     expectedSignatureHashHex,
                 );
