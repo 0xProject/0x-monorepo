@@ -48,7 +48,7 @@ const settings: ObjectMap<IAlgoliaSettings> = {
     },
     tools: {
         ...sharedSettings,
-        attributesForFaceting: ['type', 'tags', 'difficulty', 'isCommunity'],
+        attributesForFaceting: ['type', 'tags', 'difficulty'],
     },
 };
 

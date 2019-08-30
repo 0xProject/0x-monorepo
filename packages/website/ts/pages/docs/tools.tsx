@@ -124,10 +124,4 @@ const filters = [
     { attribute: 'type', heading: 'Type' },
     { attribute: 'tags', heading: 'Developer Persona' },
     { attribute: 'difficulty', heading: 'Level' },
-    {
-        attribute: 'isCommunity',
-        heading: 'Community maintained',
-        hiddenLabels: ['false'],
-        customLabels: { true: 'Only community maintained' },
-    },
 ];
