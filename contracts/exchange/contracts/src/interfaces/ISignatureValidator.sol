@@ -48,7 +48,8 @@ contract ISignatureValidator {
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
     /// @param hash Any 32-byte hash.
     function preSign(bytes32 hash)
-        external;
+        external
+        payable;
 
     /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
     /// @param validatorAddress Address of Validator contract.
@@ -57,7 +58,8 @@ contract ISignatureValidator {
         address validatorAddress,
         bool approval
     )
-        external;
+        external
+        payable;
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32-byte hash.

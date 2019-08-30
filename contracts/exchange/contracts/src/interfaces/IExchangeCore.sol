@@ -64,7 +64,8 @@ contract IExchangeCore {
     ///      and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
-        external;
+        external
+        payable;
 
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
@@ -83,7 +84,8 @@ contract IExchangeCore {
     /// @dev After calling, the order can not be filled anymore.
     /// @param order Order struct containing order specifications.
     function cancelOrder(LibOrder.Order memory order)
-        public;
+        public
+        payable;
 
     /// @dev Gets information about an order: status, hash, and amount filled.
     /// @param order Order to gather information on.

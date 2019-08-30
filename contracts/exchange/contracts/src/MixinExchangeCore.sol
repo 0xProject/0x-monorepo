@@ -61,7 +61,9 @@ contract MixinExchangeCore is
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
+        payable
         nonReentrant
+        refundFinalBalance
     {
         address makerAddress = _getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
@@ -119,7 +121,9 @@ contract MixinExchangeCore is
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
     function cancelOrder(LibOrder.Order memory order)
         public
+        payable
         nonReentrant
+        refundFinalBalance
     {
         _cancelOrder(order);
     }

@@ -182,9 +182,6 @@ blockchainTests('Exchange core internal functions', env => {
                 gasPrice,
             );
             const expectedFilledState = orderTakerAssetFilledAmount.plus(takerAssetFillAmount);
-            // const opts = isProtocolFeePaidInEth
-            //    ? { value: fillResults.protocolFeePaid }
-            //    : { value: constants.ZERO_AMOUNT };
             // CAll `testUpdateFilledState()`, which will set the `filled`
             // state for this order to `orderTakerAssetFilledAmount` before
             // calling `_updateFilledState()`.

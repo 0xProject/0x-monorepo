@@ -1043,7 +1043,6 @@ blockchainTests.resets('Exchange transactions', env => {
                         cancelTransaction.salt,
                         cancelTransaction.expirationTimeSeconds,
                         cancelTransaction.signature,
-                        // { from: makerAddress },
                         { from: makerAddress },
                     );
 

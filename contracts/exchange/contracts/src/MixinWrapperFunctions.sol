@@ -331,7 +331,9 @@ contract MixinWrapperFunctions is
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
+        payable
         nonReentrant
+        refundFinalBalance
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {

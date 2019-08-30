@@ -48,13 +48,6 @@ export class FillOrderWrapper {
         takerAddress: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
         initBalanceStore: BalanceStore,
-        // stakingOpts: {
-        //     gasPrice: BigNumber;
-        //     messageValue: BigNumber;
-        //     protocolFeeMultiplier: BigNumber;
-        //     stakingAddress: string;
-        //     wethAddress: string;
-        // },
     ): [FillResults, FillEventArgs, BalanceStore] {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =

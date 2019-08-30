@@ -155,7 +155,8 @@ contract IWrapperFunctions {
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
-        public;
+        public
+        payable;
 
     /// @dev Fetches information for all passed in orders
     /// @param orders Array of order specifications.
