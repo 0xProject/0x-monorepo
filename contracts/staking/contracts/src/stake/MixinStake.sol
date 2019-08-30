@@ -49,99 +49,116 @@ contract MixinStake is
 
     using LibSafeMath for uint256;
 
-    /// @dev Deposit Zrx and mint stake in the activated stake.
-    /// This is a convenience function, and can be used in-place of
-    /// calling `depositZrxAndMintDeactivatedStake` and `activateStake`.
-    /// This mints stake for the sender that is in the "Activated" state.
-    /// @param amount of Zrx to deposit / Stake to mint.
+    /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.
+    ///      Stake is in the 'Active' state.
+    /// @param amount of ZRX to stake.
     function stake(uint256 amount)
         external
     {
+        address payable owner = msg.sender;
+
         // deposit equivalent amount of ZRX into vault
-        _depositFromOwnerIntoZrxVault(msg.sender, amount);
+        _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
-        _mintBalance(activeStakeByOwner[msg.sender], amount);
+        _mintBalance(activeStakeByOwner[owner], amount);
 
-        // emit stake event
-        emit StakeMinted(
-            msg.sender,
+        // notify
+        emit Stake(
+            owner,
             amount
         );
     }
 
+    /// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to the owner.
+    ///      Stake must be in the 'inactive' state for at least one full epoch to unstake.
+    /// @param amount of ZRX to unstake.
     function unstake(uint256 amount)
         external
     {
+        address payable owner = msg.sender;
+
         // sanity check
-        uint256 currentWithdrawableStake = getWithdrawableStake(msg.sender);
+        uint256 currentWithdrawableStake = getWithdrawableStake(owner);
         require(
             amount <= currentWithdrawableStake,
-            "CANNOT_WITHDRAW"
+            "INSUFFICIENT_FUNDS"
         );
 
-        // burn stake
-        _burnBalance(inactiveStakeByOwner[msg.sender], amount);
+        // burn inactive stake
+        _burnBalance(inactiveStakeByOwner[owner], amount);
 
         // update withdrawable field
-        withdrawableStakeByOwner[msg.sender] = currentWithdrawableStake._sub(amount);
+        withdrawableStakeByOwner[owner] = currentWithdrawableStake._sub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        _withdrawToOwnerFromZrxVault(msg.sender, amount);
+        _withdrawToOwnerFromZrxVault(owner, amount);
 
         // emit stake event
-        emit StakeBurned(
-            msg.sender,
+        emit Unstake(
+            owner,
             amount
         );
     }
 
+    /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
+    /// @param from state to move stake out of.
+    /// @param to state to move stake into.
+    /// @param amount of stake to move.
     function moveStake(IStructs.StakeState calldata from, IStructs.StakeState calldata to, uint256 amount)
         external
     {
+        // sanity check - do nothing if moving stake between the same state
         if (from.id != IStructs.StakeStateId.DELEGATED && from.id == to.id) {
             return;
         } else if(from.id == IStructs.StakeStateId.DELEGATED && from.poolId == to.poolId) {
             return;
         }
 
+        address payable owner = msg.sender;
+
+        // handle delegation; this must be done before moving stake as the current
+        // (out-of-sync) state is used during delegation.
         if (from.id == IStructs.StakeStateId.DELEGATED) {
             _undelegateStake(
                 from.poolId,
-                msg.sender,
+                owner,
                 amount
             );
-        } else if (from.id == IStructs.StakeStateId.INACTIVE) {
-            // update withdrawable field
-            withdrawableStakeByOwner[msg.sender] = getWithdrawableStake(msg.sender);
         }
 
         if (to.id == IStructs.StakeStateId.DELEGATED) {
             _delegateStake(
                 to.poolId,
-                msg.sender,
+                owner,
                 amount
             );
         }
 
+        // cache the current withdrawal state if we're moving out of the inactive state.
+        uint256 cachedWithdrawableStakeByOwner = (from.id == IStructs.StakeStateId.INACTIVE)
+            ? getWithdrawableStake(owner)
+            : 0;
+
+        // execute move
         IStructs.StoredStakeBalance storage fromPtr = _getBalancePtrFromState(from);
         IStructs.StoredStakeBalance storage toPtr = _getBalancePtrFromState(to);
         _moveStake(fromPtr, toPtr, amount);
 
+        // update withdrawable field, if necessary
         if (from.id == IStructs.StakeStateId.INACTIVE) {
-            // update withdrawable field
-            withdrawableStakeByOwner[msg.sender] = getWithdrawableStake(msg.sender);
+            withdrawableStakeByOwner[owner] = _computeWithdrawableStake(owner, cachedWithdrawableStakeByOwner);
         }
 
-
-        /*
-            emit StakeMoved(
-                getCurrentEpoch(),
-                owner,
-                fromState.id,
-                toState.id,
-            );
-        */
+        // notify
+        emit MoveStake(
+            owner,
+            amount,
+            uint8(from.id),
+            from.poolId,
+            uint8(to.id),
+            to.poolId
+        );
     }
 
     function _getBalancePtrFromState(IStructs.StakeState memory state)
@@ -166,7 +183,7 @@ contract MixinStake is
     )
         private
     {
-       syncRewardBalanceOfStakingPoolMember(poolId, owner);
+       _syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -182,7 +199,7 @@ contract MixinStake is
     )
         private
     {
-        syncRewardBalanceOfStakingPoolMember(poolId, owner);
+        _syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
