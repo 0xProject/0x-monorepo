@@ -43,7 +43,7 @@ export class FixedMathBinOpError extends RevertError {
     }
 }
 
-const types = [ FixedMathSignedValueError, FixedMathUnsignedValueError, FixedMathBinOpError ];
+const types = [FixedMathSignedValueError, FixedMathUnsignedValueError, FixedMathBinOpError];
 
 // Register the types we've defined.
 for (const type of types) {

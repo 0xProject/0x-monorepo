@@ -1,12 +1,7 @@
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import {
-    AnyRevertError,
-    RawRevertError,
-    RevertError,
-    StringRevertError,
-} from '../src/revert_error';
+import { AnyRevertError, RawRevertError, RevertError, StringRevertError } from '../src/revert_error';
 
 import { chaiSetup } from './utils/chai_setup';
 
