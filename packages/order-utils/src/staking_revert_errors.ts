@@ -197,11 +197,10 @@ export class PoolAlreadyExistsError extends RevertError {
 
 export class InvalidCobbDouglasAlphaError extends RevertError {
     constructor(numerator: BigNumber | number | string, denominator: BigNumber | number | string) {
-        super(
-            'InvalidCobbDouglasAlphaError',
-            'InvalidCobbDouglasAlphaError(uint256 numerator, uint256 denominator)',
-            { numerator, denominator },
-        );
+        super('InvalidCobbDouglasAlphaError', 'InvalidCobbDouglasAlphaError(uint256 numerator, uint256 denominator)', {
+            numerator,
+            denominator,
+        });
     }
 }
 
