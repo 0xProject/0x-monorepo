@@ -53,8 +53,9 @@ contract MixinExchangeFees is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakeStorage,
-    MixinStakingPool,
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinStakingPoolRewards,
+    MixinStakingPool
 {
 
     using LibSafeMath for uint256;
@@ -220,11 +221,11 @@ contract MixinExchangeFees is
             // NOTE THIS SHOULD BE THE DELEGATOR PORTION OF REWARD @TODO
             if (activePools[i].delegatedStake == 0) {
                 // @TODO fees go to operator
-            } else {
-                uint256 lastKnownEpoch = rewardRatioSumsLastUpdated[activePools[i].poolId];
-                rewardRatioSums[activePools[i].poolId][epoch].numerator = (rewardRatioSums[activePools[i].poolId][lastKnownEpoch].numerator * activePools[i].delegatedStake + reward * rewardRatioSums[activePools[i].poolId][lastKnownEpoch].denominator) / 10**18;
-                rewardRatioSums[activePools[i].poolId][epoch].denominator = (rewardRatioSums[activePools[i].poolId][lastKnownEpoch].denominator * activePools[i].delegatedStake) / 10**18;
-                rewardRatioSumsLastUpdated[activePools[i].poolId] = epoch;
+            } else if (currentEpoch > 0) {
+                uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[activePools[i].poolId];
+                cumulativeRewardsByPool[activePools[i].poolId][epoch].numerator = (cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].numerator * activePools[i].delegatedStake + reward * cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].denominator) / 10**18;
+                cumulativeRewardsByPool[activePools[i].poolId][epoch].denominator = (cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].denominator * activePools[i].delegatedStake) / 10**18;
+                cumulativeRewardsByPoolLastStored[activePools[i].poolId] = epoch;
             }
 
             // record reward in vault
@@ -276,11 +277,11 @@ contract MixinExchangeFees is
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
             bytes32 poolId = rewards[i].poolId;
 
-            uint256 lastKnownEpoch = rewardRatioSumsLastUpdated[poolId];
+            uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[poolId];
             if (totalStakeDelegatedToPool != 0) {
-                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[poolId][lastKnownEpoch].denominator) / 10**18;
-                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
-                rewardRatioSumsLastUpdated[poolId] = epoch;
+                cumulativeRewardsByPool[poolId][epoch].numerator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator) / 10**18;
+                cumulativeRewardsByPool[poolId][epoch].denominator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
+                cumulativeRewardsByPoolLastStored[poolId] = epoch;
             }
 
             // record reward in vault

@@ -79,8 +79,6 @@ interface IStructs {
     struct ND {
         uint256 numerator;
         uint256 denominator;
-        uint128 carry;
-        uint128 referenceCounter;
     }
 
     struct StakeState {

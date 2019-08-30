@@ -28,6 +28,7 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakingPoolRewardVault.sol";
+import "./MixinStakingPoolRewards.sol";
 
 
 /// @dev This mixin contains logic for staking pools.
@@ -61,7 +62,11 @@ contract MixinStakingPool is
     MixinStorage,
     MixinScheduler,
     MixinOwnable,
-    MixinStakingPoolRewardVault
+    MixinStakingPoolRewardVault,
+    MixinZrxVault,
+    MixinStakeStorage,
+    MixinStakeBalances,
+    MixinStakingPoolRewards
 {
 
     using LibSafeMath for uint256;
@@ -111,12 +116,9 @@ contract MixinStakingPool is
         });
         poolById[poolId] = pool;
 
-        // @TODO prettify
-        uint256 epoch = getCurrentEpoch();
-        rewardRatioSums[poolId][epoch].numerator = 0;
-        rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
-        rewardRatioSums[poolId][epoch].carry = 0;
-        rewardRatioSumsLastUpdated[poolId] = epoch;
+        // initialize cumulative rewards for this pool;
+        // this is used to track rewards earned by delegators.
+        _initializeCumulativeRewards(poolId);
 
         // register pool in reward vault
         rewardVault.registerStakingPool(poolId, operatorShare);

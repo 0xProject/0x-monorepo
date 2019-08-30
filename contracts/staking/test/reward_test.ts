@@ -30,7 +30,7 @@ import { TestRewardBalancesContract } from '../src';
 import { artifacts } from '../src';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Testing Rewards', () => {
+blockchainTests.resets.skip('Testing Rewards', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);

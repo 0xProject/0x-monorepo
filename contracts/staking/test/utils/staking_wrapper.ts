@@ -487,12 +487,12 @@ export class StakingWrapper {
     }
     ///// REWARDS /////
     public async computeRewardBalanceOfStakingPoolMemberAsync(poolId: string, owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIEncodedTransactionData(
+        const calldata = this.getStakingContract().computeRewardBalanceOfDelegator.getABIEncodedTransactionData(
             poolId,
             owner,
         );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIDecodedReturnData(
+        const value = this.getStakingContract().computeRewardBalanceOfDelegator.getABIDecodedReturnData(
             returnData,
         );
         return value;

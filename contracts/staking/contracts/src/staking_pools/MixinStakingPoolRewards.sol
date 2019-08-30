@@ -25,7 +25,6 @@ import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../stake/MixinStakeBalances.sol";
 import "./MixinStakingPoolRewardVault.sol";
-import "./MixinStakingPool.sol";
 
 
 contract MixinStakingPoolRewards is
@@ -39,7 +38,6 @@ contract MixinStakingPoolRewards is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakeStorage,
-    MixinStakingPool,
     MixinStakeBalances
 {
 
@@ -49,7 +47,7 @@ contract MixinStakingPoolRewards is
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
     /// @return Balance in ETH.
-    function computeRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
+    function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
         public
         view
         returns (uint256)
@@ -77,12 +75,12 @@ contract MixinStakingPoolRewards is
         // compute the rewards accumulated by the `next` balance;
         // this starts at `lastStored + 1` and goes up until the last epoch, during which
         // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored)
+        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > delegatedStake.lastStored)
             ? _computeMemberRewardOverInterval(
                 poolId,
                 delegatedStake.next,
                 delegatedStake.lastStored,
-                rewardRatioSumsLastUpdated[poolId]
+                cumulativeRewardsByPoolLastStored[poolId]
             )
             : 0;
 
@@ -107,8 +105,8 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
-        IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
+        IStructs.ND memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
+        IStructs.ND memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
         uint256 reward = LibSafeMath._scaleFractionalDifference(
             endRatio.numerator,
             endRatio.denominator,
@@ -127,37 +125,26 @@ contract MixinStakingPoolRewards is
     function _transferDelegatorsAccumulatedRewardsToEthVault(bytes32 poolId, address member)
         internal
     {
-        // there are no delegators in the first epoch
         uint256 currentEpoch = getCurrentEpoch();
+
+
+        // there are no delegators in the first epoch
+
         if (currentEpoch == 0) {
             return;
         }
 
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
 
-        uint256 lastEpoch = currentEpoch._sub(1); // ie, most recently finalized epoch.
-        if (rewardRatioSumsLastUpdated[poolId] != lastEpoch) {
-            if (rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]].denominator == 0) {
-                revert('naaaaah');
-            }
+        //
 
-            rewardRatioSums[poolId][getCurrentEpoch() - 1] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
-            rewardRatioSumsLastUpdated[poolId] = getCurrentEpoch() - 1;
-        }
-
-        // just in case
-        // also set this epoch's ; it'll be overwritten if fees come in.
-
-
-        if (rewardRatioSums[poolId][getCurrentEpoch()].denominator == 0) {
-            rewardRatioSums[poolId][getCurrentEpoch()] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
-        }
 
         if (delegatedStakeToPoolByOwner[member][poolId].lastStored == getCurrentEpoch()) {
             // already in sync
             return;
         }
 
-        uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
+        uint256 balance = computeRewardBalanceOfDelegator(poolId, member);
         if (balance == 0) {
             return;
         }
@@ -167,10 +154,61 @@ contract MixinStakingPoolRewards is
         rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
     }
 
-    function _syncCumulativeRewardsForPool()
+    /// @dev Initializes Cumulative Rewards for a given pool.
+    function _initializeCumulativeRewards(bytes32 poolId)
+        internal
+    {
+        uint256 currentEpoch = getCurrentEpoch();
+        cumulativeRewardsByPool[poolId][currentEpoch] = IStructs.ND({numerator: 0, denominator: MIN_TOKEN_VALUE});
+        cumulativeRewardsByPoolLastStored[poolId] = currentEpoch;
+    }
+
+    /// @dev To compute a delegator's reward we must know the cumulative reward
+    ///      at the epoch before they delegated. If they were already delegated then
+    ///      we also need to know the value at the epoch in which they modified
+    ///      their delegated stake for this pool. See `computeRewardBalanceOfDelegator`.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch at which the stake was delegated by the delegator.
+    function _syncCumulativeRewardsNeededByDelegator(bytes32 poolId, uint256 epoch)
         private
     {
+        // set default value if staking at epoch 0
+        if (epoch == 0) {
+            return;
+        }
 
+        // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
+        mapping (uint256 => IStructs.ND) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+
+        // fetch the last epoch at which we stored an entry for this pool;
+        // this is the most up-to-date cumulative rewards for this pool.
+        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
+        IStructs.ND memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
+
+        // copy our most up-to-date cumulative rewards for last epoch, if necessary.
+        uint256 lastEpoch = currentEpoch._sub(1);
+        if (cumulativeRewardsLastStored != lastEpoch) {
+            cumulativeRewardsByPoolPtr[lastEpoch] = mostRecentCumulativeRewards;
+            cumulativeRewardsByPoolLastStored[poolId] = lastEpoch;
+        }
+
+        // copy our most up-to-date cumulative rewards for last epoch, if necessary.
+        // this is necessary if the pool does not earn any rewards this epoch;
+        // if it does then this value may be overwritten when the epoch is finalized.
+        if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[epoch])) {
+            cumulativeRewardsByPoolPtr[epoch] = mostRecentCumulativeRewards;
+        }
+    }
+
+    /// @dev returns true iff Cumulative Rewards are set
+    function _isCumulativeRewardSet(IStructs.ND memory nd)
+        private
+        returns (bool)
+    {
+        // we use the denominator as a proxy for whether the cumulative
+        // reward is set, as setting the cumulative reward always sets this
+        // field to at least 1.
+        return nd.denominator != 0;
     }
 
 /*

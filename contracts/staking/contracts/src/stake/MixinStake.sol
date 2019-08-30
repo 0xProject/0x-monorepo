@@ -44,7 +44,6 @@ contract MixinStake is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakeStorage,
-    MixinStakingPool,
     MixinStakeBalances,
     MixinStakingPoolRewards
 {

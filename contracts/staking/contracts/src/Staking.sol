@@ -44,11 +44,11 @@ contract Staking is
     MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakeStorage,
-    MixinStakingPool,
     MixinStakeBalances,
     MixinStakingPoolRewards,
-    MixinExchangeFees,
-    MixinStake
+    MixinStake,
+    MixinStakingPool,
+    MixinExchangeFees
 {
 
     // this contract can receive ETH
