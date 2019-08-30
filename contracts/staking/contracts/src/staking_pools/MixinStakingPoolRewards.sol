@@ -138,8 +138,7 @@ contract MixinStakingPoolRewards is
         }
 
         // transfer from transient Reward Pool vault to ETH Vault
-        require(address(rewardVault) != address(0), 'eyo');
-        rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
+        _transferMemberBalanceToEthVault(poolId, member, balance);
     }
 
     /// @dev Initializes Cumulative Rewards for a given pool.

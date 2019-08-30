@@ -76,4 +76,22 @@ contract MixinStakingPoolRewardVault is
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
         rewardVaultAddress.transfer(amount);
     }
+
+    /// @dev Transfer from transient Reward Pool vault to ETH Vault.
+    /// @param poolId Unique Id of pool.
+    /// @param member of pool to transfer ETH to.
+    /// @param amount The amount in ETH to transfer.
+    function _transferMemberBalanceToEthVault(
+        bytes32 poolId,
+        address member,
+        uint256 amount
+    )
+        internal
+    {
+        require(
+            address(rewardVault) != NIL_ADDRESS,
+            "REWARD_VAULT_NOT_SET"
+        );
+        rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
+    }
 }
