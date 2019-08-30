@@ -57,16 +57,16 @@
         "0x-cheat-sheet": {
             "title": "0x Cheat Sheet",
             "description": "All the information you look up often when building on 0x (e.g., deployed contract addresses)",
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
+            "topics": ["Relayer", "Trading", "Protocol Developer"],
             "difficulty": "Beginner",
             "path": "guides/0x-cheat-sheet.mdx"
         },
         "ganache-setup": {
             "title": "How to Set Up Ganache",
             "description": "",
-            "tags": ["Testing", "Relayer", "Protocol Developer", "Trader"],
-            "topics": ["Testing", "Relayer", "Protocol Developer", "Trader"],
+            "tags": ["Testing", "Relayer", "Protocol Developer", "Trading"],
+            "topics": ["Testing", "Relayer", "Protocol Developer", "Trading"],
             "difficulty": "Beginner",
             "path": "guides/ganache-setup.mdx"
         },
@@ -98,19 +98,19 @@
         "using-the-standard-relayer-api": {
             "title": "How to use the Standard Relayer API",
             "description": "This guide will show you how to use the @0x/connect package to connect to a Relayer adhering to the Standard Relayer API",
-            "tags": ["Relayer", "Trader"],
-            "topics": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
+            "topics": ["Relayer", "Trading"],
             "difficulty": "Intermediate",
             "path": "guides/using-the-standard-relayer-api.mdx"
         },
         "v2-coordinatior-specification": {
             "title": "0x Coordinator Specification (v2)",
             "description": "A comprehensive technical spec of the first coordinator model developer by the 0x core team (soft-cancel variant)",
-            "tags": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Coordinator", "Relayer", "Trading", "Protocol Developer"],
             "topics": [
                 "Coordinator",
                 "Relayer",
-                "Trader",
+                "Trading",
                 "Protocol Developer"
             ],
             "difficulty": "Advanced",
@@ -127,32 +127,32 @@
         "v2-specification": {
             "title": "0x Protocol Specification (v2)",
             "description": "A comprehensive, technical specification of the 0x protocol useful for anyone trying to understand how the protocol works in precise detail.",
-            "tags": ["Specs", "Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Specs", "Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Specs", "Relayer", "Trading", "Protocol Developer"],
+            "topics": ["Specs", "Relayer", "Trading", "Protocol Developer"],
             "difficulty": "Advanced",
             "path": "guides/v2-specification.mdx"
         },
         "web3-provider-explained": {
             "title": "Web3 Providers Explained",
             "description": "Learn more about what an Web3 Provider is and how it enables your dApp to communicate with the Ethereum blockchain and request transaction signatures from users.",
-            "tags": ["Relayer", "Trader"],
-            "topics": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
+            "topics": ["Relayer", "Trading"],
             "difficulty": "Beginner",
             "path": "guides/web3-provider-explained.mdx"
         },
         "market-making-on-0x": {
             "title": "Market-making on 0x",
             "description": "Learn how to market-make on 0x, and what the differences are between trading on a CEX vs. DEX",
-            "tags": ["Trader"],
-            "topics": ["Trader"],
+            "tags": ["Trading"],
+            "topics": ["Trading"],
             "difficulty": "Beginner",
             "path": "guides/market-making-on-0x.mdx"
         },
         "0x-extensions-explained": {
             "title": "0x Extensions Explained",
             "description": "Learn about how you can extend 0x protocol with your own custom extensions adding white-listing, dutch auction mechanics and much more to 0x.",
-            "tags": ["Relayer", "Trader", "Extensions"],
-            "topics": ["Relayer", "Trader", "Extensions"],
+            "tags": ["Relayer", "Trading", "Extensions"],
+            "topics": ["Relayer", "Trading", "Extensions"],
             "difficulty": "Advanced",
             "path": "guides/0x-extensions-explained.mdx"
         },
@@ -173,7 +173,7 @@
             "difficulty": "Intermediate",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Protocol Developer"],
+            "tags": ["Trading", "Protocol Developer"],
             "type": "Typescript Libraries",
             "path": "tools/@0x/asset-swapper/v1.0.2/reference.mdx",
             "versions": ["v1.0.2"]
@@ -184,7 +184,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Relayer", "Protocol Developer"],
+            "tags": ["Trading", "Relayer", "Protocol Developer"],
             "type": "Typescript Libraries",
             "path": "tools/0x.js/v7.0.0/reference.mdx",
             "versions": ["v7.0.0"]
@@ -195,7 +195,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Relayer"],
+            "tags": ["Trading", "Relayer"],
             "type": "Typescript Libraries",
             "path": "tools/@0x/connect/v5.0.17/reference.mdx",
             "versions": ["v5.0.17"]
@@ -206,7 +206,7 @@
             "difficulty": "Intermediate",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "Typescript Libraries",
             "path": "tools/@0x/subproviders/v5.0.2/reference.mdx",
             "versions": ["v5.0.2"]
@@ -217,7 +217,7 @@
             "difficulty": "Intermediate",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Protocol Developer"],
+            "tags": ["Trading", "Protocol Developer"],
             "type": "Typescript Libraries",
             "path": "tools/@0x/asset-buyer/v6.1.12/reference.mdx",
             "versions": ["v6.1.12"],
@@ -241,7 +241,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Relayer"],
+            "tags": ["Trading", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
             "path": "tools/@0x/contract-wrappers/v11.1.0/reference.mdx",
@@ -253,7 +253,7 @@
             "difficulty": "Intermediate",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Relayer"],
+            "tags": ["Trading", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
             "path": "tools/@0x/json-schemas/v4.0.0/reference.mdx",
@@ -265,7 +265,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Trader", "Relayer"],
+            "tags": ["Trading", "Relayer"],
             "type": "Typescript Libraries",
             "isHidden": true,
             "path": "tools/@0x/order-utils/v8.3.0/reference.mdx",
@@ -328,7 +328,7 @@
             "difficulty": "Intermediate",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "Typescript Libraries",
             "isHidden": true,
             "path": "tools/@0x/web3-wrapper/v6.0.11/reference.mdx",
@@ -341,7 +341,7 @@
             "externalUrl": "https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "Typescript Libraries"
         },
         "radar-relay-sdk": {
@@ -351,7 +351,7 @@
             "externalUrl": "https://developers.radarrelay.com/libraries/sdk",
             "isCommunity": true,
             "isFeatured": false,
-            "tags": ["Trader"],
+            "tags": ["Trading"],
             "type": "Typescript Libraries"
         },
         "tokenlon-sdk": {
@@ -361,7 +361,7 @@
             "externalUrl": "https://www.npmjs.com/package/tokenlon-sdk",
             "isCommunity": true,
             "isFeatured": false,
-            "tags": ["Trader"],
+            "tags": ["Trading"],
             "type": "Typescript Libraries"
         },
         "ganache-cli": {
@@ -370,7 +370,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Docker Images",
             "externalUrl": "https://hub.docker.com/r/0xorg/ganache-cli"
         },
@@ -390,7 +390,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Docker Images",
             "externalUrl": "https://hub.docker.com/r/0xorg/mesh"
         },
@@ -400,7 +400,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Python Libraries",
             "externalUrl": "http://0x-contract-wrappers-py.s3-website-us-east-1.amazonaws.com/"
         },
@@ -410,7 +410,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Python Libraries",
             "externalUrl": "http://0x-order-utils-py.s3-website-us-east-1.amazonaws.com/"
         },
@@ -420,7 +420,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "Python Libraries",
             "externalUrl": "http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/"
         },
@@ -440,7 +440,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "Golang Libraries",
             "externalUrl": "https://godoc.org/github.com/0xProject/0x-mesh/rpc#Client"
         },
@@ -470,7 +470,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Starter Projects",
             "externalUrl": "https://github.com/0xProject/0x-starter-project"
         },
@@ -480,7 +480,7 @@
             "difficulty": "Beginner",
             "isCommunity": false,
             "isFeatured": true,
-            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "tags": ["Relayer", "Trading", "Protocol Developer"],
             "type": "Starter Projects",
             "externalUrl": "https://codesandbox.io/s/github/0xproject/0x-codesandbox"
         },
@@ -511,7 +511,7 @@
             "difficulty": "Intermediate",
             "isCommunity": true,
             "isFeatured": false,
-            "tags": ["Relayer", "Trader"],
+            "tags": ["Relayer", "Trading"],
             "type": "CLI",
             "externalUrl": "https://github.com/NoteGio/massive"
         },
