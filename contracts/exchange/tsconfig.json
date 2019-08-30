@@ -6,6 +6,7 @@
         "generated-artifacts/Exchange.json",
         "generated-artifacts/IAssetProxy.json",
         "generated-artifacts/IAssetProxyDispatcher.json",
+        "generated-artifacts/IEIP1271Data.json",
         "generated-artifacts/IEIP1271Wallet.json",
         "generated-artifacts/IExchange.json",
         "generated-artifacts/IExchangeCore.json",

@@ -30,6 +30,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
 import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/IEIP1271Data.sol";
 import "./MixinTransactions.sol";
 
 
@@ -221,7 +222,7 @@ contract MixinSignatureValidator is
             // The entire order is verified by a validator contract.
             isValid = _validateBytesWithValidator(
                 abi.encodeWithSelector(
-                    IEIP1271Wallet(address(0)).OrderWithHash.selector,
+                    IEIP1271Data(address(0)).OrderWithHash.selector,
                     order,
                     orderHash
                 ),
@@ -233,7 +234,7 @@ contract MixinSignatureValidator is
             // The entire order is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
                 abi.encodeWithSelector(
-                    IEIP1271Wallet(address(0)).OrderWithHash.selector,
+                    IEIP1271Data(address(0)).OrderWithHash.selector,
                     order,
                     orderHash
                 ),
@@ -277,7 +278,7 @@ contract MixinSignatureValidator is
             // The entire transaction is verified by a validator contract.
             isValid = _validateBytesWithValidator(
                 abi.encodeWithSelector(
-                    IEIP1271Wallet(address(0)).ZeroExTransactionWithHash.selector,
+                    IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
                     transaction,
                     transactionHash
                 ),
@@ -289,7 +290,7 @@ contract MixinSignatureValidator is
             // The entire transaction is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
                 abi.encodeWithSelector(
-                    IEIP1271Wallet(address(0)).ZeroExTransactionWithHash.selector,
+                    IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
                     transaction,
                     transactionHash
                 ),

@@ -17,24 +17,31 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
-contract IEIP1271Wallet is
-    LibEIP1271
-{
-    /// @dev Verifies that a signature is valid.
-    /// @param data Arbitrary data.
-    /// @param signature Signature of `data`.
-    /// @return magicValue .
-    function isValidSignature(
-        bytes calldata data,
-        bytes calldata signature
+contract IEIP1271Data {
+
+    /// @dev This function's selector is used when ABI encoding the order
+    ///      and hash into a byte array before calling `isValidSignature`.
+    ///      This function serves no other purpose.
+    function OrderWithHash(
+        LibOrder.Order calldata order,
+        bytes32 orderHash
     )
         external
-        view
-        returns (bytes4 magicValue);
+        pure;
+    
+    /// @dev This function's selector is used when ABI encoding the transaction
+    ///      and hash into a byte array before calling `isValidSignature`.
+    ///      This function serves no other purpose.
+    function ZeroExTransactionWithHash(
+        LibZeroExTransaction.ZeroExTransaction calldata transaction,
+        bytes32 transactionHash
+    )
+        external
+        pure;
 }
