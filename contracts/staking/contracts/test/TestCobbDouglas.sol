@@ -46,4 +46,13 @@ contract TestCobbDouglas is
             alphaDenominator
         );
     }
+
+    function getCobbDouglasAlpha()
+        external
+        view
+        returns (uint256 numerator, uint256 denominator)
+    {
+        numerator = cobbDouglasAlphaNumerator;
+        denominator = cobbDouglasAlphaDenomintor;
+    }
 }

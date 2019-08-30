@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { artifacts, TestLibFixedMathContract } from '../src/';
 
-Decimal.set({ precision: 128 });
+import { assertRoughlyEquals, Numberish } from './utils/number_utils';
 
 blockchainTests('LibFixedMath', env => {
     let testContract: TestLibFixedMathContract;
@@ -29,8 +29,6 @@ blockchainTests('LibFixedMath', env => {
     const MIN_LN_NUMBER = new BigNumber(new Decimal(MIN_EXP_NUMBER.toFixed(128)).exp().toFixed(128));
     const FUZZ_COUNT = 1024;
 
-    type Numberish = BigNumber | string | number;
-
     function fromFixed(n: Numberish): BigNumber {
         return new BigNumber(n).dividedBy(FIXED_POINT_DIVISOR);
     }
@@ -43,30 +41,6 @@ blockchainTests('LibFixedMath', env => {
         return fromFixed(toFixed(n));
     }
 
-    function add(a: Numberish, b: Numberish): BigNumber {
-        return fromFixed(toFixed(a).plus(toFixed(b)));
-    }
-
-    function sub(a: Numberish, b: Numberish): BigNumber {
-        return fromFixed(toFixed(a).minus(toFixed(b)));
-    }
-
-    function mul(a: Numberish, b: Numberish): BigNumber {
-        return fromFixed(toFixed(a).times(toFixed(b)).dividedToIntegerBy(FIXED_POINT_DIVISOR));
-    }
-
-    function div(a: Numberish, b: Numberish): BigNumber {
-        return fromFixed(toFixed(a).times(FIXED_POINT_DIVISOR).dividedBy(toFixed(b)));
-    }
-
-    function ln(x: Numberish): BigNumber {
-        return new BigNumber(toDecimal(x).ln().toFixed(128));
-    }
-
-    function exp(x: Numberish): BigNumber {
-        return new BigNumber(toDecimal(x).exp().toFixed(128));
-    }
-
     function toDecimal(x: Numberish): Decimal {
         if (BigNumber.isBigNumber(x)) {
             return new Decimal(x.toString(10));
@@ -74,34 +48,12 @@ blockchainTests('LibFixedMath', env => {
         return new Decimal(x);
     }
 
-    function getRandomNumber(min: Numberish, max: Numberish): BigNumber {
-        const range = new BigNumber(max).minus(min);
-        const random = fromFixed(new BigNumber(hexRandom().substr(2), 16));
-        return random.mod(range).plus(min);
+    function assertFixedEquals(actualFixed: Numberish, expected: Numberish): void {
+        expect(fromFixed(actualFixed)).to.bignumber.eq(numberToFixedToNumber(expected));
     }
 
-    function toPrecision(n: Numberish, precision: number = 13): BigNumber {
-        const _n = new BigNumber(n);
-        const integerDigits = _n.integerValue().sd(true);
-        const base = 10 ** (precision - integerDigits);
-        return _n.times(base).integerValue(BigNumber.ROUND_HALF_FLOOR).dividedBy(base);
-    }
-
-    function assertFixedEquals(
-        actual: Numberish,
-        expected: Numberish,
-    ): void {
-        expect(fromFixed(actual)).to.bignumber.eq(numberToFixedToNumber(expected));
-    }
-
-    function assertFixedRoughlyEquals(
-        actual: Numberish,
-        expected: Numberish,
-        precision: number = 18,
-    ): void {
-        // SD is not what we want.
-        expect(toPrecision(fromFixed(actual), precision))
-            .to.bignumber.eq(toPrecision(numberToFixedToNumber(expected), precision));
+    function assertFixedRoughlyEquals(actualFixed: Numberish, expected: Numberish, precision: number = 18): void {
+        assertRoughlyEquals(fromFixed(actualFixed), expected, precision);
     }
 
     describe('one()', () => {
@@ -161,37 +113,37 @@ blockchainTests('LibFixedMath', env => {
 
     describe('mulDiv()', () => {
         it('mulDiv(0, 0, 1) == 0', async () => {
-            const [ a, n, d ] = [ 0, 0, 1 ];
+            const [a, n, d] = [0, 0, 1];
             const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             assertFixedEquals(r, 0);
         });
 
         it('mulDiv(0, x, y) == 0', async () => {
-            const [ a, n, d ] = [ 0, 13, 300 ];
+            const [a, n, d] = [0, 13, 300];
             const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             assertFixedEquals(r, 0);
         });
 
         it('mulDiv(x, y, y) == x', async () => {
-            const [ a, n, d ] = [ 1.2345, 149, 149 ];
+            const [a, n, d] = [1.2345, 149, 149];
             const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             assertFixedEquals(r, a);
         });
 
         it('mulDiv(x, -y, y) == -x', async () => {
-            const [ a, n, d ] = [ 1.2345, -149, 149 ];
+            const [a, n, d] = [1.2345, -149, 149];
             const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             assertFixedEquals(r, -a);
         });
 
         it('mulDiv(-x, -y, y) == x', async () => {
-            const [ a, n, d ] = [ -1.2345, -149, 149 ];
+            const [a, n, d] = [-1.2345, -149, 149];
             const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             assertFixedEquals(r, -a);
         });
 
         it('mulDiv(x, y, 0) throws', async () => {
-            const [ a, n, d ] = [ 1.2345, 149, 0 ];
+            const [a, n, d] = [1.2345, 149, 0];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
             );
@@ -201,26 +153,30 @@ blockchainTests('LibFixedMath', env => {
     });
 
     describe('add()', () => {
+        function add(a: Numberish, b: Numberish): BigNumber {
+            return fromFixed(toFixed(a).plus(toFixed(b)));
+        }
+
         it('0 + 0 == 0', async () => {
-            const [ a, b ] = [ 0, 0 ];
+            const [a, b] = [0, 0];
             const r = await testContract.add.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, 0);
         });
 
         it('adds two positive decimals', async () => {
-            const [ a, b ] = ['9310841.31841', '491021921.318948193'];
+            const [a, b] = ['9310841.31841', '491021921.318948193'];
             const r = await testContract.add.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, add(a, b));
         });
 
         it('adds two mixed decimals', async () => {
-            const [ a, b ] = ['9310841.31841', '-491021921.318948193'];
+            const [a, b] = ['9310841.31841', '-491021921.318948193'];
             const r = await testContract.add.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, add(a, b));
         });
 
         it('throws on overflow', async () => {
-            const [ a, b ] = [ MAX_FIXED_VALUE, new BigNumber(1) ];
+            const [a, b] = [MAX_FIXED_VALUE, new BigNumber(1)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
@@ -231,7 +187,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('throws on underflow', async () => {
-            const [ a, b ] = [ MIN_FIXED_VALUE, new BigNumber(-1) ];
+            const [a, b] = [MIN_FIXED_VALUE, new BigNumber(-1)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 a,
@@ -243,26 +199,30 @@ blockchainTests('LibFixedMath', env => {
     });
 
     describe('sub()', () => {
+        function sub(a: Numberish, b: Numberish): BigNumber {
+            return fromFixed(toFixed(a).minus(toFixed(b)));
+        }
+
         it('0 - 0 == 0', async () => {
-            const [ a, b ] = [ 0, 0 ];
+            const [a, b] = [0, 0];
             const r = await testContract.sub.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, 0);
         });
 
         it('subtracts two positive decimals', async () => {
-            const [ a, b ] = ['9310841.31841', '491021921.318948193'];
+            const [a, b] = ['9310841.31841', '491021921.318948193'];
             const r = await testContract.sub.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, sub(a, b));
         });
 
         it('subtracts two mixed decimals', async () => {
-            const [ a, b ] = ['9310841.31841', '-491021921.318948193'];
+            const [a, b] = ['9310841.31841', '-491021921.318948193'];
             const r = await testContract.sub.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, sub(a, b));
         });
 
         it('throws on underflow', async () => {
-            const [ a, b ] = [ MIN_FIXED_VALUE, new BigNumber(1) ];
+            const [a, b] = [MIN_FIXED_VALUE, new BigNumber(1)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 a,
@@ -273,7 +233,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('throws on overflow', async () => {
-            const [ a, b ] = [ MAX_FIXED_VALUE, new BigNumber(-1) ];
+            const [a, b] = [MAX_FIXED_VALUE, new BigNumber(-1)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
@@ -285,38 +245,46 @@ blockchainTests('LibFixedMath', env => {
     });
 
     describe('mul()', () => {
+        function mul(a: Numberish, b: Numberish): BigNumber {
+            return fromFixed(
+                toFixed(a)
+                    .times(toFixed(b))
+                    .dividedToIntegerBy(FIXED_POINT_DIVISOR),
+            );
+        }
+
         it('x * 0 == 0', async () => {
-            const [ a, b ] = [ 1337, 0 ];
+            const [a, b] = [1337, 0];
             const r = await testContract.mul.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, b);
         });
 
         it('x * 1 == x', async () => {
-            const [ a, b ] = [ 0.5, 1 ];
+            const [a, b] = [0.5, 1];
             const r = await testContract.mul.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, a);
         });
 
         it('x * -1 == -x', async () => {
-            const [ a, b ] = [ 0.5, -1 ];
+            const [a, b] = [0.5, -1];
             const r = await testContract.mul.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, -a);
         });
 
         it('multiplies two positive decimals', async () => {
-            const [ a, b ] = ['1.25394912112', '0.03413318948193'];
+            const [a, b] = ['1.25394912112', '0.03413318948193'];
             const r = await testContract.mul.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, mul(a, b));
         });
 
         it('multiplies two mixed decimals', async () => {
-            const [ a, b ] = ['1.25394912112', '-0.03413318948193'];
+            const [a, b] = ['1.25394912112', '-0.03413318948193'];
             const r = await testContract.mul.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, mul(a, b));
         });
 
         it('throws on underflow', async () => {
-            const [ a, b ] = [ MIN_FIXED_VALUE, new BigNumber(2) ];
+            const [a, b] = [MIN_FIXED_VALUE, new BigNumber(2)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
@@ -327,7 +295,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('throws on overflow', async () => {
-            const [ a, b ] = [ MAX_FIXED_VALUE, new BigNumber(2) ];
+            const [a, b] = [MAX_FIXED_VALUE, new BigNumber(2)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
@@ -339,8 +307,16 @@ blockchainTests('LibFixedMath', env => {
     });
 
     describe('div()', () => {
+        function div(a: Numberish, b: Numberish): BigNumber {
+            return fromFixed(
+                toFixed(a)
+                    .times(FIXED_POINT_DIVISOR)
+                    .dividedBy(toFixed(b)),
+            );
+        }
+
         it('x / 0 throws', async () => {
-            const [ a, b ] = [ 1, 0 ];
+            const [a, b] = [1, 0];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                 toFixed(a).times(FIXED_POINT_DIVISOR),
@@ -351,25 +327,25 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('x / 1 == x', async () => {
-            const [ a, b ] = [ 1.41214552, 1 ];
+            const [a, b] = [1.41214552, 1];
             const r = await testContract.div.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, a);
         });
 
         it('x / -1 == -x', async () => {
-            const [ a, b ] = [ 1.109312, -1 ];
+            const [a, b] = [1.109312, -1];
             const r = await testContract.div.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, -a);
         });
 
         it('divides two positive decimals', async () => {
-            const [ a, b ] = ['1.25394912112', '0.03413318948193'];
+            const [a, b] = ['1.25394912112', '0.03413318948193'];
             const r = await testContract.div.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, div(a, b));
         });
 
         it('divides two mixed decimals', async () => {
-            const [ a, b ] = ['1.25394912112', '-0.03413318948193'];
+            const [a, b] = ['1.25394912112', '-0.03413318948193'];
             const r = await testContract.div.callAsync(toFixed(a), toFixed(b));
             assertFixedEquals(r, div(a, b));
         });
@@ -377,37 +353,37 @@ blockchainTests('LibFixedMath', env => {
 
     describe('uintMul()', () => {
         it('0 * x == 0', async () => {
-            const [ a, b ] = [ 0, 1234 ];
+            const [a, b] = [0, 1234];
             const r = await testContract.uintMul.callAsync(toFixed(a), new BigNumber(b));
             expect(r).to.bignumber.eq(0);
         });
 
         it('1 * x == int(x)', async () => {
-            const [ a, b ] = [ 1, 1234 ];
+            const [a, b] = [1, 1234];
             const r = await testContract.uintMul.callAsync(toFixed(a), new BigNumber(b));
             expect(r).to.bignumber.eq(Math.trunc(b));
         });
 
         it('-1 * x == 0', async () => {
-            const [ a, b ] = [ -1, 1234 ];
+            const [a, b] = [-1, 1234];
             const r = await testContract.uintMul.callAsync(toFixed(a), new BigNumber(b));
             expect(r).to.bignumber.eq(0);
         });
 
         it('0.5 * x == x/2', async () => {
-            const [ a, b ] = [ 0.5, 1234 ];
+            const [a, b] = [0.5, 1234];
             const r = await testContract.uintMul.callAsync(toFixed(a), new BigNumber(b));
             expect(r).to.bignumber.eq(b / 2);
         });
 
         it('0.5 * x == 0 if x = 1', async () => {
-            const [ a, b ] = [ 0.5, 1];
+            const [a, b] = [0.5, 1];
             const r = await testContract.uintMul.callAsync(toFixed(a), new BigNumber(b));
             expect(r).to.bignumber.eq(0);
         });
 
         it('throws if rhs is too large', async () => {
-            const [ a, b ] = [ toFixed(1), MAX_FIXED_VALUE.plus(1) ];
+            const [a, b] = [toFixed(1), MAX_FIXED_VALUE.plus(1)];
             const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                 b,
@@ -417,7 +393,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('throws if lhs is too large', async () => {
-            const [ a, b ] = [ MAX_FIXED_VALUE, new BigNumber(2) ];
+            const [a, b] = [MAX_FIXED_VALUE, new BigNumber(2)];
             const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
@@ -475,31 +451,31 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('converts a fraction with a positive numerator and denominator', async () => {
-                const [ n, d ] = [ 1337, 1000 ];
+                const [n, d] = [1337, 1000];
                 const r = await testContract.toFixedSigned2.callAsync(new BigNumber(n), new BigNumber(d));
-                assertFixedEquals(r, div(n, d));
+                assertFixedEquals(r, n / d);
             });
 
             it('converts a fraction with a negative numerator and positive denominator', async () => {
-                const [ n, d ] = [ -1337, 1000 ];
+                const [n, d] = [-1337, 1000];
                 const r = await testContract.toFixedSigned2.callAsync(new BigNumber(n), new BigNumber(d));
-                assertFixedEquals(r, div(n, d));
+                assertFixedEquals(r, n / d);
             });
 
             it('converts a fraction with a negative numerator and denominator', async () => {
-                const [ n, d ] = [ -1337, -1000 ];
+                const [n, d] = [-1337, -1000];
                 const r = await testContract.toFixedSigned2.callAsync(new BigNumber(n), new BigNumber(d));
-                assertFixedEquals(r, div(n, d));
+                assertFixedEquals(r, n / d);
             });
 
             it('converts a fraction with a negative numerator and negative denominator', async () => {
-                const [ n, d ] = [ -1337, -1000 ];
+                const [n, d] = [-1337, -1000];
                 const r = await testContract.toFixedSigned2.callAsync(new BigNumber(n), new BigNumber(d));
-                assertFixedEquals(r, div(n, d));
+                assertFixedEquals(r, n / d);
             });
 
             it('throws if the numerator is too large to convert', async () => {
-                const [ n, d ] = [ MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000) ];
+                const [n, d] = [MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000)];
                 const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     n,
@@ -510,7 +486,7 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('throws if the denominator is zero', async () => {
-                const [ n, d ] = [ new BigNumber(1), new BigNumber(0) ];
+                const [n, d] = [new BigNumber(1), new BigNumber(0)];
                 const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     n.times(FIXED_POINT_DIVISOR),
@@ -529,13 +505,13 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('converts a fraction', async () => {
-                const [ n, d ] = [ 1337, 1000 ];
+                const [n, d] = [1337, 1000];
                 const r = await testContract.toFixedUnsigned2.callAsync(new BigNumber(n), new BigNumber(d));
-                assertFixedEquals(r, div(n, d));
+                assertFixedEquals(r, n / d);
             });
 
             it('throws if the numerator is too large', async () => {
-                const [ n, d ] = [ MAX_FIXED_VALUE.plus(1), new BigNumber(1000) ];
+                const [n, d] = [MAX_FIXED_VALUE.plus(1), new BigNumber(1000)];
                 const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
                     FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                     n,
@@ -545,7 +521,7 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('throws if the denominator is too large', async () => {
-                const [ n, d ] = [ new BigNumber(1000), MAX_FIXED_VALUE.plus(1) ];
+                const [n, d] = [new BigNumber(1000), MAX_FIXED_VALUE.plus(1)];
                 const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
                     FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                     d,
@@ -555,7 +531,7 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('throws if the numerator is too large to convert', async () => {
-                const [ n, d ] = [ MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000) ];
+                const [n, d] = [MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000)];
                 const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     n,
@@ -566,7 +542,7 @@ blockchainTests('LibFixedMath', env => {
             });
 
             it('throws if the denominator is zero', async () => {
-                const [ n, d ] = [ new BigNumber(1), new BigNumber(0) ];
+                const [n, d] = [new BigNumber(1), new BigNumber(0)];
                 const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     n.times(FIXED_POINT_DIVISOR),
@@ -578,8 +554,22 @@ blockchainTests('LibFixedMath', env => {
         });
     });
 
+    function getRandomDecimal(min: Numberish, max: Numberish): BigNumber {
+        const range = new BigNumber(max).minus(min);
+        const random = fromFixed(new BigNumber(hexRandom().substr(2), 16));
+        return random.mod(range).plus(min);
+    }
+
     describe('ln()', () => {
-        const LN_PRECISION = 13;
+        const LN_PRECISION = 16;
+
+        function ln(x: Numberish): BigNumber {
+            return new BigNumber(
+                toDecimal(x)
+                    .ln()
+                    .toFixed(128),
+            );
+        }
 
         it('ln(x = 0) throws', async () => {
             const x = toFixed(0);
@@ -626,7 +616,7 @@ blockchainTests('LibFixedMath', env => {
         it('ln(x), where x is close to 0', async () => {
             const x = new BigNumber('1e-27');
             const r = await testContract.ln.callAsync(toFixed(x));
-            assertFixedRoughlyEquals(r, ln(x), LN_PRECISION);
+            assertFixedRoughlyEquals(r, ln(x), 12);
         });
 
         it('ln(x), where x is close to 1', async () => {
@@ -642,7 +632,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         blockchainTests.optional('fuzzing', () => {
-            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(0, 1));
+            const inputs = _.times(FUZZ_COUNT, () => getRandomDecimal(0, 1));
             for (const x of inputs) {
                 it(`ln(${x.toString(10)})`, async () => {
                     const r = await testContract.ln.callAsync(toFixed(x));
@@ -654,6 +644,14 @@ blockchainTests('LibFixedMath', env => {
 
     describe('exp()', () => {
         const EXP_PRECISION = 18;
+
+        function exp(x: Numberish): BigNumber {
+            return new BigNumber(
+                toDecimal(x)
+                    .exp()
+                    .toFixed(128),
+            );
+        }
 
         it('exp(x = 0) == 1', async () => {
             const x = toFixed(0);
@@ -696,7 +694,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         blockchainTests.optional('fuzzing', () => {
-            const inputs = _.times(FUZZ_COUNT, () => getRandomNumber(MIN_EXP_NUMBER, MAX_EXP_NUMBER));
+            const inputs = _.times(FUZZ_COUNT, () => getRandomDecimal(MIN_EXP_NUMBER, MAX_EXP_NUMBER));
             for (const x of inputs) {
                 it(`exp(${x.toString(10)})`, async () => {
                     const r = await testContract.exp.callAsync(toFixed(x));

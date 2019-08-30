@@ -27,9 +27,8 @@ contract MixinDeploymentConstants {
 
     uint256 constant internal TIMELOCK_DURATION_IN_EPOCHS = 3;
 
-    uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
-
-    uint256 constant internal REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 90;
+    // How much delegated stake is weighted vs operator stake, in ppm.
+    uint32 constant internal REWARD_DELEGATED_STAKE_WEIGHT = 900000; // 90%
 
     uint256 constant internal CHAIN_ID = 1;
 }

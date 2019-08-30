@@ -170,7 +170,7 @@ contract MixinExchangeFees is
     /// @return initialContractBalance Balance of this contract before paying rewards.
     /// @return finalContractBalance Balance of this contract after paying rewards.
     function _distributeFeesAmongMakerPools()
-        private
+        internal
         returns (
             uint256 totalActivePools,
             uint256 totalFeesCollected,
@@ -210,8 +210,9 @@ contract MixinExchangeFees is
             uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId);
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
-                .safeMul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
-                .safeDiv(PERCENTAGE_DENOMINATOR)
+                    .safeSub(stakeHeldByPoolOperator)
+                    .safeMul(REWARD_DELEGATED_STAKE_WEIGHT)
+                    .safeDiv(PPM_ONE)
             );
 
             // store pool stats

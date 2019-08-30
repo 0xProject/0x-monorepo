@@ -15,6 +15,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 blockchainTests('Staking Pool Management', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
+    const PPM_ONE = 1e6;
     // tokens & addresses
     let accounts: string[];
     let owner: string;
@@ -44,7 +45,7 @@ blockchainTests('Staking Pool Management', env => {
         it('Should successfully create a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = 39;
+            const operatorShare = (39 / 100) * PPM_ONE;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             // create pool
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
@@ -53,6 +54,17 @@ blockchainTests('Staking Pool Management', env => {
             const expectedNextPoolId = '0x0000000000000000000000000000000200000000000000000000000000000000';
             const nextPoolId = await stakingWrapper.getNextStakingPoolIdAsync();
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
+        });
+        it('Should throw if poolOperatorShare is > PPM_ONE', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = PPM_ONE + 1;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
+            // create pool
+            const tx = poolOperator.createStakingPoolAsync(operatorShare);
+            const expectedPoolId = '0x0000000000000000000000000000000100000000000000000000000000000000';
+            const expectedError = new StakingRevertErrors.InvalidPoolOperatorShareError(expectedPoolId, operatorShare);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('Should successfully add/remove a maker to a pool', async () => {
             // test parameters

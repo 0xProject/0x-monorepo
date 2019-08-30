@@ -153,15 +153,15 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param poolOperatorShare Percentage of rewards given to the pool operator.
-    function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
+    /// @param poolOperatorShare Fraction of rewards given to the pool operator, in ppm.
+    function registerStakingPool(bytes32 poolId, uint32 poolOperatorShare)
         external
         onlyStakingContract
         onlyNotInCatastrophicFailure
     {
-        // operator share must be a valid percentage
-        if (poolOperatorShare > PERCENTAGE_DENOMINATOR) {
-            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareMustBeBetween0And100Error(
+        // operator share must be a valid fraction
+        if (poolOperatorShare > PPM_ONE) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidPoolOperatorShareError(
                 poolId,
                 poolOperatorShare
             ));
@@ -229,7 +229,7 @@ contract StakingPoolRewardVault is
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
         uint256 operatorPortion = LibMath.getPartialAmountCeil(
             uint256(balance.operatorShare),  // Operator share out of 100
-            PERCENTAGE_DENOMINATOR,
+            PPM_ONE,
             amount
         );
 

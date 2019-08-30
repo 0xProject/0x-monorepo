@@ -420,7 +420,6 @@ export class StakingWrapper {
         await this._web3Wrapper.mineBlockAsync();
         // increment epoch in contracts
         const txReceipt = await this.goToNextEpochAsync();
-        // mine next block
         await this._web3Wrapper.mineBlockAsync();
         return txReceipt;
     }

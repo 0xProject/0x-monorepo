@@ -25,7 +25,7 @@ import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
-// solhint-disable max-states-count
+// solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
     MixinDeploymentConstants,
     MixinConstants,

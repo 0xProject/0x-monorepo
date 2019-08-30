@@ -78,11 +78,11 @@ interface IStakingEvents {
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operatorAddress Address of creator/operator of pool.
-    /// @param operatorShare The share of rewards given to the operator.
+    /// @param operatorShare The share of rewards given to the operator, in ppm.
     event StakingPoolCreated(
         bytes32 poolId,
         address operatorAddress,
-        uint8 operatorShare
+        uint32 operatorShare
     );
 
     /// @dev Emitted by MixinStakingPool when a new maker is added to a pool.

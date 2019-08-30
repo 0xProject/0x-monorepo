@@ -29,12 +29,12 @@ interface IStakingPoolRewardVault {
 
     /// @dev Holds the balance for a staking pool.
     /// @param initialzed True iff the balance struct is initialized.
-    /// @param operatorShare Percentage of the total balance owned by the operator.
+    /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
     /// @param operatorBalance Balance in ETH of the operator.
     /// @param membersBalance Balance in ETH co-owned by the pool members.
     struct Balance {
         bool initialized;
-        uint8 operatorShare;
+        uint32 operatorShare;
         uint96 operatorBalance;
         uint96 membersBalance;
     }
@@ -69,10 +69,10 @@ interface IStakingPoolRewardVault {
 
     /// @dev Emitted when a staking pool is registered.
     /// @param poolId Unique Id of pool that was registered.
-    /// @param operatorShare Share of rewards owned by operator.
+    /// @param operatorShare Share of rewards owned by operator. in ppm.
     event StakingPoolRegistered(
         bytes32 poolId,
-        uint8 operatorShare
+        uint32 operatorShare
     );
 
     /// @dev Default constructor.
@@ -119,8 +119,8 @@ interface IStakingPoolRewardVault {
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param poolOperatorShare Percentage of rewards given to the pool operator.
-    function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
+    /// @param poolOperatorShare Share of rewards given to the pool operator, in ppm.
+    function registerStakingPool(bytes32 poolId, uint32 poolOperatorShare)
         external;
 
     /// @dev Returns the total balance of a pool.

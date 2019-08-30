@@ -1,6 +1,5 @@
-import { chaiSetup } from '@0x/contracts-test-utils';
+import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { DelegatorActor } from '../actors/delegator_actor';
@@ -11,8 +10,7 @@ import { Queue } from './queue';
 import { StakingWrapper } from './staking_wrapper';
 import { SimulationParams } from './types';
 
-chaiSetup.configure();
-const expect = chai.expect;
+const REWARD_PRECISION = 12;
 
 export class Simulation {
     private readonly _stakingWrapper: StakingWrapper;
@@ -23,6 +21,13 @@ export class Simulation {
     private readonly _poolIds: string[];
     private readonly _makers: MakerActor[];
     private readonly _delegators: DelegatorActor[];
+
+    private static _assertRewardsEqual(actual: BigNumber, expected: BigNumber, message?: string): void {
+        expect(
+            StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(actual, 18), REWARD_PRECISION),
+            message,
+        ).to.be.bignumber.equal(StakingWrapper.trimFloat(expected, REWARD_PRECISION));
+    }
 
     constructor(stakingWrapper: StakingWrapper, simulationParams: SimulationParams) {
         this._stakingWrapper = stakingWrapper;
@@ -75,12 +80,12 @@ export class Simulation {
                 await delegator.deactivateAndTimeLockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
-                expect(
-                    rewardTrimmed,
+                Simulation._assertRewardsEqual(
+                    reward,
+                    expectedReward,
                     `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`,
-                ).to.be.bignumber.equal(expectedReward);
+                );
                 delegatorIdx += 1;
             }
             poolIdx += 1;
@@ -100,12 +105,12 @@ export class Simulation {
                 await this._stakingWrapper.withdrawTotalRewardForStakingPoolMemberAsync(poolId, delegatorAddress);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
-                expect(
-                    rewardTrimmed,
+                Simulation._assertRewardsEqual(
+                    reward,
+                    expectedReward,
                     `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`,
-                ).to.be.bignumber.equal(expectedReward);
+                );
                 delegatorIdx += 1;
             }
             poolIdx += 1;
@@ -127,7 +132,7 @@ export class Simulation {
             this._poolOperatorsAsDelegators.push(poolOperatorAsDelegator);
             // add stake to the operator's pool
             const amountOfStake = p.stakeByPoolOperator[i];
-            await poolOperatorAsDelegator.depositZrxAndMintActivatedStakeAsync(amountOfStake);
+            await poolOperatorAsDelegator.depositZrxAndDelegateToStakingPoolAsync(poolId, amountOfStake);
         }
     }
 
@@ -217,44 +222,35 @@ export class Simulation {
     private async _assertVaultBalancesAsync(p: SimulationParams): Promise<void> {
         // tslint:disable-next-line no-unused-variable
         for (const i of _.range(p.numberOfPools)) {
-            // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
+            // @TODO -  we trim balances in here because payouts are accurate only to REWARD_PRECISION decimal places.
             //          update once more accurate.
             // check pool balance in vault
             const poolId = this._poolIds[i];
             const rewardVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfAsync(poolId);
-            const rewardVaultBalanceTrimmed = StakingWrapper.trimFloat(
-                StakingWrapper.toFloatingPoint(rewardVaultBalance, 18),
-                5,
-            );
             const expectedRewardBalance = p.expectedPayoutByPool[i];
-            expect(
-                rewardVaultBalanceTrimmed,
+            Simulation._assertRewardsEqual(
+                rewardVaultBalance,
+                expectedRewardBalance,
                 `expected balance in vault for pool with id ${poolId}`,
-            ).to.be.bignumber.equal(expectedRewardBalance);
+            );
             // check operator's balance
             const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(
                 poolId,
             );
-            const poolOperatorVaultBalanceTrimmed = StakingWrapper.trimFloat(
-                StakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
-                5,
-            );
             const expectedPoolOperatorVaultBalance = p.expectedPayoutByPoolOperator[i];
-            expect(
-                poolOperatorVaultBalanceTrimmed,
+            Simulation._assertRewardsEqual(
+                poolOperatorVaultBalance,
+                expectedPoolOperatorVaultBalance,
                 `operator balance in vault for pool with id ${poolId}`,
-            ).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
+            );
             // check balance of pool members
             const membersVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolMembersAsync(poolId);
-            const membersVaultBalanceTrimmed = StakingWrapper.trimFloat(
-                StakingWrapper.toFloatingPoint(membersVaultBalance, 18),
-                5,
-            );
             const expectedMembersVaultBalance = p.expectedMembersPayoutByPool[i];
-            expect(
-                membersVaultBalanceTrimmed,
+            Simulation._assertRewardsEqual(
+                membersVaultBalance,
+                expectedMembersVaultBalance,
                 `members balance in vault for pool with id ${poolId}`,
-            ).to.be.bignumber.equal(expectedMembersVaultBalance);
+            );
             // @TODO compute balance of each member
         }
     }
@@ -262,7 +258,7 @@ export class Simulation {
     private async _withdrawRewardForStakingPoolMemberForOperatorsAsync(p: SimulationParams): Promise<void> {
         // tslint:disable-next-line no-unused-variable
         for (const i of _.range(p.numberOfPools)) {
-            // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
+            // @TODO -  we trim balances in here because payouts are accurate only to REWARD_PRECISION decimal places.
             //          update once more accurate.
             // check pool balance in vault
             const poolId = this._poolIds[i];
@@ -272,11 +268,8 @@ export class Simulation {
             await this._stakingWrapper.withdrawTotalRewardForStakingPoolOperatorAsync(poolId, poolOperatorAddress);
             const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
             const reward = finalEthBalance.minus(initEthBalance);
-            const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
             const expectedReward = p.expectedPayoutByPoolOperator[i];
-            expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for operator`).to.be.bignumber.equal(
-                expectedReward,
-            );
+            Simulation._assertRewardsEqual(reward, expectedReward, `reward withdrawn from pool ${poolId} for operator`);
         }
     }
 }

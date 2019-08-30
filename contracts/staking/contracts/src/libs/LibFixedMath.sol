@@ -20,9 +20,10 @@ pragma solidity ^0.5.9;
 
 import "./LibFixedMathRichErrors.sol";
 
+
+// solhint-disable indent
 /// @dev Signed, fixed-point, 127-bit precision math library.
 library LibFixedMath {
-
     // 1
     int256 private constant FIXED_1 = int256(0x0000000000000000000000000000000080000000000000000000000000000000);
     // 1^2 (in fixed-point)
