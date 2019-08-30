@@ -37,7 +37,7 @@ const setupZeroExInstantHeap = () => {
     // Set property to specify that this is zeroEx's heap
     curWindow.zeroExInstantLoadedHeap = true;
 
-    // Typescript-compatible version of https://docs.heapanalytics.com/docs/installation
+    // TypeScript-compatible version of https://docs.heapanalytics.com/docs/installation
     /* tslint:disable */
     ((window as any).heap = (window as any).heap || []),
         ((window as any).heap.load = function(e: any, t: any) {
