@@ -5,7 +5,7 @@ import {
     ERC721Wrapper,
     MultiAssetProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { constants, expect, orderUtils, signingUtils } from '@0x/contracts-test-utils';
+import { constants, expect, LogDecoder, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import { BalanceAndProxyAllowanceLazyStore, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
@@ -40,6 +40,7 @@ const EMPTY_FILL_RESULTS = {
     makerAssetFilledAmount: constants.ZERO_AMOUNT,
     makerFeePaid: constants.ZERO_AMOUNT,
     takerFeePaid: constants.ZERO_AMOUNT,
+    protocolFeePaid: constants.ZERO_AMOUNT,
 };
 
 enum TestOutlook {
@@ -114,6 +115,8 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         {},
         new BigNumber(chainId),
     );
+
+    const logDecoder = new LogDecoder(web3Wrapper, artifacts);
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, ownerAddress);
@@ -202,6 +205,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         takerAddress,
         exchangeWrapper,
         assetWrapper,
+        logDecoder,
     );
     return fillOrderCombinatorialUtils;
 }
@@ -215,6 +219,7 @@ export class FillOrderCombinatorialUtils {
     public takerAddress: string;
     public exchangeWrapper: ExchangeWrapper;
     public assetWrapper: AssetWrapper;
+    public logDecoder: LogDecoder;
     public balanceAndProxyAllowanceFetcher: SimpleAssetBalanceAndProxyAllowanceFetcher;
 
     public static generateFillOrderCombinations(): FillScenario[] {
@@ -445,6 +450,7 @@ export class FillOrderCombinatorialUtils {
         takerAddress: string,
         exchangeWrapper: ExchangeWrapper,
         assetWrapper: AssetWrapper,
+        logDecoder: LogDecoder,
     ) {
         this.provider = provider;
         this.orderFactory = orderFactory;
@@ -454,6 +460,7 @@ export class FillOrderCombinatorialUtils {
         this.takerAddress = takerAddress;
         this.exchangeWrapper = exchangeWrapper;
         this.assetWrapper = assetWrapper;
+        this.logDecoder = logDecoder;
         this.balanceAndProxyAllowanceFetcher = new SimpleAssetBalanceAndProxyAllowanceFetcher(assetWrapper);
     }
 
@@ -643,7 +650,7 @@ export class FillOrderCombinatorialUtils {
         );
         expect(exchangeLogs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion
-        const log = txReceipt.logs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
+        const log = exchangeLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>;
         expect(log.args.makerAddress, 'log.args.makerAddress').to.be.equal(makerAddress);
         expect(log.args.takerAddress, 'log.args.takerAddress').to.be.equal(this.takerAddress);
         expect(log.args.feeRecipientAddress, 'log.args.feeRecipientAddress').to.be.equal(feeRecipient);

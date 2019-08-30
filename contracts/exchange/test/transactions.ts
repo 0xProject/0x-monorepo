@@ -1037,13 +1037,13 @@ blockchainTests.resets('Exchange transactions', env => {
                     const cancelTransaction = await makerTransactionFactory.newSignedTransactionAsync({
                         data: cancelData,
                     });
+
                     await exchangeWrapperContract.cancelOrdersUpTo.awaitTransactionSuccessAsync(
                         targetOrderEpoch,
                         cancelTransaction.salt,
                         cancelTransaction.expirationTimeSeconds,
                         cancelTransaction.signature,
                         { from: makerAddress },
-                        constants.AWAIT_TRANSACTION_MINED_MS,
                     );
 
                     const takerAssetFillAmount = signedOrder.takerAssetAmount;

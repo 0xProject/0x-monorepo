@@ -146,6 +146,14 @@ describe('AssetProxyDispatcher', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
+        it('should revert if the proxy is not a contract address', async () => {
+            const errMessage = 'VM Exception while processing transaction: revert';
+            const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(notOwner, {
+                from: owner,
+            });
+            return expect(tx).to.be.rejectedWith(errMessage);
+        });
+
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
             const logDecoder = new LogDecoder(web3Wrapper, artifacts);
             const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(

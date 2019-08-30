@@ -47,7 +47,7 @@ contract MixinTransferSimulator is
         uint256 length = assetData.length;
         for (uint256 i = 0; i != length; i++) {
             _dispatchTransferFrom(
-                // The index is passed in as `orderHash` so that a failed transfer can be quickly identified when catching the error 
+                // The index is passed in as `orderHash` so that a failed transfer can be quickly identified when catching the error
                 bytes32(i),
                 assetData[i],
                 fromAddresses[i],

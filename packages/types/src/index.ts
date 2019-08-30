@@ -817,6 +817,7 @@ export interface FillResults {
     takerAssetFilledAmount: BigNumber;
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
+    protocolFeePaid: BigNumber;
 }
 
 export interface MatchedFillResults {

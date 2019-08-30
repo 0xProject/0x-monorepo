@@ -35,6 +35,7 @@ contract IWrapperFunctions {
         bytes memory signature
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
@@ -49,6 +50,7 @@ contract IWrapperFunctions {
         bytes memory signature
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrder.
@@ -62,6 +64,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Synchronously executes multiple calls of fillOrKill.
@@ -75,6 +78,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Fills an order with specified parameters and ECDSA signature.
@@ -89,6 +93,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults[] memory fillResults);
 
     /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
@@ -102,6 +107,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
@@ -115,6 +121,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
@@ -128,6 +135,7 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.
@@ -141,12 +149,14 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
     /// @dev Synchronously cancels multiple orders in a single transaction.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
-        public;
+        public
+        payable;
 
     /// @dev Fetches information for all passed in orders
     /// @param orders Array of order specifications.

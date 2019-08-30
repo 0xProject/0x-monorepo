@@ -18,26 +18,33 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/Refundable.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
+import "@0x/contracts-staking/contracts/src/interfaces/IStaking.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./MixinAssetProxyDispatcher.sol";
+import "./MixinProtocolFees.sol";
 import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
-    LibEIP712ExchangeDomain,
     IExchangeCore,
+    Refundable,
+    LibEIP712ExchangeDomain,
     MixinAssetProxyDispatcher,
+    MixinProtocolFees,
     MixinSignatureValidator
 {
     using LibOrder for LibOrder.Order;
     using LibSafeMath for uint256;
+    using LibBytes for bytes;
 
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
@@ -54,7 +61,9 @@ contract MixinExchangeCore is
     /// @param targetOrderEpoch Orders created with a salt less or equal to this value will be cancelled.
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
+        payable
         nonReentrant
+        refundFinalBalance
     {
         address makerAddress = _getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
@@ -94,7 +103,9 @@ contract MixinExchangeCore is
         bytes memory signature
     )
         public
+        payable
         nonReentrant
+        refundFinalBalance
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
@@ -110,7 +121,9 @@ contract MixinExchangeCore is
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
     function cancelOrder(LibOrder.Order memory order)
         public
+        payable
         nonReentrant
+        refundFinalBalance
     {
         _cancelOrder(order);
     }
@@ -208,7 +221,7 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier, tx.gasprice);
 
         bytes32 orderHash = orderInfo.orderHash;
 
@@ -269,8 +282,6 @@ contract MixinExchangeCore is
         // Update state
         filled[orderHash] = orderTakerAssetFilledAmount.safeAdd(fillResults.takerAssetFilledAmount);
 
-        // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
-        // All this logic is equivalent to:
         emit Fill(
             order.makerAddress,
             order.feeRecipientAddress,
@@ -278,13 +289,14 @@ contract MixinExchangeCore is
             order.takerAssetData,
             order.makerFeeAssetData,
             order.takerFeeAssetData,
+            orderHash,
+            takerAddress,
+            msg.sender,
             fillResults.makerAssetFilledAmount,
             fillResults.takerAssetFilledAmount,
             fillResults.makerFeePaid,
             fillResults.takerFeePaid,
-            takerAddress,
-            msg.sender,
-            orderHash
+            fillResults.protocolFeePaid
         );
     }
 
@@ -306,10 +318,10 @@ contract MixinExchangeCore is
         emit Cancel(
             order.makerAddress,
             order.feeRecipientAddress,
-            msg.sender,
-            orderHash,
             order.makerAssetData,
-            order.takerAssetData
+            order.takerAssetData,
+            msg.sender,
+            orderHash
         );
     }
 
@@ -451,5 +463,29 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             fillResults.makerFeePaid
         );
+
+        // Transfer protocol fee -> staking if the fee should be paid
+        address feeCollector = protocolFeeCollector;
+        if (feeCollector != address(0)) {
+            // Create a stack variable to hold the value that will be sent so that the gas optimization of
+            // only having one call statement can be implemented.
+            uint256 valuePaid = 0;
+
+            // Calculate the protocol fee that should be paid and populate the `protocolFeePaid` field in `fillResults`.
+            // It's worth noting that we leave this calculation until now so that work isn't wasted if a fee collector
+            // is not registered in the exchange.
+            uint256 protocolFee = fillResults.protocolFeePaid;
+
+            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
+            // Otherwise the fee should be paid in WETH. Since the exchange doesn't actually handle
+            // this case, it will just forward the procotolFee in ether in case 1 and will send zero
+            // value in case 2.
+            if (address(this).balance >= protocolFee) {
+                valuePaid = protocolFee;
+            }
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(order.makerAddress, takerAddress, protocolFee);
+        } else {
+            fillResults.protocolFeePaid = 0;
+        }
     }
 }

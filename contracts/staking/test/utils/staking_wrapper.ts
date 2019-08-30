@@ -499,10 +499,16 @@ export class StakingWrapper {
     ///// PROTOCOL FEES /////
     public async payProtocolFeeAsync(
         makerAddress: string,
+        payerAddress: string,
+        protocolFeePaid: BigNumber,
         amount: BigNumber,
         exchangeAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(makerAddress);
+        const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(
+            makerAddress,
+            payerAddress,
+            protocolFeePaid,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, exchangeAddress, amount);
         return txReceipt;
     }

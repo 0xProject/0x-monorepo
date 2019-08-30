@@ -56,10 +56,15 @@ contract MixinExchangeFees is
 {
     using LibSafeMath for uint256;
 
+    /// TODO(jalextowle): Add WETH to protocol fees. Should this be unwrapped?
     /// @dev Pays a protocol fee in ETH.
     ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
     /// @param makerAddress The address of the order's maker.
-    function payProtocolFee(address makerAddress)
+    function payProtocolFee(
+        address makerAddress,
+        address payerAddress,
+        uint256 protocolFeePaid
+    )
         external
         payable
         onlyExchange

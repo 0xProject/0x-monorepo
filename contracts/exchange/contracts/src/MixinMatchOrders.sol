@@ -1,16 +1,20 @@
 /*
+
   Copyright 2019 ZeroEx Intl.
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-*/
 
+*/
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
@@ -45,7 +49,9 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        payable
         nonReentrant
+        refundFinalBalance
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -73,7 +79,9 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        payable
         nonReentrant
+        refundFinalBalance
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -101,7 +109,9 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
+        payable
         nonReentrant
+        refundFinalBalance
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -129,7 +139,9 @@ contract MixinMatchOrders is
         bytes memory rightSignature
     )
         public
+        payable
         nonReentrant
+        refundFinalBalance
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -277,7 +289,7 @@ contract MixinMatchOrders is
                 // Update the batched fill results once the leftIdx is updated.
                 batchMatchedFillResults.left[leftIdx++] = leftFillResults;
                 // Clear the intermediate fill results value.
-                leftFillResults = LibFillResults.FillResults(0, 0, 0, 0);
+                leftFillResults = LibFillResults.FillResults(0, 0, 0, 0, 0);
 
                 // If all of the left orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
@@ -297,7 +309,7 @@ contract MixinMatchOrders is
                 // Update the batched fill results once the rightIdx is updated.
                 batchMatchedFillResults.right[rightIdx++] = rightFillResults;
                 // Clear the intermediate fill results value.
-                rightFillResults = LibFillResults.FillResults(0, 0, 0, 0);
+                rightFillResults = LibFillResults.FillResults(0, 0, 0, 0, 0);
 
                 // If all of the right orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
@@ -377,6 +389,8 @@ contract MixinMatchOrders is
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,
             rightOrderInfo.orderTakerAssetFilledAmount,
+            protocolFeeMultiplier,
+            tx.gasprice,
             shouldMaximallyFillOrders
         );
 
@@ -473,7 +487,6 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.profitInLeftMakerAsset
         );
-
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,
@@ -481,6 +494,38 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.profitInRightMakerAsset
         );
+
+        // Pay the protocol fees if there is a registered `protocolFeeCollector` address.
+        address feeCollector = protocolFeeCollector;
+        if (feeCollector != address(0)) {
+            // Only one of the protocol fees is used because they are identical.
+            uint256 protocolFee = matchedFillResults.left.protocolFeePaid;
+
+            // Create a stack variable for the value that will be sent to the feeCollector when `payProtocolFee` is called.
+            // This allows a gas optimization where the `leftOrder.makerAddress` only needs be loaded onto the stack once AND
+            // a stack variable does not need to be allocated for the call.
+            uint256 valuePaid = 0;
+
+            // Since the `BALANCE` opcode costs 400 gas, we choose to calculate this value by hand rather than calling it twice.
+            uint256 balance = address(this).balance;
+
+            // Pay the left order's protocol fee.
+            if (balance >= protocolFee) {
+                valuePaid = protocolFee;
+            }
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(leftOrder.makerAddress, takerAddress, protocolFee);
+
+            // Pay the right order's protocol fee.
+            if (balance - valuePaid >= protocolFee) {
+                valuePaid = protocolFee;
+            } else {
+                valuePaid = 0;
+            }
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(rightOrder.makerAddress, takerAddress, protocolFee);
+        } else {
+            matchedFillResults.left.protocolFeePaid = 0;
+            matchedFillResults.right.protocolFeePaid = 0;
+        }
 
         // Settle taker fees.
         if (

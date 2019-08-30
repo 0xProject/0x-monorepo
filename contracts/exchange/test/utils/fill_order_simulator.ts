@@ -121,6 +121,7 @@ export class FillOrderSimulator {
             makerAssetFilledAmount: makerAssetFillAmount,
             makerFeePaid,
             takerFeePaid,
+            protocolFeePaid: constants.ZERO_AMOUNT,
         };
     }
 }

@@ -28,6 +28,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
     const { ONE_ETHER, MAX_UINT256 } = constants;
     const { addFillResults, getPartialAmountFloor } = LibReferenceFunctions;
     const { safeSub } = UtilReferenceFunctions;
+    const protocolFeeMultiplier = new BigNumber(150000);
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomAssetData = () => hexRandom(34);
     const randomAmount = (maxAmount: BigNumber = ONE_ETHER) => maxAmount.times(_.random(0, 100, true).toFixed(12));
@@ -40,20 +41,30 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         takerAssetFilledAmount: constants.ZERO_AMOUNT,
         makerFeePaid: constants.ZERO_AMOUNT,
         takerFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
     let testContract: TestWrapperFunctionsContract;
     let txHelper: TransactionHelper;
+    let owner: string;
     let senderAddress: string;
 
     before(async () => {
-        [senderAddress] = await env.getAccountAddressesAsync();
+        [owner, senderAddress] = await env.getAccountAddressesAsync();
         txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
         testContract = await TestWrapperFunctionsContract.deployFrom0xArtifactAsync(
             artifacts.TestWrapperFunctions,
             env.provider,
-            env.txDefaults,
+            {
+                ...env.txDefaults,
+                from: owner,
+            },
             {},
         );
+
+        // Set the protocol fee multiplier.
+        await testContract.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(protocolFeeMultiplier, {
+            from: owner,
+        });
     });
 
     function randomOrder(fields?: Partial<Order>): Order {
@@ -96,6 +107,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             takerAssetFilledAmount: order.takerAssetAmount,
             makerFeePaid: order.makerFee,
             takerFeePaid: order.takerFee,
+            protocolFeePaid: protocolFeeMultiplier,
         };
     }
 

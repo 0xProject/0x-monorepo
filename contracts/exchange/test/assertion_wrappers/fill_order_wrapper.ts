@@ -6,7 +6,9 @@ import {
 } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
+import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
+    constants,
     expect,
     FillEventArgs,
     filterLogsToArguments,
@@ -23,7 +25,6 @@ import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-type
 import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract } from '../../src';
-import { calculateFillResults } from '../../src/reference_functions';
 import { BalanceStore } from '../balance_stores/balance_store';
 import { BlockchainBalanceStore } from '../balance_stores/blockchain_balance_store';
 import { LocalBalanceStore } from '../balance_stores/local_balance_store';
@@ -51,7 +52,13 @@ export class FillOrderWrapper {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        const fillResults = calculateFillResults(signedOrder, takerAssetFillAmount);
+        // TODO(jalextowle): Change this if the integration tests take protocol fees into account.
+        const fillResults = LibReferenceFunctions.calculateFillResults(
+            signedOrder,
+            takerAssetFillAmount,
+            constants.ZERO_AMOUNT,
+            constants.ZERO_AMOUNT,
+        );
         const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
         // Taker -> Maker
         balanceStore.transferAsset(

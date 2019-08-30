@@ -589,11 +589,11 @@ blockchainTests.resets('Exchange core', () => {
         });
 
         it('should cancel only orders with a orderEpoch less than existing orderEpoch', async () => {
-            // Cancel all transactions with a orderEpoch less than 1
+            // Cancel all transactions with a orderEpoch less than 2
             const orderEpoch = new BigNumber(1);
             await exchangeWrapper.cancelOrdersUpToAsync(orderEpoch, makerAddress);
 
-            // Create 3 orders with orderEpoch values: 0,1,2,3
+            // Create 4 orders with orderEpoch values: 0,1,2,3
             // Since we cancelled with orderEpoch=1, orders with orderEpoch<=1 will not be processed
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             const signedOrders = [

@@ -59,7 +59,9 @@ contract MixinSignatureValidator is
     /// @param hash Any 32-byte hash.
     function preSign(bytes32 hash)
         external
+        payable
         nonReentrant
+        refundFinalBalance
     {
         address signerAddress = _getCurrentContextAddress();
         preSigned[hash][signerAddress] = true;
@@ -74,7 +76,9 @@ contract MixinSignatureValidator is
         bool approval
     )
         external
+        payable
         nonReentrant
+        refundFinalBalance
     {
         address signerAddress = _getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;

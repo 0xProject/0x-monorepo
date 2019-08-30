@@ -13,6 +13,7 @@ import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
 import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
+import * as IProtocolFees from '../generated-artifacts/IProtocolFees.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
@@ -23,6 +24,7 @@ import * as LibExchangeRichErrorDecoder from '../generated-artifacts/LibExchange
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.json';
 import * as MixinMatchOrders from '../generated-artifacts/MixinMatchOrders.json';
+import * as MixinProtocolFees from '../generated-artifacts/MixinProtocolFees.json';
 import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
 import * as MixinTransactions from '../generated-artifacts/MixinTransactions.json';
 import * as MixinTransferSimulator from '../generated-artifacts/MixinTransferSimulator.json';
@@ -31,6 +33,8 @@ import * as ReentrancyTester from '../generated-artifacts/ReentrancyTester.json'
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
+import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
+import * as TestProtocolFeesReceiver from '../generated-artifacts/TestProtocolFeesReceiver.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestTransactions from '../generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
@@ -43,6 +47,7 @@ export const artifacts = {
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinExchangeCore: MixinExchangeCore as ContractArtifact,
     MixinMatchOrders: MixinMatchOrders as ContractArtifact,
+    MixinProtocolFees: MixinProtocolFees as ContractArtifact,
     MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
     MixinTransactions: MixinTransactions as ContractArtifact,
     MixinTransferSimulator: MixinTransferSimulator as ContractArtifact,
@@ -53,6 +58,7 @@ export const artifacts = {
     IExchange: IExchange as ContractArtifact,
     IExchangeCore: IExchangeCore as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
+    IProtocolFees: IProtocolFees as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
     ITransferSimulator: ITransferSimulator as ContractArtifact,
@@ -64,6 +70,8 @@ export const artifacts = {
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
+    TestProtocolFees: TestProtocolFees as ContractArtifact,
+    TestProtocolFeesReceiver: TestProtocolFeesReceiver as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestTransactions: TestTransactions as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,

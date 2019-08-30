@@ -66,6 +66,7 @@ contract TestExchangeInternals is
         LibFillResults.FillResults memory fillResults
     )
         public
+        payable
     {
         filled[LibOrder.getTypedDataHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
         _updateFilledState(

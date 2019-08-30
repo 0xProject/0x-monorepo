@@ -48,11 +48,15 @@ blockchainTests.resets('Exchange wrappers', env => {
     let defaultTakerAssetAddress: string;
     let defaultFeeAssetAddress: string;
 
+    const DEFAULT_GAS_PRICE = new BigNumber(2);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+
     const nullFillResults: FillResults = {
-        makerAssetFilledAmount: new BigNumber(0),
-        takerAssetFilledAmount: new BigNumber(0),
-        makerFeePaid: new BigNumber(0),
-        takerFeePaid: new BigNumber(0),
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
+        protocolFeePaid: constants.ZERO_AMOUNT,
     };
 
     before(async () => {
@@ -81,10 +85,16 @@ blockchainTests.resets('Exchange wrappers', env => {
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
             env.provider,
-            env.txDefaults,
+            { ...env.txDefaults, from: owner },
             {},
             new BigNumber(chainId),
         );
+
+        // Set the protocol fee multiplier of the exchange
+        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER, {
+            from: owner,
+        });
+
         exchangeWrapper = new ExchangeWrapper(exchange, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
@@ -497,6 +507,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -526,7 +537,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                     signedOrders,
                     takerAssetFillAmounts,
                     signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
+                    { from: takerAddress, gasPrice: DEFAULT_GAS_PRICE },
                 );
                 await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmounts,
@@ -564,6 +575,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -647,6 +659,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -717,6 +730,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         makerAssetFilledAmount,
                         makerFeePaid: makerFee,
                         takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     });
 
                     erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
@@ -853,6 +867,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -864,6 +879,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -923,6 +939,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -934,6 +951,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -1037,6 +1055,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1048,6 +1067,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
@@ -1108,6 +1128,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
                     }))
                     .reduce(
                         (totalFillResults, currentFillResults) => ({
@@ -1119,6 +1140,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             ),
                             makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
                             takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
                     );
