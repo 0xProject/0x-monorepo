@@ -212,5 +212,6 @@ contract MixinStakingPoolRewards is
 
         // Remove the reference
 
+
     }
 }

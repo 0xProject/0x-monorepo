@@ -5,6 +5,8 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as EthVault from '../generated-artifacts/EthVault.json';
+import * as IEthVault from '../generated-artifacts/IEthVault.json';
 import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
@@ -48,6 +50,7 @@ export const artifacts = {
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
+    IEthVault: IEthVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,
@@ -71,6 +74,7 @@ export const artifacts = {
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
     MixinOwnable: MixinOwnable as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
+    EthVault: EthVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,

@@ -107,7 +107,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
-        it.only('Reward from first epoch should roll over', async () => {
+        it('Reward from first epoch should roll over', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
             const operatorShare = 0;
@@ -135,7 +135,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
-        it.only('Unclaimed rewards should carry over until we reach an epoch with delegators', async () => {
+        it('Unclaimed rewards should carry over until we reach an epoch with delegators', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
             const operatorShare = 0;
@@ -172,7 +172,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
-        it.only('Rewards from first epoch should roll over until we reach an epoch with delegators', async () => {
+        it('Rewards from first epoch should roll over until we reach an epoch with delegators', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
             const operatorShare = 0;
@@ -391,8 +391,6 @@ blockchainTests.resets.only('Testing Rewards', () => {
         });
 
         // should flush correctly when adding / removing stake
-
-        // should carry over balances beteween epochs
 
         // reference counters
 
