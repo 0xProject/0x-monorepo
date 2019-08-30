@@ -94,15 +94,6 @@ contract MixinStakingPoolRewards is
             uint endEpoch = delegatedStake.lastStored;
             IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
             IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
-
-            if (beginRatio.denominator == 0) {
-                revert('begin 0 -- 1');
-            }
-
-             if (endRatio.denominator == 0) {
-                revert('end 0 -- 1');
-            }
-
             uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
             uint256 rewardRatio = (delegatedStake.current * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
             totalReward += rewardRatio;
@@ -114,17 +105,6 @@ contract MixinStakingPoolRewards is
             uint endEpoch = uint256(getCurrentEpoch()) - 1;
             IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
             IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
-
-            if (beginRatio.denominator == 0) {
-                //revert('begin 0 -- 2');
-            }
-
-            if (endRatio.denominator == 0) {
-                // no changes made in this epoch
-                endRatio.denominator = 1;
-                //revert('end 0 -- 2');
-            }
-
             uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
             uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
             totalReward += rewardRatio;
@@ -140,19 +120,18 @@ contract MixinStakingPoolRewards is
     function syncRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
     {
-        uint256 lastUpdated = delegatedStakeToPoolByOwner[member][poolId].lastStored;
-        if (lastUpdated == getCurrentEpoch()) {
+        // eat update cost if necessary
+        if (getCurrentEpoch() == 0) {
             return;
         }
-
-        // every now and again a delegator eats this cost
-        if (rewardRatioSums[poolId][lastUpdated - 1].denominator == 0) {
-            rewardRatioSums[poolId][lastUpdated - 1] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
-            rewardRatioSumsLastUpdated[poolId] = lastUpdated - 1;
+        if (rewardRatioSumsLastUpdated[poolId] != getCurrentEpoch() - 1) {
+            rewardRatioSums[poolId][getCurrentEpoch() - 1] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
+            rewardRatioSumsLastUpdated[poolId] = getCurrentEpoch() - 1;
         }
-        if (rewardRatioSums[poolId][lastUpdated].denominator == 0) {
-            rewardRatioSums[poolId][lastUpdated] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
-            rewardRatioSumsLastUpdated[poolId] = lastUpdated;
+
+        if (delegatedStakeToPoolByOwner[member][poolId].lastStored == getCurrentEpoch()) {
+            // already in sync
+            return;
         }
 
         uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
