@@ -303,22 +303,22 @@ export class DocGenerateUtils {
                     let regexp;
                     switch (item.kindString) {
                         case 'Interface':
-                            regexp = new RegExp(`# Interface: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Interface: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Enumeration':
-                            regexp = new RegExp(`# Enumeration: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Enumeration: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Class':
-                            regexp = new RegExp(`# Class: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Class: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Type alias':
-                            regexp = new RegExp(`#  ${item.name}[\\s\\S]*?(___)`, 'g');
+                            regexp = new RegExp(`(.*)#  ${item.name}[\\s\\S]*?(___|<hr \\/>)`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 

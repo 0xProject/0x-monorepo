@@ -2,22 +2,14 @@
 
 # Class: AbstractArtifactAdapter
 
-## Hierarchy
 
-* **AbstractArtifactAdapter**
-
-  * [SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)
-
-  * [TruffleArtifactAdapter](#class-truffleartifactadapter)
-
-
-##  Methods
+##   Methods
 
 ### `Abstract` collectContractsDataAsync
 
 ▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
 
-*Defined in [sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts:4](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts#L4)*
+*Defined in [sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts:4](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts#L4)*
 
 **Returns:** *`Promise<ContractData[]>`*
 
@@ -25,20 +17,14 @@
 
 # Class: SolCompilerArtifactAdapter
 
-## Hierarchy
 
-* [AbstractArtifactAdapter](#class-abstractartifactadapter)
-
-  * **SolCompilerArtifactAdapter**
+##   Constructors
 
 
-##  Constructors
-
-###  constructer
 
 \+ **new SolCompilerArtifactAdapter**(`artifactsPath?`: undefined | string, `sourcesPath?`: undefined | string): *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
 
-*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:18](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L18)*
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:18](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L18)*
 
 Instantiates a SolCompilerArtifactAdapter
 
@@ -59,7 +45,7 @@ Name | Type | Description |
 
 *Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
 
-*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:44](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L44)*
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:44](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L44)*
 
 **Returns:** *`Promise<ContractData[]>`*
 
@@ -67,20 +53,14 @@ Name | Type | Description |
 
 # Class: TruffleArtifactAdapter
 
-## Hierarchy
 
-* [AbstractArtifactAdapter](#class-abstractartifactadapter)
-
-  * **TruffleArtifactAdapter**
+##   Constructors
 
 
-##  Constructors
-
-###  constructer
 
 \+ **new TruffleArtifactAdapter**(`projectRoot`: string, `solcVersion`: string): *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
 
-*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:29](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L29)*
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:29](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L29)*
 
 Instantiates a TruffleArtifactAdapter
 
@@ -101,7 +81,7 @@ Name | Type | Description |
 
 *Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
 
-*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:40](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L40)*
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:40](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L40)*
 
 **Returns:** *`Promise<ContractData[]>`*
 
@@ -123,7 +103,7 @@ Name | Type | Description |
 
 
 
-# External module: "subproviders/src/types"
+
 
 
 ##  Type aliases
@@ -132,7 +112,7 @@ Name | Type | Description |
 
 Ƭ **Callback**: *function*
 
-*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/subproviders/src/types.ts#L131)*
+*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/subproviders/src/types.ts#L131)*
 
 #### Type declaration:
 
@@ -140,13 +120,13 @@ Name | Type | Description |
 
 ___
 
-##
+
 
 ###  ErrorCallback
 
 Ƭ **ErrorCallback**: *function*
 
-*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/subproviders/src/types.ts#L130)*
+*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/subproviders/src/types.ts#L130)*
 
 #### Type declaration:
 
@@ -161,13 +141,13 @@ Name | Type |
 
 ___
 
-##
+
 
 ###  NextCallback
 
 Ƭ **NextCallback**: *function*
 
-*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/subproviders/src/types.ts#L133)*
+*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/subproviders/src/types.ts#L133)*
 
 #### Type declaration:
 
@@ -185,7 +165,7 @@ ___
 
 Ƭ **OnNextCompleted**: *function*
 
-*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/subproviders/src/types.ts#L132)*
+*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/subproviders/src/types.ts#L132)*
 
 #### Type declaration:
 
@@ -225,13 +205,11 @@ Name | Type |
 
 
 
- 
 
 
 
 
 
- 
 
 
 
@@ -259,18 +237,14 @@ Name | Type |
 
 # Interface: JSONRPCRequestPayload
 
-## Hierarchy
 
-* **JSONRPCRequestPayload**
-
-
-##  Properties
+##   Properties
 
 ###  id
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L324)*
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L324)*
 
 ___
 
@@ -278,7 +252,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L325)*
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L325)*
 
 ___
 
@@ -286,7 +260,7 @@ ___
 
 • **method**: *string*
 
-*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L323)*
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L323)*
 
 ___
 
@@ -294,24 +268,20 @@ ___
 
 • **params**: *any[]*
 
-*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L322)*
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L322)*
 
 <hr />
 
 # Interface: JSONRPCResponseError
 
-## Hierarchy
 
-* **JSONRPCResponseError**
-
-
-##  Properties
+##   Properties
 
 ###  code
 
 • **code**: *number*
 
-*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L330)*
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L330)*
 
 ___
 
@@ -319,24 +289,20 @@ ___
 
 • **message**: *string*
 
-*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L329)*
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L329)*
 
 <hr />
 
 # Interface: JSONRPCResponsePayload
 
-## Hierarchy
 
-* **JSONRPCResponsePayload**
-
-
-##  Properties
+##   Properties
 
 ### `Optional` error
 
 • **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
 
-*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L337)*
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L337)*
 
 ___
 
@@ -344,7 +310,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L335)*
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L335)*
 
 ___
 
@@ -352,7 +318,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L336)*
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L336)*
 
 ___
 
@@ -360,11 +326,9 @@ ___
 
 • **result**: *any*
 
-*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L334)*
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/ethereum-types/src/index.ts#L334)*
 
 <hr />
-
-
 
 
 
@@ -401,22 +365,16 @@ ___
 This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
 It is used to report call stack traces whenever a revert occurs.
 
-## Hierarchy
 
-* `TraceCollectionSubprovider`
-
-  * **RevertTraceSubprovider**
+##   Constructors
 
 
-##  Constructors
-
-###  constructer
 
 \+ **new RevertTraceSubprovider**(`artifactAdapter`: `AbstractArtifactAdapter`, `defaultFromAddress`: string, `isVerbose`: boolean): *[RevertTraceSubprovider](#class-reverttracesubprovider)*
 
 *Overrides void*
 
-*Defined in [sol-trace/src/revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
+*Defined in [sol-trace/src/revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
 
 Instantiates a RevertTraceSubprovider instance
 
@@ -550,78 +508,17 @@ Stops trace collection
 
 
 
+
+
+
+
+
+
+
+
  
 
 
-
- 
-
-# Interface: ContractData
-
-## Hierarchy
-
-* **ContractData**
-
-
-##  Properties
-
-###  bytecode
-
-• **bytecode**: *string*
-
-*Defined in [sol-tracing-utils/src/types.ts:87](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L87)*
-
-___
-
-###  name
-
-• **name**: *string*
-
-*Defined in [sol-tracing-utils/src/types.ts:86](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L86)*
-
-___
-
-###  runtimeBytecode
-
-• **runtimeBytecode**: *string*
-
-*Defined in [sol-tracing-utils/src/types.ts:89](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L89)*
-
-___
-
-###  sourceCodes
-
-• **sourceCodes**: *[SourceCodes](#class-sourcecodes)*
-
-*Defined in [sol-tracing-utils/src/types.ts:91](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L91)*
-
-___
-
-###  sourceMap
-
-• **sourceMap**: *string*
-
-*Defined in [sol-tracing-utils/src/types.ts:88](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L88)*
-
-___
-
-###  sourceMapRuntime
-
-• **sourceMapRuntime**: *string*
-
-*Defined in [sol-tracing-utils/src/types.ts:90](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L90)*
-
-___
-
-###  sources
-
-• **sources**: *[Sources](#class-sources)*
-
-*Defined in [sol-tracing-utils/src/types.ts:92](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L92)*
-
-<hr />
-
- 
 
 
 
@@ -633,25 +530,7 @@ ___
 
 
 
- 
 
- 
-
- 
-
- 
-
-
-
- 
-
-
-
- 
-
-
-
- 
 
  
 
@@ -671,14 +550,8 @@ ___
 
 # Interface: JSONRPCRequestPayloadWithMethod
 
-## Hierarchy
 
-* `JSONRPCRequestPayload`
-
-  * **JSONRPCRequestPayloadWithMethod**
-
-
-##  Properties
+##   Properties
 
 ###  id
 
@@ -706,7 +579,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/subproviders/src/types.ts#L136)*
+*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/140cf4d37/packages/subproviders/src/types.ts#L136)*
 
 ___
 
@@ -750,87 +623,75 @@ Defined in ethereum-types/lib/index.d.ts:260
 
 
 
-# External module: "sol-tracing-utils/src/types"
 
-
-##  Type aliases
-
-##
-
-##
-
-##
-
-###  Subtrace
-
-Ƭ **Subtrace**: *`StructLog`[]*
-
-*Defined in [sol-tracing-utils/src/types.ts:96](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/sol-tracing-utils/src/types.ts#L96)*
-
-<hr />
-
-# External module: "ethereum-types/src/index"
 
 
 ##  Type aliases
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
+##  Type aliases
 
-##
 
-##
 
-##
 
-##
 
-##
 
-##
 
-###  Web3JsProvider
 
-Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
 
-*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/abf1141ad/packages/ethereum-types/src/index.ts#L11)*
 
-<hr />
 
-# External module: "sol-trace/src/revert_trace_subprovider"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <hr /> 
 
-# External module: "sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter"
+
 
 <hr /> 
 
-# External module: "sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter"
+
 
 <hr /> 
 
-# External module: "sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter"
+
 
 <hr /> 
 
