@@ -5,7 +5,7 @@
         "rootDir": ".",
         "resolveJsonModule": true
     },
-    "include": ["./src/**/*", "./test/**/*", "./test/fixtures/dYdX/artifacts/*.json"],
+    "include": ["./src/**/*", "./test/**/*"],
     "exclude": ["node_modules"],
     "files": [ "./test/fixtures/dYdX/artifacts/ZeroExV2CoordinatorMultiOrderExchangeWrapper.json" ]
 }
