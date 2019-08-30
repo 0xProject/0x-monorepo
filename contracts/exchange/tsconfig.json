@@ -4,9 +4,9 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/Exchange.json",
-        "generated-artifacts/ExchangeWrapper.json",
         "generated-artifacts/IAssetProxy.json",
         "generated-artifacts/IAssetProxyDispatcher.json",
+        "generated-artifacts/IEIP1271Data.json",
         "generated-artifacts/IEIP1271Wallet.json",
         "generated-artifacts/IExchange.json",
         "generated-artifacts/IExchangeCore.json",
@@ -36,8 +36,7 @@
         "generated-artifacts/TestSignatureValidator.json",
         "generated-artifacts/TestTransactions.json",
         "generated-artifacts/TestValidatorWallet.json",
-        "generated-artifacts/TestWrapperFunctions.json",
-        "generated-artifacts/Whitelist.json"
+        "generated-artifacts/TestWrapperFunctions.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

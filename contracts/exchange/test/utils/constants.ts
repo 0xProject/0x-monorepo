@@ -40,10 +40,3 @@ export enum ValidatorWalletAction {
     ReturnNothing = 6,
     NTypes = 7,
 }
-
-export enum ValidatorWalletDataType {
-    None = 0,
-    Order = 1,
-    ZeroExTransaction = 2,
-    NTypes = 3,
-}
