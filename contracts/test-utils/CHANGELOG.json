@@ -68,7 +68,11 @@
             },
             {
                 "note": "Add `toHex()`, `hexLeftPad()`, `hexRightPad()`, and 'hexInvert()' hex utils",
-                "pr": "TODO"
+                "pr": 2109
+            },
+            {
+                "note": "Increase the number of ganache accounts to 20",
+                "pr": 2109
             }
         ]
     },

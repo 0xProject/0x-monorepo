@@ -45,6 +45,7 @@ const gethConfigs = {
     shouldUseFakeGasEstimate: false,
 };
 const ganacheConfigs = {
+    total_accounts: constants.NUM_TEST_ACCOUNTS,
     shouldUseInProcessGanache: true,
     shouldAllowUnlimitedContractSize: true,
 };

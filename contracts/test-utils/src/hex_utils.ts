@@ -48,7 +48,7 @@ export function hexInvert(n: string | BigNumber | number, size: number = WORD_LE
  */
 export function toHex(n: string | BigNumber | number): string {
     let hex = '0x00';
-    if (typeof(n) === 'number') {
+    if (typeof n === 'number') {
         hex = `0x${n.toString(16)}`;
     } else if (BigNumber.isBigNumber(n)) {
         hex = `0x${n.toString(16)}`;
