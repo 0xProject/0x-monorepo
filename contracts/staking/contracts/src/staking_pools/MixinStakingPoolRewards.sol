@@ -85,7 +85,7 @@ contract MixinStakingPoolRewards is
         returns (uint256)
     {
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
-        if (getCurrentEpoch() == 0) return 0;
+        if (getCurrentEpoch() == 0 || delegatedStake.lastStored == getCurrentEpoch()) return 0;
 
         // `current` leg
         uint256 totalReward = 0;
