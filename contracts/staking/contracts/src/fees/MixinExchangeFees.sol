@@ -301,6 +301,7 @@ contract MixinExchangeFees is
                 rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[poolId][epoch - 1].denominator) / 10**18;
                 rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
             }
+            rewardRatioSumsLastUpdated[poolId] = epoch;
 
             // record reward in vault
             rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward);
