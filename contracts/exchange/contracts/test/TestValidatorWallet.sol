@@ -198,7 +198,7 @@ contract TestValidatorWallet is
             // Decode the order and hash
             LibOrder.Order memory order;
             (order, hash) = abi.decode(
-                data.slice(4, data.length - 1),
+                data.slice(4, data.length),
                 (LibOrder.Order, bytes32)
             );
             // Use the Exchange to calculate the hash of the order and assert
@@ -211,7 +211,7 @@ contract TestValidatorWallet is
             // Decode the transaction and hash
             LibZeroExTransaction.ZeroExTransaction memory transaction;
             (transaction, hash) = abi.decode(
-                data.slice(4, data.length - 1),
+                data.slice(4, data.length),
                 (LibZeroExTransaction.ZeroExTransaction, bytes32)
             );
             // Use the Exchange to calculate the hash of the transaction and assert
