@@ -1,0 +1,193 @@
+/*
+
+  Copyright 2018 ZeroEx Intl.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+*/
+
+pragma solidity ^0.5.9;
+
+import "../libs/LibSafeMath.sol";
+import "../interfaces/IStructs.sol";
+import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
+import "../sys/MixinScheduler.sol";
+import "./MixinZrxVault.sol";
+
+/// @dev This mixin contains logic for managing stake storage.
+contract MixinStakeStorage is
+    IStakingEvents,
+    MixinDeploymentConstants,
+    Ownable,
+    MixinConstants,
+    MixinStorage,
+    MixinScheduler,
+    MixinOwnable,
+    MixinZrxVault
+{
+
+    using LibSafeMath for uint256;
+
+    /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
+    ///      This change comes into effect next epoch.
+    /// @param fromPtr pointer to storage location of `from` stake.
+    /// @param toPtr pointer to storage location of `to` stake.
+    /// @param amount of stake to move.
+    function _moveStake(
+        IStructs.StoredStakeBalance storage fromPtr,
+        IStructs.StoredStakeBalance storage toPtr,
+        uint256 amount
+    )
+        internal
+    {
+        // do nothing if pointers are equal
+        if (_arePointersEqual(fromPtr, toPtr)) {
+            return;
+        }
+
+        // load balance from storage and synchronize it
+        IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
+        IStructs.StoredStakeBalance memory to = _syncBalanceDestructive(toPtr);
+
+        // sanity check on balance
+        if (amount > from.next) {
+            revert("Insufficient Balance");
+        }
+
+        // move stake for next epoch
+        from.next = LibSafeMath._downcastToUint96(uint256(from.next)._sub(amount));
+        to.next = LibSafeMath._downcastToUint96(uint256(to.next)._add(amount));
+
+        // update state in storage
+        _storeBalance(fromPtr, from);
+        _storeBalance(toPtr, to);
+    }
+
+    /// @dev Synchronizes the fields of a stored balance.
+    ///      The structs `current` field is set to `next` if the
+    ///      current epoch is greater than the epoch in which the struct
+    ///      was stored.
+    /// @param balance to update. This will be equal to the return value after calling.
+    /// @return synchronized balance.
+    function _syncBalanceDestructive(IStructs.StoredStakeBalance memory balance)
+        internal
+        view
+        returns (IStructs.StoredStakeBalance memory)
+    {
+        uint64 currentEpoch = getCurrentEpoch();
+        if (currentEpoch > balance.lastStored) {
+            balance.lastStored = currentEpoch;
+            balance.current = balance.next;
+        }
+        return balance;
+    }
+
+    /// @dev Mints new value in a balance.
+    ///      This causes both the `current` and `next` fields to increase immediately.
+    /// @param balancePtr storage pointer to balance.
+    /// @param amount to mint.
+    function _mintBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+        internal
+    {
+        // Remove stake from balance
+        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._add(amount));
+        balance.current = LibSafeMath._downcastToUint96(uint256(balance.current)._add(amount));
+
+        // update state
+        _storeBalance(balancePtr, balance);
+    }
+
+    /// @dev Burns existing value in a balance.
+    ///      This causes both the `current` and `next` fields to decrease immediately.
+    /// @param balancePtr storage pointer to balance.
+    /// @param amount to mint.
+    function _burnBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+        internal
+    {
+        // Remove stake from balance
+        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._sub(amount));
+        balance.current = LibSafeMath._downcastToUint96(uint256(balance.current)._sub(amount));
+
+        // update state
+        _storeBalance(balancePtr, balance);
+    }
+
+    /// @dev Returns true iff storage pointers resolve to same storage location.
+    /// @param balancePtrA first storage pointer.
+    /// @param balancePtrB second storage pointer.
+    /// @return true iff pointers are equal.
+    function _arePointersEqual(
+        IStructs.StoredStakeBalance storage balancePtrA,
+        IStructs.StoredStakeBalance storage balancePtrB
+    )
+        private
+        returns (bool areEqual)
+    {
+        assembly {
+            areEqual := and(
+                eq(balancePtrA_slot, balancePtrB_slot),
+                eq(balancePtrA_offset, balancePtrB_offset)
+            )
+        }
+        return areEqual;
+    }
+
+    /// @dev Increments a balance.
+    ///      Ths updates the `next` field but not the `current` field.
+    /// @param balancePtr storage pointer to balance.
+    /// @param amount to increment by.
+    function _incrementBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+        internal
+    {
+        // Add stake to balance
+        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._add(amount));
+
+        // update state
+        _storeBalance(balancePtr, balance);
+    }
+
+    /// @dev Decrements a balance.
+    ///      Ths updates the `next` field but not the `current` field.
+    /// @param balancePtr storage pointer to balance.
+    /// @param amount to decrement by.
+    function _decrementBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+        internal
+    {
+        // Remove stake from balance
+        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._sub(amount));
+
+        // update state
+        _storeBalance(balancePtr, balance);
+    }
+
+    /// @dev Stores a balance in storage.
+    /// @param balancePtr points to where `balance` will be stored.
+    /// @param balance to save to storage.
+    function _storeBalance(
+        IStructs.StoredStakeBalance storage balancePtr,
+        IStructs.StoredStakeBalance memory balance
+    )
+        private
+    {
+        // note - this compresses into a single `sstore` when optimizations are enabled,
+        // since the StakeBalance struct occupies a single word of storage.
+        balancePtr.lastStored = balance.lastStored;
+        balancePtr.next = balance.next;
+        balancePtr.current = balance.current;
+    }
+}

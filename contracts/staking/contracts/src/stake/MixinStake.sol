@@ -104,6 +104,7 @@ contract MixinStake is
     }
 
     /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
+    ///      This change comes into effect next epoch.
     /// @param from state to move stake out of.
     /// @param to state to move stake into.
     /// @param amount of stake to move.

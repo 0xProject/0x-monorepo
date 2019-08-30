@@ -142,4 +142,26 @@ contract MixinStakeBalances is
             next: storedBalance.next
         });
     }
+
+    /// @dev Returns the stake that can be withdrawn for a given owner.
+    /// This stake is in the "Deactive & Withdrawable" state.
+    /// @param owner to query.
+    /// @return Withdrawable stake for owner.
+    function _computeWithdrawableStake(address owner, uint256 cachedWithdrawableStakeByOwner)
+        internal
+        view
+        returns (uint256)
+    {
+        // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
+        // so the upper bound of withdrawable stake is always limited by the value of `next`.
+        IStructs.StoredStakeBalance memory storedBalance = inactiveStakeByOwner[owner];
+        uint256 storedWithdrawableBalance = withdrawableStakeByOwner[owner];
+        if (storedBalance.lastStored == currentEpoch) {
+            return storedBalance.next < cachedWithdrawableStakeByOwner ? storedBalance.next : cachedWithdrawableStakeByOwner;
+        } else if(storedBalance.lastStored._add(1) == currentEpoch) {
+            return storedBalance.next < storedBalance.current ? storedBalance.next : storedBalance.current;
+        } else {
+            return storedBalance.next;
+        }
+    }
 }
