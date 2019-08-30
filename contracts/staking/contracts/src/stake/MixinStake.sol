@@ -175,8 +175,9 @@ contract MixinStake is
     )
         private
     {
-        // ensure the reward balance is synchronized before modifying stake state.
-       _syncRewardBalanceOfStakingPoolMember(poolId, owner);
+        // transfer any rewards from the transient pool vault to the eth vault;
+        // this must be done before we can modify the staker's portion of the delegator pool.
+       _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -196,8 +197,9 @@ contract MixinStake is
     )
         private
     {
-        // ensure the reward balance is synchronized before modifying stake state.
-        _syncRewardBalanceOfStakingPoolMember(poolId, owner);
+        // transfer any rewards from the transient pool vault to the eth vault;
+        // this must be done before we can modify the staker's portion of the delegator pool.
+        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);

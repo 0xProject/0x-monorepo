@@ -91,7 +91,12 @@ contract MixinStakingPoolRewards is
         return totalReward;
     }
 
+    /// @dev Computes a member's reward over a given epoch interval.
+    /// @param poolId Uniqud Id of pool.
     /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
+    /// @param beginEpoch beginning of interval.
+    /// @param endEpoch end of interval.
+    /// @return rewards accumulated over interval [beginEpoch, endEpoch]
     function _computeMemberRewardOverInterval(
         bytes32 poolId,
         uint256 memberStakeOverInterval,
@@ -114,18 +119,23 @@ contract MixinStakingPoolRewards is
         return reward;
     }
 
-    /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    /// @dev Transfers a delegators accumulated rewards from the transient pool Reward Pool vault
+    ///      to the Eth Vault. This is required before the member's stake in the pool can be
+    ///      modified.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
-    /// @return Balance.
-    function _syncRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
+    function _transferDelegatorsAccumulatedRewardsToEthVault(bytes32 poolId, address member)
         internal
     {
-        // eat update cost if necessary
-        if (getCurrentEpoch() == 0) {
+        // there are no delegators in the first epoch
+        uint256 currentEpoch = getCurrentEpoch();
+        if (currentEpoch == 0) {
             return;
         }
-        if (rewardRatioSumsLastUpdated[poolId] != getCurrentEpoch() - 1) {
+
+
+        uint256 lastEpoch = currentEpoch._sub(1); // ie, most recently finalized epoch.
+        if (rewardRatioSumsLastUpdated[poolId] != lastEpoch) {
             if (rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]].denominator == 0) {
                 revert('naaaaah');
             }
@@ -155,8 +165,12 @@ contract MixinStakingPoolRewards is
         // Pay the delegator
         require(address(rewardVault) != address(0), 'eyo');
         rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
+    }
 
-        // Remove the reference
+    function _syncCumulativeRewardsForPool()
+        private
+    {
+
     }
 
 /*
