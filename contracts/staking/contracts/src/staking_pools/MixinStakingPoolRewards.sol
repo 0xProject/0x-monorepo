@@ -48,7 +48,7 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
-    /// @return Balance.
+    /// @return Balance in ETH.
     function computeRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
         view
@@ -57,53 +57,58 @@ contract MixinStakingPoolRewards is
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
         if (getCurrentEpoch() == 0 || delegatedStake.lastStored == getCurrentEpoch()) return 0;
 
+        // compute first leg
+        uint256 firstLeg = (delegatedStake.current != 0)
+            ? _computeMemberRewardOverInterval(
+                poolId,
+                delegatedStake.current,
+                delegatedStake.lastStored - 1,
+                delegatedStake.lastStored
+            )
+            : 0;
 
-        // `current` leg
-        uint256 totalReward = 0;
-        if (delegatedStake.current != 0) {
-            uint256 beginEpoch = delegatedStake.lastStored - 1;
-            uint endEpoch = delegatedStake.lastStored;
-            IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
-            IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
-
-
-            if (beginRatio.denominator == 0) {
-                revert('begin denom = 0 (1)');
-            }
-
-            if (endRatio.denominator == 0) {
-                revert('end denom = 0 (1)');
-            }
-
-            uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
-            uint256 rewardRatio = (delegatedStake.current * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
-            totalReward += rewardRatio;
+        // compute end epoch of second leg
+        uint256 secondLegEndEpoch = uint256(getCurrentEpoch()) - 1;
+        if (rewardRatioSumsLastUpdated[poolId] < secondLegEndEpoch) {
+            secondLegEndEpoch = rewardRatioSumsLastUpdated[poolId];
         }
 
-        // `next` leg
-        if (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored) {
-            uint256 beginEpoch = delegatedStake.lastStored;
-            uint256 endEpoch = uint256(getCurrentEpoch()) - 1;
-            if (rewardRatioSumsLastUpdated[poolId] < endEpoch) {
-                endEpoch = rewardRatioSumsLastUpdated[poolId];
-            }
-            IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
-            IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
+        // compute second leg
+        uint256 secondLeg = (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored)
+            ? _computeMemberRewardOverInterval(
+                poolId,
+                delegatedStake.next,
+                delegatedStake.lastStored,
+                secondLegEndEpoch
+            )
+            : 0;
 
-            if (beginRatio.denominator == 0) {
-                revert('begin denom = 0 (2)');
-            }
-
-            if (endRatio.denominator == 0) {
-                revert('end denom = 0 (2)');
-            }
-
-            uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
-            uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
-            totalReward += rewardRatio;
-        }
-
+        // total reward is sum of legs
+        uint256 totalReward = firstLeg._add(secondLeg);
         return totalReward;
+    }
+
+    /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
+    function _computeMemberRewardOverInterval(
+        bytes32 poolId,
+        uint256 memberStakeOverInterval,
+        uint256 beginEpoch,
+        uint256 endEpoch
+    )
+        private
+        view
+        returns (uint256)
+    {
+        IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
+        IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
+        uint256 reward = LibSafeMath._scaleFractionalDifference(
+            endRatio.numerator,
+            endRatio.denominator,
+            beginRatio.numerator,
+            beginRatio.denominator,
+            memberStakeOverInterval
+        );
+        return reward;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

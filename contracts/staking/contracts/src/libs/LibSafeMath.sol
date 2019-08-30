@@ -22,7 +22,7 @@ pragma solidity ^0.5.9;
 library LibSafeMath {
 
     uint256 constant internal MAX_UINT_96 = 79228162514264337593543950335; // 2**96-1
-    
+
     uint256 constant internal MAX_UINT_64 = 18446744073709551615; // 2**64-1
 
     /// @dev Returns the addition of two unsigned integers, reverting on overflow.
@@ -93,4 +93,84 @@ library LibSafeMath {
         );
         return uint64(a);
     }
+
+    /// @dev Safely adds two fractions `n_1/d_1 + n_2/d_2`
+    /// @param n_1 numerator of `1`
+    /// @param d_1 denominator of `1`
+    /// @param n_2 numerator of `2`
+    /// @param d_2 denominator of `2`
+    /// @return addition of fractions
+    function _addFractions(
+        uint256 n_1,
+        uint256 d_1,
+        uint256 n_2,
+        uint256 d_2
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        uint256 numerator = _add(
+            _mul(n_1, d_2),
+            _mul(n_2, d_1)
+        );
+        uint256 denominator = _mul(d_1, d_2);
+        return _div(numerator, denominator);
+    }
+
+    /// @dev Safely subtracts two fractions `n_1/d_1 - n_2/d_2`
+    /// @param n_1 numerator of `1`
+    /// @param d_1 denominator of `1`
+    /// @param n_2 numerator of `2`
+    /// @param d_2 denominator of `2`
+    /// @return difference of fractions
+    function _subFractions(
+        uint256 n_1,
+        uint256 d_1,
+        uint256 n_2,
+        uint256 d_2
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        uint256 numerator = _sub(
+            _mul(n_1, d_2),
+            _mul(n_2, d_1)
+        );
+        uint256 denominator = _mul(d_1, d_2);
+        return _div(numerator, denominator);
+    }
+
+    /// @dev Safely scales the difference two fractions.
+    /// @param n_1 numerator of `1`
+    /// @param d_1 denominator of `1`
+    /// @param n_2 numerator of `2`
+    /// @param d_2 denominator of `2`
+    /// @param s scalar to multiply by difference.
+    /// @return result = `s * (n_1/d_1 - n_2/d_2)`.
+    function _scaleFractionalDifference(
+        uint256 n_1,
+        uint256 d_1,
+        uint256 n_2,
+        uint256 d_2,
+        uint256 s
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        uint256 numerator = _sub(
+            _mul(n_1, d_2),
+            _mul(n_2, d_1)
+        );
+        uint256 tmp = _div(numerator, d_2);
+        uint256 result = _div(
+            _mul(s, tmp),
+            d_1
+        );
+        return result;
+    }
+
+
 }
