@@ -16,6 +16,7 @@ import {
     StakingPoolRewardVaultContract,
     StakingProxyContract,
     ZrxVaultContract,
+    EthVaultContract,
 } from '../../src';
 
 import { ApprovalFactory } from './approval_factory';
@@ -33,6 +34,7 @@ export class StakingWrapper {
     private _stakingContractIfExists?: StakingContract;
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
+    private _ethVaultContractIfExists?: EthVaultContract;
     private _rewardVaultContractIfExists?: StakingPoolRewardVaultContract;
     private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
     public static toBaseUnitAmount(amount: BigNumber | number): BigNumber {
@@ -91,6 +93,10 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._zrxVaultContractIfExists as ZrxVaultContract;
     }
+    public getEthVaultContract(): EthVaultContract {
+        this._validateDeployedOrThrow();
+        return this._ethVaultContractIfExists as EthVaultContract;
+    }
     public getStakingPoolRewardVaultContract(): StakingPoolRewardVaultContract {
         this._validateDeployedOrThrow();
         return this._rewardVaultContractIfExists as StakingPoolRewardVaultContract;
@@ -111,6 +117,13 @@ export class StakingWrapper {
             this._zrxTokenContract.address,
             zrxAssetData,
         );
+        // deploy eth vault
+        this._ethVaultContractIfExists = await EthVaultContract.deployFrom0xArtifactAsync(
+            artifacts.EthVault,
+            this._provider,
+            txDefaults,
+            artifacts,
+        );
         // deploy reward vault
         this._rewardVaultContractIfExists = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
             artifacts.StakingPoolRewardVault,
@@ -118,6 +131,8 @@ export class StakingWrapper {
             txDefaults,
             artifacts,
         );
+        // set eth vault in reward vault
+        await this._rewardVaultContractIfExists.setEthVault.sendTransactionAsync(this._ethVaultContractIfExists.address);
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
             this._zrxVaultContractIfExists.address,
@@ -368,8 +383,9 @@ export class StakingWrapper {
 
     public async testFinalizefees(rewards: {reward: BigNumber, poolId: string}[]): Promise<TransactionReceiptWithDecodedLogs> {
         await this.fastForwardToNextEpochAsync();
+        const totalRewards = _.sumBy(rewards, (v: any) => {return v.reward.toNumber();});
         const calldata = this.getStakingContract().testFinalizeFees.getABIEncodedTransactionData(rewards);
-        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
+        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(totalRewards), true);
         return txReceipt;
     }
 

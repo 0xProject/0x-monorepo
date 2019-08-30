@@ -85,15 +85,32 @@ contract MixinStakingPoolRewards is
         returns (uint256)
     {
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
-        //uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
         if (getCurrentEpoch() == 0) return 0;
 
-        IStructs.ND memory beginRatio = rewardRatioSums[uint256(delegatedStake.current == 0 ? delegatedStake.lastStored : delegatedStake.lastStored - 1)];
-        IStructs.ND memory endRatio = rewardRatioSums[uint256(getCurrentEpoch()) - 1];
-        uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
-        uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
+        // `current` leg
+        uint256 totalReward = 0;
+        if (delegatedStake.current != 0) {
+            uint256 beginEpoch = delegatedStake.lastStored - 1;
+            uint endEpoch = delegatedStake.lastStored;
+            IStructs.ND memory beginRatio = rewardRatioSums[beginEpoch];
+            IStructs.ND memory endRatio = rewardRatioSums[endEpoch];
+            uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
+            uint256 rewardRatio = (delegatedStake.current * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
+            totalReward += rewardRatio;
+        }
 
-        return rewardRatio;
+        // `next` leg
+        {
+            uint256 beginEpoch = delegatedStake.lastStored;
+            uint endEpoch = uint256(getCurrentEpoch()) - 1;
+            IStructs.ND memory beginRatio = rewardRatioSums[beginEpoch];
+            IStructs.ND memory endRatio = rewardRatioSums[endEpoch];
+            uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
+            uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
+            totalReward += rewardRatio;
+        }
+
+        return totalReward;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -109,6 +126,7 @@ contract MixinStakingPoolRewards is
         }
 
         // Pay the delegator
+        require(address(rewardVault) != address(0), 'eyo');
         rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
 
         // Remove the reference

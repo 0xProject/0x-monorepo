@@ -75,12 +75,15 @@ interface IStakingPoolRewardVault {
         uint8 operatorShare
     );
 
-    /// @dev Default constructor.
+    /// @dev Fallback function.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     function ()
         external
         payable;
+
+    function setEthVault(address ethVaultAddress)
+        external;
 
     /// @dev Deposit a reward in ETH for a specific pool.
     /// Note that this is only callable by the staking contract, and when

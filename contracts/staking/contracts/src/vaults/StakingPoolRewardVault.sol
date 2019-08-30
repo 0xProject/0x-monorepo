@@ -56,7 +56,7 @@ contract StakingPoolRewardVault is
     /// @dev Sets the Eth Vault.
     /// Note that only the contract owner can call this.
     /// @param ethVaultAddress Address of the Eth Vault.
-    function setErc20Proxy(address ethVaultAddress)
+    function setEthVault(address ethVaultAddress)
         external
         onlyOwner
     {
@@ -123,6 +123,9 @@ contract StakingPoolRewardVault is
         if (amount == 0) {
             return;
         }
+
+        require(address(ethVault) != address(0), 'eth vault not set');
+
         // sanity check - sufficient balance?
         require(
             amount <= balanceByPoolId[poolId].operatorBalance,
@@ -150,6 +153,8 @@ contract StakingPoolRewardVault is
         external
         onlyStakingContract
     {
+        require(address(ethVault) != address(0), 'eth vault not set');
+
         // sanity check - sufficient balance?
         require(
             amount <= balanceByPoolId[poolId].membersBalance,
