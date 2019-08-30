@@ -23,6 +23,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
+// solhint-disable
 contract IEIP1271Data {
 
     /// @dev This function's selector is used when ABI encoding the order

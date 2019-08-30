@@ -7,18 +7,11 @@ import {
     describe,
     expect,
     getLatestBlockTimestampAsync,
-    LogDecoder,
     OrderFactory,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import {
-    assetDataUtils,
-    ExchangeRevertErrors,
-    generatePseudoRandomSalt,
-    orderHashUtils,
-    transactionHashUtils,
-} from '@0x/order-utils';
-import { EIP712DomainWithDefaultSchema, FillResults, OrderStatus, RevertReason } from '@0x/types';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { EIP712DomainWithDefaultSchema, FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';

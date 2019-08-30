@@ -19,8 +19,6 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract IEIP1271Wallet is
