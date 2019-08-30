@@ -161,21 +161,10 @@ contract MixinStake is
         );
     }
 
-    function _getBalancePtrFromState(IStructs.StakeState memory state)
-        private
-        returns (IStructs.StoredStakeBalance storage)
-    {
-        if (state.id == IStructs.StakeStateId.ACTIVE) {
-            return activeStakeByOwner[msg.sender];
-        } else if(state.id == IStructs.StakeStateId.INACTIVE) {
-            return inactiveStakeByOwner[msg.sender];
-        } else if(state.id == IStructs.StakeStateId.DELEGATED) {
-            return delegatedStakeByOwner[msg.sender];
-        } else {
-            revert("Illegal State");
-        }
-    }
-
+    /// @dev Delegates an owners stake to a staking pool.
+    /// @param poolId Id of pool to delegate to.
+    /// @param owner of stake to delegate.
+    /// @param amount of stake to delegate.
     function _delegateStake(
         bytes32 poolId,
         address payable owner,
@@ -183,6 +172,7 @@ contract MixinStake is
     )
         private
     {
+        // ensure the reward balance is synchronized before modifying stake state.
        _syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
@@ -192,6 +182,10 @@ contract MixinStake is
         _incrementBalance(delegatedStakeByPoolId[poolId], amount);
     }
 
+    /// @dev Delegates an owners stake to a staking pool.
+    /// @param poolId Id of pool to delegate to.
+    /// @param owner of stake to delegate.
+    /// @param amount of stake to delegate.
     function _undelegateStake(
         bytes32 poolId,
         address payable owner,
@@ -199,6 +193,7 @@ contract MixinStake is
     )
         private
     {
+        // ensure the reward balance is synchronized before modifying stake state.
         _syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
@@ -206,5 +201,26 @@ contract MixinStake is
 
         // decrement how much stake has been delegated to pool
         _decrementBalance(delegatedStakeByPoolId[poolId], amount);
+    }
+
+    /// @dev Returns a storage pointer to a user's stake in a given state.
+    /// @param state of user's stake to lookup.
+    /// @return a storage pointer to the corresponding stake stake
+    function _getBalancePtrFromState(IStructs.StakeState memory state)
+        private
+        returns (IStructs.StoredStakeBalance storage)
+    {
+        // lookup state
+        address owner = msg.sender;
+        if (state.id == IStructs.StakeStateId.ACTIVE) {
+            return activeStakeByOwner[owner];
+        } else if(state.id == IStructs.StakeStateId.INACTIVE) {
+            return inactiveStakeByOwner[owner];
+        } else if(state.id == IStructs.StakeStateId.DELEGATED) {
+            return delegatedStakeByOwner[owner];
+        }
+
+        // not found
+        revert("Unrecognized State");
     }
 }
