@@ -6,7 +6,6 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as Exchange from '../generated-artifacts/Exchange.json';
-import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispatcher.json';
 import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
@@ -39,10 +38,7 @@ import * as TestSignatureValidator from '../generated-artifacts/TestSignatureVal
 import * as TestTransactions from '../generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
-import * as Whitelist from '../generated-artifacts/Whitelist.json';
 export const artifacts = {
-    ExchangeWrapper: ExchangeWrapper as ContractArtifact,
-    Whitelist: Whitelist as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinExchangeCore: MixinExchangeCore as ContractArtifact,

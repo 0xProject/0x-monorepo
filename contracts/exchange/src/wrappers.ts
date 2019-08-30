@@ -4,7 +4,6 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/exchange';
-export * from '../generated-wrappers/exchange_wrapper';
 export * from '../generated-wrappers/i_asset_proxy';
 export * from '../generated-wrappers/i_asset_proxy_dispatcher';
 export * from '../generated-wrappers/i_e_i_p1271_wallet';
@@ -37,4 +36,3 @@ export * from '../generated-wrappers/test_signature_validator';
 export * from '../generated-wrappers/test_transactions';
 export * from '../generated-wrappers/test_validator_wallet';
 export * from '../generated-wrappers/test_wrapper_functions';
-export * from '../generated-wrappers/whitelist';
