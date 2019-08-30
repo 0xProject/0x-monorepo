@@ -160,7 +160,7 @@ contract MixinStake is
     )
         private
     {
-        syncRewardBalanceOfStakingPoolMember(poolId, owner);
+       // syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -176,7 +176,7 @@ contract MixinStake is
     )
         private
     {
-        syncRewardBalanceOfStakingPoolMember(poolId, owner);
+       // syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);

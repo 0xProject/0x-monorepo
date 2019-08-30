@@ -96,6 +96,7 @@ contract MixinStakingPoolRewards is
         return rewardRatio;
     }
 
+/*
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
@@ -112,6 +113,7 @@ contract MixinStakingPoolRewards is
         // Remove the reference
 
     }
+    */
 
 /*
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
