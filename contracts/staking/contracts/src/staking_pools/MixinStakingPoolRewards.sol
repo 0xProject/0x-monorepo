@@ -87,6 +87,7 @@ contract MixinStakingPoolRewards is
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
         if (getCurrentEpoch() == 0 || delegatedStake.lastStored == getCurrentEpoch()) return 0;
 
+
         // `current` leg
         uint256 totalReward = 0;
         if (delegatedStake.current != 0) {
@@ -94,17 +95,42 @@ contract MixinStakingPoolRewards is
             uint endEpoch = delegatedStake.lastStored;
             IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
             IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
+
+
+            if (beginRatio.denominator == 0) {
+                revert('begin denom = 0 (1)');
+            }
+
+            if (endRatio.denominator == 0) {
+                revert('end denom = 0 (1)');
+            }
+
             uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
             uint256 rewardRatio = (delegatedStake.current * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
             totalReward += rewardRatio;
         }
 
         // `next` leg
-        {
+        if (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored) {
             uint256 beginEpoch = delegatedStake.lastStored;
-            uint endEpoch = uint256(getCurrentEpoch()) - 1;
+            uint256 endEpoch = uint256(getCurrentEpoch()) - 1;
+            if (rewardRatioSumsLastUpdated[poolId] < endEpoch) {
+                revert(
+                    'made it here greg'
+                );
+                endEpoch = rewardRatioSumsLastUpdated[poolId];
+            }
             IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];
             IStructs.ND memory endRatio = rewardRatioSums[poolId][endEpoch];
+
+            if (beginRatio.denominator == 0) {
+                revert('begin denom = 0 (2)');
+            }
+
+            if (endRatio.denominator == 0) {
+                revert('end denom = 0 (2)');
+            }
+
             uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
             uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
             totalReward += rewardRatio;
@@ -125,8 +151,20 @@ contract MixinStakingPoolRewards is
             return;
         }
         if (rewardRatioSumsLastUpdated[poolId] != getCurrentEpoch() - 1) {
+            if (rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]].denominator == 0) {
+                revert('naaaaah');
+            }
+
             rewardRatioSums[poolId][getCurrentEpoch() - 1] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
             rewardRatioSumsLastUpdated[poolId] = getCurrentEpoch() - 1;
+        }
+
+        // just in case
+        // also set this epoch's ; it'll be overwritten if fees come in.
+
+
+        if (rewardRatioSums[poolId][getCurrentEpoch()].denominator == 0) {
+            rewardRatioSums[poolId][getCurrentEpoch()] = rewardRatioSums[poolId][rewardRatioSumsLastUpdated[poolId]];
         }
 
         if (delegatedStakeToPoolByOwner[member][poolId].lastStored == getCurrentEpoch()) {

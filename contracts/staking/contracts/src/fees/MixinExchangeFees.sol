@@ -218,6 +218,7 @@ contract MixinExchangeFees is
 
             // NOTE THIS SHOULD BE THE DELEGATOR PORTION OF REWARD @TODO
             /*
+            uint256 lastKnownEpoch = rewardRatioSumsLastUpdated[poolId];
             if (epoch == 0) {
                 rewardRatioSums[poolId][epoch].numerator = 0;
                 rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
@@ -225,13 +226,13 @@ contract MixinExchangeFees is
                 rewardRatioSumsLastUpdated[poolId] = epoch;
             } else if (activePools[i].delegatedStake == 0) {
                 // set carryover
-                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][epoch - 1];
-                rewardRatioSums[poolId][epoch].carry = reward._downcastToUint96() + rewardRatioSums[poolId][epoch - 1].carry;
+                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][lastKnownEpoch];
+                rewardRatioSums[poolId][epoch].carry = reward._downcastToUint96() + rewardRatioSums[poolId][lastKnownEpoch].carry;
                 rewardRatioSumsLastUpdated[poolId] = epoch;
             } else {
-                reward += rewardRatioSums[poolId][epoch - 1].carry;
-                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][epoch - 1].numerator * activePools[i].delegatedStake + reward * rewardRatioSums[poolId][epoch - 1].denominator) / 10**18;
-                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][epoch - 1].denominator * activePools[i].delegatedStake) / 10**18;
+                reward += rewardRatioSums[poolId][lastKnownEpoch].carry;
+                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][lastKnownEpoch].numerator * activePools[i].delegatedStake + reward * rewardRatioSums[poolId][lastKnownEpoch].denominator) / 10**18;
+                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][lastKnownEpoch].denominator * activePools[i].delegatedStake) / 10**18;
                 rewardRatioSumsLastUpdated[poolId] = epoch;
             }
             */
@@ -285,21 +286,24 @@ contract MixinExchangeFees is
     {
 
         uint256 epoch = getCurrentEpoch();
+
         for (uint i = 0; i != rewards.length; i++) {
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
             bytes32 poolId = rewards[i].poolId;
+
+            uint256 lastKnownEpoch = rewardRatioSumsLastUpdated[poolId];
             if (epoch == 0) {
                 rewardRatioSums[poolId][epoch].numerator = 0;
                 rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
                 rewardRatioSums[poolId][epoch].carry = rewards[i].reward._downcastToUint96();
             } else if (totalStakeDelegatedToPool == 0) {
                 // set carryover
-                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][epoch - 1];
-                rewardRatioSums[poolId][epoch].carry = rewards[i].reward._downcastToUint96() + rewardRatioSums[poolId][epoch - 1].carry;
+                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][lastKnownEpoch];
+                rewardRatioSums[poolId][epoch].carry = rewards[i].reward._downcastToUint96() + rewardRatioSums[poolId][lastKnownEpoch].carry;
             } else {
-                rewards[i].reward += rewardRatioSums[poolId][epoch - 1].carry;
-                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[poolId][epoch - 1].denominator) / 10**18;
-                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
+                rewards[i].reward += rewardRatioSums[poolId][lastKnownEpoch].carry;
+                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[poolId][lastKnownEpoch].denominator) / 10**18;
+                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
             }
             rewardRatioSumsLastUpdated[poolId] = epoch;
 
@@ -312,6 +316,5 @@ contract MixinExchangeFees is
         }
 
         _goToNextEpoch();
-
     }
 }
