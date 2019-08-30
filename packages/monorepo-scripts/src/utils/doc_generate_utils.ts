@@ -253,7 +253,7 @@ export class DocGenerateUtils {
         _.each(referenceNames, referenceName => {
             if (
                 !_.includes(allExportedItems, referenceName) &&
-                docGenConfigs.EXTERNAL_TYPE_TO_LINK[referenceName] === undefined
+                docGenConfigs.EXTERNAL_TYPE_MAP[referenceName] === undefined
             ) {
                 missingReferences.push(referenceName);
             }
@@ -262,7 +262,7 @@ export class DocGenerateUtils {
             throw new Error(
                 `${this._packageName} package needs to export: \n${missingReferences.join(
                     '\n',
-                )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
+                )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_MAP.`,
             );
         }
     }

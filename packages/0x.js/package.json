@@ -76,6 +76,7 @@
         "webpack": "^4.20.2"
     },
     "dependencies": {
+        "@0x/abi-gen-wrappers": "^5.2.0",
         "@0x/assert": "^2.1.4",
         "@0x/asset-swapper": "^1.0.2",
         "@0x/base-contract": "^5.3.2",

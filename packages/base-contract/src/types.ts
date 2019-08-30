@@ -31,8 +31,3 @@ export enum SubscriptionErrors {
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
-
-export interface BlockRange {
-    fromBlock: BlockParam;
-    toBlock: BlockParam;
-}
