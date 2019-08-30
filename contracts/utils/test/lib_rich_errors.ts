@@ -1,36 +1,31 @@
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { StringRevertError } from '@0x/utils';
-import * as chai from 'chai';
-import * as _ from 'lodash';
+import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
+import { coerceThrownErrorAsRevertError, StringRevertError } from '@0x/utils';
 
 import { artifacts, TestLibRichErrorsContract } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('LibRichErrors', () => {
+blockchainTests('LibRichErrors', env => {
     let lib: TestLibRichErrorsContract;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
         // Deploy SafeMath
         lib = await TestLibRichErrorsContract.deployFrom0xArtifactAsync(
             artifacts.TestLibRichErrors,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             {},
         );
     });
 
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
     describe('_rrevert', () => {
         it('should correctly revert the extra bytes', async () => {
-            return expect(lib.externalRRevert.callAsync(constants.NULL_BYTES)).to.revertWith(constants.NULL_BYTES);
+            const extraBytes = hexRandom(100);
+            try {
+                await lib.externalRRevert.callAsync(extraBytes);
+            } catch (err) {
+                const revertError = coerceThrownErrorAsRevertError(err);
+                return expect(revertError.encode()).to.eq(extraBytes);
+            }
+            return expect.fail('Expected call to revert');
         });
 
         it('should correctly revert a StringRevertError', async () => {
