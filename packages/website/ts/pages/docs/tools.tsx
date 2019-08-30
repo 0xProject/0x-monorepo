@@ -26,7 +26,7 @@ interface IHitsProps {
 export const DocsTools: React.FC = () => {
     const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
     return (
-        <DocsPageLayout title="Tools">
+        <DocsPageLayout title="Tools & Libraries">
             <InstantSearch searchClient={searchClient} indexName={nameToSearchIndex.tools}>
                 <Configure hitsPerPage={hitsPerPage.pages} />
                 <Columns>

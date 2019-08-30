@@ -46,8 +46,8 @@ const shortcutLinks = [
         url: WebsitePaths.DocsGuides,
     },
     {
-        heading: 'Tools',
-        description: 'Browse and filter through all the open-source 0x developer tools',
+        heading: 'Tools & Libraries',
+        description: 'Browse and filter through all the open-source 0x developer tools and libraries',
         icon: 'tools',
         url: WebsitePaths.DocsTools,
     },
