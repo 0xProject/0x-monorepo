@@ -2,7 +2,8 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": "."
+        "rootDir": ".",
+        "resolveJsonModule": true
     },
     "include": ["./src/**/*", "./test/**/*", "./test/fixtures/dYdX/artifacts/*.json"],
     "exclude": ["node_modules"]

@@ -1,0 +1,105 @@
+diff --git a/packages/abi-gen-templates/CHANGELOG.json b/packages/abi-gen-templates/CHANGELOG.json
+index 873c3c54b..7f572ce7f 100644
+--- a/packages/abi-gen-templates/CHANGELOG.json
++++ b/packages/abi-gen-templates/CHANGELOG.json
+@@ -1,5 +1,14 @@
+ [
+     {
++        "version": "3.0.0",
++        "changes": [
++            {
++                "note": "Initial Python wrapper templates, and new language-specific folders to hold templates",
++                "pr": 1878
++            }
++        ]
++    },
++    {
+         "version": "2.2.0",
+         "changes": [
+             {
+diff --git a/packages/python-contract-wrappers/src/contract.handlebars b/packages/abi-gen-templates/Python/contract.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/contract.handlebars
+rename to packages/abi-gen-templates/Python/contract.handlebars
+diff --git a/packages/python-contract-wrappers/src/partials/call.handlebars b/packages/abi-gen-templates/Python/partials/call.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/partials/call.handlebars
+rename to packages/abi-gen-templates/Python/partials/call.handlebars
+diff --git a/packages/python-contract-wrappers/src/partials/event.handlebars b/packages/abi-gen-templates/Python/partials/event.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/partials/event.handlebars
+rename to packages/abi-gen-templates/Python/partials/event.handlebars
+diff --git a/packages/abi-gen-templates/partials/params.handlebars b/packages/abi-gen-templates/Python/partials/params.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/params.handlebars
+rename to packages/abi-gen-templates/Python/partials/params.handlebars
+diff --git a/packages/python-contract-wrappers/src/partials/return_type.handlebars b/packages/abi-gen-templates/Python/partials/return_type.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/partials/return_type.handlebars
+rename to packages/abi-gen-templates/Python/partials/return_type.handlebars
+diff --git a/packages/python-contract-wrappers/src/partials/typed_params.handlebars b/packages/abi-gen-templates/Python/partials/typed_params.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/partials/typed_params.handlebars
+rename to packages/abi-gen-templates/Python/partials/typed_params.handlebars
+diff --git a/packages/abi-gen-templates/contract.handlebars b/packages/abi-gen-templates/TypeScript/contract.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/contract.handlebars
+rename to packages/abi-gen-templates/TypeScript/contract.handlebars
+diff --git a/packages/abi-gen-templates/partials/call.handlebars b/packages/abi-gen-templates/TypeScript/partials/call.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/call.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/call.handlebars
+diff --git a/packages/abi-gen-templates/partials/callAsync.handlebars b/packages/abi-gen-templates/TypeScript/partials/callAsync.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/callAsync.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/callAsync.handlebars
+diff --git a/packages/abi-gen-templates/partials/event.handlebars b/packages/abi-gen-templates/TypeScript/partials/event.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/event.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/event.handlebars
+diff --git a/packages/python-contract-wrappers/src/partials/params.handlebars b/packages/abi-gen-templates/TypeScript/partials/params.handlebars
+similarity index 100%
+rename from packages/python-contract-wrappers/src/partials/params.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/params.handlebars
+diff --git a/packages/abi-gen-templates/partials/return_type.handlebars b/packages/abi-gen-templates/TypeScript/partials/return_type.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/return_type.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/return_type.handlebars
+diff --git a/packages/abi-gen-templates/partials/tx.handlebars b/packages/abi-gen-templates/TypeScript/partials/tx.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/tx.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/tx.handlebars
+diff --git a/packages/abi-gen-templates/partials/typed_params.handlebars b/packages/abi-gen-templates/TypeScript/partials/typed_params.handlebars
+similarity index 100%
+rename from packages/abi-gen-templates/partials/typed_params.handlebars
+rename to packages/abi-gen-templates/TypeScript/partials/typed_params.handlebars
+diff --git a/packages/abi-gen-wrappers/package.json b/packages/abi-gen-wrappers/package.json
+index 3254d3b04..9488ff491 100644
+--- a/packages/abi-gen-wrappers/package.json
++++ b/packages/abi-gen-wrappers/package.json
+@@ -16,7 +16,7 @@
+         "fix": "tslint --fix --format stylish --project .",
+         "pre_build": "yarn generate_contract_wrappers",
+         "clean": "shx rm -rf lib src/generated-wrappers",
+-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
++        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/TypeScript/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/TypeScript/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
+     },
+     "config": {
+         "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json"
+diff --git a/packages/pipeline/pipeline.env.gpg b/packages/pipeline/pipeline.env.gpg
+deleted file mode 100644
+index d5e3f22ca..000000000
+Binary files a/packages/pipeline/pipeline.env.gpg and /dev/null differ
+diff --git a/packages/python-contract-wrappers/package.json b/packages/python-contract-wrappers/package.json
+index 8b507311e..033c3aae9 100644
+--- a/packages/python-contract-wrappers/package.json
++++ b/packages/python-contract-wrappers/package.json
+@@ -6,7 +6,7 @@
+     },
+     "description": "Python wrappers for 0x smart contracts, generated via abi-gen",
+     "scripts": {
+-        "generate": "abi-gen --abis  ${npm_package_config_abis} --template src/contract.handlebars --partials 'src/partials/**/*.handlebars' --output generated --language Python",
++        "generate": "abi-gen --abis  ${npm_package_config_abis} --template ../abi-gen-templates/contract.py.handlebars --partials '../abi-gen-templates/partials.py/**/*.handlebars' --output generated --language Python",
+         "build": "yarn generate",
+         "build:ci": "yarn build",
+         "clean": "shx rm -rf generated"
