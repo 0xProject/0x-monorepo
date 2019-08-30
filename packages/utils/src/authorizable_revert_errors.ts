@@ -12,8 +12,8 @@ export class AuthorizedAddressMismatchError extends RevertError {
 }
 
 export class IndexOutOfBoundsError extends RevertError {
-    constructor(index?: BigNumber, length?: BigNumber) {
-        super('IndexOutOfBoundsError', 'IndexOutOfBoundsError(uint256 index, uint256 length)', { index, length });
+    constructor(index?: BigNumber, len?: BigNumber) {
+        super('IndexOutOfBoundsError', 'IndexOutOfBoundsError(uint256 index, uint256 len)', { index, len });
     }
 }
 

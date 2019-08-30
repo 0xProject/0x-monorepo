@@ -17,6 +17,10 @@
             {
                 "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
                 "pr": 2109
+            },
+            {
+                "note": "Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`.",
+                "pr": 2109
             }
         ]
     },
