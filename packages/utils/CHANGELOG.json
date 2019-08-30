@@ -8,15 +8,15 @@
             },
             {
                 "note": "Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector.",
-                "pr": "TODO"
+                "pr": 2109
             },
             {
                 "note": "Add `LibFixedMath` `RevertError` types.",
-                "pr": "TODO"
+                "pr": 2109
             },
             {
                 "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
-                "pr": "TODO"
+                "pr": 2109
             }
         ]
     },

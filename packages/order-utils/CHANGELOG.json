@@ -72,11 +72,11 @@
             },
             {
                 "note": "Add `InvalidCobbDouglasAlphaError` `RevertError` type to `StakingRevertErrors`",
-                "pr": "TODO"
+                "pr": 2109
             },
             {
                 "note": "Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry.",
-                "pr": "TODO"
+                "pr": 2109
             }
         ]
     },
