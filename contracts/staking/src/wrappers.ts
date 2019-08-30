@@ -30,6 +30,7 @@ export * from '../generated-wrappers/mixin_ownable';
 export * from '../generated-wrappers/mixin_scheduler';
 export * from '../generated-wrappers/mixin_stake';
 export * from '../generated-wrappers/mixin_stake_balances';
+export * from '../generated-wrappers/mixin_stake_storage';
 export * from '../generated-wrappers/mixin_staking_pool';
 export * from '../generated-wrappers/mixin_staking_pool_reward_vault';
 export * from '../generated-wrappers/mixin_staking_pool_rewards';

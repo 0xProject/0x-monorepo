@@ -43,8 +43,9 @@ contract Staking is
     MixinExchangeManager,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinStakeBalances,
+    MixinStakeStorage,
     MixinStakingPool,
+    MixinStakeBalances,
     MixinStakingPoolRewards,
     MixinExchangeFees,
     MixinStake

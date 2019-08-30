@@ -29,6 +29,7 @@ import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
+import "./MixinStakeStorage.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
@@ -42,8 +43,9 @@ contract MixinStake is
     MixinOwnable,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinStakeBalances,
+    MixinStakeStorage,
     MixinStakingPool,
+    MixinStakeBalances,
     MixinStakingPoolRewards
 {
 

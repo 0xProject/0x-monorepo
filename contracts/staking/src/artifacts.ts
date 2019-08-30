@@ -32,6 +32,7 @@ import * as MixinOwnable from '../generated-artifacts/MixinOwnable.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
+import * as MixinStakeStorage from '../generated-artifacts/MixinStakeStorage.json';
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakingPoolRewardVault.json';
@@ -69,6 +70,7 @@ export const artifacts = {
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,
+    MixinStakeStorage: MixinStakeStorage as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
     MixinEthVault: MixinEthVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,

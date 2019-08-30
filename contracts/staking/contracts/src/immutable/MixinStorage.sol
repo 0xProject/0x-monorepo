@@ -55,9 +55,6 @@ contract MixinStorage is
     // mapping from Owner to Amount of Withdrawable Stake
     mapping (address => uint256) internal withdrawableStakeByOwner;
 
-    // total activated stake in the system
-    uint256 internal totalActivatedStake;
-
     // tracking Pool Id
     bytes32 internal nextPoolId = INITIAL_POOL_ID;
 
