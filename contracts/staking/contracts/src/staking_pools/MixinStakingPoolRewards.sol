@@ -54,11 +54,18 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
+        // cache some values to reduce sloads
         IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
-        if (getCurrentEpoch() == 0 || delegatedStake.lastStored == getCurrentEpoch()) return 0;
+        uint256 currentEpoch = getCurrentEpoch();
 
-        // compute first leg
-        uint256 firstLeg = (delegatedStake.current != 0)
+        // value is always zero in these two scenarios:
+        //   1. The current epoch is zero: delegation begins at epoch 1
+        //   2. The owner's delegated is current as of this epoch: their rewards have been moved to the ETH vault.
+        if (currentEpoch == 0 || delegatedStake.lastStored == currentEpoch) return 0;
+
+        // compute reward accumulated during `lastStored` epoch;
+        // the `current` balance describes how much stake was collecting rewards when `lastStored` was set.
+        uint256 rewardsAccumulatedDuringLastStoredEpoch = (delegatedStake.current != 0)
             ? _computeMemberRewardOverInterval(
                 poolId,
                 delegatedStake.current,
@@ -67,24 +74,20 @@ contract MixinStakingPoolRewards is
             )
             : 0;
 
-        // compute end epoch of second leg
-        uint256 secondLegEndEpoch = uint256(getCurrentEpoch()) - 1;
-        if (rewardRatioSumsLastUpdated[poolId] < secondLegEndEpoch) {
-            secondLegEndEpoch = rewardRatioSumsLastUpdated[poolId];
-        }
-
-        // compute second leg
-        uint256 secondLeg = (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored)
+        // compute the rewards accumulated by the `next` balance;
+        // this starts at `lastStored + 1` and goes up until the last epoch, during which
+        // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
+        uint256 rewardsAccumulatedAfterLastStoredEpoch = (rewardRatioSumsLastUpdated[poolId] > delegatedStake.lastStored)
             ? _computeMemberRewardOverInterval(
                 poolId,
                 delegatedStake.next,
                 delegatedStake.lastStored,
-                secondLegEndEpoch
+                rewardRatioSumsLastUpdated[poolId]
             )
             : 0;
 
-        // total reward is sum of legs
-        uint256 totalReward = firstLeg._add(secondLeg);
+        // compute the total reward
+        uint256 totalReward = rewardsAccumulatedDuringLastStoredEpoch._add(rewardsAccumulatedAfterLastStoredEpoch);
         return totalReward;
     }
 
