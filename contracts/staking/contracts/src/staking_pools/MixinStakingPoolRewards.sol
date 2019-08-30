@@ -88,7 +88,7 @@ contract MixinStakingPoolRewards is
         //uint256 rewardRatioBegin = delegatedStake.lastStored > 0 ? rewardRatioSums[uint256(delegatedStake.lastStored)] : 0; // was last updated the epoch before it came into effect
         if (getCurrentEpoch() == 0) return 0;
 
-        IStructs.ND memory beginRatio = rewardRatioSums[uint256(delegatedStake.lastStored)];
+        IStructs.ND memory beginRatio = rewardRatioSums[uint256(delegatedStake.current == 0 ? delegatedStake.lastStored : delegatedStake.lastStored - 1)];
         IStructs.ND memory endRatio = rewardRatioSums[uint256(getCurrentEpoch()) - 1];
         uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
         uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
@@ -96,24 +96,23 @@ contract MixinStakingPoolRewards is
         return rewardRatio;
     }
 
-/*
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
     /// @return Balance.
     function syncRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
-        returns (uint256)
     {
         uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
+        if (balance == 0) {
+            return;
+        }
 
         // Pay the delegator
         rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
 
         // Remove the reference
-
     }
-    */
 
 /*
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

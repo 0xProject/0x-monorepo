@@ -41,6 +41,8 @@ contract EthVault is
         public
     {}
 
+    function () external payable {}
+
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catostrophic Failure mode.

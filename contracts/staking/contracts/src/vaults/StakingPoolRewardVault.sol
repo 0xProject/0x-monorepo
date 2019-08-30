@@ -120,6 +120,9 @@ contract StakingPoolRewardVault is
         external
         onlyStakingContract
     {
+        if (amount == 0) {
+            return;
+        }
         // sanity check - sufficient balance?
         require(
             amount <= balanceByPoolId[poolId].operatorBalance,
