@@ -22,6 +22,7 @@ import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath96.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IEthVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
@@ -48,6 +49,20 @@ contract StakingPoolRewardVault is
 
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
+
+    // address of ether vault
+    IEthVault internal ethVault;
+
+    /// @dev Sets the Eth Vault.
+    /// Note that only the contract owner can call this.
+    /// @param ethVaultAddress Address of the Eth Vault.
+    function setErc20Proxy(address ethVaultAddress)
+        external
+        onlyOwner
+    {
+        ethVault = IEthVault(ethVaultAddress);
+       //  emit EthVaultChanged(erc20ProxyAddress);
+    }
 
     /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
@@ -97,10 +112,9 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function transferOperatorBalance(
+    function transferOperatorBalanceToEthVault(
         bytes32 poolId,
-        address payable to,
+        address operator,
         uint256 amount
     )
         external
@@ -114,7 +128,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance -= amount._downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        ethVault.depositFor.value(amount)(operator);
 
         // notify
         emit RewardWithdrawnForOperator(poolId, amount);
@@ -124,10 +138,10 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function transferMemberBalance(
+    /// @param amount Amount in ETH to transfer.
+    function transferMemberBalanceToEthVault(
         bytes32 poolId,
-        address payable to,
+        address member,
         uint256 amount
     )
         external
@@ -141,7 +155,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance -= amount._downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        ethVault.depositFor.value(amount)(member);
 
         // notify
         emit RewardWithdrawnForMember(poolId, amount);

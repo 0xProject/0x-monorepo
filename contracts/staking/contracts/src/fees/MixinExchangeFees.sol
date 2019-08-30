@@ -223,7 +223,7 @@ contract MixinExchangeFees is
             }
 
             // record reward in vault
-            _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
+            rewardVault.recordDepositFor(activePools[i].poolId, reward);
             totalRewardsPaid = totalRewardsPaid._add(reward);
 
             // clear state for gas refunds
@@ -288,7 +288,7 @@ contract MixinExchangeFees is
             }
 
             // record reward in vault
-            _recordDepositInStakingPoolRewardVault(rewards[i].poolId, rewards[i].reward);
+            rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward);
         }
 
         if (address(this).balance > 0) {

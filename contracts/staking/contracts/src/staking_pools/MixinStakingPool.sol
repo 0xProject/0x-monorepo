@@ -32,7 +32,7 @@ import "./MixinStakingPoolRewardVault.sol";
 /// @dev This mixin contains logic for staking pools.
 /// A pool has a single operator and any number of delegators (members).
 /// Any staker can create a pool, although at present it is only beneficial
-/// for market makers to create staking pools. A market maker *must* create a 
+/// for market makers to create staking pools. A market maker *must* create a
 /// pool in order to receive fee-based rewards at the end of each epoch (see MixinExchangeFees).
 /// Moreover, creating a staking pool leverages the delegated stake within the pool,
 /// which is counted towards a maker's total stake when computing rewards. A market maker
@@ -110,7 +110,7 @@ contract MixinStakingPool is
         poolById[poolId] = pool;
 
         // register pool in reward vault
-        _registerStakingPoolInRewardVault(poolId, operatorShare);
+        rewardVault.registerStakingPool(poolId, operatorShare);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);

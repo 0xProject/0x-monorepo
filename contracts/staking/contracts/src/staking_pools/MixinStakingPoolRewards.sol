@@ -75,101 +75,6 @@ contract MixinStakingPoolRewards is
 
     using LibSafeMath for uint256;
 
-    /// @dev Withdraws an amount in ETH of the reward for the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @param amount The amount to withdraw.
-    function withdrawRewardForStakingPoolOperator(bytes32 poolId, uint256 amount)
-        external
-        onlyStakingPoolOperator(poolId)
-    {
-        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
-        poolById[poolId].operatorAddress.transfer(amount);
-    }
-
-    /// @dev Withdraws the total balance in ETH of the reward for the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @return The amount withdrawn.
-    function withdrawTotalRewardForStakingPoolOperator(bytes32 poolId)
-        external
-        onlyStakingPoolOperator(poolId)
-        returns (uint256)
-    {
-        uint256 amount = getBalanceOfOperatorInStakingPoolRewardVault(poolId);
-        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
-        poolById[poolId].operatorAddress.transfer(amount);
-
-        return amount;
-    }
-
-    /// @dev Withdraws an amount in ETH of the reward for a pool member.
-    /// @param poolId Unique id of pool.
-    /// @param amount The amount to withdraw.
-    function withdrawRewardForStakingPoolMember(bytes32 poolId, uint256 amount)
-        external
-    {
-        // sanity checks
-        address payable member = msg.sender;
-        uint256 memberBalance = computeRewardBalanceOfStakingPoolMember(poolId, member);
-        require(
-            amount <= memberBalance,
-            "INVALID_AMOUNT"
-        );
-
-        // perform withdrawal
-        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
-        member.transfer(amount);
-    }
-
-    /// @dev Withdraws the total balance in ETH of the reward for a pool member.
-    /// @param poolId Unique id of pool.
-    /// @return The amount withdrawn.
-    function withdrawTotalRewardForStakingPoolMember(bytes32 poolId)
-        external
-        returns (uint256)
-    {
-        // sanity checks
-        address payable member = msg.sender;
-        uint256 amount = computeRewardBalanceOfStakingPoolMember(poolId, member);
-
-        // perform withdrawal and return amount withdrawn
-        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
-        member.transfer(amount);
-        return amount;
-    }
-
-    /// @dev Returns the sum total reward balance in ETH of a staking pool, across all members and the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getTotalRewardBalanceOfStakingPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getTotalBalanceInStakingPoolRewardVault(poolId);
-    }
-
-    /// @dev Returns the reward balance in ETH of the pool operator.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getRewardBalanceOfStakingPoolOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
-    }
-
-    /// @dev Returns the reward balance in ETH co-owned by the members of a pool.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getRewardBalanceOfStakingPoolMembers(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfMembersInStakingPoolRewardVault(poolId);
-    }
-
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
@@ -188,13 +93,7 @@ contract MixinStakingPoolRewards is
         uint256 rewardRatioN = ((endRatio.numerator * beginRatio.denominator) - (beginRatio.numerator * endRatio.denominator));
         uint256 rewardRatio = (delegatedStake.next * (rewardRatioN / beginRatio.denominator)) / endRatio.denominator;
 
-        return rewardRatio;//(delegatedStake.next * rewardRatio) / 10**18;
-
-        // beginRation.numerator = 0
-        // beginRatio.denominator
-
-        // endRatio.denominator = 5290000000000000000000000
-        // endRatio.numerator = 4945000000000000000000000
+        return rewardRatio;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -210,8 +109,30 @@ contract MixinStakingPoolRewards is
 
         // Pay the delegator
 
+
         // Remove the reference
 
 
     }
+
+/*
+    /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    /// @param poolId Unique id of pool.
+    /// @param member The member of the pool.
+    /// @return Balance.
+    function syncRewardBalanceOfStakingPoolOperator(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
+
+        // Pay the delegator
+
+
+        // Remove the reference
+
+
+    }
+    */
 }

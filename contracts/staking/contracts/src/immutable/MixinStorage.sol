@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "../interfaces/IZrxVault.sol";
+import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IStructs.sol";
@@ -92,5 +93,9 @@ contract MixinStorage is
     IZrxVault internal zrxVault;
 
     // Rebate Vault
+    IEthVault internal ethVault;
+
+    // Rebate Vault
     IStakingPoolRewardVault internal rewardVault;
 }
+
