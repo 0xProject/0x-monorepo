@@ -27,7 +27,7 @@ import { StakeStateId } from './utils/types';
 import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Stake States', () => {
+blockchainTests.resets.only('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -285,7 +285,7 @@ blockchainTests.resets('Stake States', () => {
     });
 
 
-    describe('Stake Simulation', () => {
+    describe.only('Stake Simulation', () => {
         it('Simulation (I)', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
@@ -337,6 +337,8 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
             }
+
+
 
             // Epoch 2: State updates (no user intervention required)
             await stakingWrapper.skipToNextEpochAsync();
@@ -408,6 +410,8 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
             }
 
+
+
             // Later in Epoch 3: User reactivates half of their inactive stake; this becomes Active next epoch
             await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.INACTIVE}, {id: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(0.5));
             {
@@ -442,6 +446,7 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(0));
             }
+// WORKS HERE
 
             // Later in Epoch 3: User re-delegates half of their stake from Pool 1 to Pool 2
             await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId: poolIds[0]}, {id: StakeStateId.DELEGATED, poolId: poolIds[1]}, StakingWrapper.toBaseUnitAmount(1));
@@ -478,6 +483,10 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
             }
 
+/** GOT TO HERE */
+
+// FAILS HERE
+
             // Epoch 4: State updates (no user intervention required)
             await stakingWrapper.skipToNextEpochAsync();
             {
@@ -512,6 +521,8 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
             }
+
+
 
             // Later in Epoch 4: User deactivates all active stake
             await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, StakingWrapper.toBaseUnitAmount(1.5));
@@ -582,6 +593,9 @@ blockchainTests.resets('Stake States', () => {
                 expect(balanceDelegatedToPool_2.current, '22c').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
                 expect(balanceDelegatedToPool_2.next, '22n').to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(1));
             }
+
+
+                 /// FAILS
 
             // Epoch 5: State updates (no user intervention required)
             await stakingWrapper.skipToNextEpochAsync();

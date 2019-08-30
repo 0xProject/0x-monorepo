@@ -52,8 +52,8 @@ contract MixinExchangeFees is
     MixinExchangeManager,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinStakingPool,
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinStakingPool
 {
 
     using LibSafeMath for uint256;
@@ -216,11 +216,25 @@ contract MixinExchangeFees is
                 totalWeightedStake
             );
 
+            // NOTE THIS SHOULD BE THE DELEGATOR PORTION OF REWARD @TODO
+            /*
             if (epoch == 0) {
-                //rewardRatioSums[0] = (10**18) * reward / activePools[i].delegatedStake;
+                rewardRatioSums[poolId][epoch].numerator = 0;
+                rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
+                rewardRatioSums[poolId][epoch].carry = reward._downcastToUint96();
+                rewardRatioSumsLastUpdated[poolId] = epoch;
+            } else if (activePools[i].delegatedStake == 0) {
+                // set carryover
+                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][epoch - 1];
+                rewardRatioSums[poolId][epoch].carry = reward._downcastToUint96() + rewardRatioSums[poolId][epoch - 1].carry;
+                rewardRatioSumsLastUpdated[poolId] = epoch;
             } else {
-                //rewardRatioSums[epoch] = rewardRatioSums[epoch - 1] + (10**18) * reward / activePools[i].delegatedStake;
+                reward += rewardRatioSums[poolId][epoch - 1].carry;
+                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][epoch - 1].numerator * activePools[i].delegatedStake + reward * rewardRatioSums[poolId][epoch - 1].denominator) / 10**18;
+                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][epoch - 1].denominator * activePools[i].delegatedStake) / 10**18;
+                rewardRatioSumsLastUpdated[poolId] = epoch;
             }
+            */
 
             // record reward in vault
             rewardVault.recordDepositFor(activePools[i].poolId, reward);
@@ -273,18 +287,19 @@ contract MixinExchangeFees is
         uint256 epoch = getCurrentEpoch();
         for (uint i = 0; i != rewards.length; i++) {
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
+            bytes32 poolId = rewards[i].poolId;
             if (epoch == 0) {
-                rewardRatioSums[epoch].numerator = 0;
-                rewardRatioSums[epoch].denominator = 1 * (10**18);
-                rewardRatioSums[epoch].carry = rewards[i].reward._downcastToUint96();
+                rewardRatioSums[poolId][epoch].numerator = 0;
+                rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
+                rewardRatioSums[poolId][epoch].carry = rewards[i].reward._downcastToUint96();
             } else if (totalStakeDelegatedToPool == 0) {
                 // set carryover
-                rewardRatioSums[epoch] = rewardRatioSums[epoch - 1];
-                rewardRatioSums[epoch].carry = rewards[i].reward._downcastToUint96() + rewardRatioSums[epoch - 1].carry;
+                rewardRatioSums[poolId][epoch] = rewardRatioSums[poolId][epoch - 1];
+                rewardRatioSums[poolId][epoch].carry = rewards[i].reward._downcastToUint96() + rewardRatioSums[poolId][epoch - 1].carry;
             } else {
-                rewards[i].reward += rewardRatioSums[epoch - 1].carry;
-                rewardRatioSums[epoch].numerator = (rewardRatioSums[epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[epoch - 1].denominator) / 10**18;
-                rewardRatioSums[epoch].denominator = (rewardRatioSums[epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
+                rewards[i].reward += rewardRatioSums[poolId][epoch - 1].carry;
+                rewardRatioSums[poolId][epoch].numerator = (rewardRatioSums[poolId][epoch - 1].numerator * totalStakeDelegatedToPool + rewards[i].reward * rewardRatioSums[poolId][epoch - 1].denominator) / 10**18;
+                rewardRatioSums[poolId][epoch].denominator = (rewardRatioSums[poolId][epoch - 1].denominator * totalStakeDelegatedToPool) / 10**18;
             }
 
             // record reward in vault

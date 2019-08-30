@@ -26,6 +26,7 @@ import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
+import "../sys/MixinScheduler.sol";
 import "./MixinStakingPoolRewardVault.sol";
 
 
@@ -58,6 +59,7 @@ contract MixinStakingPool is
     Ownable,
     MixinConstants,
     MixinStorage,
+    MixinScheduler,
     MixinOwnable,
     MixinStakingPoolRewardVault
 {
@@ -108,6 +110,13 @@ contract MixinStakingPool is
             operatorShare: operatorShare
         });
         poolById[poolId] = pool;
+
+        // @TODO prettify
+        uint256 epoch = getCurrentEpoch();
+        rewardRatioSums[poolId][epoch].numerator = 0;
+        rewardRatioSums[poolId][epoch].denominator = 1 * (10**18);
+        rewardRatioSums[poolId][epoch].carry = 0;
+        rewardRatioSumsLastUpdated[poolId] = epoch;
 
         // register pool in reward vault
         rewardVault.registerStakingPool(poolId, operatorShare);

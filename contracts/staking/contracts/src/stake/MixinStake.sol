@@ -42,8 +42,8 @@ contract MixinStake is
     MixinOwnable,
     MixinStakingPoolRewardVault,
     MixinZrxVault,
-    MixinStakingPool,
     MixinStakeBalances,
+    MixinStakingPool,
     MixinStakingPoolRewards
 {
 
@@ -99,6 +99,12 @@ contract MixinStake is
     function moveStake(IStructs.StakeState calldata from, IStructs.StakeState calldata to, uint256 amount)
         external
     {
+        if (from.id != IStructs.StakeStateId.DELEGATED && from.id == to.id) {
+            return;
+        } else if(from.id == IStructs.StakeStateId.DELEGATED && from.poolId == to.poolId) {
+            return;
+        }
+
         if (from.id == IStructs.StakeStateId.DELEGATED) {
             _undelegateStake(
                 from.poolId,
@@ -176,7 +182,7 @@ contract MixinStake is
     )
         private
     {
-        syncRewardBalanceOfStakingPoolMember(poolId, owner);
+        //syncRewardBalanceOfStakingPoolMember(poolId, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
