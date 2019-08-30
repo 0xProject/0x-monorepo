@@ -4,6 +4,6 @@
         "outDir": "lib",
         "rootDir": "."
     },
-    "include": ["./src/**/*", "./test/**/*"],
+    "include": ["./src/**/*", "./test/**/*", "./test/fixtures/dYdX/artifacts/*.json"],
     "exclude": ["node_modules"]
 }
