@@ -658,21 +658,48 @@ blockchainTests.resets.only('Testing Rewards', () => {
             expect(delegatorEthVaultBalance, 'actual').to.be.bignumber.equal(rewards[0]);
         });
 
+        it('Should collect fees correctly when leaving and returning', async () => {
+            const operator = stakers[5];
+            const operatorShare = 0;
+            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+            const rewards = [
+                StakingWrapper.toBaseUnitAmount(10),
+                StakingWrapper.toBaseUnitAmount(21),
+                StakingWrapper.toBaseUnitAmount(4),
+            ];
+            { // Epoch 0: Stake & delegate some ZRX
+                await stakingWrapper.stakeAsync(stakers[0], amountToStake);
+                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+            }
+            { // Send some rewards
+                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]); // available
+            }
+            { // Undelegate stake and check balance
+                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
+                // new dude comes in for next epoch
+                await stakingWrapper.stakeAsync(stakers[1], amountToStake);
+                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                // skip to next epoch so stop cxollecting rewards
+                await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]); // available
+            }
+            { // Earn a bunch of rewards
+                // First guy retursn
+                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.testFinalizefees([{reward: rewards[1], poolId}]);
+                await stakingWrapper.testFinalizefees([{reward: rewards[2], poolId}]); // both delegators split this
+            }
+            // Check reward & vault balances
+            const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[0]);
+            expect(delegatorComputedBalance, 'computed').to.be.bignumber.equal(rewards[2].div(2));
+            const delegatorEthVaultBalance = await stakingWrapper.getEthVaultContract().balanceOf.callAsync(stakers[0]);
+            expect(delegatorEthVaultBalance, 'actual').to.be.bignumber.equal(rewards[0]);
 
-        // Should compute correct rewards when leaving and coming back
-
-        //
-
-        //
-
-         // Should continue collecting stake after withdrawing a portion (requires two stakers)
-
-        // Should continue appropriating fees correctly after one delegator withdraws
-
-        // reference counters
-
-        // test with operator
-
+            const delegatorComputedBalance2 = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]);
+            expect(delegatorComputedBalance2, 'computed 2').to.be.bignumber.equal(rewards[1].plus(rewards[2].div(2)));
+        });
 
     });
 });
