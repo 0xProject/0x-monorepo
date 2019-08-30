@@ -1,6 +1,6 @@
 import { constants } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
-import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
+import { BlockchainLifecycle, devConstants, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
@@ -14,6 +14,8 @@ import { ContractWrappers } from '../src';
 import { CoordinatorRegistryContract } from '../src/index';
 import { CoordinatorServerErrorMsg } from '../src/utils/coordinator_server_types';
 
+import * as ZeroExV2CoordinatorMultiOrderExchangeWrapperArtifact from './fixtures/dYdX/artifacts/ZeroExV2CoordinatorMultiOrderExchangeWrapper.json';
+import { ZeroExV2CoordinatorMultiOrderExchangeWrapperContract } from './fixtures/dYdX/ts/zero_ex_v2_coordinator_multi_order_exchange_wrapper';
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
@@ -203,6 +205,20 @@ describe('CoordinatorWrapper', () => {
                 },
             ),
             constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+
+        // deploy dYdX taker contract
+        ZeroExV2CoordinatorMultiOrderExchangeWrapperContract.deployFrom0xArtifactAsync(
+            ZeroExV2CoordinatorMultiOrderExchangeWrapperArtifact,
+            provider,
+            {
+                from: takerAddress,
+                gas: devConstants.GAS_LIMIT,
+            }, // txDefaults
+            {}, // logDecodeDependencies
+            contractWrappers.exchange.address,
+            contractWrappers.coordinator.address,
+            contractWrappers.erc20Proxy.address,
         );
     });
     after(async () => {
