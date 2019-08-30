@@ -6,5 +6,6 @@
         "resolveJsonModule": true
     },
     "include": ["./src/**/*", "./test/**/*", "./test/fixtures/dYdX/artifacts/*.json"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules"],
+    "files": [ "./test/fixtures/dYdX/artifacts/ZeroExV2CoordinatorMultiOrderExchangeWrapper.json" ]
 }
