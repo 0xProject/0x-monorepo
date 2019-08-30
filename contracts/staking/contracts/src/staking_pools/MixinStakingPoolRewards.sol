@@ -115,9 +115,6 @@ contract MixinStakingPoolRewards is
             uint256 beginEpoch = delegatedStake.lastStored;
             uint256 endEpoch = uint256(getCurrentEpoch()) - 1;
             if (rewardRatioSumsLastUpdated[poolId] < endEpoch) {
-                revert(
-                    'made it here greg'
-                );
                 endEpoch = rewardRatioSumsLastUpdated[poolId];
             }
             IStructs.ND memory beginRatio = rewardRatioSums[poolId][beginEpoch];

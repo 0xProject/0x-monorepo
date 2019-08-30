@@ -27,7 +27,7 @@ import { StakeStateId } from './utils/types';
 import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.skip('Stake States', () => {
+blockchainTests.resets.only('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses

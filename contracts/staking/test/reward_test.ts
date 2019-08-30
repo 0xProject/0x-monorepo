@@ -262,7 +262,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
         });
 
-        it.only('Should split reward between delegators correctly, when the epochs they joined in are offset', async () => {
+        it('Should split reward between delegators correctly, when the epochs they joined in are offset', async () => {
             const operator = stakers[6];
             const operatorShare = 0;
             const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
@@ -331,6 +331,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Skip an epoch so that delegator can start earning rewards
                 await stakingWrapper.testFinalizefees([]);
             }
+           console.log(`entire sim ran!`);
             // Check reward balance
             expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
             expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
@@ -407,6 +408,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -435,6 +437,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -464,6 +467,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -494,6 +498,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -524,6 +529,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -560,6 +566,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -598,6 +605,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
+                await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -638,8 +646,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
-                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
+                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
@@ -677,8 +685,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
-                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
                 await stakingWrapper.testFinalizefees([]); // available
+                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
