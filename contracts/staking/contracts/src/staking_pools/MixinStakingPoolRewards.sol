@@ -102,16 +102,14 @@ contract MixinStakingPoolRewards is
     /// @return Balance.
     function syncRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
         public
-        view
         returns (uint256)
     {
         uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
 
         // Pay the delegator
-
+        rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
 
         // Remove the reference
-
 
     }
 

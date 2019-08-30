@@ -100,21 +100,24 @@ interface IStakingPoolRewardVault {
         external;
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
+    /// Note that this is only callable by the staking contract, and when
+    /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function transferOperatorBalance(
+    function transferOperatorBalanceToEthVault(
         bytes32 poolId,
-        address payable to,
+        address operator,
         uint256 amount
     )
         external;
 
     /// @dev Withdraw some amount in ETH of a pool member.
+    /// Note that this is only callable by the staking contract, and when
+    /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function transferMemberBalance(
+    /// @param amount Amount in ETH to transfer.
+    function transferMemberBalanceToEthVault(
         bytes32 poolId,
-        address payable to,
+        address member,
         uint256 amount
     )
         external;

@@ -102,8 +102,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
@@ -130,8 +130,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
@@ -167,8 +167,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
@@ -201,8 +201,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(delegatorReward);
         });
 
@@ -227,8 +227,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker), 'delegator').to.be.bignumber.equal(delegatorReward);
         });
 
@@ -257,8 +257,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
         });
@@ -292,8 +292,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
         });
@@ -330,8 +330,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: ZERO, poolId}]);
             }
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
         });
@@ -384,8 +384,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([{reward: rewards[6], poolId}]);
             }
             // Check reward balance
-            //expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
-            //expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
+            //expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
+            //expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, stakers[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
         });
@@ -417,15 +417,15 @@ blockchainTests.resets.only('Testing Rewards', () => {
             // Assign rewards and wrap-up epoch
             await stakingWrapper.testFinalizefees([{reward, poolId}]);
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId)).to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(delegatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId)).to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(operatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(delegatorReward);
             // Assign zero rewards and wrap-up epoch
             await stakingWrapper.testFinalizefees([{ZERO, poolId}]);
             // Check reward balance
-            expect(await stakingWrapper.getTotalRewardBalanceOfStakingPoolAsync(poolId), 'pool balance 2').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId), 'operator balance 2').to.be.bignumber.equal(operatorReward);
-           // expect(await stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId)).to.be.bignumber.equal(delegatorReward);
+            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'pool balance 2').to.be.bignumber.equal(reward);
+            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'operator balance 2').to.be.bignumber.equal(operatorReward);
+           // expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId)).to.be.bignumber.equal(delegatorReward);
         });
         */
     });
