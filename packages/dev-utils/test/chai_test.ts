@@ -68,13 +68,6 @@ describe('Chai tests', () => {
                 const revert = new StringRevertError('foo');
                 expect(error).is.equal(revert);
             });
-            it('should equate an empty ganache transaction revert error to any RevertError', () => {
-                const error: any = new Error(`VM Exception while processing transaction: revert`);
-                error.hashes = ['0x1'];
-                error.results = { '0x1': { error: 'revert', program_counter: 1, return: '0x', reason: undefined } };
-                const revert = new StringRevertError('foo');
-                expect(error).is.equal(revert);
-            });
             it('should not equate a ganache transaction revert error with reason to a StringRevertError with a different message', () => {
                 const message = 'foo';
                 const error: any = new Error(`VM Exception while processing transaction: revert ${message}`);
