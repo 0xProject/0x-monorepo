@@ -125,31 +125,19 @@ contract MixinStakingPoolRewards is
     function _transferDelegatorsAccumulatedRewardsToEthVault(bytes32 poolId, address member)
         internal
     {
-        uint256 currentEpoch = getCurrentEpoch();
-
-
         // there are no delegators in the first epoch
-
+        uint256 currentEpoch = getCurrentEpoch();
         if (currentEpoch == 0) {
             return;
         }
 
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
-
-        //
-
-
-        if (delegatedStakeToPoolByOwner[member][poolId].lastStored == getCurrentEpoch()) {
-            // already in sync
-            return;
-        }
-
+        // compute balance owed to delegator
         uint256 balance = computeRewardBalanceOfDelegator(poolId, member);
         if (balance == 0) {
             return;
         }
 
-        // Pay the delegator
+        // transfer from transient Reward Pool vault to ETH Vault
         require(address(rewardVault) != address(0), 'eyo');
         rewardVault.transferMemberBalanceToEthVault(poolId, member, balance);
     }
@@ -170,7 +158,7 @@ contract MixinStakingPoolRewards is
     /// @param poolId Unique Id of pool.
     /// @param epoch at which the stake was delegated by the delegator.
     function _syncCumulativeRewardsNeededByDelegator(bytes32 poolId, uint256 epoch)
-        private
+        internal
     {
         // set default value if staking at epoch 0
         if (epoch == 0) {

@@ -178,6 +178,9 @@ contract MixinStake is
         // this must be done before we can modify the staker's portion of the delegator pool.
        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
+        // sync cumulative rewards that we'll need for future computations
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+
         // decrement how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
@@ -199,6 +202,9 @@ contract MixinStake is
         // transfer any rewards from the transient pool vault to the eth vault;
         // this must be done before we can modify the staker's portion of the delegator pool.
         _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
+
+        // sync cumulative rewards that we'll need for future computations
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);

@@ -285,7 +285,7 @@ blockchainTests.resets.only('Stake States', () => {
     });
 
 
-    describe.only('Stake Simulation', () => {
+    describe('Stake Simulation', () => {
         it('Simulation (I)', async () => {
             const staker = stakers[0];
             const operator = stakers[1];
