@@ -13,6 +13,10 @@
             {
                 "note": "Add `UNLIMITED_CONTRACT_SIZE` to `EnvVars`.",
                 "pr": 2075
+            },
+            {
+                "note": "Add `total_accounts` option to `Web3Config`.",
+                "pr": 2109
             }
         ]
     },
