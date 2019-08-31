@@ -26,9 +26,8 @@ const introData: LinkConfig[] = [
         shouldOpenInNewTab: true,
     },
     {
-        label: 'Legal Wiki',
+        label: 'Legal Guide',
         url: `${WebsitePaths.DocsGuides}/legal-guide`,
-        shouldOpenInNewTab: true,
     },
 ];
 

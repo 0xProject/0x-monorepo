@@ -21,7 +21,7 @@ export const Code: React.FC<ICodeProps> = ({ children, className = 'language-typ
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
 
     // Passing in LANGUAGE to code in mdx results in classname 'language-<LANGUAGE>'
-    const language = className.replace('language-', '');
+    const language = className.replace(/language-/, '');
 
     const handleCopyClick = () => {
         setIsCopied(true);
@@ -88,10 +88,9 @@ const CodeTag = styled.code`
     border: none;
     font-family: 'Roboto Mono', sans-serif;
 
-    span {
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
+    /* Targeting newline created by markdown at the end of each code block */
+    & > span:last-of-type {
+        display: none;
     }
 `;
 
@@ -114,7 +113,8 @@ const style = {
         display: 'block',
         overflowX: 'hidden',
         background: colors.backgroundLight,
-        fontSize: '12px',
+        fontSize: '14px',
+        lineHeight: '1.5',
         padding: '20px',
     },
     'hljs-comment': {
@@ -176,7 +176,6 @@ const style = {
     },
     'hljs-function': {
         color: '#781818',
-        paddingRight: '2px',
     },
     'hljs-symbol': {
         color: '#2a9292',

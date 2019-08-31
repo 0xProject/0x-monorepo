@@ -26,7 +26,7 @@ interface IHitsProps {
 export const DocsTools: React.FC = () => {
     const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
     return (
-        <DocsPageLayout title="Tools">
+        <DocsPageLayout title="Tools & Libraries">
             <InstantSearch searchClient={searchClient} indexName={nameToSearchIndex.tools}>
                 <Configure hitsPerPage={hitsPerPage.pages} />
                 <Columns>
@@ -124,10 +124,4 @@ const filters = [
     { attribute: 'type', heading: 'Type' },
     { attribute: 'tags', heading: 'Developer Persona' },
     { attribute: 'difficulty', heading: 'Level' },
-    {
-        attribute: 'isCommunity',
-        heading: 'Community maintained',
-        hiddenLabels: ['false'],
-        customLabels: { true: 'Only community maintained' },
-    },
 ];

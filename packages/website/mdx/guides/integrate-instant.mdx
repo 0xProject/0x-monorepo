@@ -8,7 +8,7 @@ Check out a live example on [mainnet](http://0x-instant-staging.s3-website-us-ea
 
 ## Libraries
 
-0x Instant has two main libraries: the `0x Instant UI component` that users will see and the `Asset Buyer` library, a JavaScript / TypeScript library that abstracts out many of the complexities of sourcing orders and performing market buys. Most developers who want to add simple token access will just use the out-of-the-box package that includes the UI and Asset Buyer, but teams may also write their own custom UI and just plug into the Asset Buyer as they see fit. Check out the `@0x/asset-buyer` documentation [here](https://0x.org/docs/tools/asset-buyer).
+0x Instant has two main libraries: the `0x Instant UI component` that users will see and the `Asset Swapper` library, a JavaScript / TypeScript library that abstracts out many of the complexities of sourcing orders and performing market buys. Most developers who want to add simple token access will just use the out-of-the-box package that includes the UI and Asset Swapper, but teams may also write their own custom UI and just plug into the Asset Swapper as they see fit. Check out the `@0x/asset-swapper` documentation [here](https://0x.org/docs/tools/asset-swapper).
 
 ## Orders
 
@@ -20,7 +20,7 @@ As an end host of 0x Instant, you can charge users a fee on all trades made thro
 
 # UI Integration
 
-The 0x Instant UI and Asset Buyer are bundled together in a convenient JS package for you. You can either download and serve the package yourself, or use the CDN-hosted version from 0x.
+The 0x Instant UI and Asset Swapper are bundled together in a convenient JS package for you. You can either download and serve the package yourself, or use the CDN-hosted version from 0x.
 
 ```html
 <!DOCTYPE html>
@@ -212,7 +212,7 @@ zeroExInstant.render(
 );
 ```
 
-# Asset Buyer
+# Asset Swapper
 
 Behind the scenes, the `AssetBuyer` class is aggregating liquidity and calculating the orders that need to be filled for a given user request. For teams that require a more custom integration or advanced functionality, they can use the AssetBuyer class directly and skip the Instant UI. Below are the methods you will most likely be interacting with.
 
@@ -465,7 +465,7 @@ We provide assetMetaData for a subset of ERC20 tokens. You can call the helper f
 
 ### Q: Do users need to have ZRX to pay for fees on orders?
 
-Nope! The Asset Buyer will calculate the ZRX required to pay for fees on the desired orders, and automatically purchase ZRX from your order source to cover your fees as part of the order. Note that Instant cannot use a user's existing ZRX balance and the liquidity source must be able to provide ZRX / ETH orders.
+Nope! The Asset Swapper will calculate the ZRX required to pay for fees on the desired orders, and automatically purchase ZRX from your order source to cover your fees as part of the order. Note that Instant cannot use a user's existing ZRX balance and the liquidity source must be able to provide ZRX / ETH orders.
 
 ### Q: Does this work with order matching relayers (vs. open orderbook)?
 
@@ -495,7 +495,7 @@ Join us on [Discord](https://discord.gg/d3FTX3M) and join the #instant channel t
 
 ### Q: How can I make 0x Instant work in my mobile app?
 
-For apps using React Native or apps that have a web view, the asset buyer engine will work out of the box with your application. For apps that are written in a native language like Java or Swift, you will need to wrap the asset-buyer logic in a JS interpreter.
+For apps using React Native or apps that have a web view, the Asset Swapper engine will work out of the box with your application. For apps that are written in a native language like Java or Swift, you will need to wrap the asset-swapper logic in a JS interpreter.
 
 ## Affiliates
 

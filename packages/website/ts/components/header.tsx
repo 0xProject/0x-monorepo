@@ -46,7 +46,7 @@ const navItems: NavItemProps[] = [
         id: 'products',
         text: 'Products',
         dropdownComponent: DropdownProducts,
-        dropdownWidth: 280,
+        dropdownWidth: 300,
     },
     {
         id: 'docs',
