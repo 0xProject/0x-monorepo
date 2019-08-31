@@ -102,7 +102,7 @@ blockchainTests.resets.only('Stake States', () => {
         it('should successfully deactivate zero stake', async () => {
             const staker = stakers[0];
             const amount = new BigNumber(0);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amount);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amount);
             const balance = await stakingWrapper.getInactiveStakeAsync(staker);
             expect(balance.current).to.be.bignumber.equal(new BigNumber(0));
             expect(balance.next).to.be.bignumber.equal(new BigNumber(0));
@@ -112,7 +112,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = new BigNumber(10);
             const amountToDeactivate = new BigNumber(6);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // check active balance
             const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
             expect(activeBalance.current, 'active current').to.be.bignumber.equal(amountToStake);
@@ -127,7 +127,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = new BigNumber(10);
             const amountToDeactivate = new BigNumber(6);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // skip to next epoch
             await stakingWrapper.goToNextEpochAsync();
             // check active balance
@@ -151,7 +151,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = new BigNumber(10);
             const amountToDeactivate = new BigNumber(6);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // check withdrawable balance (not yet inactive)
             {
                 const balance = await stakingWrapper.getWithdrawableStakeAsync(staker);
@@ -176,7 +176,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToDeactivate = new BigNumber(6);
             const amountToUnstake = new BigNumber(5);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // skip until we can withdraw this stake
             await stakingWrapper.skipToNextEpochAsync();
             await stakingWrapper.skipToNextEpochAsync();
@@ -198,7 +198,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToDeactivate = new BigNumber(6);
             const amountToUnstake = new BigNumber(5);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // skip until we can withdraw this stake
             await stakingWrapper.skipToNextEpochAsync();
             await stakingWrapper.skipToNextEpochAsync();
@@ -222,7 +222,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToDeactivate = new BigNumber(6);
             const amountToUnstake = new BigNumber(5);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // skip until we can withdraw this stake
             await stakingWrapper.skipToNextEpochAsync();
             await stakingWrapper.skipToNextEpochAsync();
@@ -262,7 +262,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = StakingWrapper.toBaseUnitAmount(10);
             const amountToUnstake = new BigNumber(8);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToUnstake);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToUnstake);
             // skip until we can withdraw this stake
             await stakingWrapper.skipToNextEpochAsync();
             await stakingWrapper.skipToNextEpochAsync();
@@ -303,8 +303,8 @@ blockchainTests.resets.only('Stake States', () => {
                 expect(balance.next).to.be.bignumber.equal(amountToStake);
             }
             // Later in Epoch 1: User delegates and deactivates some stake
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, StakingWrapper.toBaseUnitAmount(1));
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId: poolIds[0]}, StakingWrapper.toBaseUnitAmount(2));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, StakingWrapper.toBaseUnitAmount(1));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId: poolIds[0]}, StakingWrapper.toBaseUnitAmount(2));
             {
                 const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
                 expect(totalBalance).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(4));
@@ -413,7 +413,7 @@ blockchainTests.resets.only('Stake States', () => {
 
 
             // Later in Epoch 3: User reactivates half of their inactive stake; this becomes Active next epoch
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.INACTIVE}, {id: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(0.5));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.INACTIVE}, {state: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(0.5));
             {
                 const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
                 expect(totalBalance).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(4));
@@ -449,7 +449,7 @@ blockchainTests.resets.only('Stake States', () => {
 // WORKS HERE
 
             // Later in Epoch 3: User re-delegates half of their stake from Pool 1 to Pool 2
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId: poolIds[0]}, {id: StakeStateId.DELEGATED, poolId: poolIds[1]}, StakingWrapper.toBaseUnitAmount(1));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.DELEGATED, poolId: poolIds[0]}, {state: StakeStateId.DELEGATED, poolId: poolIds[1]}, StakingWrapper.toBaseUnitAmount(1));
             {
                 const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
                 expect(totalBalance).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(4));
@@ -525,7 +525,7 @@ blockchainTests.resets.only('Stake States', () => {
 
 
             // Later in Epoch 4: User deactivates all active stake
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, StakingWrapper.toBaseUnitAmount(1.5));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, StakingWrapper.toBaseUnitAmount(1.5));
             {
                 const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
                 expect(totalBalance).to.be.bignumber.equal(StakingWrapper.toBaseUnitAmount(4));
@@ -634,7 +634,7 @@ blockchainTests.resets.only('Stake States', () => {
 
             // Later in Epoch 5: User reactivates a portion of their stake
             console.log('asdasd');
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.INACTIVE}, {id: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(1));
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.INACTIVE}, {state: StakeStateId.ACTIVE}, StakingWrapper.toBaseUnitAmount(1));
             console.log('done asdasd');
             {
                 const totalBalance = await stakingWrapper.getTotalStakeAsync(staker);
@@ -715,7 +715,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = StakingWrapper.toBaseUnitAmount(10);
             const amountToDeactivate = new BigNumber(6);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // check active balance
             const activeBalance = await stakingWrapper.getActiveStakeAsync(staker);
             expect(activeBalance.current, 'active current').to.be.bignumber.equal(amountToStake);
@@ -730,7 +730,7 @@ blockchainTests.resets.only('Stake States', () => {
             const amountToStake = new BigNumber(10);
             const amountToDeactivate = new BigNumber(6);
             await stakingWrapper.stakeAsync(staker, amountToStake);
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDeactivate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDeactivate);
             // skip to next epoch
             await stakingWrapper.goToNextEpochAsync();
             // check active balance

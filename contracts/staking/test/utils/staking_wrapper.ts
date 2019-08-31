@@ -220,11 +220,11 @@ export class StakingWrapper {
     public async moveStakeAsync(
         owner: string,
         fromState: {
-            id: number,
+            state: number,
             poolId?: string
         },
         toState: {
-            id: number,
+            state: number,
             poolId?: string
         },
         amount: BigNumber,

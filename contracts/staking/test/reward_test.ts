@@ -77,7 +77,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 expect(balance.next).to.be.bignumber.equal(amountToStake);
             }
             // Later in Epoch 1: User delegates and deactivates some stake
-            await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.INACTIVE}, amountToDelegate);
+            await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.INACTIVE}, amountToDelegate);
             // Check reward balance
             expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker)).to.be.bignumber.equal(ZERO);
         });
@@ -218,7 +218,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const delegatorReward = reward;
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Skip an epoch so that delegator can start earning rewards
                 await stakingWrapper.testFinalizefees([]);
@@ -244,10 +244,10 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 0: Stake & delegate some ZRX
                 // first staker delegates
                 await stakingWrapper.stakeAsync(stakers[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
+                await stakingWrapper.moveStakeAsync(stakers[1], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
             }
             { // Skip an epoch so that delegator can start earning rewards
                 await stakingWrapper.testFinalizefees([]);
@@ -274,7 +274,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 0: Stake & delegate some ZRX
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
             }
             console.log("first has staked");
             { // Skip an epoch so that delegator can start earning rewards
@@ -284,7 +284,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 1: Stake & delegate some ZRX
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
+                await stakingWrapper.moveStakeAsync(stakers[1], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
             }
             console.log("second has staked");
             { // Skip an epoch so that delegator can start earning rewards
@@ -313,7 +313,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 0: Stake & delegate some ZRX
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
                 await stakingWrapper.testFinalizefees([]);
             }
             { // Epoch 1: A reward was earned
@@ -322,7 +322,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 2: No rewards but
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
+                await stakingWrapper.moveStakeAsync(stakers[1], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
                 await stakingWrapper.testFinalizefees([]);
             }
             { // Skip an epoch so that delegator can start earning rewards
@@ -361,7 +361,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 0: Stake & delegate some ZRX
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[0]);
                 await stakingWrapper.testFinalizefees([]);
             }
             { // Epoch 1: A reward was earned
@@ -370,7 +370,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             { // Epoch 2: No rewards but
                 // second staker delegates
                 await stakingWrapper.stakeAsync(stakers[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
+                await stakingWrapper.moveStakeAsync(stakers[1], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountsToDelegate[1]);
                 await stakingWrapper.testFinalizefees([]);
             }
             { // Skip an epoch so that delegator can start earning rewards
@@ -405,7 +405,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const delegatorReward = reward;
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -413,7 +413,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([]); // available
             }
             { // Undelegate stake and check balance
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId}, {id: StakeStateId.ACTIVE}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.DELEGATED, poolId}, {state: StakeStateId.ACTIVE}, amountToDelegate);
             }
             // Check reward & vault balances
             const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker);
@@ -434,7 +434,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const delegatorReward = reward;
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -443,7 +443,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             // Check reward & vault balances
             const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker);
@@ -464,7 +464,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const delegatorReward = reward;
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -473,7 +473,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]);
@@ -495,7 +495,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const rewards = [StakingWrapper.toBaseUnitAmount(10), StakingWrapper.toBaseUnitAmount(7)];
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -504,7 +504,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.stakeAsync(staker, StakingWrapper.toBaseUnitAmount(123));
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([{reward: rewards[1], poolId}]);
@@ -526,7 +526,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const rewards = [StakingWrapper.toBaseUnitAmount(10), StakingWrapper.toBaseUnitAmount(7)];
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -535,7 +535,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.stakeAsync(staker, StakingWrapper.toBaseUnitAmount(123));
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             // Check reward & vault balances
             const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker);
@@ -563,7 +563,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const totalRewards = new BigNumber(_.sumBy(rewards, (n) => {return n.toNumber()}));
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -572,7 +572,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
             { // Undelegate stake and check balance
                 await stakingWrapper.stakeAsync(staker, StakingWrapper.toBaseUnitAmount(123));
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Earn a bunch of rewards
                 await stakingWrapper.testFinalizefees([{reward: rewards[1], poolId}]);
@@ -602,7 +602,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const rewards = [StakingWrapper.toBaseUnitAmount(10), StakingWrapper.toBaseUnitAmount(7)];
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
@@ -610,7 +610,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
                 await stakingWrapper.testFinalizefees([]); // available
             }
             { // Undelegate stake and check balance
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.DELEGATED, poolId},  {state: StakeStateId.ACTIVE}, amountToDelegate);
                 // skip to next epoch so no rewards for this epoch
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -643,14 +643,14 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const totalRewards = new BigNumber(_.sumBy(rewards, (n) => {return n.toNumber()}));
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
             }
             { // Undelegate stake and check balance
-                await stakingWrapper.moveStakeAsync(staker, {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(staker, {state: StakeStateId.DELEGATED, poolId},  {state: StakeStateId.ACTIVE}, amountToDelegate);
                 // skip to next epoch so stop cxollecting rewards
                 await stakingWrapper.testFinalizefees([]); // available
             }
@@ -682,23 +682,23 @@ blockchainTests.resets.only('Testing Rewards', () => {
             ];
             { // Epoch 0: Stake & delegate some ZRX
                 await stakingWrapper.stakeAsync(stakers[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
             }
             { // Send some rewards
                 await stakingWrapper.testFinalizefees([]); // available
                 await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]); // carry over
             }
             { // Undelegate stake and check balance
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.DELEGATED, poolId},  {id: StakeStateId.ACTIVE}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.DELEGATED, poolId},  {state: StakeStateId.ACTIVE}, amountToDelegate);
                 // new dude comes in for next epoch
                 await stakingWrapper.stakeAsync(stakers[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(stakers[1], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(stakers[1], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
                 // skip to next epoch so stop cxollecting rewards
                 await stakingWrapper.testFinalizefees([]); // available
             }
             { // Earn a bunch of rewards
                 // First guy retursn
-                await stakingWrapper.moveStakeAsync(stakers[0], {id: StakeStateId.ACTIVE}, {id: StakeStateId.DELEGATED, poolId}, amountToDelegate);
+                await stakingWrapper.moveStakeAsync(stakers[0], {state: StakeStateId.ACTIVE}, {state: StakeStateId.DELEGATED, poolId}, amountToDelegate);
                 await stakingWrapper.testFinalizefees([{reward: rewards[1], poolId}]);
                 await stakingWrapper.testFinalizefees([{reward: rewards[2], poolId}]); // both delegators split this
             }
