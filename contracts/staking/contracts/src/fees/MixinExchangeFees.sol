@@ -218,14 +218,17 @@ contract MixinExchangeFees is
                 totalWeightedStake
             );
 
+            // sync cumulative rewards
             // NOTE THIS SHOULD BE THE DELEGATOR PORTION OF REWARD @TODO
             if (activePools[i].delegatedStake == 0) {
                 // @TODO fees go to operator
-            } else if (currentEpoch > 0) {
-                uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[activePools[i].poolId];
-                cumulativeRewardsByPool[activePools[i].poolId][epoch].numerator = (cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].numerator * activePools[i].delegatedStake + reward * cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].denominator) / 10**18;
-                cumulativeRewardsByPool[activePools[i].poolId][epoch].denominator = (cumulativeRewardsByPool[activePools[i].poolId][lastKnownEpoch].denominator * activePools[i].delegatedStake) / 10**18;
-                cumulativeRewardsByPoolLastStored[activePools[i].poolId] = epoch;
+            } else {
+                _recordRewardForDelegators(
+                    activePools[i].poolId,
+                    activePools[i].delegatedStake,
+                    currentEpoch,
+                    reward
+                );
             }
 
             // record reward in vault
@@ -259,8 +262,7 @@ contract MixinExchangeFees is
     }
 
 
-
-    struct Reward {
+  struct Reward {
         bytes32 poolId;
         uint256 reward;
     }

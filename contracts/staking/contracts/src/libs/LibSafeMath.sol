@@ -99,7 +99,8 @@ library LibSafeMath {
     /// @param d_1 denominator of `1`
     /// @param n_2 numerator of `2`
     /// @param d_2 denominator of `2`
-    /// @return addition of fractions
+    /// @return numerator of sum
+    /// @return denominator of sum
     function _addFractions(
         uint256 n_1,
         uint256 d_1,
@@ -108,38 +109,17 @@ library LibSafeMath {
     )
         internal
         pure
-        returns (uint256)
+        returns (
+            uint256 numerator,
+            uint256 denominator
+        )
     {
-        uint256 numerator = _add(
+        numerator = _add(
             _mul(n_1, d_2),
             _mul(n_2, d_1)
         );
-        uint256 denominator = _mul(d_1, d_2);
-        return _div(numerator, denominator);
-    }
-
-    /// @dev Safely subtracts two fractions `n_1/d_1 - n_2/d_2`
-    /// @param n_1 numerator of `1`
-    /// @param d_1 denominator of `1`
-    /// @param n_2 numerator of `2`
-    /// @param d_2 denominator of `2`
-    /// @return difference of fractions
-    function _subFractions(
-        uint256 n_1,
-        uint256 d_1,
-        uint256 n_2,
-        uint256 d_2
-    )
-        internal
-        pure
-        returns (uint256)
-    {
-        uint256 numerator = _sub(
-            _mul(n_1, d_2),
-            _mul(n_2, d_1)
-        );
-        uint256 denominator = _mul(d_1, d_2);
-        return _div(numerator, denominator);
+        denominator = _mul(d_1, d_2);
+        return (numerator, denominator);
     }
 
     /// @dev Safely scales the difference two fractions.

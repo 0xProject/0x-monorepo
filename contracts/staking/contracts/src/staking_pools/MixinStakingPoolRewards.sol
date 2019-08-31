@@ -187,6 +187,45 @@ contract MixinStakingPoolRewards is
         }
     }
 
+    function _recordRewardForDelegators(
+        bytes32 poolId,
+        uint256 reward,
+        uint256 amountOfDelegatedStake,
+        uint256 epoch
+    )
+        internal
+    {
+        // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
+        mapping (uint256 => IStructs.ND) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+
+        // fetch the last epoch at which we stored an entry for this pool;
+        // this is the most up-to-date cumulative rewards for this pool.
+        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
+        IStructs.ND memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
+
+        // compute new cumulative reward
+        (uint256 numerator, uint256 denominator) = LibSafeMath._addFractions(
+            mostRecentCumulativeRewards.numerator,
+            mostRecentCumulativeRewards.denominator,
+            reward,
+            amountOfDelegatedStake
+        );
+
+        // normalize fraction components by dividing by the min token value (10^18)
+        (uint256 numeratorNormalized, uint256 denominatorNormalized) = (
+            numerator._div(MIN_TOKEN_VALUE),
+            denominator._div(MIN_TOKEN_VALUE)
+        );
+
+        // store cumulative rewards
+        cumulativeRewardsByPoolPtr[epoch] = IStructs.ND({
+            numerator: numeratorNormalized,
+            denominator: denominatorNormalized
+        });
+        cumulativeRewardsByPoolLastStored[poolId] = epoch;
+    }
+
+
     /// @dev returns true iff Cumulative Rewards are set
     function _isCumulativeRewardSet(IStructs.ND memory nd)
         private
