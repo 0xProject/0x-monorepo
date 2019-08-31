@@ -47,7 +47,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-compiler/README.md",
     "devDependencies": {
         "@0x/dev-utils": "^2.3.1",
-        "@0x/ts-doc-gen": "^0.0.20",
+        "@0x/ts-doc-gen": "^0.0.21",
         "@0x/tslint-config": "^3.0.1",
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^5.2.7",
