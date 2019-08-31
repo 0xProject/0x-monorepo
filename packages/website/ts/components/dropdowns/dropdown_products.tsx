@@ -6,11 +6,11 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
 const navData = [
-  {
-      title: 'Asset Swapper',
-      description: 'Funnel 0x liquidity into your DeFi smart contracts',
-      url: WebsitePaths.AssetSwapperPage,
-  },
+    {
+        title: 'Asset Swapper',
+        description: 'Funnel 0x liquidity into your DeFi smart contracts',
+        url: WebsitePaths.AssetSwapperPage,
+    },
     {
         title: '0x Instant',
         description: 'Embed simple token purchasing in any app or website',
