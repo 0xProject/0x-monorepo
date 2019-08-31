@@ -39,5 +39,4 @@ export * from '../generated-wrappers/mixin_zrx_vault';
 export * from '../generated-wrappers/staking';
 export * from '../generated-wrappers/staking_pool_reward_vault';
 export * from '../generated-wrappers/staking_proxy';
-export * from '../generated-wrappers/test_reward_balances';
 export * from '../generated-wrappers/zrx_vault';

@@ -59,7 +59,7 @@ interface IStructs {
         uint256 delegatedStake;
     }
 
-    struct StoredStakeBalance {
+    struct DelayedBalance {
         uint64 lastStored;
         uint96 next;
         uint96 current;
@@ -70,19 +70,19 @@ interface IStructs {
         uint256 current;
     }
 
-    enum StakeStateId {
+    enum StakeState {
         ACTIVE,
         INACTIVE,
         DELEGATED
     }
 
+    struct StakeStateInfo {
+        StakeState id;
+        bytes32 poolId;
+    }
+
     struct ND {
         uint256 numerator;
         uint256 denominator;
-    }
-
-    struct StakeState {
-        StakeStateId id;
-        bytes32 poolId;
     }
 }

@@ -41,7 +41,6 @@ import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
-import * as TestRewardBalances from '../generated-artifacts/TestRewardBalances.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     Staking: Staking as ContractArtifact,
@@ -81,5 +80,4 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     LibFeeMathTest: LibFeeMathTest as ContractArtifact,
-    TestRewardBalances: TestRewardBalances as ContractArtifact,
 };

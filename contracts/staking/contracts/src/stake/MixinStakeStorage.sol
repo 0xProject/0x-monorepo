@@ -45,8 +45,8 @@ contract MixinStakeStorage is
     /// @param toPtr pointer to storage location of `to` stake.
     /// @param amount of stake to move.
     function _moveStake(
-        IStructs.StoredStakeBalance storage fromPtr,
-        IStructs.StoredStakeBalance storage toPtr,
+        IStructs.DelayedBalance storage fromPtr,
+        IStructs.DelayedBalance storage toPtr,
         uint256 amount
     )
         internal
@@ -57,8 +57,8 @@ contract MixinStakeStorage is
         }
 
         // load balance from storage and synchronize it
-        IStructs.StoredStakeBalance memory from = _syncBalanceDestructive(fromPtr);
-        IStructs.StoredStakeBalance memory to = _syncBalanceDestructive(toPtr);
+        IStructs.DelayedBalance memory from = _syncBalanceDestructive(fromPtr);
+        IStructs.DelayedBalance memory to = _syncBalanceDestructive(toPtr);
 
         // sanity check on balance
         if (amount > from.next) {
@@ -80,10 +80,10 @@ contract MixinStakeStorage is
     ///      was stored.
     /// @param balance to update. This will be equal to the return value after calling.
     /// @return synchronized balance.
-    function _syncBalanceDestructive(IStructs.StoredStakeBalance memory balance)
+    function _syncBalanceDestructive(IStructs.DelayedBalance memory balance)
         internal
         view
-        returns (IStructs.StoredStakeBalance memory)
+        returns (IStructs.DelayedBalance memory)
     {
         uint64 currentEpoch = getCurrentEpoch();
         if (currentEpoch > balance.lastStored) {
@@ -97,11 +97,11 @@ contract MixinStakeStorage is
     ///      This causes both the `current` and `next` fields to increase immediately.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _mintBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+    function _mintBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
         balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._add(amount));
         balance.current = LibSafeMath._downcastToUint96(uint256(balance.current)._add(amount));
 
@@ -113,11 +113,11 @@ contract MixinStakeStorage is
     ///      This causes both the `current` and `next` fields to decrease immediately.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _burnBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+    function _burnBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
         balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._sub(amount));
         balance.current = LibSafeMath._downcastToUint96(uint256(balance.current)._sub(amount));
 
@@ -130,8 +130,8 @@ contract MixinStakeStorage is
     /// @param balancePtrB second storage pointer.
     /// @return true iff pointers are equal.
     function _arePointersEqual(
-        IStructs.StoredStakeBalance storage balancePtrA,
-        IStructs.StoredStakeBalance storage balancePtrB
+        IStructs.DelayedBalance storage balancePtrA,
+        IStructs.DelayedBalance storage balancePtrB
     )
         private
         returns (bool areEqual)
@@ -149,11 +149,11 @@ contract MixinStakeStorage is
     ///      Ths updates the `next` field but not the `current` field.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to increment by.
-    function _incrementBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+    function _incrementBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
         internal
     {
         // Add stake to balance
-        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
         balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._add(amount));
 
         // update state
@@ -164,11 +164,11 @@ contract MixinStakeStorage is
     ///      Ths updates the `next` field but not the `current` field.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to decrement by.
-    function _decrementBalance(IStructs.StoredStakeBalance storage balancePtr, uint256 amount)
+    function _decrementBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.StoredStakeBalance memory balance = _syncBalanceDestructive(balancePtr);
+        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
         balance.next = LibSafeMath._downcastToUint96(uint256(balance.next)._sub(amount));
 
         // update state
@@ -179,8 +179,8 @@ contract MixinStakeStorage is
     /// @param balancePtr points to where `balance` will be stored.
     /// @param balance to save to storage.
     function _storeBalance(
-        IStructs.StoredStakeBalance storage balancePtr,
-        IStructs.StoredStakeBalance memory balance
+        IStructs.DelayedBalance storage balancePtr,
+        IStructs.DelayedBalance memory balance
     )
         private
     {

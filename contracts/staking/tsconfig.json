@@ -39,7 +39,6 @@
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingPoolRewardVault.json",
         "generated-artifacts/StakingProxy.json",
-        "generated-artifacts/TestRewardBalances.json",
         "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

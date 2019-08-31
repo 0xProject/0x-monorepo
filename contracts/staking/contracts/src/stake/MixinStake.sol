@@ -106,13 +106,13 @@ contract MixinStake is
     /// @param from state to move stake out of.
     /// @param to state to move stake into.
     /// @param amount of stake to move.
-    function moveStake(IStructs.StakeState calldata from, IStructs.StakeState calldata to, uint256 amount)
+    function moveStake(IStructs.StakeStateInfo calldata from, IStructs.StakeStateInfo calldata to, uint256 amount)
         external
     {
         // sanity check - do nothing if moving stake between the same state
-        if (from.id != IStructs.StakeStateId.DELEGATED && from.id == to.id) {
+        if (from.id != IStructs.StakeState.DELEGATED && from.id == to.id) {
             return;
-        } else if(from.id == IStructs.StakeStateId.DELEGATED && from.poolId == to.poolId) {
+        } else if(from.id == IStructs.StakeState.DELEGATED && from.poolId == to.poolId) {
             return;
         }
 
@@ -120,7 +120,7 @@ contract MixinStake is
 
         // handle delegation; this must be done before moving stake as the current
         // (out-of-sync) state is used during delegation.
-        if (from.id == IStructs.StakeStateId.DELEGATED) {
+        if (from.id == IStructs.StakeState.DELEGATED) {
             _undelegateStake(
                 from.poolId,
                 owner,
@@ -128,7 +128,7 @@ contract MixinStake is
             );
         }
 
-        if (to.id == IStructs.StakeStateId.DELEGATED) {
+        if (to.id == IStructs.StakeState.DELEGATED) {
             _delegateStake(
                 to.poolId,
                 owner,
@@ -137,17 +137,17 @@ contract MixinStake is
         }
 
         // cache the current withdrawal state if we're moving out of the inactive state.
-        uint256 cachedWithdrawableStakeByOwner = (from.id == IStructs.StakeStateId.INACTIVE)
+        uint256 cachedWithdrawableStakeByOwner = (from.id == IStructs.StakeState.INACTIVE)
             ? getWithdrawableStake(owner)
             : 0;
 
         // execute move
-        IStructs.StoredStakeBalance storage fromPtr = _getBalancePtrFromState(from);
-        IStructs.StoredStakeBalance storage toPtr = _getBalancePtrFromState(to);
+        IStructs.DelayedBalance storage fromPtr = _getBalancePtrFromState(from);
+        IStructs.DelayedBalance storage toPtr = _getBalancePtrFromState(to);
         _moveStake(fromPtr, toPtr, amount);
 
         // update withdrawable field, if necessary
-        if (from.id == IStructs.StakeStateId.INACTIVE) {
+        if (from.id == IStructs.StakeState.INACTIVE) {
             withdrawableStakeByOwner[owner] = _computeWithdrawableStake(owner, cachedWithdrawableStakeByOwner);
         }
 
@@ -215,17 +215,17 @@ contract MixinStake is
     /// @dev Returns a storage pointer to a user's stake in a given state.
     /// @param state of user's stake to lookup.
     /// @return a storage pointer to the corresponding stake stake
-    function _getBalancePtrFromState(IStructs.StakeState memory state)
+    function _getBalancePtrFromState(IStructs.StakeStateInfo memory state)
         private
-        returns (IStructs.StoredStakeBalance storage)
+        returns (IStructs.DelayedBalance storage)
     {
         // lookup state
         address owner = msg.sender;
-        if (state.id == IStructs.StakeStateId.ACTIVE) {
+        if (state.id == IStructs.StakeState.ACTIVE) {
             return activeStakeByOwner[owner];
-        } else if(state.id == IStructs.StakeStateId.INACTIVE) {
+        } else if(state.id == IStructs.StakeState.INACTIVE) {
             return inactiveStakeByOwner[owner];
-        } else if(state.id == IStructs.StakeStateId.DELEGATED) {
+        } else if(state.id == IStructs.StakeState.DELEGATED) {
             return delegatedStakeByOwner[owner];
         }
 

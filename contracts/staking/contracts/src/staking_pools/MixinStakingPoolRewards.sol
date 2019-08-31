@@ -52,7 +52,7 @@ contract MixinStakingPoolRewards is
         returns (uint256)
     {
         // cache some values to reduce sloads
-        IStructs.StoredStakeBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
+        IStructs.DelayedBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
         uint256 currentEpoch = getCurrentEpoch();
 
         // value is always zero in these two scenarios:
