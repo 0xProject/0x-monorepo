@@ -90,7 +90,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const amountToStake = StakingWrapper.toBaseUnitAmount(4);
             const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
             const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = new BigNumber(0);
+            const operatorReward = reward;
             const delegatorReward = new BigNumber(0);
             { // Epoch 1: Stake some ZRX
                 await stakingWrapper.stakeAsync(staker, amountToStake);

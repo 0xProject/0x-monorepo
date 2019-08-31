@@ -18,7 +18,6 @@ import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
 import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
-import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
 import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
 import * as LibSafeMath64 from '../generated-artifacts/LibSafeMath64.json';
 import * as LibSafeMath96 from '../generated-artifacts/LibSafeMath96.json';
@@ -63,7 +62,6 @@ export const artifacts = {
     IZrxVault: IZrxVault as ContractArtifact,
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFeeMath: LibFeeMath as ContractArtifact,
-    LibRewardMath: LibRewardMath as ContractArtifact,
     LibSafeMath: LibSafeMath as ContractArtifact,
     LibSafeMath64: LibSafeMath64 as ContractArtifact,
     LibSafeMath96: LibSafeMath96 as ContractArtifact,

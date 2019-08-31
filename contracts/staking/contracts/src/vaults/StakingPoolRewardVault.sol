@@ -73,39 +73,32 @@ contract StakingPoolRewardVault is
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
     }
 
-    /// @dev Deposit a reward in ETH for a specific pool.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
-        external
-        payable
-        onlyStakingContract
-    {
-        // update balance of pool
-        uint256 amount = msg.value;
-        Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
-        balanceByPoolId[poolId] = balance;
-
-        // notify
-        emit RewardDeposited(poolId, amount);
-    }
-
     /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
     /// which is enforced by the staking contract. We do not enforce it here to save (a lot of) gas.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
+    /// @param operatorOnly Only attribute amount to operator.
+    /// @return operatorPortion Portion of amount attributed to the operator.
+    /// @return operatorPortion Portion of amount attributed to the delegators.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 amount,
+        bool operatorOnly
+    )
         external
         onlyStakingContract
+        returns (
+            uint256 operatorPortion,
+            uint256 delegatorsPortion
+        )
     {
         // update balance of pool
         Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
+        (operatorPortion, delegatorsPortion) = _incrementBalanceStruct(balance, amount, operatorOnly);
         balanceByPoolId[poolId] = balance;
+        return (operatorPortion, delegatorsPortion);
     }
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
@@ -238,19 +231,26 @@ contract StakingPoolRewardVault is
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param balance Balance struct to increment.
     /// @param amount256Bit Amount to add to balance.
-    function _incrementBalanceStruct(Balance memory balance, uint256 amount256Bit)
+    /// @param operatorOnly Only give this balance to the operator.
+    /// @return portion of amount given to operator and delegators, respectively.
+    function _incrementBalanceStruct(Balance memory balance, uint256 amount256Bit, bool operatorOnly)
         private
         pure
+        returns (uint256, uint256)
     {
         // balances are stored as uint96; safely downscale.
         uint96 amount = amount256Bit._downcastToUint96();
 
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
-        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
-        uint96 poolPortion = amount._sub(operatorPortion);
+        uint96 operatorPortion = operatorOnly ? amount : amount._computePercentageCeil(balance.operatorShare);
+        uint96 poolPortion = operatorOnly ? 0 : amount._sub(operatorPortion);
 
         // update balances
         balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
         balance.membersBalance = balance.membersBalance._add(poolPortion);
+        return (
+            operatorPortion,
+            poolPortion
+        );
     }
 }

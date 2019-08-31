@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibSafeMath.sol";
-import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";

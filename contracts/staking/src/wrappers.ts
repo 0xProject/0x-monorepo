@@ -16,7 +16,6 @@ export * from '../generated-wrappers/i_zrx_vault';
 export * from '../generated-wrappers/lib_e_i_p712_hash';
 export * from '../generated-wrappers/lib_fee_math';
 export * from '../generated-wrappers/lib_fee_math_test';
-export * from '../generated-wrappers/lib_reward_math';
 export * from '../generated-wrappers/lib_safe_math';
 export * from '../generated-wrappers/lib_safe_math64';
 export * from '../generated-wrappers/lib_safe_math96';

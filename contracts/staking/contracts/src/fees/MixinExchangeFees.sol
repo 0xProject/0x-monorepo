@@ -218,22 +218,20 @@ contract MixinExchangeFees is
                 totalWeightedStake
             );
 
-            // sync cumulative rewards
-            // NOTE THIS SHOULD BE THE DELEGATOR PORTION OF REWARD @TODO
-            if (activePools[i].delegatedStake == 0) {
-                // @TODO fees go to operator
-            } else {
+            // record reward in vault
+            bool rewardForOperatorOnly = activePools[i].delegatedStake == 0;
+            (, uint256 delegatorsPortion) = rewardVault.recordDepositFor(activePools[i].poolId, reward, rewardForOperatorOnly);
+            totalRewardsPaid = totalRewardsPaid._add(reward);
+
+            // sync cumulative rewards, if necessary.
+            if (delegatorsPortion > 0) {
                 _recordRewardForDelegators(
                     activePools[i].poolId,
                     activePools[i].delegatedStake,
                     currentEpoch,
-                    reward
+                    delegatorsPortion
                 );
             }
-
-            // record reward in vault
-            rewardVault.recordDepositFor(activePools[i].poolId, reward);
-            totalRewardsPaid = totalRewardsPaid._add(reward);
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;
@@ -278,16 +276,15 @@ contract MixinExchangeFees is
         for (uint i = 0; i != rewards.length; i++) {
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
             bytes32 poolId = rewards[i].poolId;
-
             uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[poolId];
-            if (totalStakeDelegatedToPool != 0) {
+
+            // record reward in vault
+            (, uint256 delegatorsAmount) = rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward, totalStakeDelegatedToPool == 0);
+            if (delegatorsAmount > 0) {
                 cumulativeRewardsByPool[poolId][epoch].numerator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator) / 10**18;
                 cumulativeRewardsByPool[poolId][epoch].denominator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
                 cumulativeRewardsByPoolLastStored[poolId] = epoch;
             }
-
-            // record reward in vault
-            rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward);
         }
 
         if (address(this).balance > 0) {

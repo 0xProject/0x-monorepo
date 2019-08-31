@@ -498,15 +498,6 @@ export class StakingWrapper {
         return value;
     }
     ///// REWARD VAULT /////
-    public async rewardVaultDepositForAsync(
-        poolId: string,
-        amount: BigNumber,
-        stakingContractAddress: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingPoolRewardVaultContract().depositFor.getABIEncodedTransactionData(poolId);
-        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, amount);
-        return txReceipt;
-    }
     public async rewardVaultEnterCatastrophicFailureModeAsync(
         zeroExMultisigAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {

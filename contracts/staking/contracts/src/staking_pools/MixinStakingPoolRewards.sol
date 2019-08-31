@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../libs/LibSafeMath.sol";
-import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../stake/MixinStakeBalances.sol";
@@ -187,6 +186,11 @@ contract MixinStakingPoolRewards is
         }
     }
 
+    /// @dev Records a reward for delegators. This adds to the `cumulativeRewardsByPool`.
+    /// @param poolId Unique Id of pool.
+    /// @param reward to record for delegators.
+    /// @param amountOfDelegatedStake the amount of delegated stake that will split this reward.
+    /// @param epoch at which this was earned.
     function _recordRewardForDelegators(
         bytes32 poolId,
         uint256 reward,

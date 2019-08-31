@@ -85,22 +85,25 @@ interface IStakingPoolRewardVault {
     function setEthVault(address ethVaultAddress)
         external;
 
-    /// @dev Deposit a reward in ETH for a specific pool.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
-        external
-        payable;
-
-    /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
+     /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
     /// which is enforced by the staking contract. We do not enforce it here to save (a lot of) gas.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
-        external;
+    /// @param operatorOnly Only attribute amount to operator.
+    /// @return operatorPortion Portion of amount attributed to the operator.
+    /// @return operatorPortion Portion of amount attributed to the delegators.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 amount,
+        bool operatorOnly
+    )
+        external
+        returns (
+            uint256 operatorPortion,
+            uint256 delegatorsPortion
+    );
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
     /// Note that this is only callable by the staking contract, and when
