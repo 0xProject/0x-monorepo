@@ -1,4 +1,4 @@
-import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
+import { ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
 
 export type LogEvent = LogEntryEvent;
 export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
