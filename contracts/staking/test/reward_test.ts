@@ -25,7 +25,7 @@ import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeStateId } from './utils/types';
 import { constants as stakingConstants } from './utils/constants';
-import { TestRewardBalancesContract } from '../src';
+// import { TestRewardBalancesContract } from '../src';
 
 import { artifacts } from '../src';
 
@@ -42,7 +42,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
     let erc20ProxyContract: ERC20ProxyContract;
     // wrappers
     let stakingWrapper: StakingWrapper;
-    let testWrapper: TestRewardBalancesContract;
+   // let testWrapper: TestRewardBalancesContract;
     let erc20Wrapper: ERC20Wrapper;
     // tests
     before(async () => {
@@ -58,8 +58,8 @@ blockchainTests.resets.only('Testing Rewards', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContractsAsync(artifacts.TestRewardBalances);
-        testWrapper = new TestRewardBalancesContract(constants.NULL_ADDRESS, provider);
+        await stakingWrapper.deployAndConfigureContractsAsync(/*artifacts.TestRewardBalances*/);
+       //  testWrapper = new TestRewardBalancesContract(constants.NULL_ADDRESS, provider);
     });
 
     describe.only('Reward Simulation', () => {

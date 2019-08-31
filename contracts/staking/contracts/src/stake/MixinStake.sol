@@ -110,9 +110,9 @@ contract MixinStake is
         external
     {
         // sanity check - do nothing if moving stake between the same state
-        if (from.id != IStructs.StakeState.DELEGATED && from.id == to.id) {
+        if (from.state != IStructs.StakeState.DELEGATED && from.state == to.state) {
             return;
-        } else if(from.id == IStructs.StakeState.DELEGATED && from.poolId == to.poolId) {
+        } else if(from.state == IStructs.StakeState.DELEGATED && from.poolId == to.poolId) {
             return;
         }
 
@@ -120,7 +120,7 @@ contract MixinStake is
 
         // handle delegation; this must be done before moving stake as the current
         // (out-of-sync) state is used during delegation.
-        if (from.id == IStructs.StakeState.DELEGATED) {
+        if (from.state == IStructs.StakeState.DELEGATED) {
             _undelegateStake(
                 from.poolId,
                 owner,
@@ -128,7 +128,7 @@ contract MixinStake is
             );
         }
 
-        if (to.id == IStructs.StakeState.DELEGATED) {
+        if (to.state == IStructs.StakeState.DELEGATED) {
             _delegateStake(
                 to.poolId,
                 owner,
@@ -137,7 +137,7 @@ contract MixinStake is
         }
 
         // cache the current withdrawal state if we're moving out of the inactive state.
-        uint256 cachedWithdrawableStakeByOwner = (from.id == IStructs.StakeState.INACTIVE)
+        uint256 cachedWithdrawableStakeByOwner = (from.state == IStructs.StakeState.INACTIVE)
             ? getWithdrawableStake(owner)
             : 0;
 
@@ -147,7 +147,7 @@ contract MixinStake is
         _moveStake(fromPtr, toPtr, amount);
 
         // update withdrawable field, if necessary
-        if (from.id == IStructs.StakeState.INACTIVE) {
+        if (from.state == IStructs.StakeState.INACTIVE) {
             withdrawableStakeByOwner[owner] = _computeWithdrawableStake(owner, cachedWithdrawableStakeByOwner);
         }
 
@@ -155,9 +155,9 @@ contract MixinStake is
         emit MoveStake(
             owner,
             amount,
-            uint8(from.id),
+            uint8(from.state),
             from.poolId,
-            uint8(to.id),
+            uint8(to.state),
             to.poolId
         );
     }
@@ -221,11 +221,11 @@ contract MixinStake is
     {
         // lookup state
         address owner = msg.sender;
-        if (state.id == IStructs.StakeState.ACTIVE) {
+        if (state.state == IStructs.StakeState.ACTIVE) {
             return activeStakeByOwner[owner];
-        } else if(state.id == IStructs.StakeState.INACTIVE) {
+        } else if(state.state == IStructs.StakeState.INACTIVE) {
             return inactiveStakeByOwner[owner];
-        } else if(state.id == IStructs.StakeState.DELEGATED) {
+        } else if(state.state == IStructs.StakeState.DELEGATED) {
             return delegatedStakeByOwner[owner];
         }
 

@@ -59,29 +59,40 @@ interface IStructs {
         uint256 delegatedStake;
     }
 
+    /// @dev A delayed balance allows values to be computed
     struct DelayedBalance {
-        uint64 lastStored;
-        uint96 next;
         uint96 current;
+        uint96 next;
+        uint64 lastStored;
     }
 
+    /// @dev Balance struct for stake.
+    /// @param current Balance in the current epoch.
+    /// @param next Balance in the next epoch.
     struct StakeBalance {
-        uint256 next;
         uint256 current;
+        uint256 next;
     }
 
+    /// @dev States that stake can exist in.
     enum StakeState {
         ACTIVE,
         INACTIVE,
         DELEGATED
     }
 
+    /// @dev Info used to describe a state.
+    /// @param state of the stake.
+    /// @param poolId Unique Id of pool. This is set when state=DELEGATED.
     struct StakeStateInfo {
-        StakeState id;
+        StakeState state;
         bytes32 poolId;
     }
 
-    struct ND {
+    /// @dev Struct to represent a fraction.
+    /// @param numerator of fraction.
+    /// @param denominator of fraction.
+    struct Fraction {
         uint256 numerator;
         uint256 denominator;
     }
