@@ -231,34 +231,13 @@ contract MixinStakingPoolRewards is
 
 
     /// @dev returns true iff Cumulative Rewards are set
-    function _isCumulativeRewardSet(IStructs.Fraction memory f)
+    function _isCumulativeRewardSet(IStructs.Fraction memory cumulativeReward)
         private
         returns (bool)
     {
         // we use the denominator as a proxy for whether the cumulative
         // reward is set, as setting the cumulative reward always sets this
         // field to at least 1.
-        return f.denominator != 0;
+        return cumulativeReward.denominator != 0;
     }
-
-/*
-    /// @dev Computes the reward balance in ETH of a specific member of a pool.
-    /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
-    /// @return Balance.
-    function syncRewardBalanceOfStakingPoolOperator(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 balance = computeRewardBalanceOfStakingPoolMember(poolId, member);
-
-        // Pay the delegator
-
-
-        // Remove the reference
-
-
-    }
-    */
 }
