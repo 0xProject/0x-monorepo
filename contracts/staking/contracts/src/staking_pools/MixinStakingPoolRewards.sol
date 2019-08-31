@@ -104,8 +104,8 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        IStructs.ND memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
-        IStructs.ND memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
+        IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
+        IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
         uint256 reward = LibSafeMath._scaleFractionalDifference(
             endRatio.numerator,
             endRatio.denominator,
@@ -145,7 +145,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         uint256 currentEpoch = getCurrentEpoch();
-        cumulativeRewardsByPool[poolId][currentEpoch] = IStructs.ND({numerator: 0, denominator: MIN_TOKEN_VALUE});
+        cumulativeRewardsByPool[poolId][currentEpoch] = IStructs.Fraction({numerator: 0, denominator: MIN_TOKEN_VALUE});
         cumulativeRewardsByPoolLastStored[poolId] = currentEpoch;
     }
 
@@ -164,12 +164,12 @@ contract MixinStakingPoolRewards is
         }
 
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.ND) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+        mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
 
         // fetch the last epoch at which we stored an entry for this pool;
         // this is the most up-to-date cumulative rewards for this pool.
         uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.ND memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
+        IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
         // copy our most up-to-date cumulative rewards for last epoch, if necessary.
         uint256 lastEpoch = currentEpoch._sub(1);
@@ -200,12 +200,12 @@ contract MixinStakingPoolRewards is
         internal
     {
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.ND) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+        mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
 
         // fetch the last epoch at which we stored an entry for this pool;
         // this is the most up-to-date cumulative rewards for this pool.
         uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.ND memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
+        IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
         // compute new cumulative reward
         (uint256 numerator, uint256 denominator) = LibSafeMath._addFractions(
@@ -222,7 +222,7 @@ contract MixinStakingPoolRewards is
         );
 
         // store cumulative rewards
-        cumulativeRewardsByPoolPtr[epoch] = IStructs.ND({
+        cumulativeRewardsByPoolPtr[epoch] = IStructs.Fraction({
             numerator: numeratorNormalized,
             denominator: denominatorNormalized
         });
@@ -231,14 +231,14 @@ contract MixinStakingPoolRewards is
 
 
     /// @dev returns true iff Cumulative Rewards are set
-    function _isCumulativeRewardSet(IStructs.ND memory nd)
+    function _isCumulativeRewardSet(IStructs.Fraction memory f)
         private
         returns (bool)
     {
         // we use the denominator as a proxy for whether the cumulative
         // reward is set, as setting the cumulative reward always sets this
         // field to at least 1.
-        return nd.denominator != 0;
+        return f.denominator != 0;
     }
 
 /*
