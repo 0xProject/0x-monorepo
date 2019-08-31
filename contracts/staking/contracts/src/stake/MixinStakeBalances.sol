@@ -155,10 +155,9 @@ contract MixinStakeBalances is
         // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
         // so the upper bound of withdrawable stake is always limited by the value of `next`.
         IStructs.DelayedBalance memory storedBalance = inactiveStakeByOwner[owner];
-        uint256 storedWithdrawableBalance = withdrawableStakeByOwner[owner];
         if (storedBalance.lastStored == currentEpoch) {
             return storedBalance.next < cachedWithdrawableStakeByOwner ? storedBalance.next : cachedWithdrawableStakeByOwner;
-        } else if(storedBalance.lastStored._add(1) == currentEpoch) {
+        } else if (storedBalance.lastStored._add(1) == currentEpoch) {
             return storedBalance.next < storedBalance.current ? storedBalance.next : storedBalance.current;
         } else {
             return storedBalance.next;

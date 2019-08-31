@@ -88,34 +88,6 @@ contract MixinStakingPoolRewards is
         return totalReward;
     }
 
-    /// @dev Computes a member's reward over a given epoch interval.
-    /// @param poolId Uniqud Id of pool.
-    /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
-    /// @param beginEpoch beginning of interval.
-    /// @param endEpoch end of interval.
-    /// @return rewards accumulated over interval [beginEpoch, endEpoch]
-    function _computeMemberRewardOverInterval(
-        bytes32 poolId,
-        uint256 memberStakeOverInterval,
-        uint256 beginEpoch,
-        uint256 endEpoch
-    )
-        private
-        view
-        returns (uint256)
-    {
-        IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
-        IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
-        uint256 reward = LibSafeMath._scaleFractionalDifference(
-            endRatio.numerator,
-            endRatio.denominator,
-            beginRatio.numerator,
-            beginRatio.denominator,
-            memberStakeOverInterval
-        );
-        return reward;
-    }
-
     /// @dev Transfers a delegators accumulated rewards from the transient pool Reward Pool vault
     ///      to the Eth Vault. This is required before the member's stake in the pool can be
     ///      modified.
@@ -229,6 +201,33 @@ contract MixinStakingPoolRewards is
         cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
 
+    /// @dev Computes a member's reward over a given epoch interval.
+    /// @param poolId Uniqud Id of pool.
+    /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
+    /// @param beginEpoch beginning of interval.
+    /// @param endEpoch end of interval.
+    /// @return rewards accumulated over interval [beginEpoch, endEpoch]
+    function _computeMemberRewardOverInterval(
+        bytes32 poolId,
+        uint256 memberStakeOverInterval,
+        uint256 beginEpoch,
+        uint256 endEpoch
+    )
+        private
+        view
+        returns (uint256)
+    {
+        IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
+        IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
+        uint256 reward = LibSafeMath._scaleFractionalDifference(
+            endRatio.numerator,
+            endRatio.denominator,
+            beginRatio.numerator,
+            beginRatio.denominator,
+            memberStakeOverInterval
+        );
+        return reward;
+    }
 
     /// @dev returns true iff Cumulative Rewards are set
     function _isCumulativeRewardSet(IStructs.Fraction memory cumulativeReward)

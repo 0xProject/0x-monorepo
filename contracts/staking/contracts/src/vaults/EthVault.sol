@@ -37,11 +37,8 @@ contract EthVault is
     mapping (address => uint256) internal balances;
 
     /// @dev Constructor.
-    constructor()
-        public
-    {}
-
-    function () external payable {}
+    // solhint-disable-next-line no-empty-blocks
+    constructor() public {}
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.

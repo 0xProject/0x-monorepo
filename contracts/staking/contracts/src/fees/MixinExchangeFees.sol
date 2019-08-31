@@ -149,7 +149,6 @@ contract MixinExchangeFees is
         )
     {
         // initialize return values
-        uint256 epoch = getCurrentEpoch();
         totalActivePools = activePoolsThisEpoch.length;
         totalFeesCollected = 0;
         totalWeightedStake = 0;

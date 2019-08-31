@@ -94,18 +94,18 @@ library LibSafeMath {
         return uint64(a);
     }
 
-    /// @dev Safely adds two fractions `n_1/d_1 + n_2/d_2`
-    /// @param n_1 numerator of `1`
-    /// @param d_1 denominator of `1`
-    /// @param n_2 numerator of `2`
-    /// @param d_2 denominator of `2`
+    /// @dev Safely adds two fractions `n1/d1 + n2/d2`
+    /// @param n1 numerator of `1`
+    /// @param d1 denominator of `1`
+    /// @param n2 numerator of `2`
+    /// @param d2 denominator of `2`
     /// @return numerator of sum
     /// @return denominator of sum
     function _addFractions(
-        uint256 n_1,
-        uint256 d_1,
-        uint256 n_2,
-        uint256 d_2
+        uint256 n1,
+        uint256 d1,
+        uint256 n2,
+        uint256 d2
     )
         internal
         pure
@@ -115,25 +115,25 @@ library LibSafeMath {
         )
     {
         numerator = _add(
-            _mul(n_1, d_2),
-            _mul(n_2, d_1)
+            _mul(n1, d2),
+            _mul(n2, d1)
         );
-        denominator = _mul(d_1, d_2);
+        denominator = _mul(d1, d2);
         return (numerator, denominator);
     }
 
     /// @dev Safely scales the difference two fractions.
-    /// @param n_1 numerator of `1`
-    /// @param d_1 denominator of `1`
-    /// @param n_2 numerator of `2`
-    /// @param d_2 denominator of `2`
+    /// @param n1 numerator of `1`
+    /// @param d1 denominator of `1`
+    /// @param n2 numerator of `2`
+    /// @param d2 denominator of `2`
     /// @param s scalar to multiply by difference.
-    /// @return result = `s * (n_1/d_1 - n_2/d_2)`.
+    /// @return result = `s * (n1/d1 - n2/d2)`.
     function _scaleFractionalDifference(
-        uint256 n_1,
-        uint256 d_1,
-        uint256 n_2,
-        uint256 d_2,
+        uint256 n1,
+        uint256 d1,
+        uint256 n2,
+        uint256 d2,
         uint256 s
     )
         internal
@@ -141,13 +141,13 @@ library LibSafeMath {
         returns (uint256)
     {
         uint256 numerator = _sub(
-            _mul(n_1, d_2),
-            _mul(n_2, d_1)
+            _mul(n1, d2),
+            _mul(n2, d1)
         );
-        uint256 tmp = _div(numerator, d_2);
+        uint256 tmp = _div(numerator, d2);
         uint256 result = _div(
             _mul(s, tmp),
-            d_1
+            d1
         );
         return result;
     }

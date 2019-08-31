@@ -112,7 +112,7 @@ contract MixinStake is
         // sanity check - do nothing if moving stake between the same state
         if (from.state != IStructs.StakeState.DELEGATED && from.state == to.state) {
             return;
-        } else if(from.state == IStructs.StakeState.DELEGATED && from.poolId == to.poolId) {
+        } else if (from.state == IStructs.StakeState.DELEGATED && from.poolId == to.poolId) {
             return;
         }
 
@@ -175,7 +175,7 @@ contract MixinStake is
     {
         // transfer any rewards from the transient pool vault to the eth vault;
         // this must be done before we can modify the staker's portion of the delegator pool.
-       _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
+        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // sync cumulative rewards that we'll need for future computations
         _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
@@ -223,9 +223,9 @@ contract MixinStake is
         address owner = msg.sender;
         if (state.state == IStructs.StakeState.ACTIVE) {
             return activeStakeByOwner[owner];
-        } else if(state.state == IStructs.StakeState.INACTIVE) {
+        } else if (state.state == IStructs.StakeState.INACTIVE) {
             return inactiveStakeByOwner[owner];
-        } else if(state.state == IStructs.StakeState.DELEGATED) {
+        } else if (state.state == IStructs.StakeState.DELEGATED) {
             return delegatedStakeByOwner[owner];
         }
 

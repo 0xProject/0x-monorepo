@@ -25,6 +25,7 @@ import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
 import "./MixinZrxVault.sol";
 
+
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
     IStakingEvents,
@@ -125,26 +126,6 @@ contract MixinStakeStorage is
         _storeBalance(balancePtr, balance);
     }
 
-    /// @dev Returns true iff storage pointers resolve to same storage location.
-    /// @param balancePtrA first storage pointer.
-    /// @param balancePtrB second storage pointer.
-    /// @return true iff pointers are equal.
-    function _arePointersEqual(
-        IStructs.DelayedBalance storage balancePtrA,
-        IStructs.DelayedBalance storage balancePtrB
-    )
-        private
-        returns (bool areEqual)
-    {
-        assembly {
-            areEqual := and(
-                eq(balancePtrA_slot, balancePtrB_slot),
-                eq(balancePtrA_offset, balancePtrB_offset)
-            )
-        }
-        return areEqual;
-    }
-
     /// @dev Increments a balance.
     ///      Ths updates the `next` field but not the `current` field.
     /// @param balancePtr storage pointer to balance.
@@ -189,5 +170,27 @@ contract MixinStakeStorage is
         balancePtr.lastStored = balance.lastStored;
         balancePtr.next = balance.next;
         balancePtr.current = balance.current;
+    }
+
+    /// @dev Returns true iff storage pointers resolve to same storage location.
+    /// @param balancePtrA first storage pointer.
+    /// @param balancePtrB second storage pointer.
+    /// @return true iff pointers are equal.
+    function _arePointersEqual(
+        // solhint-disable-next-line no-unused-vars
+        IStructs.DelayedBalance storage balancePtrA,
+        // solhint-disable-next-line no-unused-vars
+        IStructs.DelayedBalance storage balancePtrB
+    )
+        private
+        returns (bool areEqual)
+    {
+        assembly {
+            areEqual := and(
+                eq(balancePtrA_slot, balancePtrB_slot),
+                eq(balancePtrA_offset, balancePtrB_offset)
+            )
+        }
+        return areEqual;
     }
 }

@@ -53,6 +53,15 @@ contract StakingPoolRewardVault is
     // address of ether vault
     IEthVault internal ethVault;
 
+    /// @dev Fallback function. This contract is payable, but only by the staking contract.
+    function ()
+        external
+        payable
+        onlyStakingContract
+    {
+        emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
+    }
+
     /// @dev Sets the Eth Vault.
     /// Note that only the contract owner can call this.
     /// @param ethVaultAddress Address of the Eth Vault.
@@ -62,15 +71,6 @@ contract StakingPoolRewardVault is
     {
         ethVault = IEthVault(ethVaultAddress);
        //  emit EthVaultChanged(erc20ProxyAddress);
-    }
-
-    /// @dev Fallback function. This contract is payable, but only by the staking contract.
-    function ()
-        external
-        payable
-        onlyStakingContract
-    {
-        emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
     }
 
     /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
@@ -117,7 +117,11 @@ contract StakingPoolRewardVault is
             return;
         }
 
-        require(address(ethVault) != address(0), 'eth vault not set');
+        // sanity check on eth vault
+        require(
+            address(ethVault) != address(0),
+            "ETH_VAULT_NOT_SET"
+        );
 
         // sanity check - sufficient balance?
         require(
@@ -146,7 +150,11 @@ contract StakingPoolRewardVault is
         external
         onlyStakingContract
     {
-        require(address(ethVault) != address(0), 'eth vault not set');
+        // sanity check on eth vault
+        require(
+            address(ethVault) != address(0),
+            "ETH_VAULT_NOT_SET"
+        );
 
         // sanity check - sufficient balance?
         require(
