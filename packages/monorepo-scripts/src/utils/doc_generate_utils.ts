@@ -16,7 +16,6 @@ export class DocGenerateUtils {
     private readonly _omitExports: string[];
     private readonly _packagePath: string;
     private readonly _exportPathToExportedItems: ExportPathToExportedItems;
-    private readonly _exportPathOrder: string[];
     private readonly _monoRepoPkgNameToPath: { [name: string]: string };
     private readonly _packageJson: PackageJSON;
     /**
@@ -179,7 +178,6 @@ export class DocGenerateUtils {
         const indexPath = `${this._packagePath}/src/index.ts`;
         const exportInfo = DocGenerateUtils._getExportPathToExportedItems(indexPath, this._omitExports);
         this._exportPathToExportedItems = exportInfo.exportPathToExportedItems;
-        this._exportPathOrder = exportInfo.exportPathOrder;
     }
     public async generateAndUploadDocsAsync(): Promise<void> {
         // For each dep that is another one of our monorepo packages, we fetch it's index.ts
@@ -400,19 +398,6 @@ export class DocGenerateUtils {
         }
         const matchingExportPath = sanitizedExportPathToExportPath[matchingSanitizedExportPathIfExists];
         return matchingExportPath;
-    }
-    private _getAllExternalExports(): string[] {
-        const externalExports: string[] = [];
-        _.each(this._exportPathToExportedItems, (exportedItems, exportPath) => {
-            const pathIfExists = this._monoRepoPkgNameToPath[exportPath];
-            if (pathIfExists === undefined && !_.startsWith(exportPath, './')) {
-                _.each(exportedItems, exportedItem => {
-                    externalExports.push(exportedItem);
-                });
-                return; // It's an external package
-            }
-        });
-        return externalExports;
     }
     private _getTypeDocFileIncludesForPackage(): string[] {
         let typeDocExtraFileIncludes: string[] = [];
