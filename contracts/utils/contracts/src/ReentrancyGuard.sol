@@ -30,20 +30,28 @@ contract ReentrancyGuard {
     /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
     ///      before function execution and unlocked after.
     modifier nonReentrant() {
+        _lockMutexOrThrowIfAlreadyLocked();
+        _;
+        _unlockMutex();
+    }
+
+    function _lockMutexOrThrowIfAlreadyLocked()
+        internal
+    {
         // Ensure mutex is unlocked.
         if (locked) {
             LibRichErrors.rrevert(
                 LibReentrancyGuardRichErrors.IllegalReentrancyError()
             );
         }
-
-        // Lock mutex before function call
+        // Lock mutex.
         locked = true;
+    }
 
-        // Perform function call
-        _;
-
-        // Unlock mutex after function call
+    function _unlockMutex()
+        internal
+    {
+        // Unlock mutex.
         locked = false;
     }
 }
