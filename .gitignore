@@ -76,7 +76,6 @@ TODO.md
 .vscode
 
 packages/website/public/bundle*
-packages/dev-tools-pages/public/bundle*
 
 # server cli
 packages/testnet-faucets/server/

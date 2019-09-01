@@ -55,7 +55,7 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
-        "ignoreDependencyVersionsForPackage": "website instant dev-tools-pages contract-wrappers"
+        "ignoreDependencyVersionsForPackage": "website instant contract-wrappers"
     },
     "bundlewatch": {
         "files": [
