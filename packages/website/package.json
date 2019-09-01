@@ -109,6 +109,7 @@
         "@types/react-dom": "^16.0.6",
         "@types/react-helmet": "^5.0.6",
         "@types/react-redux": "^4.4.37",
+        "@types/react-router-dom": "^4.0.4",
         "@types/react-scroll": "1.5.3",
         "@types/react-syntax-highlighter": "^0.0.8",
         "@types/react-tap-event-plugin": "0.0.30",

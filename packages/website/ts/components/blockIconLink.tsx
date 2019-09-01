@@ -48,7 +48,7 @@ class BaseComponent extends React.PureComponent<BaseComponentProps> {
     }
 }
 
-export const BlockIconLink = withRouter<BaseComponentProps>(BaseComponent);
+export const BlockIconLink = withRouter(BaseComponent);
 
 const Wrap = styled.div`
     width: calc(50% - 15px);

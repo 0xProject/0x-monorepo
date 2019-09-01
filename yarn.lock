@@ -1806,6 +1806,10 @@
   dependencies:
     "@types/node" "*"
 
+"@types/history@*":
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.3.tgz#856c99cdc1551d22c22b18b5402719affec9839a"
+
 "@types/is-mobile@0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@types/is-mobile/-/is-mobile-0.3.0.tgz#821825eeddb9016c41dd11c0dd6d2db8621432fc"
@@ -1985,6 +1989,21 @@
   dependencies:
     "@types/react" "*"
     redux "^4.0.0"
+
+"@types/react-router-dom@^4.0.4":
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.3.5.tgz#72f229967690c890d00f96e6b85e9ee5780db31f"
+  dependencies:
+    "@types/history" "*"
+    "@types/react" "*"
+    "@types/react-router" "*"
+
+"@types/react-router@*":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-5.0.3.tgz#855a1606e62de3f4d69ea34fb3c0e50e98e964d5"
+  dependencies:
+    "@types/history" "*"
+    "@types/react" "*"
 
 "@types/react-scroll@1.5.3":
   version "1.5.3"
