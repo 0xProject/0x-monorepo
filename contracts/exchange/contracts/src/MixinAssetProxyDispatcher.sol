@@ -33,7 +33,7 @@ contract MixinAssetProxyDispatcher is
     using LibBytes for bytes;
 
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
-    mapping (bytes4 => address) public assetProxies;
+    mapping (bytes4 => address) internal _assetProxies;
 
     /// @dev Registers an asset proxy to its asset proxy id.
     ///      Once an asset proxy is registered, it cannot be unregistered.
@@ -44,7 +44,7 @@ contract MixinAssetProxyDispatcher is
     {
         // Ensure that no asset proxy exists with current id.
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
-        address currentAssetProxy = assetProxies[assetProxyId];
+        address currentAssetProxy = _assetProxies[assetProxyId];
         if (currentAssetProxy != address(0)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyExistsError(
                 assetProxyId,
@@ -53,7 +53,7 @@ contract MixinAssetProxyDispatcher is
         }
 
         // Add asset proxy and log registration.
-        assetProxies[assetProxyId] = assetProxy;
+        _assetProxies[assetProxyId] = assetProxy;
         emit AssetProxyRegistered(
             assetProxyId,
             assetProxy
@@ -68,7 +68,7 @@ contract MixinAssetProxyDispatcher is
         view
         returns (address)
     {
-        return assetProxies[assetProxyId];
+        return _assetProxies[assetProxyId];
     }
 
     /// @dev Forwards arguments to assetProxy and calls `transferFrom`. Either succeeds or throws.
@@ -99,7 +99,7 @@ contract MixinAssetProxyDispatcher is
 
             // Lookup assetProxy.
             bytes4 assetProxyId = assetData.readBytes4(0);
-            address assetProxy = assetProxies[assetProxyId];
+            address assetProxy = _assetProxies[assetProxyId];
 
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
