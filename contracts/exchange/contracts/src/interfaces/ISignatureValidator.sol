@@ -98,21 +98,6 @@ contract ISignatureValidator {
         view
         returns (bool isValid);
 
-    /// @dev Checks if a signature is of a type that should be verified for
-    /// every subsequent fill.
-    /// @param hash The hash of the order/transaction.
-    /// @param signature The signature for `hash`.
-    /// @return needsRegularValidation True if the signature should be validated
-    ///                                for every operation.
-    function doesSignatureRequireRegularValidation(
-        bytes32 hash,
-        address signerAddress,
-        bytes memory signature
-    )
-        public
-        pure
-        returns (bool needsRegularValidation);
-
     /// @dev Verifies that an order, with provided order hash, has been signed
     ///      by the given signer.
     /// @param order The order.

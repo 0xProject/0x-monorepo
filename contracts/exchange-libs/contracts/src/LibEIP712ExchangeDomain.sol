@@ -24,10 +24,10 @@ import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 contract LibEIP712ExchangeDomain {
 
     // EIP712 Exchange Domain Name value
-    string constant public EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
+    string constant internal _EIP712_EXCHANGE_DOMAIN_NAME = "0x Protocol";
 
     // EIP712 Exchange Domain Version value
-    string constant public EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
+    string constant internal _EIP712_EXCHANGE_DOMAIN_VERSION = "3.0.0";
 
     // Hash of the EIP712 Domain Separator data
     // solhint-disable-next-line var-name-mixedcase
@@ -43,8 +43,8 @@ contract LibEIP712ExchangeDomain {
     {
         address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
         EIP712_EXCHANGE_DOMAIN_HASH = LibEIP712.hashEIP712Domain(
-            EIP712_EXCHANGE_DOMAIN_NAME,
-            EIP712_EXCHANGE_DOMAIN_VERSION,
+            _EIP712_EXCHANGE_DOMAIN_NAME,
+            _EIP712_EXCHANGE_DOMAIN_VERSION,
             chainId,
             verifyingContractAddress
         );

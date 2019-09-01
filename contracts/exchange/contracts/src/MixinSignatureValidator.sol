@@ -177,12 +177,12 @@ contract MixinSignatureValidator is
     /// @param signature The signature for `hash`.
     /// @return needsRegularValidation True if the signature should be validated
     ///                                for every action.
-    function doesSignatureRequireRegularValidation(
+    function _doesSignatureRequireRegularValidation(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
     )
-        public
+        internal
         pure
         returns (bool needsRegularValidation)
     {
@@ -195,6 +195,7 @@ contract MixinSignatureValidator is
             signatureType == SignatureType.Wallet ||
             signatureType == SignatureType.Validator ||
             signatureType == SignatureType.EIP1271Wallet;
+        return needsRegularValidation;
     }
 
     /// @dev Verifies that an order, with provided order hash, has been signed

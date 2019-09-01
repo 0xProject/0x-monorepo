@@ -35,8 +35,6 @@ contract Exchange is
     MixinWrapperFunctions,
     MixinTransferSimulator
 {
-    string constant public VERSION = "3.0.0";
-
     /// @dev Mixins are instantiated in the order they are inherited
     /// @param chainId Chain ID of the network this contract is deployed on.
     constructor (uint256 chainId)

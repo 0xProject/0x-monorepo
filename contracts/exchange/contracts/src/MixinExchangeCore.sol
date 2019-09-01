@@ -369,7 +369,7 @@ contract MixinExchangeCore is
         // regular validation.
         address makerAddress = order.makerAddress;
         if (orderInfo.orderTakerAssetFilledAmount == 0 ||
-            doesSignatureRequireRegularValidation(
+            _doesSignatureRequireRegularValidation(
                 orderInfo.orderHash,
                 makerAddress,
                 signature

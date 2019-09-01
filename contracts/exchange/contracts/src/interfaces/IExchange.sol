@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./IExchangeCore.sol";
+import "./IProtocolFees.sol";
 import "./IMatchOrders.sol";
 import "./ISignatureValidator.sol";
 import "./ITransactions.sol";
@@ -30,6 +31,7 @@ import "./ITransferSimulator.sol";
 
 // solhint-disable no-empty-blocks
 contract IExchange is
+    IProtocolFees,
     IExchangeCore,
     IMatchOrders,
     ISignatureValidator,
