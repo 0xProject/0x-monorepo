@@ -65,6 +65,21 @@ contract TestWrapperFunctions is
         orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
     }
 
+    function fillOrderNoThrow(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        public
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        return _fillOrderNoThrow(
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+    }
+
     /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
     function _fillOrder(
         LibOrder.Order memory order,
