@@ -10,7 +10,7 @@
         "build": "yarn build:dev",
         "build:prod": "node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
         "build:dev": "../../node_modules/.bin/webpack --mode development",
-        "clean": "shx rm -f public/bundle*",
+        "clean": "shx rm -rf public/bundle*",
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "fix": "tslint --fix --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "dev": "webpack-dev-server --mode development --content-base public --https",
