@@ -575,6 +575,27 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
+        it('should revert when SignatureType=Validator and signature is shorter than 21 bytes', async () => {
+            // Set approval of signature validator to false
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                false,
+                { from: signedOrder.makerAddress },
+            );
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(SignatureType.Validator);
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                orderHashHex,
+                signedOrder.makerAddress,
+                signatureHex,
+            );
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.MatchSignatureHash);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
         it('should revert when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
             await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
@@ -835,6 +856,27 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 signatureDataHex,
             );
             expect(isValidSignature).to.be.false();
+        });
+
+        it('should revert when SignatureType=Validator and signature is shorter than 21 bytes', async () => {
+            // Set approval of signature validator to false
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                false,
+                { from: signedTransaction.signerAddress },
+            );
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(SignatureType.Validator);
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                transactionHashHex,
+                signedTransaction.signerAddress,
+                signatureHex,
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.MatchSignatureHash);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert when validator returns nothing and SignatureType=Validator', async () => {

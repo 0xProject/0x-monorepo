@@ -65,13 +65,12 @@ contract ReentrancyTester is
     }
 
     /// @dev Overridden to revert on unsuccessful fillOrder call.
-    function fillOrderNoThrow(
+    function _fillOrderNoThrow(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
-        public
-        payable
+        internal
         returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
