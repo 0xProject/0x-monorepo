@@ -1,8 +1,11 @@
+/*
+@TODO (hysz) - update once new staking mechanics are merged
+
 import { expect } from '@0x/contracts-test-utils';
+import { chaiSetup } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DelegatorActor } from '../actors/delegator_actor';
 import { MakerActor } from '../actors/maker_actor';
 import { PoolOperatorActor } from '../actors/pool_operator_actor';
 
@@ -13,9 +16,6 @@ import { SimulationParams } from './types';
 const REWARD_PRECISION = 12;
 
 export class Simulation {
-    /*
-
-
     private readonly _stakingWrapper: StakingWrapper;
     private readonly _p: SimulationParams;
     private _userQueue: Queue<string>;
@@ -275,5 +275,5 @@ export class Simulation {
             Simulation._assertRewardsEqual(reward, expectedReward, `reward withdrawn from pool ${poolId} for operator`);
         }
     }
-    */
 }
+*/

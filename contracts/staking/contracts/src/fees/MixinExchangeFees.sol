@@ -229,7 +229,7 @@ contract MixinExchangeFees is
 
         // sanity check - this is a gas optimization that can be used because we assume a non-zero
         // split between stake and fees generated in the cobb-douglas computation (see below).
-        if (totalFeesCollected == 0 || totalWeightedStake == 0) {
+        if (totalFeesCollected == 0) {
             return (
                 totalActivePools,
                 totalFeesCollected,
@@ -247,8 +247,8 @@ contract MixinExchangeFees is
                 initialContractBalance,
                 activePools[i].feesCollected,
                 totalFeesCollected,
-                activePools[i].weightedStake,
-                totalWeightedStake,
+                activePools[i].weightedStake != 0 ? activePools[i].weightedStake : 1,
+                totalWeightedStake != 0 ? totalWeightedStake : 1,
                 cobbDouglasAlphaNumerator,
                 cobbDouglasAlphaDenomintor
             );

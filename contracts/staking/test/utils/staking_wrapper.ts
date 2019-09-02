@@ -1,4 +1,3 @@
-import { BaseContract } from '@0x/base-contract';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
@@ -10,11 +9,11 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    EthVaultContract,
     StakingContract,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
     ZrxVaultContract,
-    EthVaultContract,
 } from '../../src';
 
 import { ApprovalFactory } from './approval_factory';
@@ -61,7 +60,6 @@ export class StakingWrapper {
             .dividedBy(scalar);
         return amountAsFloatingPoint;
     }
-
     constructor(
         provider: Provider,
         ownerAddres: string,
@@ -123,7 +121,9 @@ export class StakingWrapper {
             artifacts,
         );
         // set eth vault in reward vault
-        await this._rewardVaultContractIfExists.setEthVault.sendTransactionAsync(this._ethVaultContractIfExists.address);
+        await this._rewardVaultContractIfExists.setEthVault.sendTransactionAsync(
+            this._ethVaultContractIfExists.address,
+        );
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
             this._zrxVaultContractIfExists.address,
@@ -181,23 +181,13 @@ export class StakingWrapper {
         return balance;
     }
     ///// STAKE /////
-    public async stakeAsync(
-        owner: string,
-        amount: BigNumber,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().stake.getABIEncodedTransactionData(
-            amount,
-        );
+    public async stakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().stake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async unstakeAsync(
-        owner: string,
-        amount: BigNumber,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().unstake.getABIEncodedTransactionData(
-            amount,
-        );
+    public async unstakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().unstake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
@@ -377,10 +367,10 @@ export class StakingWrapper {
         return txReceipt;
     }
     public async fastForwardToNextEpochAsync(): Promise<void> {
-         // increase timestamp of next block
-         const epochDurationInSeconds = await this.getEpochDurationInSecondsAsync();
-         await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
-         // mine next block
+        // increase timestamp of next block
+        const epochDurationInSeconds = await this.getEpochDurationInSecondsAsync();
+        await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
+        // mine next block
         await this._web3Wrapper.mineBlockAsync();
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
@@ -476,9 +466,7 @@ export class StakingWrapper {
             owner,
         );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().computeRewardBalanceOfDelegator.getABIDecodedReturnData(
-            returnData,
-        );
+        const value = this.getStakingContract().computeRewardBalanceOfDelegator.getABIDecodedReturnData(returnData);
         return value;
     }
     ///// REWARD VAULT /////
