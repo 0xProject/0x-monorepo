@@ -12,14 +12,15 @@ interface ISearchInputProps {
 
 export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => {
     const nameToSearchIndex = getNameToSearchIndex(environments.getEnvironment());
+    const defaultIndex = nameToSearchIndex['core-concepts'];
+
     return (
-        <InstantSearch searchClient={searchClient} indexName={nameToSearchIndex.tools}>
+        <InstantSearch searchClient={searchClient} indexName={defaultIndex}>
             <AutoComplete isHome={isHome} />
             <Configure hitsPerPage={hitsPerPage.autocomplete} />
             {/* We could map these when we decide to show api explorer in search results */}
-            <Index indexName={nameToSearchIndex.tools} />
             <Index indexName={nameToSearchIndex.guides} />
-            <Index indexName={nameToSearchIndex['core-concepts']} />
+            <Index indexName={nameToSearchIndex.tools} />
             {/*
                 TODO: Add this back in when api-explorer page is ready
                 to be indexed and included in the search results (ditto in autocomplete.tsx)
