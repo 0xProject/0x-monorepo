@@ -31,39 +31,30 @@ export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents, ver
     return (
         <SidebarWrapper>
             {versions && <VersionPicker versions={versions} />}
-            <Contents contents={contents} />
-        </SidebarWrapper>
-    );
-};
-
-const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
-    return (
-        <ul>
-            {contents.map(content => {
-                const { children, id, level, title } = content;
-
-                return (
-                    <li key={id}>
-                        {/* containerId is set to an empty string to make body element the scroll container */}
+            <div>
+                {contents.map(content => {
+                    const { id, level, title } = content;
+                    /* containerId is set to an empty string to make body element the scroll container */
+                    return (
                         <ContentLink
                             containerId=""
                             duration={docs.scrollDuration}
                             offset={-docs.headerOffset}
                             level={level}
                             to={id}
+                            key={id}
                         >
                             {title}
                         </ContentLink>
-                        {children.length > 0 && <Contents contents={children} />}
-                    </li>
-                );
-            })}
-        </ul>
+                    );
+                })}
+            </div>
+        </SidebarWrapper>
     );
 };
 
 const ContentLink = styled(Link)<{ level: number }>`
-    display: inline-block;
+    display: block;
 
     span {
         color: #939393;
@@ -78,6 +69,7 @@ const ContentLink = styled(Link)<{ level: number }>`
 
     &.active span {
         font-weight: 500;
+
     }
 
     ${({ level }) =>
