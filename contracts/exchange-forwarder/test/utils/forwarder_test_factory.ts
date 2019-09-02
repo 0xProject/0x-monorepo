@@ -164,7 +164,7 @@ export class ForwarderTestFactory {
             this._forwarderFeeRecipientAddress,
         );
 
-        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const ordersInfoBefore = await Promise.all(orders.map(order => this._exchangeWrapper.getOrderInfoAsync(order)));
         const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
 
         const expectedResults = computeExpectedResults(orders, ordersInfoBefore, fractionalNumberOfOrdersToFill);
@@ -197,7 +197,9 @@ export class ForwarderTestFactory {
             await expect(tx).to.revertWith(options.revertError);
         } else {
             const gasUsed = (await tx).gasUsed;
-            const ordersInfoAfter = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+            const ordersInfoAfter = await Promise.all(
+                orders.map(order => this._exchangeWrapper.getOrderInfoAsync(order)),
+            );
             const orderStatusesAfter = ordersInfoAfter.map(orderInfo => orderInfo.orderStatus);
 
             await this._checkResultsAsync(
@@ -235,7 +237,7 @@ export class ForwarderTestFactory {
             this._forwarderFeeRecipientAddress,
         );
 
-        const ordersInfoBefore = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+        const ordersInfoBefore = await Promise.all(orders.map(order => this._exchangeWrapper.getOrderInfoAsync(order)));
         const orderStatusesBefore = ordersInfoBefore.map(orderInfo => orderInfo.orderStatus);
 
         const expectedResults = computeExpectedResults(orders, ordersInfoBefore, fractionalNumberOfOrdersToFill);
@@ -266,7 +268,9 @@ export class ForwarderTestFactory {
             await expect(tx).to.revertWith(options.revertError);
         } else {
             const gasUsed = (await tx).gasUsed;
-            const ordersInfoAfter = await this._exchangeWrapper.getOrdersInfoAsync(orders);
+            const ordersInfoAfter = await Promise.all(
+                orders.map(order => this._exchangeWrapper.getOrderInfoAsync(order)),
+            );
             const orderStatusesAfter = ordersInfoAfter.map(orderInfo => orderInfo.orderStatus);
 
             await this._checkResultsAsync(

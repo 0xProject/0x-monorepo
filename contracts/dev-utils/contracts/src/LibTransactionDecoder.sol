@@ -48,8 +48,6 @@ contract LibTransactionDecoder {
 
         if (functionSelector == IExchange(address(0)).batchCancelOrders.selector) {
             functionName = "batchCancelOrders";
-        } else if (functionSelector == IExchange(address(0)).batchFillOrders.selector) {
-            functionName = "batchFillOrders";
         } else if (functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector) {
             functionName = "batchFillOrdersNoThrow";
         } else if (functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector) {
@@ -58,8 +56,6 @@ contract LibTransactionDecoder {
             functionName = "cancelOrder";
         } else if (functionSelector == IExchange(address(0)).fillOrder.selector) {
             functionName = "fillOrder";
-        } else if (functionSelector == IExchange(address(0)).fillOrderNoThrow.selector) {
-            functionName = "fillOrderNoThrow";
         } else if (functionSelector == IExchange(address(0)).fillOrKillOrder.selector) {
             functionName = "fillOrKillOrder";
         } else if (functionSelector == IExchange(address(0)).marketBuyOrdersNoThrow.selector) {
@@ -88,8 +84,7 @@ contract LibTransactionDecoder {
             signatures = new bytes[](0);
         } else if (
             functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector ||
-            functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector ||
-            functionSelector == IExchange(address(0)).batchFillOrders.selector
+            functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(transactionData);
         } else if (functionSelector == IExchange(address(0)).cancelOrder.selector) {
@@ -99,8 +94,7 @@ contract LibTransactionDecoder {
             signatures = new bytes[](0);
         } else if (
             functionSelector == IExchange(address(0)).fillOrKillOrder.selector ||
-            functionSelector == IExchange(address(0)).fillOrder.selector ||
-            functionSelector == IExchange(address(0)).fillOrderNoThrow.selector
+            functionSelector == IExchange(address(0)).fillOrder.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(transactionData);
         } else if (
