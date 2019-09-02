@@ -18,7 +18,6 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => {
         <InstantSearch searchClient={searchClient} indexName={defaultIndex}>
             <AutoComplete isHome={isHome} />
             <Configure hitsPerPage={hitsPerPage.autocomplete} />
-            {/* We could map these when we decide to show api explorer in search results */}
             <Index indexName={nameToSearchIndex.guides} />
             <Index indexName={nameToSearchIndex.tools} />
             {/*
