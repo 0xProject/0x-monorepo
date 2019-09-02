@@ -25,7 +25,7 @@ import "./LibRichErrors.sol";
 contract ReentrancyGuard {
 
     // Locked state of mutex.
-    bool private locked = false;
+    bool private _locked = false;
 
     /// @dev Functions with this modifer cannot be reentered. The mutex will be locked
     ///      before function execution and unlocked after.
@@ -39,19 +39,19 @@ contract ReentrancyGuard {
         internal
     {
         // Ensure mutex is unlocked.
-        if (locked) {
+        if (_locked) {
             LibRichErrors.rrevert(
                 LibReentrancyGuardRichErrors.IllegalReentrancyError()
             );
         }
         // Lock mutex.
-        locked = true;
+        _locked = true;
     }
 
     function _unlockMutex()
         internal
     {
         // Unlock mutex.
-        locked = false;
+        _locked = false;
     }
 }

@@ -24,17 +24,17 @@ import "../src/Refundable.sol";
 contract TestRefundable is
     Refundable
 {
-    function refundNonzeroBalanceExternal()
+    function refundNonZeroBalanceExternal()
         external
         payable
     {
-        _refundNonzeroBalance();
+        _refundNonZeroBalance();
     }
 
     function setShouldNotRefund(bool shouldNotRefundNew)
         external
     {
-        shouldNotRefund = shouldNotRefundNew;
+        _shouldNotRefund = shouldNotRefundNew;
     }
 
     function getShouldNotRefund()
@@ -42,7 +42,7 @@ contract TestRefundable is
         view
         returns (bool)
     {
-        return shouldNotRefund;
+        return _shouldNotRefund;
     }
 
     function refundFinalBalanceFunction()

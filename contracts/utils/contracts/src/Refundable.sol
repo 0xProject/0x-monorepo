@@ -22,32 +22,58 @@ pragma solidity ^0.5.9;
 contract Refundable {
 
     // This bool is used by the refund modifier to allow for lazily evaluated refunds.
-    bool internal shouldNotRefund;
+    bool internal _shouldNotRefund;
 
     modifier refundFinalBalance {
         _;
-        if (!shouldNotRefund) {
-            _refundNonzeroBalance();
-        }
+        _refundNonZeroBalanceIfEnabled();
     }
 
     modifier disableRefundUntilEnd {
-        if (shouldNotRefund) {
+        if (_areRefundsDisabled()) {
             _;
         } else {
-            shouldNotRefund = true;
+            _disableRefund();
             _;
-            shouldNotRefund = false;
-            _refundNonzeroBalance();
+            _enableRefund();
+            _refundNonZeroBalance();
         }
     }
 
-    function _refundNonzeroBalance()
+    function _refundNonZeroBalanceIfEnabled()
+        internal
+    {
+        if (!_areRefundsDisabled()) {
+            _refundNonZeroBalance();
+        }
+    }
+
+    function _refundNonZeroBalance()
         internal
     {
         uint256 balance = address(this).balance;
         if (balance > 0) {
             msg.sender.transfer(balance);
         }
+    }
+
+    function _disableRefund()
+        internal
+    {
+        _shouldNotRefund = true;
+    }
+
+    function _enableRefund()
+        internal
+    {
+        _shouldNotRefund = false;
+    }
+
+    function _areRefundsDisabled()
+        internal
+        view
+        returns (bool)
+    {
+        return _shouldNotRefund;
     }
 }

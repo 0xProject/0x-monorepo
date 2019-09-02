@@ -35,14 +35,14 @@ blockchainTests('Refundable', env => {
     blockchainTests.resets('refundNonzeroBalance', () => {
         it('should not send a refund when no value is sent', async () => {
             // Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testRefundNonzeroBalance.awaitTransactionSuccessAsync(refundable.address, {
+            await receiver.testRefundNonZeroBalance.awaitTransactionSuccessAsync(refundable.address, {
                 value: constants.ZERO_AMOUNT,
             });
         });
 
         it('should send a full refund when nonzero value is sent', async () => {
             // Send 100 wei to the refundable contract that should be refunded.
-            await receiver.testRefundNonzeroBalance.awaitTransactionSuccessAsync(refundable.address, {
+            await receiver.testRefundNonZeroBalance.awaitTransactionSuccessAsync(refundable.address, {
                 value: ONE_HUNDRED,
             });
         });
