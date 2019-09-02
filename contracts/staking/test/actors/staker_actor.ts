@@ -133,7 +133,7 @@ export class StakerActor extends BaseActor {
 
     public getNextEpochBalances(balances: StakeBalances): StakeBalances {
         let nextBalances = _.cloneDeep(balances);
-        nextBalances.withdrawableStakeBalance = nextBalances.inactiveStakeBalance.current <= nextBalances.inactiveStakeBalance.next ? nextBalances.inactiveStakeBalance.current : nextBalances.inactiveStakeBalance.next;
+        nextBalances.withdrawableStakeBalance = nextBalances.inactiveStakeBalance.next.isLessThan(nextBalances.inactiveStakeBalance.current) ? nextBalances.inactiveStakeBalance.next : nextBalances.inactiveStakeBalance.current;
         nextBalances.activeStakeBalance.current = nextBalances.activeStakeBalance.next;
         nextBalances.inactiveStakeBalance.current = nextBalances.inactiveStakeBalance.next;
         nextBalances.delegatedStakeBalance.current = nextBalances.delegatedStakeBalance.next;

@@ -2,38 +2,16 @@ import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
-    constants,
     describe,
-    ERC20BalancesByOwner,
-    expect,
-    getLatestBlockTimestampAsync,
-    hexConcat,
-    increaseTimeAndMineBlockAsync,
-    OrderFactory,
-    OrderStatus,
     provider,
-    txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber, RevertError } from '@0x/utils';
+import { BigNumber, StringRevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DelegatorActor } from './actors/delegator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeState, StakeStateInfo } from './utils/types';
-import { constants as stakingConstants } from './utils/constants';
-import { StringRevertError } from '@0x/utils';
-
-
-// should fail to transfer to pool id if it does not exist
-// should revert if pool id set when active or inactive
-
-// should not be able to withdraw balance that has been moved out of `inactive`
-
-
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets.only('Stake States', () => {
@@ -107,7 +85,7 @@ blockchainTests.resets.only('Stake States', () => {
             // still epoch 1 ~ should be able to move stake again
             await staker.moveStakeAsync({state: StakeState.INACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, amount);
         });
-        it('should fail to move the same stake twice', async () => {
+        it('should fail to move the same stake more than once', async () => {
             // epoch 1
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
@@ -115,7 +93,7 @@ blockchainTests.resets.only('Stake States', () => {
             // stake is now inactive, should not be able to move it out of active state again
             await staker.moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.INACTIVE}, amount, new StringRevertError('Insufficient Balance'));
         });
-        it('should fail to reassign stake twice', async () => {
+        it('should fail to reassign stake', async () => {
             // epoch 1
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
@@ -253,7 +231,7 @@ blockchainTests.resets.only('Stake States', () => {
             await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.moveStakeAsync({state: StakeState.INACTIVE}, {state: StakeState.ACTIVE}, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
-            await staker.unstakeAsync(amount/*, new StringRevertError('INSUFFICIENT_FUNDS')*/);
+            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
         });
         it('should fail to unstake >1 epoch after inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
@@ -264,10 +242,10 @@ blockchainTests.resets.only('Stake States', () => {
             await staker.moveStakeAsync({state: StakeState.INACTIVE}, {state: StakeState.ACTIVE}, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
-            await staker.unstakeAsync(amount/*, new StringRevertError('INSUFFICIENT_FUNDS')*/);
+            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
         });
     });
-    describe.only('Staking Simulations', () => {
+    describe('Simulations', () => {
         it('Simulation from Staking Spec', async () => {
             // Epoch 1: Stake some ZRX
             await staker.stakeAsync(StakingWrapper.toBaseUnitAmount(4));
