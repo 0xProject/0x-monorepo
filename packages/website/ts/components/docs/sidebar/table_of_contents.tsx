@@ -37,6 +37,7 @@ export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents, ver
                     /* containerId is set to an empty string to make body element the scroll container */
                     return (
                         <ContentLink
+                            activeClass="toc-link-active"
                             containerId=""
                             duration={docs.scrollDuration}
                             offset={-docs.headerOffset}
@@ -63,11 +64,11 @@ const ContentLink = styled(Link)<{ level: number }>`
     }
 
     &:hover span,
-    &.active span {
+    &.toc-link-active span {
         color: ${colors.brandDark};
     }
 
-    &.active span {
+    &.toc-link-active span {
         font-weight: 500;
 
     }
@@ -88,7 +89,7 @@ const ContentLink = styled(Link)<{ level: number }>`
         transition: all 150ms ease-in-out;
 
         &:hover,
-        &.active {
+        &.toc-link-active {
             border-color: ${colors.brandDark};
         }
     `}

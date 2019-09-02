@@ -19,6 +19,7 @@ export interface BaseLinkProps {
 }
 
 export interface ScrollLinkProps extends BaseLinkProps {
+    activeClass?: string;
     containerId?: string;
     duration?: number;
     offset?: number;
@@ -41,16 +42,17 @@ export interface LinkState {}
  */
 export class Link extends React.Component<LinkProps, LinkState> {
     public static defaultProps: Partial<LinkProps> = {
-        shouldOpenInNewTab: false,
+        activeClass: 'active',
         className: '',
-        onMouseOver: _.noop.bind(_),
-        onMouseLeave: _.noop.bind(_),
-        onMouseEnter: _.noop.bind(_),
-        textDecoration: 'none',
-        fontColor: 'inherit',
         containerId: constants.SCROLL_CONTAINER_ID,
         duration: constants.DOCS_SCROLL_DURATION_MS,
+        fontColor: 'inherit',
         offset: 0,
+        onMouseEnter: _.noop.bind(_),
+        onMouseLeave: _.noop.bind(_),
+        onMouseOver: _.noop.bind(_),
+        shouldOpenInNewTab: false,
+        textDecoration: 'none',
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -114,6 +116,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                         onMouseLeave={this.props.onMouseLeave}
                     >
                         <ScrollLink
+                            activeClass={this.props.activeClass}
                             to={this.props.to}
                             offset={this.props.offset}
                             spy={true}
