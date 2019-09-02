@@ -186,7 +186,7 @@ contract MixinSignatureValidator is
         pure
         returns (bool needsRegularValidation)
     {
-        SignatureType signatureType =  _readValidSignatureType(
+        SignatureType signatureType = _readValidSignatureType(
             hash,
             signerAddress,
             signature
@@ -471,43 +471,22 @@ contract MixinSignatureValidator is
     )
         private
         view
-        returns (bool isValid)
+        returns (bool)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 1      | Signature type is always "\x04" |
-
-        uint256 signatureLength = signature.length;
-        // HACK(dorothy-zbornak): Temporarily shave the signature type
-        // from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 1))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IWallet(walletAddress).isValidSignature.selector,
+        (bool isValid, bytes memory returnData) = _staticCallLegacyWallet(
+            walletAddress,
             hash,
             signature
         );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
+        if (!isValid) {
+            // Static call to verifier failed.
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
+                hash,
+                walletAddress,
+                signature,
+                returnData
+            ));
         }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be `LEGACY_WALLET_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
-            return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
-        }
-        // Static call to verifier failed.
-        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
-            hash,
-            walletAddress,
-            signature,
-            returnData
-        ));
     }
 
     /// @dev Verifies arbitrary data and a signature via an EIP1271 Wallet
@@ -525,43 +504,24 @@ contract MixinSignatureValidator is
     )
         private
         view
-        returns (bool isValid)
+        returns (bool)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 1      | Signature type is always "\x07" |
-
-        uint256 signatureLength = signature.length;
-        // HACK(dorothy-zbornak): Temporarily shave the signature type
-        // from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 1))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IEIP1271Wallet(walletAddress).isValidSignature.selector,
-            data,
-            signature
-        );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
-            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
-        }
-        // Static call to verifier failed.
-        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
-            hash,
+        (bool isValid, bytes memory returnData) = _staticCallEIP1271WalletWithReducedSignatureLength(
             walletAddress,
+            data,
             signature,
-            returnData
-        ));
+            1  // The last byte of the signature (signatureType) is removed before making the staticcall
+        );
+        if (!isValid) {
+            // Static call to verifier failed.
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
+                hash,
+                walletAddress,
+                signature,
+                returnData
+            ));
+        }
+        return isValid;
     }
 
     /// @dev Verifies arbitrary data and a signature via an EIP1271 contract
@@ -579,15 +539,18 @@ contract MixinSignatureValidator is
     )
         private
         view
-        returns (bool isValid)
+        returns (bool)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x05" |
-
         uint256 signatureLength = signature.length;
+        if (signatureLength < 21) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        // The validator address is appended to the signature before the signatureType.
         // Read the validator address from the signature.
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
@@ -597,35 +560,91 @@ contract MixinSignatureValidator is
                 validatorAddress
             ));
         }
-        // HACK(dorothy-zbornak): Temporarily shave the validator address
-        // and signature type from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 21))
+        (bool isValid, bytes memory returnData) = _staticCallEIP1271WalletWithReducedSignatureLength(
+            validatorAddress,
+            data,
+            signature,
+            21  // The last 21 bytes of the signature (validatorAddress + signatureType) are removed before making the staticcall
+        );
+        if (!isValid) {
+            // Static call to verifier failed.
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorError(
+                hash,
+                signerAddress,
+                validatorAddress,
+                signature,
+                returnData
+            ));
         }
+        return isValid;
+    }
+
+    /// @dev Performs a staticcall to `Wallet.isValidSignature` and validates the output.
+    /// @param walletAddress Address of Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param signature Proof that the hash has been signed by signer. The last byte will be temporarily
+    ///                  popped off of the signature before calling `Wallet.isValidSignature`.
+    /// @return The validity of the signature and the raw returnData of the call.
+    function _staticCallLegacyWallet(
+        address walletAddress,
+        bytes32 hash,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid, bytes memory)
+    {
+        // Backup length of signature
+        uint256 signatureLength = signature.length;
+        // Temporarily remove signatureType byte from end of signature
+        signature.writeLength(signatureLength - 1);
         // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
-            IEIP1271Wallet(validatorAddress).isValidSignature.selector,
+            IWallet(address(0)).isValidSignature.selector,
+            hash,
+            signature
+        );
+        // Restore the original signature length
+        signature.writeLength(signatureLength);
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Ensure that the call was successful and that the correct value was returned
+        isValid = didSucceed && returnData.length <= 32 && returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
+        return (isValid, returnData);
+    }
+
+    /// @dev Performs a staticcall to and EIP11271 compiant `isValidSignature` function and validates the output.
+    /// @param staticCallTargetAddress Address of EIP1271Wallet or Validator contract.
+    /// @param data Arbitrary signed data.
+    /// @param signature Proof that the hash has been signed by signer. Bytes will be temporarily be popped
+    ///                  off of the signature before calling `isValidSignature`.
+    /// @param ignoredSignatureByteLen The amount of bytes that will be temporarily popped off the the signature.
+    /// @return The validity of the signature and the raw returnData of the call.
+    function _staticCallEIP1271WalletWithReducedSignatureLength(
+        address staticCallTargetAddress,
+        bytes memory data,
+        bytes memory signature,
+        uint256 ignoredSignatureByteLen
+    )
+        private
+        view
+        returns (bool isValid, bytes memory)
+    {
+        // Backup length of the signature
+        uint256 signatureLength = signature.length;
+        // Temporarily remove bytes from signature end
+        signature.writeLength(signatureLength - ignoredSignatureByteLen);
+        bytes memory callData = abi.encodeWithSelector(
+            IEIP1271Wallet(address(0)).isValidSignature.selector,
             data,
             signature
         );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
-        // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
-            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
-        }
-        // Static call to verifier failed.
-        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorError(
-            hash,
-            signerAddress,
-            validatorAddress,
-            signature,
-            returnData
-        ));
+        // Restore original signature length
+        signature.writeLength(signatureLength);
+        // Static call the verification function
+        (bool didSucceed, bytes memory returnData) = staticCallTargetAddress.staticcall(callData);
+        // Ensure that the call was successful and that the correct value was returned
+        isValid = didSucceed && returnData.length <= 32 && returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
+        return (isValid, returnData);
     }
 }
