@@ -16,39 +16,49 @@ const THROTTLE_RATE = 200;
 
 export const SidebarWrapper: React.FC<ISidebarWrapperProps> = ({ children }) => {
     const [maxHeight, setMaxHeight] = React.useState<number>(0);
-    const el = React.useRef(null);
+    const asideRef = React.useRef(null);
 
-    function visibleHeight(el: HTMLElement) {
+    function visibleHeight(el: HTMLElement): number {
         const elementHeight = el.offsetHeight;
         const windowHeight = window.innerHeight;
         const { bottom, top } = el.getBoundingClientRect();
-        return Math.max(0, top > 0 ? Math.min(elementHeight, windowHeight - top) : Math.min(bottom, windowHeight));
+        // Get the lareger visible top or bottom part of the sidebar
+        let calc = Math.max(0, top > 0 ? Math.min(elementHeight, windowHeight - top) : Math.min(bottom, windowHeight));
+        // Adjust the calculation if position sticky is 'stuck' at the offset of header
+        if (top < docs.headerOffset) {
+            calc = calc - docs.headerOffset;
+        }
+        return calc;
     }
 
-    const listener = (e: Event) => {
-        const newMaxHeight = visibleHeight(el.current);
-        setMaxHeight(newMaxHeight);
+    const listener = (e: Event): void => {
+        const newMaxHeight = visibleHeight(asideRef.current);
+        if (maxHeight !== newMaxHeight) {
+            setMaxHeight(newMaxHeight);
+        }
     };
 
     const throttledListener = _.throttle(listener, THROTTLE_RATE);
 
     React.useEffect(() => {
-        const { top } = el.current.getBoundingClientRect();
+        const { top } = asideRef.current.getBoundingClientRect();
         const newHeight = window.innerHeight - top;
 
         setMaxHeight(newHeight);
+    }, []);
 
+    React.useEffect(() => {
         window.addEventListener('scroll', throttledListener);
         window.addEventListener('resize', throttledListener);
         return () => {
             window.removeEventListener('scroll', throttledListener);
             window.removeEventListener('resize', throttledListener);
         };
-    }, []);
+    }, [maxHeight]);
 
     return (
-        <SidebarAside ref={el}>
-            <SidebarContent maxHeight={maxHeight}>
+        <SidebarAside ref={asideRef}>
+            <SidebarContent style={{ maxHeight: maxHeight - 20 }}>
                 <MediaQuery maxWidth={900}>
                     <Collapse>{children}</Collapse>
                 </MediaQuery>
@@ -63,10 +73,9 @@ const SidebarAside = styled.aside`
     position: relative;
 `;
 
-const SidebarContent = styled.div<{ maxHeight: number }>`
+const SidebarContent = styled.div`
     position: sticky;
-    top: ${docs.headerOffset}px; /* To make space for the header (react-headroom) when clicking on links */
-    max-height: ${props => props.maxHeight - 20}px;
+    top: ${docs.headerOffset}px; /* Space for the header (react-headroom) when clicking on links */
     overflow-y: auto;
     overflow-x: hidden;
 
