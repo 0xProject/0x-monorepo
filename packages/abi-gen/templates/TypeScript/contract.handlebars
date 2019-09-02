@@ -2,7 +2,6 @@
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
 import { BaseContract{{#if events}},
-    BlockRange,
     EventCallback,
     IndexedFilterValues,
     SubscriptionManager{{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
@@ -10,6 +9,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,

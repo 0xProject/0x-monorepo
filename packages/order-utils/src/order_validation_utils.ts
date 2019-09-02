@@ -25,7 +25,7 @@ export class OrderValidationUtils {
     private readonly _orderFilledCancelledFetcher: AbstractOrderFilledCancelledFetcher;
     private readonly _provider: ZeroExProvider;
     /**
-     * A Typescript implementation mirroring the implementation of isRoundingError in the
+     * A TypeScript implementation mirroring the implementation of isRoundingError in the
      * Exchange smart contract
      * @param numerator Numerator value. When used to check an order, pass in `takerAssetFilledAmount`
      * @param denominator Denominator value.  When used to check an order, pass in `order.takerAssetAmount`

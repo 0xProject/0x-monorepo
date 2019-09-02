@@ -46,7 +46,7 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/ts-doc-gen": "^0.0.20",
+        "@0x/ts-doc-gen": "^0.0.21",
         "@0x/contract-addresses": "^3.1.0",
         "@0x/dev-utils": "^2.3.1",
         "@0x/migrations": "^4.3.0",
@@ -76,6 +76,7 @@
         "webpack": "^4.20.2"
     },
     "dependencies": {
+        "@0x/abi-gen-wrappers": "^5.3.0",
         "@0x/assert": "^2.1.4",
         "@0x/asset-swapper": "^1.0.2",
         "@0x/base-contract": "^5.3.2",

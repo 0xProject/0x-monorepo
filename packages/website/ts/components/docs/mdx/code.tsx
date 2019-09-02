@@ -21,7 +21,7 @@ export const Code: React.FC<ICodeProps> = ({ children, className = 'language-typ
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
 
     // Passing in LANGUAGE to code in mdx results in classname 'language-<LANGUAGE>'
-    const language = className.replace('language-', '');
+    const language = className.replace(/language-/, '');
 
     const handleCopyClick = () => {
         setIsCopied(true);
@@ -88,10 +88,9 @@ const CodeTag = styled.code`
     border: none;
     font-family: 'Roboto Mono', sans-serif;
 
-    span {
-        font-size: 14px;
-        line-height: 20px;
-        display: flex;
+    /* Targeting newline created by markdown at the end of each code block */
+    & > span:last-of-type {
+        display: none;
     }
 `;
 
@@ -114,104 +113,135 @@ const style = {
         display: 'block',
         overflowX: 'hidden',
         background: colors.backgroundLight,
-        fontSize: '12px',
+        fontSize: '14px',
+        lineHeight: '1.5',
         padding: '20px',
     },
-    'hljs-comment': {
-        color: '#7e7887',
-    },
-    'hljs-quote': {
-        color: '#7e7887',
-    },
-    'hljs-variable': {
-        color: '#be4678',
-    },
-    'hljs-template-variable': {
-        color: '#be4678',
-    },
-    'hljs-attribute': {
-        color: '#be4678',
-    },
-    'hljs-regexp': {
-        color: '#be4678',
-    },
-    'hljs-link': {
-        color: '#be4678',
-    },
-    'hljs-tag': {
-        color: '#3E85DD',
-    },
-    'hljs-name': {
-        color: '#3E85DD',
-    },
-    'hljs-selector-id': {
-        color: '#be4678',
-    },
-    'hljs-selector-class': {
-        color: '#be4678',
-    },
-    'hljs-number': {
-        color: '#c994ff',
-    },
-    'hljs-meta': {
-        color: '#3E85DD',
-    },
-    'hljs-built_in': {
-        color: '#aa573c',
-    },
-    'hljs-builtin-name': {
-        color: '#aa573c',
+    'hljs-keyword': {
+        color: '#1C297D',
     },
     'hljs-literal': {
-        color: '#aa573c',
-    },
-    'hljs-type': {
-        color: '#aa573c',
-    },
-    'hljs-params': {
-        color: '#aa573c',
-    },
-    'hljs-string': {
-        color: '#781818',
-    },
-    'hljs-function': {
-        color: '#781818',
-        paddingRight: '2px',
+        color: '#1C297D',
     },
     'hljs-symbol': {
-        color: '#2a9292',
+        color: '#1C297D',
     },
-    'hljs-bullet': {
-        color: '#2a9292',
+    'hljs-name': {
+        color: '#1C297D',
+    },
+    'hljs-link': {
+        color: '#1C297D',
+        textDecoration: 'underline',
+    },
+    'hljs-built_in': {
+        color: '#0E7C7B',
+    },
+    'hljs-type': {
+        color: '#0E7C7B',
+    },
+    'hljs-number': {
+        color: '#EA526F',
+    },
+    'hljs-class': {
+        color: '#EA526F',
+    },
+    'hljs-string': {
+        color: '#CD8987',
+    },
+    'hljs-meta-string': {
+        color: '#CD8987',
+    },
+    'hljs-regexp': {
+        color: '#9A5334',
+    },
+    'hljs-template-tag': {
+        color: '#9A5334',
+    },
+    'hljs-subst': {
+        color: '#12130F',
+    },
+    'hljs-function': {
+        color: '#12130F',
     },
     'hljs-title': {
-        color: '#576ddb',
+        color: '#12130F',
+    },
+    'hljs-params': {
+        color: '#12130F',
+    },
+    'hljs-formula': {
+        color: '#12130F',
+    },
+    'hljs-comment': {
+        color: '#6A8D73',
+        fontStyle: 'italic',
+    },
+    'hljs-quote': {
+        color: '#6A8D73',
+        fontStyle: 'italic',
+    },
+    'hljs-doctag': {
+        color: '#70967A',
+    },
+    'hljs-meta': {
+        color: '#AAABBC',
+    },
+    'hljs-meta-keyword': {
+        color: '#AAABBC',
+    },
+    'hljs-tag': {
+        color: '#AAABBC',
+    },
+    'hljs-variable': {
+        color: '#BD63C5',
+    },
+    'hljs-template-variable': {
+        color: '#BD63C5',
+    },
+    'hljs-attr': {
+        color: '#90BEDE',
+    },
+    'hljs-attribute': {
+        color: '#90BEDE',
+    },
+    'hljs-builtin-name': {
+        color: '#90BEDE',
     },
     'hljs-section': {
-        color: '#576ddb',
-    },
-    'hljs-keyword': {
-        color: '#253C90',
-    },
-    'hljs-selector-tag': {
-        color: '#253C90',
-    },
-    'hljs-deletion': {
-        color: '#19171c',
-        display: 'inline-block',
-        width: '100%',
-        backgroundColor: '#be4678',
-    },
-    'hljs-addition': {
-        color: '#19171c',
-        display: 'inline-block',
-        width: '100%',
-        backgroundColor: '#2a9292',
+        color: 'gold',
     },
     'hljs-emphasis': {
         fontStyle: 'italic',
     },
     'hljs-strong': {
         fontWeight: 'bold',
+    },
+    'hljs-bullet': {
+        color: '#E4B363',
+    },
+    'hljs-selector-tag': {
+        color: '#E4B363',
+    },
+    'hljs-selector-id': {
+        color: '#E4B363',
+    },
+    'hljs-selector-class': {
+        color: '#E4B363',
+    },
+    'hljs-selector-attr': {
+        color: '#E4B363',
+    },
+    'hljs-selector-pseudo': {
+        color: '#E4B363',
+    },
+    'hljs-addition': {
+        backgroundColor: '#D5E2BC',
+        display: 'inline-block',
+        width: '100%',
+    },
+    'hljs-deletion': {
+        backgroundColor: '#EBB3A9',
+        display: 'inline-block',
+        width: '100%',
     },
 };

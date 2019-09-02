@@ -11,9 +11,7 @@ import { difficultyOrder } from 'ts/utils/algolia_constants';
 interface IFilterListProps {
     attribute: string;
     currentRefinement: string[];
-    customLabels?: ICustomLabels;
     heading: string;
-    hiddenLabels?: string[];
     isDisabled?: boolean;
     items: IFilterProps[];
     operator: string;
@@ -21,19 +19,7 @@ interface IFilterListProps {
     transformItems: (items: IFilterProps[]) => void;
 }
 
-interface ICustomLabels {
-    [key: string]: string;
-}
-
-const FiltersList: React.FC<IFilterListProps> = ({
-    attribute,
-    items,
-    currentRefinement,
-    customLabels,
-    heading,
-    hiddenLabels,
-    refine,
-}) => {
+const FiltersList: React.FC<IFilterListProps> = ({ attribute, items, currentRefinement, heading, refine }) => {
     const [filters, setFilters] = React.useState<IFilterProps[]>([]);
     //    Note (Piotr): Whenever you choose a filter (refinement), algolia removes all filters that could not match the query.
     //    What we are doing instead is first grabbing the list of all possible filters on mount (or clearing all filters) and
@@ -85,20 +71,9 @@ const FiltersList: React.FC<IFilterListProps> = ({
             <Heading asElement="h3" size={18} fontWeight="400" marginBottom="1rem">
                 {heading}
             </Heading>
-            {sortedFilters.map((filter: IFilterProps, index: number) => {
-                if (hiddenLabels && hiddenLabels.includes(filter.label)) {
-                    return null;
-                }
-                return (
-                    <Filter
-                        key={`filter-${index}`}
-                        currentRefinement={currentRefinement}
-                        customLabels={customLabels}
-                        refine={refine}
-                        {...filter}
-                    />
-                );
-            })}
+            {sortedFilters.map((filter: IFilterProps, index: number) => (
+                <Filter key={`filter-${index}`} currentRefinement={currentRefinement} refine={refine} {...filter} />
+            ))}
         </FiltersGroupWrapper>
     );
 };

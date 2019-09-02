@@ -1,5 +1,5 @@
 import { BigNumber } from '@0x/utils';
-import { ALink, Key, Networks, WebsitePaths } from 'ts/types';
+import { Networks, WebsitePaths } from 'ts/types';
 
 import { SupportedDocJson } from '../types';
 

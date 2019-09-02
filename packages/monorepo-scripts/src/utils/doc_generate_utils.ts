@@ -16,7 +16,6 @@ export class DocGenerateUtils {
     private readonly _omitExports: string[];
     private readonly _packagePath: string;
     private readonly _exportPathToExportedItems: ExportPathToExportedItems;
-    private readonly _exportPathOrder: string[];
     private readonly _monoRepoPkgNameToPath: { [name: string]: string };
     private readonly _packageJson: PackageJSON;
     /**
@@ -179,7 +178,6 @@ export class DocGenerateUtils {
         const indexPath = `${this._packagePath}/src/index.ts`;
         const exportInfo = DocGenerateUtils._getExportPathToExportedItems(indexPath, this._omitExports);
         this._exportPathToExportedItems = exportInfo.exportPathToExportedItems;
-        this._exportPathOrder = exportInfo.exportPathOrder;
     }
     public async generateAndUploadDocsAsync(): Promise<void> {
         // For each dep that is another one of our monorepo packages, we fetch it's index.ts
@@ -253,7 +251,7 @@ export class DocGenerateUtils {
         _.each(referenceNames, referenceName => {
             if (
                 !_.includes(allExportedItems, referenceName) &&
-                docGenConfigs.EXTERNAL_TYPE_TO_LINK[referenceName] === undefined
+                docGenConfigs.EXTERNAL_TYPE_MAP[referenceName] === undefined
             ) {
                 missingReferences.push(referenceName);
             }
@@ -262,7 +260,7 @@ export class DocGenerateUtils {
             throw new Error(
                 `${this._packageName} package needs to export: \n${missingReferences.join(
                     '\n',
-                )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_TO_LINK mapping.`,
+                )} \nFrom it\'s index.ts. If any are from external dependencies, then add them to the EXTERNAL_TYPE_MAP.`,
             );
         }
     }
@@ -303,22 +301,22 @@ export class DocGenerateUtils {
                     let regexp;
                     switch (item.kindString) {
                         case 'Interface':
-                            regexp = new RegExp(`# Interface: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Interface: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Enumeration':
-                            regexp = new RegExp(`# Enumeration: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Enumeration: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Class':
-                            regexp = new RegExp(`# Class: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
+                            regexp = new RegExp(`(.*)# Class: ${item.name}[\\s\\S]*?<hr \\/>`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
                         case 'Type alias':
-                            regexp = new RegExp(`#  ${item.name}[\\s\\S]*?(___)`, 'g');
+                            regexp = new RegExp(`(.*)#  ${item.name}[\\s\\S]*?(___|<hr \\/>)`, 'g');
                             modifiedMarkdownOutput = modifiedMarkdownOutput.replace(regexp, '');
                             break;
 
@@ -400,19 +398,6 @@ export class DocGenerateUtils {
         }
         const matchingExportPath = sanitizedExportPathToExportPath[matchingSanitizedExportPathIfExists];
         return matchingExportPath;
-    }
-    private _getAllExternalExports(): string[] {
-        const externalExports: string[] = [];
-        _.each(this._exportPathToExportedItems, (exportedItems, exportPath) => {
-            const pathIfExists = this._monoRepoPkgNameToPath[exportPath];
-            if (pathIfExists === undefined && !_.startsWith(exportPath, './')) {
-                _.each(exportedItems, exportedItem => {
-                    externalExports.push(exportedItem);
-                });
-                return; // It's an external package
-            }
-        });
-        return externalExports;
     }
     private _getTypeDocFileIncludesForPackage(): string[] {
         let typeDocExtraFileIncludes: string[] = [];

@@ -726,4 +726,9 @@ export interface CompilerOptions {
     useDockerisedSolc?: boolean;
     isOfflineMode?: boolean;
     solcVersion?: string;
+}
+
+export interface BlockRange {
+    fromBlock: BlockParam;
+    toBlock: BlockParam;
 } // tslint:disable-line:max-file-line-count
