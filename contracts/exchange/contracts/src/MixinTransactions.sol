@@ -99,11 +99,9 @@ contract MixinTransactions is
             transactionHash
         );
 
+        // Set the current transaction signer
         address signerAddress = transaction.signerAddress;
-        if (signerAddress != msg.sender) {
-            // Set the current transaction signer
-            currentContextAddress = signerAddress;
-        }
+        _setCurrentContextAddressIfRequired(signerAddress);
 
         // Execute transaction
         transactionsExecuted[transactionHash] = true;
@@ -116,9 +114,7 @@ contract MixinTransactions is
         }
 
         // Reset current transaction signer if it was previously updated
-        if (signerAddress != msg.sender) {
-            currentContextAddress = address(0);
-        }
+        _setCurrentContextAddressIfRequired(address(0));
 
         emit TransactionExecution(transactionHash);
 
@@ -187,6 +183,16 @@ contract MixinTransactions is
                 signerAddress,
                 signature
             ));
+        }
+    }
+
+    /// @dev Sets the currentContextAddress if the current context is not msg.sender.
+    /// @param contextAddress The current context address.
+    function _setCurrentContextAddressIfRequired(address contextAddress)
+        internal
+    {
+        if (contextAddress != msg.sender) {
+            currentContextAddress = contextAddress;
         }
     }
 
