@@ -54,8 +54,28 @@ export interface StakeBalance {
     next: BigNumber,
 }
 
-export enum StakeStateId {
+export interface StakeBalanceByPool {
+    [key:string]: StakeBalance;
+}
+
+export enum StakeState {
     ACTIVE,
     INACTIVE,
     DELEGATED
+};
+
+export interface StakeStateInfo {
+    state: StakeState;
+    poolId?: string;
+}
+
+export interface StakeBalances {
+    zrxBalance: BigNumber;
+    stakeBalanceInVault: BigNumber;
+    withdrawableStakeBalance: BigNumber;
+    activeStakeBalance: StakeBalance;
+    inactiveStakeBalance: StakeBalance;
+    delegatedStakeBalance: StakeBalance;
+    delegatedStakeByPool: StakeBalanceByPool;
+    totalDelegatedStakeByPool: StakeBalanceByPool;
 };

@@ -64,6 +64,15 @@ export class StakingWrapper {
         return amountAsFloatingPoint;
     }
 
+    public async testFinalizefees(rewards: {reward: BigNumber, poolId: string}[]): Promise<TransactionReceiptWithDecodedLogs> {
+        await this.fastForwardToNextEpochAsync();
+        const totalRewards = _.sumBy(rewards, (v: any) => {return v.reward.toNumber();});
+        const calldata = this.getStakingContract().testFinalizeFees.getABIEncodedTransactionData(rewards);
+        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(totalRewards), true);
+        return txReceipt;
+    }
+
+
     constructor(
         provider: Provider,
         ownerAddres: string,

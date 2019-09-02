@@ -266,4 +266,40 @@ contract MixinExchangeFees is
             finalContractBalance
         );
     }
+
+
+
+  struct Reward {
+        bytes32 poolId;
+        uint256 reward;
+    }
+
+
+    function testFinalizeFees(Reward[] memory rewards)
+        public
+        payable
+    {
+
+        uint256 epoch = getCurrentEpoch();
+
+        for (uint i = 0; i != rewards.length; i++) {
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(rewards[i].poolId).current;
+            bytes32 poolId = rewards[i].poolId;
+            uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[poolId];
+
+            // record reward in vault
+            (, uint256 delegatorsAmount) = rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward, totalStakeDelegatedToPool == 0);
+            if (delegatorsAmount > 0) {
+                cumulativeRewardsByPool[poolId][epoch].numerator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator) / 10**18;
+                cumulativeRewardsByPool[poolId][epoch].denominator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
+                cumulativeRewardsByPoolLastStored[poolId] = epoch;
+            }
+        }
+
+        if (address(this).balance > 0) {
+            _depositIntoStakingPoolRewardVault(address(this).balance);
+        }
+
+        _goToNextEpoch();
+    }
 }
