@@ -668,7 +668,7 @@ describe('LibBytes', () => {
     describe('writeBytesWithLength', () => {
         it('should successfully write short, nested array of bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
+            const emptyByteArray = ethUtil.bufferToHex(ethUtil.toBuffer(shortTestBytesAsBuffer.byteLength));
             const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
                 testBytesOffset,
@@ -683,7 +683,7 @@ describe('LibBytes', () => {
             const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
             const prefixOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(
-                new Buffer(prefixDataAsBuffer.byteLength + shortTestBytesAsBuffer.byteLength),
+                ethUtil.toBuffer(prefixDataAsBuffer.byteLength + shortTestBytesAsBuffer.byteLength),
             );
             let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
@@ -703,7 +703,7 @@ describe('LibBytes', () => {
         });
         it('should successfully write a nested array of bytes - one word in length - when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const emptyByteArray = ethUtil.bufferToHex(new Buffer(wordOfTestBytesAsBuffer.byteLength));
+            const emptyByteArray = ethUtil.bufferToHex(ethUtil.toBuffer(wordOfTestBytesAsBuffer.byteLength));
             const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
                 testBytesOffset,
@@ -718,7 +718,7 @@ describe('LibBytes', () => {
             const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
             const prefixOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(
-                new Buffer(prefixDataAsBuffer.byteLength + wordOfTestBytesAsBuffer.byteLength),
+                ethUtil.toBuffer(prefixDataAsBuffer.byteLength + wordOfTestBytesAsBuffer.byteLength),
             );
             let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
@@ -738,7 +738,7 @@ describe('LibBytes', () => {
         });
         it('should successfully write a long, nested bytes when it takes up the whole array', async () => {
             const testBytesOffset = new BigNumber(0);
-            const emptyByteArray = ethUtil.bufferToHex(new Buffer(longTestBytesAsBuffer.byteLength));
+            const emptyByteArray = ethUtil.bufferToHex(ethUtil.toBuffer(longTestBytesAsBuffer.byteLength));
             const bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
                 testBytesOffset,
@@ -753,7 +753,7 @@ describe('LibBytes', () => {
             const prefixDataAsBuffer = ethUtil.toBuffer(prefixData);
             const prefixOffset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(
-                new Buffer(prefixDataAsBuffer.byteLength + longTestBytesAsBuffer.byteLength),
+                ethUtil.toBuffer(prefixDataAsBuffer.byteLength + longTestBytesAsBuffer.byteLength),
             );
             let bytesWritten = await libBytes.publicWriteBytesWithLength.callAsync(
                 emptyByteArray,
@@ -769,7 +769,7 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
             const offset = new BigNumber(0);
-            const emptyByteArray = ethUtil.bufferToHex(new Buffer(1));
+            const emptyByteArray = ethUtil.bufferToHex(ethUtil.toBuffer(1));
             const inputLen = new BigNumber((longData.length - 2) / 2);
             const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
                 LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
@@ -781,7 +781,7 @@ describe('LibBytes', () => {
             ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
-            const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
+            const emptyByteArray = ethUtil.bufferToHex(ethUtil.toBuffer(shortTestBytesAsBuffer.byteLength));
             const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
             const inputLen = new BigNumber((shortData.length - 2) / 2);
             const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
@@ -1072,6 +1072,64 @@ describe('LibBytes', () => {
             const to = new BigNumber(byteLen);
             const [result] = await libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to);
             expect(result).to.eq(byteArrayLongerThan32Bytes);
+        });
+    });
+
+    describe('writeLength', () => {
+        it('should return a null byte array if length is set to 0', async () => {
+            const result = await libBytes.publicWriteLength.callAsync(
+                byteArrayLongerThan32Bytes,
+                constants.ZERO_AMOUNT,
+                constants.NULL_BYTES,
+            );
+            expect(result).to.eq(constants.NULL_BYTES);
+        });
+        it('should return the same byte array if length is unchanged', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const result = await libBytes.publicWriteLength.callAsync(
+                byteArrayLongerThan32Bytes,
+                new BigNumber(byteLen),
+                constants.NULL_BYTES,
+            );
+            expect(result).to.eq(byteArrayLongerThan32Bytes);
+        });
+        it('should shave off lower order bytes if new length is less than original', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const newLen = new BigNumber(byteLen).dividedToIntegerBy(2);
+            const result = await libBytes.publicWriteLength.callAsync(
+                byteArrayLongerThan32Bytes,
+                newLen,
+                constants.NULL_BYTES,
+            );
+            expect(result).to.eq(
+                byteArrayLongerThan32Bytes.slice(
+                    0,
+                    newLen
+                        .multipliedBy(2)
+                        .plus(2)
+                        .toNumber(),
+                ),
+            );
+        });
+        it("should right pad with 0's if new length is greater than original and no extra bytes are appended", async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const newLen = new BigNumber(byteLen).multipliedBy(2);
+            const result = await libBytes.publicWriteLength.callAsync(
+                byteArrayLongerThan32Bytes,
+                newLen,
+                constants.NULL_BYTES,
+            );
+            expect(result).to.eq(`${byteArrayLongerThan32Bytes}${'0'.repeat(byteArrayLongerThan32Bytes.length - 2)}`);
+        });
+        it('should right pad with extra bytes if specified', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const newLen = new BigNumber(byteLen).multipliedBy(2);
+            const result = await libBytes.publicWriteLength.callAsync(
+                byteArrayLongerThan32Bytes,
+                newLen,
+                byteArrayLongerThan32Bytes,
+            );
+            expect(result).to.eq(`${byteArrayLongerThan32Bytes}${byteArrayLongerThan32Bytes.slice(2)}`);
         });
     });
 });
