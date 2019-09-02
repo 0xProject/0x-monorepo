@@ -56,21 +56,20 @@ contract LibExchangeRichErrorDecoder {
     /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
-    function decodeSignatureValidatorError(bytes memory encoded)
+    function decodeEIP1271SignatureError(bytes memory encoded)
         public
         pure
         returns (
-            bytes32 hash,
-            address signerAddress,
-            address validatorAddress,
+            address verifyingContractAddress,
+            bytes memory data,
             bytes memory signature,
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureValidatorErrorSelector());
-        (hash, signerAddress, validatorAddress, signature, errorData) = abi.decode(
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.EIP1271SignatureErrorSelector());
+        (verifyingContractAddress, data, signature, errorData) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
-            (bytes32, address, address, bytes, bytes)
+            (address, bytes, bytes, bytes)
         );
     }
 

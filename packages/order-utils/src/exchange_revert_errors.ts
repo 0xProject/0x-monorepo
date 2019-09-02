@@ -88,15 +88,14 @@ export class SignatureWalletError extends RevertError {
     }
 }
 
-export class SignatureValidatorError extends RevertError {
-    constructor(hash?: string, signer?: string, validator?: string, signature?: string, errorData?: string) {
+export class EIP1271SignatureError extends RevertError {
+    constructor(verifyingContractAddress?: string, data?: string, signature?: string, errorData?: string) {
         super(
-            'SignatureValidatorError',
-            'SignatureValidatorError(bytes32 hash, address signer, address validator, bytes signature, bytes errorData)',
+            'EIP1271SignatureError',
+            'EIP1271SignatureError(address verifyingContractAddress, bytes data, bytes signature, bytes errorData)',
             {
-                hash,
-                signer,
-                validator,
+                verifyingContractAddress,
+                data,
                 signature,
                 errorData,
             },
@@ -266,7 +265,7 @@ const types = [
     SignatureError,
     SignatureValidatorNotApprovedError,
     SignatureWalletError,
-    SignatureValidatorError,
+    EIP1271SignatureError,
     InvalidSenderError,
     InvalidTakerError,
     InvalidMakerError,
