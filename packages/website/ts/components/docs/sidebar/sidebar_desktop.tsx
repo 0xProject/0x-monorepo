@@ -55,6 +55,8 @@ export const SidebarDesktop: React.FC<ISidebarWrapperProps> = ({ children }) => 
 
     return (
         <SidebarAside ref={asideRef}>
+            {/* Setting amcHeight as style and not styled component prop due
+            to better performance, not having to create a dynamic class for each change */}
             <SidebarContent style={{ maxHeight: maxHeight - 20 }}>{children}</SidebarContent>
         </SidebarAside>
     );
