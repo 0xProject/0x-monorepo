@@ -1,6 +1,5 @@
 import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
     blockchainTests,
     constants,
@@ -8,7 +7,6 @@ import {
     ERC20BalancesByOwner,
     expect,
     getLatestBlockTimestampAsync,
-    increaseTimeAndMineBlockAsync,
     OrderFactory,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
@@ -30,7 +28,6 @@ blockchainTests.resets('Exchange wrappers', env => {
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
     let feeToken: DummyERC20TokenContract;
-    let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -41,14 +38,10 @@ blockchainTests.resets('Exchange wrappers', env => {
     let erc20Balances: ERC20BalancesByOwner;
     let orderFactory: OrderFactory;
 
-    let erc721MakerAssetId: BigNumber;
-    let erc721TakerAssetId: BigNumber;
-
     let defaultMakerAssetAddress: string;
     let defaultTakerAssetAddress: string;
     let defaultFeeAssetAddress: string;
 
-    const DEFAULT_GAS_PRICE = new BigNumber(2);
     const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
 
     const nullFillResults: FillResults = {
@@ -75,12 +68,8 @@ blockchainTests.resets('Exchange wrappers', env => {
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
         await erc721Wrapper.setBalancesAndAllowancesAsync();
-        const erc721Balances = await erc721Wrapper.getBalancesAsync();
-        erc721MakerAssetId = erc721Balances[makerAddress][erc721Token.address][0];
-        erc721TakerAssetId = erc721Balances[takerAddress][erc721Token.address][0];
 
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,

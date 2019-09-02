@@ -56,7 +56,7 @@ describe('LibTransactionDecoder', () => {
         ]);
     });
 
-    for (const func of ['batchFillOrders', 'batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
+    for (const func of ['batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
         const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
             [order, order],
             [takerAssetFillAmount, takerAssetFillAmount],
@@ -82,7 +82,7 @@ describe('LibTransactionDecoder', () => {
         ]);
     });
 
-    for (const func of ['fillOrder', 'fillOrderNoThrow', 'fillOrKillOrder']) {
+    for (const func of ['fillOrder', 'fillOrKillOrder']) {
         const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
             order,
             takerAssetFillAmount,
