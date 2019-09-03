@@ -54,6 +54,20 @@ export class ExchangeWrapper {
         );
         return txReceipt;
     }
+    public async batchFillOrdersAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { takerAssetFillAmounts?: BigNumber[]; gasPrice?: BigNumber } = {},
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        return this._exchange.batchFillOrders.awaitTransactionSuccessAsync(
+            orders,
+            opts.takerAssetFillAmounts === undefined
+                ? orders.map(signedOrder => signedOrder.takerAssetAmount)
+                : opts.takerAssetFillAmounts,
+            orders.map(signedOrder => signedOrder.signature),
+            { from, gasPrice: opts.gasPrice },
+        );
+    }
     public async batchFillOrKillOrdersAsync(
         orders: SignedOrder[],
         from: string,

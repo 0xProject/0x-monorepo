@@ -84,7 +84,7 @@ contract TestProtocolFeesReceiver {
         }
 
         // Forward all of the value sent to the contract to `batchFillOrders()`.
-        testProtocolFees.batchFillOrKillOrders.value(msg.value)(orders, takerAssetFilledAmounts, signatures);
+        testProtocolFees.batchFillOrders.value(msg.value)(orders, takerAssetFilledAmounts, signatures);
 
         // If the `protocolFeeCollector` was set, ensure that the protocol fees were paid correctly.
         // Otherwise, the protocol fees should not have been paid.

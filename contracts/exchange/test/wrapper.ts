@@ -216,6 +216,74 @@ blockchainTests.resets('Exchange wrappers', env => {
             ];
         });
 
+        describe('batchFillOrders', () => {
+            it('should transfer the correct amounts', async () => {
+                const makerAssetAddress = erc20TokenA.address;
+                const takerAssetAddress = erc20TokenB.address;
+
+                const takerAssetFillAmounts: BigNumber[] = [];
+                const expectedFillResults: FillResults[] = [];
+
+                _.forEach(signedOrders, signedOrder => {
+                    const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+                    const makerAssetFilledAmount = takerAssetFillAmount
+                        .times(signedOrder.makerAssetAmount)
+                        .dividedToIntegerBy(signedOrder.takerAssetAmount);
+                    const makerFee = signedOrder.makerFee
+                        .times(makerAssetFilledAmount)
+                        .dividedToIntegerBy(signedOrder.makerAssetAmount);
+                    const takerFee = signedOrder.takerFee
+                        .times(makerAssetFilledAmount)
+                        .dividedToIntegerBy(signedOrder.makerAssetAmount);
+
+                    takerAssetFillAmounts.push(takerAssetFillAmount);
+                    expectedFillResults.push({
+                        takerAssetFilledAmount: takerAssetFillAmount,
+                        makerAssetFilledAmount,
+                        makerFeePaid: makerFee,
+                        takerFeePaid: takerFee,
+                        protocolFeePaid: constants.ZERO_AMOUNT,
+                    });
+
+                    erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
+                        makerAssetAddress
+                    ].minus(makerAssetFilledAmount);
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
+                    ].plus(takerAssetFillAmount);
+                    erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
+                        makerFee,
+                    );
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
+                    ].plus(makerAssetFilledAmount);
+                    erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
+                        takerAssetAddress
+                    ].minus(takerAssetFillAmount);
+                    erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
+                        takerFee,
+                    );
+                    erc20Balances[feeRecipientAddress][feeToken.address] = erc20Balances[feeRecipientAddress][
+                        feeToken.address
+                    ].plus(makerFee.plus(takerFee));
+                });
+
+                const fillResults = await exchange.batchFillOrders.callAsync(
+                    signedOrders,
+                    takerAssetFillAmounts,
+                    signedOrders.map(signedOrder => signedOrder.signature),
+                    { from: takerAddress },
+                );
+                await exchangeWrapper.batchFillOrdersAsync(signedOrders, takerAddress, {
+                    takerAssetFillAmounts,
+                });
+                const newBalances = await erc20Wrapper.getBalancesAsync();
+
+                expect(fillResults).to.deep.equal(expectedFillResults);
+                expect(newBalances).to.be.deep.equal(erc20Balances);
+            });
+        });
+
         describe('batchFillOrKillOrders', () => {
             it('should transfer the correct amounts', async () => {
                 const makerAssetAddress = erc20TokenA.address;

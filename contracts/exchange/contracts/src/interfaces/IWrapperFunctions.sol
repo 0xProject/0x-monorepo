@@ -38,6 +38,20 @@ contract IWrapperFunctions {
         payable
         returns (LibFillResults.FillResults memory fillResults);
 
+    /// @dev Executes multiple calls of fillOrder.
+    /// @param orders Array of order specifications.
+    /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
+    /// @param signatures Proofs that orders have been created by makers.
+    /// @return Array of amounts filled and fees paid by makers and taker.
+    function batchFillOrders(
+        LibOrder.Order[] memory orders,
+        uint256[] memory takerAssetFillAmounts,
+        bytes[] memory signatures
+    )
+        public
+        payable
+        returns (LibFillResults.FillResults[] memory fillResults);
+
     /// @dev Synchronously executes multiple calls of fillOrKill.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.

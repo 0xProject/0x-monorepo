@@ -56,7 +56,7 @@ describe('LibTransactionDecoder', () => {
         ]);
     });
 
-    for (const func of ['batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
+    for (const func of ['batchFillOrders', 'batchFillOrdersNoThrow', 'batchFillOrKillOrders']) {
         const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
             [order, order],
             [takerAssetFillAmount, takerAssetFillAmount],

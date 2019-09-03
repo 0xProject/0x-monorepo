@@ -48,6 +48,8 @@ contract LibTransactionDecoder {
 
         if (functionSelector == IExchange(address(0)).batchCancelOrders.selector) {
             functionName = "batchCancelOrders";
+        } else if (functionSelector == IExchange(address(0)).batchFillOrders.selector) {
+            functionName = "batchFillOrders";
         } else if (functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector) {
             functionName = "batchFillOrdersNoThrow";
         } else if (functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector) {
@@ -84,6 +86,7 @@ contract LibTransactionDecoder {
             signatures = new bytes[](0);
         } else if (
             functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector ||
+            functionSelector == IExchange(address(0)).batchFillOrders.selector ||
             functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(transactionData);
