@@ -49,10 +49,10 @@ contract TestTransactions is
         transactionsExecuted[hash] = true;
     }
 
-    function setCurrentContextAddressIfRequired(address context)
+    function setCurrentContextAddressIfRequired(address signerAddress, address context)
         external
     {
-        _setCurrentContextAddressIfRequired(context);
+        _setCurrentContextAddressIfRequired(signerAddress, context);
     }
 
     function getCurrentContextAddress()
