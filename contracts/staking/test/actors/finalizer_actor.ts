@@ -67,9 +67,14 @@ export class FinalizerActor extends BaseActor {
         // cache initial info and balances
         const operatorShareByPoolId = await this._getOperatorShareByPoolId(this._poolIds);
         const rewardVaultBalanceByPoolId = await this._getRewardVaultBalanceByPoolId(this._poolIds);
+        const memberBalancesByPoolId = await this._getMemberBalancesByPoolId(this._membersByPoolId);
         // compute expecnted changes
         const expectedRewardVaultBalanceByPoolId = await this._computeExpectedRewardVaultBalanceByPoolId(rewards, rewardVaultBalanceByPoolId, operatorShareByPoolId);
-        const expectedMemberBalancesByPoolId = await this._computeExpectedMemberBalancesByPoolId(this._membersByPoolId, expectedRewardVaultBalanceByPoolId);
+        const memberRewardByPoolId = _.mapValues(_.keyBy(rewards, 'poolId'), (r) => {return r.reward.minus(r.reward.times(operatorShareByPoolId[r.poolId]).dividedToIntegerBy(100))});
+        console.log('************************************');
+        console.log(JSON.stringify(memberRewardByPoolId, null, 4));
+        console.log('************************************');
+        const expectedMemberBalancesByPoolId = await this._computeExpectedMemberBalancesByPoolId(this._membersByPoolId, memberBalancesByPoolId, memberRewardByPoolId);
         // finalize
         await this._stakingWrapper.testFinalizefees(rewards); // available
         // assert reward vault changes
@@ -79,7 +84,8 @@ export class FinalizerActor extends BaseActor {
         expect(finalRewardVaultBalanceByPoolId).to.be.deep.equal(expectedRewardVaultBalanceByPoolId);
         // assert member balances
         const finalMemberBalancesByPoolId = await this._getMemberBalancesByPoolId(this._membersByPoolId);
-        console.log(JSON.stringify(finalMemberBalancesByPoolId));
+        console.log('FINAL\n', JSON.stringify(finalMemberBalancesByPoolId, null, 4));
+        console.log('EXP\n', JSON.stringify(expectedMemberBalancesByPoolId, null, 4));
         expect(finalMemberBalancesByPoolId).to.be.deep.equal(expectedMemberBalancesByPoolId);
 
     }
@@ -88,23 +94,26 @@ export class FinalizerActor extends BaseActor {
         const ethVaultBalanceByOwner = await this._getEthVaultBalanceByOwner(this._operatorByPoolId, this._membersByPoolId);
     }
 
-    private async _computeExpectedMemberBalancesByPoolId(membersByPoolId: MembersByPoolId, rewardVaultBalanceByPoolId: RewardVaultBalanceByPoolId): Promise<MemberBalancesByPoolId> {
-        const memberBalancesByPoolId: MemberBalancesByPoolId = {};
+    private async _computeExpectedMemberBalancesByPoolId(membersByPoolId: MembersByPoolId, memberBalancesByPoolId: MemberBalancesByPoolId, rewardByPoolId: {[key:string]: BigNumber}): Promise<MemberBalancesByPoolId> {
+        const expectedMemberBalancesByPoolId = _.cloneDeep(memberBalancesByPoolId);
         for (const poolId in membersByPoolId) {
-            const members = membersByPoolId[poolId];
-            memberBalancesByPoolId[poolId] = {};
+            if (rewardByPoolId[poolId] === undefined) {
+                continue;
+            }
             const totalStakeDelegatedToPool = (await this._stakingWrapper.getTotalStakeDelegatedToPoolAsync(poolId)).current;
-            for (const member of members) {
+            for (const member of membersByPoolId[poolId]) {
                 console.log(`getting member balance for ${poolId}/${member}`);
-                const stakeDelegatedToPoolByMember = (await this._stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, member)).current;
+
                 if (totalStakeDelegatedToPool.eq(0)) {
-                    memberBalancesByPoolId[poolId][member] = new BigNumber(0);
+                    expectedMemberBalancesByPoolId[poolId][member] = new BigNumber(0);
                 } else {
-                    memberBalancesByPoolId[poolId][member] = rewardVaultBalanceByPoolId[poolId].membersBalance.times(stakeDelegatedToPoolByMember).dividedToIntegerBy(totalStakeDelegatedToPool);
+                    const stakeDelegatedToPoolByMember = (await this._stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, member)).current;
+                    const rewardThisEpoch = rewardByPoolId[poolId].times(stakeDelegatedToPoolByMember).dividedToIntegerBy(totalStakeDelegatedToPool);
+                    expectedMemberBalancesByPoolId[poolId][member] = memberBalancesByPoolId[poolId][member] === undefined ? rewardThisEpoch : memberBalancesByPoolId[poolId][member].plus(rewardThisEpoch);
                 }
             }
         }
-        return memberBalancesByPoolId;
+        return expectedMemberBalancesByPoolId;
     }
 
     private async _getMemberBalancesByPoolId(membersByPoolId: MembersByPoolId): Promise<MemberBalancesByPoolId> {

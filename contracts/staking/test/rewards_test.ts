@@ -98,110 +98,93 @@ blockchainTests.resets.only('Testing Rewards', () => {
             await finalizer.finalizeAsync();
         });
 
-        it('Delegator should not receive rewards for epochs before they delegated', async () => {
-            const amount = StakingWrapper.toBaseUnitAmount(4);
+        it('Operator should receive entire reward if delegators in their pool', async () => {
             const reward = StakingWrapper.toBaseUnitAmount(10);
-            await stakers[0].stakeAsync(amount);
-            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, amount);
             await finalizer.finalizeAsync([{reward, poolId: poolIds[0]}]);
         });
-
-
-        /*
-        it('Single delegator should receive entire pot if no other delegators', async () => {
-            const staker = actors[0];
-            const operator = actors[1];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
-            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
+        it('Operator should receive entire reward if delegators in their pool (staker joins this epoch but is active next epoch)', async () => {
+            // delegate
+            const amount = StakingWrapper.toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(amount);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, amount);
+            // finalize
             const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = ZERO;
-            const delegatorReward = reward;
-            { // Epoch 0: Stake & delegate some ZRX
-                await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountToDelegate);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
-            }
-            // Check reward balance
-
-            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker), 'delegator').to.be.bignumber.equal(delegatorReward);
+            await finalizer.finalizeAsync([{reward, poolId: poolIds[0]}]);
+        });
+        it('Should give pool reward to delegator', async () => {
+            // delegate
+            const amount = StakingWrapper.toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(amount);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, amount);
+            // skip epoch, so staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // finalize
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            await finalizer.finalizeAsync([{reward, poolId: poolIds[0]}]);
+        });
+        it('Should split pool reward between delegators', async () => {
+            // first staker delegates
+            const stakeAmounts = [
+                StakingWrapper.toBaseUnitAmount(4),
+                StakingWrapper.toBaseUnitAmount(6),
+            ];
+            await stakers[0].stakeAsync(stakeAmounts[0]);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[0]);
+            // second staker delegates
+            await stakers[1].stakeAsync(stakeAmounts[1]);
+            await stakers[1].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[1]);
+            // skip epoch, so staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // finalize
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            await finalizer.finalizeAsync([{reward, poolId: poolIds[0]}]);
+        });
+        it('Should split pool reward between delegators, when they join in different epochs', async () => {
+            // first staker delegates (epoch 0)
+            const stakeAmounts = [
+                StakingWrapper.toBaseUnitAmount(4),
+                StakingWrapper.toBaseUnitAmount(6),
+            ];
+            await stakers[0].stakeAsync(stakeAmounts[0]);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[0]);
+            // skip epoch, so staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // second staker delegates (epoch 1)
+            await stakers[1].stakeAsync(stakeAmounts[1]);
+            await stakers[1].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[1]);
+            // skip epoch, so staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // finalize
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            await finalizer.finalizeAsync([{reward, poolId: poolIds[0]}]);
+        });
+        it('Should give pool reward to delegators only for the epochs during which they delegated', async () => {
+            // first staker delegates (epoch 0)
+            const stakeAmounts = [
+                StakingWrapper.toBaseUnitAmount(4),
+                StakingWrapper.toBaseUnitAmount(6),
+            ];
+            await stakers[0].stakeAsync(stakeAmounts[0]);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[0]);
+            // skip epoch, so first staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // second staker delegates (epoch 1)
+            await stakers[1].stakeAsync(stakeAmounts[1]);
+            await stakers[1].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmounts[1]);
+            // only the first staker will get this reward
+            const rewardForOnlyFirstDelegator = StakingWrapper.toBaseUnitAmount(10);
+            await finalizer.finalizeAsync([{reward: rewardForOnlyFirstDelegator, poolId: poolIds[0]}]);
+            // finalize
+            const rewardForBothDelegators = StakingWrapper.toBaseUnitAmount(20);
+            await finalizer.finalizeAsync([{reward: rewardForBothDelegators, poolId: poolIds[0]}]);
         });
 
-        it('Should split reward between delegators correctly', async () => {
-            const operator = actors[6];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(1000);
-            const amountsToDelegate = [StakingWrapper.toBaseUnitAmount(23), StakingWrapper.toBaseUnitAmount(77)];
-            const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = ZERO;
-            const delegatorRewards = [reward.times(0.23), reward.times(0.77)];
-            { // Epoch 0: Stake & delegate some ZRX
-                // first staker delegates
-                await stakingWrapper.stakeAsync(actors[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[0], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[0]);
-                // second staker delegates
-                await stakingWrapper.stakeAsync(actors[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[1], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[1]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
-            }
-            // Check reward balance
-            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
-        });
 
-        it('Should split reward between delegators correctly, when the epochs they joined in are offset', async () => {
-            const operator = actors[6];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(1000);
-            const amountsToDelegate = [StakingWrapper.toBaseUnitAmount(23), StakingWrapper.toBaseUnitAmount(77)];
-            const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = ZERO;
-            const delegatorRewards = [reward.times(0.23), reward.times(0.77)];
-            { // Epoch 0: Stake & delegate some ZRX
-                // second staker delegates
-                await stakingWrapper.stakeAsync(actors[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[0], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[0]);
-            }
-            console.log("first has staked");
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([]);
-            }
 
-            { // Epoch 1: Stake & delegate some ZRX
-                // second staker delegates
-                await stakingWrapper.stakeAsync(actors[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[1], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[1]);
-            }
-            console.log("second has staked");
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([{reward: reward, poolId}]);
-            }
-            // Check reward balance
-            expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(reward);
-            expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'opertaor').to.be.bignumber.equal(operatorReward);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
-        });
+
+
+         /*
+
 
         it('Should attribute rewards to delegators only for the epochs they were present for', async () => {
             const operator = actors[6];
