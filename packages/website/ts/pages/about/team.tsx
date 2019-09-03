@@ -203,6 +203,11 @@ const team: TeamMember[] = [
         name: 'Michael Zhu',
         title: 'Protocol Engineer',
     },
+    {
+        imageUrl: '/images/team/fulviam.jpg',
+        name: 'Fulvia Morales',
+        title: 'Product Manager',
+    },
 ];
 
 const advisors: TeamMember[] = [
