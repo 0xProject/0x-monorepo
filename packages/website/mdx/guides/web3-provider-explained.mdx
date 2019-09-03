@@ -2,9 +2,9 @@
 
 When instantiating a [new instance of the @0x/contract-wrappers library](https://0x.org/docs/tools/contract-wrappers), we require that you pass in a Web3 provider. This Web3 provider allows your application to communicate with an Ethereum Node. Since there doesn't seem to be great documentation on what exactly a Web3 Provider is, we thought we'd fill the gap.
 
-A provider can be any module or class instance that implements the `sendAsync` method (simply `send` in web3 V1.0 Beta). That's it. What this `sendAsync` method does is take JSON RPC payload requests and handles them. [Web3.js](https://github.com/ethereum/web3.js/) is an example of a javascript module that contains a Web3 HTTP Provider.
+A provider can be any module or class instance that implements the `sendAsync` method. That's it. What this `sendAsync` method does is take JSON-RPC payload requests and handles them. [Web3.js](https://github.com/ethereum/web3.js/) is an example of a javascript library that contains a Web3 HTTP Provider.
 
-Using a configured Web3 Provider, the application can request signatures, estimate gas and gas price, and submit transactions to an Ethereum node.
+Using a configured Web3 Provider, the application can request signatures, estimate gas, and submit transactions to an Ethereum node.
 
 The simplest example of a provider is:
 
@@ -12,7 +12,7 @@ The simplest example of a provider is:
 const provider = new web3.providers.HttpProvider('http://localhost:8545');
 ```
 
-This provider simply takes each JSON RPC payload it receives and sends it on to the Ethereum node running on port 8545.
+This provider takes each JSON-RPC payload it receives and sends it on to the Ethereum node running on port 8545.
 
 # More complex providers
 
@@ -26,10 +26,6 @@ npm install @0x/subproviders --save
 
 We describe several of our subproviders below.
 
-## RedundantSubprovider
-
-In 0x Portal we use a custom built provider called [RedundantSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/redundant_subprovider.ts) that sends an RPC payload to several Ethereum nodes sequentially until one successfully handles it. During our token sale, the huge amount of traffic caused some of our Ethereum nodes to fail. Using this subprovider we were able to have requests sent to backup nodes when this happened, greatly improving the application's resilience to outages.
-
 ## LedgerSubprovider
 
 A great use case for custom providers is to support additional ways for your users to sign requests and send transactions. We wanted to add hardware wallet signing support to 0x Portal so we wrote a [LedgerSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/ledger.ts) that would send all message and transaction signing requests to a users Ledger Nano S. All other requests would be sent to a backing Ethereum node.
@@ -38,9 +34,15 @@ A great use case for custom providers is to support additional ways for your use
 
 Many people use browser extension wallets (e.g [Metamask](https://metamask.io/)). These services inject a web3 provider into the page so that your dApp can relay signing requests. We wrote [SignerSubprovider](https://github.com/0xProject/0x-monorepo/blob/cd08a9c1218fa7c4819e31248e50da2a4f45ee36/packages/subproviders/src/subproviders/signer.ts) so that we could route all signing requests to the injected provider, but have all other requests handled by another backing Ethereum node.
 
-# Web3 Provider Examples
+## PrivateKeySubprovider
 
-As described above, we at 0x have created a number of useful Web3 subproviders. These subproviders aren't only useful for 0x.js, they can be added to any application to provide resiliency, usability and to support hardware wallet functionality.
+A subprovider that let's you sign requests with a supplied private key.
+
+## MnemonicSubprovider
+
+A subprovider that let's you sign requests with the accounts derivated from the supplied mnemonic.
+
+# Web3 Provider Examples
 
 You can install the 0x subproviders package as follows:
 
@@ -69,7 +71,7 @@ providerEngine.addProvider(new RPCSubprovider('http://localhost:8545'));
 providerEngine.start();
 
 (async () => {
-    // Get all of the accounts through the Web3Wrapper
+    // Get all of the accounts via Web3Wrapper
     const web3Wrapper = new Web3Wrapper(providerEngine);
     const accounts = await web3Wrapper.getAvailableAddressesAsync();
     console.log(accounts);
@@ -143,30 +145,3 @@ It is important to remember that UI components and UX need to be considered when
 -   The user may want to set the a higher gas price so the transaction has a higher probability of being mined
 -   The hardware device is limited to handling one request at a time
 -   The hardware device is not capable of showing the message entirely on screen. An application [should confirm](https://github.com/ethfinex/0x-order-verify) what is displayed on the device
-
-## RedundantRPCSubprovider example
-
-In our last example we will add redundancy to the application by making use of the RedundantRPCSubprovider. The RedundantRPCSubprovider helps your application stay up when underlying Ethereum nodes experience network issues. To use this subprovider, simply provide it with a list of Ethereum node RPC endpoints and it will attempt each one in sequence until a successful response is returned.
-
-```typescript
-import { RedundantSubprovider, RPCSubprovider, SignerSubprovider, Web3ProviderEngine } from '@0x/subproviders';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-
-// Create a Web3 Provider Engine
-const providerEngine = new Web3ProviderEngine();
-// Compose our Providers, order matters
-// Use the SignerSubprovider to wrap the browser extension wallet
-const signerSubprovider = new SignerSubprovider(window.web3.currentProvider);
-providerEngine.addProvider(signerSubprovider);
-// Use the RedundantRPCSubprovider to route all other requests
-const subproviders = [new RPCSubprovider('http://localhost:8545'), new RPCSubprovider('https://kovan.infura.io')];
-providerEngine.addProvider(new RedundantSubprovider(subproviders));
-providerEngine.start();
-
-(async () => {
-    // Get the latest Block Number
-    const web3Wrapper = new Web3Wrapper(providerEngine);
-    const blockNumber = await web3Wrapper.getBlockNumberAsync();
-    console.log(blockNumber);
-})();
-```
