@@ -46,7 +46,7 @@ For a set of scenarios show-casing the above steps, as well as allowance setting
 
 Note that the `salt` field of an order should be set to the current unix timestamp in milliseconds for full compatibility with the [`cancelOrdersUpTo`](#cancelling-orders) function. For low level details of how an order is created, please reference the [orders](https://0x.org/docs/guides/v2-specification#orders) section of the protocol specification.
 
-Once you have a valid 0x order, it can be submitted to a relayer. You can use the [POST /v2/order](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md#post-v2order) endpoint of the Standard Relayer API for this purpose (see: [submitOrderAsync in 0x Connect](https://0x.org/docs/tools/connect#submitorderasync)).
+Once you have a valid 0x order, it can be submitted to a relayer or the Mesh network. You can use the [POST /v2/order](https://github.com/0xProject/standard-relayer-api/blob/master/http/v2.md#post-v2order) endpoint of the Standard Relayer API (see: [submitOrderAsync in 0x Connect](https://0x.org/docs/tools/connect#submitorderasync)) or the [mesh_addOrders](https://0x-org.gitbook.io/mesh/getting-started/usage#mesh_addorders) Mesh JSON-RPC method (see: [addOrdersAsync in `@0x/mesh-rpc-client`](https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript/reference#addordersasync)) respectively.
 
 If you want to be notified whenever the order is filled by a trader, you should also submit the order to a [0x Mesh node](https://0x-org.gitbook.io/mesh/) instance you are running.
 
@@ -96,9 +96,11 @@ Explicitly cancelling orders always requires an on-chain transaction. However, y
 
 # Fetching off-chain orders
 
-Since 0x orders live off-chain, they must be fetched from relayers. All relayers host APIs that allow you to pull orders from their orderbook. In order to make life easier for traders, many implement the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/), allowing you to use a single client to fetch orders from multiple relayers. Standard Relayer API clients exist in [Python](https://pypi.org/project/0x-sra-client/) and [TypeScript/Javascript](https://0x.org/docs/tools/connect).
+Since 0x orders live off-chain, they must be fetched from somewhere. Currently, there are two places to fetch orders from:
 
-To learn more about fetching orders from relayers, check out our [How to use the Standard Relayer API tutorial](https://0x.org/docs/guides/using-the-standard-relayer-api).
+1. Directly from Relayers via their API endpoints. In order to make life easier for traders, many implement the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api/), allowing you to use a single client to fetch orders from multiple relayers. Standard Relayer API clients exist in [Python](https://pypi.org/project/0x-sra-client/) and [TypeScript/Javascript](https://0x.org/docs/tools/connect). To learn more about fetching orders from relayers, check out our [How to use the Standard Relayer API tutorial](https://0x.org/docs/guides/using-the-standard-relayer-api).
+
+2. Indirectly via the [0x Mesh](https://0x-org.gitbook.io/mesh/) p2p network. Many relayers share liquidity via the Mesh p2p network meaning that all their 0x orders are available to anyone running a Mesh node. Instead of pulling orders from multiple Relayer API's, you can spin up a Mesh node and connect to an aggregated stream of orders.
 
 # Trading on Ethereum
 
