@@ -288,11 +288,14 @@ contract MixinExchangeFees is
             uint256 lastKnownEpoch = cumulativeRewardsByPoolLastStored[poolId];
 
             // record reward in vault
-            (, uint256 delegatorsAmount) = rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward, totalStakeDelegatedToPool == 0);
-            if (delegatorsAmount > 0) {
-                cumulativeRewardsByPool[poolId][epoch].numerator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].numerator * totalStakeDelegatedToPool + rewards[i].reward * cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator) / 10**18;
-                cumulativeRewardsByPool[poolId][epoch].denominator = (cumulativeRewardsByPool[poolId][lastKnownEpoch].denominator * totalStakeDelegatedToPool) / 10**18;
-                cumulativeRewardsByPoolLastStored[poolId] = epoch;
+            (, uint256 poolPortion) = rewardVault.recordDepositFor(rewards[i].poolId, rewards[i].reward, totalStakeDelegatedToPool == 0);
+            if (poolPortion > 0) {
+                _recordRewardForDelegators(
+                    poolId,
+                    poolPortion,
+                    totalStakeDelegatedToPool,
+                    currentEpoch
+                );
             }
         }
 

@@ -248,6 +248,17 @@ contract StakingPoolRewardVault is
         return balanceByPoolId[poolId].membersBalance;
     }
 
+    /// @dev Returns the operator share of a pool's balance.
+    /// @param poolId Unique Id of pool.
+    /// @return Operator share (integer out of 100)
+    function getOperatorShare(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return balanceByPoolId[poolId].operatorShare;
+    }
+
     /// @dev Increments a balance struct, splitting the input amount between the
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param balance Balance struct to increment.

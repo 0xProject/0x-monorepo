@@ -14,7 +14,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeState, StakeStateInfo } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Stake States', () => {
+blockchainTests.resets.skip('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);
