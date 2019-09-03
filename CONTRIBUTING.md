@@ -29,9 +29,9 @@ ALL PRs should be opened against `development`.
 
 Branch names should be prefixed with `fix`, `feature` or `refactor`.
 
--   e.g `fix/broken-wiki-link`
+-   e.g `fix/missing-import`
 -   If the PR only edits a single package, add it's name too
-    -   e.g `fix/website/broken-wiki-link`
+    -   e.g `fix/subproviders/missing-import`
 
 ### CHANGELOGs
 

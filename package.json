@@ -18,7 +18,7 @@
         "test:installation": "node ./packages/monorepo-scripts/lib/test_installation.js",
         "test:installation:local": "IS_LOCAL_PUBLISH=true node ./packages/monorepo-scripts/lib/test_installation.js",
         "test:publish:circleci": "yarn npm-cli-login -u test -p test -e test@example.com -r http://localhost:4873 && IS_LOCAL_PUBLISH=true run-s script:publish test:installation:local",
-        "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild:no_website script:publish",
+        "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
         "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
         "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
@@ -26,8 +26,7 @@
         "wsrun": "wsrun",
         "lerna": "lerna",
         "build": "lerna link && wsrun build $PKG --fast-exit -r --stages --exclude-missing",
-        "build:no_website": "lerna link && wsrun build $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
-        "build:ci:no_website": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude @0x/website --exclude-missing",
+        "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing",
         "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
@@ -39,7 +38,6 @@
         "contracts:watch": "wsrun watch $PKG --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
-        "rebuild:no_website": "run-s clean build:no_website",
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate.js",
@@ -54,7 +52,7 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "contract-wrappers 0x.js connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer asset-swapper migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
-        "ignoreDependencyVersionsForPackage": "website instant dev-tools-pages contract-wrappers"
+        "ignoreDependencyVersionsForPackage": "instant dev-tools-pages contract-wrappers"
     },
     "bundlewatch": {
         "files": [

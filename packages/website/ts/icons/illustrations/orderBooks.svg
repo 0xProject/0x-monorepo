@@ -1,8 +1,0 @@
-<svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="75" cy="75" r="73" stroke="#00AE99" stroke-width="3"/>
-<path d="M75 64V75M75 75H69V128H75M75 75H81V128H75M75 128V139" stroke="#00AE99" stroke-width="3"/>
-<path d="M98 16V27M98 27H92V75H98M98 27H104V75H98M98 75V86" stroke="#00AE99" stroke-width="3"/>
-<path d="M52 16V27M52 27H46V75H52M52 27H58V75H52M52 75V86" stroke="#00AE99" stroke-width="3"/>
-<path d="M29 64V75M29 75H23V100H29M29 75H35V100H29M29 100V111" stroke="#00AE99" stroke-width="3"/>
-<path d="M121 64V75M121 75H115V100H121M121 75H127V100H121M121 100V111" stroke="#00AE99" stroke-width="3"/>
-</svg>
