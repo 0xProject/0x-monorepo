@@ -14,7 +14,7 @@
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "fix": "tslint --fix --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "update:tools": "aws s3 sync s3://docs-markdown/ mdx/tools/",
-        "dev": "npm run update:tools; node --max-old-space-size=8192 ../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --content-base public --https",
+        "dev": "npm run update:tools; node --max-old-space-size=16384 ../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --content-base public --https",
         "deploy_dogfood": "npm run update:tools; yarn index_docs --environment dogfood; npm run build:prod; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_staging": "npm run update:tools; yarn index_docs --environment staging; npm run build:prod; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_live": "npm run update:tools; yarn index_docs --environment production; DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build:prod; aws s3 sync ./public/. s3://0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js",
