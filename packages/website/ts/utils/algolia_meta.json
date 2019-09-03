@@ -62,13 +62,13 @@
             "difficulty": "Beginner",
             "path": "guides/0x-cheat-sheet.mdx"
         },
-        "ganache-setup": {
-            "title": "How to Set Up Ganache",
+        "setting-up-a-local-0x-testnet": {
+            "title": "How to set up a local 0x testnet",
             "description": "",
             "tags": ["Testing", "Relayer", "Protocol Developer", "Trader"],
             "topics": ["Testing", "Relayer", "Protocol Developer", "Trader"],
             "difficulty": "Beginner",
-            "path": "guides/ganache-setup.mdx"
+            "path": "guides/setting-up-a-local-0x-testnet.mdx"
         },
         "integrate-instant": {
             "title": "Get Started with 0x Instant",
@@ -107,7 +107,12 @@
             "title": "0x Coordinator Specification (v2)",
             "description": "A comprehensive technical spec of the first coordinator model developer by the 0x core team (soft-cancel variant)",
             "tags": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
-            "topics": ["Coordinator", "Relayer", "Trader", "Protocol Developer"],
+            "topics": [
+                "Coordinator",
+                "Relayer",
+                "Trader",
+                "Protocol Developer"
+            ],
             "difficulty": "Advanced",
             "path": "guides/v2-coordinatior-specification.mdx"
         },
