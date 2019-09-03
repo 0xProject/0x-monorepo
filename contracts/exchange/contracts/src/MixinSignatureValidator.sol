@@ -186,11 +186,15 @@ contract MixinSignatureValidator is
         pure
         returns (bool needsRegularValidation)
     {
-        SignatureType signatureType = _readValidSignatureType(
+        // Read the signatureType from the signature
+        SignatureType signatureType = _readSignatureType(
             hash,
             signerAddress,
             signature
         );
+
+        // Any signature type that makes an external call needs to be revalidated
+        // with every partial fill
         needsRegularValidation =
             signatureType == SignatureType.Wallet ||
             signatureType == SignatureType.Validator ||
@@ -396,7 +400,28 @@ contract MixinSignatureValidator is
         }
     }
 
-    /// Reads the `SignatureType` from the end of a signature and validates it.
+    /// @dev Reads the `SignatureType` from a signature with minimal validation.
+    function _readSignatureType(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        pure
+        returns (SignatureType signatureType)
+    {
+        if (signature.length == 0) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        return SignatureType(uint8(signature[signature.length - 1]));
+    }
+
+    /// @dev Reads the `SignatureType` from the end of a signature and validates it.
     function _readValidSignatureType(
         bytes32 hash,
         address signerAddress,
@@ -406,6 +431,13 @@ contract MixinSignatureValidator is
         pure
         returns (SignatureType signatureType)
     {
+        // Read the signatureType from the signature
+        SignatureType signatureType = _readSignatureType(
+            hash,
+            signerAddress,
+            signature
+        );
+
         // Disallow address zero because it is ecrecover() returns zero on
         // failure.
         if (signerAddress == address(0)) {
@@ -417,20 +449,8 @@ contract MixinSignatureValidator is
             ));
         }
 
-        if (signature.length == 0) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
-                hash,
-                signerAddress,
-                signature
-            ));
-        }
-
-        // Read the last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature[signature.length - 1]);
-
         // Ensure signature is supported
-        if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
+        if (uint8(signatureType) >= uint8(SignatureType.NSignatureTypes)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
                 hash,
@@ -444,7 +464,7 @@ contract MixinSignatureValidator is
         // signature array with invalid type or length. We may as well make
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
-        if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
+        if (signatureType == SignatureType.Illegal) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
                 hash,
@@ -453,7 +473,7 @@ contract MixinSignatureValidator is
             ));
         }
 
-        return SignatureType(signatureTypeRaw);
+        return signatureType;
     }
 
     /// @dev Verifies a hash and signature using logic defined by Wallet contract.
