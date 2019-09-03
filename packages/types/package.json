@@ -1,6 +1,6 @@
 {
     "name": "@0x/types",
-    "version": "2.4.1",
+    "version": "2.4.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -32,7 +32,7 @@
     "dependencies": {
         "@types/node": "*",
         "bignumber.js": "~8.0.2",
-        "ethereum-types": "^2.1.4"
+        "ethereum-types": "^2.1.5"
     },
     "publishConfig": {
         "access": "public"

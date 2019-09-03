@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "4.3.0",
+    "version": "4.3.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -40,10 +40,10 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/dev-utils": "^2.3.1",
+        "@0x/dev-utils": "^2.3.2",
         "@0x/ts-doc-gen": "^0.0.21",
         "@0x/tslint-config": "^3.0.1",
-        "@0x/types": "^2.4.1",
+        "@0x/types": "^2.4.2",
         "@types/yargs": "^11.0.0",
         "make-promises-safe": "^1.1.0",
         "npm-run-all": "^4.1.2",
@@ -55,19 +55,19 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.3.0",
-        "@0x/base-contract": "^5.3.2",
+        "@0x/abi-gen-wrappers": "^5.3.1",
+        "@0x/base-contract": "^5.3.3",
         "@0x/contract-addresses": "^3.1.0",
-        "@0x/contract-artifacts": "^2.2.0",
-        "@0x/order-utils": "^8.3.0",
-        "@0x/sol-compiler": "^3.1.13",
-        "@0x/subproviders": "^5.0.2",
-        "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.5.0",
-        "@0x/web3-wrapper": "^6.0.11",
+        "@0x/contract-artifacts": "^2.2.1",
+        "@0x/order-utils": "^8.3.1",
+        "@0x/sol-compiler": "^3.1.14",
+        "@0x/subproviders": "^5.0.3",
+        "@0x/typescript-typings": "^4.2.5",
+        "@0x/utils": "^4.5.1",
+        "@0x/web3-wrapper": "^6.0.12",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@types/web3-provider-engine": "^14.0.0",
-        "ethereum-types": "^2.1.4",
+        "ethereum-types": "^2.1.5",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11"
     },

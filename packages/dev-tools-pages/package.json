@@ -1,6 +1,6 @@
 {
     "name": "@0x/dev-tools-pages",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "engines": {
         "node": ">=6.12"
     },

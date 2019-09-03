@@ -1,6 +1,6 @@
 {
     "name": "ethereum-types",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "engines": {
         "node": ">=6.12"
     },
