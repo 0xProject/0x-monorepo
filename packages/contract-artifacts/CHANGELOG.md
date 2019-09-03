@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _September 3, 2019_
+
+    * Dependencies updated
+
 ## v2.2.0 - _August 22, 2019_
 
     * Update `IWallet` and `IValidator` to reflect Mainnet (#2078)

@@ -40,8 +40,11 @@ build/Release
 node_modules/
 jspm_packages/
 
-# Typescript v1 declaration files
+# TypeScript v1 declaration files
 typings/
+
+# NVM config
+.nvmrc
 
 # Optional npm cache directory
 .npm
@@ -74,8 +77,6 @@ TODO.md
 
 # VSCode file
 .vscode
-
-packages/website/public/bundle*
 
 # server cli
 packages/testnet-faucets/server/
@@ -134,9 +135,6 @@ python-packages/contract_wrappers/src/zero_ex/contract_wrappers/zrx_token/__init
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
 
-# Monorepo scripts
-packages/*/scripts/
-
 # python stuff
 .eggs
 .mypy_cache
@@ -152,3 +150,5 @@ python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 
 # Doc README copy
 packages/*/docs/README.md
+
+.DS_Store

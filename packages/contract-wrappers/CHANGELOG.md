@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v12.0.0 - _September 3, 2019_
+
+    * Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package. (#2086)
+    * Change CoordinatorWrapper constructor to take a provider instead of a Web3Wrapper instance (#2023)
+
 ## v11.1.0 - _August 22, 2019_
 
     * Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo. (#2068)

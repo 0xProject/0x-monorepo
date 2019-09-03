@@ -1,20 +1,443 @@
+
+
+
+
+
+
+
+
+
+
+
+
+<hr /> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: CompilerOptions
+
+Options you can specify (as flags or in a compiler.json file) when invoking sol-compiler
+contractsDir: Directory containing your project's Solidity contracts. Can contain nested directories.
+artifactsDir: Directory where you want the generated artifacts.json written to
+compilerSettings: Desired settings to pass to the Solidity compiler during compilation.
+(http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html#compiler-input-and-output-json-description)
+contracts: List of contract names you wish to compile, or alternatively ['*'] to compile all contracts in the
+specified directory.
+useDockerisedSolc: If set to true - sol-compiler will try calling a dockerized installations of solc to achieve faster compilation times. Otherwise and by default - solcjs will be used. Defaults to false.
+isOfflineMode: If set to true - sol-compiler will not fetch the list of solc releases from github. It will use the hardcoded list. Defaults to false.
+solcVersion: If you don't want to compile each contract with the Solidity version specified in-file, you can force all
+contracts to compile with the the version specified here.
+
+
+##   Properties
+
+### `Optional` artifactsDir
+
+• **artifactsDir**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:723](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L723)*
+
+___
+
+### `Optional` compilerSettings
+
+• **compilerSettings**? : *[CompilerSettings](#class-compilersettings)*
+
+*Defined in [ethereum-types/src/index.ts:724](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L724)*
+
+___
+
+### `Optional` contracts
+
+• **contracts**? : *string[] | "*"*
+
+*Defined in [ethereum-types/src/index.ts:725](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L725)*
+
+___
+
+### `Optional` contractsDir
+
+• **contractsDir**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:722](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L722)*
+
+___
+
+### `Optional` isOfflineMode
+
+• **isOfflineMode**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:727](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L727)*
+
+___
+
+### `Optional` solcVersion
+
+• **solcVersion**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:728](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L728)*
+
+___
+
+### `Optional` useDockerisedSolc
+
+• **useDockerisedSolc**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:726](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L726)*
+
+<hr />
+
+
+
+# Interface: CompilerSettings
+
+
+##   Properties
+
+### `Optional` evmVersion
+
+• **evmVersion**? : *"homestead" | "tangerineWhistle" | "spuriousDragon" | "byzantium" | "constantinople"*
+
+*Defined in [ethereum-types/src/index.ts:681](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L681)*
+
+___
+
+### `Optional` libraries
+
+• **libraries**? : *undefined | object*
+
+*Defined in [ethereum-types/src/index.ts:683](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L683)*
+
+___
+
+### `Optional` metadata
+
+• **metadata**? : *[CompilerSettingsMetadata](#class-compilersettingsmetadata)*
+
+*Defined in [ethereum-types/src/index.ts:682](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L682)*
+
+___
+
+### `Optional` optimizer
+
+• **optimizer**? : *[OptimizerSettings](#class-optimizersettings)*
+
+*Defined in [ethereum-types/src/index.ts:680](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L680)*
+
+___
+
+###  outputSelection
+
+• **outputSelection**: *object*
+
+*Defined in [ethereum-types/src/index.ts:688](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L688)*
+
+#### Type declaration:
+
+● \[▪ **fileName**: *string*\]: object
+
+● \[▪ **contractName**: *string*\]: [OutputField](#outputfield)[]
+
+___
+
+### `Optional` remappings
+
+• **remappings**? : *string[]*
+
+*Defined in [ethereum-types/src/index.ts:679](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L679)*
+
+<hr />
+
+# Interface: CompilerSettingsMetadata
+
+
+##   Properties
+
+###  useLiteralContent
+
+• **useLiteralContent**: *true*
+
+*Defined in [ethereum-types/src/index.ts:696](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L696)*
+
+<hr />
+
+# Interface: ConstructorAbi
+
+
+##   Properties
+
+###  inputs
+
+• **inputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:103](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L103)*
+
+___
+
+###  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:104](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L104)*
+
+___
+
+###  stateMutability
+
+• **stateMutability**: *[ConstructorStateMutability](#constructorstatemutability)*
+
+*Defined in [ethereum-types/src/index.ts:105](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L105)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:102](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L102)*
+
+<hr />
+
+
+
+
+
+
+
+# Interface: DataItem
+
+
+##   Properties
+
+### `Optional` components
+
+• **components**? : *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L131)*
+
+___
+
+###  name
+
+• **name**: *string*
+
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L129)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L130)*
+
+<hr />
+
+
+
+
+
+# Interface: DevdocOutput
+
+
+##   Properties
+
+### `Optional` author
+
+• **author**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:620](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L620)*
+
+___
+
+###  methods
+
+• **methods**: *object*
+
+*Defined in [ethereum-types/src/index.ts:621](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L621)*
+
+#### Type declaration:
+
+● \[▪ **signature**: *string*\]: object
+
+___
+
+### `Optional` title
+
+• **title**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:619](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L619)*
+
+<hr />
+
+
+
+# Interface: EventAbi
+
+
+##   Properties
+
+###  anonymous
+
+• **anonymous**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:125](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L125)*
+
+___
+
+###  inputs
+
+• **inputs**: *[EventParameter](#class-eventparameter)[]*
+
+*Defined in [ethereum-types/src/index.ts:124](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L124)*
+
+___
+
+###  name
+
+• **name**: *string*
+
+*Defined in [ethereum-types/src/index.ts:123](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L123)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:122](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L122)*
+
+<hr />
+
+# Interface: EventParameter
+
+
+##   Properties
+
+### `Optional` components
+
+• **components**? : *[DataItem](#class-dataitem)[]*
+
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[components](#optional-components)*
+
+*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L131)*
+
+___
+
+###  indexed
+
+• **indexed**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:116](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L116)*
+
+___
+
+###  name
+
+• **name**: *string*
+
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[name](#name)*
+
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L129)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[type](#type)*
+
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L130)*
+
+<hr />
+
+# Interface: EvmBytecodeOutput
+
+
+##   Properties
+
+###  object
+
+• **object**: *string*
+
+*Defined in [ethereum-types/src/index.ts:614](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L614)*
+
+___
+
+###  sourceMap
+
+• **sourceMap**: *string*
+
+*Defined in [ethereum-types/src/index.ts:615](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L615)*
+
+<hr />
+
+# Interface: EvmOutput
+
+
+##   Properties
+
+###  bytecode
+
+• **bytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
+
+*Defined in [ethereum-types/src/index.ts:609](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L609)*
+
+___
+
+###  deployedBytecode
+
+• **deployedBytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
+
+*Defined in [ethereum-types/src/index.ts:610](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L610)*
+
+<hr />
+
+# Interface: FallbackAbi
+
+
+##   Properties
+
+###  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:112](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L112)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:111](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L111)*
+
+<hr />
+
 # Class: Compiler
 
 The Compiler facilitates compiling Solidity smart contracts and saves the results
 to artifact files.
 
-### Hierarchy
 
-* **Compiler**
+##   Constructors
 
 
-### Constructors
 
-##  constructer
+\+ **new Compiler**(`opts?`: [CompilerOptions](#interface-compileroptions)): *[Compiler](#class-compiler)*
 
-\+ **new Compiler**(`opts?`: `CompilerOptions`): *[Compiler](#class-compiler)*
-
-*Defined in [compiler.ts:94](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/compiler.ts#L94)*
+*Defined in [sol-compiler/src/compiler.ts:94](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-compiler/src/compiler.ts#L94)*
 
 Instantiates a new instance of the Compiler class.
 
@@ -22,19 +445,19 @@ Instantiates a new instance of the Compiler class.
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`opts?` | `CompilerOptions` | Optional compiler options |
+`opts?` | [CompilerOptions](#interface-compileroptions) | Optional compiler options |
 
 **Returns:** *[Compiler](#class-compiler)*
 
 An instance of the Compiler class.
 
-### Methods
+## Methods
 
-##  compileAsync
+###  compileAsync
 
 ▸ **compileAsync**(): *`Promise<void>`*
 
-*Defined in [compiler.ts:132](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/compiler.ts#L132)*
+*Defined in [sol-compiler/src/compiler.ts:132](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-compiler/src/compiler.ts#L132)*
 
 Compiles selected Solidity files found in `contractsDir` and writes JSON artifacts to `artifactsDir`.
 
@@ -42,11 +465,11 @@ Compiles selected Solidity files found in `contractsDir` and writes JSON artifac
 
 ___
 
-##  getCompilerOutputsAsync
+###  getCompilerOutputsAsync
 
 ▸ **getCompilerOutputsAsync**(): *`Promise<StandardOutput[]>`*
 
-*Defined in [compiler.ts:145](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/compiler.ts#L145)*
+*Defined in [sol-compiler/src/compiler.ts:145](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-compiler/src/compiler.ts#L145)*
 
 Compiles Solidity files specified during instantiation, and returns the
 compiler output given by solc.  Return value is an array of outputs:
@@ -59,238 +482,396 @@ that version.
 
 ___
 
-##  watchAsync
+###  watchAsync
 
 ▸ **watchAsync**(): *`Promise<void>`*
 
-*Defined in [compiler.ts:149](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/compiler.ts#L149)*
+*Defined in [sol-compiler/src/compiler.ts:149](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-compiler/src/compiler.ts#L149)*
 
 **Returns:** *`Promise<void>`*
 
 <hr />
 
-# Class: CompilationError
-
-### Hierarchy
-
-* `Error`
-
-  * **CompilationError**
 
 
-### Constructors
 
-##  constructer
 
-\+ **new CompilationError**(`errorsCount`: number): *[CompilationError](#class-compilationerror)*
 
-*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L39)*
 
-**Parameters:**
 
-Name | Type |
------- | ------ |
-`errorsCount` | number |
 
-**Returns:** *[CompilationError](#class-compilationerror)*
 
-### Properties
 
-##  errorsCount
 
-• **errorsCount**: *number*
 
-*Defined in [utils/types.ts:38](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L38)*
+
+
+
+
+# Interface: MethodAbi
+
+
+##   Properties
+
+###  constant
+
+• **constant**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L94)*
 
 ___
 
-##  message
+###  inputs
+
+• **inputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L92)*
+
+___
+
+###  name
+
+• **name**: *string*
+
+*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L91)*
+
+___
+
+###  outputs
+
+• **outputs**: *[DataItem](#class-dataitem)[]*
+
+*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L93)*
+
+___
+
+###  payable
+
+• **payable**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L96)*
+
+___
+
+###  stateMutability
+
+• **stateMutability**: *[StateMutability](#statemutability)*
+
+*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L95)*
+
+___
+
+###  type
+
+• **type**: *string*
+
+*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L90)*
+
+<hr />
+
+# Interface: OptimizerSettings
+
+
+##   Properties
+
+###  enabled
+
+• **enabled**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:700](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L700)*
+
+___
+
+### `Optional` runs
+
+• **runs**? : *undefined | number*
+
+*Defined in [ethereum-types/src/index.ts:701](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L701)*
+
+<hr />
+
+
+
+
+
+# Interface: SolcError
+
+
+##   Properties
+
+###  component
+
+• **component**: *"general" | "ewasm"*
+
+*Defined in [ethereum-types/src/index.ts:596](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L596)*
+
+___
+
+### `Optional` formattedMessage
+
+• **formattedMessage**? : *undefined | string*
+
+*Defined in [ethereum-types/src/index.ts:599](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L599)*
+
+___
+
+###  message
 
 • **message**: *string*
 
-
-
-
+*Defined in [ethereum-types/src/index.ts:598](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L598)*
 
 ___
 
-##  name
+###  severity
+
+• **severity**: *[ErrorSeverity](#errorseverity)*
+
+*Defined in [ethereum-types/src/index.ts:597](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L597)*
+
+___
+
+### `Optional` sourceLocation
+
+• **sourceLocation**? : *[SourceLocation](#class-sourcelocation)*
+
+*Defined in [ethereum-types/src/index.ts:594](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L594)*
+
+___
+
+###  type
+
+• **type**: *[ErrorType](#errortype)*
+
+*Defined in [ethereum-types/src/index.ts:595](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L595)*
+
+<hr />
+
+
+
+
+
+# Interface: StandardContractOutput
+
+
+##   Properties
+
+###  abi
+
+• **abi**: *[ContractAbi](#contractabi)*
+
+*Defined in [ethereum-types/src/index.ts:556](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L556)*
+
+___
+
+### `Optional` devdoc
+
+• **devdoc**? : *[DevdocOutput](#class-devdocoutput)*
+
+*Defined in [ethereum-types/src/index.ts:558](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L558)*
+
+___
+
+###  evm
+
+• **evm**: *[EvmOutput](#class-evmoutput)*
+
+*Defined in [ethereum-types/src/index.ts:557](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L557)*
+
+<hr />
+
+# Interface: StandardOutput
+
+
+##   Properties
+
+###  contracts
+
+• **contracts**: *object*
+
+*Defined in [ethereum-types/src/index.ts:570](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L570)*
+
+#### Type declaration:
+
+● \[▪ **fileName**: *string*\]: object
+
+● \[▪ **contractName**: *string*\]: [StandardContractOutput](#class-standardcontractoutput)
+
+___
+
+###  errors
+
+• **errors**: *[SolcError](#class-solcerror)[]*
+
+*Defined in [ethereum-types/src/index.ts:562](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L562)*
+
+___
+
+###  sources
+
+• **sources**: *object*
+
+*Defined in [ethereum-types/src/index.ts:563](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L563)*
+
+#### Type declaration:
+
+● \[▪ **fileName**: *string*\]: object
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: TupleDataItem
+
+
+##   Properties
+
+###  components
+
+• **components**: *[DataItem](#class-dataitem)[]*
+
+*Overrides [DataItem](_ethereum_types_src_index_.dataitem.md).[components](#optional-components)*
+
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L135)*
+
+___
+
+###  name
 
 • **name**: *string*
 
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[name](#name)*
 
-
-
-
-___
-
-## `Optional` stack
-
-• **stack**? : *undefined | string*
-
-
-
-*Overrides void*
-
-
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
-##  typeName
+###  type
 
-• **typeName**: *string* = "CompilationError"
+• **type**: *string*
 
-*Defined in [utils/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L39)*
+*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[type](#type)*
 
-___
-
-## `Static` Error
-
-▪ **Error**: *`ErrorConstructor`*
-
-
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
-# Enumeration: AbiType
 
 
-### Enumeration members
 
-##  Constructor
 
-• **Constructor**: = "constructor"
 
-*Defined in [utils/types.ts:3](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L3)*
 
-___
 
-##  Event
 
-• **Event**: = "event"
 
-*Defined in [utils/types.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L4)*
 
-___
 
-##  Fallback
 
-• **Fallback**: = "fallback"
 
-*Defined in [utils/types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L5)*
+
+
+##  Type aliases
+
+###  AbiDefinition
+
+Ƭ **AbiDefinition**: *[FunctionAbi](_ethereum_types_src_index_.md#functionabi) | [EventAbi](#interface-eventabi)*
+
+*Defined in [ethereum-types/src/index.ts:80](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L80)*
 
 ___
 
-##  Function
-
-• **Function**: = "function"
-
-*Defined in [utils/types.ts:2](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L2)*
-
-<hr />
-
-# Interface: BinaryPaths
-
-### Hierarchy
-
-* **BinaryPaths**
 
 
-### Hierarchy
+###  ConstructorStateMutability
 
-* **ContractSourceData**
+Ƭ **ConstructorStateMutability**: *"nonpayable" | "payable"*
 
-
-### Hierarchy
-
-* **ContractSpecificSourceData**
-
-
-### Properties
-
-##  solcVersionRange
-
-• **solcVersionRange**: *string*
-
-*Defined in [utils/types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L21)*
+*Defined in [ethereum-types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L84)*
 
 ___
 
-##  sourceHash
+###  ContractAbi
 
-• **sourceHash**: *`Buffer`*
+Ƭ **ContractAbi**: *[AbiDefinition](#abidefinition)[]*
 
-*Defined in [utils/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L22)*
-
-___
-
-##  sourceTreeHash
-
-• **sourceTreeHash**: *`Buffer`*
-
-*Defined in [utils/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L23)*
-
-<hr />
-
-# Interface: SolcErrors
-
-### Hierarchy
-
-* **SolcErrors**
-
-
-### Hierarchy
-
-* **Token**
-
-
-### Properties
-
-## `Optional` address
-
-• **address**? : *undefined | string*
-
-*Defined in [utils/types.ts:27](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L27)*
+*Defined in [ethereum-types/src/index.ts:78](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L78)*
 
 ___
 
-##  decimals
 
-• **decimals**: *number*
 
-*Defined in [utils/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L30)*
 
-___
 
-##  ipfsHash
+###  ErrorSeverity
 
-• **ipfsHash**: *string*
+Ƭ **ErrorSeverity**: *"error" | "warning"*
 
-*Defined in [utils/types.ts:31](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L31)*
+*Defined in [ethereum-types/src/index.ts:591](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L591)*
 
 ___
 
-##  name
+###  ErrorType
 
-• **name**: *string*
+Ƭ **ErrorType**: *"JSONError" | "IOError" | "ParserError" | "DocstringParsingError" | "SyntaxError" | "DeclarationError" | "TypeError" | "UnimplementedFeatureError" | "InternalCompilerError" | "Exception" | "CompilerError" | "FatalError" | "Warning"*
 
-*Defined in [utils/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L28)*
-
-___
-
-##  swarmHash
-
-• **swarmHash**: *string*
-
-*Defined in [utils/types.ts:32](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L32)*
+*Defined in [ethereum-types/src/index.ts:577](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L577)*
 
 ___
 
-##  symbol
+###  FunctionAbi
 
-• **symbol**: *string*
+Ƭ **FunctionAbi**: *[MethodAbi](#interface-methodabi) | [ConstructorAbi](#interface-constructorabi) | [FallbackAbi](#interface-fallbackabi)*
 
-*Defined in [utils/types.ts:29](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-compiler/src/utils/types.ts#L29)*
+*Defined in [ethereum-types/src/index.ts:82](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L82)*
 
-<hr />
+___
+
+
+
+
+
+###  OutputField
+
+Ƭ **OutputField**: *"*" | "ast" | "legacyAST" | "abi" | "devdoc" | "userdoc" | "metadata" | "ir" | "evm.assembly" | "evm.legacyAssembly" | "evm.bytecode.object" | "evm.bytecode.opcodes" | "evm.bytecode.sourceMap" | "evm.bytecode.linkReferences" | "evm.deployedBytecode.object" | "evm.deployedBytecode.opcodes" | "evm.deployedBytecode.sourceMap" | "evm.deployedBytecode.linkReferences" | "evm.methodIdentifiers" | "evm.gasEstimates" | "ewasm.wast" | "ewasm.wasm"*
+
+*Defined in [ethereum-types/src/index.ts:517](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L517)*
+
+___
+
+###  ParamDescription
+
+Ƭ **ParamDescription**: *string*
+
+*Defined in [ethereum-types/src/index.ts:553](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L553)*
+
+___
+
+
+
+###  StateMutability
+
+Ƭ **StateMutability**: *"pure" | "view" | [ConstructorStateMutability](#constructorstatemutability)*
+
+*Defined in [ethereum-types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L85)*
+
+___
+
+
+
+
+
+
+
+
 

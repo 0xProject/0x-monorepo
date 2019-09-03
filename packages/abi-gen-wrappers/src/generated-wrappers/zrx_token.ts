@@ -3,7 +3,6 @@
 // tslint:disable:no-unused-variable
 import {
     BaseContract,
-    BlockRange,
     EventCallback,
     IndexedFilterValues,
     SubscriptionManager,
@@ -13,6 +12,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,

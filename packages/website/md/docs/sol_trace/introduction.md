@@ -1,1 +1,0 @@
-Welcome to the [sol-trace](https://github.com/0xProject/0x-monorepo/tree/development/packages/sol-trace) documentation! Sol-trace gives you a human-readable error stack trace when a revert happens in your Solidity code.

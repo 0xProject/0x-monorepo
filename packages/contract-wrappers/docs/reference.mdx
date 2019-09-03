@@ -1,185 +1,18 @@
-# Class: ContractWrappers
 
-The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
-
-### Hierarchy
-
-* **ContractWrappers**
-
-
-### Constructors
-
-##  constructer
-
-\+ **new ContractWrappers**(`supportedProvider`: `SupportedProvider`, `config`: [ContractWrappersConfig](#interface-contractwrappersconfig)): *[ContractWrappers](#class-contractwrappers)*
-
-*Defined in [contract_wrappers.ts:78](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L78)*
-
-Instantiates a new ContractWrappers instance.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`supportedProvider` | `SupportedProvider` | The Provider instance you would like the contract-wrappers library to use for interacting with                      the Ethereum network. |
-`config` | [ContractWrappersConfig](#interface-contractwrappersconfig) | The configuration object. Look up the type for the description. |
-
-**Returns:** *[ContractWrappers](#class-contractwrappers)*
-
-An instance of the ContractWrappers class.
-
-### Properties
-
-##  contractAddresses
-
-• **contractAddresses**: *`ContractAddresses`*
-
-*Defined in [contract_wrappers.ts:41](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L41)*
-
-An index of the default contract addresses for this network.
-
-___
-
-##  coordinator
-
-• **coordinator**: *[CoordinatorWrapper](#class-coordinatorwrapper)*
-
-*Defined in [contract_wrappers.ts:76](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L76)*
-
-An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
-
-___
-
-##  dutchAuction
-
-• **dutchAuction**: *`DutchAuctionContract`*
-
-*Defined in [contract_wrappers.ts:72](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L72)*
-
-An instance of the DutchAuctionContract class containing methods for interacting with any DutchAuction smart contract.
-
-___
-
-##  erc20Proxy
-
-• **erc20Proxy**: *`ERC20ProxyContract`*
-
-*Defined in [contract_wrappers.ts:50](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L50)*
-
-An instance of the ERC20ProxyContract class containing methods for interacting with the
-erc20Proxy smart contract.
-
-___
-
-##  erc721Proxy
-
-• **erc721Proxy**: *`ERC721ProxyContract`*
-
-*Defined in [contract_wrappers.ts:55](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L55)*
-
-An instance of the ERC721ProxyContract class containing methods for interacting with the
-erc721Proxy smart contract.
-
-___
-
-##  exchange
-
-• **exchange**: *`ExchangeContract`*
-
-*Defined in [contract_wrappers.ts:45](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L45)*
-
-An instance of the ExchangeContract class containing methods for interacting with the 0x Exchange smart contract.
-
-___
-
-##  forwarder
-
-• **forwarder**: *`ForwarderContract`*
-
-*Defined in [contract_wrappers.ts:64](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L64)*
-
-An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
-
-___
-
-##  orderValidator
-
-• **orderValidator**: *`OrderValidatorContract`*
-
-*Defined in [contract_wrappers.ts:68](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L68)*
-
-An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
-
-___
-
-##  weth9
-
-• **weth9**: *`WETH9Contract`*
-
-*Defined in [contract_wrappers.ts:60](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L60)*
-
-An instance of the WETH9Contract class containing methods for interacting with the
-WETH9 smart contract.
-
-### Methods
-
-##  getAbiDecoder
-
-▸ **getAbiDecoder**(): *`AbiDecoder`*
-
-*Defined in [contract_wrappers.ts:147](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L147)*
-
-Get the abi decoder instance currently used by contract-wrappers
-
-**Returns:** *`AbiDecoder`*
-
-AbiDecoder instance
-
-___
-
-##  getProvider
-
-▸ **getProvider**(): *`SupportedProvider`*
-
-*Defined in [contract_wrappers.ts:140](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L140)*
-
-Get the provider instance currently used by contract-wrappers
-
-**Returns:** *`SupportedProvider`*
-
-Web3 provider instance
-
-___
-
-##  unsubscribeAll
-
-▸ **unsubscribeAll**(): *void*
-
-*Defined in [contract_wrappers.ts:130](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/contract_wrappers.ts#L130)*
-
-Unsubscribes from all subscriptions for all contracts.
-
-**Returns:** *void*
-
-<hr />
 
 # Class: CoordinatorWrapper
 
 This class includes all the functionality related to filling or cancelling orders through
 the 0x V2 Coordinator extension contract.
 
-### Hierarchy
 
-* **CoordinatorWrapper**
+##   Constructors
 
 
-### Constructors
 
-##  constructer
+\+ **new CoordinatorWrapper**(`provider`: `SupportedProvider`, `networkId`: number, `address?`: undefined | string, `exchangeAddress?`: undefined | string, `registryAddress?`: undefined | string): *[CoordinatorWrapper](#class-coordinatorwrapper)*
 
-\+ **new CoordinatorWrapper**(`web3Wrapper`: `Web3Wrapper`, `networkId`: number, `address?`: undefined | string, `exchangeAddress?`: undefined | string, `registryAddress?`: undefined | string): *[CoordinatorWrapper](#class-coordinatorwrapper)*
-
-*Defined in [coordinator_wrapper.ts:43](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L43)*
+*Defined in [coordinator_wrapper.ts:43](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L43)*
 
 Instantiate CoordinatorWrapper
 
@@ -187,7 +20,7 @@ Instantiate CoordinatorWrapper
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`web3Wrapper` | `Web3Wrapper` | Web3Wrapper instance to use. |
+`provider` | `SupportedProvider` | - |
 `networkId` | number | Desired networkId. |
 `address?` | undefined \| string | The address of the Coordinator contract. If undefined, will default to the known address corresponding to the networkId. |
 `exchangeAddress?` | undefined \| string | The address of the Exchange contract. If undefined, will default to the known address corresponding to the networkId. |
@@ -195,53 +28,53 @@ Name | Type | Description |
 
 **Returns:** *[CoordinatorWrapper](#class-coordinatorwrapper)*
 
-### Properties
+## Properties
 
-##  abi
+###  abi
 
 • **abi**: *`ContractAbi`* =  Coordinator.compilerOutput.abi
 
-*Defined in [coordinator_wrapper.ts:34](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L34)*
+*Defined in [coordinator_wrapper.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L34)*
 
 ___
 
-##  address
+###  address
 
 • **address**: *string*
 
-*Defined in [coordinator_wrapper.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L36)*
+*Defined in [coordinator_wrapper.ts:36](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L36)*
 
 ___
 
-##  exchangeAddress
+###  exchangeAddress
 
 • **exchangeAddress**: *string*
 
-*Defined in [coordinator_wrapper.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L37)*
+*Defined in [coordinator_wrapper.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L37)*
 
 ___
 
-##  networkId
+###  networkId
 
 • **networkId**: *number*
 
-*Defined in [coordinator_wrapper.ts:35](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L35)*
+*Defined in [coordinator_wrapper.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L35)*
 
 ___
 
-##  registryAddress
+###  registryAddress
 
 • **registryAddress**: *string*
 
-*Defined in [coordinator_wrapper.ts:38](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L38)*
+*Defined in [coordinator_wrapper.ts:38](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L38)*
 
-### Methods
+## Methods
 
-##  assertValidCoordinatorApprovalsOrThrowAsync
+###  assertValidCoordinatorApprovalsOrThrowAsync
 
 ▸ **assertValidCoordinatorApprovalsOrThrowAsync**(`transaction`: `ZeroExTransaction`, `txOrigin`: string, `transactionSignature`: string, `approvalExpirationTimeSeconds`: `BigNumber`[], `approvalSignatures`: string[]): *`Promise<void>`*
 
-*Defined in [coordinator_wrapper.ts:637](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L637)*
+*Defined in [coordinator_wrapper.ts:637](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L637)*
 
 Validates that the 0x transaction has been approved by all of the feeRecipients that correspond to each order in the transaction's Exchange calldata.
 Throws an error if the transaction approvals are not valid. Will not detect failures that would occur when the transaction is executed on the Exchange contract.
@@ -260,11 +93,11 @@ Name | Type | Description |
 
 ___
 
-##  batchFillOrKillOrdersAsync
+###  batchFillOrKillOrdersAsync
 
 ▸ **batchFillOrKillOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:273](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L273)*
+*Defined in [coordinator_wrapper.ts:273](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L273)*
 
 Batch version of fillOrKillOrderAsync. Executes multiple fills atomically in a single transaction.
 
@@ -283,11 +116,11 @@ Transaction hash.
 
 ___
 
-##  batchFillOrdersAsync
+###  batchFillOrdersAsync
 
 ▸ **batchFillOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:203](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L203)*
+*Defined in [coordinator_wrapper.ts:203](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L203)*
 
 Batch version of fillOrderAsync. Executes multiple fills atomically in a single transaction.
 Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
@@ -311,11 +144,11 @@ Transaction hash.
 
 ___
 
-##  batchFillOrdersNoThrowAsync
+###  batchFillOrdersNoThrowAsync
 
 ▸ **batchFillOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmounts`: `BigNumber`[], `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:238](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L238)*
+*Defined in [coordinator_wrapper.ts:238](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L238)*
 
 No throw version of batchFillOrdersAsync
 
@@ -334,11 +167,11 @@ Transaction hash.
 
 ___
 
-##  batchHardCancelOrdersAsync
+###  batchHardCancelOrdersAsync
 
 ▸ **batchHardCancelOrdersAsync**(`orders`: `SignedOrder`[], `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:568](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L568)*
+*Defined in [coordinator_wrapper.ts:568](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L568)*
 
 Batch version of hardCancelOrderAsync. Cancels orders on-chain by submitting an Ethereum transaction.
 Executes multiple cancels atomically in a single transaction.
@@ -356,11 +189,11 @@ Transaction hash.
 
 ___
 
-##  batchSoftCancelOrdersAsync
+###  batchSoftCancelOrdersAsync
 
 ▸ **batchSoftCancelOrdersAsync**(`orders`: `SignedOrder`[]): *`Promise<CoordinatorServerCancellationResponse[]>`*
 
-*Defined in [coordinator_wrapper.ts:482](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L482)*
+*Defined in [coordinator_wrapper.ts:482](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L482)*
 
 Batch version of softCancelOrderAsync. Requests multiple soft cancels
 
@@ -376,11 +209,11 @@ CoordinatorServerCancellationResponse. See [Cancellation Response](https://githu
 
 ___
 
-##  fillOrKillOrderAsync
+###  fillOrKillOrderAsync
 
 ▸ **fillOrKillOrderAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:166](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L166)*
+*Defined in [coordinator_wrapper.ts:166](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L166)*
 
 Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
 the fill order is abandoned.
@@ -400,11 +233,11 @@ Transaction hash.
 
 ___
 
-##  fillOrderAsync
+###  fillOrderAsync
 
 ▸ **fillOrderAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:101](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L101)*
+*Defined in [coordinator_wrapper.ts:101](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L101)*
 
 Fills a signed order with an amount denominated in baseUnits of the taker asset. Under-the-hood, this
 method uses the `feeRecipientAddress` of the order to look up the coordinator server endpoint registered in the
@@ -427,11 +260,11 @@ Transaction hash.
 
 ___
 
-##  fillOrderNoThrowAsync
+###  fillOrderNoThrowAsync
 
 ▸ **fillOrderNoThrowAsync**(`signedOrder`: `SignedOrder`, `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:133](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L133)*
+*Defined in [coordinator_wrapper.ts:133](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L133)*
 
 No-throw version of fillOrderAsync. This version will not throw if the fill fails. This allows the caller to save gas at the expense of not knowing the reason the fill failed.
 
@@ -450,11 +283,11 @@ Transaction hash.
 
 ___
 
-##  getSignerAddressAsync
+###  getSignerAddressAsync
 
 ▸ **getSignerAddressAsync**(`hash`: string, `signature`: string): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:669](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L669)*
+*Defined in [coordinator_wrapper.ts:669](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L669)*
 
 Recovers the address of a signer given a hash and signature.
 
@@ -471,11 +304,11 @@ Signer address.
 
 ___
 
-##  hardCancelOrderAsync
+###  hardCancelOrderAsync
 
 ▸ **hardCancelOrderAsync**(`order`: `Order` | `SignedOrder`, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:536](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L536)*
+*Defined in [coordinator_wrapper.ts:536](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L536)*
 
 Cancels an order on-chain by submitting an Ethereum transaction.
 
@@ -492,11 +325,11 @@ Transaction hash.
 
 ___
 
-##  hardCancelOrdersUpToAsync
+###  hardCancelOrdersUpToAsync
 
 ▸ **hardCancelOrdersUpToAsync**(`targetOrderEpoch`: `BigNumber`, `senderAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:603](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L603)*
+*Defined in [coordinator_wrapper.ts:603](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L603)*
 
 Cancels orders on-chain by submitting an Ethereum transaction.
 Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
@@ -516,11 +349,11 @@ Transaction hash.
 
 ___
 
-##  marketBuyOrdersAsync
+###  marketBuyOrdersAsync
 
 ▸ **marketBuyOrdersAsync**(`signedOrders`: `SignedOrder`[], `makerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:313](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L313)*
+*Defined in [coordinator_wrapper.ts:313](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L313)*
 
 Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
 Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
@@ -544,11 +377,11 @@ Transaction hash.
 
 ___
 
-##  marketBuyOrdersNoThrowAsync
+###  marketBuyOrdersNoThrowAsync
 
 ▸ **marketBuyOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `makerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:384](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L384)*
+*Defined in [coordinator_wrapper.ts:384](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L384)*
 
 No throw version of marketBuyOrdersAsync
 
@@ -567,11 +400,11 @@ Transaction hash.
 
 ___
 
-##  marketSellOrdersAsync
+###  marketSellOrdersAsync
 
 ▸ **marketSellOrdersAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:351](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L351)*
+*Defined in [coordinator_wrapper.ts:351](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L351)*
 
 Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
 Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
@@ -595,11 +428,11 @@ Transaction hash.
 
 ___
 
-##  marketSellOrdersNoThrowAsync
+###  marketSellOrdersNoThrowAsync
 
 ▸ **marketSellOrdersNoThrowAsync**(`signedOrders`: `SignedOrder`[], `takerAssetFillAmount`: `BigNumber`, `takerAddress`: string, `orderTransactionOpts`: [OrderTransactionOpts](#interface-ordertransactionopts)): *`Promise<string>`*
 
-*Defined in [coordinator_wrapper.ts:417](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L417)*
+*Defined in [coordinator_wrapper.ts:417](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L417)*
 
 No throw version of marketSellOrdersAsync
 
@@ -618,11 +451,11 @@ Transaction hash.
 
 ___
 
-##  softCancelOrderAsync
+###  softCancelOrderAsync
 
 ▸ **softCancelOrderAsync**(`order`: `Order` | `SignedOrder`): *`Promise<CoordinatorServerCancellationResponse>`*
 
-*Defined in [coordinator_wrapper.ts:447](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/coordinator_wrapper.ts#L447)*
+*Defined in [coordinator_wrapper.ts:447](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/coordinator_wrapper.ts#L447)*
 
 Soft cancel a given order.
 Soft cancels are recorded only on coordinator operator servers and do not involve an Ethereum transaction.
@@ -642,22 +475,16 @@ CoordinatorServerCancellationResponse. See [Cancellation Response](https://githu
 
 # Class: IWalletContract
 
-### Hierarchy
 
-* `BaseContract`
-
-  * **IWalletContract**
+##   Constructors
 
 
-### Constructors
-
-##  constructer
 
 \+ **new IWalletContract**(`address`: string, `supportedProvider`: `SupportedProvider`, `txDefaults?`: `Partial<TxData>`, `logDecodeDependencies?`: undefined | object): *[IWalletContract](#class-iwalletcontract)*
 
 *Overrides void*
 
-*Defined in [generated-wrappers/i_wallet.ts:206](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L206)*
+*Defined in [generated-wrappers/i_wallet.ts:206](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L206)*
 
 **Parameters:**
 
@@ -670,9 +497,9 @@ Name | Type |
 
 **Returns:** *[IWalletContract](#class-iwalletcontract)*
 
-### Properties
+## Properties
 
-##  abi
+###  abi
 
 • **abi**: *`ContractAbi`*
 
@@ -682,7 +509,7 @@ Name | Type |
 
 ___
 
-##  address
+###  address
 
 • **address**: *string*
 
@@ -692,7 +519,7 @@ ___
 
 ___
 
-##  constructerArgs
+Args
 
 • **constructorArgs**: *any[]*
 
@@ -702,7 +529,7 @@ ___
 
 ___
 
-##  contractName
+###  contractName
 
 • **contractName**: *string*
 
@@ -710,13 +537,13 @@ ___
 
 
 
-### Methods
+## Methods
 
-## `Static` ABI
+### `Static` ABI
 
 ▸ **ABI**(): *`ContractAbi`*
 
-*Defined in [generated-wrappers/i_wallet.ts:179](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L179)*
+*Defined in [generated-wrappers/i_wallet.ts:179](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L179)*
 
 **Returns:** *`ContractAbi`*
 
@@ -724,11 +551,11 @@ The contract ABI
 
 ___
 
-## `Static` deployAsync
+### `Static` deployAsync
 
 ▸ **deployAsync**(`bytecode`: string, `abi`: `ContractAbi`, `supportedProvider`: `SupportedProvider`, `txDefaults`: `Partial<TxData>`, `logDecodeDependencies`: object): *`Promise<IWalletContract>`*
 
-*Defined in [generated-wrappers/i_wallet.ts:137](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L137)*
+*Defined in [generated-wrappers/i_wallet.ts:137](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L137)*
 
 **Parameters:**
 
@@ -744,11 +571,11 @@ Name | Type |
 
 ___
 
-## `Static` deployFrom0xArtifactAsync
+### `Static` deployFrom0xArtifactAsync
 
 ▸ **deployFrom0xArtifactAsync**(`artifact`: `ContractArtifact` | `SimpleContractArtifact`, `supportedProvider`: `SupportedProvider`, `txDefaults`: `Partial<TxData>`, `logDecodeDependencies`: object): *`Promise<IWalletContract>`*
 
-*Defined in [generated-wrappers/i_wallet.ts:112](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L112)*
+*Defined in [generated-wrappers/i_wallet.ts:112](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L112)*
 
 **Parameters:**
 
@@ -763,7 +590,7 @@ Name | Type |
 
 ___
 
-## `Static` strictArgumentEncodingCheck
+### `Static` strictArgumentEncodingCheck
 
 ▸ **strictArgumentEncodingCheck**(`inputAbi`: `DataItem`[], `args`: any[]): *string*
 
@@ -780,21 +607,21 @@ Name | Type |
 
 **Returns:** *string*
 
-### Object literals
+## Object literals
 
-##  isValidSignature
+###  isValidSignature
 
-## ▪ **isValidSignature**: *object*
+#### ▪ **isValidSignature**: *object*
 
-*Defined in [generated-wrappers/i_wallet.ts:33](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L33)*
+*Defined in [generated-wrappers/i_wallet.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L33)*
 
 Verifies that a signature is valid.
 
-##  callAsync
+####  callAsync
 
 ▸ **callAsync**(`hash`: string, `signature`: string, `callData`: `Partial<CallData>`, `defaultBlock?`: `BlockParam`): *`Promise<string>`*
 
-*Defined in [generated-wrappers/i_wallet.ts:42](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L42)*
+*Defined in [generated-wrappers/i_wallet.ts:42](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L42)*
 
 Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
 Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -813,11 +640,11 @@ Name | Type | Default | Description |
 
 Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidWalletSignature(bytes32,address,bytes)&quot;))
 
-##  getABIDecodedReturnData
+####  getABIDecodedReturnData
 
 ▸ **getABIDecodedReturnData**(`returnData`: string): *string*
 
-*Defined in [generated-wrappers/i_wallet.ts:104](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L104)*
+*Defined in [generated-wrappers/i_wallet.ts:104](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L104)*
 
 **Parameters:**
 
@@ -827,11 +654,11 @@ Name | Type |
 
 **Returns:** *string*
 
-##  getABIDecodedTransactionData
+####  getABIDecodedTransactionData
 
 ▸ **getABIDecodedTransactionData**(`callData`: string): *string*
 
-*Defined in [generated-wrappers/i_wallet.ts:97](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L97)*
+*Defined in [generated-wrappers/i_wallet.ts:97](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L97)*
 
 **Parameters:**
 
@@ -841,11 +668,11 @@ Name | Type |
 
 **Returns:** *string*
 
-##  getABIEncodedTransactionData
+####  getABIEncodedTransactionData
 
 ▸ **getABIEncodedTransactionData**(`hash`: string, `signature`: string): *string*
 
-*Defined in [generated-wrappers/i_wallet.ts:87](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L87)*
+*Defined in [generated-wrappers/i_wallet.ts:87](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/generated-wrappers/i_wallet.ts#L87)*
 
 Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
 sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
@@ -864,20 +691,14 @@ Name | Type | Description |
 
 # Class: CoordinatorServerError
 
-### Hierarchy
 
-* `Error`
-
-  * **CoordinatorServerError**
+##   Constructors
 
 
-### Constructors
-
-##  constructer
 
 \+ **new CoordinatorServerError**(`message`: [CoordinatorServerErrorMsg](#enumeration-coordinatorservererrormsg), `approvedOrders`: `SignedOrder`[], `cancellations`: [CoordinatorServerCancellationResponse](#interface-coordinatorservercancellationresponse)[], `errors`: [CoordinatorServerResponse](#interface-coordinatorserverresponse)[]): *[CoordinatorServerError](#class-coordinatorservererror)*
 
-*Defined in [utils/coordinator_server_types.ts:43](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L43)*
+*Defined in [utils/coordinator_server_types.ts:43](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L43)*
 
 **Parameters:**
 
@@ -890,43 +711,43 @@ Name | Type |
 
 **Returns:** *[CoordinatorServerError](#class-coordinatorservererror)*
 
-### Properties
+## Properties
 
-## `Optional` approvedOrders
+#### `Optional` approvedOrders
 
 • **approvedOrders**? : *`SignedOrder`[]* =  []
 
-*Defined in [utils/coordinator_server_types.ts:41](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L41)*
+*Defined in [utils/coordinator_server_types.ts:41](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L41)*
 
 ___
 
-## `Optional` cancellations
+### `Optional` cancellations
 
 • **cancellations**? : *[CoordinatorServerCancellationResponse](#interface-coordinatorservercancellationresponse)[]* =  []
 
-*Defined in [utils/coordinator_server_types.ts:42](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L42)*
+*Defined in [utils/coordinator_server_types.ts:42](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L42)*
 
 ___
 
-##  errors
+###  errors
 
 • **errors**: *[CoordinatorServerResponse](#interface-coordinatorserverresponse)[]*
 
-*Defined in [utils/coordinator_server_types.ts:43](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L43)*
+*Defined in [utils/coordinator_server_types.ts:43](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L43)*
 
 ___
 
-##  message
+###  message
 
 • **message**: *[CoordinatorServerErrorMsg](#enumeration-coordinatorservererrormsg)*
 
 *Overrides void*
 
-*Defined in [utils/coordinator_server_types.ts:40](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L40)*
+*Defined in [utils/coordinator_server_types.ts:40](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L40)*
 
 ___
 
-##  name
+###  name
 
 • **name**: *string*
 
@@ -936,7 +757,7 @@ ___
 
 ___
 
-## `Optional` stack
+### `Optional` stack
 
 • **stack**? : *undefined | string*
 
@@ -948,7 +769,7 @@ ___
 
 ___
 
-## `Static` Error
+### `Static` Error
 
 ▪ **Error**: *`ErrorConstructor`*
 
@@ -959,297 +780,326 @@ ___
 # Enumeration: ContractError
 
 
-### Enumeration members
+##  Enumeration members
 
-##  ContractNotDeployedOnNetwork
+###  ContractNotDeployedOnNetwork
 
 • **ContractNotDeployedOnNetwork**: = "CONTRACT_NOT_DEPLOYED_ON_NETWORK"
 
-*Defined in [types.ts:32](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L32)*
+*Defined in [types.ts:32](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L32)*
 
 ___
 
-##  ERC721NoApproval
+###  ERC721NoApproval
 
 • **ERC721NoApproval**: = "ERC_721_NO_APPROVAL"
 
-*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L42)*
+*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L42)*
 
 ___
 
-##  ERC721OwnerNotFound
+###  ERC721OwnerNotFound
 
 • **ERC721OwnerNotFound**: = "ERC_721_OWNER_NOT_FOUND"
 
-*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L41)*
+*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L41)*
 
 ___
 
-##  InsufficientAllowanceForTransfer
+###  InsufficientAllowanceForTransfer
 
 • **InsufficientAllowanceForTransfer**: = "INSUFFICIENT_ALLOWANCE_FOR_TRANSFER"
 
-*Defined in [types.ts:33](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L33)*
+*Defined in [types.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L33)*
 
 ___
 
-##  InsufficientBalanceForTransfer
+###  InsufficientBalanceForTransfer
 
 • **InsufficientBalanceForTransfer**: = "INSUFFICIENT_BALANCE_FOR_TRANSFER"
 
-*Defined in [types.ts:34](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L34)*
+*Defined in [types.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L34)*
 
 ___
 
-##  InsufficientEthBalanceForDeposit
+###  InsufficientEthBalanceForDeposit
 
 • **InsufficientEthBalanceForDeposit**: = "INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT"
 
-*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L35)*
+*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L35)*
 
 ___
 
-##  InsufficientWEthBalanceForWithdrawal
+###  InsufficientWEthBalanceForWithdrawal
 
 • **InsufficientWEthBalanceForWithdrawal**: = "INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL"
 
-*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L36)*
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L36)*
 
 ___
 
-##  InvalidJump
+###  InvalidJump
 
 • **InvalidJump**: = "INVALID_JUMP"
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L37)*
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L37)*
 
 ___
 
-##  OutOfGas
+###  OutOfGas
 
 • **OutOfGas**: = "OUT_OF_GAS"
 
-*Defined in [types.ts:38](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L38)*
+*Defined in [types.ts:38](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L38)*
 
 ___
 
-##  SignatureRequestDenied
+###  SignatureRequestDenied
 
 • **SignatureRequestDenied**: = "SIGNATURE_REQUEST_DENIED"
 
-*Defined in [types.ts:43](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L43)*
+*Defined in [types.ts:43](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L43)*
 
 ___
 
-##  SubscriptionAlreadyPresent
+###  SubscriptionAlreadyPresent
 
 • **SubscriptionAlreadyPresent**: = "SUBSCRIPTION_ALREADY_PRESENT"
 
-*Defined in [types.ts:40](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L40)*
+*Defined in [types.ts:40](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L40)*
 
 ___
 
-##  SubscriptionNotFound
+###  SubscriptionNotFound
 
 • **SubscriptionNotFound**: = "SUBSCRIPTION_NOT_FOUND"
 
-*Defined in [types.ts:39](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L39)*
+*Defined in [types.ts:39](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L39)*
 
 <hr />
 
 # Enumeration: ForwarderError
 
 
-### Enumeration members
+##  Enumeration members
 
-##  CompleteFillFailed
+###  CompleteFillFailed
 
 • **CompleteFillFailed**: = "COMPLETE_FILL_FAILED"
 
-*Defined in [types.ts:28](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L28)*
+*Defined in [types.ts:28](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L28)*
 
 <hr />
 
 # Enumeration: OrderStatus
 
 
-### Enumeration members
+##  Enumeration members
 
-##  Cancelled
+###  Cancelled
 
 • **Cancelled**:
 
-*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L91)*
+*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L91)*
 
 ___
 
-##  Expired
+###  Expired
 
 • **Expired**:
 
-*Defined in [types.ts:89](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L89)*
+*Defined in [types.ts:89](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L89)*
 
 ___
 
-##  Fillable
+###  Fillable
 
 • **Fillable**:
 
-*Defined in [types.ts:88](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L88)*
+*Defined in [types.ts:88](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L88)*
 
 ___
 
-##  FullyFilled
+###  FullyFilled
 
 • **FullyFilled**:
 
-*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L90)*
+*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L90)*
 
 ___
 
-##  Invalid
+###  Invalid
 
 • **Invalid**: = 0
 
-*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L85)*
+*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L85)*
 
 ___
 
-##  InvalidMakerAssetAmount
+###  InvalidMakerAssetAmount
 
 • **InvalidMakerAssetAmount**:
 
-*Defined in [types.ts:86](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L86)*
+*Defined in [types.ts:86](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L86)*
 
 ___
 
-##  InvalidTakerAssetAmount
+###  InvalidTakerAssetAmount
 
 • **InvalidTakerAssetAmount**:
 
-*Defined in [types.ts:87](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L87)*
+*Defined in [types.ts:87](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L87)*
 
 <hr />
 
 # Enumeration: CoordinatorServerErrorMsg
 
 
-### Enumeration members
+##  Enumeration members
 
-##  CancellationFailed
+###  CancellationFailed
 
 • **CancellationFailed**: = "Failed to cancel with some coordinator server(s). See errors for more info. See cancellations for successful cancellations."
 
-*Defined in [utils/coordinator_server_types.ts:59](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L59)*
+*Defined in [utils/coordinator_server_types.ts:59](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L59)*
 
 ___
 
-##  FillFailed
+###  FillFailed
 
 • **FillFailed**: = "Failed to obtain approval signatures from some coordinator server(s). See errors for more info. Current transaction has been abandoned but you may resubmit with only approvedOrders (a new ZeroEx transaction will have to be signed)."
 
-*Defined in [utils/coordinator_server_types.ts:60](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L60)*
+*Defined in [utils/coordinator_server_types.ts:60](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L60)*
 
 <hr />
 
 # Enumeration: ContractError
 
 
-### Enumeration members
+##  Enumeration members
 
-##  ContractNotDeployedOnNetwork
+###  ContractNotDeployedOnNetwork
 
 • **ContractNotDeployedOnNetwork**: = "CONTRACT_NOT_DEPLOYED_ON_NETWORK"
 
-*Defined in [utils/decorators.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L4)*
+*Defined in [utils/decorators.ts:4](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L4)*
 
 ___
 
-##  ERC721NoApproval
+###  ERC721NoApproval
 
 • **ERC721NoApproval**: = "ERC_721_NO_APPROVAL"
 
-*Defined in [utils/decorators.ts:14](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L14)*
+*Defined in [utils/decorators.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L14)*
 
 ___
 
-##  ERC721OwnerNotFound
+###  ERC721OwnerNotFound
 
 • **ERC721OwnerNotFound**: = "ERC_721_OWNER_NOT_FOUND"
 
-*Defined in [utils/decorators.ts:13](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L13)*
+*Defined in [utils/decorators.ts:13](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L13)*
 
 ___
 
-##  InsufficientAllowanceForTransfer
+###  InsufficientAllowanceForTransfer
 
 • **InsufficientAllowanceForTransfer**: = "INSUFFICIENT_ALLOWANCE_FOR_TRANSFER"
 
-*Defined in [utils/decorators.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L5)*
+*Defined in [utils/decorators.ts:5](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L5)*
 
 ___
 
-##  InsufficientBalanceForTransfer
+###  InsufficientBalanceForTransfer
 
 • **InsufficientBalanceForTransfer**: = "INSUFFICIENT_BALANCE_FOR_TRANSFER"
 
-*Defined in [utils/decorators.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L6)*
+*Defined in [utils/decorators.ts:6](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L6)*
 
 ___
 
-##  InsufficientEthBalanceForDeposit
+###  InsufficientEthBalanceForDeposit
 
 • **InsufficientEthBalanceForDeposit**: = "INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT"
 
-*Defined in [utils/decorators.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L7)*
+*Defined in [utils/decorators.ts:7](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L7)*
 
 ___
 
-##  InsufficientWEthBalanceForWithdrawal
+###  InsufficientWEthBalanceForWithdrawal
 
 • **InsufficientWEthBalanceForWithdrawal**: = "INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL"
 
-*Defined in [utils/decorators.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L8)*
+*Defined in [utils/decorators.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L8)*
 
 ___
 
-##  InvalidJump
+###  InvalidJump
 
 • **InvalidJump**: = "INVALID_JUMP"
 
-*Defined in [utils/decorators.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L9)*
+*Defined in [utils/decorators.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L9)*
 
 ___
 
-##  OutOfGas
+###  OutOfGas
 
 • **OutOfGas**: = "OUT_OF_GAS"
 
-*Defined in [utils/decorators.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L10)*
+*Defined in [utils/decorators.ts:10](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L10)*
 
 ___
 
-##  SignatureRequestDenied
+###  SignatureRequestDenied
 
 • **SignatureRequestDenied**: = "SIGNATURE_REQUEST_DENIED"
 
-*Defined in [utils/decorators.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L15)*
+*Defined in [utils/decorators.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L15)*
 
 ___
 
-##  SubscriptionAlreadyPresent
+###  SubscriptionAlreadyPresent
 
 • **SubscriptionAlreadyPresent**: = "SUBSCRIPTION_ALREADY_PRESENT"
 
-*Defined in [utils/decorators.ts:12](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L12)*
+*Defined in [utils/decorators.ts:12](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L12)*
 
 ___
 
-##  SubscriptionNotFound
+###  SubscriptionNotFound
 
 • **SubscriptionNotFound**: = "SUBSCRIPTION_NOT_FOUND"
 
-*Defined in [utils/decorators.ts:11](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/decorators.ts#L11)*
+*Defined in [utils/decorators.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L11)*
+
+<hr />
+
+
+
+
+##  Functions
+
+###  getAbiEncodedTransactionData
+
+▸ **getAbiEncodedTransactionData**<**K**>(`contractInstance`: `ExchangeContract`, `methodName`: `K`, ...`params`: any[]): *string*
+
+*Defined in [utils/getAbiEncodedTransactionData.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/getAbiEncodedTransactionData.ts#L8)*
+
+Returns the ABI encoded transaction hash for a given method and arguments
+
+**Type parameters:**
+
+▪ **K**: *keyof ExchangeContract*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`contractInstance` | `ExchangeContract` | - |
+`methodName` | `K` | Must be a valid name of a function in the Solidity Exchange Contract |
+`...params` | any[] | The appropriate arguments for the method given, in order  |
+
+**Returns:** *string*
 
 <hr />
 
@@ -1260,167 +1110,120 @@ gasPrice: Gas price to use with every transaction
 contractAddresses: The address of all contracts to use. Defaults to the known addresses based on networkId.
 blockPollingIntervalMs: The interval to use for block polling in event watching methods (defaults to 1000)
 
-### Hierarchy
 
-* **ContractWrappersConfig**
+##   Properties
 
-
-### Properties
-
-## `Optional` blockPollingIntervalMs
+### `Optional` blockPollingIntervalMs
 
 • **blockPollingIntervalMs**? : *undefined | number*
 
-*Defined in [types.ts:56](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L56)*
+*Defined in [types.ts:56](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L56)*
 
 ___
 
-## `Optional` contractAddresses
+### `Optional` contractAddresses
 
 • **contractAddresses**? : *`ContractAddresses`*
 
-*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L55)*
+*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L55)*
 
 ___
 
-## `Optional` gasPrice
+### `Optional` gasPrice
 
 • **gasPrice**? : *`BigNumber`*
 
-*Defined in [types.ts:54](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L54)*
+*Defined in [types.ts:54](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L54)*
 
 ___
 
-##  networkId
+###  networkId
 
 • **networkId**: *number*
 
-*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L53)*
+*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L53)*
 
 <hr />
 
-# Interface: CoordinatorTransaction
 
-### Hierarchy
-
-* **CoordinatorTransaction**
-
-
-### Properties
-
-##  data
-
-• **data**: *string*
-
-*Defined in [types.ts:115](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L115)*
-
-___
-
-##  salt
-
-• **salt**: *`BigNumber`*
-
-*Defined in [types.ts:113](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L113)*
-
-___
-
-##  signerAddress
-
-• **signerAddress**: *string*
-
-*Defined in [types.ts:114](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L114)*
-
-<hr />
 
 # Interface: DecodedLogEvent <**ArgsType**>
 
-### Type parameters
+## Type parameters
 
 ▪ **ArgsType**: *`DecodedLogArgs`*
 
-### Hierarchy
 
-* **DecodedLogEvent**
+##   Properties
 
-
-### Properties
-
-##  isRemoved
+###  isRemoved
 
 • **isRemoved**: *boolean*
 
-*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L7)*
+*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L7)*
 
 ___
 
-##  log
+###  log
 
 • **log**: *`LogWithDecodedArgs<ArgsType>`*
 
-*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L8)*
+*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L8)*
 
 <hr />
 
 # Interface: IndexedFilterValues
 
-### Hierarchy
 
-* **IndexedFilterValues**
-
-
-### Hierarchy
+##  Hierarchy
 
 * **OrderAndTraderInfo**
 
 
-### Properties
+##  Properties
 
-##  orderInfo
+###  orderInfo
 
 • **orderInfo**: *[OrderInfo](#interface-orderinfo)*
 
-*Defined in [types.ts:106](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L106)*
+*Defined in [types.ts:106](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L106)*
 
 ___
 
-##  traderInfo
+###  traderInfo
 
 • **traderInfo**: *[TraderInfo](#interface-traderinfo)*
 
-*Defined in [types.ts:107](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L107)*
+*Defined in [types.ts:107](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L107)*
 
 <hr />
 
 # Interface: OrderInfo
 
-### Hierarchy
 
-* **OrderInfo**
+##   Properties
 
-
-### Properties
-
-##  orderHash
+###  orderHash
 
 • **orderHash**: *string*
 
-*Defined in [types.ts:80](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L80)*
+*Defined in [types.ts:80](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L80)*
 
 ___
 
-##  orderStatus
+###  orderStatus
 
 • **orderStatus**: *[OrderStatus](#enumeration-orderstatus)*
 
-*Defined in [types.ts:79](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L79)*
+*Defined in [types.ts:79](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L79)*
 
 ___
 
-##  orderTakerAssetFilledAmount
+###  orderTakerAssetFilledAmount
 
 • **orderTakerAssetFilledAmount**: *`BigNumber`*
 
-*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L81)*
+*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L81)*
 
 <hr />
 
@@ -1429,409 +1232,837 @@ ___
 shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
 broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
 
-### Hierarchy
 
-* [TransactionOpts](#interface-transactionopts)
+##   Properties
 
-  * **OrderTransactionOpts**
-
-
-### Properties
-
-## `Optional` gasLimit
+### `Optional` gasLimit
 
 • **gasLimit**? : *undefined | number*
 
 *Inherited from [TransactionOpts](#interface-transactionopts).[gasLimit](#optional-gaslimit)*
 
-*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L66)*
+*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L66)*
 
 ___
 
-## `Optional` gasPrice
+### `Optional` gasPrice
 
 • **gasPrice**? : *`BigNumber`*
 
 *Inherited from [TransactionOpts](#interface-transactionopts).[gasPrice](#optional-gasprice)*
 
-*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L65)*
+*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L65)*
 
 ___
 
-## `Optional` nonce
+### `Optional` nonce
 
 • **nonce**? : *undefined | number*
 
 *Inherited from [TransactionOpts](#interface-transactionopts).[nonce](#optional-nonce)*
 
-*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L67)*
+*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L67)*
 
 ___
 
-## `Optional` shouldValidate
+### `Optional` shouldValidate
 
 • **shouldValidate**? : *undefined | false | true*
 
-*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L75)*
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L75)*
 
 <hr />
 
-# Interface: TraderInfo
-
-### Hierarchy
-
-* **TraderInfo**
 
 
-### Properties
 
-##  makerAllowance
 
-• **makerAllowance**: *`BigNumber`*
+# Class: ContractWrappers
 
-*Defined in [types.ts:96](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L96)*
+The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
 
-___
 
-##  makerBalance
+##   Constructors
 
-• **makerBalance**: *`BigNumber`*
 
-*Defined in [types.ts:95](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L95)*
 
-___
+\+ **new ContractWrappers**(`supportedProvider`: `SupportedProvider`, `config`: [ContractWrappersConfig](#interface-contractwrappersconfig)): *[ContractWrappers](#class-contractwrappers)*
 
-##  makerZrxAllowance
+*Defined in [contract_wrappers.ts:78](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L78)*
 
-• **makerZrxAllowance**: *`BigNumber`*
+Instantiates a new ContractWrappers instance.
 
-*Defined in [types.ts:100](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L100)*
+**Parameters:**
 
-___
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | `SupportedProvider` | The Provider instance you would like the contract-wrappers library to use for interacting with                      the Ethereum network. |
+`config` | [ContractWrappersConfig](#interface-contractwrappersconfig) | The configuration object. Look up the type for the description. |
 
-##  makerZrxBalance
+**Returns:** *[ContractWrappers](#class-contractwrappers)*
 
-• **makerZrxBalance**: *`BigNumber`*
+An instance of the ContractWrappers class.
 
-*Defined in [types.ts:99](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L99)*
+## Properties
 
-___
+###  contractAddresses
 
-##  takerAllowance
+• **contractAddresses**: *`ContractAddresses`*
 
-• **takerAllowance**: *`BigNumber`*
+*Defined in [contract_wrappers.ts:41](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L41)*
 
-*Defined in [types.ts:98](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L98)*
+An index of the default contract addresses for this network.
 
 ___
 
-##  takerBalance
+###  coordinator
 
-• **takerBalance**: *`BigNumber`*
+• **coordinator**: *[CoordinatorWrapper](#class-coordinatorwrapper)*
 
-*Defined in [types.ts:97](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L97)*
+*Defined in [contract_wrappers.ts:76](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L76)*
 
-___
-
-##  takerZrxAllowance
-
-• **takerZrxAllowance**: *`BigNumber`*
-
-*Defined in [types.ts:102](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L102)*
+An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
 
 ___
 
-##  takerZrxBalance
+###  dutchAuction
 
-• **takerZrxBalance**: *`BigNumber`*
+• **dutchAuction**: *`DutchAuctionContract`*
 
-*Defined in [types.ts:101](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L101)*
+*Defined in [contract_wrappers.ts:72](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L72)*
 
-<hr />
-
-# Interface: TransactionOpts
-
-gasPrice: Gas price in Wei to use for a transaction
-gasLimit: The amount of gas to send with a transaction (in Gwei)
-nonce: The nonce to use for a transaction. If not specified, it defaults to the next incremented nonce.
-
-### Hierarchy
-
-* **TransactionOpts**
-
-  * [OrderTransactionOpts](#interface-ordertransactionopts)
-
-
-### Properties
-
-## `Optional` gasLimit
-
-• **gasLimit**? : *undefined | number*
-
-*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L66)*
+An instance of the DutchAuctionContract class containing methods for interacting with any DutchAuction smart contract.
 
 ___
 
-## `Optional` gasPrice
+###  erc20Proxy
 
-• **gasPrice**? : *`BigNumber`*
+• **erc20Proxy**: *`ERC20ProxyContract`*
 
-*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L65)*
+*Defined in [contract_wrappers.ts:50](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L50)*
 
-___
-
-## `Optional` nonce
-
-• **nonce**? : *undefined | number*
-
-*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L67)*
-
-<hr />
-
-# Interface: TxOpts
-
-### Hierarchy
-
-* **TxOpts**
-
-
-### Properties
-
-##  from
-
-• **from**: *string*
-
-*Defined in [types.ts:17](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L17)*
+An instance of the ERC20ProxyContract class containing methods for interacting with the
+erc20Proxy smart contract.
 
 ___
 
-## `Optional` gas
+###  erc721Proxy
 
-• **gas**? : *undefined | number*
+• **erc721Proxy**: *`ERC721ProxyContract`*
 
-*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L18)*
+*Defined in [contract_wrappers.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L55)*
 
-___
-
-## `Optional` gasPrice
-
-• **gasPrice**? : *`BigNumber`*
-
-*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L20)*
+An instance of the ERC721ProxyContract class containing methods for interacting with the
+erc721Proxy smart contract.
 
 ___
 
-## `Optional` value
+###  exchange
 
-• **value**? : *`BigNumber`*
+• **exchange**: *`ExchangeContract`*
 
-*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/types.ts#L19)*
+*Defined in [contract_wrappers.ts:45](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L45)*
+
+An instance of the ExchangeContract class containing methods for interacting with the 0x Exchange smart contract.
+
+___
+
+###  forwarder
+
+• **forwarder**: *`ForwarderContract`*
+
+*Defined in [contract_wrappers.ts:64](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L64)*
+
+An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
+
+___
+
+###  orderValidator
+
+• **orderValidator**: *`OrderValidatorContract`*
+
+*Defined in [contract_wrappers.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L68)*
+
+An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
+
+___
+
+###  weth9
+
+• **weth9**: *`WETH9Contract`*
+
+*Defined in [contract_wrappers.ts:60](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L60)*
+
+An instance of the WETH9Contract class containing methods for interacting with the
+WETH9 smart contract.
+
+## Methods
+
+###  getAbiDecoder
+
+▸ **getAbiDecoder**(): *`AbiDecoder`*
+
+*Defined in [contract_wrappers.ts:147](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L147)*
+
+Get the abi decoder instance currently used by contract-wrappers
+
+**Returns:** *`AbiDecoder`*
+
+AbiDecoder instance
+
+___
+
+###  getProvider
+
+▸ **getProvider**(): *`SupportedProvider`*
+
+*Defined in [contract_wrappers.ts:140](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L140)*
+
+Get the provider instance currently used by contract-wrappers
+
+**Returns:** *`SupportedProvider`*
+
+Web3 provider instance
+
+___
+
+###  unsubscribeAll
+
+▸ **unsubscribeAll**(): *void*
+
+*Defined in [contract_wrappers.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/contract_wrappers.ts#L130)*
+
+Unsubscribes from all subscriptions for all contracts.
+
+**Returns:** *void*
 
 <hr />
 
 # Interface: CoordinatorOutstandingFillSignatures
 
-### Hierarchy
 
-* **CoordinatorOutstandingFillSignatures**
+##   Properties
 
-
-### Properties
-
-##  approvalSignatures
+###  approvalSignatures
 
 • **approvalSignatures**: *string[]*
 
-*Defined in [utils/coordinator_server_types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L19)*
+*Defined in [utils/coordinator_server_types.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L19)*
 
 ___
 
-##  expirationTimeSeconds
+###  expirationTimeSeconds
 
 • **expirationTimeSeconds**: *`BigNumber`*
 
-*Defined in [utils/coordinator_server_types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L20)*
+*Defined in [utils/coordinator_server_types.ts:20](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L20)*
 
 ___
 
-##  orderHash
+###  orderHash
 
 • **orderHash**: *string*
 
-*Defined in [utils/coordinator_server_types.ts:18](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L18)*
+*Defined in [utils/coordinator_server_types.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L18)*
 
 ___
 
-##  takerAssetFillAmount
+###  takerAssetFillAmount
 
 • **takerAssetFillAmount**: *`BigNumber`*
 
-*Defined in [utils/coordinator_server_types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L21)*
+*Defined in [utils/coordinator_server_types.ts:21](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L21)*
 
 <hr />
 
 # Interface: CoordinatorServerApprovalRawResponse
 
-### Hierarchy
 
-* **CoordinatorServerApprovalRawResponse**
+##   Properties
 
-
-### Properties
-
-##  expirationTimeSeconds
+###  expirationTimeSeconds
 
 • **expirationTimeSeconds**: *`BigNumber`*
 
-*Defined in [utils/coordinator_server_types.ts:10](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L10)*
+*Defined in [utils/coordinator_server_types.ts:10](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L10)*
 
 ___
 
-##  signatures
+###  signatures
 
 • **signatures**: *string[]*
 
-*Defined in [utils/coordinator_server_types.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L9)*
+*Defined in [utils/coordinator_server_types.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L9)*
 
 <hr />
 
 # Interface: CoordinatorServerApprovalResponse
 
-### Hierarchy
 
-* **CoordinatorServerApprovalResponse**
+##   Properties
 
-
-### Properties
-
-##  expirationTimeSeconds
+###  expirationTimeSeconds
 
 • **expirationTimeSeconds**: *`BigNumber`[]*
 
-*Defined in [utils/coordinator_server_types.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L6)*
+*Defined in [utils/coordinator_server_types.ts:6](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L6)*
 
 ___
 
-##  signatures
+###  signatures
 
 • **signatures**: *string[]*
 
-*Defined in [utils/coordinator_server_types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L5)*
+*Defined in [utils/coordinator_server_types.ts:5](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L5)*
 
 <hr />
 
 # Interface: CoordinatorServerCancellationResponse
 
-### Hierarchy
 
-* **CoordinatorServerCancellationResponse**
+##   Properties
 
-
-### Properties
-
-##  cancellationSignatures
+###  cancellationSignatures
 
 • **cancellationSignatures**: *string[]*
 
-*Defined in [utils/coordinator_server_types.ts:15](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L15)*
+*Defined in [utils/coordinator_server_types.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L15)*
 
 ___
 
-##  outstandingFillSignatures
+###  outstandingFillSignatures
 
 • **outstandingFillSignatures**: *[CoordinatorOutstandingFillSignatures](#class-coordinatoroutstandingfillsignatures)[]*
 
-*Defined in [utils/coordinator_server_types.ts:14](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L14)*
+*Defined in [utils/coordinator_server_types.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L14)*
 
 <hr />
 
 # Interface: CoordinatorServerRequest
 
-### Hierarchy
 
-* **CoordinatorServerRequest**
+##   Properties
 
-
-### Properties
-
-##  signedTransaction
+###  signedTransaction
 
 • **signedTransaction**: *`SignedZeroExTransaction`*
 
-*Defined in [utils/coordinator_server_types.ts:35](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L35)*
+*Defined in [utils/coordinator_server_types.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L35)*
 
 ___
 
-##  txOrigin
+###  txOrigin
 
 • **txOrigin**: *string*
 
-*Defined in [utils/coordinator_server_types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L36)*
+*Defined in [utils/coordinator_server_types.ts:36](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L36)*
 
 <hr />
 
 # Interface: CoordinatorServerResponse
 
-### Hierarchy
 
-* **CoordinatorServerResponse**
+##   Properties
 
-
-### Properties
-
-## `Optional` body
+### `Optional` body
 
 • **body**? : *[CoordinatorServerCancellationResponse](_utils_coordinator_server_types_.coordinatorservercancellationresponse.md) | [CoordinatorServerApprovalRawResponse](#class-coordinatorserverapprovalrawresponse)*
 
-*Defined in [utils/coordinator_server_types.ts:27](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L27)*
+*Defined in [utils/coordinator_server_types.ts:27](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L27)*
 
 ___
 
-##  coordinatorOperator
+###  coordinatorOperator
 
 • **coordinatorOperator**: *string*
 
-*Defined in [utils/coordinator_server_types.ts:30](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L30)*
+*Defined in [utils/coordinator_server_types.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L30)*
 
 ___
 
-## `Optional` error
+### `Optional` error
 
 • **error**? : *any*
 
-*Defined in [utils/coordinator_server_types.ts:28](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L28)*
+*Defined in [utils/coordinator_server_types.ts:28](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L28)*
 
 ___
 
-##  isError
+###  isError
 
 • **isError**: *boolean*
 
-*Defined in [utils/coordinator_server_types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L25)*
+*Defined in [utils/coordinator_server_types.ts:25](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L25)*
 
 ___
 
-## `Optional` orders
+### `Optional` orders
 
 • **orders**? : *`Array<SignedOrder | Order>`*
 
-*Defined in [utils/coordinator_server_types.ts:31](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L31)*
+*Defined in [utils/coordinator_server_types.ts:31](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L31)*
 
 ___
 
-##  request
+###  request
 
 • **request**: *[CoordinatorServerRequest](#class-coordinatorserverrequest)*
 
-*Defined in [utils/coordinator_server_types.ts:29](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L29)*
+*Defined in [utils/coordinator_server_types.ts:29](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L29)*
 
 ___
 
-##  status
+###  status
 
 • **status**: *number*
 
-*Defined in [utils/coordinator_server_types.ts:26](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L26)*
+*Defined in [utils/coordinator_server_types.ts:26](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/coordinator_server_types.ts#L26)*
 
 <hr />
+
+
+
+
+##  Type aliases
+
+###  AsyncMethod
+
+Ƭ **AsyncMethod**: *function*
+
+*Defined in [utils/decorators.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L18)*
+
+#### Type declaration:
+
+▸ (...`args`: any[]): *`Promise<any>`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`...args` | any[] |
+
+___
+
+###  SyncMethod
+
+Ƭ **SyncMethod**: *function*
+
+*Defined in [utils/decorators.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L19)*
+
+#### Type declaration:
+
+▸ (...`args`: any[]): *any*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`...args` | any[] |
+
+## Object literals
+
+### `Const` decorators
+
+#### ▪ **decorators**: *object*
+
+*Defined in [utils/decorators.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L130)*
+
+####  asyncZeroExErrorHandler
+
+• **asyncZeroExErrorHandler**: *`asyncErrorHandlingDecorator`* =  asyncErrorHandlerFactory(zeroExErrorTransformer)
+
+*Defined in [utils/decorators.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L131)*
+
+####  syncZeroExErrorHandler
+
+• **syncZeroExErrorHandler**: *`syncErrorHandlingDecorator`* =  syncErrorHandlerFactory(zeroExErrorTransformer)
+
+*Defined in [utils/decorators.ts:132](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/decorators.ts#L132)*
+
+<hr />
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr />
+
+
+
+
+##  Object literals
+
+#### `Const` ContractWrappersConfigSchema
+
+#### ▪ **ContractWrappersConfigSchema**: *object*
+
+*Defined in [schemas/contract_wrappers_config_schema.ts:1](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/contract_wrappers_config_schema.ts#L1)*
+
+####  id
+
+• **id**: *string* = "/ContractWrappersConfig"
+
+*Defined in [schemas/contract_wrappers_config_schema.ts:2](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/contract_wrappers_config_schema.ts#L2)*
+
+####  required
+
+• **required**: *string[]* =  ['networkId']
+
+*Defined in [schemas/contract_wrappers_config_schema.ts:24](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/contract_wrappers_config_schema.ts#L24)*
+
+####  type
+
+• **type**: *string* = "object"
+
+*Defined in [schemas/contract_wrappers_config_schema.ts:23](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/contract_wrappers_config_schema.ts#L23)*
+
+▪ **properties**: *object*
+
+*Defined in [schemas/contract_wrappers_config_schema.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/contract_wrappers_config_schema.ts#L3)*
+
+* **blockPollingIntervalMs**: *object*
+
+  * **type**: *string* = "number"
+
+* **contractAddresses**: *object*
+
+  * **type**: *string* = "object"
+
+  * **properties**: *object*
+
+    * **assetProxyOwner**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **erc20Proxy**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **erc721Proxy**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **etherToken**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **exchange**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **forwarder**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **orderValidator**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+    * **zrxToken**: *object*
+
+      * **$ref**: *string* = "/addressSchema"
+
+* **gasPrice**: *object*
+
+  * **$ref**: *string* = "/numberSchema"
+
+* **networkId**: *object*
+
+  * **type**: *string* = "number"
+
+<hr />
+
+
+
+
+##  Object literals
+
+#### `Const` orderTxOptsSchema
+
+#### ▪ **orderTxOptsSchema**: *object*
+
+*Defined in [schemas/order_tx_opts_schema.ts:1](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/order_tx_opts_schema.ts#L1)*
+
+####  allOf
+
+• **allOf**: *object[]* =  [{ $ref: '/TxOpts' }]
+
+*Defined in [schemas/order_tx_opts_schema.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/order_tx_opts_schema.ts#L3)*
+
+####  id
+
+• **id**: *string* = "/OrderTxOpts"
+
+*Defined in [schemas/order_tx_opts_schema.ts:2](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/order_tx_opts_schema.ts#L2)*
+
+####  type
+
+• **type**: *string* = "object"
+
+*Defined in [schemas/order_tx_opts_schema.ts:7](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/order_tx_opts_schema.ts#L7)*
+
+▪ **properties**: *object*
+
+*Defined in [schemas/order_tx_opts_schema.ts:4](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/order_tx_opts_schema.ts#L4)*
+
+* **shouldValidate**: *object*
+
+  * **type**: *string* = "boolean"
+
+<hr />
+
+
+
+
+##  Object literals
+
+#### `Const` txOptsSchema
+
+#### ▪ **txOptsSchema**: *object*
+
+*Defined in [schemas/tx_opts_schema.ts:1](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/tx_opts_schema.ts#L1)*
+
+####  id
+
+• **id**: *string* = "/TxOpts"
+
+*Defined in [schemas/tx_opts_schema.ts:2](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/tx_opts_schema.ts#L2)*
+
+####  type
+
+• **type**: *string* = "object"
+
+*Defined in [schemas/tx_opts_schema.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/tx_opts_schema.ts#L8)*
+
+▪ **properties**: *object*
+
+*Defined in [schemas/tx_opts_schema.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/schemas/tx_opts_schema.ts#L3)*
+
+* **gasLimit**: *object*
+
+  * **type**: *string* = "number"
+
+* **gasPrice**: *object*
+
+  * **$ref**: *string* = "/numberSchema"
+
+* **nonce**: *object*
+
+  * **type**: *string* = "number"
+
+<hr />
+
+
+
+
+##  Type aliases
+
+####  EventCallback
+
+Ƭ **EventCallback**: *function*
+
+*Defined in [types.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/types.ts#L11)*
+
+##### Type declaration:
+
+▸ (`err`: null | `Error`, `log?`: [DecodedLogEvent](#interface-decodedlogevent)‹*`ArgsType`*›): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | null \| `Error` |
+`log?` | [DecodedLogEvent](#interface-decodedlogevent)‹*`ArgsType`*› |
+
+<hr />
+
+
+
+
+##  Object literals
+
+#### `Const` assert
+
+#### ▪ **assert**: *object*
+
+*Defined in [utils/assert.ts:13](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L13)*
+
+####  allMakerAssetDatasAreErc20Token
+
+▸ **allMakerAssetDatasAreErc20Token**(`orders`: `Order`[], `tokenAddress`: string): *void*
+
+*Defined in [utils/assert.ts:61](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L61)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+`tokenAddress` | string |
+
+**Returns:** *void*
+
+####  allTakerAddressesAreNull
+
+▸ **allTakerAddressesAreNull**(`orders`: `Order`[]): *void*
+
+*Defined in [utils/assert.ts:58](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L58)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+
+**Returns:** *void*
+
+####  allTakerAssetDatasAreErc20Token
+
+▸ **allTakerAssetDatasAreErc20Token**(`orders`: `Order`[], `tokenAddress`: string): *void*
+
+*Defined in [utils/assert.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L68)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+`tokenAddress` | string |
+
+**Returns:** *void*
+
+####  feeOrdersCanBeUsedForForwarderContract
+
+▸ **feeOrdersCanBeUsedForForwarderContract**(`orders`: `Order`[], `zrxTokenAddress`: string, `etherTokenAddress`: string): *void*
+
+*Defined in [utils/assert.ts:52](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L52)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+`zrxTokenAddress` | string |
+`etherTokenAddress` | string |
+
+**Returns:** *void*
+
+####  isSenderAddressAsync
+
+▸ **isSenderAddressAsync**(`variableName`: string, `senderAddressHex`: string, `web3Wrapper`: `Web3Wrapper`): *`Promise<void>`*
+
+*Defined in [utils/assert.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L34)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`variableName` | string |
+`senderAddressHex` | string |
+`web3Wrapper` | `Web3Wrapper` |
+
+**Returns:** *`Promise<void>`*
+
+####  isValidSignatureAsync
+
+▸ **isValidSignatureAsync**(`supportedProvider`: `SupportedProvider`, `orderHash`: string, `signature`: string, `signerAddress`: string): *`Promise<void>`*
+
+*Defined in [utils/assert.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L15)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`supportedProvider` | `SupportedProvider` |
+`orderHash` | string |
+`signature` | string |
+`signerAddress` | string |
+
+**Returns:** *`Promise<void>`*
+
+####  isValidSubscriptionToken
+
+▸ **isValidSubscriptionToken**(`variableName`: string, `subscriptionToken`: string): *void*
+
+*Defined in [utils/assert.ts:29](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L29)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`variableName` | string |
+`subscriptionToken` | string |
+
+**Returns:** *void*
+
+####  ordersCanBeUsedForForwarderContract
+
+▸ **ordersCanBeUsedForForwarderContract**(`orders`: `Order`[], `etherTokenAddress`: string): *void*
+
+*Defined in [utils/assert.ts:46](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L46)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+`etherTokenAddress` | string |
+
+**Returns:** *void*
+
+####  ordersHaveAtMostOneUniqueValueForProperty
+
+▸ **ordersHaveAtMostOneUniqueValueForProperty**(`orders`: `Order`[], `propertyName`: string, `value?`: any): *void*
+
+*Defined in [utils/assert.ts:79](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/assert.ts#L79)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `Order`[] |
+`propertyName` | string |
+`value?` | any |
+
+**Returns:** *void*
+
+<hr />
+
+
+
+
+##  Functions
+
+####  _getDefaultContractAddresses
+
+▸ **_getDefaultContractAddresses**(`networkId`: number): *`ContractAddresses`*
+
+*Defined in [utils/contract_addresses.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-wrappers/src/utils/contract_addresses.ts#L8)*
+
+Returns the default contract addresses for the given networkId or throws with
+a context-specific error message if the networkId is not recognized.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`networkId` | number |
+
+**Returns:** *`ContractAddresses`*
+
+<hr />
+
+
+
+<hr /> 
 

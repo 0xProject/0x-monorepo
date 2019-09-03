@@ -288,8 +288,8 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = sra_client.DefaultApi()
-maker_asset_proxy_id = 0xf47261b0 # str | The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721). (optional)
-taker_asset_proxy_id = 0x02571792 # str | The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721). (optional)
+maker_asset_proxy_id = 0xf47261b0 # str | The maker [asset proxy id](https://0x.org/docs/tools/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721). (optional)
+taker_asset_proxy_id = 0x02571792 # str | The taker asset [asset proxy id](https://0x.org/docs/tools/0x.js#types-AssetProxyId) (example: \"0xf47261b0\" for ERC20, \"0x02571792\" for ERC721). (optional)
 maker_asset_address = 0xe41d2489571d322189246dafa5ebde1f4699f498 # str | The contract address for the maker asset. (optional)
 taker_asset_address = 0xe41d2489571d322189246dafa5ebde1f4699f498 # str | The contract address for the taker asset. (optional)
 exchange_address = 0xe41d2489571d322189246dafa5ebde1f4699f498 # str | Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format) (optional)
@@ -316,8 +316,8 @@ except ApiException as e:
 
 | Name                      | Type      | Description                                                                                                                                                                       | Notes                      |
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| **maker_asset_proxy_id**  | **str**   | The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).               | [optional]                 |
-| **taker_asset_proxy_id**  | **str**   | The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).         | [optional]                 |
+| **maker_asset_proxy_id**  | **str**   | The maker [asset proxy id](https://0x.org/docs/tools/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).                | [optional]                 |
+| **taker_asset_proxy_id**  | **str**   | The taker asset [asset proxy id](https://0x.org/docs/tools/0x.js#types-AssetProxyId) (example: \&quot;0xf47261b0\&quot; for ERC20, \&quot;0x02571792\&quot; for ERC721).          | [optional]                 |
 | **maker_asset_address**   | **str**   | The contract address for the maker asset.                                                                                                                                         | [optional]                 |
 | **taker_asset_address**   | **str**   | The contract address for the taker asset.                                                                                                                                         | [optional]                 |
 | **exchange_address**      | **str**   | Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)     | [optional]                 |

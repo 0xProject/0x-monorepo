@@ -1,175 +1,868 @@
-# Enumeration: ContractName
+# Interface: GanacheProvider
 
 
-### Enumeration members
+##   Methods
 
-##  AccountLevels
+###  sendAsync
 
-• **AccountLevels**: = "AccountLevels"
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L26)*
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L14)*
 
-___
+**Parameters:**
 
-##  Arbitrage
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
 
-• **Arbitrage**: = "Arbitrage"
-
-*Defined in [types.ts:28](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L28)*
-
-___
-
-##  DummyToken
-
-• **DummyToken**: = "DummyToken"
-
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L23)*
-
-___
-
-##  EtherDelta
-
-• **EtherDelta**: = "EtherDelta"
-
-*Defined in [types.ts:27](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L27)*
-
-___
-
-##  Exchange
-
-• **Exchange**: = "Exchange"
-
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L21)*
-
-___
-
-##  MultiSigWalletWithTimeLock
-
-• **MultiSigWalletWithTimeLock**: = "MultiSigWalletWithTimeLock"
-
-*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L20)*
-
-___
-
-##  MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress
-
-• **MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress**: = "MultiSigWalletWithTimeLockExceptRemoveAuthorizedAddress"
-
-*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L25)*
-
-___
-
-##  TokenRegistry
-
-• **TokenRegistry**: = "TokenRegistry"
-
-*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L19)*
-
-___
-
-##  TokenTransferProxy
-
-• **TokenTransferProxy**: = "TokenTransferProxy"
-
-*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L18)*
-
-___
-
-##  WETH9
-
-• **WETH9**: = "WETH9"
-
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L24)*
-
-___
-
-##  ZRXToken
-
-• **ZRXToken**: = "ZRXToken"
-
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L22)*
+**Returns:** *void*
 
 <hr />
 
-# Interface: ERC20Token
-
-### Hierarchy
-
-* **ERC20Token**
 
 
-### Properties
 
-## `Optional` address
 
-• **address**? : *undefined | string*
 
-*Defined in [types.ts:4](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L4)*
 
-___
 
-##  decimals
 
-• **decimals**: *`BigNumber`*
+# Interface: ContractAddresses
 
-*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L7)*
+
+##   Properties
+
+###  assetProxyOwner
+
+• **assetProxyOwner**: *string*
+
+*Defined in [contract-addresses/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L9)*
 
 ___
 
-##  ipfsHash
+###  coordinator
 
-• **ipfsHash**: *string*
+• **coordinator**: *string*
 
-*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L8)*
-
-___
-
-##  name
-
-• **name**: *string*
-
-*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L5)*
+*Defined in [contract-addresses/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L14)*
 
 ___
 
-##  swarmHash
+###  coordinatorRegistry
 
-• **swarmHash**: *string*
+• **coordinatorRegistry**: *string*
 
-*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L9)*
+*Defined in [contract-addresses/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L13)*
 
 ___
 
-##  symbol
+###  devUtils
 
-• **symbol**: *string*
+• **devUtils**: *string*
 
-*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L6)*
+*Defined in [contract-addresses/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L18)*
+
+___
+
+###  dutchAuction
+
+• **dutchAuction**: *string*
+
+*Defined in [contract-addresses/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L12)*
+
+___
+
+###  erc1155Proxy
+
+• **erc1155Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L17)*
+
+___
+
+###  erc20Proxy
+
+• **erc20Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:4](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L4)*
+
+___
+
+###  erc721Proxy
+
+• **erc721Proxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:5](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L5)*
+
+___
+
+###  etherToken
+
+• **etherToken**: *string*
+
+*Defined in [contract-addresses/src/index.ts:7](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L7)*
+
+___
+
+###  exchange
+
+• **exchange**: *string*
+
+*Defined in [contract-addresses/src/index.ts:8](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L8)*
+
+___
+
+###  forwarder
+
+• **forwarder**: *string*
+
+*Defined in [contract-addresses/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L10)*
+
+___
+
+###  multiAssetProxy
+
+• **multiAssetProxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L15)*
+
+___
+
+###  orderValidator
+
+• **orderValidator**: *string*
+
+*Defined in [contract-addresses/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L11)*
+
+___
+
+###  staticCallProxy
+
+• **staticCallProxy**: *string*
+
+*Defined in [contract-addresses/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L16)*
+
+___
+
+###  zrxToken
+
+• **zrxToken**: *string*
+
+*Defined in [contract-addresses/src/index.ts:6](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L6)*
 
 <hr />
 
-# Interface: ERC721Token
-
-### Hierarchy
-
-* **ERC721Token**
 
 
-### Properties
 
-##  name
 
-• **name**: *string*
 
-*Defined in [types.ts:13](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L13)*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: EIP1193Provider
+
+
+##   Properties
+
+###  isEIP1193
+
+• **isEIP1193**: *boolean*
+
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L73)*
+
+## Methods
+
+###  on
+
+▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
+
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L75)*
+
+**Parameters:**
+
+▪ **event**: *[EIP1193Event](#eip1193event)*
+
+▪ **listener**: *function*
+
+▸ (`result`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`result` | any |
+
+**Returns:** *this*
 
 ___
 
-##  symbol
+###  send
 
-• **symbol**: *string*
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/migrations/src/types.ts#L14)*
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L74)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: JSONRPCRequestPayload
+
+
+##   Properties
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L324)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L325)*
+
+___
+
+###  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L323)*
+
+___
+
+###  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L322)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+
+##   Properties
+
+###  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+###  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L329)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+
+##   Properties
+
+### `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L337)*
+
+___
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L335)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+###  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L334)*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: TxData
+
+
+##   Properties
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[data](#optional-data)*
+
+*Defined in [ethereum-types/src/index.ts:387](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L387)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Defined in [ethereum-types/src/index.ts:392](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L392)*
+
+___
+
+### `Optional` gas
+
+• **gas**? : *number | string | `BigNumber`*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[gas](#optional-gas)*
+
+*Defined in [ethereum-types/src/index.ts:385](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L385)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *number | string | `BigNumber`*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[gasPrice](#optional-gasprice)*
+
+*Defined in [ethereum-types/src/index.ts:386](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L386)*
+
+___
+
+### `Optional` nonce
+
+• **nonce**? : *undefined | number*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[nonce](#optional-nonce)*
+
+*Defined in [ethereum-types/src/index.ts:388](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L388)*
+
+___
+
+### `Optional` to
+
+• **to**? : *undefined | string*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[to](#optional-to)*
+
+*Defined in [ethereum-types/src/index.ts:383](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L383)*
+
+___
+
+### `Optional` value
+
+• **value**? : *number | string | `BigNumber`*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[value](#optional-value)*
+
+*Defined in [ethereum-types/src/index.ts:384](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L384)*
+
+<hr />
+
+# Interface: TxDataPayable
+
+
+##   Properties
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[data](#optional-data)*
+
+*Defined in [ethereum-types/src/index.ts:387](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L387)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Inherited from [TxData](_ethereum_types_src_index_.txdata.md).[from](#from)*
+
+*Defined in [ethereum-types/src/index.ts:392](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L392)*
+
+___
+
+### `Optional` gas
+
+• **gas**? : *number | string | `BigNumber`*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[gas](#optional-gas)*
+
+*Defined in [ethereum-types/src/index.ts:385](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L385)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *number | string | `BigNumber`*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[gasPrice](#optional-gasprice)*
+
+*Defined in [ethereum-types/src/index.ts:386](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L386)*
+
+___
+
+### `Optional` nonce
+
+• **nonce**? : *undefined | number*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[nonce](#optional-nonce)*
+
+*Defined in [ethereum-types/src/index.ts:388](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L388)*
+
+___
+
+### `Optional` to
+
+• **to**? : *undefined | string*
+
+*Inherited from [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[to](#optional-to)*
+
+*Defined in [ethereum-types/src/index.ts:383](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L383)*
+
+___
+
+### `Optional` value
+
+• **value**? : *`BigNumber`*
+
+*Overrides [CallTxDataBase](_ethereum_types_src_index_.calltxdatabase.md).[value](#optional-value)*
+
+*Defined in [ethereum-types/src/index.ts:434](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L434)*
+
+<hr />
+
+# Interface: Web3JsV1Provider
+
+Web3.js version 1 provider interface
+This provider interface was implemented in the pre-1.0Beta releases for Web3.js.
+This interface allowed sending synchonous requests, support for which was later dropped.
+
+
+##   Methods
+
+###  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L45)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+
+**Returns:** *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
+
+___
+
+###  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L44)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV2Provider
+
+Web3.js version 2 provider interface
+This provider interface was used in a couple of Web3.js 1.0 beta releases
+before the first attempts to conform to EIP1193
+
+
+##   Methods
+
+###  send
+
+▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L54)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+<hr />
+
+# Interface: Web3JsV3Provider
+
+Web3.js version 3 provider interface
+This provider interface was implemented with the hopes for conforming to the EIP1193 spec,
+however it does not conform entirely.
+
+
+##   Methods
+
+###  send
+
+▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
+
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L63)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`method` | string |
+`params?` | any[] |
+
+**Returns:** *`Promise<any>`*
+
+<hr />
+
+# Interface: ZeroExProvider
+
+The interface for the provider used internally by 0x libraries
+Any property we use from any SupportedProvider should we explicitly
+add here
+
+
+##   Properties
+
+### `Optional` isMetaMask
+
+• **isMetaMask**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L31)*
+
+___
+
+### `Optional` isParity
+
+• **isParity**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L32)*
+
+___
+
+### `Optional` isZeroExProvider
+
+• **isZeroExProvider**? : *undefined | false | true*
+
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L30)*
+
+## Methods
+
+### `Optional` enable
+
+▸ **enable**(): *`Promise<void>`*
+
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L34)*
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  sendAsync
+
+▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
+
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L35)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`payload` | [JSONRPCRequestPayload](#class-jsonrpcrequestpayload) |
+`callback` | [JSONRPCErrorCallback](#jsonrpcerrorcallback) |
+
+**Returns:** *void*
+
+___
+
+### `Optional` stop
+
+▸ **stop**(): *void*
+
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L33)*
+
+**Returns:** *void*
+
+<hr />
+
+
+
+
+##  Functions
+
+###  runMigrationsAsync
+
+▸ **runMigrationsAsync**(`supportedProvider`: [SupportedProvider](#supportedprovider), `txDefaults`: `TxData`): *`Promise<ContractAddresses>`*
+
+*Defined in [migrations/src/migration.ts:20](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/migrations/src/migration.ts#L20)*
+
+Creates and deploys all the contracts that are required for the latest
+version of the 0x protocol.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to. |
+`txDefaults` | `TxData` | Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter). |
+
+**Returns:** *`Promise<ContractAddresses>`*
+
+The addresses of the contracts that were deployed.
+
+___
+
+###  runMigrationsOnceAsync
+
+▸ **runMigrationsOnceAsync**(`provider`: `Web3ProviderEngine`, `txDefaults`: `TxData`): *`Promise<ContractAddresses>`*
+
+*Defined in [migrations/src/migration.ts:296](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/migrations/src/migration.ts#L296)*
+
+Exactly like runMigrationsAsync but will only run the migrations the first
+time it is called. Any subsequent calls will return the cached contract
+addresses.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`provider` | `Web3ProviderEngine` | Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to. |
+`txDefaults` | `TxData` | Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter). |
+
+**Returns:** *`Promise<ContractAddresses>`*
+
+The addresses of the contracts that were deployed.
+
+<hr />
+
+
+
+
+##  Functions
+
+###  getContractAddressesForNetworkOrThrow
+
+▸ **getContractAddressesForNetworkOrThrow**(`networkId`: [NetworkId](#enumeration-networkid)): *[ContractAddresses](#interface-contractaddresses)*
+
+*Defined in [contract-addresses/src/index.ts:128](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/contract-addresses/src/index.ts#L128)*
+
+Used to get addresses of contracts that have been deployed to either the
+Ethereum mainnet or a supported testnet. Throws if there are no known
+contracts deployed on the corresponding network.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`networkId` | [NetworkId](#enumeration-networkid) | The desired networkId. |
+
+**Returns:** *[ContractAddresses](#interface-contractaddresses)*
+
+The set of addresses for contracts which have been deployed on the
+given networkId.
+
+<hr />
+
+
+
+
+##  Type aliases
+
+
+
+
+
+
+
+
+
+
+
+###  EIP1193Event
+
+Ƭ **EIP1193Event**: *"accountsChanged" | "networkChanged" | "close" | "connect" | "notification"*
+
+*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L70)*
+
+Interface for providers that conform to EIP 1193
+Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
+
+___
+
+
+
+
+
+
+
+###  JSONRPCErrorCallback
+
+Ƭ **JSONRPCErrorCallback**: *function*
+
+*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L3)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `result?`: [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`result?` | [JSONRPCResponsePayload](#interface-jsonrpcresponsepayload) |
+
+___
+
+
+
+
+
+
+
+
+
+
+
+###  SupportedProvider
+
+Ƭ **SupportedProvider**: *[Web3JsProvider](_ethereum_types_src_index_.md#web3jsprovider) | [GanacheProvider](#interface-ganacheprovider) | [EIP1193Provider](#interface-eip1193provider) | [ZeroExProvider](#interface-zeroexprovider)*
+
+*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L9)*
+
+Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
+Read more about Providers in the guides section of the 0x docs.
+
+___
+
+
+
+
+
+###  Web3JsProvider
+
+Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
+
+*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L11)*
 
 <hr />
 

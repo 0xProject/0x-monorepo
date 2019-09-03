@@ -4,7 +4,7 @@ export type JSONRPCErrorCallback = (err: Error | null, result?: JSONRPCResponseP
 
 /**
  * Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
- * Read more about Providers in the 0x wiki.
+ * Read more about Providers in the guides section of the 0x docs.
  */
 export type SupportedProvider = Web3JsProvider | GanacheProvider | EIP1193Provider | ZeroExProvider;
 
@@ -726,4 +726,9 @@ export interface CompilerOptions {
     useDockerisedSolc?: boolean;
     isOfflineMode?: boolean;
     solcVersion?: string;
+}
+
+export interface BlockRange {
+    fromBlock: BlockParam;
+    toBlock: BlockParam;
 } // tslint:disable-line:max-file-line-count

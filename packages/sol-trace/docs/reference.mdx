@@ -1,24 +1,380 @@
+
+
+# Class: AbstractArtifactAdapter
+
+
+##   Methods
+
+### `Abstract` collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts:4](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-tracing-utils/src/artifact_adapters/abstract_artifact_adapter.ts#L4)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+# Class: SolCompilerArtifactAdapter
+
+
+##   Constructors
+
+
+
+\+ **new SolCompilerArtifactAdapter**(`artifactsPath?`: undefined | string, `sourcesPath?`: undefined | string): *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L18)*
+
+Instantiates a SolCompilerArtifactAdapter
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`artifactsPath?` | undefined \| string | Path to your artifacts directory |
+`sourcesPath?` | undefined \| string | Path to your contract sources directory  |
+
+**Returns:** *[SolCompilerArtifactAdapter](#class-solcompilerartifactadapter)*
+
+## Methods
+
+###  collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts:44](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-tracing-utils/src/artifact_adapters/sol_compiler_artifact_adapter.ts#L44)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+# Class: TruffleArtifactAdapter
+
+
+##   Constructors
+
+
+
+\+ **new TruffleArtifactAdapter**(`projectRoot`: string, `solcVersion`: string): *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:29](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L29)*
+
+Instantiates a TruffleArtifactAdapter
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`projectRoot` | string | Path to the truffle project's root directory |
+`solcVersion` | string | Solidity version with which to compile all the contracts  |
+
+**Returns:** *[TruffleArtifactAdapter](#class-truffleartifactadapter)*
+
+## Methods
+
+###  collectContractsDataAsync
+
+▸ **collectContractsDataAsync**(): *`Promise<ContractData[]>`*
+
+*Overrides [AbstractArtifactAdapter](_sol_tracing_utils_src_artifact_adapters_abstract_artifact_adapter_.abstractartifactadapter.md).[collectContractsDataAsync](#abstract-collectcontractsdataasync)*
+
+*Defined in [sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts:40](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-tracing-utils/src/artifact_adapters/truffle_artifact_adapter.ts#L40)*
+
+**Returns:** *`Promise<ContractData[]>`*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##  Type aliases
+
+###  Callback
+
+Ƭ **Callback**: *function*
+
+*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L131)*
+
+#### Type declaration:
+
+▸ (): *void*
+
+___
+
+
+
+###  ErrorCallback
+
+Ƭ **ErrorCallback**: *function*
+
+*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L130)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `data?`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`data?` | any |
+
+___
+
+
+
+###  NextCallback
+
+Ƭ **NextCallback**: *function*
+
+*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L133)*
+
+#### Type declaration:
+
+▸ (`callback?`: [OnNextCompleted](#onnextcompleted)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`callback?` | [OnNextCompleted](#onnextcompleted) |
+
+___
+
+###  OnNextCompleted
+
+Ƭ **OnNextCompleted**: *function*
+
+*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L132)*
+
+#### Type declaration:
+
+▸ (`err`: `Error` | null, `result`: any, `cb`: [Callback](#callback)): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`result` | any |
+`cb` | [Callback](#callback) |
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: JSONRPCRequestPayload
+
+
+##   Properties
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L324)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L325)*
+
+___
+
+###  method
+
+• **method**: *string*
+
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L323)*
+
+___
+
+###  params
+
+• **params**: *any[]*
+
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L322)*
+
+<hr />
+
+# Interface: JSONRPCResponseError
+
+
+##   Properties
+
+###  code
+
+• **code**: *number*
+
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L330)*
+
+___
+
+###  message
+
+• **message**: *string*
+
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L329)*
+
+<hr />
+
+# Interface: JSONRPCResponsePayload
+
+
+##   Properties
+
+### `Optional` error
+
+• **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
+
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L337)*
+
+___
+
+###  id
+
+• **id**: *number*
+
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L335)*
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L336)*
+
+___
+
+###  result
+
+• **result**: *any*
+
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L334)*
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Class: RevertTraceSubprovider
 
 This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
 It is used to report call stack traces whenever a revert occurs.
 
-### Hierarchy
 
-* `TraceCollectionSubprovider`
-
-  * **RevertTraceSubprovider**
+##   Constructors
 
 
-### Constructors
-
-##  constructer
 
 \+ **new RevertTraceSubprovider**(`artifactAdapter`: `AbstractArtifactAdapter`, `defaultFromAddress`: string, `isVerbose`: boolean): *[RevertTraceSubprovider](#class-reverttracesubprovider)*
 
 *Overrides void*
 
-*Defined in [revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/6474a4e08/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
+*Defined in [sol-trace/src/revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
 
 Instantiates a RevertTraceSubprovider instance
 
@@ -32,15 +388,15 @@ Name | Type | Default | Description |
 
 **Returns:** *[RevertTraceSubprovider](#class-reverttracesubprovider)*
 
-### Methods
+## Methods
 
-##  emitPayloadAsync
+###  emitPayloadAsync
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
 
 
-
+Defined in subproviders/lib/src/subproviders/subprovider.d.ts:25
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -58,15 +414,15 @@ JSON RPC response payload
 
 ___
 
-##  handleRequest
+###  handleRequest
 
-▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: `NextCallback`, `_end`: `ErrorCallback`): *`Promise<void>`*
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [NextCallback](#nextcallback), `_end`: [ErrorCallback](#errorcallback)): *`Promise<void>`*
 
 
 
 *Overrides void*
 
-
+Defined in sol-tracing-utils/lib/src/trace_collection_subprovider.d.ts:42
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -77,14 +433,14 @@ turn to handle a JSON RPC request.
 Name | Type | Description |
 ------ | ------ | ------ |
 `payload` | `JSONRPCRequestPayload` | JSON RPC payload |
-`next` | `NextCallback` | Callback to call if this subprovider decides not to handle the request |
-`_end` | `ErrorCallback` | Callback to call if subprovider handled the request and wants to pass back the request.  |
+`next` | [NextCallback](#nextcallback) | Callback to call if this subprovider decides not to handle the request |
+`_end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
 
 **Returns:** *`Promise<void>`*
 
 ___
 
-##  setEngine
+###  setEngine
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
@@ -92,7 +448,7 @@ ___
 
 *Overrides void*
 
-
+Defined in sol-tracing-utils/lib/src/trace_collection_subprovider.d.ts:49
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -108,13 +464,13 @@ Name | Type | Description |
 
 ___
 
-##  start
+###  start
 
 ▸ **start**(): *void*
 
 
 
-
+Defined in sol-tracing-utils/lib/src/trace_collection_subprovider.d.ts:29
 
 Starts trace collection
 
@@ -122,17 +478,220 @@ Starts trace collection
 
 ___
 
-##  stop
+###  stop
 
 ▸ **stop**(): *void*
 
 
 
-
+Defined in sol-tracing-utils/lib/src/trace_collection_subprovider.d.ts:33
 
 Stops trace collection
 
 **Returns:** *void*
 
 <hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Interface: JSONRPCRequestPayloadWithMethod
+
+
+##   Properties
+
+###  id
+
+• **id**: *number*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:262
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:263
+
+___
+
+###  method
+
+• **method**: *string*
+
+*Overrides void*
+
+*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L136)*
+
+___
+
+###  params
+
+• **params**: *any[]*
+
+
+
+Defined in ethereum-types/lib/index.d.ts:260
+
+<hr />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##  Type aliases
+
+
+
+
+
+
+
+
+
+
+
+
+##  Type aliases
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr /> 
 

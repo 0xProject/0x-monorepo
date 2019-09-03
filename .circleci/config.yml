@@ -28,7 +28,7 @@ jobs:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
-            - run: yarn build:ci:no_website
+            - run: yarn build:ci
             - run: yarn build:ts
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
@@ -38,16 +38,6 @@ jobs:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
                   path: ~/repo/packages/abi-gen-wrappers/generated_docs
-    build-website:
-        resource_class: medium+
-        docker:
-            - image: nikolaik/python-nodejs:python3.7-nodejs8
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
         resource_class: medium+
         docker:
@@ -382,9 +372,6 @@ workflows:
     main:
         jobs:
             - build
-            - build-website:
-                  requires:
-                      - build
             - test-contracts-ganache:
                   requires:
                       - build

@@ -1,6 +1,6 @@
 {
     "name": "@0x/asset-buyer",
-    "version": "6.1.12",
+    "version": "6.1.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -21,8 +21,8 @@
         "clean": "shx rm -rf lib test_temp",
         "diff_docs": "git diff --exit-code ./docs",
         "s3:sync_md_docs": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
-        "docs:md": "ts-doc-gen --sourceDir=./src --output=./docs --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
+        "docs:md": "ts-doc-gen --sourceDir='$PROJECT_FILES' --output=$MD_FILE_DIR --fileExtension=mdx --tsconfig=./typedoc-tsconfig.json",
+        "docs:json": "typedoc --excludePrivate --excludeExternals --excludeProtected --ignoreCompilerErrors --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
         "postpublish": {
@@ -40,21 +40,21 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
     "dependencies": {
-        "@0x/assert": "^2.1.4",
-        "@0x/connect": "^5.0.17",
-        "@0x/contract-wrappers": "^11.1.0",
-        "@0x/json-schemas": "^4.0.0",
-        "@0x/order-utils": "^8.3.0",
-        "@0x/subproviders": "^5.0.2",
-        "@0x/types": "^2.4.1",
-        "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.5.0",
-        "@0x/web3-wrapper": "^6.0.11",
-        "ethereum-types": "^2.1.4",
+        "@0x/assert": "^2.1.5",
+        "@0x/connect": "^5.0.18",
+        "@0x/contract-wrappers": "^12.0.0",
+        "@0x/json-schemas": "^4.0.1",
+        "@0x/order-utils": "^8.3.1",
+        "@0x/subproviders": "^5.0.3",
+        "@0x/types": "^2.4.2",
+        "@0x/typescript-typings": "^4.2.5",
+        "@0x/utils": "^4.5.1",
+        "@0x/web3-wrapper": "^6.0.12",
+        "ethereum-types": "^2.1.5",
         "lodash": "^4.17.11"
     },
     "devDependencies": {
-        "@0x/ts-doc-gen": "^0.0.17",
+        "@0x/ts-doc-gen": "^0.0.21",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
