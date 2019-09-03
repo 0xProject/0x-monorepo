@@ -178,9 +178,7 @@ blockchainTests.resets.only('Testing Rewards', () => {
             const rewardForBothDelegators = StakingWrapper.toBaseUnitAmount(20);
             await finalizer.finalizeAsync([{reward: rewardForBothDelegators, poolId: poolIds[0]}]);
         });
-
-
-        it.only('Should split pool reward between delegators, over several consecutive epochs', async () => {
+        it('Should split pool reward between delegators, over several consecutive epochs', async () => {
             const rewardForOnlyFirstDelegator = StakingWrapper.toBaseUnitAmount(10);
             const sharedRewards = [
                 StakingWrapper.toBaseUnitAmount(20),
@@ -210,131 +208,41 @@ blockchainTests.resets.only('Testing Rewards', () => {
             }
         });
 
-
-        /*
-        it('Should work across many epochs', async () => {
-            const operator = actors[6];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(1000);
-            const amountsToDelegate = [StakingWrapper.toBaseUnitAmount(23), StakingWrapper.toBaseUnitAmount(77)];
-            const totalDelegatedByEpoch = [StakingWrapper.toBaseUnitAmount(23), StakingWrapper.toBaseUnitAmount(100)];
-            const rewards = [
-                StakingWrapper.toBaseUnitAmount(10),
-                StakingWrapper.toBaseUnitAmount(20),
-                StakingWrapper.toBaseUnitAmount(16),
-                StakingWrapper.toBaseUnitAmount(24),
-                StakingWrapper.toBaseUnitAmount(5),
-                StakingWrapper.toBaseUnitAmount(0),
-                StakingWrapper.toBaseUnitAmount(17)
-            ];
-            const sharedRewards = StakingWrapper.toBaseUnitAmount(82);
-            const operatorReward = ZERO;
-            const delegatorRewards = [rewards[0].plus(sharedRewards.times(0.23)), sharedRewards.times(0.77)];
-            { // Epoch 0: Stake & delegate some ZRX
-                // second staker delegates
-                await stakingWrapper.stakeAsync(actors[0], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[0], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[0]);
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Epoch 1: A reward was earned
-                await stakingWrapper.testFinalizefees([{reward: rewards[0], poolId}]);
-            }
-            { // Epoch 2: No rewards but
-                // second staker delegates
-                await stakingWrapper.stakeAsync(actors[1], amountToStake);
-                await stakingWrapper.moveStakeAsync(actors[1], {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountsToDelegate[1]);
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([{reward: rewards[1], poolId}]);
-            }
-            { // Skip an epoch so that delegator can start earning rewards
-                await stakingWrapper.testFinalizefees([]);
-            }
-            { // Earn a bunch of rewards
-                await stakingWrapper.testFinalizefees([{reward: rewards[2], poolId}]);
-                await stakingWrapper.testFinalizefees([{reward: rewards[3], poolId}]);
-                await stakingWrapper.testFinalizefees([{reward: rewards[4], poolId}]);
-                await stakingWrapper.testFinalizefees([{reward: rewards[5], poolId}]);
-                await stakingWrapper.testFinalizefees([{reward: rewards[6], poolId}]);
-            }
-            // Check reward balance
-            //expect(await stakingWrapper.rewardVaultBalanceOfAsync(poolId), 'whole pool').to.be.bignumber.equal(rewards[0].plus(rewards[1]));
-            //expect(await stakingWrapper.rewardVaultBalanceOfOperatorAsync(poolId), 'operator').to.be.bignumber.equal(operatorReward);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[0]), 'delegator 1').to.be.bignumber.equal(delegatorRewards[0]);
-            expect(await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, actors[1]), 'delegator 2').to.be.bignumber.equal(delegatorRewards[1]);
+        it('Should send existing rewards from reward vault to eth vault correctly when undelegating stake', async () => {
+            // first staker delegates (epoch 0)
+            const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmount);
+            // skip epoch, so first staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // earn reward
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.testFinalizefees([{reward, poolId: poolIds[0]}]);
+            // undelegate (moves delegator's from the transient reward vault into the eth vault)
+            await stakers[0].moveStakeAsync({state: StakeState.DELEGATED, poolId: poolIds[0]}, {state: StakeState.ACTIVE}, stakeAmount);
+            // @TODO -- check eth vault
         });
-        */
 
-
+        it('Should send existing rewards from reward vault to eth vault correctly when delegating more stake', async () => {
+            // first staker delegates (epoch 0)
+            const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmount);
+            // skip epoch, so first staker can start earning rewards
+            await finalizer.finalizeAsync();
+            // earn reward
+            const reward = StakingWrapper.toBaseUnitAmount(10);
+            await stakingWrapper.testFinalizefees([{reward, poolId: poolIds[0]}]);
+            // add more stake
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync({state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId: poolIds[0]}, stakeAmount);
+             // @TODO -- check eth vault
+        });
 
 
          /*
 
 
-
-
-
-
-        it('Should sync correctly when undelegating stake', async () => {
-            const staker = actors[0];
-            const operator = actors[1];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
-            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
-            const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = ZERO;
-            const delegatorReward = reward;
-            { // Epoch 0: Stake & delegate some ZRX
-                await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountToDelegate);
-            }
-            { // Send some rewards
-                await stakingWrapper.testFinalizefees([]); // available
-                await stakingWrapper.testFinalizefees([{reward: reward, poolId}]); // carry over
-                await stakingWrapper.testFinalizefees([]); // available
-            }
-            { // Undelegate stake and check balance
-                await stakingWrapper.moveStakeAsync(staker, {state: StakeState.DELEGATED, poolId}, {state: StakeState.ACTIVE}, amountToDelegate);
-            }
-            // Check reward & vault balances
-            const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker);
-            expect(delegatorComputedBalance).to.be.bignumber.equal(ZERO);
-            const delegatorEthVaultBalance = await stakingWrapper.getEthVaultContract().balanceOf.callAsync(staker);
-            expect(delegatorEthVaultBalance).to.be.bignumber.equal(delegatorReward);
-        });
-
-        it('Should sync correctly when adding more stake', async () => {
-            const staker = actors[0];
-            const operator = actors[1];
-            const operatorShare = 0;
-            const poolId = await stakingWrapper.createStakingPoolAsync(operator, operatorShare);
-            const amountToStake = StakingWrapper.toBaseUnitAmount(4);
-            const amountToDelegate = StakingWrapper.toBaseUnitAmount(2);
-            const reward = StakingWrapper.toBaseUnitAmount(10);
-            const operatorReward = ZERO;
-            const delegatorReward = reward;
-            { // Epoch 0: Stake & delegate some ZRX
-                await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountToDelegate);
-            }
-            { // Send some rewards
-                await stakingWrapper.testFinalizefees([]); // available
-                await stakingWrapper.testFinalizefees([{reward: reward, poolId}]); // carry over
-                await stakingWrapper.testFinalizefees([]); // available
-            }
-            { // Undelegate stake and check balance
-                await stakingWrapper.stakeAsync(staker, amountToStake);
-                await stakingWrapper.moveStakeAsync(staker, {state: StakeState.ACTIVE}, {state: StakeState.DELEGATED, poolId}, amountToDelegate);
-            }
-            // Check reward & vault balances
-            const delegatorComputedBalance = await stakingWrapper.computeRewardBalanceOfStakingPoolMemberAsync(poolId, staker);
-            expect(delegatorComputedBalance).to.be.bignumber.equal(ZERO);
-            const delegatorEthVaultBalance = await stakingWrapper.getEthVaultContract().balanceOf.callAsync(staker);
-            expect(delegatorEthVaultBalance).to.be.bignumber.equal(delegatorReward);
-        });
 
         it('Should have correct value after adding more stake and moving to next epoch', async () => {
             const staker = actors[0];
