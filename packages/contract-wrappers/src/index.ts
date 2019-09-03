@@ -1,4 +1,4 @@
-export * from '@0x/contract-addresses';
+export { ContractAddresses } from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
 export { CoordinatorWrapper } from './coordinator_wrapper';
@@ -78,7 +78,6 @@ export {
     OrderStatus,
     ContractError,
     ForwarderError,
-    OrderAndTraderInfo,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
     IndexedFilterValues,
@@ -88,7 +87,72 @@ export {
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
-    TraderInfo,
 } from './types';
 
-export { BlockRange } from 'ethereum-types';
+export {
+    BlockRange,
+    SupportedProvider,
+    TxData,
+    ContractAbi,
+    ContractArtifact,
+    DataItem,
+    CallData,
+    BlockParam,
+    ContractEventArg,
+    DecodedLogArgs,
+    LogWithDecodedArgs,
+    CompilerOpts,
+    StandardContractOutput,
+    ContractNetworks,
+    EventParameter,
+    TupleDataItem,
+    TxDataPayable,
+    BlockParamLiteral,
+    AbiDefinition,
+    Web3JsProvider,
+    GanacheProvider,
+    EIP1193Provider,
+    ZeroExProvider,
+    LogEntry,
+    RawLog,
+    CompilerSettings,
+    ContractNetworkData,
+    EIP1193Event,
+    JSONRPCRequestPayload,
+    JSONRPCErrorCallback,
+    DecodedLogEntry,
+    LogEntryEvent,
+    DevdocOutput,
+    EvmOutput,
+    FunctionAbi,
+    EventAbi,
+    Web3JsV1Provider,
+    Web3JsV2Provider,
+    Web3JsV3Provider,
+    CompilerSettingsMetadata,
+    OptimizerSettings,
+    OutputField,
+    DecodedLogEntryEvent,
+    ParamDescription,
+    EvmBytecodeOutput,
+    JSONRPCResponsePayload,
+    MethodAbi,
+    ConstructorAbi,
+    FallbackAbi,
+    ConstructorStateMutability,
+    JSONRPCResponseError,
+    StateMutability,
+} from 'ethereum-types';
+
+export {
+    SimpleContractArtifact,
+    ZeroExTransaction,
+    SignedOrder,
+    Order,
+    SimpleStandardContractOutput,
+    SignedZeroExTransaction,
+    SimpleEvmOutput,
+    SimpleEvmBytecodeOutput,
+} from '@0x/types';
+
+export { AbiDecoder, DecodedCalldata } from '@0x/utils';
