@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.0 - _September 3, 2019_
+
+    * Provide a default set of templates for code generation, used when --template and --partials are left unspecified (#2082)
+
 ## v4.1.1 - _August 22, 2019_
 
     * Dependencies updated

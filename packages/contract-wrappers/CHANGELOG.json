@@ -10,7 +10,8 @@
                 "note": "Change CoordinatorWrapper constructor to take a provider instead of a Web3Wrapper instance",
                 "pr": 2023
             }
-        ]
+        ],
+        "timestamp": 1567521715
     },
     {
         "version": "11.1.0",

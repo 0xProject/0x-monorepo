@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.3 - _September 3, 2019_
+
+    * Dependencies updated
+
 ## v5.0.2 - _August 22, 2019_
 
     * Updated `MetamaskSubprovider` to use `personal_sign` instead of `eth_sign` to support proxied hardware wallets. (#2054)

@@ -6,7 +6,8 @@
                 "note": "Provide a default set of templates for code generation, used when --template and --partials are left unspecified",
                 "pr": 2082
             }
-        ]
+        ],
+        "timestamp": 1567521715
     },
     {
         "timestamp": 1566446343,
