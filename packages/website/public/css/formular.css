@@ -43,3 +43,10 @@
     src: url('../fonts/Formular-Regular.woff2') format('woff2'), url('../fonts/Formular-Regular.woff') format('woff');
     font-display: swap;
 }
+
+@font-face {
+    font-family: 'Formular Mono';
+    src: url('../fonts/Formular-Mono.woff') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }

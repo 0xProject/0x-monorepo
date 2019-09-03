@@ -6,7 +6,6 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
-import { DevelopersDropDown } from 'ts/components/dropdowns/developers_drop_down';
 import { DrawerMenu } from 'ts/components/portal/drawer_menu';
 import { ProviderDisplay } from 'ts/components/top_bar/provider_display';
 import { TopBarMenuItem } from 'ts/components/top_bar/top_bar_menu_item';
@@ -140,12 +139,6 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
                     {!this._isViewingPortal() && (
                         <div className={menuClasses}>
                             <div className="flex items-center justify-between">
-                                <DevelopersDropDown
-                                    location={this.props.location}
-                                    menuItemStyles={{ ...styles.menuItem, paddingBottom: 12, paddingTop: 12 }}
-                                    translate={this.props.translate}
-                                    menuIconStyle={menuIconStyle}
-                                />
                                 <TopBarMenuItem
                                     title={this.props.translate.get(Key.Blog, Deco.Cap)}
                                     path={constants.URL_BLOG}

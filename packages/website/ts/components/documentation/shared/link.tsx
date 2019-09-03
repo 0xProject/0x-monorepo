@@ -19,6 +19,10 @@ export interface BaseLinkProps {
 }
 
 export interface ScrollLinkProps extends BaseLinkProps {
+    activeClass?: string;
+    containerId?: string;
+    duration?: number;
+    offset?: number;
     onActivityChanged?: (isActive: boolean) => void;
 }
 
@@ -38,13 +42,17 @@ export interface LinkState {}
  */
 export class Link extends React.Component<LinkProps, LinkState> {
     public static defaultProps: Partial<LinkProps> = {
-        shouldOpenInNewTab: false,
+        activeClass: 'active',
         className: '',
-        onMouseOver: _.noop.bind(_),
-        onMouseLeave: _.noop.bind(_),
-        onMouseEnter: _.noop.bind(_),
-        textDecoration: 'none',
+        containerId: constants.SCROLL_CONTAINER_ID,
+        duration: constants.DOCS_SCROLL_DURATION_MS,
         fontColor: 'inherit',
+        offset: 0,
+        onMouseEnter: _.noop.bind(_),
+        onMouseLeave: _.noop.bind(_),
+        onMouseOver: _.noop.bind(_),
+        shouldOpenInNewTab: false,
+        textDecoration: 'none',
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -61,10 +69,6 @@ export class Link extends React.Component<LinkProps, LinkState> {
             type = LinkType.External;
         } else {
             type = LinkType.ReactScroll;
-        }
-
-        if (type === LinkType.ReactScroll && this.props.shouldOpenInNewTab) {
-            throw new Error(`Cannot open LinkType.ReactScroll links in new tab. link.to: ${this.props.to}`);
         }
 
         const styleWithDefault = {
@@ -112,12 +116,14 @@ export class Link extends React.Component<LinkProps, LinkState> {
                         onMouseLeave={this.props.onMouseLeave}
                     >
                         <ScrollLink
+                            activeClass={this.props.activeClass}
                             to={this.props.to}
-                            offset={0}
+                            offset={this.props.offset}
                             spy={true}
                             hashSpy={true}
-                            duration={constants.DOCS_SCROLL_DURATION_MS}
-                            containerId={constants.SCROLL_CONTAINER_ID}
+                            duration={this.props.duration}
+                            smooth={this.props.duration > 0}
+                            containerId={this.props.containerId}
                             className={this.props.className}
                             style={styleWithDefault}
                             onSetActive={this._onActivityChanged.bind(this, true)}

@@ -32,7 +32,7 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Explore the Docs',
-                url: `${WebsitePaths.Wiki}#0x-Extensions`,
+                url: `${WebsitePaths.DocsGuides}/0x-extensions-explained`,
             },
         ],
     },
@@ -43,7 +43,7 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Explore the Docs',
-                url: 'https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md',
+                url: 'https://0x.org/docs/guides/v2-forwarder-specification',
             },
         ],
     },
@@ -54,16 +54,25 @@ const extensionData: Extension[] = [
         links: [
             {
                 text: 'Explore the Docs',
-                url: `${WebsitePaths.Wiki}#0x-Extensions`,
+                url: `${WebsitePaths.DocsGuides}/0x-extensions-explained`,
             },
         ],
     },
 ];
 
-export class Extensions extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class Extensions extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="dark">
@@ -96,7 +105,7 @@ export class Extensions extends React.Component {
                     subline="Developers can build custom extensions on 0x to add new modes of exchange"
                     mainCta={{
                         text: 'Get Started',
-                        href: `${WebsitePaths.Wiki}#0x-Extensions`,
+                        href: `${WebsitePaths.DocsGuides}/0x-extensions-explained`,
                         shouldOpenInNewTab: true,
                     }}
                     secondaryCta={{ text: 'Get in Touch', onClick: this._onOpenContactModal.bind(this) }}
@@ -106,18 +115,20 @@ export class Extensions extends React.Component {
         );
     }
 
-    public _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    public _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 }
 
 const HeroActions = () => (
     <React.Fragment>
-        <Button href={`${WebsitePaths.Wiki}#0x-Extensions`} isInline={true} target="_blank">
+        <Button href={`${WebsitePaths.DocsGuides}/0x-extensions-explained`} isInline={true} target="_blank">
             Get Started
         </Button>
 

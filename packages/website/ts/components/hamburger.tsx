@@ -1,12 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { zIndex } from 'ts/style/z_index';
+
 interface Props {
     isOpen: boolean;
     onClick?: () => void;
 }
 
-export const Hamburger: React.FunctionComponent<Props> = (props: Props) => {
+export const Hamburger: React.FC<Props> = (props: Props) => {
     return (
         <StyledHamburger isOpen={props.isOpen} onClick={props.onClick}>
             <span />
@@ -22,14 +24,10 @@ const StyledHamburger = styled.button<Props>`
     width: 22px;
     height: 16px;
     position: relative;
-    z-index: 25;
+    z-index: ${zIndex.header};
     padding: 0;
     outline: none;
     user-select: none;
-
-    @media (min-width: 800px) {
-        display: none;
-    }
 
     span {
         display: block;

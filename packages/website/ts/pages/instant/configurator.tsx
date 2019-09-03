@@ -39,7 +39,7 @@ export class Configurator extends React.Component {
                         <Heading size="small" marginBottom="15px">
                             Code Snippet
                         </Heading>
-                        <Link href={`${WebsitePaths.Wiki}#Get-Started-With-Instant`} isBlock={true} target="_blank">
+                        <Link href={`${WebsitePaths.DocsGuides}/integrate-instant`} isBlock={true} target="_blank">
                             Explore the Docs
                         </Link>
                     </HeadingWrapper>

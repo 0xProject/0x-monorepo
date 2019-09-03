@@ -3,23 +3,28 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 export interface FullscreenMessageProps {
-    headerText: string;
     bodyText: string;
+    headerText: string;
+    headerTextColor?: string;
 }
 
-export const FullscreenMessage = (props: FullscreenMessageProps) => {
+export const FullscreenMessage: React.FC<FullscreenMessageProps> = props => {
     return (
         <div className="mx-auto max-width-4 py4">
             <div className="center py4">
-                <Heading>{props.headerText}</Heading>
+                <Heading color={props.headerTextColor}>{props.headerText}</Heading>
                 <Paragraph>{props.bodyText}</Paragraph>
             </div>
         </div>
     );
 };
 
+FullscreenMessage.defaultProps = {
+    headerTextColor: colors.brandLight,
+};
+
 const Heading = styled.h1`
-    color: ${colors.brandLight};
+    color: ${({ color }) => color};
     font-size: 78px;
     font-weight: 300;
     margin-bottom: 35px;

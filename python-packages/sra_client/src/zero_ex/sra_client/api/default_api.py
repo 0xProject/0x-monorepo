@@ -718,11 +718,11 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
             `asset proxy id
-            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str taker_asset_proxy_id: The taker asset
             `asset proxy id
-            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.
@@ -795,11 +795,11 @@ class DefaultApi(object):
         :param bool async_req: Whether request should be asynchronous.
         :param str maker_asset_proxy_id: The maker
             `asset proxy id
-            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str taker_asset_proxy_id: The taker asset
             `asset proxy id
-            <https://0xproject.com/docs/0x.js#types-AssetProxyId>`__
+            <https://0x.org/docs/tools/0x.js#types-AssetProxyId>`__
             (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).
         :param str maker_asset_address: The contract address for the maker asset.
         :param str taker_asset_address: The contract address for the taker asset.

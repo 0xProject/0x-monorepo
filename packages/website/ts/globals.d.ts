@@ -1,11 +1,18 @@
 declare module '@reach/dialog';
+declare module '@reach/tabs';
 declare module 'truffle-contract';
 declare module 'whatwg-fetch';
 declare module 'thenby';
 declare module 'react-document-title';
 declare module 'react-ga';
 declare module 'reach__dialog';
+declare module 'reach__tabs';
 declare module 'react-flickity-component';
+declare module 'algoliasearch';
+declare module 'algoliasearch/lite';
+declare module 'react-instantsearch-dom';
+declare module 'react-autocomplete';
+declare module 'react-autosuggest';
 declare module 'react-anchor-link-smooth-scroll';
 declare module 'react-responsive';
 declare module 'react-scrollable-anchor';
@@ -20,9 +27,26 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
+declare module '*.mdx' {
+    let MDXComponent: (props: any) => JSX.Element;
+    export default MDXComponent;
+}
+
+declare module '@mdx-js/react' {
+    import { ComponentType, StyleHTMLAttributes } from 'react';
+
+    interface MDXProps {
+        children: React.ReactNode;
+        components: { [key: string]: React.ReactNode };
+    }
+    export class MDXProvider extends React.Component<MDXProps> {}
+}
+
 declare module '*.svg' {
     import { PureComponent, SVGProps } from 'react';
+    /* tslint:disable */
     export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
+    /* tslint:enable */
 }
 
 declare module 'web3-provider-engine/subproviders/filters';

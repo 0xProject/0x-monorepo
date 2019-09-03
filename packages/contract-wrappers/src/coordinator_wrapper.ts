@@ -5,7 +5,7 @@ import { generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber, fetchAsync } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractAbi } from 'ethereum-types';
+import { ContractAbi, SupportedProvider } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
 import { flatten } from 'lodash';
 
@@ -54,7 +54,7 @@ export class CoordinatorWrapper {
      * default to the known address corresponding to the networkId.
      */
     constructor(
-        web3Wrapper: Web3Wrapper,
+        provider: SupportedProvider,
         networkId: number,
         address?: string,
         exchangeAddress?: string,
@@ -65,7 +65,7 @@ export class CoordinatorWrapper {
         this.address = address === undefined ? contractAddresses.coordinator : address;
         this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
-        this._web3Wrapper = web3Wrapper;
+        this._web3Wrapper = new Web3Wrapper(provider);
 
         this._contractInstance = new CoordinatorContract(
             this.address,

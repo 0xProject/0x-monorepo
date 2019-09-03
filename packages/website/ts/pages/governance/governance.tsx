@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import { Banner } from 'ts/components/banner';
 import { Button } from 'ts/components/button';
 import { DocumentTitle } from 'ts/components/document_title';
-import { ModalContact } from 'ts/components/modals/modal_contact';
 import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
@@ -21,14 +20,13 @@ import { colors } from 'ts/style/colors';
 import { TallyInterface } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { utils } from 'ts/utils/utils';
+import { environments } from 'ts/utils/environments';
 
 interface LabelInterface {
     [key: number]: string;
 }
 
 interface State {
-    isContactModalOpen: boolean;
     isVoteModalOpen: boolean;
     isWalletConnected: boolean;
     isVoteReceived: boolean;
@@ -50,7 +48,6 @@ const riskLabels: LabelInterface = {
 
 export class Governance extends React.Component<RouteComponentProps<any>> {
     public state: State = {
-        isContactModalOpen: false,
         isVoteModalOpen: false,
         isWalletConnected: false,
         isVoteReceived: false,
@@ -154,7 +151,6 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
                     mainCta={{ text: 'Get ZRX', onClick: this._onLaunchInstantClick.bind(this) }}
                     secondaryCta={{ text: 'Vote', onClick: this._onOpenVoteModal.bind(this) }}
                 />
-                <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote
                     zeipId={this._proposalData.zeipId}
                     isOpen={this.state.isVoteModalOpen}
@@ -175,10 +171,6 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
             },
             'body',
         );
-    };
-
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ ...this.state, isContactModalOpen: false });
     };
 
     private readonly _onOpenVoteModal = (): void => {
@@ -207,7 +199,7 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
-            const voteDomain = utils.isProduction()
+            const voteDomain = environments.isProduction()
                 ? `https://${configs.DOMAIN_VOTE}`
                 : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${this._proposalData.zeipId}`;

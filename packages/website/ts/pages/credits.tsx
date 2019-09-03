@@ -12,17 +12,22 @@ import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-export interface CreditsProps {}
+export interface CreditsProps {
+    location: Location;
+}
 
 export class Credits extends React.Component<CreditsProps> {
     public state = {
         isContactModalOpen: false,
     };
-
     constructor(props: CreditsProps) {
         super(props);
     }
-
+    public componentDidMount(): void {
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
@@ -95,12 +100,14 @@ export class Credits extends React.Component<CreditsProps> {
         );
     }
 
-    private readonly _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 
     private readonly _renderHeroActions = () => (

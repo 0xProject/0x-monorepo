@@ -17,7 +17,6 @@ import {
     AccountState,
     BlockchainCallErrs,
     BrowserType,
-    Environments,
     EtherscanLinkSuffixes,
     Networks,
     OperatingSystemType,
@@ -33,6 +32,7 @@ import {
 } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
+import { environments } from 'ts/utils/environments';
 import * as u2f from 'ts/vendor/u2f_api';
 
 export const utils = {
@@ -330,42 +330,15 @@ export const utils = {
         return parsedProviderName;
     },
     getBackendBaseUrl(): string {
-        if (utils.isDogfood()) {
+        if (environments.isDogfood()) {
             return configs.BACKEND_BASE_STAGING_URL;
-        } else if (utils.isDevelopment()) {
+        } else if (environments.isDevelopment()) {
             return configs.BACKEND_BASE_DEV_URL;
         }
         return configs.BACKEND_BASE_PROD_URL;
     },
-    isDevelopment(): boolean {
-        return _.includes(configs.DOMAINS_DEVELOPMENT, window.location.host);
-    },
-    isStaging(): boolean {
-        return _.includes(window.location.href, configs.DOMAIN_STAGING);
-    },
     isExternallyInjected(providerType: ProviderType, injectedProviderName: string): boolean {
         return providerType === ProviderType.Injected && injectedProviderName !== constants.PROVIDER_NAME_PUBLIC;
-    },
-    isDogfood(): boolean {
-        return _.includes(window.location.href, configs.DOMAIN_DOGFOOD);
-    },
-    isProduction(): boolean {
-        return _.includes(window.location.href, configs.DOMAIN_PRODUCTION);
-    },
-    getEnvironment(): Environments {
-        if (utils.isDogfood()) {
-            return Environments.Dogfood;
-        }
-        if (utils.isDevelopment()) {
-            return Environments.Development;
-        }
-        if (utils.isStaging()) {
-            return Environments.Staging;
-        }
-        if (utils.isProduction()) {
-            return Environments.Production;
-        }
-        return Environments.Unknown;
     },
     getEthToken(tokenByAddress: TokenByAddress): Token {
         return utils.getTokenBySymbol(constants.ETHER_TOKEN_SYMBOL, tokenByAddress);

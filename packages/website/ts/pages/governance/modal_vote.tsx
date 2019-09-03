@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
 import { Icon } from 'ts/components/icon';
+import { ButtonClose } from 'ts/components/modals/button_close';
 import { Heading, Paragraph } from 'ts/components/text';
 import { GlobalStyle } from 'ts/constants/globalStyle';
 import { ConnectForm, WalletConnectedProps } from 'ts/pages/governance/connect_form';
@@ -128,10 +129,7 @@ export class ModalVote extends React.Component<Props> {
                                 </Button>
                             </ButtonWrap>
                         </Confirmation>
-                        <ButtonClose type="button" onClick={this.props.onDismiss}>
-                            <span>Close</span>
-                            <Icon name="close-modal" size={27} margin={[0, 0, 0, 0]} />
-                        </ButtonClose>
+                        <ButtonClose onClick={this.props.onDismiss} />
                         <ErrorModal
                             isOpen={isErrorModalOpen}
                             text={errorMessage}
@@ -257,25 +255,6 @@ export class ModalVote extends React.Component<Props> {
     }
 }
 
-const ButtonClose = styled.button.attrs({})`
-    cursor: pointer;
-    position: absolute;
-    right: 0;
-    top: 0;
-    overflow: hidden;
-    width: 27px;
-    height: 27px;
-    border: 0;
-    background-color: transparent;
-    padding: 0;
-    transform: translateY(-47px);
-
-    span {
-        opacity: 0;
-        visibility: hidden;
-        position: absolute;
-    }
-`;
 const StyledDialogContent = styled(DialogContent)`
     position: relative;
     max-width: 800px;

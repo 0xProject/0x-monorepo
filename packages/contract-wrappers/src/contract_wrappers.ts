@@ -116,7 +116,7 @@ export class ContractWrappers {
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
         this.dutchAuction = new DutchAuctionContract(contractAddresses.dutchAuction, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
-            this._web3Wrapper,
+            this.getProvider(),
             config.networkId,
             contractAddresses.coordinator,
             contractAddresses.exchange,

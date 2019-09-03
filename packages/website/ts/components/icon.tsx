@@ -1,8 +1,6 @@
 import * as React from 'react';
-import Loadable from 'react-loadable';
 import styled from 'styled-components';
 
-import { Paragraph } from 'ts/components/text';
 import { getCSSPadding, PaddingInterface } from 'ts/constants/utilities';
 import { colors } from 'ts/style/colors';
 
@@ -13,16 +11,17 @@ interface IconProps extends PaddingInterface {
     size?: 'small' | 'medium' | 'large' | 'hero' | 'natural' | number;
 }
 
-export const Icon: React.FunctionComponent<IconProps> = props => {
+export const Icon: React.FC<IconProps> = props => {
     if (props.name && !props.component) {
-        const IconSVG = Loadable({
-            loader: async () => import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
-            loading: () => <Paragraph>Loading</Paragraph>,
-        });
+        const IconSVG = React.lazy(async () =>
+            import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
+        );
 
         return (
             <StyledIcon {...props}>
-                <IconSVG />
+                <React.Suspense fallback={<React.Fragment />}>
+                    <IconSVG />
+                </React.Suspense>
             </StyledIcon>
         );
     }

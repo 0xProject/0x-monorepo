@@ -1,8 +1,8 @@
 import { logUtils } from '@0x/utils';
 import Rollbar from 'rollbar';
-import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
+import { domains } from 'ts/utils/domains';
+import { environments } from 'ts/utils/environments';
 
 // Suggested way to include Rollbar with Webpack
 // https://github.com/rollbar/rollbar.js/tree/master/examples/webpack
@@ -13,7 +13,7 @@ const rollbarConfig = {
     itemsPerMinute: 10,
     maxItems: 500,
     payload: {
-        environment: utils.getEnvironment(),
+        environment: environments.getEnvironment(),
         client: {
             javascript: {
                 source_map_enabled: true,
@@ -24,7 +24,7 @@ const rollbarConfig = {
         },
     },
     uncaughtErrorLevel: 'error',
-    hostWhiteList: [configs.DOMAIN_PRODUCTION, configs.DOMAIN_STAGING],
+    hostWhiteList: [domains.DOMAIN_PRODUCTION, domains.DOMAIN_STAGING],
     ignoredMessages: [
         // Errors from the third-party scripts
         'Script error',
@@ -42,7 +42,7 @@ const rollbar = new Rollbar(rollbarConfig);
 
 export const errorReporter = {
     report(err: Error): void {
-        if (utils.isDevelopment()) {
+        if (environments.isDevelopment()) {
             return; // Let's not log development errors to rollbar
         }
         rollbar.error(err, (rollbarErr: Error) => {

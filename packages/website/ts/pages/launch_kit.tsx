@@ -68,10 +68,19 @@ const featuresList = [
     ],
 ];
 
-export class NextLaunchKit extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class NextLaunchKit extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap>
@@ -171,12 +180,14 @@ export class NextLaunchKit extends React.Component {
         );
     }
 
-    public _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    public _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 }
 

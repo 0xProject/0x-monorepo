@@ -1,11 +1,13 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/components/siteWrap';
 import LogoIcon from 'ts/icons/logo-with-type.svg';
+import { IThemeInterface } from 'ts/style/theme';
+
+import { zIndex } from 'ts/style/z_index';
 
 interface LogoInterface {
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
 }
 
 // Note let's refactor this
@@ -14,7 +16,7 @@ interface LogoInterface {
 const StyledLogo = styled.div`
     text-align: left;
     position: relative;
-    z-index: 25;
+    z-index: ${zIndex.header};
 
     @media (max-width: 800px) {
         svg {

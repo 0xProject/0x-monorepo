@@ -20,7 +20,7 @@
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
         "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
-        "script:doc_generate_and_upload": "node ./lib/doc_generate_and_upload.js",
+        "script:doc_generate": "node ./lib/doc_generate.js",
         "script:publish_release_notes": "node ./lib/publish_release_notes.js"
     },
     "repository": {
@@ -36,7 +36,6 @@
         "@types/glob": "5.0.35",
         "@types/mkdirp": "^0.5.2",
         "@types/node": "*",
-        "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
         "@types/yargs": "^11.0.0",
@@ -60,7 +59,6 @@
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
         "moment": "2.21.0",
-        "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
         "prompt": "^1.0.0",
         "publish-release": "https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed",

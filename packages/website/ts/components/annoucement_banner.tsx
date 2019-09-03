@@ -2,10 +2,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
+import { zIndex } from 'ts/style/z_index';
 
 import { Button } from 'ts/components/button';
-import { ThemeInterface } from 'ts/components/siteWrap';
 import { Paragraph } from 'ts/components/text';
+
+import { IThemeInterface } from 'ts/style/theme';
 
 import { Column, Section, SectionProps } from 'ts/components/newLayout';
 
@@ -15,7 +17,7 @@ interface Props {
     onDismiss?: () => void;
     mainCta?: CTAButton;
     secondaryCta?: CTAButton;
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
     dismissed?: boolean;
 }
 
@@ -128,7 +130,7 @@ const CustomSection = styled(Section)<CustomSectionProps>`
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1201;
+    z-index: ${zIndex.announcementBanner};
     padding: 0 1px;
     margin: 0;
     max-width: 100%;

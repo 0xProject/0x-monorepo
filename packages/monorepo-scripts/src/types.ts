@@ -43,9 +43,7 @@ export interface Package {
 
 export interface DocGenConfigs {
     DOC_JSON_VERSION: string;
-    EXTERNAL_TYPE_TO_LINK: { [externalType: string]: string };
-    EXTERNAL_EXPORT_TO_LINK: { [externalExport: string]: string };
-    CLASSES_WITH_HIDDEN_CONSTRUCTORS: string[];
+    EXTERNAL_TYPE_MAP: { [externalType: string]: boolean };
     IGNORED_EXCESSIVE_TYPES: string[];
     TYPES_ONLY_LIBRARIES: string[];
 }

@@ -1,92 +1,39 @@
 import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import styled from 'styled-components';
 
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
-import { colors } from 'ts/style/colors';
+import { fadeIn } from 'ts/style/keyframes';
+
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 
-interface FormProps {
-    theme: ThemeValuesInterface;
+interface IFormProps {
+    color?: string;
 }
 
-interface InputProps {
+interface IInputProps {
     isSubmitted: boolean;
     name: string;
     type: string;
     label: string;
-    textColor: string;
+    color?: string;
     required?: boolean;
 }
 
-interface ArrowProps {
+interface IArrowProps {
     isSubmitted: boolean;
 }
 
-const Input = React.forwardRef((props: InputProps, ref: React.Ref<HTMLInputElement>) => {
-    const { name, label, type } = props;
-    const id = `input-${name}`;
+export const NewsletterForm: React.FC<IFormProps> = ({ color }) => {
+    const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
+    const emailInput = React.createRef<HTMLInputElement>();
 
-    return (
-        <InnerInputWrapper {...props}>
-            <label className="visuallyHidden" htmlFor={id}>
-                {label}
-            </label>
-            <StyledInput ref={ref} id={id} placeholder={label} type={type || 'text'} {...props} />
-        </InnerInputWrapper>
-    );
-});
-
-class Form extends React.Component<FormProps> {
-    public emailInput = React.createRef<HTMLInputElement>();
-    public state = {
-        isSubmitted: false,
-    };
-    public render(): React.ReactNode {
-        const { isSubmitted } = this.state;
-        const { theme } = this.props;
-
-        return (
-            <StyledForm onSubmit={this._onSubmitAsync.bind(this)}>
-                <InputWrapper>
-                    <Input
-                        isSubmitted={isSubmitted}
-                        name="email"
-                        type="email"
-                        label="Email Address"
-                        ref={this.emailInput}
-                        required={true}
-                        textColor={theme.textColor}
-                    />
-
-                    <SubmitButton>
-                        <Arrow
-                            isSubmitted={isSubmitted}
-                            width="22"
-                            height="17"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z"
-                                fill="#CBCBCB"
-                            />
-                        </Arrow>
-                    </SubmitButton>
-                    <SuccessText isSubmitted={isSubmitted}>🎉 Thank you for signing up!</SuccessText>
-                </InputWrapper>
-                <Text>Subscribe to our newsletter for updates in the 0x ecosystem</Text>
-            </StyledForm>
-        );
-    }
-
-    private async _onSubmitAsync(e: React.FormEvent<HTMLFormElement>): Promise<void> {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
-        const email = this.emailInput.current.value;
+        const email = emailInput.current.value;
         const referrer = 'https://0x.org/';
 
-        this.setState({ isSubmitted: true });
+        setIsSubmitted(true);
 
         if (email === 'triggererror@0xproject.org') {
             throw new Error('Manually triggered error');
@@ -104,88 +51,98 @@ class Form extends React.Component<FormProps> {
         } catch (e) {
             errorReporter.report(e);
         }
-    }
-}
+    };
 
-export const NewsletterForm = withTheme(Form);
+    return (
+        <StyledForm onSubmit={handleSubmit}>
+            {isSubmitted ? (
+                <SuccessText isSubmitted={isSubmitted}>🎉 Thank you for signing up!</SuccessText>
+            ) : (
+                <Input
+                    color={color}
+                    isSubmitted={isSubmitted}
+                    name="email"
+                    type="email"
+                    label="Email Address"
+                    ref={emailInput}
+                    required={true}
+                />
+            )}
+
+            <SubmitButton>
+                <Arrow
+                    color={color}
+                    isSubmitted={isSubmitted}
+                    width="22"
+                    height="17"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z" />
+                </Arrow>
+            </SubmitButton>
+        </StyledForm>
+    );
+};
+
+const Input = React.forwardRef((props: IInputProps, ref: React.Ref<HTMLInputElement>) => {
+    const { name, label, type } = props;
+    const id = `input-${name}`;
+
+    return (
+        <>
+            <label className="visuallyHidden" htmlFor={id}>
+                {label}
+            </label>
+            <StyledInput ref={ref} id={id} placeholder={label} type={type || 'text'} {...props} />
+        </>
+    );
+});
+
+const INPUT_HEIGHT = '60px';
 
 const StyledForm = styled.form`
-    appearance: none;
-    border: 0;
-    color: ${colors.white};
-    padding: 13px 0 14px;
-    margin-top: 27px;
+    position: relative;
+    margin-top: 24px;
 `;
 
-const StyledInput = styled.input<InputProps>`
+const StyledInput = styled.input<IInputProps>`
     appearance: none;
     background-color: transparent;
     border: 0;
-    border-bottom: 1px solid #393939;
-    color: ${props => props.textColor || '#fff'};
-    font-size: 1.294117647rem;
-    padding: 15px 0;
+    border-bottom: 1px solid ${({ color }) => color || '#393939'};
+    color: ${({ theme }) => theme.textColor};
+    height: ${INPUT_HEIGHT};
+    font-size: 1.3rem;
     outline: none;
     width: 100%;
 
     &::placeholder {
-        color: #b1b1b1; // #9D9D9D on light theme
+        color: #b1b1b1;
     }
-`;
-
-const InputWrapper = styled.div`
-    position: relative;
-`;
-
-const InnerInputWrapper = styled.div<ArrowProps>`
-    opacity: ${props => props.isSubmitted && 0};
-    visibility: ${props => props.isSubmitted && 'hidden'};
-    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
-    transition-delay: 0.3s;
 `;
 
 const SubmitButton = styled.button`
     width: 44px;
-    height: 44px;
+    height: ${INPUT_HEIGHT};
     background-color: transparent;
     border: 0;
     position: absolute;
     right: 0;
-    top: calc(50% - 22px);
+    top: 0;
     overflow: hidden;
     outline: 0;
-
-    &:focus-within {
-        //background-color: #eee;
-    }
 `;
 
-const Text = styled.p`
-    color: #656565;
-    font-size: 0.833333333rem;
-    font-weight: 300;
-    line-height: 1.2em;
-    margin-top: 15px;
-`;
-
-const SuccessText = styled.p<ArrowProps>`
+const SuccessText = styled.p<IArrowProps>`
     color: #b1b1b1;
     font-size: 1rem;
     font-weight: 300;
-    line-height: 1.2em;
-    padding-top: 25px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    text-align: left;
-    right: 50px;
-    opacity: ${props => (props.isSubmitted ? 1 : 0)};
-    visibility: ${props => (props.isSubmitted ? 'visible' : 'hidden')};
-    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
-    transition-delay: 0.55s;
+    line-height: ${INPUT_HEIGHT};
+    animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
-const Arrow = styled.svg<ArrowProps>`
-    transform: ${props => props.isSubmitted && `translateX(44px)`};
+const Arrow = styled.svg<IArrowProps>`
+    fill: ${({ color }) => color};
+    transform: ${({ isSubmitted }) => isSubmitted && `translateX(44px)`};
     transition: transform 0.25s ease-in-out;
 `;

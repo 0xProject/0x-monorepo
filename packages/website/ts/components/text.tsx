@@ -9,7 +9,7 @@ interface BaseTextInterface extends PaddingInterface {
 }
 
 interface HeadingProps extends BaseTextInterface {
-    asElement?: 'h1' | 'h2' | 'h3' | 'h4';
+    asElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     maxWidth?: string;
     fontWeight?: string;
     isCentered?: boolean;
@@ -19,10 +19,12 @@ interface HeadingProps extends BaseTextInterface {
     isInline?: boolean;
     marginBottom?: string;
     color?: string;
+    children?: React.ReactNode | string;
 }
 
 interface ParagraphProps extends BaseTextInterface {
     isNoMargin?: boolean;
+    lineHeight?: number | string;
     marginBottom?: string; // maybe we should remove isNoMargin
     isMuted?: boolean | number;
     fontWeight?: string | number;
@@ -70,9 +72,10 @@ export const Paragraph = styled.p<ParagraphProps>`
     color: ${props => props.color || props.theme.paragraphColor};
     opacity: ${props => (typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted)};
     text-align: ${props => (props.textAlign ? props.textAlign : props.isCentered && 'center')};
-    line-height: 1.4;
+    line-height: ${props => props.lineHeight};
 `;
 
 Paragraph.defaultProps = {
     isMuted: true,
+    lineHeight: 1.4,
 };

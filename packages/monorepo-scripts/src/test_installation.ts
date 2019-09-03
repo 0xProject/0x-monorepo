@@ -105,7 +105,7 @@ async function testInstallPackageAsync(
     utils.log(`Testing ${packageName}@${lastChangelogVersion}`);
     const packageDirName = path.join(...`${packageName}-test`.split('/'));
     // NOTE(fabio): The `testDirectory` needs to be somewhere **outside** the monorepo root directory.
-    // Otherwise, it will have access to the hoisted `node_modules` directory and the Typescript missing
+    // Otherwise, it will have access to the hoisted `node_modules` directory and the TypeScript missing
     // type errors will not be caught.
     const testDirectory = path.join(monorepoRootPath, '..', '.installation-test', packageDirName);
     await rimrafAsync(testDirectory);

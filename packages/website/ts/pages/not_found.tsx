@@ -14,17 +14,13 @@ export interface NotFoundProps {
     dispatcher: Dispatcher;
 }
 
-export class NotFound extends React.Component<NotFoundProps> {
-    public render(): React.ReactNode {
-        return (
-            <SiteWrap isFullScreen={true}>
-                <DocumentTitle {...documentConstants.LANDING} />
+export const NotFound: React.FC<NotFoundProps> = () => (
+    <SiteWrap isFullScreen={true}>
+        <DocumentTitle {...documentConstants.LANDING} />
 
-                <FullscreenMessage
-                    headerText={'404'}
-                    bodyText={"Hm... looks like we couldn't find what you are looking for."}
-                />
-            </SiteWrap>
-        );
-    }
-}
+        <FullscreenMessage
+            headerText={'404'}
+            bodyText={"Hm... looks like we couldn't find what you are looking for."}
+        />
+    </SiteWrap>
+);

@@ -21,6 +21,8 @@ Add the following to your `/etc/hosts` file:
 127.0.0.1 0xproject.localhost
 ```
 
+You will also need to have the [aws CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) installed locally and your credentials set up.
+
 ### Install dependencies:
 
 ```bash
@@ -54,6 +56,23 @@ yarn clean
 ```bash
 yarn lint
 ```
+
+### Indexing docs
+
+Before you can index the docs on Algolia, you need to set the admin API key environment variable:
+
+```
+# 0x Website frontend
+export ALGOLIA_ADMIN_API_KEY={YOUR_ADMIN_API_KEY}
+```
+
+```bash
+yarn index_docs
+```
+
+The above script will index all the docs found in the `/mdx` folder on [Algolia](https://www.algolia.com/). It's possible to pass in arguments that match the directory names to index only those document types, i.e. `yarn index_docs --indexes 'tools,core-concepts' --environment development` will index tools and core concepts for `development`.
+
+Running the script updates some of the meta information about the files (relative paths to files and versions of the doc). For other types of information (i.e. title, subtitle, tags...) you will have to update it yourself.
 
 ### Resources
 

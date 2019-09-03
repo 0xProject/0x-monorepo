@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 
 import {
-    ArticlesBySection,
     WebsiteBackendCFLMetricsData,
     WebsiteBackendGasInfo,
     WebsiteBackendJobInfo,
@@ -17,7 +16,6 @@ const JOBS_ENDPOINT = '/jobs';
 const PRICES_ENDPOINT = '/prices';
 const RELAYERS_ENDPOINT = '/relayers';
 const TOKENS_ENDPOINT = '/tokens';
-const WIKI_ENDPOINT = '/wiki';
 const CFL_METRICS_ENDPOINT = '/cfl-metrics';
 const SUBSCRIBE_SUBSTACK_NEWSLETTER_ENDPOINT = '/newsletter_subscriber/substack';
 
@@ -47,10 +45,6 @@ export const backendClient = {
     },
     async getTokenInfosAsync(): Promise<WebsiteBackendTokenInfo[]> {
         const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), TOKENS_ENDPOINT);
-        return result;
-    },
-    async getWikiArticlesBySectionAsync(): Promise<ArticlesBySection> {
-        const result = await fetchUtils.requestAsync(utils.getBackendBaseUrl(), WIKI_ENDPOINT);
         return result;
     },
     async subscribeToNewsletterAsync(email: string): Promise<Response> {

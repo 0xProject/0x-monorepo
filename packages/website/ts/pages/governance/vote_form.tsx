@@ -20,7 +20,7 @@ import { colors } from 'ts/style/colors';
 import { InjectedProvider } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
+import { environments } from 'ts/utils/environments';
 
 export enum VoteValue {
     Yes = 'Yes',
@@ -232,7 +232,7 @@ export class VoteForm extends React.Component<Props> {
                 isAwaitingLedgerSignature: false,
             }));
 
-            const voteDomain = utils.isProduction()
+            const voteDomain = environments.isProduction()
                 ? `https://${configs.DOMAIN_VOTE}`
                 : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/vote`;

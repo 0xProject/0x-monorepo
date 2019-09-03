@@ -2,6 +2,7 @@ import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import {
     BlockParamLiteral,
+    BlockRange,
     ContractAbi,
     FilterObject,
     LogEntry,
@@ -12,7 +13,7 @@ import {
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
-import { BlockRange, EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
+import { EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
 import { filterUtils } from './utils/filter_utils';
 
 const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;

@@ -2,15 +2,15 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
 import { Column, FlexWrap } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { Heading } from 'ts/components/text';
+import { IThemeValuesInterface } from 'ts/style/theme';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 import { Link } from '../documentation/shared/link';
 
 interface Props {
-    theme: ThemeValuesInterface;
+    theme: IThemeValuesInterface;
 }
 
 interface LinkConfig {
@@ -26,9 +26,8 @@ const introData: LinkConfig[] = [
         shouldOpenInNewTab: true,
     },
     {
-        label: 'Legal Wiki',
-        url: `${WebsitePaths.Wiki}#Legal-Wiki`,
-        shouldOpenInNewTab: true,
+        label: 'Legal Guide',
+        url: `${WebsitePaths.DocsGuides}/legal-guide`,
     },
 ];
 

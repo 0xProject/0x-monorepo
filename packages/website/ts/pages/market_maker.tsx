@@ -20,7 +20,10 @@ interface OfferData {
     description: string;
     links?: Action[];
 }
-export interface NextMarketMakerProps {}
+
+interface NextMarketMakerProps {
+    location: Location;
+}
 
 export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
     public state = {
@@ -40,7 +43,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 links: [
                     {
                         label: 'Explore the Docs',
-                        url: `${WebsitePaths.Wiki}#Market-Making-on-0x`,
+                        url: `${WebsitePaths.DocsGuides}/market-making-on-0x`,
                     },
                 ],
             },
@@ -64,7 +67,11 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
             },
         ];
     }
-
+    public componentDidMount(): void {
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
+        }
+    }
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
@@ -127,7 +134,7 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
                 <Banner
                     heading="Start trading today."
                     subline="Check out our Market Making tutorials to get started"
-                    mainCta={{ text: 'Tutorials', href: `${WebsitePaths.Wiki}#Market-Making-on-0x` }}
+                    mainCta={{ text: 'Tutorials', href: `${WebsitePaths.DocsGuides}/market-making-on-0x` }}
                     secondaryCta={{ text: 'Apply Now', onClick: this._onOpenContactModal }}
                 />
                 <ModalContact
@@ -139,17 +146,19 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
         );
     }
 
-    private readonly _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    private readonly _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 
     private readonly _renderHeroActions = () => (
         <>
-            <Button href={`${WebsitePaths.Wiki}#Market-Making-on-0x`} bgColor="dark" isInline={true}>
+            <Button href={`${WebsitePaths.DocsGuides}/market-making-on-0x`} bgColor="dark" isInline={true}>
                 Get Started
             </Button>
             <Button

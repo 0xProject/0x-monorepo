@@ -88,10 +88,19 @@ const useCaseSlides = [
 
 configureAnchors({ offset: -60 });
 
-export class NextWhy extends React.Component {
+interface Props {
+    location: Location;
+}
+
+export class NextWhy extends React.Component<Props> {
     public state = {
         isContactModalOpen: false,
     };
+    public componentDidMount(): void {
+        if (this.props.location.hash.includes('contact')) {
+            this._onOpenContactModal();
+        }
+    }
     public render(): React.ReactNode {
         const buildAction = (
             <Button href="/docs" isWithArrow={true} isAccentColor={true}>
@@ -217,12 +226,14 @@ export class NextWhy extends React.Component {
         );
     }
 
-    public _onOpenContactModal = (): void => {
-        this.setState({ isContactModalOpen: true });
+    private readonly _onDismissContactModal = (): void => {
+        window.history.replaceState(null, null, window.location.pathname + window.location.search);
+        this.setState({ isContactModalOpen: false });
     };
 
-    public _onDismissContactModal = (): void => {
-        this.setState({ isContactModalOpen: false });
+    private readonly _onOpenContactModal = (): void => {
+        window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
+        this.setState({ isContactModalOpen: true });
     };
 }
 

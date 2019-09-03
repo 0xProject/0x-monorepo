@@ -1,152 +1,59 @@
 import * as React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
-import { colors } from 'ts/style/colors';
-
+import { Header as DocsHeader } from 'ts/components/docs/header/header';
 import { Footer } from 'ts/components/footer';
-import { Header } from 'ts/components/header';
-import { GlobalStyles } from 'ts/constants/globalStyle';
+import { Header as MainHeader } from 'ts/components/header';
 
-interface Props {
+import { GlobalStyles } from 'ts/constants/globalStyle';
+import { GLOBAL_THEMES } from 'ts/style/theme';
+
+interface ISiteWrapProps {
     theme?: 'dark' | 'light' | 'gray';
+    isDocs?: boolean;
     isFullScreen?: boolean;
     children: any;
 }
 
-interface State {
-    isMobileNavOpen: boolean;
-}
-
-interface MainProps {
+interface IMainProps {
     isNavToggled: boolean;
     isFullScreen?: boolean;
 }
 
-export interface ThemeValuesInterface {
-    bgColor: string;
-    darkBgColor?: string;
-    lightBgColor: string;
-    introTextColor: string;
-    textColor: string;
-    paragraphColor: string;
-    linkColor: string;
-    mobileNavBgUpper: string;
-    mobileNavBgLower: string;
-    mobileNavColor: string;
-    dropdownBg: string;
-    dropdownButtonBg: string;
-    dropdownBorderColor?: string;
-    dropdownColor: string;
-    headerButtonBg: string;
-    footerBg: string;
-    footerColor: string;
-}
+export const SiteWrap: React.FC<ISiteWrapProps> = props => {
+    const { children, theme = 'dark', isDocs, isFullScreen } = props;
+    const [isMobileNavOpen, setIsMobileNavOpen] = React.useState<boolean>(false);
 
-export interface ThemeInterface {
-    [key: string]: ThemeValuesInterface;
-}
+    const Header = isDocs ? DocsHeader : MainHeader;
 
-const GLOBAL_THEMES: ThemeInterface = {
-    dark: {
-        bgColor: '#000000',
-        darkBgColor: '#111A19',
-        lightBgColor: '#003831',
-        introTextColor: 'rgba(255, 255, 255, 0.75)',
-        textColor: '#FFFFFF',
-        paragraphColor: '#FFFFFF',
-        linkColor: colors.brandLight,
-        mobileNavBgUpper: '#003831',
-        mobileNavBgLower: '#022924',
-        mobileNavColor: '#FFFFFF',
-        dropdownBg: '#111A19',
-        dropdownButtonBg: '#003831',
-        dropdownColor: '#FFFFFF',
-        headerButtonBg: '#00AE99',
-        footerBg: '#181818',
-        footerColor: '#FFFFFF',
-    },
-    light: {
-        bgColor: '#FFFFFF',
-        lightBgColor: '#F3F6F4',
-        darkBgColor: '#003831',
-        introTextColor: 'rgba(92, 92, 92, 0.87)',
-        textColor: '#000000',
-        paragraphColor: '#474747',
-        linkColor: colors.brandDark,
-        mobileNavBgUpper: '#FFFFFF',
-        mobileNavBgLower: '#F3F6F4',
-        mobileNavColor: '#000000',
-        dropdownBg: '#FBFBFB',
-        dropdownButtonBg: '#F3F6F4',
-        dropdownColor: '#003831',
-        dropdownBorderColor: '#E4E4E4',
-        headerButtonBg: '#003831',
-        footerBg: '#F2F2F2',
-        footerColor: '#000000',
-    },
-    gray: {
-        bgColor: '#e0e0e0',
-        lightBgColor: '#003831',
-        introTextColor: 'rgba(92, 92, 92, 0.87)',
-        textColor: '#000000',
-        paragraphColor: '#777777',
-        linkColor: colors.brandDark,
-        mobileNavBgUpper: '#FFFFFF',
-        mobileNavBgLower: '#F3F6F4',
-        mobileNavColor: '#000000',
-        dropdownBg: '#FFFFFF',
-        dropdownButtonBg: '#F3F6F4',
-        dropdownColor: '#003831',
-        headerButtonBg: '#003831',
-        footerBg: '#181818',
-        footerColor: '#FFFFFF',
-    },
-};
-
-export class SiteWrap extends React.Component<Props, State> {
-    public state = {
-        isMobileNavOpen: false,
-    };
-
-    public componentDidMount(): void {
+    React.useEffect(() => {
         document.documentElement.style.overflowY = 'auto';
         window.scrollTo(0, 0);
-    }
+    }, []);
 
-    public toggleMobileNav = () => {
-        this.setState({
-            isMobileNavOpen: !this.state.isMobileNavOpen,
-        });
-    };
+    const toggleMobileNav = () => setIsMobileNavOpen(!isMobileNavOpen);
 
-    public render(): React.ReactNode {
-        const { children, theme = 'dark', isFullScreen } = this.props;
-        const { isMobileNavOpen } = this.state;
-        const currentTheme = GLOBAL_THEMES[theme];
-
-        return (
+    return (
+        <ThemeProvider theme={GLOBAL_THEMES[theme]}>
             <>
-                <ThemeProvider theme={currentTheme}>
-                    <>
-                        <GlobalStyles />
+                <GlobalStyles />
 
-                        <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
+                <Header isNavToggled={isMobileNavOpen} toggleMobileNav={toggleMobileNav} />
 
-                        <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>
-                            {children}
-                        </Main>
+                <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>
+                    {children}
+                </Main>
 
-                        <Footer />
-                    </>
-                </ThemeProvider>
+                <Footer isDocs={isDocs} />
             </>
-        );
-    }
-}
+        </ThemeProvider>
+    );
+};
 
-const Main = styled.main<MainProps>`
+const Main = styled.main<IMainProps>`
     transition: transform 0.5s, opacity 0.5s;
     opacity: ${props => props.isNavToggled && '0.5'};
+    padding-bottom: 70px;
 
     ${props =>
         props.isFullScreen &&

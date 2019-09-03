@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/components/siteWrap';
+import { IThemeInterface } from 'ts/style/theme';
 
 import { colors } from 'ts/style/colors';
 import { withFilteredProps } from 'ts/utils/filter_props';
@@ -27,9 +27,10 @@ export interface ButtonInterface {
     href?: string;
     type?: string;
     target?: string;
+    textAlign?: string;
     to?: string;
     onClick?: (e: any) => any;
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
     shouldUseAnchorTag?: boolean;
 }
 
@@ -64,6 +65,7 @@ export const Button: React.StatelessComponent<ButtonInterface> = (props: ButtonI
 
 Button.defaultProps = {
     borderColor: 'rgba(255, 255, 255, .4)',
+    textAlign: 'center',
 };
 
 const ButtonBase = styled.button<ButtonInterface>`
@@ -78,7 +80,7 @@ const ButtonBase = styled.button<ButtonInterface>`
     padding: ${props =>
         !props.isNoPadding && !props.isWithArrow && ((!!props.padding && props.padding) || '18px 30px')};
     white-space: ${props => props.isWithArrow && 'nowrap'};
-    text-align: center;
+    text-align: ${props => props.textAlign};
     font-size: ${props => (props.fontSize ? props.fontSize : props.isWithArrow ? '20px' : '18px')};
     text-decoration: none;
     cursor: pointer;
