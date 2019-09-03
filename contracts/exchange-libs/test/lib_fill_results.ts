@@ -225,23 +225,6 @@ blockchainTests('LibFillResults', env => {
                 ).to.revertWith(expectedError);
             });
 
-            it('reverts if `order.makerAssetAmount` is 0', async () => {
-                const order = makeOrder({
-                    makerAssetAmount: constants.ZERO_AMOUNT,
-                    takerAssetAmount: ONE_ETHER,
-                });
-                const takerAssetFilledAmount = ONE_ETHER;
-                const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(
-                    libsContract.calculateFillResults.callAsync(
-                        order,
-                        takerAssetFilledAmount,
-                        DEFAULT_PROTOCOL_FEE_MULTIPLIER,
-                        DEFAULT_GAS_PRICE,
-                    ),
-                ).to.revertWith(expectedError);
-            });
-
             it('reverts if `order.takerAssetAmount` is 0', async () => {
                 const order = makeOrder({
                     makerAssetAmount: ONE_ETHER,
