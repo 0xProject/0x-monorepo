@@ -1,4 +1,4 @@
-import { OrderAndTraderInfo, OrderStatus, OrderValidatorContract } from '@0x/contract-wrappers';
+import { OrderStatus, OrderValidatorContract } from '@0x/contract-wrappers';
 import { orderCalculationUtils, sortingUtils } from '@0x/order-utils';
 import { RemainingFillableCalculator } from '@0x/order-utils/lib/src/remaining_fillable_calculator';
 import { SignedOrder } from '@0x/types';
@@ -51,8 +51,8 @@ export const orderProviderResponseProcessor = {
                     filteredOrders,
                     takerAddresses,
                 );
-                const ordersAndTradersInfo: OrderAndTraderInfo[] = ordersInfo.map((orderInfo, index) => {
-                    const singleOrderAndTraderInfo: OrderAndTraderInfo = {
+                const ordersAndTradersInfo: any[] = ordersInfo.map((orderInfo, index) => {
+                    const singleOrderAndTraderInfo = {
                         orderInfo,
                         traderInfo: tradersInfo[index],
                     };
@@ -105,7 +105,7 @@ function filterOutExpiredAndNonOpenOrders(
  */
 function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
     inputOrders: SignedOrder[],
-    ordersAndTradersInfo: OrderAndTraderInfo[],
+    ordersAndTradersInfo: any[],
     isMakerAssetZrxToken: boolean,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     // iterate through the input orders and find the ones that are still fillable
