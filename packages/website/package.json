@@ -7,9 +7,9 @@
     "private": true,
     "description": "Website and 0x portal dapp",
     "scripts": {
-        "build": "npm run update:tools; yarn build:dev",
-        "build:prod": "npm run update:tools; node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
-        "build:dev": "npm run update:tools; ../../node_modules/.bin/webpack --mode development",
+        "build": "yarn build:dev",
+        "build:prod": "node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
+        "build:dev": "../../node_modules/.bin/webpack --mode development",
         "clean": "shx rm -rf public/bundle*",
         "lint": "tslint --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
         "fix": "tslint --fix --format stylish --project . 'ts/**/*.ts' 'ts/**/*.tsx'",
