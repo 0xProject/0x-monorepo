@@ -41,7 +41,7 @@ contract ISignatureValidator {
     event SignatureValidatorApproval(
         address indexed signerAddress,     // Address that approves or disapproves a contract to verify signatures.
         address indexed validatorAddress,  // Address of signature validator contract.
-        bool approved                      // Approval or disapproval of validator contract.
+        bool isApproved                    // Approval or disapproval of validator contract.
     );
 
     /// @dev Approves a hash on-chain.

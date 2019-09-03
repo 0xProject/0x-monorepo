@@ -483,7 +483,11 @@ contract MixinExchangeCore is
             if (address(this).balance >= protocolFee) {
                 valuePaid = protocolFee;
             }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(order.makerAddress, takerAddress, protocolFee);
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
+                order.makerAddress,
+                takerAddress,
+                protocolFee
+            );
         } else {
             fillResults.protocolFeePaid = 0;
         }

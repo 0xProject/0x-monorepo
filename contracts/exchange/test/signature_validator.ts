@@ -1152,7 +1152,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
-            expect(logArgs.approved).to.equal(approval);
+            expect(logArgs.isApproved).to.equal(approval);
         });
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is disapproved', async () => {
             const approval = false;
@@ -1170,7 +1170,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
-            expect(logArgs.approved).to.equal(approval);
+            expect(logArgs.isApproved).to.equal(approval);
         });
     });
 });

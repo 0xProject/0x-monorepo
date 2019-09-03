@@ -41,7 +41,7 @@ library LibZeroExTransaction {
     struct ZeroExTransaction {
         uint256 salt;                   // Arbitrary number to ensure uniqueness of transaction hash.
         uint256 expirationTimeSeconds;  // Timestamp in seconds at which transaction expires.
-        uint256 gasPrice;               // gasPrice at which transaction is required to be executed with.
+        uint256 gasPrice;               // gasPrice that transaction is required to be executed with.
         address signerAddress;          // Address of transaction signer.
         bytes data;                     // AbiV2 encoded calldata.
     }

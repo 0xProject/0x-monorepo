@@ -120,14 +120,14 @@ contract MixinAssetProxyDispatcher is
             );
 
             // Call the asset proxy's transferFrom function with the constructed calldata.
-            (bool didSucceed, bytes memory revertData) = assetProxy.call(proxyCalldata);
+            (bool didSucceed, bytes memory returnData) = assetProxy.call(proxyCalldata);
 
             // If the transaction did not succeed, revert with the returned data.
             if (!didSucceed) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyTransferError(
                     orderHash,
                     assetData,
-                    revertData
+                    returnData
                 ));
             }
         }

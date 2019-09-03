@@ -611,7 +611,7 @@ blockchainTests.resets('Exchange transactions', env => {
                 >).args;
                 expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
                 expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
-                expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
+                expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
             });
             it('should approve a validator for the caller if called with no signature', async () => {
                 const shouldApprove = true;
@@ -633,7 +633,7 @@ blockchainTests.resets('Exchange transactions', env => {
                 >).args;
                 expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
                 expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
-                expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
+                expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
             });
         });
         describe('batchExecuteTransactions', () => {

@@ -513,7 +513,11 @@ contract MixinMatchOrders is
             if (balance >= protocolFee) {
                 valuePaid = protocolFee;
             }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(leftOrder.makerAddress, takerAddress, protocolFee);
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
+                leftOrder.makerAddress,
+                takerAddress,
+                protocolFee
+            );
 
             // Pay the right order's protocol fee.
             if (balance - valuePaid >= protocolFee) {
@@ -521,7 +525,11 @@ contract MixinMatchOrders is
             } else {
                 valuePaid = 0;
             }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(rightOrder.makerAddress, takerAddress, protocolFee);
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
+                rightOrder.makerAddress,
+                takerAddress,
+                protocolFee
+            );
         } else {
             matchedFillResults.left.protocolFeePaid = 0;
             matchedFillResults.right.protocolFeePaid = 0;
