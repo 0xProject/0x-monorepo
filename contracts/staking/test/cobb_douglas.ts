@@ -1,7 +1,6 @@
-import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
-import { AnyRevertError, BigNumber, FixedMathRevertErrors, OwnableRevertErrors } from '@0x/utils';
-import { Decimal } from 'decimal.js';
+import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
@@ -11,7 +10,7 @@ import {
     TestCobbDouglasEvents,
 } from '../src/';
 
-import { assertRoughlyEquals, Numberish } from './utils/number_utils';
+import { assertRoughlyEquals, getRandomInteger, getRandomPortion, Numberish, toDecimal } from './utils/number_utils';
 
 // tslint:disable: no-unnecessary-type-assertion
 blockchainTests('Cobb-Douglas', env => {
@@ -31,23 +30,6 @@ blockchainTests('Cobb-Douglas', env => {
             artifacts,
         );
     });
-
-    function toDecimal(x: Numberish): Decimal {
-        if (BigNumber.isBigNumber(x)) {
-            return new Decimal(x.toString(10));
-        }
-        return new Decimal(x);
-    }
-
-    function getRandomInteger(min: Numberish, max: Numberish): BigNumber {
-        const range = new BigNumber(max).minus(min);
-        const random = new BigNumber(hexRandom().substr(2), 16);
-        return random.mod(range).plus(min);
-    }
-
-    function getRandomPortion(total: Numberish): BigNumber {
-        return new BigNumber(total).times(Math.random()).integerValue();
-    }
 
     blockchainTests.resets('setCobbDouglasAlpha()', () => {
         const NEGATIVE_ONE = constants.MAX_UINT256.minus(1);
@@ -127,7 +109,7 @@ blockchainTests('Cobb-Douglas', env => {
             gas?: number;
         }
 
-        const MAX_COBB_DOUGLAS_GAS = 15e3;
+        const MAX_COBB_DOUGLAS_GAS = 11e3;
         const TX_GAS_FEE = 21e3;
         const DEFAULT_COBB_DOUGLAS_PARAMS: CobbDouglasParams = {
             totalRewards: 100e18,
@@ -171,7 +153,7 @@ blockchainTests('Cobb-Douglas', env => {
             return new BigNumber(
                 feeRatio
                     .pow(alpha)
-                    .times(stakeRatio.pow(new Decimal(1).minus(alpha)))
+                    .times(stakeRatio.pow(toDecimal(1).minus(alpha)))
                     .times(toDecimal(totalRewards))
                     .toFixed(0, BigNumber.ROUND_FLOOR),
             );
@@ -195,39 +177,6 @@ blockchainTests('Cobb-Douglas', env => {
                 alphaDenominator,
             };
         }
-
-        it('throws if `alphaNumerator` > `alphaDenominator`', async () => {
-            return expect(
-                callCobbDouglasAsync({
-                    alphaNumerator: 11,
-                    alphaDenominator: 10,
-                }),
-            ).to.revertWith(new AnyRevertError()); // Just an assertion failure.
-        });
-
-        it('throws if `ownerFees` > `totalFees`', async () => {
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
-                FixedMathRevertErrors.ValueErrorCodes.TooLarge,
-            );
-            return expect(
-                callCobbDouglasAsync({
-                    ownerFees: 11,
-                    totalFees: 10,
-                }),
-            ).to.revertWith(expectedError);
-        });
-
-        it('throws if `ownerStake` > `totalStake`', async () => {
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
-                FixedMathRevertErrors.ValueErrorCodes.TooLarge,
-            );
-            return expect(
-                callCobbDouglasAsync({
-                    ownerStake: 11,
-                    totalStake: 10,
-                }),
-            ).to.revertWith(expectedError);
-        });
 
         it('computes the correct reward', async () => {
             const expected = cobbDouglas();

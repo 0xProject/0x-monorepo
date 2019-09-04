@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { artifacts, TestLibFixedMathContract } from '../src/';
 
-import { assertRoughlyEquals, Numberish } from './utils/number_utils';
+import { assertRoughlyEquals, fromFixed, Numberish, toDecimal, toFixed } from './utils/number_utils';
 
 blockchainTests('LibFixedMath', env => {
     let testContract: TestLibFixedMathContract;
@@ -29,27 +29,8 @@ blockchainTests('LibFixedMath', env => {
     const MIN_LN_NUMBER = new BigNumber(new Decimal(MIN_EXP_NUMBER.toFixed(128)).exp().toFixed(128));
     const FUZZ_COUNT = 1024;
 
-    function fromFixed(n: Numberish): BigNumber {
-        return new BigNumber(n).dividedBy(FIXED_POINT_DIVISOR);
-    }
-
-    function toFixed(n: Numberish): BigNumber {
-        return new BigNumber(n).times(FIXED_POINT_DIVISOR).integerValue();
-    }
-
-    function numberToFixedToNumber(n: Numberish): BigNumber {
-        return fromFixed(toFixed(n));
-    }
-
-    function toDecimal(x: Numberish): Decimal {
-        if (BigNumber.isBigNumber(x)) {
-            return new Decimal(x.toString(10));
-        }
-        return new Decimal(x);
-    }
-
     function assertFixedEquals(actualFixed: Numberish, expected: Numberish): void {
-        expect(fromFixed(actualFixed)).to.bignumber.eq(numberToFixedToNumber(expected));
+        expect(fromFixed(actualFixed)).to.bignumber.eq(fromFixed(toFixed(expected)));
     }
 
     function assertFixedRoughlyEquals(actualFixed: Numberish, expected: Numberish, precision: number = 18): void {

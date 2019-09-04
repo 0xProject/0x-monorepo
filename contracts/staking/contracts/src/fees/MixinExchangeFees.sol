@@ -93,7 +93,7 @@ contract MixinExchangeFees is
     {
         uint256 amount = msg.value;
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        if (poolId != 0x0) {
+        if (poolId != NIL_MAKER_ID) {
             // There is a pool associated with `makerAddress`.
             // TODO(dorothy-zbornak): When we have epoch locks on delegating, we could
             // preclude pools that have no delegated stake, since they will never have
@@ -212,7 +212,7 @@ contract MixinExchangeFees is
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
                     .safeMul(REWARD_DELEGATED_STAKE_WEIGHT)
-                    .safeDiv(PPM_ONE)
+                    .safeDiv(PPM_DENOMINATOR)
             );
 
             // store pool stats
@@ -309,7 +309,6 @@ contract MixinExchangeFees is
         pure
         returns (uint256 ownerRewards)
     {
-        assert(alphaNumerator <= alphaDenominator);
         int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
         int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
         if (feeRatio == 0 || stakeRatio == 0) {
@@ -317,36 +316,37 @@ contract MixinExchangeFees is
         }
 
         // The cobb-doublas function has the form:
-        // totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)
-        // We instead use:
-        // totalRewards * stakeRatio * e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
+        // `totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)`
+        // This is equivalent to:
+        // `totalRewards * stakeRatio * e^(alpha * (ln(feeRatio / stakeRatio)))`
+        // However, because `ln(x)` has the domain of `0 < x < 1`
+        // and `exp(x)` has the domain of `x < 0`,
+        // and fixed-point math easily overflows with multiplication,
+        // we will choose the following if `stakeRatio > feeRatio`:
+        // `totalRewards * stakeRatio / e^(alpha * (ln(stakeRatio / feeRatio)))`
 
-        // Compute e^(alpha * (ln(feeRatio) - ln(stakeRatio)))
-        int256 logFeeRatio = LibFixedMath._ln(feeRatio);
-        int256 logStakeRatio = LibFixedMath._ln(stakeRatio);
-        int256 n;
-        if (logFeeRatio <= logStakeRatio) {
-            n = LibFixedMath._exp(
-                LibFixedMath._mulDiv(
-                    LibFixedMath._sub(logFeeRatio, logStakeRatio),
-                    int256(alphaNumerator),
-                    int256(alphaDenominator)
-                )
-            );
-        } else {
-            n = LibFixedMath._exp(
-                LibFixedMath._mulDiv(
-                    LibFixedMath._sub(logStakeRatio, logFeeRatio),
-                    int256(alphaNumerator),
-                    int256(alphaDenominator)
-                )
-            );
-            n = LibFixedMath._invert(n);
-        }
-        // Multiply the above with totalRewards * stakeRatio
-        ownerRewards = LibFixedMath._uintMul(
-            LibFixedMath._mul(n, stakeRatio),
-            totalRewards
+        // Compute
+        // `e^(alpha * (ln(feeRatio/stakeRatio)))` if feeRatio <= stakeRatio
+        // or
+        // `e^(ln(stakeRatio/feeRatio))` if feeRatio > stakeRatio
+        int256 n = feeRatio <= stakeRatio ?
+            LibFixedMath._div(feeRatio, stakeRatio) :
+            LibFixedMath._div(stakeRatio, feeRatio);
+        n = LibFixedMath._exp(
+            LibFixedMath._mulDiv(
+                LibFixedMath._ln(n),
+                int256(alphaNumerator),
+                int256(alphaDenominator)
+            )
         );
+        // Compute
+        // `totalRewards * n` if feeRatio <= stakeRatio
+        // or
+        // `totalRewards / n` if stakeRatio > feeRatio
+        n = feeRatio <= stakeRatio ?
+            LibFixedMath._mul(stakeRatio, n) :
+            LibFixedMath._div(stakeRatio, n);
+        // Multiply the above with totalRewards.
+        ownerRewards = LibFixedMath._uintMul(n, totalRewards);
     }
 }

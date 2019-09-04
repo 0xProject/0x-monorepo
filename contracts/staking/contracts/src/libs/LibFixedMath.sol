@@ -256,7 +256,7 @@ library LibFixedMath {
         // Multiply with the taylor series for e^q
         int256 y;
         int256 z;
-        // q = x % 0.125
+        // q = x % 0.125 (the residual)
         z = y = x % 0x0000000000000000000000000000000010000000000000000000000000000000;
         z = z * y / FIXED_1; r += z * 0x10e1b3be415a0000; // add y^02 * (20! / 02!)
         z = z * y / FIXED_1; r += z * 0x05a0913f6b1e0000; // add y^03 * (20! / 03!)

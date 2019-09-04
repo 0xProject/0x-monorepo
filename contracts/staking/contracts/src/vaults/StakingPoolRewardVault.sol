@@ -160,7 +160,7 @@ contract StakingPoolRewardVault is
         onlyNotInCatastrophicFailure
     {
         // operator share must be a valid fraction
-        if (poolOperatorShare > PPM_ONE) {
+        if (poolOperatorShare > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(LibStakingRichErrors.InvalidPoolOperatorShareError(
                 poolId,
                 poolOperatorShare
@@ -228,8 +228,8 @@ contract StakingPoolRewardVault is
     {
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
         uint256 operatorPortion = LibMath.getPartialAmountCeil(
-            uint256(balance.operatorShare),  // Operator share out of 100
-            PPM_ONE,
+            uint256(balance.operatorShare),  // Operator share out of 1e6
+            PPM_DENOMINATOR,
             amount
         );
 

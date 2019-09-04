@@ -24,7 +24,7 @@ import "./MixinDeploymentConstants.sol";
 contract MixinConstants is
     MixinDeploymentConstants
 {
-    uint32 constant internal PPM_ONE = 1000000;
+    uint32 constant internal PPM_DENOMINATOR = 1000000;
 
     // The upper 16 bytes represent the pool id, so this would be pool id 1. See MixinStakinPool for more information.
     bytes32 constant internal INITIAL_POOL_ID = 0x0000000000000000000000000000000100000000000000000000000000000000;
