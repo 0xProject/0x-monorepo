@@ -331,10 +331,6 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// Note: This function only needs `refundFinalBalance` modifier because ether will not
-    //        be returned in the event that the delegatecall fails. This said, there is no
-    //        reason to invoke `disableRefundUntilEnd` because it is cheaper to use this modifier
-    //        and the inner refund will not affect the logic of this call.
     /// @dev Fills the input order.
     ///      Returns a null FillResults instance if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.

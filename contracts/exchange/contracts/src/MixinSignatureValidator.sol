@@ -122,12 +122,13 @@ contract MixinSignatureValidator is
                 signature
             ));
         }
-        return _validateHashSignatureTypes(
+        isValid = _validateHashSignatureTypes(
             signatureType,
             hash,
             signerAddress,
             signature
         );
+        return isValid;
     }
 
     /// @dev Verifies that a signature for an order is valid.
@@ -143,11 +144,12 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         bytes32 orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
-        return _isValidOrderWithHashSignature(
+        isValid = _isValidOrderWithHashSignature(
             order,
             orderHash,
             signature
         );
+        return isValid;
     }
 
     /// @dev Verifies that a signature for a transaction is valid.
@@ -168,6 +170,7 @@ contract MixinSignatureValidator is
             transactionHash,
             signature
         );
+        return isValid;
     }
 
     /// @dev Checks if a signature is of a type that should be verified for
@@ -255,6 +258,7 @@ contract MixinSignatureValidator is
                 signature
             );
         }
+        return isValid;
     }
 
     /// @dev Verifies that a transaction, with provided order hash, has been signed
@@ -310,6 +314,7 @@ contract MixinSignatureValidator is
                 signature
             );
         }
+        return isValid;
     }
 
     /// Validates a hash-only signature type
@@ -398,6 +403,7 @@ contract MixinSignatureValidator is
             // Signer signed hash previously using the preSign function.
             isValid = preSigned[hash][signerAddress];
         }
+        return isValid;
     }
 
     /// @dev Reads the `SignatureType` from a signature with minimal validation.
@@ -408,7 +414,7 @@ contract MixinSignatureValidator is
     )
         private
         pure
-        returns (SignatureType signatureType)
+        returns (SignatureType)
     {
         if (signature.length == 0) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
@@ -438,8 +444,7 @@ contract MixinSignatureValidator is
             signature
         );
 
-        // Disallow address zero because it is ecrecover() returns zero on
-        // failure.
+        // Disallow address zero because ecrecover() returns zero on failure.
         if (signerAddress == address(0)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
@@ -481,7 +486,7 @@ contract MixinSignatureValidator is
     /// @param walletAddress Address that should have signed the given hash
     ///                      and defines its own signature verification method.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return isValid True if the signature is validated by the Wallet.
+    /// @return True if the signature is validated by the Wallet.
     function _validateHashWithWallet(
         bytes32 hash,
         address walletAddress,
@@ -587,13 +592,13 @@ contract MixinSignatureValidator is
         return isValid;
     }
 
-    /// @dev Performs a staticcall to and EIP11271 compiant `isValidSignature` function and validates the output.
+    /// @dev Performs a staticcall to an EIP1271 compiant `isValidSignature` function and validates the output.
     /// @param verifyingContractAddress Address of EIP1271Wallet or Validator contract.
     /// @param data Arbitrary signed data.
     /// @param signature Proof that the hash has been signed by signer. Bytes will be temporarily be popped
     ///                  off of the signature before calling `isValidSignature`.
     /// @param ignoredSignatureBytesLen The amount of bytes that will be temporarily popped off the the signature.
-    /// @return The validity of the signature and the raw returnData of the call.
+    /// @return The validity of the signature.
     function _staticCallEIP1271WalletWithReducedSignatureLength(
         address verifyingContractAddress,
         bytes memory data,
@@ -602,7 +607,7 @@ contract MixinSignatureValidator is
     )
         private
         view
-        returns (bool isValid)
+        returns (bool)
     {
         // Backup length of the signature
         uint256 signatureLength = signature.length;
