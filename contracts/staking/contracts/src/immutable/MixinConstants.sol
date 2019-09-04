@@ -43,4 +43,7 @@ contract MixinConstants is
     uint64 constant internal INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
     uint256 constant internal MIN_TOKEN_VALUE = 10**18;
+
+    // The address of the canonical WETH contract -- this will be used as an alternative to ether for paying protocol fees.
+    address constant internal WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 }

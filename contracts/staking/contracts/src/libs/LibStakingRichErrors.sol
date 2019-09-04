@@ -113,6 +113,10 @@ library LibStakingRichErrors {
         POOL_IS_FULL
     }
 
+    // bytes4(keccak256("InvalidProtocolFeePaymentError(uint256,uint256)"))
+    bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
+        0x31d7a505;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -356,6 +360,21 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             ETH_VAULT_NOT_SET_ERROR_SELECTOR
+        );
+    }
+
+    function InvalidProtocolFeePaymentError(
+        uint256 expectedProtocolFeePaid,
+        uint256 actualProtocolFeePaid
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR,
+            expectedProtocolFeePaid,
+            actualProtocolFeePaid
         );
     }
 

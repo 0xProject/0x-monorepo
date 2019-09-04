@@ -18,6 +18,8 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
@@ -35,7 +37,19 @@ contract MixinStorage is
     constructor()
         public
         Ownable()
-    {}
+    {
+        // Set the erc20 asset proxy data.
+        wethAssetData = abi.encodeWithSelector(
+            IAssetData(address(0)).ERC20Token.selector,
+            WETH_ADDRESS
+        );
+    }
+
+    // 0x ERC20 Proxy
+    IAssetProxy internal erc20Proxy;
+
+    // The asset data that should be sent to transfer weth
+    bytes internal wethAssetData;
 
     // address of staking contract
     address internal stakingContract;

@@ -19,6 +19,9 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
@@ -80,10 +83,11 @@ contract MixinExchangeFees is
         emit CobbDouglasAlphaChanged(numerator, denominator);
     }
 
-    /// TODO(jalextowle): Add WETH to protocol fees. Should this be unwrapped?
-    /// @dev Pays a protocol fee in ETH.
+    /// @dev Pays a protocol fee in ETH or WETH.
     ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
     /// @param makerAddress The address of the order's maker.
+    /// @param payerAddress The address of the protocol fee payer.
+    /// @param protocolFeePaid The protocol fee that should be paid.
     function payProtocolFee(
         address makerAddress,
         // solhint-disable-next-line
@@ -95,18 +99,37 @@ contract MixinExchangeFees is
         payable
         onlyExchange
     {
-        uint256 amount = msg.value;
+        // Get the pool id of the maker address, and use this pool id to get the amount
+        // of fees collected during this epoch.
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        if (poolId != NIL_POOL_ID) {
-            // There is a pool associated with `makerAddress`.
-            // TODO(dorothy-zbornak): When we have epoch locks on delegating, we could
-            // preclude pools that have no delegated stake, since they will never have
-            // stake in this epoch and are therefore not entitled to rewards.
-            uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
-            if (_feesCollectedThisEpoch == 0) {
-                activePoolsThisEpoch.push(poolId);
-            }
+        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
+
+        if (msg.value == 0) {
+            // Transfer the protocol fee to this address.
+            erc20Proxy.transferFrom(
+                wethAssetData,
+                payerAddress,
+                address(this),
+                protocolFeePaid
+            );
+
+            // Update the amount of protocol fees paid to this pool this epoch.
+            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
+
+        } else if (msg.value == protocolFeePaid) {
+            // Update the amount of protocol fees paid to this pool this epoch.
+            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
+        } else {
+            // If the wrong message value was sent, revert with a rich error.
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                protocolFeePaid,
+                msg.value
+            ));
+        }
+
+        // If there were no fees collected prior to this payment, activate the pool that is being paid.
+        if (_feesCollectedThisEpoch == 0) {
+            activePoolsThisEpoch.push(poolId);
         }
     }
 
@@ -181,7 +204,11 @@ contract MixinExchangeFees is
             uint256 finalContractBalance
         )
     {
-        // initialize return values
+        // step 1/4 - withdraw the entire wrapper ether balance into this contract.
+        //            WETH is unwrapped here to keep `payProtocolFee()` calls relatively cheap.
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
+
         totalActivePools = activePoolsThisEpoch.length;
         totalFeesCollected = 0;
         totalWeightedStake = 0;
@@ -201,7 +228,7 @@ contract MixinExchangeFees is
             );
         }
 
-        // step 1/3 - compute stats for active maker pools
+        // step 2/4 - compute stats for active maker pools
         IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](totalActivePools);
         for (uint256 i = 0; i != totalActivePools; i++) {
             bytes32 poolId = activePoolsThisEpoch[i];
@@ -217,8 +244,9 @@ contract MixinExchangeFees is
             );
 
             // store pool stats
+            uint256 protocolFeeBalance = protocolFeesThisEpochByPool[poolId];
             activePools[i].poolId = poolId;
-            activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
+            activePools[i].feesCollected = protocolFeeBalance;
             activePools[i].weightedStake = weightedStake;
             activePools[i].delegatedStake = totalStakeDelegatedToPool;
 
@@ -240,7 +268,7 @@ contract MixinExchangeFees is
             );
         }
 
-        // step 2/3 - record reward for each pool
+        // step 3/4 - record reward for each pool
         for (uint256 i = 0; i != totalActivePools; i++) {
             // compute reward using cobb-douglas formula
             uint256 reward = _cobbDouglas(
@@ -277,7 +305,7 @@ contract MixinExchangeFees is
         }
         activePoolsThisEpoch.length = 0;
 
-        // step 3/3 send total payout to vault
+        // step 4/4 send total payout to vault
 
         // Sanity check rewards calculation
         if (totalRewardsPaid > initialContractBalance) {
@@ -289,6 +317,7 @@ contract MixinExchangeFees is
         if (totalRewardsPaid > 0) {
             _depositIntoStakingPoolRewardVault(totalRewardsPaid);
         }
+
         finalContractBalance = address(this).balance;
 
         return (

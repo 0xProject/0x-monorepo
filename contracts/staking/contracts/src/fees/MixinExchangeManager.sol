@@ -45,6 +45,17 @@ contract MixinExchangeManager is
         _;
     }
 
+    /// @dev Adds a new erc20 proxy.
+    /// @param erc20AssetProxy The asset proxy that will transfer erc20 tokens.
+    function addERC20AssetProxy(address erc20AssetProxy)
+        external
+        onlyOwner
+    {
+        // Update the erc20 asset proxy.
+        erc20Proxy = IAssetProxy(erc20AssetProxy);
+        emit ERC20AssetProxy(erc20AssetProxy);
+    }
+
     /// @dev Adds a new exchange address
     /// @param addr Address of exchange contract to add
     function addExchangeAddress(address addr)
