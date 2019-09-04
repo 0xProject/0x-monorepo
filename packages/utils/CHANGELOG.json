@@ -15,6 +15,10 @@
                 "pr": 2109
             },
             {
+                "note": "Add `RawRevertError` `RevertError` type.",
+                "pr": 2109
+            },
+            {
                 "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
                 "pr": 2109
             },

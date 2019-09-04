@@ -145,6 +145,9 @@ export abstract class RevertError extends Error {
      * Parameters that are left undefined will not be tested in equality checks.
      * @param declaration Function-style declaration of the revert (e.g., Error(string message))
      * @param values Optional mapping of parameters to values.
+     * @param raw Optional encoded form of the revert error. If supplied, this
+     *        instance will be treated as a `RawRevertError`, meaning it can only
+     *        match other `RawRevertError` types with the same encoded payload.
      */
     protected constructor(name: string, declaration?: string, values?: ValueMap, raw?: string) {
         super(createErrorMessage(name, values));
