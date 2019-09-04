@@ -97,15 +97,12 @@ contract MixinExchangeFees is
             // There is a pool associated with `makerAddress`.
             // TODO(dorothy-zbornak): When we have epoch locks on delegating, we could
             // preclude pools that have no delegated stake, since they will never have
-            // stake in this epoch.
+            // stake in this epoch and are therefore not entitled to rewards.
             uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
             protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
             if (_feesCollectedThisEpoch == 0) {
                 activePoolsThisEpoch.push(poolId);
             }
-        } else {
-            // No pool associated with `makerAddress`. Refund the fee.
-            msg.sender.transfer(amount);
         }
     }
 
