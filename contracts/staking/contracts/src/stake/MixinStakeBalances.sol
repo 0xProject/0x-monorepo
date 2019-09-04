@@ -32,8 +32,6 @@ import "./MixinStakeStorage.sol";
 /// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
     MixinZrxVault,

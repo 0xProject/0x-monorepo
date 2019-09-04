@@ -25,9 +25,7 @@ import "./MixinVaultCore.sol";
 
 /// @dev This vault manages ETH.
 contract EthVault is
-    Authorizable,
     IEthVault,
-    IVaultCore,
     MixinVaultCore
 {
 

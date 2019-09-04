@@ -58,15 +58,8 @@ import "./MixinStakingPoolRewards.sol";
 /// 3. Leverage the staking power of others by convincing them to delegate to your pool.
 contract MixinStakingPool is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
-    MixinZrxVault,
-    MixinScheduler,
-    MixinStakingPoolRewardVault,
-    MixinStakeStorage,
-    MixinStakeBalances,
     MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;

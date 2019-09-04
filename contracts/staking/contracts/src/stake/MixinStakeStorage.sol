@@ -30,11 +30,8 @@ import "./MixinZrxVault.sol";
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
-    MixinZrxVault,
     MixinScheduler
 {
 

@@ -29,14 +29,10 @@ import "./MixinStakingPoolRewardVault.sol";
 
 contract MixinStakingPoolRewards is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
-    MixinZrxVault,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeStorage,
     MixinStakeBalances
 {
 

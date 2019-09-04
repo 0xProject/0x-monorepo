@@ -35,14 +35,9 @@ import "./MixinStakeStorage.sol";
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
 contract MixinStake is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
-    MixinZrxVault,
     MixinScheduler,
-    MixinStakingPoolRewardVault,
-    MixinStakeStorage,
     MixinStakeBalances,
     MixinStakingPoolRewards
 {

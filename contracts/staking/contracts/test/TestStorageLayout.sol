@@ -25,9 +25,6 @@ import "../src/interfaces/IStructs.sol";
 
 
 contract TestStorageLayout is
-    MixinDeploymentConstants,
-    Ownable,
-    MixinConstants,
     MixinStorage
 {
     function assertExpectedStorageLayout()

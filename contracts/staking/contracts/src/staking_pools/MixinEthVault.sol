@@ -27,8 +27,6 @@ import "../immutable/MixinStorage.sol";
 /// (see vaults/EthVault.sol).
 contract MixinEthVault is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage
 {

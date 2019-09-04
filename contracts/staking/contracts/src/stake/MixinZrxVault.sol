@@ -25,8 +25,6 @@ import "../immutable/MixinStorage.sol";
 /// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
 /// (see vaults/ZrxVault.sol).
 contract MixinZrxVault is
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage
 {

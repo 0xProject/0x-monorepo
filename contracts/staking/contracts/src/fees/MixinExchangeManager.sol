@@ -32,7 +32,6 @@ import "../immutable/MixinStorage.sol";
 contract MixinExchangeManager is
     IStakingEvents,
     MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage
 {

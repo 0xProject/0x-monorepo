@@ -34,8 +34,6 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
-    Authorizable,
-    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {
@@ -160,7 +158,7 @@ contract ZrxVault is
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);
-        
+
         // withdraw ZRX to owner
         zrxToken.transfer(
             owner,

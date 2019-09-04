@@ -45,8 +45,6 @@ import "./MixinExchangeManager.sol";
 /// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
     MixinConstants,
     MixinStorage,
     MixinZrxVault,

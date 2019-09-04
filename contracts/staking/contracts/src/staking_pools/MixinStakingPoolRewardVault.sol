@@ -29,9 +29,6 @@ import "../libs/LibStakingRichErrors.sol";
 /// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
-    MixinDeploymentConstants,
-    Ownable,
-    MixinConstants,
     MixinStorage
 {
 
