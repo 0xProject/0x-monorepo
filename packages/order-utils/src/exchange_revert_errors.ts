@@ -11,6 +11,12 @@ export enum BatchMatchOrdersErrorCodes {
     InvalidLengthRightSignatures,
 }
 
+export enum ExchangeContextErrorCodes {
+    InvalidMaker,
+    InvalidTaker,
+    InvalidSender,
+}
+
 export enum FillErrorCode {
     InvalidTakerAmount,
     TakerOverpay,
@@ -106,24 +112,6 @@ export class EIP1271SignatureError extends RevertError {
 export class OrderStatusError extends RevertError {
     constructor(orderHash?: string, status?: OrderStatus) {
         super('OrderStatusError', 'OrderStatusError(bytes32 orderHash, uint8 status)', { orderHash, status });
-    }
-}
-
-export class InvalidSenderError extends RevertError {
-    constructor(orderHash?: string, sender?: string) {
-        super('InvalidSenderError', 'InvalidSenderError(bytes32 orderHash, address sender)', { orderHash, sender });
-    }
-}
-
-export class InvalidTakerError extends RevertError {
-    constructor(orderHash?: string, taker?: string) {
-        super('InvalidTakerError', 'InvalidTakerError(bytes32 orderHash, address taker)', { orderHash, taker });
-    }
-}
-
-export class InvalidMakerError extends RevertError {
-    constructor(orderHash?: string, maker?: string) {
-        super('InvalidMakerError', 'InvalidMakerError(bytes32 orderHash, address maker)', { orderHash, maker });
     }
 }
 
@@ -259,6 +247,31 @@ export class IncompleteFillError extends RevertError {
     }
 }
 
+export class ExchangeInvalidContextError extends RevertError {
+    constructor(error?: ExchangeContextErrorCodes, orderHash?: string, contextAddress?: string) {
+        super(
+            'ExchangeInvalidContextError',
+            'ExchangeInvalidContextError(uint8 error, bytes32 orderHash, address contextAddress)',
+            { error, orderHash, contextAddress },
+        );
+    }
+}
+export class PayProtocolFeeError extends RevertError {
+    constructor(
+        orderHash?: string,
+        protocolFee?: BigNumber,
+        makerAddress?: string,
+        takerAddress?: string,
+        errorData?: string,
+    ) {
+        super(
+            'PayProtocolFeeError',
+            'PayProtocolFeeError(bytes32 orderHash, uint256 protocolFee, address makerAddress, address takerAddress, bytes errorData)',
+            { orderHash, protocolFee, makerAddress, takerAddress, errorData },
+        );
+    }
+}
+
 const types = [
     BatchMatchOrdersError,
     OrderStatusError,
@@ -266,9 +279,6 @@ const types = [
     SignatureValidatorNotApprovedError,
     SignatureWalletError,
     EIP1271SignatureError,
-    InvalidSenderError,
-    InvalidTakerError,
-    InvalidMakerError,
     FillError,
     OrderEpochError,
     AssetProxyExistsError,
@@ -276,9 +286,13 @@ const types = [
     AssetProxyTransferError,
     NegativeSpreadError,
     TransactionError,
+    TransactionGasPriceError,
+    TransactionInvalidContextError,
     TransactionSignatureError,
     TransactionExecutionError,
     IncompleteFillError,
+    PayProtocolFeeError,
+    ExchangeInvalidContextError,
 ];
 
 // Register the types we've defined.

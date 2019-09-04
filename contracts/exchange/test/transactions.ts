@@ -423,7 +423,8 @@ blockchainTests.resets('Exchange transactions', env => {
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
-                const nestedError = new ExchangeRevertErrors.InvalidMakerError(
+                const nestedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                    ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
                     orderHashUtils.getOrderHashHex(order),
                     takerAddress,
                 ).encode();
@@ -479,7 +480,8 @@ blockchainTests.resets('Exchange transactions', env => {
                 );
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
-                const nestedError = new ExchangeRevertErrors.InvalidMakerError(
+                const nestedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                    ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
                     orderHashUtils.getOrderHashHex(orders[0]),
                     takerAddress,
                 ).encode();

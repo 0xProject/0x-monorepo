@@ -36,6 +36,12 @@ library LibExchangeRichErrors {
         INVALID_LENGTH_RIGHT_SIGNATURES
     }
 
+    enum ExchangeContextErrorCodes {
+        INVALID_MAKER,
+        INVALID_TAKER,
+        INVALID_SENDER
+    }
+
     enum FillErrorCodes {
         INVALID_TAKER_AMOUNT,
         TAKER_OVERPAY,
@@ -83,21 +89,13 @@ library LibExchangeRichErrors {
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
         0xfdb6ca8d;
 
-    // bytes4(keccak256("InvalidSenderError(bytes32,address)"))
-    bytes4 internal constant INVALID_SENDER_ERROR_SELECTOR =
-        0x95b59997;
-
-    // bytes4(keccak256("InvalidMakerError(bytes32,address)"))
-    bytes4 internal constant INVALID_MAKER_ERROR_SELECTOR =
-        0x26bf55d9;
+    // bytes4(keccak256("ExchangeInvalidContextError(uint8,bytes32,address)"))
+    bytes4 internal constant EXCHANGE_INVALID_CONTEXT_ERROR_SELECTOR =
+        0xe53c76c8;
 
     // bytes4(keccak256("FillError(uint8,bytes32)"))
     bytes4 internal constant FILL_ERROR_SELECTOR =
         0xe94a7ed0;
-
-    // bytes4(keccak256("InvalidTakerError(bytes32,address)"))
-    bytes4 internal constant INVALID_TAKER_ERROR_SELECTOR =
-        0xfdb328be;
 
     // bytes4(keccak256("OrderEpochError(address,address,uint256)"))
     bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
@@ -147,6 +145,10 @@ library LibExchangeRichErrors {
     bytes4 internal constant BATCH_MATCH_ORDERS_ERROR_SELECTOR =
         0xd4092f4f;
 
+    // bytes4(keccak256("PayProtocolFeeError(bytes32,uint256,address,address,bytes)"))
+    bytes4 internal constant PAY_PROTOCOL_FEE_ERROR_SELECTOR =
+        0x87cb1e75;
+
     // solhint-disable func-name-mixedcase
     function SignatureErrorSelector()
         internal
@@ -188,20 +190,12 @@ library LibExchangeRichErrors {
         return ORDER_STATUS_ERROR_SELECTOR;
     }
 
-    function InvalidSenderErrorSelector()
+    function ExchangeInvalidContextErrorSelector()
         internal
         pure
         returns (bytes4)
     {
-        return INVALID_SENDER_ERROR_SELECTOR;
-    }
-
-    function InvalidMakerErrorSelector()
-        internal
-        pure
-        returns (bytes4)
-    {
-        return INVALID_MAKER_ERROR_SELECTOR;
+        return EXCHANGE_INVALID_CONTEXT_ERROR_SELECTOR;
     }
 
     function FillErrorSelector()
@@ -210,14 +204,6 @@ library LibExchangeRichErrors {
         returns (bytes4)
     {
         return FILL_ERROR_SELECTOR;
-    }
-
-    function InvalidTakerErrorSelector()
-        internal
-        pure
-        returns (bytes4)
-    {
-        return INVALID_TAKER_ERROR_SELECTOR;
     }
 
     function OrderEpochErrorSelector()
@@ -316,6 +302,14 @@ library LibExchangeRichErrors {
         return TRANSACTION_INVALID_CONTEXT_ERROR_SELECTOR;
     }
 
+    function PayProtocolFeeErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return PAY_PROTOCOL_FEE_ERROR_SELECTOR;
+    }
+    
     function BatchMatchOrdersError(
         BatchMatchOrdersErrorCodes errorCode
     )
@@ -416,33 +410,20 @@ library LibExchangeRichErrors {
         );
     }
 
-    function InvalidSenderError(
+    function ExchangeInvalidContextError(
+        ExchangeContextErrorCodes errorCode,
         bytes32 orderHash,
-        address senderAddress
+        address contextAddress
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            INVALID_SENDER_ERROR_SELECTOR,
+            EXCHANGE_INVALID_CONTEXT_ERROR_SELECTOR,
+            errorCode,
             orderHash,
-            senderAddress
-        );
-    }
-
-    function InvalidMakerError(
-        bytes32 orderHash,
-        address makerAddress
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_MAKER_ERROR_SELECTOR,
-            orderHash,
-            makerAddress
+            contextAddress
         );
     }
 
@@ -458,21 +439,6 @@ library LibExchangeRichErrors {
             FILL_ERROR_SELECTOR,
             errorCode,
             orderHash
-        );
-    }
-
-    function InvalidTakerError(
-        bytes32 orderHash,
-        address takerAddress
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_TAKER_ERROR_SELECTOR,
-            orderHash,
-            takerAddress
         );
     }
 
@@ -650,6 +616,27 @@ library LibExchangeRichErrors {
             errorCode,
             expectedAssetFillAmount,
             actualAssetFillAmount
+        );
+    }
+
+    function PayProtocolFeeError(
+        bytes32 orderHash,
+        uint256 protocolFee,
+        address makerAddress,
+        address takerAddress,
+        bytes memory errorData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            PAY_PROTOCOL_FEE_ERROR_SELECTOR,
+            orderHash,
+            protocolFee,
+            makerAddress,
+            takerAddress,
+            errorData
         );
     }
 }

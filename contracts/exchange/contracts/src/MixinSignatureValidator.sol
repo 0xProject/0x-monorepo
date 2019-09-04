@@ -229,11 +229,7 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Validator) {
             // The entire order is verified by a validator contract.
             isValid = _validateBytesWithValidator(
-                abi.encodeWithSelector(
-                    IEIP1271Data(address(0)).OrderWithHash.selector,
-                    order,
-                    orderHash
-                ),
+                _encodeEIP1271OrderWithHash(order, orderHash),
                 orderHash,
                 signerAddress,
                 signature
@@ -241,11 +237,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP1271Wallet) {
             // The entire order is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
-                abi.encodeWithSelector(
-                    IEIP1271Data(address(0)).OrderWithHash.selector,
-                    order,
-                    orderHash
-                ),
+                _encodeEIP1271OrderWithHash(order, orderHash),
                 signerAddress,
                 signature
             );
@@ -285,11 +277,7 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Validator) {
             // The entire transaction is verified by a validator contract.
             isValid = _validateBytesWithValidator(
-                abi.encodeWithSelector(
-                    IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
-                    transaction,
-                    transactionHash
-                ),
+                _encodeEIP1271TransactionWithHash(transaction, transactionHash),
                 transactionHash,
                 signerAddress,
                 signature
@@ -297,11 +285,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP1271Wallet) {
             // The entire transaction is verified by a wallet contract.
             isValid = _validateBytesWithWallet(
-                abi.encodeWithSelector(
-                    IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
-                    transaction,
-                    transactionHash
-                ),
+                _encodeEIP1271TransactionWithHash(transaction, transactionHash),
                 signerAddress,
                 signature
             );
@@ -479,6 +463,40 @@ contract MixinSignatureValidator is
         }
 
         return signatureType;
+    }
+
+    /// @dev ABI encodes an order and hash with a selector to be passed into 
+    ///      an EIP1271 compliant `isValidSignature` function.
+    function _encodeEIP1271OrderWithHash(
+        LibOrder.Order memory order,
+        bytes32 orderHash
+    )
+        private
+        pure
+        returns (bytes memory encoded)
+    {
+        return abi.encodeWithSelector(
+            IEIP1271Data(address(0)).OrderWithHash.selector,
+            order,
+            orderHash
+        );
+    }
+
+    /// @dev ABI encodes a transaction and hash with a selector to be passed into 
+    ///      an EIP1271 compliant `isValidSignature` function.
+    function _encodeEIP1271TransactionWithHash(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes32 transactionHash
+    )
+        private
+        pure
+        returns (bytes memory encoded)
+    {
+        return abi.encodeWithSelector(
+            IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
+            transaction,
+            transactionHash
+        );
     }
 
     /// @dev Verifies a hash and signature using logic defined by Wallet contract.

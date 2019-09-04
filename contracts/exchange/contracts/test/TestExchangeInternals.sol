@@ -51,8 +51,8 @@ contract TestExchangeInternals is
         _assertValidMatch(
             leftOrder,
             rightOrder,
-            getOrderInfo(leftOrder),
-            getOrderInfo(rightOrder)
+            leftOrder.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH),
+            rightOrder.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH)
         );
     }
 

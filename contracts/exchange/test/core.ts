@@ -493,7 +493,11 @@ blockchainTests.resets('Exchange core', () => {
 
         it('should revert if not sent by maker', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.InvalidMakerError(orderHash, takerAddress);
+            const expectedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
+                orderHash,
+                takerAddress,
+            );
             const tx = exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });

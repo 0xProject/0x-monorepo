@@ -79,9 +79,21 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     (() => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         const address = addressUtils.generatePseudoRandomAddress();
-        createDecodeTest(ExchangeRevertErrors.InvalidSenderError, [orderHash, address]);
-        createDecodeTest(ExchangeRevertErrors.InvalidMakerError, [orderHash, address]);
-        createDecodeTest(ExchangeRevertErrors.InvalidTakerError, [orderHash, address]);
+        createDecodeTest(ExchangeRevertErrors.ExchangeInvalidContextError, [
+            ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
+            orderHash,
+            address,
+        ]);
+        createDecodeTest(ExchangeRevertErrors.ExchangeInvalidContextError, [
+            ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidTaker,
+            orderHash,
+            address,
+        ]);
+        createDecodeTest(ExchangeRevertErrors.ExchangeInvalidContextError, [
+            ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidSender,
+            orderHash,
+            address,
+        ]);
     })();
 
     (() => {
