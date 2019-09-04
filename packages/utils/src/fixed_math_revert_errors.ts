@@ -15,27 +15,27 @@ export enum BinOpErrorCodes {
     DivisionByZero,
 }
 
-export class FixedMathSignedValueError extends RevertError {
+export class SignedValueError extends RevertError {
     constructor(error?: ValueErrorCodes, n?: BigNumber | number | string) {
-        super('FixedMathSignedValueError', 'FixedMathSignedValueError(uint8 error, int256 n)', {
+        super('SignedValueError', 'SignedValueError(uint8 error, int256 n)', {
             error,
             n,
         });
     }
 }
 
-export class FixedMathUnsignedValueError extends RevertError {
+export class UnsignedValueError extends RevertError {
     constructor(error?: ValueErrorCodes, n?: BigNumber | number | string) {
-        super('FixedMathUnsignedValueError', 'FixedMathUnsignedValueError(uint8 error, uint256 n)', {
+        super('UnsignedValueError', 'UnsignedValueError(uint8 error, uint256 n)', {
             error,
             n,
         });
     }
 }
 
-export class FixedMathBinOpError extends RevertError {
+export class BinOpError extends RevertError {
     constructor(error?: BinOpErrorCodes, a?: BigNumber | number | string, b?: BigNumber | number | string) {
-        super('FixedMathBinOpError', 'FixedMathBinOpError(uint8 error, int256 a, int256 b)', {
+        super('BinOpError', 'BinOpError(uint8 error, int256 a, int256 b)', {
             error,
             a,
             b,
@@ -43,7 +43,7 @@ export class FixedMathBinOpError extends RevertError {
     }
 }
 
-const types = [FixedMathSignedValueError, FixedMathUnsignedValueError, FixedMathBinOpError];
+const types = [SignedValueError, UnsignedValueError, BinOpError];
 
 // Register the types we've defined.
 for (const type of types) {
