@@ -27,7 +27,6 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
-import "@0x/contracts-staking/contracts/src/interfaces/IStaking.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinProtocolFees.sol";
@@ -350,8 +349,10 @@ contract MixinExchangeCore is
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(
-                    orderInfo.orderHash, msg.sender
+                LibRichErrors.rrevert(LibExchangeRichErrors.ExchangeInvalidContextError(
+                    LibExchangeRichErrors.ExchangeContextErrorCodes.INVALID_SENDER,
+                    orderInfo.orderHash,
+                    msg.sender
                 ));
             }
         }
@@ -359,8 +360,10 @@ contract MixinExchangeCore is
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             if (order.takerAddress != takerAddress) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidTakerError(
-                    orderInfo.orderHash, takerAddress
+                LibRichErrors.rrevert(LibExchangeRichErrors.ExchangeInvalidContextError(
+                    LibExchangeRichErrors.ExchangeContextErrorCodes.INVALID_TAKER,
+                    orderInfo.orderHash,
+                    takerAddress
                 ));
             }
         }
@@ -404,14 +407,22 @@ contract MixinExchangeCore is
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
+                LibRichErrors.rrevert(LibExchangeRichErrors.ExchangeInvalidContextError(
+                    LibExchangeRichErrors.ExchangeContextErrorCodes.INVALID_SENDER,
+                    orderInfo.orderHash,
+                    msg.sender
+                ));
             }
         }
 
         // Validate transaction signed by maker
         address makerAddress = _getCurrentContextAddress();
         if (order.makerAddress != makerAddress) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
+            LibRichErrors.rrevert(LibExchangeRichErrors.ExchangeInvalidContextError(
+                LibExchangeRichErrors.ExchangeContextErrorCodes.INVALID_MAKER,
+                orderInfo.orderHash,
+                makerAddress
+            ));
         }
     }
 
@@ -464,31 +475,16 @@ contract MixinExchangeCore is
             fillResults.makerFeePaid
         );
 
-        // Transfer protocol fee -> staking if the fee should be paid
-        address feeCollector = protocolFeeCollector;
-        if (feeCollector != address(0)) {
-            // Create a stack variable to hold the value that will be sent so that the gas optimization of
-            // only having one call statement can be implemented.
-            uint256 valuePaid = 0;
+        // Pay protocol fee
+        bool didPayProtocolFee = _paySingleProtocolFee(
+            orderHash,
+            fillResults.protocolFeePaid,
+            order.makerAddress,
+            takerAddress
+        );
 
-            // Calculate the protocol fee that should be paid and populate the `protocolFeePaid` field in `fillResults`.
-            // It's worth noting that we leave this calculation until now so that work isn't wasted if a fee collector
-            // is not registered in the exchange.
-            uint256 protocolFee = fillResults.protocolFeePaid;
-
-            // If sufficient ether was sent to the contract, the protocol fee should be paid in ETH.
-            // Otherwise the fee should be paid in WETH. Since the exchange doesn't actually handle
-            // this case, it will just forward the procotolFee in ether in case 1 and will send zero
-            // value in case 2.
-            if (address(this).balance >= protocolFee) {
-                valuePaid = protocolFee;
-            }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
-                order.makerAddress,
-                takerAddress,
-                protocolFee
-            );
-        } else {
+        // Protocol fees are not paid if the protocolFeeCollector contract is not set
+        if (!didPayProtocolFee) {
             fillResults.protocolFeePaid = 0;
         }
     }

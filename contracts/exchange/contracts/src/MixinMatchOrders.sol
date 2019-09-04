@@ -156,13 +156,13 @@ contract MixinMatchOrders is
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
-    /// @param leftOrderInfo OrderStatus, orderHash, and amount already filled of leftOrder.
-    /// @param rightOrderInfo OrderStatus, orderHash, and amount already filled of rightOrder.
+    /// @param leftOrderHash First matched order hash.
+    /// @param rightOrderHash Second matched order hash.
     function _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
-        LibOrder.OrderInfo memory leftOrderInfo,
-        LibOrder.OrderInfo memory rightOrderInfo
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash
     )
         internal
         view
@@ -178,8 +178,8 @@ contract MixinMatchOrders is
         if (leftOrder.makerAssetAmount.safeMul(rightOrder.makerAssetAmount) <
             leftOrder.takerAssetAmount.safeMul(rightOrder.takerAssetAmount)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.NegativeSpreadError(
-                leftOrderInfo.orderHash,
-                rightOrderInfo.orderHash
+                leftOrderHash,
+                rightOrderHash
             ));
         }
     }
@@ -379,8 +379,8 @@ contract MixinMatchOrders is
         _assertValidMatch(
             leftOrder,
             rightOrder,
-            leftOrderInfo,
-            rightOrderInfo
+            leftOrderInfo.orderHash,
+            rightOrderInfo.orderHash
         );
 
         // Compute proportional fill amounts
@@ -495,42 +495,18 @@ contract MixinMatchOrders is
             matchedFillResults.profitInRightMakerAsset
         );
 
-        // Pay the protocol fees if there is a registered `protocolFeeCollector` address.
-        address feeCollector = protocolFeeCollector;
-        if (feeCollector != address(0)) {
-            // Only one of the protocol fees is used because they are identical.
-            uint256 protocolFee = matchedFillResults.left.protocolFeePaid;
+        // Pay protocol fees for each maker
+        bool didPayProtocolFees = _payTwoProtocolFees(
+            leftOrderHash,
+            rightOrderHash,
+            matchedFillResults.left.protocolFeePaid,
+            leftOrder.makerAddress,
+            rightOrder.makerAddress,
+            takerAddress
+        );
 
-            // Create a stack variable for the value that will be sent to the feeCollector when `payProtocolFee` is called.
-            // This allows a gas optimization where the `leftOrder.makerAddress` only needs be loaded onto the stack once AND
-            // a stack variable does not need to be allocated for the call.
-            uint256 valuePaid = 0;
-
-            // Since the `BALANCE` opcode costs 400 gas, we choose to calculate this value by hand rather than calling it twice.
-            uint256 balance = address(this).balance;
-
-            // Pay the left order's protocol fee.
-            if (balance >= protocolFee) {
-                valuePaid = protocolFee;
-            }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
-                leftOrder.makerAddress,
-                takerAddress,
-                protocolFee
-            );
-
-            // Pay the right order's protocol fee.
-            if (balance - valuePaid >= protocolFee) {
-                valuePaid = protocolFee;
-            } else {
-                valuePaid = 0;
-            }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
-                rightOrder.makerAddress,
-                takerAddress,
-                protocolFee
-            );
-        } else {
+        // Protocol fees are not paid if the protocolFeeCollector contract is not set
+        if (!didPayProtocolFees) {
             matchedFillResults.left.protocolFeePaid = 0;
             matchedFillResults.right.protocolFeePaid = 0;
         }
