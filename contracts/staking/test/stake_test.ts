@@ -1,7 +1,8 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, describe, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BigNumber, StringRevertError } from '@0x/utils';
+import { StakingRevertErrors } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakerActor } from './actors/staker_actor';
@@ -9,7 +10,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeState, StakeStateInfo } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Stake States', () => {
+blockchainTests.resets('Stake States', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);
@@ -94,7 +95,7 @@ blockchainTests.resets.only('Stake States', () => {
                 { state: StakeState.Active },
                 { state: StakeState.Inactive },
                 amount,
-                new StringRevertError('Insufficient Balance'),
+                new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
             );
         });
         it('should fail to reassign stake', async () => {
@@ -113,7 +114,7 @@ blockchainTests.resets.only('Stake States', () => {
                 { state: StakeState.Inactive },
                 { state: StakeState.Active },
                 amount,
-                new StringRevertError('Insufficient Balance'),
+                new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
             );
         });
     });
@@ -254,20 +255,20 @@ blockchainTests.resets.only('Stake States', () => {
         it('should fail to unstake with insufficient balance', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake in the same epoch as stake was set to inactive', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake after being inactive for <1 epoch', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
             await staker.goToNextEpochAsync();
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake in same epoch that inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
@@ -276,7 +277,7 @@ blockchainTests.resets.only('Stake States', () => {
             await staker.goToNextEpochAsync(); // stake is now inactive
             await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake one epoch after inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
@@ -286,7 +287,7 @@ blockchainTests.resets.only('Stake States', () => {
             await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake >1 epoch after inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
@@ -297,7 +298,7 @@ blockchainTests.resets.only('Stake States', () => {
             await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
-            await staker.unstakeAsync(amount, new StringRevertError('INSUFFICIENT_FUNDS'));
+            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
     });
     describe('Simulations', () => {

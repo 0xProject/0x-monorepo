@@ -62,10 +62,14 @@ export class FinalizerActor extends BaseActor {
         await this._stakingWrapper.skipToNextEpochAsync();
         // assert reward vault changes
         const finalRewardVaultBalanceByPoolId = await this._getRewardVaultBalanceByPoolIdAsync(this._poolIds);
-        expect(finalRewardVaultBalanceByPoolId).to.be.deep.equal(expectedRewardVaultBalanceByPoolId);
+        expect(finalRewardVaultBalanceByPoolId, 'final pool balances in reward vault').to.be.deep.equal(
+            expectedRewardVaultBalanceByPoolId,
+        );
         // assert member balances
         const finalMemberBalancesByPoolId = await this._getMemberBalancesByPoolIdAsync(this._membersByPoolId);
-        expect(finalMemberBalancesByPoolId).to.be.deep.equal(expectedMemberBalancesByPoolId);
+        expect(finalMemberBalancesByPoolId, 'final delegator balances in reward vault').to.be.deep.equal(
+            expectedMemberBalancesByPoolId,
+        );
     }
 
     private async _computeExpectedMemberBalancesByPoolIdAsync(

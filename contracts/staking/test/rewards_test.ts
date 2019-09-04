@@ -11,7 +11,7 @@ import { MembersByPoolId, OperatorByPoolId, StakeState } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.only('Testing Rewards', () => {
+blockchainTests.resets('Testing Rewards', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses

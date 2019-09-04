@@ -247,8 +247,8 @@ contract MixinExchangeFees is
                 initialContractBalance,
                 activePools[i].feesCollected,
                 totalFeesCollected,
-                activePools[i].weightedStake != 0 ? activePools[i].weightedStake : 1,
-                totalWeightedStake != 0 ? totalWeightedStake : 1,
+                totalWeightedStake != 0 ? activePools[i].weightedStake : 1, // only rewards are accounted for if no one has staked
+                totalWeightedStake != 0 ? totalWeightedStake : 1 // this is to avoid divide-by-zero in cobb douglas
                 cobbDouglasAlphaNumerator,
                 cobbDouglasAlphaDenomintor
             );

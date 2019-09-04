@@ -194,28 +194,24 @@ export class StakingWrapper {
     public async moveStakeAsync(
         owner: string,
         _fromStatus: {
-            status: number,
-            poolId?: string
+            status: number;
+            poolId?: string;
         },
         _toStatus: {
-            status: number,
-            poolId?: string
+            status: number;
+            poolId?: string;
         },
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const fromStatus = {
             status: _fromStatus.status,
-            poolId: _fromStatus.poolId !== undefined ? _fromStatus.poolId : constants.NIL_POOL_ID
+            poolId: _fromStatus.poolId !== undefined ? _fromStatus.poolId : constants.NIL_POOL_ID,
         };
         const toStatus = {
             status: _toStatus.status,
-            poolId: _toStatus.poolId !== undefined ? _toStatus.poolId : constants.NIL_POOL_ID
+            poolId: _toStatus.poolId !== undefined ? _toStatus.poolId : constants.NIL_POOL_ID,
         };
-        const calldata = this.getStakingContract().moveStake.getABIEncodedTransactionData(
-            fromStatus,
-            toStatus,
-            amount,
-        );
+        const calldata = this.getStakingContract().moveStake.getABIEncodedTransactionData(fromStatus, toStatus, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
