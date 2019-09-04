@@ -49,6 +49,12 @@ contract TestTransactions is
         transactionsExecuted[hash] = true;
     }
 
+    function setCurrentContextAddressIfRequired(address signerAddress, address context)
+        external
+    {
+        _setCurrentContextAddressIfRequired(signerAddress, context);
+    }
+
     function getCurrentContextAddress()
         external
         view

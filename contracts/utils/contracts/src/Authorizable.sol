@@ -30,9 +30,7 @@ contract Authorizable is
 {
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
-        if (!authorized[msg.sender]) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
-        }
+        _assertSenderIsAuthorized();
         _;
     }
 
@@ -121,5 +119,15 @@ contract Authorizable is
         returns (address[] memory)
     {
         return authorities;
+    }
+
+    /// @dev Reverts if msg.sender is not authorized.
+    function _assertSenderIsAuthorized()
+        internal
+        view
+    {
+        if (!authorized[msg.sender]) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
+        }
     }
 }

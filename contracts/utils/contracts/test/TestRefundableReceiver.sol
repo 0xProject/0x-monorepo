@@ -37,12 +37,12 @@ contract TestRefundableReceiver {
     /// @dev This function tests the behavior of the `refundNonzeroBalance` function by checking whether or
     ///      not the `callCounter` state variable changes after the `refundNonzeroBalance` is called.
     /// @param testRefundable The TestRefundable that should be tested against.
-    function testRefundNonzeroBalance(TestRefundable testRefundable)
+    function testRefundNonZeroBalance(TestRefundable testRefundable)
         external
         payable
     {
         // Call `refundNonzeroBalance()` and forward all of the eth sent to the contract.
-        testRefundable.refundNonzeroBalanceExternal.value(msg.value)();
+        testRefundable.refundNonZeroBalanceExternal.value(msg.value)();
 
         // If the value sent was nonzero, a check that a refund was received will be executed. Otherwise, the fallback
         // function contains a check that will fail in the event that a value of zero was sent to the contract.

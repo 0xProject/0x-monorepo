@@ -122,12 +122,13 @@ contract MixinSignatureValidator is
                 signature
             ));
         }
-        return _validateHashSignatureTypes(
+        isValid = _validateHashSignatureTypes(
             signatureType,
             hash,
             signerAddress,
             signature
         );
+        return isValid;
     }
 
     /// @dev Verifies that a signature for an order is valid.
@@ -143,11 +144,12 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         bytes32 orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
-        return _isValidOrderWithHashSignature(
+        isValid = _isValidOrderWithHashSignature(
             order,
             orderHash,
             signature
         );
+        return isValid;
     }
 
     /// @dev Verifies that a signature for a transaction is valid.
@@ -168,6 +170,7 @@ contract MixinSignatureValidator is
             transactionHash,
             signature
         );
+        return isValid;
     }
 
     /// @dev Checks if a signature is of a type that should be verified for
@@ -177,24 +180,29 @@ contract MixinSignatureValidator is
     /// @param signature The signature for `hash`.
     /// @return needsRegularValidation True if the signature should be validated
     ///                                for every action.
-    function doesSignatureRequireRegularValidation(
+    function _doesSignatureRequireRegularValidation(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
     )
-        public
+        internal
         pure
         returns (bool needsRegularValidation)
     {
-        SignatureType signatureType =  _readValidSignatureType(
+        // Read the signatureType from the signature
+        SignatureType signatureType = _readSignatureType(
             hash,
             signerAddress,
             signature
         );
+
+        // Any signature type that makes an external call needs to be revalidated
+        // with every partial fill
         needsRegularValidation =
             signatureType == SignatureType.Wallet ||
             signatureType == SignatureType.Validator ||
             signatureType == SignatureType.EIP1271Wallet;
+        return needsRegularValidation;
     }
 
     /// @dev Verifies that an order, with provided order hash, has been signed
@@ -238,7 +246,6 @@ contract MixinSignatureValidator is
                     order,
                     orderHash
                 ),
-                orderHash,
                 signerAddress,
                 signature
             );
@@ -251,6 +258,7 @@ contract MixinSignatureValidator is
                 signature
             );
         }
+        return isValid;
     }
 
     /// @dev Verifies that a transaction, with provided order hash, has been signed
@@ -294,7 +302,6 @@ contract MixinSignatureValidator is
                     transaction,
                     transactionHash
                 ),
-                transactionHash,
                 signerAddress,
                 signature
             );
@@ -307,6 +314,7 @@ contract MixinSignatureValidator is
                 signature
             );
         }
+        return isValid;
     }
 
     /// Validates a hash-only signature type
@@ -395,9 +403,31 @@ contract MixinSignatureValidator is
             // Signer signed hash previously using the preSign function.
             isValid = preSigned[hash][signerAddress];
         }
+        return isValid;
     }
 
-    /// Reads the `SignatureType` from the end of a signature and validates it.
+    /// @dev Reads the `SignatureType` from a signature with minimal validation.
+    function _readSignatureType(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        pure
+        returns (SignatureType)
+    {
+        if (signature.length == 0) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        return SignatureType(uint8(signature[signature.length - 1]));
+    }
+
+    /// @dev Reads the `SignatureType` from the end of a signature and validates it.
     function _readValidSignatureType(
         bytes32 hash,
         address signerAddress,
@@ -407,8 +437,14 @@ contract MixinSignatureValidator is
         pure
         returns (SignatureType signatureType)
     {
-        // Disallow address zero because it is ecrecover() returns zero on
-        // failure.
+        // Read the signatureType from the signature
+        SignatureType signatureType = _readSignatureType(
+            hash,
+            signerAddress,
+            signature
+        );
+
+        // Disallow address zero because ecrecover() returns zero on failure.
         if (signerAddress == address(0)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
@@ -418,20 +454,8 @@ contract MixinSignatureValidator is
             ));
         }
 
-        if (signature.length == 0) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
-                hash,
-                signerAddress,
-                signature
-            ));
-        }
-
-        // Read the last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature[signature.length - 1]);
-
         // Ensure signature is supported
-        if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
+        if (uint8(signatureType) >= uint8(SignatureType.NSignatureTypes)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
                 hash,
@@ -445,7 +469,7 @@ contract MixinSignatureValidator is
         // signature array with invalid type or length. We may as well make
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
-        if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
+        if (signatureType == SignatureType.Illegal) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 LibExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
                 hash,
@@ -454,7 +478,7 @@ contract MixinSignatureValidator is
             ));
         }
 
-        return SignatureType(signatureTypeRaw);
+        return signatureType;
     }
 
     /// @dev Verifies a hash and signature using logic defined by Wallet contract.
@@ -462,7 +486,7 @@ contract MixinSignatureValidator is
     /// @param walletAddress Address that should have signed the given hash
     ///                      and defines its own signature verification method.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return isValid True if the signature is validated by the Wallet.
+    /// @return True if the signature is validated by the Wallet.
     function _validateHashWithWallet(
         bytes32 hash,
         address walletAddress,
@@ -470,37 +494,27 @@ contract MixinSignatureValidator is
     )
         private
         view
-        returns (bool isValid)
+        returns (bool)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 1      | Signature type is always "\x04" |
-
+        // Backup length of signature
         uint256 signatureLength = signature.length;
-        // HACK(dorothy-zbornak): Temporarily shave the signature type
-        // from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 1))
-        }
+        // Temporarily remove signatureType byte from end of signature
+        signature.writeLength(signatureLength - 1);
         // Encode the call data.
         bytes memory callData = abi.encodeWithSelector(
-            IWallet(walletAddress).isValidSignature.selector,
+            IWallet(address(0)).isValidSignature.selector,
             hash,
             signature
         );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
+        // Restore the original signature length
+        signature.writeLength(signatureLength);
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be `LEGACY_WALLET_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
+        // Return the validity of the signature if the call was successful
+        if (didSucceed && returnData.length == 32) {
             return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
         }
-        // Static call to verifier failed.
+        // Revert if the call was unsuccessful
         LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
             hash,
             walletAddress,
@@ -512,13 +526,11 @@ contract MixinSignatureValidator is
     /// @dev Verifies arbitrary data and a signature via an EIP1271 Wallet
     ///      contract, where the wallet address is also the signer address.
     /// @param data Arbitrary signed data.
-    /// @param hash The hash associated with the data.
     /// @param walletAddress Contract that will verify the data and signature.
     /// @param signature Proof that the data has been signed by signer.
     /// @return isValid True if the signature is validated by the Wallet.
     function _validateBytesWithWallet(
         bytes memory data,
-        bytes32 hash,
         address walletAddress,
         bytes memory signature
     )
@@ -526,41 +538,13 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 1      | Signature type is always "\x07" |
-
-        uint256 signatureLength = signature.length;
-        // HACK(dorothy-zbornak): Temporarily shave the signature type
-        // from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 1))
-        }
-        // Encode the call data.
-        bytes memory callData = abi.encodeWithSelector(
-            IEIP1271Wallet(walletAddress).isValidSignature.selector,
-            data,
-            signature
-        );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
-            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
-        }
-        // Static call to verifier failed.
-        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
-            hash,
+        isValid = _staticCallEIP1271WalletWithReducedSignatureLength(
             walletAddress,
+            data,
             signature,
-            returnData
-        ));
+            1  // The last byte of the signature (signatureType) is removed before making the staticcall
+        );
+        return isValid;
     }
 
     /// @dev Verifies arbitrary data and a signature via an EIP1271 contract
@@ -580,13 +564,16 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x05" |
-
         uint256 signatureLength = signature.length;
+        if (signatureLength < 21) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        // The validator address is appended to the signature before the signatureType.
         // Read the validator address from the signature.
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
@@ -596,33 +583,53 @@ contract MixinSignatureValidator is
                 validatorAddress
             ));
         }
-        // HACK(dorothy-zbornak): Temporarily shave the validator address
-        // and signature type from the signature for the encode call then restore
-        // it immediately after because we want to keep signatures intact.
-        assembly {
-            mstore(signature, sub(signatureLength, 21))
-        }
-        // Encode the call data.
+        isValid = _staticCallEIP1271WalletWithReducedSignatureLength(
+            validatorAddress,
+            data,
+            signature,
+            21  // The last 21 bytes of the signature (validatorAddress + signatureType) are removed before making the staticcall
+        );
+        return isValid;
+    }
+
+    /// @dev Performs a staticcall to an EIP1271 compiant `isValidSignature` function and validates the output.
+    /// @param verifyingContractAddress Address of EIP1271Wallet or Validator contract.
+    /// @param data Arbitrary signed data.
+    /// @param signature Proof that the hash has been signed by signer. Bytes will be temporarily be popped
+    ///                  off of the signature before calling `isValidSignature`.
+    /// @param ignoredSignatureBytesLen The amount of bytes that will be temporarily popped off the the signature.
+    /// @return The validity of the signature.
+    function _staticCallEIP1271WalletWithReducedSignatureLength(
+        address verifyingContractAddress,
+        bytes memory data,
+        bytes memory signature,
+        uint256 ignoredSignatureBytesLen
+    )
+        private
+        view
+        returns (bool)
+    {
+        // Backup length of the signature
+        uint256 signatureLength = signature.length;
+        // Temporarily remove bytes from signature end
+        signature.writeLength(signatureLength - ignoredSignatureBytesLen);
         bytes memory callData = abi.encodeWithSelector(
-            IEIP1271Wallet(validatorAddress).isValidSignature.selector,
+            IEIP1271Wallet(address(0)).isValidSignature.selector,
             data,
             signature
         );
-        // Restore the full signature.
-        assembly {
-            mstore(signature, signatureLength)
-        }
-        // Static call the verification function.
-        (bool didSucceed, bytes memory returnData) = validatorAddress.staticcall(callData);
-        // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length <= 32) {
+        // Restore original signature length
+        signature.writeLength(signatureLength);
+        // Static call the verification function
+        (bool didSucceed, bytes memory returnData) = verifyingContractAddress.staticcall(callData);
+        // Return the validity of the signature if the call was successful
+        if (didSucceed && returnData.length == 32) {
             return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
-        // Static call to verifier failed.
-        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorError(
-            hash,
-            signerAddress,
-            validatorAddress,
+        // Revert if the call was unsuccessful
+        LibRichErrors.rrevert(LibExchangeRichErrors.EIP1271SignatureError(
+            verifyingContractAddress,
+            data,
             signature,
             returnData
         ));

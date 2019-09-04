@@ -616,4 +616,18 @@ library LibBytes {
             sourceLen
         );
     }
+
+    /// @dev Writes a new length to a byte array. 
+    ///      Decreasing length will lead to removing the corresponding lower order bytes from the byte array.
+    ///      Increasing length may lead to appending adjacent in-memory bytes to the end of the byte array.
+    /// @param b Bytes array to write new length to.
+    /// @param length New length of byte array.
+    function writeLength(bytes memory b, uint256 length)
+        internal
+        pure
+    {
+        assembly {
+            mstore(b, length)
+        }
+    }
 }

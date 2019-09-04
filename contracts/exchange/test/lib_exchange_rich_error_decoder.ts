@@ -61,17 +61,12 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         const signer = addressUtils.generatePseudoRandomAddress();
         const validator = addressUtils.generatePseudoRandomAddress();
+        const data = hexRandom(ERROR_DATA_LENGTH);
         const signature = hexRandom(SIGNATURE_LENGTH);
         const errorData = hexRandom(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.SignatureError, [errorCode, orderHash, signer, signature]);
         createDecodeTest(ExchangeRevertErrors.SignatureValidatorNotApprovedError, [signer, validator]);
-        createDecodeTest(ExchangeRevertErrors.SignatureValidatorError, [
-            orderHash,
-            signer,
-            validator,
-            signature,
-            errorData,
-        ]);
+        createDecodeTest(ExchangeRevertErrors.EIP1271SignatureError, [validator, data, signature, errorData]);
         createDecodeTest(ExchangeRevertErrors.SignatureWalletError, [orderHash, signer, signature, errorData]);
     })();
 

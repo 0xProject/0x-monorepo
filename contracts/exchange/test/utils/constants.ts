@@ -12,11 +12,7 @@ export const constants = {
         ExchangeFunctionName.SetProtocolFeeMultiplier,
         ExchangeFunctionName.SetProtocolFeeCollectorAddress,
     ],
-    SINGLE_FILL_FN_NAMES: [
-        ExchangeFunctionName.FillOrder,
-        ExchangeFunctionName.FillOrKillOrder,
-        ExchangeFunctionName.FillOrderNoThrow,
-    ],
+    SINGLE_FILL_FN_NAMES: [ExchangeFunctionName.FillOrder, ExchangeFunctionName.FillOrKillOrder],
     BATCH_FILL_FN_NAMES: [
         ExchangeFunctionName.BatchFillOrders,
         ExchangeFunctionName.BatchFillOrKillOrders,

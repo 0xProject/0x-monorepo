@@ -46,7 +46,7 @@ const gethConfigs = {
 };
 const ganacheConfigs = {
     shouldUseInProcessGanache: true,
-    shouldAllowUnlimitedContractSize: env.parseBoolean(EnvVars.UnlimitedContractSize),
+    shouldAllowUnlimitedContractSize: true,
 };
 const providerConfigs = testProvider === ProviderType.Ganache ? ganacheConfigs : gethConfigs;
 

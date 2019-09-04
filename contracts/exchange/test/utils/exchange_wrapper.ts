@@ -54,20 +54,6 @@ export class ExchangeWrapper {
         );
         return txReceipt;
     }
-    public async fillOrderNoThrowAsync(
-        signedOrder: SignedOrder,
-        from: string,
-        opts: { takerAssetFillAmount?: BigNumber; gas?: number; gasPrice?: BigNumber } = {},
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
-        const txReceipt = await this._exchange.fillOrderNoThrow.awaitTransactionSuccessAsync(
-            params.order,
-            params.takerAssetFillAmount,
-            params.signature,
-            { from, gas: opts.gas, gasPrice: opts.gasPrice },
-        );
-        return txReceipt;
-    }
     public async batchFillOrdersAsync(
         orders: SignedOrder[],
         from: string,
@@ -214,10 +200,6 @@ export class ExchangeWrapper {
     public async getOrderInfoAsync(signedOrder: SignedOrder): Promise<OrderInfo> {
         const orderInfo = await this._exchange.getOrderInfo.callAsync(signedOrder);
         return orderInfo;
-    }
-    public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {
-        const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
-        return ordersInfo;
     }
     public async batchMatchOrdersAsync(
         signedOrdersLeft: SignedOrder[],

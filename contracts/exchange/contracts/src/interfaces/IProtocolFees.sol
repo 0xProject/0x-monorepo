@@ -21,9 +21,6 @@ pragma solidity ^0.5.9;
 
 contract IProtocolFees {
 
-    // The proxy id of the weth asset proxy.
-    bytes internal constant WETH_ASSET_DATA = hex"f47261b0";
-
     // Logs updates to the protocol fee multiplier.
     event ProtocolFeeMultiplier(uint256 oldProtocolFeeMultiplier, uint256 updatedProtocolFeeMultiplier);
 

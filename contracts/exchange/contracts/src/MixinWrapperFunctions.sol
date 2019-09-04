@@ -59,43 +59,6 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// Note: This function only needs `refundFinalBalance` modifier because ether will not
-    //        be returned in the event that the delegatecall fails. This said, there is no
-    //        reason to invoke `disableRefundUntilEnd` because it is cheaper to use this modifier
-    //        and the inner refund will not affect the logic of this call.
-    /// @dev Fills the input order.
-    ///      Returns a null FillResults instance if the transaction would otherwise revert.
-    /// @param order Order struct containing order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signature Proof that order has been created by maker.
-    /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderNoThrow(
-        LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
-    )
-        public
-        payable
-        refundFinalBalance
-        returns (LibFillResults.FillResults memory fillResults)
-    {
-        // ABI encode calldata for `fillOrder`
-        bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            IExchangeCore(address(0)).fillOrder.selector,
-            order,
-            takerAssetFillAmount,
-            signature
-        );
-
-        (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
-        if (didSucceed) {
-            assert(returnData.length == 160);
-            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
-        }
-        // fillResults values will be 0 by default if call was unsuccessful
-        return fillResults;
-    }
-
     /// @dev Executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
@@ -170,7 +133,7 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
-            fillResults[i] = fillOrderNoThrow(
+            fillResults[i] = _fillOrderNoThrow(
                 orders[i],
                 takerAssetFillAmounts[i],
                 signatures[i]
@@ -208,7 +171,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
-            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
@@ -262,7 +225,7 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
-            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
@@ -341,22 +304,6 @@ contract MixinWrapperFunctions is
         }
     }
 
-    /// @dev Fetches information for all passed in orders.
-    /// @param orders Array of order specifications.
-    /// @return Array of OrderInfo instances that correspond to each order.
-    function getOrdersInfo(LibOrder.Order[] memory orders)
-        public
-        view
-        returns (LibOrder.OrderInfo[] memory)
-    {
-        uint256 ordersLength = orders.length;
-        LibOrder.OrderInfo[] memory ordersInfo = new LibOrder.OrderInfo[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            ordersInfo[i] = getOrderInfo(orders[i]);
-        }
-        return ordersInfo;
-    }
-
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -381,6 +328,37 @@ contract MixinWrapperFunctions is
                 fillResults.takerAssetFilledAmount
             ));
         }
+        return fillResults;
+    }
+
+    /// @dev Fills the input order.
+    ///      Returns a null FillResults instance if the transaction would otherwise revert.
+    /// @param order Order struct containing order specifications.
+    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
+    /// @param signature Proof that order has been created by maker.
+    /// @return Amounts filled and fees paid by maker and taker.
+    function _fillOrderNoThrow(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (LibFillResults.FillResults memory fillResults)
+    {
+        // ABI encode calldata for `fillOrder`
+        bytes memory fillOrderCalldata = abi.encodeWithSelector(
+            IExchangeCore(address(0)).fillOrder.selector,
+            order,
+            takerAssetFillAmount,
+            signature
+        );
+
+        (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
+        if (didSucceed) {
+            assert(returnData.length == 160);
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
+        }
+        // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
     }
 }

@@ -427,8 +427,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
             });
             const takerAssetFillAmount = order.takerAssetAmount.dividedToIntegerBy(3);
             const expectedError = new LibMathRevertErrors.RoundingError(
-                takerAssetFillAmount.times(2),
-                order.makerAssetAmount,
+                takerAssetFillAmount,
+                order.takerAssetAmount,
                 order.makerFee,
             );
             return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);

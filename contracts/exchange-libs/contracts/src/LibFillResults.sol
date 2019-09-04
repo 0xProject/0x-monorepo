@@ -74,8 +74,8 @@ library LibFillResults {
             order.makerAssetAmount
         );
         fillResults.makerFeePaid = LibMath.safeGetPartialAmountFloor(
-            fillResults.makerAssetFilledAmount,
-            order.makerAssetAmount,
+            takerAssetFilledAmount,
+            order.takerAssetAmount,
             order.makerFee
         );
         fillResults.takerFeePaid = LibMath.safeGetPartialAmountFloor(

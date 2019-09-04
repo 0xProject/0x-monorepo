@@ -369,7 +369,7 @@ contract MixinExchangeCore is
         // regular validation.
         address makerAddress = order.makerAddress;
         if (orderInfo.orderTakerAssetFilledAmount == 0 ||
-            doesSignatureRequireRegularValidation(
+            _doesSignatureRequireRegularValidation(
                 orderInfo.orderHash,
                 makerAddress,
                 signature
@@ -483,7 +483,11 @@ contract MixinExchangeCore is
             if (address(this).balance >= protocolFee) {
                 valuePaid = protocolFee;
             }
-            IStaking(feeCollector).payProtocolFee.value(valuePaid)(order.makerAddress, takerAddress, protocolFee);
+            IStaking(feeCollector).payProtocolFee.value(valuePaid)(
+                order.makerAddress,
+                takerAddress,
+                protocolFee
+            );
         } else {
             fillResults.protocolFeePaid = 0;
         }

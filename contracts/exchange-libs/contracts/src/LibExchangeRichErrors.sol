@@ -71,9 +71,9 @@ library LibExchangeRichErrors {
     bytes4 internal constant SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR =
         0xa15c0d06;
 
-    // bytes4(keccak256("SignatureValidatorError(bytes32,address,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        0xa23838b8;
+    // bytes4(keccak256("EIP1271SignatureError(address,bytes,bytes,bytes)"))
+    bytes4 internal constant EIP1271_SIGNATURE_ERROR_SELECTOR =
+        0x5bd0428d;
 
     // bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
@@ -164,12 +164,12 @@ library LibExchangeRichErrors {
         return SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR;
     }
 
-    function SignatureValidatorErrorSelector()
+    function EIP1271SignatureErrorSelector()
         internal
         pure
         returns (bytes4)
     {
-        return SIGNATURE_VALIDATOR_ERROR_SELECTOR;
+        return EIP1271_SIGNATURE_ERROR_SELECTOR;
     }
 
     function SignatureWalletErrorSelector()
@@ -363,10 +363,9 @@ library LibExchangeRichErrors {
         );
     }
 
-    function SignatureValidatorError(
-        bytes32 hash,
-        address signerAddress,
-        address validatorAddress,
+    function EIP1271SignatureError(
+        address verifyingContractAddress,
+        bytes memory data,
         bytes memory signature,
         bytes memory errorData
     )
@@ -375,10 +374,9 @@ library LibExchangeRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            SIGNATURE_VALIDATOR_ERROR_SELECTOR,
-            hash,
-            signerAddress,
-            validatorAddress,
+            EIP1271_SIGNATURE_ERROR_SELECTOR,
+            verifyingContractAddress,
+            data,
             signature,
             errorData
         );
@@ -386,7 +384,7 @@ library LibExchangeRichErrors {
 
     function SignatureWalletError(
         bytes32 hash,
-        address signerAddress,
+        address walletAddress,
         bytes memory signature,
         bytes memory errorData
     )
@@ -397,7 +395,7 @@ library LibExchangeRichErrors {
         return abi.encodeWithSelector(
             SIGNATURE_WALLET_ERROR_SELECTOR,
             hash,
-            signerAddress,
+            walletAddress,
             signature,
             errorData
         );

@@ -692,6 +692,30 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         });
     });
 
+    describe('setCurrentContextAddressIfRequired', () => {
+        it('should set the currentContextAddress if signer not equal to sender', async () => {
+            const randomAddress = hexRandom(20);
+            await transactionsContract.setCurrentContextAddressIfRequired.awaitTransactionSuccessAsync(
+                randomAddress,
+                randomAddress,
+            );
+            const currentContextAddress = await transactionsContract.currentContextAddress.callAsync();
+            expect(currentContextAddress).to.eq(randomAddress);
+        });
+        it('should not set the currentContextAddress if signer equal to sender', async () => {
+            const randomAddress = hexRandom(20);
+            await transactionsContract.setCurrentContextAddressIfRequired.awaitTransactionSuccessAsync(
+                accounts[0],
+                randomAddress,
+                {
+                    from: accounts[0],
+                },
+            );
+            const currentContextAddress = await transactionsContract.currentContextAddress.callAsync();
+            expect(currentContextAddress).to.eq(constants.NULL_ADDRESS);
+        });
+    });
+
     describe('getCurrentContext', () => {
         it('should return the sender address when there is not a saved context address', async () => {
             const currentContextAddress = await transactionsContract.getCurrentContextAddress.callAsync({

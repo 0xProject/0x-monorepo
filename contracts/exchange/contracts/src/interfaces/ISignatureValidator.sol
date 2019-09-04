@@ -41,7 +41,7 @@ contract ISignatureValidator {
     event SignatureValidatorApproval(
         address indexed signerAddress,     // Address that approves or disapproves a contract to verify signatures.
         address indexed validatorAddress,  // Address of signature validator contract.
-        bool approved                      // Approval or disapproval of validator contract.
+        bool isApproved                    // Approval or disapproval of validator contract.
     );
 
     /// @dev Approves a hash on-chain.
@@ -97,21 +97,6 @@ contract ISignatureValidator {
         public
         view
         returns (bool isValid);
-
-    /// @dev Checks if a signature is of a type that should be verified for
-    /// every subsequent fill.
-    /// @param hash The hash of the order/transaction.
-    /// @param signature The signature for `hash`.
-    /// @return needsRegularValidation True if the signature should be validated
-    ///                                for every operation.
-    function doesSignatureRequireRegularValidation(
-        bytes32 hash,
-        address signerAddress,
-        bytes memory signature
-    )
-        public
-        pure
-        returns (bool needsRegularValidation);
 
     /// @dev Verifies that an order, with provided order hash, has been signed
     ///      by the given signer.

@@ -27,7 +27,7 @@ export class StringDataType extends AbstractBlobDataType {
     public encodeValue(value: string): Buffer {
         // Encoded value is of the form: <length><value>, with each field padded to be word-aligned.
         // 1/3 Construct the value
-        const valueBuf = new Buffer(value);
+        const valueBuf = Buffer.from(value);
         const valueLengthInBytes = valueBuf.byteLength;
         const wordsToStoreValuePadded = Math.ceil(valueLengthInBytes / constants.EVM_WORD_WIDTH_IN_BYTES);
         const bytesToStoreValuePadded = wordsToStoreValuePadded * constants.EVM_WORD_WIDTH_IN_BYTES;

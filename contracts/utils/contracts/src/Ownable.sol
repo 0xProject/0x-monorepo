@@ -17,12 +17,7 @@ contract Ownable is
     }
 
     modifier onlyOwner() {
-        if (msg.sender != owner) {
-            LibRichErrors.rrevert(LibOwnableRichErrors.OnlyOwnerError(
-                msg.sender,
-                owner
-            ));
-        }
+        _assertSenderIsOwner();
         _;
     }
 
@@ -34,6 +29,18 @@ contract Ownable is
             LibRichErrors.rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
         } else {
             owner = newOwner;
+        }
+    }
+
+    function _assertSenderIsOwner()
+        internal
+        view
+    {
+        if (msg.sender != owner) {
+            LibRichErrors.rrevert(LibOwnableRichErrors.OnlyOwnerError(
+                msg.sender,
+                owner
+            ));
         }
     }
 }

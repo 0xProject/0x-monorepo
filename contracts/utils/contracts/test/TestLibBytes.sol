@@ -303,4 +303,40 @@ contract TestLibBytes {
         result = LibBytes.sliceDestructive(b, from, to);
         return (result, b);
     }
+
+    /// @dev Returns a byte array with an updated length.
+    /// @dev Writes a new length to a byte array. 
+    ///      Decreasing length will lead to removing the corresponding lower order bytes from the byte array.
+    ///      Increasing length may lead to appending adjacent in-memory bytes to the end of the byte array.
+    /// @param b Bytes array to write new length to.
+    /// @param length New length of byte array.
+    /// @param extraBytes Bytes that are appended to end of b in memory.
+    function publicWriteLength(
+        bytes memory b,
+        uint256 length,
+        bytes memory extraBytes
+    )
+        public
+        pure
+        returns (bytes memory)
+    {
+        uint256 bEnd = b.contentAddress() + b.length;
+        LibBytes.memCopy(bEnd, extraBytes.contentAddress(), extraBytes.length);
+        b.writeLength(length);
+        return b;
+    }
+
+    function assertBytesUnchangedAfterLengthReset(
+        bytes memory b,
+        uint256 tempLength
+    )
+        public
+        pure
+    {
+        uint256 length = b.length;
+        bytes memory bCopy = b.slice(0, length);
+        b.writeLength(tempLength);
+        b.writeLength(length);
+        assert(b.equals(bCopy));
+    }
 }
