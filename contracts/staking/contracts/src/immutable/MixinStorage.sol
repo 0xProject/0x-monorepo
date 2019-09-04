@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -92,13 +92,13 @@ contract MixinStorage is
     // registered 0x Exchange contracts
     mapping (address => bool) internal validExchanges;
 
-    // ZRX vault
+    // ZRX vault (stores staked ZRX)
     IZrxVault internal zrxVault;
 
-    // Rebate Vault
+    // ETH Vault (stores eth balances of stakers and pool operators)
     IEthVault internal ethVault;
 
-    // Rebate Vault
+    // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault internal rewardVault;
 
     // Numerator for cobb douglas alpha factor.

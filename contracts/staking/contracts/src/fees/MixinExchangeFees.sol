@@ -256,8 +256,11 @@ contract MixinExchangeFees is
             );
 
             // record reward in vault
-            bool rewardForOperatorOnly = activePools[i].delegatedStake == 0;
-            (, uint256 poolPortion) = rewardVault.recordDepositFor(activePools[i].poolId, reward, rewardForOperatorOnly);
+            (, uint256 poolPortion) = rewardVault.recordDepositFor(
+                activePools[i].poolId,
+                reward,
+                activePools[i].delegatedStake == 0 // true -> reward is for operator only
+            );
             totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
 
             // sync cumulative rewards, if necessary.

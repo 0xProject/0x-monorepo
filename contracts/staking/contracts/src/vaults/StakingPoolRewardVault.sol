@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -121,8 +121,9 @@ contract StakingPoolRewardVault is
         }
 
         // sanity check on eth vault
+        IEthVault _ethVault = ethVault;
         require(
-            address(ethVault) != address(0),
+            address(_ethVault) != address(0),
             "ETH_VAULT_NOT_SET"
         );
 
@@ -137,7 +138,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance = operatorBalance.safeSub(amount).downcastToUint96();
-        ethVault.depositFor.value(amount)(operator);
+        _ethVault.depositFor.value(amount)(operator);
 
         // notify
         emit RewardWithdrawnForOperator(poolId, amount);
@@ -157,8 +158,9 @@ contract StakingPoolRewardVault is
         onlyStakingContract
     {
         // sanity check on eth vault
+        IEthVault _ethVault = ethVault;
         require(
-            address(ethVault) != address(0),
+            address(_ethVault) != address(0),
             "ETH_VAULT_NOT_SET"
         );
 
@@ -173,7 +175,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance = membersBalance.safeSub(amount).downcastToUint96();
-        ethVault.depositFor.value(amount)(member);
+        _ethVault.depositFor.value(amount)(member);
 
         // notify
         emit RewardWithdrawnForMember(poolId, amount);

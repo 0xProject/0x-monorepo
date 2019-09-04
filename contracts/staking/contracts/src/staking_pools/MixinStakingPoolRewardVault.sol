@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -86,10 +86,11 @@ contract MixinStakingPoolRewardVault is
     )
         internal
     {
+        IStakingPoolRewardVault _rewardVault = rewardVault;
         require(
-            address(rewardVault) != NIL_ADDRESS,
+            address(_rewardVault) != NIL_ADDRESS,
             "REWARD_VAULT_NOT_SET"
         );
-        rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
+        _rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
     }
 }

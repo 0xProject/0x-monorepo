@@ -2,7 +2,7 @@
 
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -42,6 +42,11 @@ contract TestStorageLayout is
                 mstore(64, 0x00000016494e434f52524543545f53544f524147455f534c4f54000000000000)
                 mstore(96, 0)
             }
+
+            // The staking contract writes to state that's stored in the staking proxy contract; hence,
+            // we require that slots do not change across upgrades to the staking contract. We expect
+            // storage slots to match the ordering in MixinStorage.sol.
+
             let slot := 0
 
             if sub(owner_slot, slot) { revertIncorrectStorageSlot() }

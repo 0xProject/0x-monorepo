@@ -14,6 +14,7 @@ export * from '../generated-wrappers/lib_bytes';
 export * from '../generated-wrappers/lib_bytes_rich_errors';
 export * from '../generated-wrappers/lib_e_i_p1271';
 export * from '../generated-wrappers/lib_e_i_p712';
+export * from '../generated-wrappers/lib_fractions';
 export * from '../generated-wrappers/lib_ownable_rich_errors';
 export * from '../generated-wrappers/lib_reentrancy_guard_rich_errors';
 export * from '../generated-wrappers/lib_rich_errors';

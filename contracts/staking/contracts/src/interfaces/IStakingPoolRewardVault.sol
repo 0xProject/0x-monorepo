@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ interface IStakingPoolRewardVault {
         returns (
             uint256 operatorPortion,
             uint256 delegatorsPortion
-    );
+        );
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
     /// Note that this is only callable by the staking contract, and when

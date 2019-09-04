@@ -203,21 +203,27 @@ export class StakingWrapper {
     }
     public async moveStakeAsync(
         owner: string,
-        fromState: {
+        _fromState: {
             state: number,
             poolId?: string
         },
-        toState: {
+        _toState: {
             state: number,
             poolId?: string
         },
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        fromState.poolId = fromState.poolId !== undefined ? fromState.poolId : constants.NIL_POOL_ID;
-        toState.poolId = fromState.poolId !== undefined ? toState.poolId : constants.NIL_POOL_ID;
+        const fromState = {
+            state: _fromState.state,
+            poolId: _fromState.poolId !== undefined ? _fromState.poolId : constants.NIL_POOL_ID
+        };
+        const toState = {
+            state: _toState.state,
+            poolId: _toState.poolId !== undefined ? _toState.poolId : constants.NIL_POOL_ID
+        };
         const calldata = this.getStakingContract().moveStake.getABIEncodedTransactionData(
-            fromState as any,
-            toState as any,
+            fromState,
+            toState,
             amount,
         );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
@@ -364,19 +370,6 @@ export class StakingWrapper {
         return signedStakingPoolApproval;
     }
     ///// EPOCHS /////
-
-    /*
-    public async testFinalizefees(rewards: {reward: BigNumber, poolId: string}[]): Promise<TransactionReceiptWithDecodedLogs> {
-        await this.fastForwardToNextEpochAsync();
-        const totalRewards = _.sumBy(rewards, (v: any) => {return v.reward.toNumber();});
-        const calldata = this.getStakingContract().testFinalizeFees.getABIEncodedTransactionData(rewards);
-        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(totalRewards), true);
-        return txReceipt;
-    }
-    */
-
-
-
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);

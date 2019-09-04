@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -104,7 +104,11 @@ contract MixinStake is
     /// @param from state to move stake out of.
     /// @param to state to move stake into.
     /// @param amount of stake to move.
-    function moveStake(IStructs.StakeStateInfo calldata from, IStructs.StakeStateInfo calldata to, uint256 amount)
+    function moveStake(
+        IStructs.StakeStateInfo calldata from,
+        IStructs.StakeStateInfo calldata to,
+        uint256 amount
+    )
         external
     {
         // sanity check - do nothing if moving stake between the same state
@@ -140,8 +144,8 @@ contract MixinStake is
             : 0;
 
         // execute move
-        IStructs.DelayedBalance storage fromPtr = _getBalancePtrFromState(from);
-        IStructs.DelayedBalance storage toPtr = _getBalancePtrFromState(to);
+        IStructs.DelayedBalance storage fromPtr = _getBalancePtrFromState(from.state);
+        IStructs.DelayedBalance storage toPtr = _getBalancePtrFromState(to.state);
         _moveStake(fromPtr, toPtr, amount);
 
         // update withdrawable field, if necessary
@@ -160,9 +164,9 @@ contract MixinStake is
         );
     }
 
-    /// @dev Delegates an owners stake to a staking pool.
+    /// @dev Delegates a owners stake to a staking pool.
     /// @param poolId Id of pool to delegate to.
-    /// @param owner of stake to delegate.
+    /// @param owner who wants to delegate.
     /// @param amount of stake to delegate.
     function _delegateStake(
         bytes32 poolId,
@@ -172,23 +176,23 @@ contract MixinStake is
         private
     {
         // transfer any rewards from the transient pool vault to the eth vault;
-        // this must be done before we can modify the staker's portion of the delegator pool.
+        // this must be done before we can modify the owner's portion of the delegator pool.
         _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // sync cumulative rewards that we'll need for future computations
         _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
 
-        // decrement how much stake the owner has delegated to the input pool
+        // increment how much stake the owner has delegated to the input pool
         _incrementBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
         // increment how much stake has been delegated to pool
         _incrementBalance(delegatedStakeByPoolId[poolId], amount);
     }
 
-    /// @dev Delegates an owners stake to a staking pool.
-    /// @param poolId Id of pool to delegate to.
-    /// @param owner of stake to delegate.
-    /// @param amount of stake to delegate.
+    /// @dev Un-Delegates a owners stake from a staking pool.
+    /// @param poolId Id of pool to un-delegate to.
+    /// @param owner who wants to un-delegate.
+    /// @param amount of stake to un-delegate.
     function _undelegateStake(
         bytes32 poolId,
         address payable owner,
@@ -197,7 +201,7 @@ contract MixinStake is
         private
     {
         // transfer any rewards from the transient pool vault to the eth vault;
-        // this must be done before we can modify the staker's portion of the delegator pool.
+        // this must be done before we can modify the owner's portion of the delegator pool.
         _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // sync cumulative rewards that we'll need for future computations
@@ -213,17 +217,17 @@ contract MixinStake is
     /// @dev Returns a storage pointer to a user's stake in a given state.
     /// @param state of user's stake to lookup.
     /// @return a storage pointer to the corresponding stake stake
-    function _getBalancePtrFromState(IStructs.StakeStateInfo memory state)
+    function _getBalancePtrFromState(IStructs.StakeState state)
         private
         returns (IStructs.DelayedBalance storage)
     {
         // lookup state
         address owner = msg.sender;
-        if (state.state == IStructs.StakeState.ACTIVE) {
+        if (state == IStructs.StakeState.ACTIVE) {
             return activeStakeByOwner[owner];
-        } else if (state.state == IStructs.StakeState.INACTIVE) {
+        } else if (state == IStructs.StakeState.INACTIVE) {
             return inactiveStakeByOwner[owner];
-        } else if (state.state == IStructs.StakeState.DELEGATED) {
+        } else if (state == IStructs.StakeState.DELEGATED) {
             return delegatedStakeByOwner[owner];
         }
 

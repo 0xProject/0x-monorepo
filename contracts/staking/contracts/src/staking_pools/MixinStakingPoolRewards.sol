@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
@@ -44,11 +45,11 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
-    /// @return Balance in ETH.
+    /// @return totalReward Balance in ETH.
     function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
         public
         view
-        returns (uint256)
+        returns (uint256 totalReward)
     {
         // cache some values to reduce sloads
         IStructs.DelayedBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
@@ -83,7 +84,7 @@ contract MixinStakingPoolRewards is
             : 0;
 
         // compute the total reward
-        uint256 totalReward = rewardsAccumulatedDuringLastStoredEpoch.safeAdd(rewardsAccumulatedAfterLastStoredEpoch);
+        totalReward = rewardsAccumulatedDuringLastStoredEpoch.safeAdd(rewardsAccumulatedAfterLastStoredEpoch);
         return totalReward;
     }
 
@@ -179,7 +180,7 @@ contract MixinStakingPoolRewards is
         IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
         // compute new cumulative reward
-        (uint256 numerator, uint256 denominator) = LibSafeMath.addFractions(
+        (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
             mostRecentCumulativeRewards.numerator,
             mostRecentCumulativeRewards.denominator,
             reward,
@@ -218,7 +219,7 @@ contract MixinStakingPoolRewards is
     {
         IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
         IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
-        uint256 reward = LibSafeMath.scaleFractionalDifference(
+        uint256 reward = LibFractions.scaleFractionalDifference(
             endRatio.numerator,
             endRatio.denominator,
             beginRatio.numerator,

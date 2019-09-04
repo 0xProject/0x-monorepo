@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -37,8 +37,9 @@ contract EthVault is
     mapping (address => uint256) internal balances;
 
     /// @dev Constructor.
-    // solhint-disable-next-line no-empty-blocks
-    constructor() public {}
+    constructor()
+        public
+    {} // solhint-disable-line no-empty-blocks
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.
@@ -69,11 +70,11 @@ contract EthVault is
     /// @dev Withdraw ALL ETH to `msg.sender` from the vault.
     function withdrawAll()
         external
-        returns (uint256)
+        returns (uint256 totalBalance)
     {
         // get total balance
         address payable owner = msg.sender;
-        uint256 totalBalance = balances[owner];
+        totalBalance = balances[owner];
 
         // withdraw ETH to owner
         _withdrawFrom(owner, totalBalance);
