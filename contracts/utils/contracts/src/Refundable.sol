@@ -35,8 +35,7 @@ contract Refundable {
         } else {
             _disableRefund();
             _;
-            _enableRefund();
-            _refundNonZeroBalance();
+            _enableAndRefundNonZeroBalance();
         }
     }
 
@@ -63,10 +62,11 @@ contract Refundable {
         _shouldNotRefund = true;
     }
 
-    function _enableRefund()
+    function _enableAndRefundNonZeroBalance()
         internal
     {
         _shouldNotRefund = false;
+        _refundNonZeroBalance();
     }
 
     function _areRefundsDisabled()
