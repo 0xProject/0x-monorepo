@@ -151,7 +151,7 @@ contract MixinProtocolFees is
         internal
         returns (uint256 valuePaid)
     {
-        // Do not send a value with the call if insufficient balance
+        // Do not send a value with the call if the exchange has an insufficient balance
         // The protocolFeeCollector contract will fallback to charging WETH
         if (exchangeBalance >= protocolFee) {
             valuePaid = protocolFee;
