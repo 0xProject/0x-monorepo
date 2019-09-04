@@ -63,7 +63,12 @@ contract MixinStakeStorage is
 
         // sanity check on balance
         if (amount > from.next) {
-            revert("Insufficient Balance");
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InsufficientBalanceError(
+                    amount,
+                    from.next
+                )
+            );
         }
 
         // move stake for next epoch
@@ -183,6 +188,7 @@ contract MixinStakeStorage is
         IStructs.DelayedBalance storage balancePtrB
     )
         private
+        pure
         returns (bool areEqual)
     {
         assembly {

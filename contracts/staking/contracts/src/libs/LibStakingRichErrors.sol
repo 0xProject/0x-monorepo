@@ -122,6 +122,18 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
         0x8f8e73de;
 
+    // bytes4(keccak256("EthVaultNotSet()"))
+    bytes4 internal constant ETH_VAULT_NOT_SET =
+        0xdb3f0be8;
+
+    // bytes4(keccak256("RewardVaultNotSet()"))
+    bytes4 internal constant REWARD_VAULT_NOT_SET =
+        0xfcb260f7;
+
+    // bytes4(keccak256("InvalidStakeState(uint256)"))
+    bytes4 internal constant INVALID_STAKE_STATE =
+        0xe6586728;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -460,6 +472,37 @@ library LibStakingRichErrors {
             INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR,
             numerator,
             denominator
+        );
+    }
+
+    function EthVaultNotSet()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            ETH_VAULT_NOT_SET
+        );
+    }
+
+    function RewardVaultNotSet()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            REWARD_VAULT_NOT_SET
+        );
+    }
+
+    function InvalidStakeState(uint256 state)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_STAKE_STATE,
+            state
         );
     }
 }

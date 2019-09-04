@@ -120,13 +120,6 @@ contract StakingPoolRewardVault is
             return;
         }
 
-        // sanity check on eth vault
-        IEthVault _ethVault = ethVault;
-        require(
-            address(_ethVault) != address(0),
-            "ETH_VAULT_NOT_SET"
-        );
-
         // sanity check - sufficient balance?
         uint256 operatorBalance = uint256(balanceByPoolId[poolId].operatorBalance);
         if (amount > operatorBalance) {
@@ -138,7 +131,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance = operatorBalance.safeSub(amount).downcastToUint96();
-        _ethVault.depositFor.value(amount)(operator);
+        _transferToEthVault(operator, amount);
 
         // notify
         emit RewardWithdrawnForOperator(poolId, amount);
@@ -157,12 +150,9 @@ contract StakingPoolRewardVault is
         external
         onlyStakingContract
     {
-        // sanity check on eth vault
-        IEthVault _ethVault = ethVault;
-        require(
-            address(_ethVault) != address(0),
-            "ETH_VAULT_NOT_SET"
-        );
+        if (amount == 0) {
+            return;
+        }
 
         // sanity check - sufficient balance?
         uint256 membersBalance = uint256(balanceByPoolId[poolId].membersBalance);
@@ -175,7 +165,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance = membersBalance.safeSub(amount).downcastToUint96();
-        _ethVault.depositFor.value(amount)(member);
+        _transferToEthVault(member, amount);
 
         // notify
         emit RewardWithdrawnForMember(poolId, amount);
@@ -277,12 +267,27 @@ contract StakingPoolRewardVault is
         uint256 newMembersBalance = uint256(balance.membersBalance).safeAdd(poolPortion);
 
         // save new balances
-        balance.operatorBalance = LibSafeDowncast.downcastToUint96(newOperatorBalance);
-        balance.membersBalance = LibSafeDowncast.downcastToUint96(newMembersBalance);
+        balance.operatorBalance = newOperatorBalance.downcastToUint96();
+        balance.membersBalance = newMembersBalance.downcastToUint96();
 
         return (
             operatorPortion,
             poolPortion
         );
+    }
+
+    function _transferToEthVault(address from, uint256 amount)
+        private
+    {
+        // sanity check on eth vault
+        IEthVault _ethVault = ethVault;
+        if (address(_ethVault) == address(0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.EthVaultNotSet()
+            );
+        }
+
+        // perform xfer
+        _ethVault.depositFor.value(amount)(from);
     }
 }

@@ -21,6 +21,7 @@ pragma solidity ^0.5.9;
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
+import "../libs/LibStakingRichErrors.sol";
 
 
 /// @dev This mixin contains logic for interfacing with the Staking Pool Reward Vault (vaults/StakingPoolRewardVault.sol)
@@ -71,7 +72,15 @@ contract MixinStakingPoolRewardVault is
     function _depositIntoStakingPoolRewardVault(uint256 amount)
         internal
     {
+        // cast to payable and sanity check
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
+        if (rewardVaultAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.RewardVaultNotSet()
+            );
+        }
+
+        // perform transfer
         rewardVaultAddress.transfer(amount);
     }
 
@@ -86,11 +95,15 @@ contract MixinStakingPoolRewardVault is
     )
         internal
     {
+        // sanity check
         IStakingPoolRewardVault _rewardVault = rewardVault;
-        require(
-            address(_rewardVault) != NIL_ADDRESS,
-            "REWARD_VAULT_NOT_SET"
-        );
+        if (address(_rewardVault) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.RewardVaultNotSet()
+            );
+        }
+
+        // perform transfer
         _rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
     }
 }

@@ -84,9 +84,10 @@ contract MixinStorage is
     // pools that were active in the current epoch
     bytes32[] internal activePoolsThisEpoch;
 
-    // reward ratios by epoch
+    // mapping from Pool Id to Epoch to Reward Ratio
     mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal cumulativeRewardsByPool;
 
+    // mapping from Pool Id to Epoch
     mapping (bytes32 => uint256) internal cumulativeRewardsByPoolLastStored;
 
     // registered 0x Exchange contracts

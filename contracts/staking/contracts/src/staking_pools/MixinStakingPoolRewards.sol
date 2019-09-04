@@ -232,6 +232,7 @@ contract MixinStakingPoolRewards is
     /// @dev returns true iff Cumulative Rewards are set
     function _isCumulativeRewardSet(IStructs.Fraction memory cumulativeReward)
         private
+        pure
         returns (bool)
     {
         // we use the denominator as a proxy for whether the cumulative

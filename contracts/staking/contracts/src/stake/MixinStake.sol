@@ -27,6 +27,7 @@ import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../sys/MixinScheduler.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinStakeStorage.sol";
 
@@ -78,10 +79,14 @@ contract MixinStake is
 
         // sanity check
         uint256 currentWithdrawableStake = getWithdrawableStake(owner);
-        require(
-            amount <= currentWithdrawableStake,
-            "INSUFFICIENT_FUNDS"
-        );
+        if (amount > currentWithdrawableStake) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InsufficientBalanceError(
+                    amount,
+                    currentWithdrawableStake
+                )
+            );
+        }
 
         // burn inactive stake
         _burnBalance(inactiveStakeByOwner[owner], amount);
@@ -219,6 +224,7 @@ contract MixinStake is
     /// @return a storage pointer to the corresponding stake stake
     function _getBalancePtrFromState(IStructs.StakeState state)
         private
+        view
         returns (IStructs.DelayedBalance storage)
     {
         // lookup state
@@ -231,7 +237,12 @@ contract MixinStake is
             return delegatedStakeByOwner[owner];
         }
 
-        // not found
-        revert("Unrecognized State");
+        // invalid state
+        LibRichErrors.rrevert(
+            LibStakingRichErrors.InvalidStakeState(uint256(state))
+        );
+
+        // required to compile ~ we should never hit this.
+        revert("INVALID_STATE");
     }
 }
