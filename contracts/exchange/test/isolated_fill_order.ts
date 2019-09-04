@@ -387,7 +387,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
             const order = createOrder({
                 takerAddress: randomAddress(),
             });
-            const expectedError = new ExchangeRevertErrors.InvalidTakerError(
+            const expectedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidTaker,
                 exchange.getOrderHash(order),
                 takerAddress,
             );
@@ -398,7 +399,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
             const order = createOrder({
                 senderAddress: randomAddress(),
             });
-            const expectedError = new ExchangeRevertErrors.InvalidSenderError(
+            const expectedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidSender,
                 exchange.getOrderHash(order),
                 takerAddress,
             );

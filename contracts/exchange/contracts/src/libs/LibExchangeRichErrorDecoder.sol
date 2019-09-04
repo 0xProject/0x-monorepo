@@ -136,61 +136,27 @@ contract LibExchangeRichErrorDecoder {
         orderStatus = LibOrder.OrderStatus(_orderStatus);
     }
 
-    /// @dev Decompose an ABI-encoded InvalidSenderError.
+    /// @dev Decompose an ABI-encoded OrderStatusError.
     /// @param encoded ABI-encoded revert error.
+    /// @return errorCode Error code that corresponds to invalid maker, taker, or sender.
     /// @return orderHash The order hash.
-    /// @return senderAddress The sender.
-    function decodeInvalidSenderError(bytes memory encoded)
+    /// @return contextAddress The maker, taker, or sender address
+    function decodeExchangeInvalidContextError(bytes memory encoded)
         public
         pure
         returns (
+            LibExchangeRichErrors.ExchangeContextErrorCodes errorCode,
             bytes32 orderHash,
-            address senderAddress
+            address contextAddress
         )
     {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidSenderErrorSelector());
-        (orderHash, senderAddress) = abi.decode(
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.ExchangeInvalidContextErrorSelector());
+        uint8 _errorCode;
+        (_errorCode, orderHash, contextAddress) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
-            (bytes32, address)
+            (uint8, bytes32, address)
         );
-    }
-
-    /// @dev Decompose an ABI-encoded InvalidMakerError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return orderHash The order hash.
-    /// @return makerAddress The maker of the order.
-    function decodeInvalidMakerError(bytes memory encoded)
-        public
-        pure
-        returns (
-            bytes32 orderHash,
-            address makerAddress
-        )
-    {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidMakerErrorSelector());
-        (orderHash, makerAddress) = abi.decode(
-            encoded.sliceDestructive(4, encoded.length),
-            (bytes32, address)
-        );
-    }
-
-    /// @dev Decompose an ABI-encoded InvalidTaker.
-    /// @param encoded ABI-encoded revert error.
-    /// @return orderHash The order hash.
-    /// @return takerAddress The taker of the order.
-    function decodeInvalidTakerError(bytes memory encoded)
-        public
-        pure
-        returns (
-            bytes32 orderHash,
-            address takerAddress
-        )
-    {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidTakerErrorSelector());
-        (orderHash, takerAddress) = abi.decode(
-            encoded.sliceDestructive(4, encoded.length),
-            (bytes32, address)
-        );
+        errorCode = LibExchangeRichErrors.ExchangeContextErrorCodes(_errorCode);
     }
 
     /// @dev Decompose an ABI-encoded FillError.

@@ -1045,7 +1045,10 @@ function fillErrorToRevertError(order: Order, error: FillOrderError): RevertErro
     const orderHash = orderHashUtils.getOrderHashHex(order);
     switch (error) {
         case FillOrderError.InvalidTaker:
-            return new ExchangeRevertErrors.InvalidTakerError(orderHash);
+            return new ExchangeRevertErrors.ExchangeInvalidContextError(
+                ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidTaker,
+                orderHash,
+            );
         case FillOrderError.InvalidMakerAmount:
         case FillOrderError.OrderUnfillable:
             return new ExchangeRevertErrors.OrderStatusError(orderHash);
