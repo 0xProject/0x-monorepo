@@ -1131,6 +1131,20 @@ describe('LibBytes', () => {
             );
             expect(result).to.eq(`${byteArrayLongerThan32Bytes}${byteArrayLongerThan32Bytes.slice(2)}`);
         });
+        it('should result in the same byte array if length is reduced and reset', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const tempByteLen = new BigNumber(byteLen).dividedToIntegerBy(2);
+            return expect(
+                libBytes.assertBytesUnchangedAfterLengthReset.callAsync(byteArrayLongerThan32Bytes, tempByteLen),
+            ).to.be.fulfilled('');
+        });
+        it('should result in the same byte array if length is increased and reset', async () => {
+            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const tempByteLen = new BigNumber(byteLen).multipliedBy(2);
+            return expect(
+                libBytes.assertBytesUnchangedAfterLengthReset.callAsync(byteArrayLongerThan32Bytes, tempByteLen),
+            ).to.be.fulfilled('');
+        });
     });
 });
 // tslint:disable:max-file-line-count

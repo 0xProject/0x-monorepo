@@ -325,4 +325,18 @@ contract TestLibBytes {
         b.writeLength(length);
         return b;
     }
+
+    function assertBytesUnchangedAfterLengthReset(
+        bytes memory b,
+        uint256 tempLength
+    )
+        public
+        pure
+    {
+        uint256 length = b.length;
+        bytes memory bCopy = b.slice(0, length);
+        b.writeLength(tempLength);
+        b.writeLength(length);
+        assert(b.equals(bCopy));
+    }
 }
