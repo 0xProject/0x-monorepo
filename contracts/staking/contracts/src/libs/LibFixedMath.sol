@@ -72,7 +72,7 @@ library LibFixedMath {
     ///      Negative results are clamped to zero.
     function _uintMul(int256 f, uint256 u) internal pure returns (uint256) {
         if (int256(u) < int256(0)) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 u
             ));
@@ -112,7 +112,7 @@ library LibFixedMath {
     ///      Reverts if `n` is too large to fit in a fixed-point number.
     function _toFixed(uint256 n) internal pure returns (int256 f) {
         if (int256(n) < int256(0)) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 n
             ));
@@ -124,13 +124,13 @@ library LibFixedMath {
     ///      Reverts if `n` / `d` is too large to fit in a fixed-point number.
     function _toFixed(uint256 n, uint256 d) internal pure returns (int256 f) {
         if (int256(n) < int256(0)) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 n
             ));
         }
         if (int256(d) < int256(0)) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathUnsignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 d
             ));
@@ -146,13 +146,13 @@ library LibFixedMath {
     /// @dev Get the natural logarithm of a fixed-point number 0 < `x` <= LN_MAX_VAL
     function _ln(int256 x) internal pure returns (int256 r) {
         if (x > LN_MAX_VAL) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 x
             ));
         }
         if (x <= 0) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_SMALL,
                 x
             ));
@@ -241,7 +241,7 @@ library LibFixedMath {
             return FIXED_1;
         }
         if (x > EXP_MAX_VAL) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathSignedValueError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 x
             ));
@@ -335,7 +335,7 @@ library LibFixedMath {
         }
         c = a * b;
         if (c / a != b) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.MULTIPLICATION_OVERFLOW,
                 a,
                 b
@@ -346,7 +346,7 @@ library LibFixedMath {
     /// @dev Returns the division of two numbers, reverting on division by zero.
     function __div(int256 a, int256 b) private pure returns (int256 c) {
         if (b == 0) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
                 a,
                 b
@@ -359,14 +359,14 @@ library LibFixedMath {
     function __add(int256 a, int256 b) private pure returns (int256 c) {
         c = a + b;
         if (c > 0 && a < 0 && b < 0) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW,
                 a,
                 b
             ));
         }
         if (c < 0 && a > 0 && b > 0) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.FixedMathBinOpError(
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
                 a,
                 b

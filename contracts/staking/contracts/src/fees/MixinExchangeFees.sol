@@ -84,7 +84,9 @@ contract MixinExchangeFees is
     /// @param makerAddress The address of the order's maker.
     function payProtocolFee(
         address makerAddress,
+        // solhint-disable-next-line
         address payerAddress,
+        // solhint-disable-next-line
         uint256 protocolFeePaid
     )
         external

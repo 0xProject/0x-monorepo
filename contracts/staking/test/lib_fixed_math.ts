@@ -84,7 +84,7 @@ blockchainTests('LibFixedMath', env => {
         });
 
         it('invert(0) throws', async () => {
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
             );
             const tx = testContract.invert.callAsync(toFixed(0));
@@ -125,7 +125,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('mulDiv(x, y, 0) throws', async () => {
             const [a, n, d] = [1.2345, 149, 0];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
             );
             const tx = testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
@@ -158,7 +158,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on overflow', async () => {
             const [a, b] = [MAX_FIXED_VALUE, new BigNumber(1)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b,
@@ -169,7 +169,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on underflow', async () => {
             const [a, b] = [MIN_FIXED_VALUE, new BigNumber(-1)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 a,
                 b,
@@ -204,7 +204,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on underflow', async () => {
             const [a, b] = [MIN_FIXED_VALUE, new BigNumber(1)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
                 a,
                 b.negated(),
@@ -215,7 +215,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on overflow', async () => {
             const [a, b] = [MAX_FIXED_VALUE, new BigNumber(-1)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b.negated(),
@@ -266,7 +266,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on underflow', async () => {
             const [a, b] = [MIN_FIXED_VALUE, new BigNumber(2)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
                 b,
@@ -277,7 +277,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws on overflow', async () => {
             const [a, b] = [MAX_FIXED_VALUE, new BigNumber(2)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
                 b,
@@ -298,7 +298,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('x / 0 throws', async () => {
             const [a, b] = [1, 0];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                 toFixed(a).times(FIXED_POINT_DIVISOR),
                 toFixed(b),
@@ -365,7 +365,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws if rhs is too large', async () => {
             const [a, b] = [toFixed(1), MAX_FIXED_VALUE.plus(1)];
-            const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
+            const expectedError = new FixedMathRevertErrors.UnsignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                 b,
             );
@@ -375,7 +375,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('throws if lhs is too large', async () => {
             const [a, b] = [MAX_FIXED_VALUE, new BigNumber(2)];
-            const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+            const expectedError = new FixedMathRevertErrors.BinOpError(
                 FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                 a,
                 b,
@@ -457,7 +457,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the numerator is too large to convert', async () => {
                 const [n, d] = [MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000)];
-                const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                const expectedError = new FixedMathRevertErrors.BinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     n,
                     FIXED_POINT_DIVISOR,
@@ -468,7 +468,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the denominator is zero', async () => {
                 const [n, d] = [new BigNumber(1), new BigNumber(0)];
-                const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                const expectedError = new FixedMathRevertErrors.BinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     n.times(FIXED_POINT_DIVISOR),
                     d,
@@ -493,7 +493,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the numerator is too large', async () => {
                 const [n, d] = [MAX_FIXED_VALUE.plus(1), new BigNumber(1000)];
-                const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
+                const expectedError = new FixedMathRevertErrors.UnsignedValueError(
                     FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                     n,
                 );
@@ -503,7 +503,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the denominator is too large', async () => {
                 const [n, d] = [new BigNumber(1000), MAX_FIXED_VALUE.plus(1)];
-                const expectedError = new FixedMathRevertErrors.FixedMathUnsignedValueError(
+                const expectedError = new FixedMathRevertErrors.UnsignedValueError(
                     FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                     d,
                 );
@@ -513,7 +513,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the numerator is too large to convert', async () => {
                 const [n, d] = [MAX_FIXED_VALUE.dividedToIntegerBy(FIXED_POINT_DIVISOR).plus(1), new BigNumber(1000)];
-                const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                const expectedError = new FixedMathRevertErrors.BinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.MultiplicationOverflow,
                     n,
                     FIXED_POINT_DIVISOR,
@@ -524,7 +524,7 @@ blockchainTests('LibFixedMath', env => {
 
             it('throws if the denominator is zero', async () => {
                 const [n, d] = [new BigNumber(1), new BigNumber(0)];
-                const expectedError = new FixedMathRevertErrors.FixedMathBinOpError(
+                const expectedError = new FixedMathRevertErrors.BinOpError(
                     FixedMathRevertErrors.BinOpErrorCodes.DivisionByZero,
                     n.times(FIXED_POINT_DIVISOR),
                     d,
@@ -554,7 +554,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('ln(x = 0) throws', async () => {
             const x = toFixed(0);
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+            const expectedError = new FixedMathRevertErrors.SignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooSmall,
                 x,
             );
@@ -564,7 +564,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('ln(x > 1) throws', async () => {
             const x = toFixed(1.000001);
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+            const expectedError = new FixedMathRevertErrors.SignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                 x,
             );
@@ -574,7 +574,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('ln(x < 0) throws', async () => {
             const x = toFixed(-0.000001);
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+            const expectedError = new FixedMathRevertErrors.SignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooSmall,
                 x,
             );
@@ -642,7 +642,7 @@ blockchainTests('LibFixedMath', env => {
 
         it('exp(x > EXP_MAX_VAL) throws', async () => {
             const x = toFixed(MAX_EXP_NUMBER).plus(1);
-            const expectedError = new FixedMathRevertErrors.FixedMathSignedValueError(
+            const expectedError = new FixedMathRevertErrors.SignedValueError(
                 FixedMathRevertErrors.ValueErrorCodes.TooLarge,
                 x,
             );

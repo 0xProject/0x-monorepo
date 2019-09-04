@@ -35,20 +35,20 @@ library LibFixedMathRichErrors {
         DIVISION_BY_ZERO
     }
 
-    // bytes4(keccak256("FixedMathSignedValueError(uint8,int256)"))
+    // bytes4(keccak256("SignedValueError(uint8,int256)"))
     bytes4 internal constant SIGNED_VALUE_ERROR_SELECTOR =
-        0x0edd9c46;
+        0xed2f26a1;
 
-    // bytes4(keccak256("FixedMathUnsignedValueError(uint8,uint256)"))
+    // bytes4(keccak256("UnsignedValueError(uint8,uint256)"))
     bytes4 internal constant UNSIGNED_VALUE_ERROR_SELECTOR =
-        0x38e93856;
+        0xbd79545f;
 
-    // bytes4(keccak256("FixedMathBinOpError(uint8,int256,int256)"))
+    // bytes4(keccak256("BinOpError(uint8,int256,int256)"))
     bytes4 internal constant BIN_OP_ERROR_SELECTOR =
-        0x2bd3386e;
+        0x8c12dfe7;
 
     // solhint-disable func-name-mixedcase
-    function FixedMathSignedValueError(
+    function SignedValueError(
         ValueErrorCodes error,
         int256 n
     )
@@ -63,7 +63,7 @@ library LibFixedMathRichErrors {
         );
     }
 
-    function FixedMathUnsignedValueError(
+    function UnsignedValueError(
         ValueErrorCodes error,
         uint256 n
     )
@@ -78,7 +78,7 @@ library LibFixedMathRichErrors {
         );
     }
 
-    function FixedMathBinOpError(
+    function BinOpError(
         BinOpErrorCodes error,
         int256 a,
         int256 b
