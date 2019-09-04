@@ -13,7 +13,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('Staking Pool Management', env => {
     // constants
-    const { DUMMY_TOKEN_DECIMALS, PPM_DENOMINATOR } = constants;
+    const { DUMMY_TOKEN_DECIMALS, PPM_100_PERCENT, PPM_DENOMINATOR } = constants;
     // tokens & addresses
     let accounts: string[];
     let owner: string;
@@ -56,7 +56,8 @@ blockchainTests('Staking Pool Management', env => {
         it('Should throw if poolOperatorShare is > PPM_DENOMINATOR', async () => {
             // test parameters
             const operatorAddress = users[0];
-            const operatorShare = PPM_DENOMINATOR + 1;
+            // tslint:disable-next-line
+            const operatorShare = PPM_100_PERCENT + 1;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             // create pool
             const tx = poolOperator.createStakingPoolAsync(operatorShare);
