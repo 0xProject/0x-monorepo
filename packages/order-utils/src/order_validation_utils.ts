@@ -1,15 +1,15 @@
 import {
-    ERC20ProxyContract,
-    ERC721ProxyContract,
+    DevUtilsContract,
     ExchangeContract,
     getContractAddressesForNetworkOrThrow,
     IAssetProxyContract,
     NetworkId,
 } from '@0x/abi-gen-wrappers';
 import { assert } from '@0x/assert';
+import { getNetworkIdByExchangeAddressOrThrow } from '@0x/contract-addresses';
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { BlockParamLiteral, SupportedProvider, ZeroExProvider } from 'ethereum-types';
+import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
@@ -187,11 +187,6 @@ export class OrderValidationUtils {
     // to make migrating easier in the interim.
     /**
      * Validate if the supplied order is fillable, and throw if it isn't
-     * @param erc20ProxyAddress A valid address where an ERC20ProxyContract is deployed
-     * @param erc721ProxyAddress A valid address where an ERC721ProxyContract is deployed
-     * @param exchangeAddress A valid address where the ExchangeContract is deployed
-     * @param zrxTokenAddress A valid address where ZRXTokenContract is deployed
-     * @param networkId The network for all contracts
      * @param provider The same provider used to interact with contracts
      * @param signedOrder SignedOrder of interest
      * @param opts ValidateOrderFillableOpts options (e.g expectedFillTakerTokenAmount.
@@ -199,27 +194,23 @@ export class OrderValidationUtils {
      * To check if the order is fillable for a non-zero amount, set `validateRemainingOrderAmountIsFillable` to false.)
      */
     public async simpleValidateOrderFillableOrThrowAsync(
-        erc20ProxyAddress: string,
-        erc721ProxyAddress: string,
-        exchangeAddress: string,
-        zrxTokenAddress: string,
-        networkId: number,
         provider: SupportedProvider,
         signedOrder: SignedOrder,
         opts: ValidateOrderFillableOpts = {},
     ): Promise<void> {
         assert.doesConformToSchema('opts', opts, validateOrderFillableOptsSchema);
 
-        const exchange = new ExchangeContract(exchangeAddress, provider);
+        const exchangeAddress = signedOrder.exchangeAddress;
+        const networkId = getNetworkIdByExchangeAddressOrThrow(exchangeAddress);
+        const { zrxToken, devUtils } = getContractAddressesForNetworkOrThrow(networkId);
+        const exchangeContract = new ExchangeContract(exchangeAddress, provider);
         const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
-            new ERC20ProxyContract(erc20ProxyAddress, provider),
-            new ERC721ProxyContract(erc721ProxyAddress, provider),
-            provider,
-            BlockParamLiteral.Latest,
+            new DevUtilsContract(devUtils, provider),
         );
         const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
         const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
 
+        // Define fillable taker asset amount
         let fillableTakerAssetAmount;
         const shouldValidateRemainingOrderAmountIsFillable =
             opts.validateRemainingOrderAmountIsFillable === undefined
@@ -230,7 +221,9 @@ export class OrderValidationUtils {
             fillableTakerAssetAmount = opts.expectedFillTakerTokenAmount;
         } else if (shouldValidateRemainingOrderAmountIsFillable) {
             // Default behaviour is to validate the amount left on the order.
-            const filledTakerTokenAmount = await exchange.filled.callAsync(orderHashUtils.getOrderHashHex(signedOrder));
+            const filledTakerTokenAmount = await exchangeContract.filled.callAsync(
+                orderHashUtils.getOrderHashHex(signedOrder),
+            );
             fillableTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
         } else {
             const orderStateUtils = new OrderStateUtils(balanceAllowanceStore, this._orderFilledCancelledFetcher);
@@ -242,7 +235,7 @@ export class OrderValidationUtils {
         await this.validateOrderFillableOrThrowAsync(
             exchangeTradeSimulator,
             signedOrder,
-            assetDataUtils.encodeERC20AssetData(zrxTokenAddress),
+            assetDataUtils.encodeERC20AssetData(zrxToken),
             fillableTakerAssetAmount,
         );
         const makerTransferAmount = orderCalculationUtils.getMakerFillAmount(signedOrder, fillableTakerAssetAmount);
@@ -306,44 +299,6 @@ export class OrderValidationUtils {
             fillTakerAssetAmount,
             signedOrder.takerAddress,
             zrxAssetData,
-        );
-    }
-    /**
-     * Validate a call to FillOrder and throw if it wouldn't succeed. This
-     * calls validateFillOrderThrowIfInvalidAsync under the hood
-     * @param erc20ProxyAddress A valid address where an ERC20ProxyContract is deployed
-     * @param erc721ProxyAddress A valid address where an ERC721ProxyContract is deployed
-     * @param zrxTokenAddress A valid address where ZRXTokenContract is deployed
-     * @param provider The same provider used to interact with contracts
-     * @param signedOrder SignedOrder of interest
-     * @param fillTakerAssetAmount Amount we'd like to fill the order for
-     * @param takerAddress The taker of the order
-     */
-    public async simpleValidateFillOrderThrowIfInvalidAsync(
-        erc20ProxyAddress: string,
-        erc721ProxyAddress: string,
-        zrxTokenAddress: string,
-        provider: SupportedProvider,
-        signedOrder: SignedOrder,
-        fillTakerAssetAmount: BigNumber,
-        takerAddress: string,
-    ): Promise<void> {
-        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
-            new ERC20ProxyContract(erc20ProxyAddress, provider),
-            new ERC721ProxyContract(erc721ProxyAddress, provider),
-            provider,
-            BlockParamLiteral.Latest,
-        );
-        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
-        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
-
-        await this.validateFillOrderThrowIfInvalidAsync(
-            exchangeTradeSimulator,
-            provider,
-            signedOrder,
-            fillTakerAssetAmount,
-            takerAddress,
-            assetDataUtils.encodeERC20AssetData(zrxTokenAddress),
         );
     }
     /**

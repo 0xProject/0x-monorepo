@@ -131,3 +131,21 @@ export function getContractAddressesForNetworkOrThrow(networkId: NetworkId): Con
     }
     return networkToAddresses[networkId];
 }
+
+/**
+ * Uses a given exchange address to look up the network id that the exchange contract is deployed
+ * on. Only works for Ethereum mainnet or a supported testnet. Throws if the exchange address
+ * does not correspond to a known deployed exchange contract.
+ * @param exchangeAddress The exchange address of concern
+ * @returns The network ID on which the exchange contract is deployed
+ */
+export function getNetworkIdByExchangeAddressOrThrow(exchangeAddress: string): NetworkId {
+    for (const networkId of Object.keys(networkToAddresses)) {
+        if (networkToAddresses[networkId as any].exchange === exchangeAddress) {
+            return networkId as any;
+        }
+    }
+    throw new Error(
+        `Unknown exchange address (${exchangeAddress}). No known 0x Exchange Contract deployed at this address.`,
+    );
+}
