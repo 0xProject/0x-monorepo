@@ -134,6 +134,10 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
         0xb7161acd;
 
+    // bytes4(keccak256("ProxyDestinationCannotBeNil()"))
+    bytes4 internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
+        0x01ecebea;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -505,4 +509,15 @@ library LibStakingRichErrors {
             status
         );
     }
+
+    function ProxyDestinationCannotBeNil()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            PROXY_DESTINATION_CANNOT_BE_NIL
+        );
+    }
+
 }

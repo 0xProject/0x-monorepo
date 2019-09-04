@@ -18,6 +18,7 @@ import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
+import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
@@ -65,6 +66,7 @@ export const artifacts = {
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
+    LibProxy: LibProxy as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,

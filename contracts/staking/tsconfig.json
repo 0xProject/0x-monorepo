@@ -16,6 +16,7 @@
         "generated-artifacts/LibEIP712Hash.json",
         "generated-artifacts/LibFixedMath.json",
         "generated-artifacts/LibFixedMathRichErrors.json",
+        "generated-artifacts/LibProxy.json",
         "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibSignatureValidator.json",
         "generated-artifacts/LibStakingRichErrors.json",
