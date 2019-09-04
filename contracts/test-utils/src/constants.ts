@@ -80,4 +80,6 @@ export const constants = {
     EIP712_DOMAIN_VERSION: '3.0.0',
     DEFAULT_GAS_PRICE: 1,
     NUM_TEST_ACCOUNTS: 20,
+    PPM_DENOMINATOR: 1e6,
+    PPM_100_PERCENT: 1e6,
 };

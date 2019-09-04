@@ -71,6 +71,10 @@
                 "pr": 2109
             },
             {
+                "note": "Add `PPM_DENOMINATOR` and `PPM_100_PERCENT` constants.",
+                "pr": 2109
+            },
+            {
                 "note": "Increase the number of ganache accounts to 20",
                 "pr": 2109
             }

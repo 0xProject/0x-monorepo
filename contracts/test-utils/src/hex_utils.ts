@@ -5,6 +5,7 @@ import * as ethUtil from 'ethereumjs-util';
 import { constants } from './constants';
 
 const { WORD_LENGTH } = constants;
+const WORD_CEIL = new BigNumber(2).pow(WORD_LENGTH * 8);
 
 /**
  * Concatenate all arguments as a hex string.
@@ -45,19 +46,17 @@ export function hexInvert(n: string | BigNumber | number, size: number = WORD_LE
 
 /**
  * Convert a string, a number, or a BigNumber into a hex string.
+ * Works with negative numbers, as well.
  */
-export function toHex(n: string | BigNumber | number): string {
-    let hex = '0x00';
-    if (typeof n === 'number') {
-        hex = `0x${n.toString(16)}`;
-    } else if (BigNumber.isBigNumber(n)) {
-        hex = `0x${n.toString(16)}`;
-    } else {
-        if (/^0x/.test(n)) {
-            hex = n;
-        } else {
-            hex = `0x${parseInt(n, 10).toString(16)}`;
-        }
+export function toHex(n: string | BigNumber | number, size: number = WORD_LENGTH): string {
+    if (typeof n === 'string' && /^0x[0-9a-f]+$/i.test(n)) {
+        // Already a hex.
+        return n;
     }
-    return hex;
+    let _n = new BigNumber(n);
+    if (_n.isNegative()) {
+        // Perform two's-complement.
+        _n = new BigNumber(hexInvert(toHex(_n.abs()), size).substr(2), 16).plus(1).mod(WORD_CEIL);
+    }
+    return `0x${_n.toString(16)}`;
 }
