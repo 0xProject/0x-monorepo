@@ -31,6 +31,11 @@ interface IStakingProxy /* is IStaking */
     /// @dev Emitted by StakingProxy when a staking contract is detached.
     event StakingContractDetachedFromProxy();
 
+    /// @dev Emitted by StakingProxy when read-only mode is set.
+    event ReadOnlyModeSet(
+        bool readOnlyMode
+    );
+
     /// @dev Delegates calls to the staking contract, if it is set.
     // solhint-disable no-complex-fallback
     function ()

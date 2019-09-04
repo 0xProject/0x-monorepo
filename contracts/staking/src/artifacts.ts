@@ -36,6 +36,7 @@ import * as MixinStakingPoolRewardVault from '../generated-artifacts/MixinStakin
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
 import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
+import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
@@ -44,6 +45,7 @@ import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json'
 import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
+    ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
     Staking: Staking as ContractArtifact,
     StakingProxy: StakingProxy as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,

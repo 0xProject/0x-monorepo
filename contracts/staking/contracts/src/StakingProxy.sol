@@ -31,11 +31,13 @@ contract StakingProxy is
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
-    constructor(address _stakingContract)
+    constructor(address _stakingContract, address _readOnlyProxy)
         public
         MixinStorage()
     {
         stakingContract = _stakingContract;
+        readOnlyProxyCallee = _stakingContract;
+        readOnlyProxy = _readOnlyProxy;
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
@@ -92,6 +94,7 @@ contract StakingProxy is
         onlyOwner
     {
         stakingContract = _stakingContract;
+        readOnlyProxyCallee = _stakingContract;
         emit StakingContractAttachedToProxy(_stakingContract);
     }
 
@@ -103,5 +106,19 @@ contract StakingProxy is
     {
         stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
+    }
+
+    /// @dev Set read-only mode (state cannot be changed).
+    function setReadOnlyMode(bool readOnlyMode)
+        external
+        onlyOwner
+    {
+        if (readOnlyMode) {
+            stakingContract = readOnlyProxy;
+        } else {
+            stakingContract = readOnlyProxyCallee;
+        }
+
+        emit ReadOnlyModeSet(readOnlyMode);
     }
 }

@@ -10,6 +10,7 @@ import * as _ from 'lodash';
 import {
     artifacts,
     EthVaultContract,
+    ReadOnlyProxyContract,
     StakingContract,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
@@ -33,6 +34,7 @@ export class StakingWrapper {
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _ethVaultContractIfExists?: EthVaultContract;
     private _rewardVaultContractIfExists?: StakingPoolRewardVaultContract;
+    private _readOnlyProxyContractIfExists?: ReadOnlyProxyContract;
     public static toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
         const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
@@ -97,6 +99,13 @@ export class StakingWrapper {
         return this._rewardVaultContractIfExists as StakingPoolRewardVaultContract;
     }
     public async deployAndConfigureContractsAsync(): Promise<void> {
+        // deploy read-only proxy
+        this._readOnlyProxyContractIfExists = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
+            artifacts.ReadOnlyProxy,
+            this._provider,
+            txDefaults,
+            artifacts,
+        );
         // deploy zrx vault
         this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
             artifacts.ZrxVault,
@@ -142,6 +151,7 @@ export class StakingWrapper {
             txDefaults,
             artifacts,
             this._stakingContractIfExists.address,
+            this._readOnlyProxyContractIfExists.address,
         );
         // set staking proxy contract in zrx vault
         await this._zrxVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(
@@ -175,6 +185,12 @@ export class StakingWrapper {
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._web3Wrapper.sendTransactionAsync(setStakingPoolRewardVaultTxData),
         );
+    }
+    public async setReadOnlyModeAsync(readOnlyMode: boolean): Promise<TransactionReceiptWithDecodedLogs> {
+        const txReceipt = await this.getStakingProxyContract().setReadOnlyMode.awaitTransactionSuccessAsync(
+            readOnlyMode,
+        );
+        return txReceipt;
     }
     public async getEthBalanceAsync(owner: string): Promise<BigNumber> {
         const balance = this._web3Wrapper.getBalanceInWeiAsync(owner);
