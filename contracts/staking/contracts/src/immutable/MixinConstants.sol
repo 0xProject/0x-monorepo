@@ -34,6 +34,8 @@ contract MixinConstants is
 
     bytes32 constant internal NIL_POOL_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
+    bytes32 constant internal NIL_POOL_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
+
     address constant internal NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
     bytes32 constant internal UNKNOWN_STAKING_POOL_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
@@ -46,4 +48,7 @@ contract MixinConstants is
 
     // The address of the canonical WETH contract -- this will be used as an alternative to ether for paying protocol fees.
     address constant internal WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+
+    // abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
+    bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 }

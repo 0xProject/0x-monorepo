@@ -99,37 +99,42 @@ contract MixinExchangeFees is
         payable
         onlyExchange
     {
-        // Get the pool id of the maker address, and use this pool id to get the amount
-        // of fees collected during this epoch.
-        bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-
-        if (msg.value == 0) {
-            // Transfer the protocol fee to this address.
-            erc20Proxy.transferFrom(
-                wethAssetData,
-                payerAddress,
-                address(this),
-                protocolFeePaid
-            );
-
-            // Update the amount of protocol fees paid to this pool this epoch.
-            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
-
-        } else if (msg.value == protocolFeePaid) {
-            // Update the amount of protocol fees paid to this pool this epoch.
-            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
-        } else {
-            // If the wrong message value was sent, revert with a rich error.
+        // If the protocol fee payment is invalid, revert with a rich error.
+        if (
+            protocolFeePaid == 0 ||
+            (msg.value != protocolFeePaid && msg.value != 0)
+        ) {
             LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
                 protocolFeePaid,
                 msg.value
             ));
         }
 
-        // If there were no fees collected prior to this payment, activate the pool that is being paid.
-        if (_feesCollectedThisEpoch == 0) {
-            activePoolsThisEpoch.push(poolId);
+        // Transfer the protocol fee to this address if it should be paid in WETH.
+        if (msg.value == 0) {
+            erc20Proxy.transferFrom(
+                WETH_ASSET_DATA,
+                payerAddress,
+                address(this),
+                protocolFeePaid
+            );
+        }
+
+        // Get the pool id of the maker address.
+        bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
+
+        // Only attribute the protocol fee payment to a pool if the maker is registered to a pool.
+        if (poolId != NIL_POOL_ID) {
+            // Use the maker pool id to get the amount of fees collected during this epoch in the pool.
+            uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
+
+            // Update the amount of protocol fees paid to this pool this epoch.
+            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
+
+            // If there were no fees collected prior to this payment, activate the pool that is being paid.
+            if (_feesCollectedThisEpoch == 0) {
+                activePoolsThisEpoch.push(poolId);
+            }
         }
     }
 
@@ -179,6 +184,18 @@ contract MixinExchangeFees is
         return protocolFeesThisEpochByPool[poolId];
     }
 
+    /// @dev Withdraws the entire WETH balance of the contract.
+    function _unwrapWETH()
+        internal
+    {
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+
+        // Don't withdraw WETH if the WETH balance is zero as a gas optimization.
+        if (wethBalance != 0) {
+            IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
+        }
+    }
+
     /// @dev Pays rewards to market making pools that were active this epoch.
     /// Each pool receives a portion of the fees generated this epoch (see _cobbDouglas) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and
@@ -204,11 +221,12 @@ contract MixinExchangeFees is
             uint256 finalContractBalance
         )
     {
-        // step 1/4 - withdraw the entire wrapper ether balance into this contract.
-        //            WETH is unwrapped here to keep `payProtocolFee()` calls relatively cheap.
-        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
-        IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
+        // step 1/4 - withdraw the entire wrapped ether balance into this contract. WETH
+        //            is unwrapped here to keep `payProtocolFee()` calls relatively cheap,
+        //            and WETH is only withdrawn if this contract's WETH balance is nonzero.
+        _unwrapWETH();
 
+        // Initialize initial values
         totalActivePools = activePoolsThisEpoch.length;
         totalFeesCollected = 0;
         totalWeightedStake = 0;

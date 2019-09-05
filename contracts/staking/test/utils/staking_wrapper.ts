@@ -62,7 +62,7 @@ export class StakingWrapper {
     constructor(
         provider: Provider,
         ownerAddres: string,
-        erc20ProxyContract: ERC20ProxyContract,
+        erc20ProxyContract: any, // This needs to be the `any` type so that other types of proxies can be used
         zrxTokenContract: DummyERC20TokenContract,
     ) {
         this._web3Wrapper = new Web3Wrapper(provider);

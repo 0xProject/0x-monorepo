@@ -6,6 +6,8 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
+import { artifacts } from '../src';
+
 import { constants as stakingConstants } from './utils/constants';
 import { StakingWrapper } from './utils/staking_wrapper';
 

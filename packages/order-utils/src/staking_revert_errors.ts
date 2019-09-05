@@ -179,6 +179,19 @@ export class InvalidStakeStatusError extends RevertError {
     }
 }
 
+export class InvalidProtocolFeePaymentError extends RevertError {
+    constructor(
+        expectedProtocolFeePaid?: BigNumber | number | string,
+        actualProtocolFeePaid?: BigNumber | number | string,
+    ) {
+        super(
+            'InvalidProtocolFeePaymentError',
+            'InvalidProtocolFeePaymentError(uint256 expectedProtocolFeePaid, uint256 actualProtocolFeePaid)',
+            { expectedProtocolFeePaid, actualProtocolFeePaid },
+        );
+    }
+}
+
 const types = [
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
@@ -200,6 +213,7 @@ const types = [
     EthVaultNotSetError,
     RewardVaultNotSetError,
     InvalidStakeStatusError,
+    InvalidProtocolFeePaymentError,
 ];
 
 // Register the types we've defined.

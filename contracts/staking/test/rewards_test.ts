@@ -4,6 +4,8 @@ import { blockchainTests, describe, expect, provider, web3Wrapper } from '@0x/co
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { artifacts } from '../src';
+
 import { FinalizerActor } from './actors/finalizer_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
