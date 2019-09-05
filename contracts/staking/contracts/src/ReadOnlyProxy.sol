@@ -29,6 +29,7 @@ contract ReadOnlyProxy is
 
     /// @dev Executes a read-only call to the staking contract, via `revertDelegateCall`.
     ///      By routing through `revertDelegateCall` any state changes are reverted.
+    // solhint-disable-next-line payable-fallback
     function ()
         external
     {
