@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
-import { StakeStatus, StakeInfo } from './utils/types';
+import { StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Stake Statuses', () => {

@@ -250,7 +250,7 @@ const types = [
     InvalidCobbDouglasAlphaError,
     EthVaultNotSetError,
     RewardVaultNotSetError,
-    InvalidStakeStatusError
+    InvalidStakeStatusError,
 ];
 
 // Register the types we've defined.

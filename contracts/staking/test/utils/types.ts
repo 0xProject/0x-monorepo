@@ -50,14 +50,13 @@ export interface SimulationParams {
 }
 
 export interface StakeBalance {
-    currentEpochBalance: BigNumber,
-    nextEpochBalance: BigNumber,
+    currentEpochBalance: BigNumber;
+    nextEpochBalance: BigNumber;
 }
 
 export interface StakeBalanceByPool {
     [key: string]: StakeBalance;
 }
-
 
 export enum StakeStatus {
     Active,
