@@ -44,7 +44,7 @@ export class FinalizerActor extends BaseActor {
         const operatorShareByPoolId = await this._getOperatorShareByPoolIdAsync(this._poolIds);
         const rewardVaultBalanceByPoolId = await this._getRewardVaultBalanceByPoolIdAsync(this._poolIds);
         const memberBalancesByPoolId = await this._getMemberBalancesByPoolIdAsync(this._membersByPoolId);
-        // compute expecnted changes
+        // compute expected changes
         const expectedRewardVaultBalanceByPoolId = await this._computeExpectedRewardVaultBalanceAsyncByPoolIdAsync(
             rewards,
             rewardVaultBalanceByPoolId,
