@@ -34,7 +34,6 @@ contract MixinStakeStorage is
     MixinStorage,
     MixinScheduler
 {
-
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 

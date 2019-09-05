@@ -138,7 +138,7 @@ contract MixinStake is
             );
         }
 
-        // cache the current withdrawal amoiunt, which may change if we're moving out of the inactive status.
+        // cache the current withdrawal amount, which may change if we're moving out of the inactive status.
         uint256 withdrawableStake = (from.status == IStructs.StakeStatus.INACTIVE)
             ? getWithdrawableStake(owner)
             : 0;

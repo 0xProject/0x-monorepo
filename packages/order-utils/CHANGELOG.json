@@ -81,6 +81,10 @@
             {
                 "note": "Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry.",
                 "pr": 2109
+            },
+            {
+                "note": "Add `EthVaultNotSetError, `RewardVaultNotSetError`, and `InvalidStakeStatusError` to error registry.",
+                "pr": 2118
             }
         ]
     },

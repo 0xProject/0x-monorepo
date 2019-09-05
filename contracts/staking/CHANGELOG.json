@@ -25,6 +25,10 @@
             {
                 "note": "Denominate pool operator shares in parts-per-million.",
                 "pr": 2109
+            },
+            {
+                "note": "New stake management mechanics. Delay before delegation. Nixed shadow rewards.",
+                "pr": 2118
             }
         ]
     }

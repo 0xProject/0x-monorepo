@@ -35,7 +35,6 @@ contract MixinStakingPoolRewards is
     MixinStakingPoolRewardVault,
     MixinStakeBalances
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

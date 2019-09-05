@@ -28,7 +28,6 @@ contract EthVault is
     IEthVault,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
 
     // mapping from Owner to ETH balance
