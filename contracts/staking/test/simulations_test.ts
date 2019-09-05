@@ -1,3 +1,6 @@
+/*
+@TODO (hysz) - update once new staking mechanics are merged
+
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
@@ -9,7 +12,6 @@ import { Simulation } from './utils/Simulation';
 import { StakingWrapper } from './utils/staking_wrapper';
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('End-To-End Simulations', env => {
-    /*
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const PPM_ONE = 1e6;
@@ -333,6 +335,6 @@ blockchainTests('End-To-End Simulations', env => {
             await expect(tx).to.revertWith(revertError);
         });
     });
-    */
 });
 // tslint:enable:no-unnecessary-type-assertion
+*/

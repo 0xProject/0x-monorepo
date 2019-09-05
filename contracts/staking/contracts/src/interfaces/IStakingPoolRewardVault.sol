@@ -165,4 +165,12 @@ interface IStakingPoolRewardVault {
         external
         view
         returns (uint256);
+
+    /// @dev Returns the operator share of a pool's balance.
+    /// @param poolId Unique Id of pool.
+    /// @return Operator share (integer out of 100)
+    function getOperatorShare(bytes32 poolId)
+        external
+        view
+        returns (uint256);
 }
