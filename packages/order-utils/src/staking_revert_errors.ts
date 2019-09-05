@@ -179,11 +179,11 @@ export class AmountExceedsBalanceOfPoolError extends RevertError {
     }
 }
 
-export class OperatorShareMustBeBetween0And100Error extends RevertError {
+export class InvalidPoolOperatorShareError extends RevertError {
     constructor(poolId?: string, poolOperatorShare?: BigNumber | number | string) {
         super(
-            'OperatorShareMustBeBetween0And100Error',
-            'OperatorShareMustBeBetween0And100Error(bytes32 poolId, uint8 poolOperatorShare)',
+            'InvalidPoolOperatorShareError',
+            'InvalidPoolOperatorShareError(bytes32 poolId, uint32 poolOperatorShare)',
             { poolId, poolOperatorShare },
         );
     }
@@ -192,6 +192,15 @@ export class OperatorShareMustBeBetween0And100Error extends RevertError {
 export class PoolAlreadyExistsError extends RevertError {
     constructor(poolId?: string) {
         super('PoolAlreadyExistsError', 'PoolAlreadyExistsError(bytes32 poolId)', { poolId });
+    }
+}
+
+export class InvalidCobbDouglasAlphaError extends RevertError {
+    constructor(numerator: BigNumber | number | string, denominator: BigNumber | number | string) {
+        super('InvalidCobbDouglasAlphaError', 'InvalidCobbDouglasAlphaError(uint256 numerator, uint256 denominator)', {
+            numerator,
+            denominator,
+        });
     }
 }
 
@@ -218,8 +227,9 @@ const types = [
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,
     AmountExceedsBalanceOfPoolError,
-    OperatorShareMustBeBetween0And100Error,
+    InvalidPoolOperatorShareError,
     PoolAlreadyExistsError,
+    InvalidCobbDouglasAlphaError,
 ];
 
 // Register the types we've defined.

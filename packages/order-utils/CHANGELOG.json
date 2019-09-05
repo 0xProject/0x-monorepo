@@ -69,6 +69,18 @@
             {
                 "note": "Add EIP712 types for Staking",
                 "pr": 1910
+            },
+            {
+                "note": "Add `InvalidCobbDouglasAlphaError` `RevertError` type to `StakingRevertErrors`",
+                "pr": 2109
+            },
+            {
+                "note": "Rename `OperatorShareMustBeBetween0And100Error` `RevertError` type to `InvalidPoolOperatorShareError`.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry.",
+                "pr": 2109
             }
         ]
     },

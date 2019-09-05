@@ -65,6 +65,18 @@
             {
                 "note": "`web3Wrapper` is created with `shouldAllowUnlimitedContractSize` if `UNLIMITED_CONTRACT_SIZE` environment variable is set.",
                 "pr": 2075
+            },
+            {
+                "note": "Add `toHex()`, `hexLeftPad()`, `hexRightPad()`, and 'hexInvert()' hex utils",
+                "pr": 2109
+            },
+            {
+                "note": "Add `PPM_DENOMINATOR` and `PPM_100_PERCENT` constants.",
+                "pr": 2109
+            },
+            {
+                "note": "Increase the number of ganache accounts to 20",
+                "pr": 2109
             }
         ]
     },

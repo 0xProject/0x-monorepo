@@ -273,26 +273,26 @@ export class PayProtocolFeeError extends RevertError {
 }
 
 const types = [
-    BatchMatchOrdersError,
-    OrderStatusError,
-    SignatureError,
-    SignatureValidatorNotApprovedError,
-    SignatureWalletError,
-    EIP1271SignatureError,
-    FillError,
-    OrderEpochError,
     AssetProxyExistsError,
     AssetProxyDispatchError,
     AssetProxyTransferError,
+    BatchMatchOrdersError,
+    EIP1271SignatureError,
+    ExchangeInvalidContextError,
+    FillError,
+    IncompleteFillError,
     NegativeSpreadError,
+    OrderEpochError,
+    OrderStatusError,
+    PayProtocolFeeError,
+    SignatureError,
+    SignatureValidatorNotApprovedError,
+    SignatureWalletError,
     TransactionError,
+    TransactionExecutionError,
     TransactionGasPriceError,
     TransactionInvalidContextError,
     TransactionSignatureError,
-    TransactionExecutionError,
-    IncompleteFillError,
-    PayProtocolFeeError,
-    ExchangeInvalidContextError,
 ];
 
 // Register the types we've defined.

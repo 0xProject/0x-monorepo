@@ -130,7 +130,7 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(1);
-            const expectedError = new AuthorizableRevertErrors.IndexOutOfBoundsError(index, constants.ZERO_AMOUNT);
+            const expectedError = new AuthorizableRevertErrors.IndexOutOfBoundsError(index, index);
             const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
                 from: owner,
             });

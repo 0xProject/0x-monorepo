@@ -97,9 +97,9 @@ contract MixinStakingPool is
 
     /// @dev Create a new staking pool. The sender will be the operator of this pool.
     /// Note that an operator must be payable.
-    /// @param operatorShare The percentage of any rewards owned by the operator.
+    /// @param operatorShare Portion of rewards owned by the operator, in ppm.
     /// @return poolId The unique pool id generated for this pool.
-    function createStakingPool(uint8 operatorShare)
+    function createStakingPool(uint32 operatorShare)
         external
         returns (bytes32 poolId)
     {

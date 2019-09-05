@@ -88,8 +88,8 @@ contract MixinStakingPoolRewardVault is
 
     /// @dev Registers a staking pool in the reward vault.
     /// @param poolId Unique id of pool.
-    /// @param operatorShare The percentage of the rewards owned by the operator.
-    function _registerStakingPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
+    /// @param operatorShare Portion of rewards owned by the operator, in ppm.
+    function _registerStakingPoolInRewardVault(bytes32 poolId, uint32 operatorShare)
         internal
     {
         rewardVault.registerStakingPool(

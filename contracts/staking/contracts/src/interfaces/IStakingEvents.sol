@@ -41,6 +41,14 @@ interface IStakingEvents {
         uint256 earliestEndTimeInSeconds
     );
 
+    /// @dev Emitted by MixinExchangeFees when the cobb douglas alpha is updated.
+    /// @param numerator The alpha numerator.
+    /// @param denominator The alpha denominator.
+    event CobbDouglasAlphaChanged(
+        uint256 numerator,
+        uint256 denominator
+    );
+
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.
      /// @param timeLockPeriod The timeLock period we changed to.
      /// @param startEpoch The epoch this period started.
@@ -70,11 +78,11 @@ interface IStakingEvents {
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operatorAddress Address of creator/operator of pool.
-    /// @param operatorShare The share of rewards given to the operator.
+    /// @param operatorShare The share of rewards given to the operator, in ppm.
     event StakingPoolCreated(
         bytes32 poolId,
         address operatorAddress,
-        uint8 operatorShare
+        uint32 operatorShare
     );
 
     /// @dev Emitted by MixinStakingPool when a new maker is added to a pool.

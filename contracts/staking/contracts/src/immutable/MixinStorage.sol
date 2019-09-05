@@ -25,7 +25,7 @@ import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
-// solhint-disable max-states-count
+// solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
     MixinDeploymentConstants,
     MixinConstants,
@@ -106,4 +106,10 @@ contract MixinStorage is
 
     // Rebate Vault
     IStakingPoolRewardVault internal rewardVault;
+
+    // Numerator for cobb douglas alpha factor.
+    uint256 internal cobbDouglasAlphaNumerator = 1;
+
+    // Denominator for cobb douglas alpha factor.
+    uint256 internal cobbDouglasAlphaDenomintor = 6;
 }

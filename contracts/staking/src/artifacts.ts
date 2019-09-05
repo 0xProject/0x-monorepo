@@ -14,8 +14,8 @@ import * as IVaultCore from '../generated-artifacts/IVaultCore.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
-import * as LibFeeMath from '../generated-artifacts/LibFeeMath.json';
-import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
+import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
+import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
 import * as LibRewardMath from '../generated-artifacts/LibRewardMath.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
@@ -38,6 +38,8 @@ import * as MixinZrxVault from '../generated-artifacts/MixinZrxVault.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
+import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
@@ -57,7 +59,8 @@ export const artifacts = {
     IWallet: IWallet as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
     LibEIP712Hash: LibEIP712Hash as ContractArtifact,
-    LibFeeMath: LibFeeMath as ContractArtifact,
+    LibFixedMath: LibFixedMath as ContractArtifact,
+    LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
     LibRewardMath: LibRewardMath as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibSignatureValidator: LibSignatureValidator as ContractArtifact,
@@ -74,6 +77,7 @@ export const artifacts = {
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
-    LibFeeMathTest: LibFeeMathTest as ContractArtifact,
+    TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

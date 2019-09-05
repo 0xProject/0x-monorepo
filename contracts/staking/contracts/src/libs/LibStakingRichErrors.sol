@@ -110,13 +110,17 @@ library LibStakingRichErrors {
     bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR =
         0x4c5c09dd;
 
-    // bytes4(keccak256("OperatorShareMustBeBetween0And100Error(bytes32,uint8)"))
-    bytes4 internal constant OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100_ERROR_SELECTOR =
-        0xde447684;
+    // bytes4(keccak256("InvalidPoolOperatorShareError(bytes32,uint32)"))
+    bytes4 internal constant INVALID_POOL_OPERATOR_SHARE_ERROR_SELECTOR =
+        0x70f55b5a;
 
     // bytes4(keccak256("PoolAlreadyExistsError(bytes32)"))
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
+
+    // bytes4(keccak256("InvalidCobbDouglasAlphaError(uint256,uint256)"))
+    bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
+        0x8f8e73de;
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -416,16 +420,16 @@ library LibStakingRichErrors {
         );
     }
 
-    function OperatorShareMustBeBetween0And100Error(
+    function InvalidPoolOperatorShareError(
         bytes32 poolId,
-        uint8 poolOperatorShare
+        uint32 poolOperatorShare
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100_ERROR_SELECTOR,
+            INVALID_POOL_OPERATOR_SHARE_ERROR_SELECTOR,
             poolId,
             poolOperatorShare
         );
@@ -441,6 +445,21 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             POOL_ALREADY_EXISTS_ERROR_SELECTOR,
             poolId
+        );
+    }
+
+    function InvalidCobbDouglasAlphaError(
+        uint256 numerator,
+        uint256 denominator
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR,
+            numerator,
+            denominator
         );
     }
 }
