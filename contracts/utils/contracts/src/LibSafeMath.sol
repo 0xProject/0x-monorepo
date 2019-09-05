@@ -6,8 +6,6 @@ import "./LibSafeMathRichErrors.sol";
 
 library LibSafeMath {
 
-    using LibSafeMath for uint256;
-
     function safeMul(uint256 a, uint256 b)
         internal
         pure

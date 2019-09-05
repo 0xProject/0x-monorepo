@@ -48,33 +48,32 @@ contract MixinStakingPoolRewards is
         returns (uint256 totalReward)
     {
         // cache some values to reduce sloads
-        IStructs.DelayedBalance memory delegatedStake = delegatedStakeToPoolByOwner[member][poolId];
+        IStructs.StoredBalance memory delegatedStake = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]);
         uint256 currentEpoch = getCurrentEpoch();
 
         // value is always zero in these two scenarios:
-        //   1. The current epoch is zero: delegation begins at epoch 1
-        //   2. The owner's delegated is current as of this epoch: their rewards have been moved to the ETH vault.
-        if (currentEpoch == 0 || delegatedStake.lastStored == currentEpoch) return 0;
+        //   1. The owner's delegated is current as of this epoch: their rewards have been moved to the ETH vault.
+        //   2. The current epoch is zero: delegation begins at epoch 1
+        if (delegatedStake.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
 
-        // compute reward accumulated during `lastStored` epoch;
-        // the `current` balance describes how much stake was collecting rewards when `lastStored` was set.
-        uint256 rewardsAccumulatedDuringLastStoredEpoch = (delegatedStake.current != 0)
+        // compute reward accumulated during `delegatedStake.currentEpoch`;
+        uint256 rewardsAccumulatedDuringLastStoredEpoch = (delegatedStake.currentEpochBalance != 0)
             ? _computeMemberRewardOverInterval(
                 poolId,
-                delegatedStake.current,
-                delegatedStake.lastStored - 1,
-                delegatedStake.lastStored
+                delegatedStake.currentEpochBalance,
+                delegatedStake.currentEpoch - 1,
+                delegatedStake.currentEpoch
             )
             : 0;
 
-        // compute the rewards accumulated by the `next` balance;
-        // this starts at `lastStored + 1` and goes up until the last epoch, during which
+        // compute the reward accumulated by the `next` balance;
+        // this starts at `delegatedStake.currentEpoch + 1` and goes up until the last epoch, during which
         // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > delegatedStake.lastStored)
+        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > delegatedStake.currentEpoch)
             ? _computeMemberRewardOverInterval(
                 poolId,
-                delegatedStake.next,
-                delegatedStake.lastStored,
+                delegatedStake.nextEpochBalance,
+                delegatedStake.currentEpoch,
                 cumulativeRewardsByPoolLastStored[poolId]
             )
             : 0;

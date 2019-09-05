@@ -280,7 +280,7 @@ contract StakingPoolRewardVault is
         IEthVault _ethVault = ethVault;
         if (address(_ethVault) == address(0)) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.EthVaultNotSet()
+                LibStakingRichErrors.EthVaultNotSetError()
             );
         }
 

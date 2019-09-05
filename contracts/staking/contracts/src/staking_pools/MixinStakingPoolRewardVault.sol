@@ -73,7 +73,7 @@ contract MixinStakingPoolRewardVault is
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
         if (rewardVaultAddress == NIL_ADDRESS) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.RewardVaultNotSet()
+                LibStakingRichErrors.RewardVaultNotSetError()
             );
         }
 
@@ -96,7 +96,7 @@ contract MixinStakingPoolRewardVault is
         IStakingPoolRewardVault _rewardVault = rewardVault;
         if (address(_rewardVault) == NIL_ADDRESS) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.RewardVaultNotSet()
+                LibStakingRichErrors.RewardVaultNotSetError()
             );
         }
 

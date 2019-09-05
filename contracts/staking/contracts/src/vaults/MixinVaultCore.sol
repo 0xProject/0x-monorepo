@@ -34,7 +34,7 @@ import "../interfaces/IVaultCore.sol";
 /// recoverable flaw/bug/vulnerability, simply detach the staking contract
 /// by setting its address to `address(0)`. Once in Catastrophic Failure Mode,
 /// a vault cannot be reset to normal mode; this prevents corruption of related
-/// state in the staking contract.
+/// status in the staking contract.
 contract MixinVaultCore is
     Authorizable,
     IVaultCore

@@ -122,17 +122,17 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
         0x8f8e73de;
 
-    // bytes4(keccak256("EthVaultNotSet()"))
-    bytes4 internal constant ETH_VAULT_NOT_SET =
-        0xdb3f0be8;
+   // bytes4(keccak256("EthVaultNotSetError()"))
+    bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
+        0xa067f596;
 
-    // bytes4(keccak256("RewardVaultNotSet()"))
-    bytes4 internal constant REWARD_VAULT_NOT_SET =
-        0xfcb260f7;
+    // bytes4(keccak256("RewardVaultNotSetError()"))
+    bytes4 internal constant REWARD_VAULT_NOT_SET_ERROR_SELECTOR =
+        0xe6976d70;
 
-    // bytes4(keccak256("InvalidStakeState(uint256)"))
-    bytes4 internal constant INVALID_STAKE_STATE =
-        0xe6586728;
+    // bytes4(keccak256("InvalidStakeStatusError(uint256)"))
+    bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
+        0xb7161acd;
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -475,34 +475,34 @@ library LibStakingRichErrors {
         );
     }
 
-    function EthVaultNotSet()
+    function EthVaultNotSetError()
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            ETH_VAULT_NOT_SET
+            ETH_VAULT_NOT_SET_ERROR_SELECTOR
         );
     }
 
-    function RewardVaultNotSet()
+    function RewardVaultNotSetError()
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            REWARD_VAULT_NOT_SET
+            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
         );
     }
 
-    function InvalidStakeState(uint256 state)
+    function InvalidStakeStatusError(uint256 status)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            INVALID_STAKE_STATE,
-            state
+            INVALID_STAKE_STATUS_ERROR_SELECTOR,
+            status
         );
     }
 }

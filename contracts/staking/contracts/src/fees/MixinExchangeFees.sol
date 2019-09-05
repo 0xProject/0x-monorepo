@@ -207,8 +207,8 @@ contract MixinExchangeFees is
             bytes32 poolId = activePoolsThisEpoch[i];
 
             // compute weighted stake
-            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).current;
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId).current; // @TODO Update
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId).currentEpochBalance;
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)

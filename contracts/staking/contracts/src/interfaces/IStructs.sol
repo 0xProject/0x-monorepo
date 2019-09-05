@@ -39,7 +39,7 @@ interface IStructs {
         address makerAddress;
     }
 
-    /// @dev State for Staking Pools (see MixinStakingPool).
+    /// @dev Status for Staking Pools (see MixinStakingPool).
     /// @param operatorAddress Address of pool operator.
     /// @param operatorShare Portion of pool rewards owned by operator, in ppm.
     struct Pool {
@@ -47,7 +47,7 @@ interface IStructs {
         uint32 operatorShare;
     }
 
-    /// @dev State for a pool that actively traded during the current epoch.
+    /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
     /// @param poolId Unique Id of staking pool.
     /// @param feesCollected Fees collected in ETH by this pool in the current epoch.
@@ -59,33 +59,39 @@ interface IStructs {
         uint256 delegatedStake;
     }
 
-    /// @dev A delayed balance allows values to be computed
-    struct DelayedBalance {
-        uint96 current;
-        uint96 next;
-        uint64 lastStored;
+    /// @dev Encapsulates a balance for the current and next epochs.
+    /// Note that these balances may be stale if the current epoch
+    /// is greater than `currentEpoch`.
+    /// Always load this struct using _loadAndSyncBalance or _loadUnsyncedBalance.
+    /// @param currentEpoch the current epoch
+    /// @param currentEpochBalance balance in the current epoch.
+    /// @param nextEpochBalance balance in the next epoch.
+    struct StoredBalance {
+        uint64 currentEpoch;
+        uint96 currentEpochBalance;
+        uint96 nextEpochBalance;
     }
 
     /// @dev Balance struct for stake.
-    /// @param current Balance in the current epoch.
-    /// @param next Balance in the next epoch.
+    /// @param currentEpochBalance Balance in the current epoch.
+    /// @param nextEpochBalance Balance in the next epoch.
     struct StakeBalance {
-        uint256 current;
-        uint256 next;
+        uint256 currentEpochBalance;
+        uint256 nextEpochBalance;
     }
 
-    /// @dev States that stake can exist in.
-    enum StakeState {
+    /// @dev Statuses that stake can exist in.
+    enum StakeStatus {
         ACTIVE,
         INACTIVE,
         DELEGATED
     }
 
-    /// @dev Info used to describe a state.
-    /// @param state of the stake.
-    /// @param poolId Unique Id of pool. This is set when state=DELEGATED.
-    struct StakeStateInfo {
-        StakeState state;
+    /// @dev Info used to describe a status.
+    /// @param status of the stake.
+    /// @param poolId Unique Id of pool. This is set when status=DELEGATED.
+    struct StakeInfo {
+        StakeStatus status;
         bytes32 poolId;
     }
 

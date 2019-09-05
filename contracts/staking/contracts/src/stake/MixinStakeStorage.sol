@@ -36,6 +36,7 @@ contract MixinStakeStorage is
 {
 
     using LibSafeMath for uint256;
+    using LibSafeDowncast for uint256;
 
     /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
     ///      This change comes into effect next epoch.
@@ -43,8 +44,8 @@ contract MixinStakeStorage is
     /// @param toPtr pointer to storage location of `to` stake.
     /// @param amount of stake to move.
     function _moveStake(
-        IStructs.DelayedBalance storage fromPtr,
-        IStructs.DelayedBalance storage toPtr,
+        IStructs.StoredBalance storage fromPtr,
+        IStructs.StoredBalance storage toPtr,
         uint256 amount
     )
         internal
@@ -55,104 +56,118 @@ contract MixinStakeStorage is
         }
 
         // load balance from storage and synchronize it
-        IStructs.DelayedBalance memory from = _syncBalanceDestructive(fromPtr);
-        IStructs.DelayedBalance memory to = _syncBalanceDestructive(toPtr);
+        IStructs.StoredBalance memory from = _loadAndSyncBalance(fromPtr);
+        IStructs.StoredBalance memory to = _loadAndSyncBalance(toPtr);
 
         // sanity check on balance
-        if (amount > from.next) {
+        if (amount > from.nextEpochBalance) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InsufficientBalanceError(
                     amount,
-                    from.next
+                    from.nextEpochBalance
                 )
             );
         }
 
         // move stake for next epoch
-        from.next = LibSafeDowncast.downcastToUint96(uint256(from.next).safeSub(amount));
-        to.next = LibSafeDowncast.downcastToUint96(uint256(to.next).safeAdd(amount));
+        from.nextEpochBalance = uint256(from.nextEpochBalance).safeSub(amount).downcastToUint96();
+        to.nextEpochBalance = uint256(to.nextEpochBalance).safeAdd(amount).downcastToUint96();
 
         // update state in storage
         _storeBalance(fromPtr, from);
         _storeBalance(toPtr, to);
     }
 
-    /// @dev Synchronizes the fields of a stored balance.
+    /// @dev Loads a balance from storage and synchronizes its current/next fields.
     ///      The structs `current` field is set to `next` if the
     ///      current epoch is greater than the epoch in which the struct
     ///      was stored.
-    /// @param balance to update. This will be equal to the return value after calling.
+    /// @param balancePtr to load and sync.
     /// @return synchronized balance.
-    function _syncBalanceDestructive(IStructs.DelayedBalance memory balance)
+    function _loadAndSyncBalance(IStructs.StoredBalance storage balancePtr)
         internal
         view
-        returns (IStructs.DelayedBalance memory)
+        returns (IStructs.StoredBalance memory balance)
     {
+        // load from storage
+        balance = balancePtr;
+        // sync
         uint256 currentEpoch = getCurrentEpoch();
-        if (currentEpoch > balance.lastStored) {
-            balance.lastStored = LibSafeDowncast.downcastToUint64(currentEpoch);
-            balance.current = balance.next;
+        if (currentEpoch > balance.currentEpoch) {
+            balance.currentEpoch = currentEpoch.downcastToUint64();
+            balance.currentEpochBalance = balance.nextEpochBalance;
         }
         return balance;
     }
 
-    /// @dev Mints new value in a balance.
-    ///      This causes both the `current` and `next` fields to increase immediately.
+    /// @dev Loads a balance from storage without synchronizing its fields.
+    /// This function exists so that developers will have to explicitly
+    /// communicate that they're loading a synchronized or unsynchronized balance.
+    /// These balances should never be accessed directly.
+    /// @param balancePtr to load.
+    /// @return unsynchronized balance.
+    function _loadUnsyncedBalance(IStructs.StoredBalance storage balancePtr)
+        internal
+        view
+        returns (IStructs.StoredBalance memory balance)
+    {
+        balance = balancePtr;
+        return balance;
+    }
+
+    /// @dev Increments both the `current` and `next` fields.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _mintBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
+    function _incrementCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
-        balance.next = LibSafeDowncast.downcastToUint96(uint256(balance.next).safeAdd(amount));
-        balance.current = LibSafeDowncast.downcastToUint96(uint256(balance.current).safeAdd(amount));
+        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
+        balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeAdd(amount).downcastToUint96();
 
         // update state
         _storeBalance(balancePtr, balance);
     }
 
-    /// @dev Burns existing value in a balance.
-    ///      This causes both the `current` and `next` fields to decrease immediately.
+    /// @dev Decrements both the `current` and `next` fields.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _burnBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
+    function _decrementCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
-        balance.next = LibSafeDowncast.downcastToUint96(uint256(balance.next).safeSub(amount));
-        balance.current = LibSafeDowncast.downcastToUint96(uint256(balance.current).safeSub(amount));
+        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
+        balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeSub(amount).downcastToUint96();
 
         // update state
         _storeBalance(balancePtr, balance);
     }
 
-    /// @dev Increments a balance.
-    ///      Ths updates the `next` field but not the `current` field.
+    /// @dev Increments the `next` field (but not the `current` field).
     /// @param balancePtr storage pointer to balance.
     /// @param amount to increment by.
-    function _incrementBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
+    function _incrementNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Add stake to balance
-        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
-        balance.next = LibSafeDowncast.downcastToUint96(uint256(balance.next).safeAdd(amount));
+        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
 
         // update state
         _storeBalance(balancePtr, balance);
     }
 
-    /// @dev Decrements a balance.
-    ///      Ths updates the `next` field but not the `current` field.
+    /// @dev Decrements the `next` field (but not the `current` field).
     /// @param balancePtr storage pointer to balance.
     /// @param amount to decrement by.
-    function _decrementBalance(IStructs.DelayedBalance storage balancePtr, uint256 amount)
+    function _decrementNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
-        IStructs.DelayedBalance memory balance = _syncBalanceDestructive(balancePtr);
-        balance.next = LibSafeDowncast.downcastToUint96(uint256(balance.next).safeSub(amount));
+        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
 
         // update state
         _storeBalance(balancePtr, balance);
@@ -162,16 +177,16 @@ contract MixinStakeStorage is
     /// @param balancePtr points to where `balance` will be stored.
     /// @param balance to save to storage.
     function _storeBalance(
-        IStructs.DelayedBalance storage balancePtr,
-        IStructs.DelayedBalance memory balance
+        IStructs.StoredBalance storage balancePtr,
+        IStructs.StoredBalance memory balance
     )
         private
     {
         // note - this compresses into a single `sstore` when optimizations are enabled,
         // since the StakeBalance struct occupies a single word of storage.
-        balancePtr.lastStored = balance.lastStored;
-        balancePtr.next = balance.next;
-        balancePtr.current = balance.current;
+        balancePtr.currentEpoch = balance.currentEpoch;
+        balancePtr.nextEpochBalance = balance.nextEpochBalance;
+        balancePtr.currentEpochBalance = balance.currentEpochBalance;
     }
 
     /// @dev Returns true iff storage pointers resolve to same storage location.
@@ -180,9 +195,9 @@ contract MixinStakeStorage is
     /// @return true iff pointers are equal.
     function _arePointersEqual(
         // solhint-disable-next-line no-unused-vars
-        IStructs.DelayedBalance storage balancePtrA,
+        IStructs.StoredBalance storage balancePtrA,
         // solhint-disable-next-line no-unused-vars
-        IStructs.DelayedBalance storage balancePtrB
+        IStructs.StoredBalance storage balancePtrB
     )
         private
         pure

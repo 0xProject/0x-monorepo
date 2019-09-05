@@ -25,9 +25,9 @@ interface IStakingEvents {
     event MoveStake(
         address indexed owner,
         uint256 amount,
-        uint8 fromState,
+        uint8 fromStatus,
         bytes32 indexed fromPool,
-        uint8 toState,
+        uint8 toStatus,
         bytes32 indexed toProol
     );
 

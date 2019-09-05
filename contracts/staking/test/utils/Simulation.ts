@@ -64,7 +64,7 @@ export class Simulation {
             await this._withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(this._p);
         }
 
-        // @TODO cleanup state and verify the staking contract is empty
+        // @TODO cleanup status and verify the staking contract is empty
     }
 
     private async _withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(
