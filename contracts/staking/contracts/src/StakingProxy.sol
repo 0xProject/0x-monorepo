@@ -29,7 +29,6 @@ contract StakingProxy is
     MixinConstants,
     MixinStorage
 {
-
     using LibProxy for address;
 
     /// @dev Constructor.
@@ -44,7 +43,6 @@ contract StakingProxy is
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
-    // solhint-disable no-complex-fallback
     function ()
         external
         payable

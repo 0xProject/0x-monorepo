@@ -32,7 +32,6 @@ library LibProxy {
 
     /// @dev Executes a read-only call to the staking contract, via `revertDelegateCall`.
     ///      By routing through `revertDelegateCall` any state changes are reverted.
-    // solhint-disable no-complex-fallback
     function proxyCall(
         address destination,
         RevertRule revertRule,
@@ -96,6 +95,7 @@ library LibProxy {
             case 2 {    // NEVER_REVERT
                 return(0, returndatasize())
             }
+            // solhint-disable no-empty-blocks
             default {} // REVERT_ON_ERROR (handled below)
 
             // rethrow any exceptions
