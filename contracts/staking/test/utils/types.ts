@@ -66,7 +66,7 @@ export enum StakeStatus {
 }
 
 export interface StakeInfo {
-    Status: StakeStatus;
+    status: StakeStatus;
     poolId?: string;
 }
 

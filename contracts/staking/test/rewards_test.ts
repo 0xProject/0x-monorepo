@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { FinalizerActor } from './actors/finalizer_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
-import { MembersByPoolId, OperatorByPoolId, StakeState } from './utils/types';
+import { MembersByPoolId, OperatorByPoolId, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
@@ -174,8 +174,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const amount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 amount,
             );
             await payProtocolFeeAndFinalize();
@@ -196,8 +196,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const amount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 amount,
             );
             // finalize
@@ -214,8 +214,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const amount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 amount,
             );
             // skip epoch, so staker can start earning rewards
@@ -236,15 +236,15 @@ blockchainTests.resets('Testing Rewards', () => {
             const totalStakeAmount = StakingWrapper.toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[0],
             );
             // second staker delegates
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[1],
             );
             // skip epoch, so staker can start earning rewards
@@ -266,8 +266,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const totalStakeAmount = StakingWrapper.toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[0],
             );
             // skip epoch, so staker can start earning rewards
@@ -275,8 +275,8 @@ blockchainTests.resets('Testing Rewards', () => {
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[1],
             );
             // skip epoch, so staker can start earning rewards
@@ -298,8 +298,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const totalStakeAmount = StakingWrapper.toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
@@ -307,8 +307,8 @@ blockchainTests.resets('Testing Rewards', () => {
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
@@ -348,8 +348,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const totalStakeAmount = StakingWrapper.toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
@@ -357,8 +357,8 @@ blockchainTests.resets('Testing Rewards', () => {
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
@@ -384,8 +384,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
@@ -395,8 +395,8 @@ blockchainTests.resets('Testing Rewards', () => {
             await payProtocolFeeAndFinalize(reward);
             // undelegate (moves delegator's from the transient reward vault into the eth vault)
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Delegated, poolId },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId },
+                { status: StakeStatus.Active },
                 stakeAmount,
             );
             // sanity check final balances
@@ -410,8 +410,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
@@ -422,8 +422,8 @@ blockchainTests.resets('Testing Rewards', () => {
             // add more stake
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // sanity check final balances
@@ -451,8 +451,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmounts = [StakingWrapper.toBaseUnitAmount(4), StakingWrapper.toBaseUnitAmount(6)];
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
@@ -460,8 +460,8 @@ blockchainTests.resets('Testing Rewards', () => {
             // second staker delegates (epoch 1)
             await stakers[0].stakeAsync(stakeAmounts[1]);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
@@ -484,8 +484,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
@@ -494,8 +494,8 @@ blockchainTests.resets('Testing Rewards', () => {
             await payProtocolFeeAndFinalize(rewardForDelegator);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Delegated, poolId },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId },
+                { status: StakeStatus.Active },
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();
@@ -527,8 +527,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
@@ -537,8 +537,8 @@ blockchainTests.resets('Testing Rewards', () => {
             await payProtocolFeeAndFinalize(rewardForDelegator);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Delegated, poolId },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId },
+                { status: StakeStatus.Active },
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();
@@ -560,8 +560,8 @@ blockchainTests.resets('Testing Rewards', () => {
             const stakeAmount = StakingWrapper.toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
@@ -570,8 +570,8 @@ blockchainTests.resets('Testing Rewards', () => {
             await payProtocolFeeAndFinalize(rewardsForDelegator[0]);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Delegated, poolId },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId },
+                { status: StakeStatus.Active },
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();
@@ -579,8 +579,8 @@ blockchainTests.resets('Testing Rewards', () => {
             await payProtocolFeeAndFinalize(rewardNotForDelegator);
             // delegate stake and go to next epoch
             await stakers[0].moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId },
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();

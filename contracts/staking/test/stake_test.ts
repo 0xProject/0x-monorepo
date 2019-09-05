@@ -7,10 +7,10 @@ import * as _ from 'lodash';
 
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
-import { StakeState, StakeStateInfo } from './utils/types';
+import { StakeStatus, StakeInfo } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Stake States', () => {
+blockchainTests.resets('Stake Statuses', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);
@@ -77,11 +77,11 @@ blockchainTests.resets('Stake States', () => {
             // epoch 1
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             // still epoch 1 ~ should be able to move stake again
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 amount,
             );
         });
@@ -89,11 +89,11 @@ blockchainTests.resets('Stake States', () => {
             // epoch 1
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
-            // stake is now inactive, should not be able to move it out of active state again
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
+            // stake is now inactive, should not be able to move it out of active status again
             await staker.moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Inactive },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Inactive },
                 amount,
                 new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
             );
@@ -102,17 +102,17 @@ blockchainTests.resets('Stake States', () => {
             // epoch 1
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             // still epoch 1 ~ should be able to move stake again
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 amount,
             );
             // stake is now delegated; should fail to re-assign it from inactive back to active
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Active },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Active },
                 amount,
                 new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
             );
@@ -120,67 +120,67 @@ blockchainTests.resets('Stake States', () => {
     });
     describe('Move Zero Stake', () => {
         it('active -> active', async () => {
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Active }, ZERO);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Active }, ZERO);
         });
         it('active -> inactive', async () => {
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, ZERO);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, ZERO);
         });
         it('active -> delegated', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 ZERO,
             );
         });
         it('inactive -> active', async () => {
-            await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, ZERO);
+            await staker.moveStakeAsync({ status: StakeStatus.Inactive }, { status: StakeStatus.Active }, ZERO);
         });
         it('inactive -> inactive', async () => {
-            await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Inactive }, ZERO);
+            await staker.moveStakeAsync({ status: StakeStatus.Inactive }, { status: StakeStatus.Inactive }, ZERO);
         });
         it('inactive -> delegated', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 ZERO,
             );
         });
         it('delegated -> active', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Active },
                 ZERO,
             );
         });
         it('delegated -> inactive', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
                 ZERO,
             );
         });
         it('delegated -> delegated (same pool)', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 ZERO,
             );
         });
         it('delegated -> delegated (other pool)', async () => {
             await staker.moveStakeAsync(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Delegated, poolId: poolIds[1] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[1] },
                 ZERO,
             );
         });
     });
     describe('Move Non-Zero Stake', () => {
-        const testMovePartialStake = async (from: StakeStateInfo, to: StakeStateInfo) => {
+        const testMovePartialStake = async (from: StakeInfo, to: StakeInfo) => {
             // setup
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            if (from.state !== StakeState.Active) {
-                await staker.moveStakeAsync({ state: StakeState.Active }, from, amount);
+            if (from.status !== StakeStatus.Active) {
+                await staker.moveStakeAsync({ status: StakeStatus.Active }, from, amount);
             }
             // run test, checking balances in epochs [n .. n + 2]
             // in epoch `n` - `next` is set
@@ -191,51 +191,51 @@ blockchainTests.resets('Stake States', () => {
             await staker.goToNextEpochAsync();
         };
         it('active -> active', async () => {
-            await testMovePartialStake({ state: StakeState.Active }, { state: StakeState.Active });
+            await testMovePartialStake({ status: StakeStatus.Active }, { status: StakeStatus.Active });
         });
         it('active -> inactive', async () => {
-            await testMovePartialStake({ state: StakeState.Active }, { state: StakeState.Inactive });
+            await testMovePartialStake({ status: StakeStatus.Active }, { status: StakeStatus.Inactive });
         });
         it('active -> delegated', async () => {
             await testMovePartialStake(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
             );
         });
         it('inactive -> active', async () => {
-            await testMovePartialStake({ state: StakeState.Inactive }, { state: StakeState.Active });
+            await testMovePartialStake({ status: StakeStatus.Inactive }, { status: StakeStatus.Active });
         });
         it('inactive -> inactive', async () => {
-            await testMovePartialStake({ state: StakeState.Inactive }, { state: StakeState.Inactive });
+            await testMovePartialStake({ status: StakeStatus.Inactive }, { status: StakeStatus.Inactive });
         });
         it('inactive -> delegated', async () => {
             await testMovePartialStake(
-                { state: StakeState.Inactive },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
             );
         });
         it('delegated -> active', async () => {
             await testMovePartialStake(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Active },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Active },
             );
         });
         it('delegated -> inactive', async () => {
             await testMovePartialStake(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Inactive },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Inactive },
             );
         });
         it('delegated -> delegated (same pool)', async () => {
             await testMovePartialStake(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
             );
         });
         it('delegated -> delegated (other pool)', async () => {
             await testMovePartialStake(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Delegated, poolId: poolIds[1] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[1] },
             );
         });
     });
@@ -247,7 +247,7 @@ blockchainTests.resets('Stake States', () => {
         it('should successfully unstake after being inactive for 1 epoch', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
             await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.unstakeAsync(amount);
@@ -260,42 +260,42 @@ blockchainTests.resets('Stake States', () => {
         it('should fail to unstake in the same epoch as stake was set to inactive', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake after being inactive for <1 epoch', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.goToNextEpochAsync();
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake in same epoch that inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
             await staker.goToNextEpochAsync(); // stake is now withdrawable
-            await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Inactive }, { status: StakeStatus.Active }, amount);
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake one epoch after inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
             await staker.goToNextEpochAsync(); // stake is now withdrawable
-            await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Inactive }, { status: StakeStatus.Active }, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake >1 epoch after inactive/withdrawable stake has been reactivated', async () => {
             const amount = StakingWrapper.toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
-            await staker.moveStakeAsync({ state: StakeState.Active }, { state: StakeState.Inactive }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Active }, { status: StakeStatus.Inactive }, amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
             await staker.goToNextEpochAsync(); // stake is now withdrawable
-            await staker.moveStakeAsync({ state: StakeState.Inactive }, { state: StakeState.Active }, amount);
+            await staker.moveStakeAsync({ status: StakeStatus.Inactive }, { status: StakeStatus.Active }, amount);
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
             await staker.goToNextEpochAsync(); // stake is active and not withdrawable
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
@@ -307,50 +307,50 @@ blockchainTests.resets('Stake States', () => {
             await staker.stakeAsync(StakingWrapper.toBaseUnitAmount(4));
             // Later in Epoch 1: User delegates and deactivates some stake
             await staker.moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Inactive },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Inactive },
                 StakingWrapper.toBaseUnitAmount(1),
             );
             await staker.moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
                 StakingWrapper.toBaseUnitAmount(2),
             );
-            // Epoch 2: State updates (no user intervention required)
+            // Epoch 2: Status updates (no user intervention required)
             await staker.goToNextEpochAsync();
             // Epoch 3: Stake that has been inactive for an epoch can be withdrawn (no user intervention required)
             await staker.goToNextEpochAsync();
             // Later in Epoch 3: User reactivates half of their inactive stake; this becomes Active next epoch
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Active },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Active },
                 StakingWrapper.toBaseUnitAmount(0.5),
             );
             // Later in Epoch 3: User re-delegates half of their stake from Pool 1 to Pool 2
             await staker.moveStakeAsync(
-                { state: StakeState.Delegated, poolId: poolIds[0] },
-                { state: StakeState.Delegated, poolId: poolIds[1] },
+                { status: StakeStatus.Delegated, poolId: poolIds[0] },
+                { status: StakeStatus.Delegated, poolId: poolIds[1] },
                 StakingWrapper.toBaseUnitAmount(1),
             );
-            // Epoch 4: State updates (no user intervention required)
+            // Epoch 4: Status updates (no user intervention required)
             await staker.goToNextEpochAsync();
             // Later in Epoch 4: User deactivates all active stake
             await staker.moveStakeAsync(
-                { state: StakeState.Active },
-                { state: StakeState.Inactive },
+                { status: StakeStatus.Active },
+                { status: StakeStatus.Inactive },
                 StakingWrapper.toBaseUnitAmount(1.5),
             );
             // Later in Epoch 4: User withdraws all available inactive stake
             await staker.unstakeAsync(StakingWrapper.toBaseUnitAmount(0.5));
-            // Epoch 5: State updates (no user intervention required)
+            // Epoch 5: Status updates (no user intervention required)
             await staker.goToNextEpochAsync();
             // Later in Epoch 5: User reactivates a portion of their stake
             await staker.moveStakeAsync(
-                { state: StakeState.Inactive },
-                { state: StakeState.Active },
+                { status: StakeStatus.Inactive },
+                { status: StakeStatus.Active },
                 StakingWrapper.toBaseUnitAmount(1),
             );
-            // Epoch 6: State updates (no user intervention required)
+            // Epoch 6: Status updates (no user intervention required)
             await staker.goToNextEpochAsync();
         });
     });

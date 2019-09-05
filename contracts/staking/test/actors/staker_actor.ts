@@ -3,7 +3,7 @@ import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
-import { StakeBalances, StakeState, StakeStateInfo } from '../utils/types';
+import { StakeBalances, StakeStatus, StakeInfo } from '../utils/types';
 
 import { BaseActor } from './base_actor';
 
@@ -69,13 +69,13 @@ export class StakerActor extends BaseActor {
     }
 
     public async moveStakeAsync(
-        from: StakeStateInfo,
-        to: StakeStateInfo,
+        from: StakeInfo,
+        to: StakeInfo,
         amount: BigNumber,
         revertError?: RevertError,
     ): Promise<void> {
         // check if we're moving stake into a new pool
-        if (to.state === StakeState.Delegated && to.poolId !== undefined && !_.includes(this._poolIds, to.poolId)) {
+        if (to.status === StakeStatus.Delegated && to.poolId !== undefined && !_.includes(this._poolIds, to.poolId)) {
             this._poolIds.push(to.poolId);
         }
         // cache balances
@@ -85,9 +85,9 @@ export class StakerActor extends BaseActor {
         // check balances
         const expectedStakerBalances = initStakerBalances;
         // from
-        if (from.state === StakeState.Active) {
+        if (from.status === StakeStatus.Active) {
             expectedStakerBalances.activeStakeBalance.next = initStakerBalances.activeStakeBalance.next.minus(amount);
-        } else if (from.state === StakeState.Inactive) {
+        } else if (from.status === StakeStatus.Inactive) {
             expectedStakerBalances.inactiveStakeBalance.next = initStakerBalances.inactiveStakeBalance.next.minus(
                 amount,
             );
@@ -98,7 +98,7 @@ export class StakerActor extends BaseActor {
             ) {
                 expectedStakerBalances.withdrawableStakeBalance = expectedStakerBalances.inactiveStakeBalance.next;
             }
-        } else if (from.state === StakeState.Delegated && from.poolId !== undefined) {
+        } else if (from.status === StakeStatus.Delegated && from.poolId !== undefined) {
             expectedStakerBalances.delegatedStakeBalance.next = initStakerBalances.delegatedStakeBalance.next.minus(
                 amount,
             );
@@ -110,13 +110,13 @@ export class StakerActor extends BaseActor {
             ].next = initStakerBalances.totalDelegatedStakeByPool[from.poolId].next.minus(amount);
         }
         // to
-        if (to.state === StakeState.Active) {
+        if (to.status === StakeStatus.Active) {
             expectedStakerBalances.activeStakeBalance.next = initStakerBalances.activeStakeBalance.next.plus(amount);
-        } else if (to.state === StakeState.Inactive) {
+        } else if (to.status === StakeStatus.Inactive) {
             expectedStakerBalances.inactiveStakeBalance.next = initStakerBalances.inactiveStakeBalance.next.plus(
                 amount,
             );
-        } else if (to.state === StakeState.Delegated && to.poolId !== undefined) {
+        } else if (to.status === StakeStatus.Delegated && to.poolId !== undefined) {
             expectedStakerBalances.delegatedStakeBalance.next = initStakerBalances.delegatedStakeBalance.next.plus(
                 amount,
             );
