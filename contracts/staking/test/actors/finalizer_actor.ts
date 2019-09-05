@@ -83,7 +83,7 @@ export class FinalizerActor extends BaseActor {
                 continue;
             }
             const totalStakeDelegatedToPool = (await this._stakingWrapper.getTotalStakeDelegatedToPoolAsync(poolId))
-                .current;
+                .currentEpochBalance;
             for (const member of membersByPoolId[poolId]) {
                 if (totalStakeDelegatedToPool.eq(0)) {
                     expectedMemberBalancesByPoolId[poolId][member] = new BigNumber(0);
@@ -91,7 +91,7 @@ export class FinalizerActor extends BaseActor {
                     const stakeDelegatedToPoolByMember = (await this._stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(
                         poolId,
                         member,
-                    )).current;
+                    )).currentEpochBalance;
                     const rewardThisEpoch = rewardByPoolId[poolId]
                         .times(stakeDelegatedToPoolByMember)
                         .dividedToIntegerBy(totalStakeDelegatedToPool);
@@ -144,7 +144,7 @@ export class FinalizerActor extends BaseActor {
         operatorShare: BigNumber,
     ): Promise<RewardVaultBalance> {
         const totalStakeDelegatedToPool = (await this._stakingWrapper.getTotalStakeDelegatedToPoolAsync(poolId))
-            .current;
+            .currentEpochBalance;
         const operatorPortion = totalStakeDelegatedToPool.eq(0)
             ? reward
             : reward.times(operatorShare).dividedToIntegerBy(100);

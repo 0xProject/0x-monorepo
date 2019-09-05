@@ -30,8 +30,8 @@ export class StakerActor extends BaseActor {
         const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.minus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.plus(amount);
-        expectedStakerBalances.activeStakeBalance.current = initStakerBalances.activeStakeBalance.current.plus(amount);
-        expectedStakerBalances.activeStakeBalance.next = initStakerBalances.activeStakeBalance.next.plus(amount);
+        expectedStakerBalances.activeStakeBalance.currentEpochBalance = initStakerBalances.activeStakeBalance.currentEpochBalance.plus(amount);
+        expectedStakerBalances.activeStakeBalance.nextEpochBalance = initStakerBalances.activeStakeBalance.nextEpochBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
@@ -55,8 +55,8 @@ export class StakerActor extends BaseActor {
         const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.minus(amount);
-        expectedStakerBalances.inactiveStakeBalance.next = initStakerBalances.inactiveStakeBalance.next.minus(amount);
-        expectedStakerBalances.inactiveStakeBalance.current = initStakerBalances.inactiveStakeBalance.current.minus(
+        expectedStakerBalances.inactiveStakeBalance.nextEpochBalance = initStakerBalances.inactiveStakeBalance.nextEpochBalance.minus(amount);
+        expectedStakerBalances.inactiveStakeBalance.currentEpochBalance = initStakerBalances.inactiveStakeBalance.currentEpochBalance.minus(
             amount,
         );
         expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
@@ -86,46 +86,46 @@ export class StakerActor extends BaseActor {
         const expectedStakerBalances = initStakerBalances;
         // from
         if (from.status === StakeStatus.Active) {
-            expectedStakerBalances.activeStakeBalance.next = initStakerBalances.activeStakeBalance.next.minus(amount);
+            expectedStakerBalances.activeStakeBalance.nextEpochBalance = initStakerBalances.activeStakeBalance.nextEpochBalance.minus(amount);
         } else if (from.status === StakeStatus.Inactive) {
-            expectedStakerBalances.inactiveStakeBalance.next = initStakerBalances.inactiveStakeBalance.next.minus(
+            expectedStakerBalances.inactiveStakeBalance.nextEpochBalance = initStakerBalances.inactiveStakeBalance.nextEpochBalance.minus(
                 amount,
             );
             if (
-                expectedStakerBalances.inactiveStakeBalance.next.isLessThan(
+                expectedStakerBalances.inactiveStakeBalance.nextEpochBalance.isLessThan(
                     expectedStakerBalances.withdrawableStakeBalance,
                 )
             ) {
-                expectedStakerBalances.withdrawableStakeBalance = expectedStakerBalances.inactiveStakeBalance.next;
+                expectedStakerBalances.withdrawableStakeBalance = expectedStakerBalances.inactiveStakeBalance.nextEpochBalance;
             }
         } else if (from.status === StakeStatus.Delegated && from.poolId !== undefined) {
-            expectedStakerBalances.delegatedStakeBalance.next = initStakerBalances.delegatedStakeBalance.next.minus(
+            expectedStakerBalances.delegatedStakeBalance.nextEpochBalance = initStakerBalances.delegatedStakeBalance.nextEpochBalance.minus(
                 amount,
             );
-            expectedStakerBalances.delegatedStakeByPool[from.poolId].next = initStakerBalances.delegatedStakeByPool[
+            expectedStakerBalances.delegatedStakeByPool[from.poolId].nextEpochBalance = initStakerBalances.delegatedStakeByPool[
                 from.poolId
-            ].next.minus(amount);
+            ].nextEpochBalance.minus(amount);
             expectedStakerBalances.totalDelegatedStakeByPool[
                 from.poolId
-            ].next = initStakerBalances.totalDelegatedStakeByPool[from.poolId].next.minus(amount);
+            ].nextEpochBalance = initStakerBalances.totalDelegatedStakeByPool[from.poolId].nextEpochBalance.minus(amount);
         }
         // to
         if (to.status === StakeStatus.Active) {
-            expectedStakerBalances.activeStakeBalance.next = initStakerBalances.activeStakeBalance.next.plus(amount);
+            expectedStakerBalances.activeStakeBalance.nextEpochBalance = initStakerBalances.activeStakeBalance.nextEpochBalance.plus(amount);
         } else if (to.status === StakeStatus.Inactive) {
-            expectedStakerBalances.inactiveStakeBalance.next = initStakerBalances.inactiveStakeBalance.next.plus(
+            expectedStakerBalances.inactiveStakeBalance.nextEpochBalance = initStakerBalances.inactiveStakeBalance.nextEpochBalance.plus(
                 amount,
             );
         } else if (to.status === StakeStatus.Delegated && to.poolId !== undefined) {
-            expectedStakerBalances.delegatedStakeBalance.next = initStakerBalances.delegatedStakeBalance.next.plus(
+            expectedStakerBalances.delegatedStakeBalance.nextEpochBalance = initStakerBalances.delegatedStakeBalance.nextEpochBalance.plus(
                 amount,
             );
-            expectedStakerBalances.delegatedStakeByPool[to.poolId].next = initStakerBalances.delegatedStakeByPool[
+            expectedStakerBalances.delegatedStakeByPool[to.poolId].nextEpochBalance = initStakerBalances.delegatedStakeByPool[
                 to.poolId
-            ].next.plus(amount);
+            ].nextEpochBalance.plus(amount);
             expectedStakerBalances.totalDelegatedStakeByPool[
                 to.poolId
-            ].next = initStakerBalances.totalDelegatedStakeByPool[to.poolId].next.plus(amount);
+            ].nextEpochBalance = initStakerBalances.totalDelegatedStakeByPool[to.poolId].nextEpochBalance.plus(amount);
         }
         // move stake
         const txReceiptPromise = this._stakingWrapper.moveStakeAsync(this._owner, from, to, amount);
@@ -157,18 +157,18 @@ export class StakerActor extends BaseActor {
 
     public getNextEpochBalances(balances: StakeBalances): StakeBalances {
         const nextBalances = _.cloneDeep(balances);
-        nextBalances.withdrawableStakeBalance = nextBalances.inactiveStakeBalance.next.isLessThan(
-            nextBalances.inactiveStakeBalance.current,
+        nextBalances.withdrawableStakeBalance = nextBalances.inactiveStakeBalance.nextEpochBalance.isLessThan(
+            nextBalances.inactiveStakeBalance.currentEpochBalance,
         )
-            ? nextBalances.inactiveStakeBalance.next
-            : nextBalances.inactiveStakeBalance.current;
-        nextBalances.activeStakeBalance.current = nextBalances.activeStakeBalance.next;
-        nextBalances.inactiveStakeBalance.current = nextBalances.inactiveStakeBalance.next;
-        nextBalances.delegatedStakeBalance.current = nextBalances.delegatedStakeBalance.next;
+            ? nextBalances.inactiveStakeBalance.nextEpochBalance
+            : nextBalances.inactiveStakeBalance.currentEpochBalance;
+        nextBalances.activeStakeBalance.currentEpochBalance = nextBalances.activeStakeBalance.nextEpochBalance;
+        nextBalances.inactiveStakeBalance.currentEpochBalance = nextBalances.inactiveStakeBalance.nextEpochBalance;
+        nextBalances.delegatedStakeBalance.currentEpochBalance = nextBalances.delegatedStakeBalance.nextEpochBalance;
         for (const poolId of this._poolIds) {
-            nextBalances.delegatedStakeByPool[poolId].current = nextBalances.delegatedStakeByPool[poolId].next;
-            nextBalances.totalDelegatedStakeByPool[poolId].current =
-                nextBalances.totalDelegatedStakeByPool[poolId].next;
+            nextBalances.delegatedStakeByPool[poolId].currentEpochBalance = nextBalances.delegatedStakeByPool[poolId].nextEpochBalance;
+            nextBalances.totalDelegatedStakeByPool[poolId].currentEpochBalance =
+                nextBalances.totalDelegatedStakeByPool[poolId].nextEpochBalance;
         }
         return nextBalances;
     }
@@ -207,23 +207,23 @@ export class StakerActor extends BaseActor {
         expect(balances.withdrawableStakeBalance, 'withdrawable stake balance').to.be.bignumber.equal(
             expectedBalances.withdrawableStakeBalance,
         );
-        expect(balances.activeStakeBalance.current, 'active stake balance (current)').to.be.bignumber.equal(
-            expectedBalances.activeStakeBalance.current,
+        expect(balances.activeStakeBalance.currentEpochBalance, 'active stake balance (current)').to.be.bignumber.equal(
+            expectedBalances.activeStakeBalance.currentEpochBalance,
         );
-        expect(balances.activeStakeBalance.next, 'active stake balance (next)').to.be.bignumber.equal(
-            expectedBalances.activeStakeBalance.next,
+        expect(balances.activeStakeBalance.nextEpochBalance, 'active stake balance (next)').to.be.bignumber.equal(
+            expectedBalances.activeStakeBalance.nextEpochBalance,
         );
-        expect(balances.inactiveStakeBalance.current, 'inactive stake balance (current)').to.be.bignumber.equal(
-            expectedBalances.inactiveStakeBalance.current,
+        expect(balances.inactiveStakeBalance.currentEpochBalance, 'inactive stake balance (current)').to.be.bignumber.equal(
+            expectedBalances.inactiveStakeBalance.currentEpochBalance,
         );
-        expect(balances.inactiveStakeBalance.next, 'inactive stake balance (next)').to.be.bignumber.equal(
-            expectedBalances.inactiveStakeBalance.next,
+        expect(balances.inactiveStakeBalance.nextEpochBalance, 'inactive stake balance (next)').to.be.bignumber.equal(
+            expectedBalances.inactiveStakeBalance.nextEpochBalance,
         );
-        expect(balances.delegatedStakeBalance.current, 'delegated stake balance (current)').to.be.bignumber.equal(
-            expectedBalances.delegatedStakeBalance.current,
+        expect(balances.delegatedStakeBalance.currentEpochBalance, 'delegated stake balance (current)').to.be.bignumber.equal(
+            expectedBalances.delegatedStakeBalance.currentEpochBalance,
         );
-        expect(balances.delegatedStakeBalance.next, 'delegated stake balance (next)').to.be.bignumber.equal(
-            expectedBalances.delegatedStakeBalance.next,
+        expect(balances.delegatedStakeBalance.nextEpochBalance, 'delegated stake balance (next)').to.be.bignumber.equal(
+            expectedBalances.delegatedStakeBalance.nextEpochBalance,
         );
         expect(balances.delegatedStakeByPool, 'delegated stake by pool').to.be.deep.equal(
             expectedBalances.delegatedStakeByPool,
