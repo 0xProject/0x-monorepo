@@ -24,8 +24,11 @@ import "../src/StakingProxy.sol";
 contract TestStakingProxy is
     StakingProxy
 {
-    // solhint-disable-next-line no-empty-blocks
-    constructor(address _stakingContract) public StakingProxy(_stakingContract) {}
+    // solhint-disable no-empty-blocks
+    constructor(address _stakingContract)
+        public
+        StakingProxy(_stakingContract, address(0))
+    {}
 
     function getAttachedContract() external view returns (address) {
         return stakingContract;
