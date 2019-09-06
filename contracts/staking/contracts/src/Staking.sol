@@ -49,6 +49,13 @@ contract Staking is
     MixinStakingPool,
     MixinExchangeFees
 {
+    // this contract can receive ETH
+    // solhint-disable no-empty-blocks
+    function ()
+        external
+        payable
+    {}
+
     /// @dev Initialize storage owned by this contract.
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
@@ -60,11 +67,4 @@ contract Staking is
         // not to accidentally overwrite existing state.
         _initMixinScheduler();
     }
-
-    // this contract can receive ETH
-    // solhint-disable no-empty-blocks
-    function ()
-        external
-        payable
-    {}
 }

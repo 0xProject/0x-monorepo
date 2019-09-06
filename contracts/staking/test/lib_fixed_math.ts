@@ -1,11 +1,11 @@
-import { blockchainTests, expect, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, hexRandom, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber, FixedMathRevertErrors } from '@0x/utils';
 import { Decimal } from 'decimal.js';
 import * as _ from 'lodash';
 
 import { artifacts, TestLibFixedMathContract } from '../src/';
 
-import { assertRoughlyEquals, fromFixed, Numberish, toDecimal, toFixed } from './utils/number_utils';
+import { assertRoughlyEquals, fromFixed, toDecimal, toFixed } from './utils/number_utils';
 
 blockchainTests('LibFixedMath', env => {
     let testContract: TestLibFixedMathContract;

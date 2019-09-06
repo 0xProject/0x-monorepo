@@ -2,6 +2,15 @@ import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
 
+export interface HyperParameters {
+    epochDurationInSeconds: BigNumber;
+    rewardDelegatedStakeWeight: BigNumber;
+    minimumPoolStake: BigNumber;
+    maxMakersInPool: BigNumber;
+    cobbDouglasAlphaNumerator: BigNumber;
+    cobbDouglasAlphaDenomintor: BigNumber;
+}
+
 export interface StakerBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;

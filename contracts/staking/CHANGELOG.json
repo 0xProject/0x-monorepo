@@ -33,6 +33,14 @@
             {
                 "note": "Tests for new stake management mechanics.",
                 "pr": 2126
+            },
+            {
+                "note": "Add `init()` pattern to contracts.",
+                "pr": 2131
+            },
+            {
+                "note": "Replace `MixinDeploymentConstants` with `MixinHyperParameters`.",
+                "pr": 2131
             }
         ]
     }

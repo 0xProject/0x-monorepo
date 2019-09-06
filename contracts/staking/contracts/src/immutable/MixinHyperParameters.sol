@@ -24,6 +24,7 @@ import "../interfaces/IStakingEvents.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "./MixinConstants.sol";
 
+
 contract MixinHyperParameters is
     IStakingEvents,
     MixinConstants,
@@ -39,30 +40,6 @@ contract MixinHyperParameters is
     uint256 internal cobbDouglasAlphaNumerator = 1;
     // Denominator for cobb douglas alpha factor.
     uint256 internal cobbDouglasAlphaDenomintor = 2;
-
-    /// @dev Retrives all tuned values.
-    /// @return _epochDurationInSeconds Minimum seconds between epochs.
-    /// @return _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
-    /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
-    /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
-    /// @return _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    function getHyperParameters()
-        external
-        view
-        returns (
-            uint256 _epochDurationInSeconds,
-            uint32 _rewardDelegatedStakeWeight,
-            uint256 _minimumPoolStake,
-            uint256 _cobbDouglasAlphaNumerator,
-            uint256 _cobbDouglasAlphaDenomintor
-        )
-    {
-        _epochDurationInSeconds = epochDurationInSeconds;
-        _rewardDelegatedStakeWeight = rewardDelegatedStakeWeight;
-        _minimumPoolStake = minimumPoolStake;
-        _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
-        _cobbDouglasAlphaDenomintor = cobbDouglasAlphaDenomintor;
-    }
 
     /// @dev Set all hyperparameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
@@ -98,6 +75,30 @@ contract MixinHyperParameters is
             cobbDouglasAlphaNumerator,
             cobbDouglasAlphaDenomintor
         );
+    }
+
+    /// @dev Retrives all tuned values.
+    /// @return _epochDurationInSeconds Minimum seconds between epochs.
+    /// @return _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
+    /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
+    /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
+    /// @return _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
+    function getHyperParameters()
+        external
+        view
+        returns (
+            uint256 _epochDurationInSeconds,
+            uint32 _rewardDelegatedStakeWeight,
+            uint256 _minimumPoolStake,
+            uint256 _cobbDouglasAlphaNumerator,
+            uint256 _cobbDouglasAlphaDenomintor
+        )
+    {
+        _epochDurationInSeconds = epochDurationInSeconds;
+        _rewardDelegatedStakeWeight = rewardDelegatedStakeWeight;
+        _minimumPoolStake = minimumPoolStake;
+        _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
+        _cobbDouglasAlphaDenomintor = cobbDouglasAlphaDenomintor;
     }
 
     /// @dev Asserts that cobb douglas alpha values are valid.

@@ -29,7 +29,7 @@ blockchainTests('Epochs', env => {
         it('basic epochs & timeLock periods', async () => {
             ///// 1/3 Validate Assumptions /////
             expect(await stakingApiWrapper.stakingContract.getEpochDurationInSeconds.callAsync()).to.be.bignumber.equal(
-                stakingConstants.EPOCH_DURATION_IN_SECONDS,
+                stakingConstants.DEFAULT_HYPER_PARAMETERS.epochDurationInSeconds,
             );
             ///// 2/3 Validate Initial Epoch & TimeLock Period /////
             {

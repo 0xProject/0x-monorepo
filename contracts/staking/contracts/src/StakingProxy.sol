@@ -25,6 +25,7 @@ import "./immutable/MixinHyperParameters.sol";
 import "./interfaces/IStorageInit.sol";
 import "./interfaces/IStakingProxy.sol";
 
+
 contract StakingProxy is
     IStakingEvents,
     IStakingProxy,

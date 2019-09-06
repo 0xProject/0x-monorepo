@@ -1,12 +1,10 @@
-import { expect } from '@0x/contracts-test-utils';
+import { expect, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
 import { Decimal } from 'decimal.js';
 
 Decimal.set({ precision: 80 });
-
-export type Numberish = BigNumber | string | number;
 
 /**
  * Convert `x` to a `Decimal` type.

@@ -88,6 +88,7 @@ contract MixinScheduler is
                 )
             );
         }
+        // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
     }
 
