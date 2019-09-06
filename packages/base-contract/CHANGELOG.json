@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.4.0",
+        "changes": [
+            {
+                "note": "Add `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ]
+    },
+    {
         "timestamp": 1567521715,
         "version": "5.3.3",
         "changes": [
