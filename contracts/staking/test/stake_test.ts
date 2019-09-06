@@ -1,6 +1,6 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { blockchainTests, describe, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import { blockchainTests, describe, web3Wrapper } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -10,7 +10,7 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Stake Statuses', () => {
+blockchainTests.resets('Stake Statuses', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);
@@ -34,21 +34,21 @@ blockchainTests.resets('Stake Statuses', () => {
         owner = accounts[0];
         actors = accounts.slice(2, 5);
         // deploy erc20 proxy
-        erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract);
         await stakingWrapper.deployAndConfigureContractsAsync();
         // setup new staker
         staker = new StakerActor(actors[0], stakingWrapper);
         // setup pools
         poolOperator = actors[1];
         poolIds = await Promise.all([
-            await stakingWrapper.createStakingPoolAsync(poolOperator, 4),
-            await stakingWrapper.createStakingPoolAsync(poolOperator, 5),
+            await stakingWrapper.createStakingPoolAsync(poolOperator, 4, false),
+            await stakingWrapper.createStakingPoolAsync(poolOperator, 5, false),
         ]);
     });
     describe('Stake', () => {

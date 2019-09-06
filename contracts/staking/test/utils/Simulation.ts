@@ -128,7 +128,7 @@ export class Simulation {
             const poolOperator = new PoolOperatorActor(poolOperatorAddress, this._stakingWrapper);
             this._poolOperators.push(poolOperator);
             // create a pool id for this operator
-            const poolId = await poolOperator.createStakingPoolAsync(p.poolOperatorShares[i]);
+            const poolId = await poolOperator.createStakingPoolAsync(p.poolOperatorShares[i], false);
             this._poolIds.push(poolId);
             // each pool operator can also be a staker/delegator
             const poolOperatorAsDelegator = new DelegatorActor(poolOperatorAddress, this._stakingWrapper);
@@ -156,9 +156,9 @@ export class Simulation {
             // tslint:disable-next-line no-unused-variable
             for (const j of _.range(numberOfMakersInPool)) {
                 const maker = this._makers[makerIdx];
-                const makerApproval = maker.signApprovalForStakingPool(poolId);
+                await maker.joinStakingPoolAsMakerAsync(poolId);
                 const makerAddress = maker.getOwner();
-                await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
+                await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress);
                 makerIdx += 1;
             }
             poolIdx += 1;

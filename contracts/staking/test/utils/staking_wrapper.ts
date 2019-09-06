@@ -1,7 +1,6 @@
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
-import { SignatureType } from '@0x/types';
+import { LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -17,9 +16,8 @@ import {
     ZrxVaultContract,
 } from '../../src';
 
-import { ApprovalFactory } from './approval_factory';
 import { constants } from './constants';
-import { SignedStakingPoolApproval, StakeBalance } from './types';
+import { StakeBalance } from './types';
 
 export class StakingWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
@@ -28,7 +26,6 @@ export class StakingWrapper {
     private readonly _ownerAddress: string;
     private readonly _erc20ProxyContract: ERC20ProxyContract;
     private readonly _zrxTokenContract: DummyERC20TokenContract;
-    private readonly _accounts: string[];
     private _stakingContractIfExists?: StakingContract;
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
@@ -67,7 +64,6 @@ export class StakingWrapper {
         ownerAddres: string,
         erc20ProxyContract: ERC20ProxyContract,
         zrxTokenContract: DummyERC20TokenContract,
-        accounts: string[],
     ) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
@@ -76,7 +72,6 @@ export class StakingWrapper {
         this._ownerAddress = ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
         this._zrxTokenContract = zrxTokenContract;
-        this._accounts = accounts;
     }
     public getStakingContract(): StakingContract {
         this._validateDeployedOrThrow();
@@ -283,23 +278,36 @@ export class StakingWrapper {
         const nextPoolId = await this._callAsync(calldata);
         return nextPoolId;
     }
-    public async createStakingPoolAsync(operatorAddress: string, operatorShare: number): Promise<string> {
-        const calldata = this.getStakingContract().createStakingPool.getABIEncodedTransactionData(operatorShare);
+    public async createStakingPoolAsync(
+        operatorAddress: string,
+        operatorShare: number,
+        addOperatorAsMaker: boolean,
+    ): Promise<string> {
+        const calldata = this.getStakingContract().createStakingPool.getABIEncodedTransactionData(
+            operatorShare,
+            addOperatorAsMaker,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         const createStakingPoolLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[0]);
         const poolId = (createStakingPoolLog as any).args.poolId;
         return poolId;
     }
+    public async joinStakingPoolAsMakerAsync(
+        poolId: string,
+        makerAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().joinStakingPoolAsMaker.getABIEncodedTransactionData(poolId);
+        const txReceipt = await this._executeTransactionAsync(calldata, makerAddress);
+        return txReceipt;
+    }
     public async addMakerToStakingPoolAsync(
         poolId: string,
         makerAddress: string,
-        makerSignature: string,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().addMakerToStakingPool.getABIEncodedTransactionData(
             poolId,
             makerAddress,
-            makerSignature,
         );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
@@ -321,55 +329,11 @@ export class StakingWrapper {
         const poolId = await this._callAsync(calldata);
         return poolId;
     }
-    public async getMakersForStakingPoolAsync(poolId: string): Promise<string[]> {
-        const calldata = this.getStakingContract().getMakersForStakingPool.getABIEncodedTransactionData(poolId);
-        const returndata = await this._callAsync(calldata);
-        const makerAddresses = this.getStakingContract().getMakersForStakingPool.getABIDecodedReturnData(returndata);
-        return makerAddresses;
-    }
-    public async isValidMakerSignatureAsync(
-        poolId: string,
-        makerAddress: string,
-        makerSignature: string,
-    ): Promise<boolean> {
-        const calldata = this.getStakingContract().isValidMakerSignature.getABIEncodedTransactionData(
-            poolId,
-            makerAddress,
-            makerSignature,
-        );
-        const returndata = await this._callAsync(calldata);
-        const isValid = this.getStakingContract().isValidMakerSignature.getABIDecodedReturnData(returndata);
-        return isValid;
-    }
-    public async getStakingPoolApprovalMessageHashAsync(poolId: string, makerAddress: string): Promise<string> {
-        const calldata = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIEncodedTransactionData(
-            poolId,
-            makerAddress,
-        );
-        const returndata = await this._callAsync(calldata);
-        const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(
-            returndata,
-        );
-        return messageHash;
-    }
-    public signApprovalForStakingPool(
-        poolId: string,
-        makerAddress: string,
-        makerPrivateKeyIfExists?: Buffer,
-        verifierAddressIfExists?: string,
-        chainIdIfExists?: number,
-        signatureType: SignatureType = SignatureType.EthSign,
-    ): SignedStakingPoolApproval {
-        const makerPrivateKey =
-            makerPrivateKeyIfExists !== undefined
-                ? makerPrivateKeyIfExists
-                : testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
-        const verifierAddress =
-            verifierAddressIfExists !== undefined ? verifierAddressIfExists : this.getStakingProxyContract().address;
-        const chainId = chainIdIfExists !== undefined ? chainIdIfExists : constants.CHAIN_ID;
-        const approvalFactory = new ApprovalFactory(makerPrivateKey, verifierAddress, chainId);
-        const signedStakingPoolApproval = approvalFactory.newSignedApproval(poolId, makerAddress, signatureType);
-        return signedStakingPoolApproval;
+    public async getNumberOfMakersInStakingPoolAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getNumberOfMakersInStakingPool.getABIEncodedTransactionData(poolId);
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getNumberOfMakersInStakingPool.getABIDecodedReturnData(returnData);
+        return value;
     }
     ///// EPOCHS /////
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
