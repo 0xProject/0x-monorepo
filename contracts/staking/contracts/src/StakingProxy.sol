@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStakingProxy.sol";
 
@@ -28,60 +29,29 @@ contract StakingProxy is
     MixinConstants,
     MixinStorage
 {
+    using LibProxy for address;
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
-    constructor(address _stakingContract)
+    constructor(address _stakingContract, address _readOnlyProxy)
         public
         MixinStorage()
     {
         stakingContract = _stakingContract;
+        readOnlyProxyCallee = _stakingContract;
+        readOnlyProxy = _readOnlyProxy;
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
-    // solhint-disable no-complex-fallback
     function ()
         external
         payable
     {
-        address _stakingContract = stakingContract;
-        if (_stakingContract == NIL_ADDRESS) {
-            return;
-        }
-
-        assembly {
-            // copy calldata to memory
-            calldatacopy(
-                0x0,
-                0x0,
-                calldatasize()
-            )
-
-            // delegate call into staking contract
-            let success := delegatecall(
-                gas,                    // forward all gas
-                _stakingContract,       // calling staking contract
-                0x0,                    // start of input (calldata)
-                calldatasize(),         // length of input (calldata)
-                0x0,                    // write output over input
-                0                       // length of output is unknown
-            )
-
-            // copy return data to memory
-            returndatacopy(
-                0x0,
-                0x0,
-                returndatasize()
-            )
-
-            // rethrow any exceptions
-            if iszero(success) {
-                revert(0, returndatasize())
-            }
-
-            // return call results
-            return(0, returndatasize())
-        }
+        stakingContract.proxyCall(
+            LibProxy.RevertRule.REVERT_ON_ERROR,
+            bytes4(0),                              // no custom egress selector
+            false                                   // do not ignore ingress selector
+        );
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
@@ -92,6 +62,7 @@ contract StakingProxy is
         onlyOwner
     {
         stakingContract = _stakingContract;
+        readOnlyProxyCallee = _stakingContract;
         emit StakingContractAttachedToProxy(_stakingContract);
     }
 
@@ -103,5 +74,19 @@ contract StakingProxy is
     {
         stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
+    }
+
+    /// @dev Set read-only mode (state cannot be changed).
+    function setReadOnlyMode(bool readOnlyMode)
+        external
+        onlyOwner
+    {
+        if (readOnlyMode) {
+            stakingContract = readOnlyProxy;
+        } else {
+            stakingContract = readOnlyProxyCallee;
+        }
+
+        emit ReadOnlyModeSet(readOnlyMode);
     }
 }

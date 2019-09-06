@@ -41,6 +41,12 @@ contract MixinStorage is
     // address of staking contract
     address internal stakingContract;
 
+    // address of read-only proxy
+    address internal readOnlyProxy;
+
+    // address for read-only proxy to call
+    address internal readOnlyProxyCallee;
+
     // mapping from Owner to Amount of Active Stake
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal activeStakeByOwner;

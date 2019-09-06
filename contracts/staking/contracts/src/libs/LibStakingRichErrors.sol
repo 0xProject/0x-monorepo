@@ -122,7 +122,7 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
         0x8f8e73de;
 
-   // bytes4(keccak256("EthVaultNotSetError()"))
+    // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
 
@@ -133,6 +133,10 @@ library LibStakingRichErrors {
     // bytes4(keccak256("InvalidStakeStatusError(uint256)"))
     bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
         0xb7161acd;
+
+    // bytes4(keccak256("ProxyDestinationCannotBeNil()"))
+    bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
+        hex"01ecebea";
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -505,4 +509,13 @@ library LibStakingRichErrors {
             status
         );
     }
+
+    function ProxyDestinationCannotBeNil()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return PROXY_DESTINATION_CANNOT_BE_NIL;
+    }
+
 }
