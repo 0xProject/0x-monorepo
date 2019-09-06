@@ -20,7 +20,9 @@ export enum ProtocolFeePaymentErrorCodes {
 }
 
 export enum InvalidTuningValueErrorCode {
-    InvalidCobbDouglasAlpha = 0,
+    InvalidCobbDouglasAlpha,
+    InvalidRewardDelegatedStakeWeight,
+    InvalidMaximumMakersInPool,
 }
 
 export enum InitializationErrorCode {
