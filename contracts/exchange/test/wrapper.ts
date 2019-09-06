@@ -1,4 +1,4 @@
-import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
@@ -30,11 +30,9 @@ blockchainTests.resets('Exchange wrappers', env => {
     let feeToken: DummyERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
-    let erc721Proxy: ERC721ProxyContract;
 
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
-    let erc721Wrapper: ERC721Wrapper;
     let erc20Balances: ERC20BalancesByOwner;
     let orderFactory: OrderFactory;
 
@@ -58,7 +56,6 @@ blockchainTests.resets('Exchange wrappers', env => {
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
         erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
@@ -67,9 +64,6 @@ blockchainTests.resets('Exchange wrappers', env => {
         );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-
-        erc721Proxy = await erc721Wrapper.deployProxyAsync();
-        await erc721Wrapper.setBalancesAndAllowancesAsync();
 
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
@@ -86,12 +80,8 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         exchangeWrapper = new ExchangeWrapper(exchange, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
             from: owner,
         });
 
@@ -623,22 +613,26 @@ blockchainTests.resets('Exchange wrappers', env => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should not fill a signedOrder that does not use the same takerAssetAddress', async () => {
+            it('should fill a signedOrder that does not use the same takerAssetAddress', async () => {
+                const differentTakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        takerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
+                        takerAssetData: differentTakerAssetData,
                     }),
                 ];
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                const filledSignedOrders = signedOrders.slice(0, -1);
-                _.forEach(filledSignedOrders, signedOrder => {
+                _.forEach(signedOrders, signedOrder => {
+                    const takerAssetAddress =
+                        signedOrder.takerAssetData === differentTakerAssetData
+                            ? feeToken.address
+                            : defaultTakerAssetAddress;
                     erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
                         defaultMakerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
-                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultTakerAssetAddress
+                    erc20Balances[makerAddress][takerAssetAddress] = erc20Balances[makerAddress][
+                        takerAssetAddress
                     ].plus(signedOrder.takerAssetAmount);
                     erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
                         signedOrder.makerFee,
@@ -646,8 +640,8 @@ blockchainTests.resets('Exchange wrappers', env => {
                     erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
                         defaultMakerAssetAddress
                     ].plus(signedOrder.makerAssetAmount);
-                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultTakerAssetAddress
+                    erc20Balances[takerAddress][takerAssetAddress] = erc20Balances[takerAddress][
+                        takerAssetAddress
                     ].minus(signedOrder.takerAssetAmount);
                     erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
                         signedOrder.takerFee,
@@ -668,7 +662,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const expectedFillResults = filledSignedOrders
+                const expectedFillResults = signedOrders
                     .map(signedOrder => ({
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
@@ -811,20 +805,24 @@ blockchainTests.resets('Exchange wrappers', env => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should not fill a signedOrder that does not use the same makerAssetAddress', async () => {
+            it('should fill a signedOrder that does not use the same makerAssetAddress', async () => {
+                const differentMakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
+                        makerAssetData: differentMakerAssetData,
                     }),
                 ];
 
                 const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                const filledSignedOrders = signedOrders.slice(0, -1);
-                _.forEach(filledSignedOrders, signedOrder => {
-                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultMakerAssetAddress
+                _.forEach(signedOrders, signedOrder => {
+                    const makerAssetAddress =
+                        signedOrder.makerAssetData === differentMakerAssetData
+                            ? feeToken.address
+                            : defaultMakerAssetAddress;
+                    erc20Balances[makerAddress][makerAssetAddress] = erc20Balances[makerAddress][
+                        makerAssetAddress
                     ].minus(signedOrder.makerAssetAmount);
                     erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
                         defaultTakerAssetAddress
@@ -832,8 +830,8 @@ blockchainTests.resets('Exchange wrappers', env => {
                     erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
                         signedOrder.makerFee,
                     );
-                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultMakerAssetAddress
+                    erc20Balances[takerAddress][makerAssetAddress] = erc20Balances[takerAddress][
+                        makerAssetAddress
                     ].plus(signedOrder.makerAssetAmount);
                     erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
                         defaultTakerAssetAddress
@@ -857,7 +855,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                 });
                 const newBalances = await erc20Wrapper.getBalancesAsync();
 
-                const expectedFillResults = filledSignedOrders
+                const expectedFillResults = signedOrders
                     .map(signedOrder => ({
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,

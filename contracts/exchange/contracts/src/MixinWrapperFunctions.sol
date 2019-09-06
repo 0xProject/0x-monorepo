@@ -87,7 +87,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrKill.
+    /// @dev Executes multiple calls of fillOrKillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
@@ -115,7 +115,7 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrderNoThrow.
+    /// @dev Executes multiple calls of fillOrder. If any fill reverts, the error is caught and ignored.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
@@ -142,7 +142,9 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+    ///      If any fill reverts, the error is caught and ignored.
+    ///      NOTE: This function does not enforce that the takerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -157,18 +159,11 @@ contract MixinWrapperFunctions is
         disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
-        bytes memory takerAssetData = orders[0].takerAssetData;
-
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
-
-            // The `takerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].takerAssetData = takerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
@@ -188,7 +183,9 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
+    /// @dev Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+    ///      If any fill reverts, the error is caught and ignored.
+    ///      NOTE: This function does not enforce that the makerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -203,8 +200,6 @@ contract MixinWrapperFunctions is
         disableRefundUntilEnd
         returns (LibFillResults.FillResults memory fillResults)
     {
-        bytes memory makerAssetData = orders[0].makerAssetData;
-
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
@@ -218,11 +213,6 @@ contract MixinWrapperFunctions is
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
-
-            // The `makerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].makerAssetData = makerAssetData;
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
@@ -243,6 +233,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
+    ///      NOTE: This function does not enforce that the takerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Minimum amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -267,6 +258,7 @@ contract MixinWrapperFunctions is
     }
 
     /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.
+    ///      NOTE: This function does not enforce that the makerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Minimum amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
