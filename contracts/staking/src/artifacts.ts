@@ -13,14 +13,11 @@ import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRew
 import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IVaultCore from '../generated-artifacts/IVaultCore.json';
-import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
-import * as LibEIP712Hash from '../generated-artifacts/LibEIP712Hash.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
 import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
-import * as LibSignatureValidator from '../generated-artifacts/LibSignatureValidator.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
@@ -61,14 +58,11 @@ export const artifacts = {
     IStakingProxy: IStakingProxy as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IVaultCore: IVaultCore as ContractArtifact,
-    IWallet: IWallet as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
-    LibEIP712Hash: LibEIP712Hash as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
     LibProxy: LibProxy as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
-    LibSignatureValidator: LibSignatureValidator as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,

@@ -31,4 +31,6 @@ contract MixinDeploymentConstants {
     uint32 constant internal REWARD_DELEGATED_STAKE_WEIGHT = 900000; // 90%
 
     uint256 constant internal CHAIN_ID = 1;
+
+    uint256 constant internal MAX_MAKERS_IN_POOL = 10;
 }

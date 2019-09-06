@@ -31,14 +31,6 @@ interface IStructs {
         NSignatureTypes     // 0x05, number of signature types. Always leave at end.
     }
 
-    /// @dev Required fields for a maker to approve a staking pool.
-    /// @param poolId Unique Id of staking pool.
-    /// @param makerAddress Address of maker who has approved the pool.
-    struct StakingPoolApproval {
-        bytes32 poolId;
-        address makerAddress;
-    }
-
     /// @dev Status for Staking Pools (see MixinStakingPool).
     /// @param operatorAddress Address of pool operator.
     /// @param operatorShare Portion of pool rewards owned by operator, in ppm.
@@ -101,5 +93,14 @@ interface IStructs {
     struct Fraction {
         uint256 numerator;
         uint256 denominator;
+    }
+
+    /// @dev State for keeping track of which pool a maker has joined, and if the operator has
+    /// added them (see MixinStakingPool).
+    /// @param poolId Unique Id of staking pool.
+    /// @param confirmed Whether the operator has added the maker to the pool.
+    struct MakerPoolJoinStatus {
+        bytes32 poolId;
+        bool confirmed;
     }
 }

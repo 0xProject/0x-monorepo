@@ -46,16 +46,13 @@ blockchainTests.resets('Testing Rewards', () => {
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract);
         await stakingWrapper.deployAndConfigureContractsAsync();
         // setup stakers
         stakers = [new StakerActor(actors[0], stakingWrapper), new StakerActor(actors[1], stakingWrapper)];
         // setup pools
         poolOperator = actors[2];
-        poolId = await stakingWrapper.createStakingPoolAsync(poolOperator, 0);
-        // add operator as maker
-        const approvalMessage = stakingWrapper.signApprovalForStakingPool(poolId, poolOperator);
-        await stakingWrapper.addMakerToStakingPoolAsync(poolId, poolOperator, approvalMessage.signature, poolOperator);
+        poolId = await stakingWrapper.createStakingPoolAsync(poolOperator, 0, true);
         // set exchange address
         await stakingWrapper.addExchangeAddressAsync(exchangeAddress);
         // associate operators for tracking in Finalizer

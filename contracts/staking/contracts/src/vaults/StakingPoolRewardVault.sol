@@ -30,7 +30,7 @@ import "../immutable/MixinConstants.sol";
 
 
 /// @dev This vault manages staking pool rewards.
-/// Rewards can be deposited and withdraw by the staking contract.
+/// Rewards can be deposited and withdrawn by the staking contract.
 /// There is a "Catastrophic Failure Mode" that, when invoked, only
 /// allows withdrawals to be made. Once this vault is in catastrophic
 /// failure mode, it cannot be returned to normal mode; this prevents

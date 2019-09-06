@@ -32,7 +32,7 @@ contract MixinConstants is
     // The upper 16 bytes represent the pool id, so this would be an increment of 1. See MixinStakinPool for more information.
     uint256 constant internal POOL_ID_INCREMENT_AMOUNT = 0x0000000000000000000000000000000100000000000000000000000000000000;
 
-    bytes32 constant internal NIL_MAKER_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal NIL_POOL_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
     address constant internal NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 

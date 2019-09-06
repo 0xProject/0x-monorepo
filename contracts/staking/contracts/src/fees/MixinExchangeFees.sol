@@ -97,7 +97,7 @@ contract MixinExchangeFees is
     {
         uint256 amount = msg.value;
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        if (poolId != NIL_MAKER_ID) {
+        if (poolId != NIL_POOL_ID) {
             // There is a pool associated with `makerAddress`.
             // TODO(dorothy-zbornak): When we have epoch locks on delegating, we could
             // preclude pools that have no delegated stake, since they will never have

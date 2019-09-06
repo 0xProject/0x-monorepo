@@ -1,41 +1,47 @@
-import { SignatureType } from '@0x/types';
+import { expect } from '@0x/contracts-test-utils';
+import { RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { StakingWrapper } from '../utils/staking_wrapper';
-import { SignedStakingPoolApproval } from '../utils/types';
+import { constants as stakingConstants } from '../utils/constants';
 
 import { BaseActor } from './base_actor';
 
 export class MakerActor extends BaseActor {
-    private readonly _ownerPrivateKeyIfExists?: Buffer;
-    private readonly _signatureVerifierIfExists?: string;
-    private readonly _chainIdIfExists?: number;
+    public async joinStakingPoolAsMakerAsync(poolId: string, revertError?: RevertError): Promise<void> {
+        // Join pool
+        const txReceiptPromise = this._stakingWrapper.joinStakingPoolAsMakerAsync(poolId, this._owner);
 
-    constructor(
-        owner: string,
-        stakingWrapper: StakingWrapper,
-        ownerPrivateKey?: Buffer,
-        signatureVerifier?: string,
-        chainId?: number,
-    ) {
-        super(owner, stakingWrapper);
-        this._ownerPrivateKeyIfExists = ownerPrivateKey;
-        this._signatureVerifierIfExists = signatureVerifier;
-        this._chainIdIfExists = chainId;
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
+            return;
+        }
+        await txReceiptPromise;
+
+        // Pool id of the maker should be nil (join would've thrown otherwise)
+        const poolIdOfMaker = await this._stakingWrapper.getStakingPoolIdOfMakerAsync(this._owner);
+        expect(poolIdOfMaker, 'pool id of maker').to.be.equal(stakingConstants.NIL_POOL_ID);
     }
 
-    public signApprovalForStakingPool(
+    public async removeMakerFromStakingPoolAsync(
         poolId: string,
-        signatureType: SignatureType = SignatureType.EthSign,
-    ): SignedStakingPoolApproval {
-        const approval = this._stakingWrapper.signApprovalForStakingPool(
+        makerAddress: string,
+        revertError?: RevertError,
+    ): Promise<void> {
+        // remove maker (should fail if makerAddress !== this._owner)
+        const txReceiptPromise = this._stakingWrapper.removeMakerFromStakingPoolAsync(
             poolId,
+            makerAddress,
             this._owner,
-            this._ownerPrivateKeyIfExists,
-            this._signatureVerifierIfExists,
-            this._chainIdIfExists,
-            signatureType,
         );
-        return approval;
+
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise).to.revertWith(revertError);
+            return;
+        }
+        await txReceiptPromise;
+
+        // check the pool id of the maker
+        const poolIdOfMakerAfterRemoving = await this._stakingWrapper.getStakingPoolIdOfMakerAsync(this._owner);
+        expect(poolIdOfMakerAfterRemoving, 'pool id of maker').to.be.equal(stakingConstants.NIL_POOL_ID);
     }
 }

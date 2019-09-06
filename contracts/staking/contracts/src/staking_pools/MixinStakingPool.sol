@@ -22,8 +22,6 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibSignatureValidator.sol";
-import "../libs/LibEIP712Hash.sol";
 import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
@@ -99,8 +97,9 @@ contract MixinStakingPool is
     /// @dev Create a new staking pool. The sender will be the operator of this pool.
     /// Note that an operator must be payable.
     /// @param operatorShare Portion of rewards owned by the operator, in ppm.
+    /// @param addOperatorAsMaker Adds operator to the created pool as a maker for convenience iff true.
     /// @return poolId The unique pool id generated for this pool.
-    function createStakingPool(uint32 operatorShare)
+    function createStakingPool(uint32 operatorShare, bool addOperatorAsMaker)
         external
         returns (bytes32 poolId)
     {
@@ -125,48 +124,119 @@ contract MixinStakingPool is
         // register pool in reward vault
         rewardVault.registerStakingPool(poolId, operatorShare);
 
-        // notify
+        // Staking pool has been created
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
+
+        if (addOperatorAsMaker) {
+            // Is the maker already in a pool?
+            if (isMakerAssignedToStakingPool(operatorAddress)) {
+                LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                    LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                    operatorAddress,
+                    getStakingPoolIdOfMaker(operatorAddress)
+                ));
+            }
+
+            IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
+                poolId: poolId,
+                confirmed: true
+            });
+            poolJoinedByMakerAddress[operatorAddress] = poolJoinStatus;
+            numMakersByPoolId[poolId] += 1;
+
+            // Operator has been added as a maker to tbe pool
+            emit MakerAddedToStakingPool(
+                poolId,
+                operatorAddress
+            );
+        }
+
         return poolId;
     }
 
+    function joinStakingPoolAsMaker(
+        bytes32 poolId
+    )
+        external
+    {
+        // Is the maker already in a pool?
+        address makerAddress = msg.sender;
+        if (isMakerAssignedToStakingPool(makerAddress)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                makerAddress,
+                getStakingPoolIdOfMaker(makerAddress)
+            ));
+        }
+
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
+            poolId: poolId,
+            confirmed: false
+        });
+        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+
+        // Maker has joined to the pool, awaiting operator confirmation
+        emit PendingAddMakerToPool(
+            poolId,
+            makerAddress
+        );
+    }
+
     /// @dev Adds a maker to a staking pool. Note that this is only callable by the pool operator.
+    /// Note also that the maker must have previously called joinStakingPoolAsMaker.
     /// @param poolId Unique id of pool.
     /// @param makerAddress Address of maker.
-    /// @param makerSignature Signature proving that maker has agreed to join the pool.
     function addMakerToStakingPool(
         bytes32 poolId,
-        address makerAddress,
-        bytes calldata makerSignature
+        address makerAddress
     )
         external
         onlyStakingPoolOperator(poolId)
     {
-        // sanity check - did maker agree to join this pool?
-        if (!isValidMakerSignature(poolId, makerAddress, makerSignature)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidMakerSignatureError(
-                poolId,
-                makerAddress,
-                makerSignature
-            ));
-        }
+        // Is the maker already in a pool?
         if (isMakerAssignedToStakingPool(makerAddress)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.MakerAddressAlreadyRegisteredError(
-                makerAddress
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                makerAddress,
+                getStakingPoolIdOfMaker(makerAddress)
             ));
         }
 
-        poolIdByMakerAddress[makerAddress] = poolId;
-        makerAddressesByPoolId[poolId].push(makerAddress);
+        // Is the maker trying to join this pool?
+        bytes32 makerPendingPoolId = poolJoinedByMakerAddress[makerAddress].poolId;
+        if (makerPendingPoolId != poolId) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_NOT_PENDING_ADD,
+                makerAddress,
+                makerPendingPoolId
+            ));
+        }
 
-        // notify
+        // Is the pool already full?
+        if (getNumberOfMakersInStakingPool(poolId) == MAX_MAKERS_IN_POOL) {
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.POOL_IS_FULL,
+                makerAddress,
+                poolId
+            ));
+        }
+
+        // Add maker to pool
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
+            poolId: poolId,
+            confirmed: true
+        });
+        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+        numMakersByPoolId[poolId] += 1;
+
+        // Maker has been added to the pool
         emit MakerAddedToStakingPool(
             poolId,
             makerAddress
         );
     }
 
-    /// @dev Adds a maker to a staking pool. Note that this is only callable by the pool operator or maker.
+    /// @dev Removes a maker from a staking pool. Note that this is only callable by the pool operator or maker.
     /// Note also that the maker does not have to *agree* to leave the pool; this action is
     /// at the sole discretion of the pool operator.
     /// @param poolId Unique id of pool.
@@ -180,90 +250,41 @@ contract MixinStakingPool is
     {
         bytes32 makerPoolId = getStakingPoolIdOfMaker(makerAddress);
         if (makerPoolId != poolId) {
-            LibRichErrors.rrevert(LibStakingRichErrors.MakerAddressNotRegisteredError(
+            LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_NOT_REGISTERED,
                 makerAddress,
-                makerPoolId,
-                poolId
+                makerPoolId
             ));
         }
 
-        // load list of makers for the input pool.
-        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
-        uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
+        // remove the pool and confirmation from the maker status
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
+            poolId: NIL_POOL_ID,
+            confirmed: false
+        });
+        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+        numMakersByPoolId[poolId] -= 1;
 
-        // find index of maker to remove.
-        uint indexOfMakerAddress = 0;
-        for (; indexOfMakerAddress < makerAddressesByPoolIdLength; ++indexOfMakerAddress) {
-            if (makerAddressesByPoolIdPtr[indexOfMakerAddress] == makerAddress) {
-                break;
-            }
-        }
-
-        // remove the maker from the list of makers for this pool.
-        // (i) move maker at end of list to the slot occupied by the maker to remove, then
-        // (ii) zero out the slot at the end of the list and decrement the length.
-        uint256 indexOfLastMakerAddress = makerAddressesByPoolIdLength - 1;
-        if (indexOfMakerAddress != indexOfLastMakerAddress) {
-            makerAddressesByPoolIdPtr[indexOfMakerAddress] = makerAddressesByPoolIdPtr[indexOfLastMakerAddress];
-        }
-        makerAddressesByPoolIdPtr[indexOfLastMakerAddress] = NIL_ADDRESS;
-        makerAddressesByPoolIdPtr.length -= 1;
-
-        // reset the pool id assigned to the maker.
-        poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
-
-        // notify
+        // Maker has been removed from the pool`
         emit MakerRemovedFromStakingPool(
             poolId,
             makerAddress
         );
     }
 
-    /// @dev Returns true iff the input signature is valid; meaning that the maker agrees to
-    /// be added to the pool.
-    /// @param poolId Unique id of pool the maker wishes to join.
-    /// @param makerAddress Address of maker.
-    /// @param makerSignature Signature of the maker.
-    /// @return isValid True iff the maker agrees to be added to the pool.
-    function isValidMakerSignature(bytes32 poolId, address makerAddress, bytes memory makerSignature)
-        public
-        view
-        returns (bool isValid)
-    {
-        bytes32 approvalHash = getStakingPoolApprovalMessageHash(poolId, makerAddress);
-        isValid = LibSignatureValidator._isValidSignature(approvalHash, makerAddress, makerSignature);
-        return isValid;
-    }
-
-    /// @dev Returns the approval message hash - this is what a maker must sign in order to
-    /// be added to a pool.
-    /// @param poolId Unique id of pool the maker wishes to join.
-    /// @param makerAddress Address of maker.
-    /// @return approvalHash Hash of message the maker must sign.
-    function getStakingPoolApprovalMessageHash(bytes32 poolId, address makerAddress)
-        public
-        view
-        returns (bytes32 approvalHash)
-    {
-        IStructs.StakingPoolApproval memory approval = IStructs.StakingPoolApproval({
-            poolId: poolId,
-            makerAddress: makerAddress
-        });
-
-        // hash approval message and check signer address
-        address verifierAddress = address(this);
-        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(approval, CHAIN_ID, verifierAddress);
-
-        return approvalHash;
-    }
-
-    /// @dev Returns the pool id of an input maker.
+    /// @dev Returns the pool id of the input maker.
+    /// @param makerAddress Address of maker
+    /// @return Pool id, nil if maker is not yet assigned to a pool.
     function getStakingPoolIdOfMaker(address makerAddress)
         public
         view
         returns (bytes32)
     {
-        return poolIdByMakerAddress[makerAddress];
+        if (isMakerAssignedToStakingPool(makerAddress)) {
+            return poolJoinedByMakerAddress[makerAddress].poolId;
+        } else {
+            return NIL_POOL_ID;
+        }
     }
 
     /// @dev Returns true iff the maker is assigned to a staking pool.
@@ -274,18 +295,18 @@ contract MixinStakingPool is
         view
         returns (bool)
     {
-        return getStakingPoolIdOfMaker(makerAddress) != NIL_MAKER_ID;
+        return poolJoinedByMakerAddress[makerAddress].confirmed;
     }
 
-    /// @dev Returns the makers for a given pool.
+    /// @dev Returns the current number of makers in a given pool.
     /// @param poolId Unique id of pool.
-    /// @return _makerAddressesByPoolId Makers for pool.
-    function getMakersForStakingPool(bytes32 poolId)
+    /// @return Size of pool.
+    function getNumberOfMakersInStakingPool(bytes32 poolId)
         public
         view
-        returns (address[] memory _makerAddressesByPoolId)
+        returns (uint256)
     {
-        return makerAddressesByPoolId[poolId];
+        return numMakersByPoolId[poolId];
     }
 
     /// @dev Returns the unique id that will be assigned to the next pool that is created.

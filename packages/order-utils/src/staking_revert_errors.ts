@@ -2,6 +2,13 @@ import { BigNumber, RevertError } from '@0x/utils';
 
 // tslint:disable:max-classes-per-file
 
+export enum MakerPoolAssignmentErrorCodes {
+    MakerAddressAlreadyRegistered,
+    MakerAddressNotRegistered,
+    MakerAddressNotPendingAdd,
+    PoolIsFull,
+}
+
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -36,42 +43,6 @@ export class ExchangeAddressNotRegisteredError extends RevertError {
     }
 }
 
-export class SignatureLengthGreaterThan0RequiredError extends RevertError {
-    constructor() {
-        super('SignatureLengthGreaterThan0RequiredError', 'SignatureLengthGreaterThan0RequiredError()', {});
-    }
-}
-
-export class SignatureUnsupportedError extends RevertError {
-    constructor(signature?: string) {
-        super('SignatureUnsupportedError', 'SignatureUnsupportedError(bytes signature)', { signature });
-    }
-}
-
-export class SignatureIllegalError extends RevertError {
-    constructor(signature?: string) {
-        super('SignatureIllegalError', 'SignatureIllegalError(bytes signature)', { signature });
-    }
-}
-
-export class SignatureLength0RequiredError extends RevertError {
-    constructor(signature?: string) {
-        super('SignatureLength0RequiredError', 'SignatureLength0RequiredError(bytes signature)', { signature });
-    }
-}
-
-export class SignatureLength65RequiredError extends RevertError {
-    constructor(signature?: string) {
-        super('SignatureLength65RequiredError', 'SignatureLength65RequiredError(bytes signature)', { signature });
-    }
-}
-
-export class WalletError extends RevertError {
-    constructor(walletAddress?: string, errorData?: string) {
-        super('WalletError', 'WalletError(address walletAddress, bytes errorData)', { walletAddress, errorData });
-    }
-}
-
 export class InsufficientBalanceError extends RevertError {
     constructor(amount?: BigNumber | number | string, balance?: BigNumber | number | string) {
         super('InsufficientBalanceError', 'InsufficientBalanceError(uint256 amount, uint256 balance)', {
@@ -101,30 +72,16 @@ export class OnlyCallableByPoolOperatorOrMakerError extends RevertError {
     }
 }
 
-export class InvalidMakerSignatureError extends RevertError {
-    constructor(poolId?: string, makerAddress?: string, makerSignature?: string) {
+export class MakerPoolAssignmentError extends RevertError {
+    constructor(error?: MakerPoolAssignmentErrorCodes, makerAddress?: string, poolId?: string) {
         super(
-            'InvalidMakerSignatureError',
-            'InvalidMakerSignatureError(bytes32 poolId, address makerAddress, bytes makerSignature)',
-            { poolId, makerAddress, makerSignature },
-        );
-    }
-}
-
-export class MakerAddressAlreadyRegisteredError extends RevertError {
-    constructor(makerAddress?: string) {
-        super('MakerAddressAlreadyRegisteredError', 'MakerAddressAlreadyRegisteredError(address makerAddress)', {
-            makerAddress,
-        });
-    }
-}
-
-export class MakerAddressNotRegisteredError extends RevertError {
-    constructor(makerAddress?: string, makerPoolId?: string, poolId?: string) {
-        super(
-            'MakerAddressNotRegisteredError',
-            'MakerAddressNotRegisteredError(address makerAddress, bytes32 makerPoolId, bytes32 poolId)',
-            { makerAddress, makerPoolId, poolId },
+            'MakerPoolAssignmentError',
+            'MakerPoolAssignmentError(uint8 error, address makerAddress, bytes32 poolId)',
+            {
+                error,
+                makerAddress,
+                poolId,
+            },
         );
     }
 }
@@ -143,7 +100,7 @@ export class BlockTimestampTooLowError extends RevertError {
     constructor(epochEndTime?: BigNumber | number | string, currentBlockTimestamp?: BigNumber | number | string) {
         super(
             'BlockTimestampTooLowError',
-            'BlockTimestampTooLowError(uint64 epochEndTime, uint64 currentBlockTimestamp)',
+            'BlockTimestampTooLowError(uint256 epochEndTime, uint256 currentBlockTimestamp)',
             { epochEndTime, currentBlockTimestamp },
         );
     }
@@ -227,18 +184,10 @@ const types = [
     OnlyCallableByExchangeError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,
-    SignatureLengthGreaterThan0RequiredError,
-    SignatureUnsupportedError,
-    SignatureIllegalError,
-    SignatureLength0RequiredError,
-    SignatureLength65RequiredError,
-    WalletError,
     InsufficientBalanceError,
     OnlyCallableByPoolOperatorError,
     OnlyCallableByPoolOperatorOrMakerError,
-    InvalidMakerSignatureError,
-    MakerAddressAlreadyRegisteredError,
-    MakerAddressNotRegisteredError,
+    MakerPoolAssignmentError,
     WithdrawAmountExceedsMemberBalanceError,
     BlockTimestampTooLowError,
     OnlyCallableByStakingContractError,
