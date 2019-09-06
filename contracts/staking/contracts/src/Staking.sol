@@ -34,14 +34,14 @@ import "./staking_pools/MixinStakingPoolRewards.sol";
 contract Staking is
     IStaking,
     IStakingEvents,
-    Ownable,
     MixinConstants,
+    Ownable,
     MixinStorage,
     MixinHyperParameters,
     MixinZrxVault,
     MixinExchangeManager,
-    MixinScheduler,
     MixinStakingPoolRewardVault,
+    MixinScheduler,
     MixinStakeStorage,
     MixinStakeBalances,
     MixinStakingPoolRewards,
@@ -58,7 +58,7 @@ contract Staking is
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // not to accidentally overwrite existing state.
-        MixinStorage._initMixinScheduler();
+        _initMixinScheduler();
     }
 
     // this contract can receive ETH

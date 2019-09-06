@@ -22,6 +22,22 @@ import "../src/Staking.sol";
 
 
 contract TestCobbDouglas is
+    IStaking,
+    IStakingEvents,
+    MixinConstants,
+    Ownable,
+    MixinStorage,
+    MixinHyperParameters,
+    MixinZrxVault,
+    MixinExchangeManager,
+    MixinStakingPoolRewardVault,
+    MixinScheduler,
+    MixinStakeStorage,
+    MixinStakeBalances,
+    MixinStakingPoolRewards,
+    MixinStake,
+    MixinStakingPool,
+    MixinExchangeFees,
     Staking
 {
     function cobbDouglas(

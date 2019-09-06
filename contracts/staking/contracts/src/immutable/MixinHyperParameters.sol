@@ -26,13 +26,13 @@ import "./MixinConstants.sol";
 
 contract MixinHyperParameters is
     IStakingEvents,
-    Ownable,
-    MixinConstants
+    MixinConstants,
+    Ownable
 {
     // Minimum seconds between epochs.
     uint256 internal epochDurationInSeconds = 2 weeks;
     // How much delegated stake is weighted vs operator stake, in ppm.
-    uint32 internal rewardDelegatedStakeWeight = 0.9 * PPM_DENOMINATOR; // 90%
+    uint32 internal rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
     // Minimum amount of stake required in a pool to collect rewards.
     uint256 internal minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
     // Numerator for cobb douglas alpha factor.
@@ -82,6 +82,7 @@ contract MixinHyperParameters is
         uint256 denominator
     )
         private
+        pure
     {
         if (int256(numerator) < 0
             || int256(denominator) <= 0

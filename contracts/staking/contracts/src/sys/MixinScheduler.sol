@@ -37,6 +37,7 @@ import "../interfaces/IStakingEvents.sol";
 contract MixinScheduler is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
     MixinHyperParameters
 {
@@ -81,7 +82,7 @@ contract MixinScheduler is
         internal
     {
         if (currentEpochStartTimeInSeconds != 0) {
-            LibRichErrors._rrevert(
+            LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
                     LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
                 )

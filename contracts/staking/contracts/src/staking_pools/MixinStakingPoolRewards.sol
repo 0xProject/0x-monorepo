@@ -30,9 +30,13 @@ import "./MixinStakingPoolRewardVault.sol";
 contract MixinStakingPoolRewards is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
-    MixinScheduler,
+    MixinHyperParameters,
+    MixinZrxVault,
     MixinStakingPoolRewardVault,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;

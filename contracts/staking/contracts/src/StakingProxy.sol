@@ -18,16 +18,20 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
+import "./immutable/MixinHyperParameters.sol";
+import "./interfaces/IStaking.sol";
 import "./interfaces/IStakingProxy.sol";
 
-
 contract StakingProxy is
+    IStakingEvents,
     IStakingProxy,
-    MixinHyperParameters,
     MixinConstants,
-    MixinStorage
+    Ownable,
+    MixinStorage,
+    MixinHyperParameters
 {
     using LibProxy for address;
 
@@ -66,7 +70,12 @@ contract StakingProxy is
     {
         stakingContract = _stakingContract;
         readOnlyProxyCallee = _stakingContract;
-        stakingContract.init.delegatecall();
+        // Call `init()` on the staking contract to initialize storage.
+        (bool didInitSucceed, bytes memory initReturnData) =
+            _stakingContract.delegatecall(abi.encode(IStaking(0).init.selector));
+        if (!didInitSucceed) {
+            assembly { revert(add(initReturnData, 0x20), mload(initReturnData)) }
+        }
         emit StakingContractAttachedToProxy(_stakingContract);
     }
 

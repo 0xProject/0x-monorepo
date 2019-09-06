@@ -33,8 +33,8 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
-    Ownable,
-    MixinConstants
+    MixinConstants,
+    Ownable
 {
     using LibBytes for bytes;
 

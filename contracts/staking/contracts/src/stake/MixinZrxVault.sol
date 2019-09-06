@@ -26,6 +26,7 @@ import "../immutable/MixinStorage.sol";
 /// (see vaults/ZrxVault.sol).
 contract MixinZrxVault is
     MixinConstants,
+    Ownable,
     MixinStorage
 {
     /// @dev Set the Zrx Vault.

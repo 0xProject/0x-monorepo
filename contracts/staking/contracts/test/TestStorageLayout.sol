@@ -25,11 +25,13 @@ import "../src/interfaces/IStructs.sol";
 
 
 contract TestStorageLayout is
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
     function assertExpectedStorageLayout()
         public
-        view
+        pure
     {
         assembly {
             function revertIncorrectStorageSlot() {

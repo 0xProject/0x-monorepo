@@ -33,7 +33,9 @@ import "./MixinStakeStorage.sol";
 contract MixinStakeBalances is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
+    MixinHyperParameters,
     MixinZrxVault,
     MixinScheduler,
     MixinStakeStorage

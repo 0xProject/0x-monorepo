@@ -32,6 +32,7 @@ import "../immutable/MixinStorage.sol";
 contract MixinExchangeManager is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage
 {
     /// @dev Asserts that the call is coming from a valid exchange.
