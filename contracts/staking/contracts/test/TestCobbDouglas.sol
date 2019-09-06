@@ -18,27 +18,11 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/Staking.sol";
+import "../src/fees/MixinExchangeFees.sol";
 
 
 contract TestCobbDouglas is
-    IStaking,
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinHyperParameters,
-    MixinZrxVault,
-    MixinExchangeManager,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
-    MixinStake,
-    MixinStakingPool,
-    MixinExchangeFees,
-    Staking
+    MixinExchangeFees
 {
     function cobbDouglas(
         uint256 totalRewards,
@@ -62,14 +46,5 @@ contract TestCobbDouglas is
             alphaNumerator,
             alphaDenominator
         );
-    }
-
-    function getCobbDouglasAlpha()
-        external
-        view
-        returns (uint256 numerator, uint256 denominator)
-    {
-        numerator = cobbDouglasAlphaNumerator;
-        denominator = cobbDouglasAlphaDenomintor;
     }
 }
