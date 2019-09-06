@@ -739,10 +739,18 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('reverts with no orders', async () => {
-                const expectedError = new AnyRevertError(); // Just a generic revert.
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), [], constants.ZERO_AMOUNT, []);
-                return expect(tx).to.revertWith(expectedError);
+            it('returns empty fill results with no orders', async () => {
+                const [expectedResult, expectedCalls] = simulator([], constants.ZERO_AMOUNT, []);
+                expect(expectedCalls.length).to.eq(0);
+                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
+                    getContractFn(),
+                    [],
+                    constants.ZERO_AMOUNT,
+                    [],
+                );
+
+                expect(actualResult).to.deep.eq(expectedResult);
+                assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
         }
 
@@ -753,12 +761,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         ): [FillResults, ExpectedFillOrderCallArgs[]] {
             const fillOrderCalls = [];
             let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
-            const takerAssetData = orders[0].takerAssetData;
             for (const [order, signature] of _.zip(orders, signatures) as [[Order, string]]) {
                 const remainingTakerAssetFillAmount = safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
                 if (order.salt !== ALWAYS_FAILING_SALT) {
-                    const modifiedOrder = { ...order, takerAssetData };
-                    fillOrderCalls.push([modifiedOrder, remainingTakerAssetFillAmount, signature]);
+                    fillOrderCalls.push([order, remainingTakerAssetFillAmount, signature]);
                 }
                 fillResults = addFillResults(fillResults, getExpectedFillResults(order, signature));
                 if (fillResults.takerAssetFilledAmount.gte(takerAssetFillAmount)) {
@@ -1087,10 +1093,18 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('reverts with no orders', async () => {
-                const expectedError = new AnyRevertError(); // Just a generic revert.
-                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), [], constants.ZERO_AMOUNT, []);
-                return expect(tx).to.revertWith(expectedError);
+            it('returns empty fill results with no orders', async () => {
+                const [expectedResult, expectedCalls] = simulator([], constants.ZERO_AMOUNT, []);
+                expect(expectedCalls.length).to.eq(0);
+                const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
+                    getContractFn(),
+                    [],
+                    constants.ZERO_AMOUNT,
+                    [],
+                );
+
+                expect(actualResult).to.deep.eq(expectedResult);
+                assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
             });
         }
 
@@ -1101,7 +1115,6 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         ): [FillResults, ExpectedFillOrderCallArgs[]] {
             const fillOrderCalls = [];
             let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
-            const makerAssetData = orders[0].makerAssetData;
             for (const [order, signature] of _.zip(orders, signatures) as [[Order, string]]) {
                 const remainingMakerAssetFillAmount = safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
                 const remainingTakerAssetFillAmount = getPartialAmountFloor(
@@ -1110,8 +1123,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     remainingMakerAssetFillAmount,
                 );
                 if (order.salt !== ALWAYS_FAILING_SALT) {
-                    const modifiedOrder = { ...order, makerAssetData };
-                    fillOrderCalls.push([modifiedOrder, remainingTakerAssetFillAmount, signature]);
+                    fillOrderCalls.push([order, remainingTakerAssetFillAmount, signature]);
                 }
                 fillResults = addFillResults(fillResults, getExpectedFillResults(order, signature));
                 if (fillResults.makerAssetFilledAmount.gte(makerAssetFillAmount)) {
