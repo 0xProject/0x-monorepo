@@ -41,6 +41,7 @@ export {
     FillEventArgs,
     MarketBuyOrders,
     MarketSellOrders,
+    Numberish,
     OrderStatus,
     Token,
     TokenBalances,

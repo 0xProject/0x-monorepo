@@ -77,6 +77,10 @@
             {
                 "note": "Increase the number of ganache accounts to 20",
                 "pr": 2109
+            },
+            {
+                "note": "Add `Numberish` type.",
+                "pr": 2131
             }
         ]
     },

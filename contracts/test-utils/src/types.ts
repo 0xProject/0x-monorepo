@@ -175,3 +175,5 @@ export interface FillEventArgs {
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
 }
+
+export type Numberish = BigNumber | string | number;
