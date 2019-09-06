@@ -40,10 +40,12 @@ import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestProtocolFeesERC20Proxy from '../generated-artifacts/TestProtocolFeesERC20Proxy.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
+import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
 import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
@@ -83,9 +85,11 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestProtocolFeesERC20Proxy: TestProtocolFeesERC20Proxy as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
+    TestStakingProxy: TestStakingProxy as ContractArtifact,
     TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

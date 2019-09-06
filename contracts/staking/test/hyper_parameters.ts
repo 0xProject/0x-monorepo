@@ -1,7 +1,6 @@
 import { blockchainTests, constants, expect, filterLogsToArguments, Numberish } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, OwnableRevertErrors } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { artifacts, IStakingEventsTunedEventArgs, MixinHyperParametersContract } from '../src/';
 
