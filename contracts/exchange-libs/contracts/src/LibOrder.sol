@@ -67,7 +67,7 @@ library LibOrder {
         address senderAddress;          // Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.
         uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.
         uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.
-        uint256 makerFee;               // Fee paid to feeRecipient by maker when order is filled. 
+        uint256 makerFee;               // Fee paid to feeRecipient by maker when order is filled.
         uint256 takerFee;               // Fee paid to feeRecipient by taker when order is filled.
         uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.
         uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.
@@ -133,6 +133,11 @@ library LibOrder {
         // ));
 
         assembly {
+            // Assert order offset (this is an internal error that should never be triggered)
+            if lt(order, 32) {
+                invalid()
+            }
+
             // Calculate memory addresses that will be swapped out before hashing
             let pos1 := sub(order, 32)
             let pos2 := add(order, 320)
