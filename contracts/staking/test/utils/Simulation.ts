@@ -1,8 +1,11 @@
+/*
+@TODO (hysz) - update once new staking mechanics are merged
+
 import { expect } from '@0x/contracts-test-utils';
+import { chaiSetup } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DelegatorActor } from '../actors/delegator_actor';
 import { MakerActor } from '../actors/maker_actor';
 import { PoolOperatorActor } from '../actors/pool_operator_actor';
 
@@ -61,7 +64,7 @@ export class Simulation {
             await this._withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(this._p);
         }
 
-        // @TODO cleanup state and verify the staking contract is empty
+        // @TODO cleanup status and verify the staking contract is empty
     }
 
     private async _withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(
@@ -273,3 +276,4 @@ export class Simulation {
         }
     }
 }
+*/

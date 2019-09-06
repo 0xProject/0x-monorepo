@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
@@ -44,15 +45,16 @@ import "./MixinExchangeManager.sol";
 /// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakingPool,
-    MixinTimeLockedStake,
-    MixinStakeBalances
+    MixinStakeStorage,
+    MixinStakeBalances,
+    MixinStakingPoolRewards,
+    MixinStakingPool
 {
     using LibSafeMath for uint256;
 
@@ -205,8 +207,8 @@ contract MixinExchangeFees is
             bytes32 poolId = activePoolsThisEpoch[i];
 
             // compute weighted stake
-            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId);
+            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(getStakingPoolOperator(poolId), poolId).currentEpochBalance;
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
@@ -218,6 +220,7 @@ contract MixinExchangeFees is
             activePools[i].poolId = poolId;
             activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
             activePools[i].weightedStake = weightedStake;
+            activePools[i].delegatedStake = totalStakeDelegatedToPool;
 
             // update cumulative amounts
             totalFeesCollected = totalFeesCollected.safeAdd(activePools[i].feesCollected);
@@ -226,7 +229,7 @@ contract MixinExchangeFees is
 
         // sanity check - this is a gas optimization that can be used because we assume a non-zero
         // split between stake and fees generated in the cobb-douglas computation (see below).
-        if (totalFeesCollected == 0 || totalWeightedStake == 0) {
+        if (totalFeesCollected == 0) {
             return (
                 totalActivePools,
                 totalFeesCollected,
@@ -244,15 +247,29 @@ contract MixinExchangeFees is
                 initialContractBalance,
                 activePools[i].feesCollected,
                 totalFeesCollected,
-                activePools[i].weightedStake,
-                totalWeightedStake,
+                totalWeightedStake != 0 ? activePools[i].weightedStake : 1, // only rewards are accounted for if no one has staked
+                totalWeightedStake != 0 ? totalWeightedStake : 1, // this is to avoid divide-by-zero in cobb douglas
                 cobbDouglasAlphaNumerator,
                 cobbDouglasAlphaDenomintor
             );
 
             // record reward in vault
-            _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
+            (, uint256 poolPortion) = rewardVault.recordDepositFor(
+                activePools[i].poolId,
+                reward,
+                activePools[i].delegatedStake == 0 // true -> reward is for operator only
+            );
             totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
+
+            // sync cumulative rewards, if necessary.
+            if (poolPortion > 0) {
+                _recordRewardForDelegators(
+                    activePools[i].poolId,
+                    poolPortion,
+                    activePools[i].delegatedStake,
+                    currentEpoch
+                );
+            }
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;

@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
 import "./fees/MixinExchangeManager.sol";
@@ -24,9 +25,7 @@ import "./stake/MixinZrxVault.sol";
 import "./staking_pools/MixinStakingPoolRewardVault.sol";
 import "./sys/MixinScheduler.sol";
 import "./stake/MixinStakeBalances.sol";
-import "./stake/MixinTimeLockedStake.sol";
 import "./stake/MixinStake.sol";
-import "./stake/MixinDelegatedStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
 import "./staking_pools/MixinStakingPoolRewards.sol";
@@ -36,19 +35,19 @@ contract Staking is
     IStaking,
     IStakingEvents,
     MixinDeploymentConstants,
+    Ownable,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinZrxVault,
-    MixinStakingPool,
-    MixinTimeLockedStake,
+    MixinStakeStorage,
     MixinStakeBalances,
-    MixinStake,
     MixinStakingPoolRewards,
-    MixinExchangeFees,
-    MixinDelegatedStake
+    MixinStake,
+    MixinStakingPool,
+    MixinExchangeFees
 {
     // this contract can receive ETH
     // solhint-disable no-empty-blocks

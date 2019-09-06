@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IEthVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
@@ -38,9 +39,7 @@ import "../immutable/MixinConstants.sol";
 /// When in Catastrophic Failure Mode, the Staking contract can still
 /// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
-    Authorizable,
     IStakingPoolRewardVault,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinVaultCore
 {
@@ -49,6 +48,9 @@ contract StakingPoolRewardVault is
 
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
+
+    // address of ether vault
+    IEthVault internal ethVault;
 
     /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
@@ -60,24 +62,15 @@ contract StakingPoolRewardVault is
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
     }
 
-    /// @dev Deposit a reward in ETH for a specific pool.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
+    /// @dev Sets the Eth Vault.
+    /// Note that only the contract owner can call this.
+    /// @param ethVaultAddress Address of the Eth Vault.
+    function setEthVault(address ethVaultAddress)
         external
-        payable
-        onlyStakingContract
-        onlyNotInCatastrophicFailure
+        onlyOwner
     {
-        // update balance of pool
-        uint256 amount = msg.value;
-        Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
-        balanceByPoolId[poolId] = balance;
-
-        // notify
-        emit RewardDeposited(poolId, amount);
+        ethVault = IEthVault(ethVaultAddress);
+        emit EthVaultChanged(ethVaultAddress);
     }
 
     /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
@@ -86,26 +79,44 @@ contract StakingPoolRewardVault is
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
+    /// @param operatorOnly Only attribute amount to operator.
+    /// @return operatorPortion Portion of amount attributed to the operator.
+    /// @return poolPortion Portion of amount attributed to the pool.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 amount,
+        bool operatorOnly
+    )
         external
         onlyStakingContract
-        onlyNotInCatastrophicFailure
+        returns (
+            uint256 operatorPortion,
+            uint256 poolPortion
+        )
     {
         // update balance of pool
         Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
+        (operatorPortion, poolPortion) = _incrementBalanceStruct(balance, amount, operatorOnly);
         balanceByPoolId[poolId] = balance;
+        return (operatorPortion, poolPortion);
     }
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function withdrawForOperator(bytes32 poolId, uint256 amount)
+    function transferOperatorBalanceToEthVault(
+        bytes32 poolId,
+        address operator,
+        uint256 amount
+    )
         external
         onlyStakingContract
     {
+        if (amount == 0) {
+            return;
+        }
+
         // sanity check - sufficient balance?
         uint256 operatorBalance = uint256(balanceByPoolId[poolId].operatorBalance);
         if (amount > operatorBalance) {
@@ -117,7 +128,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].operatorBalance = operatorBalance.safeSub(amount).downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        _transferToEthVault(operator, amount);
 
         // notify
         emit RewardWithdrawnForOperator(poolId, amount);
@@ -127,11 +138,19 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function withdrawForMember(bytes32 poolId, uint256 amount)
+    /// @param amount Amount in ETH to transfer.
+    function transferMemberBalanceToEthVault(
+        bytes32 poolId,
+        address member,
+        uint256 amount
+    )
         external
         onlyStakingContract
     {
+        if (amount == 0) {
+            return;
+        }
+
         // sanity check - sufficient balance?
         uint256 membersBalance = uint256(balanceByPoolId[poolId].membersBalance);
         if (amount > membersBalance) {
@@ -143,7 +162,7 @@ contract StakingPoolRewardVault is
 
         // update balance and transfer `amount` in ETH to staking contract
         balanceByPoolId[poolId].membersBalance = membersBalance.safeSub(amount).downcastToUint96();
-        stakingContractAddress.transfer(amount);
+        _transferToEthVault(member, amount);
 
         // notify
         emit RewardWithdrawnForMember(poolId, amount);
@@ -218,25 +237,65 @@ contract StakingPoolRewardVault is
         return balanceByPoolId[poolId].membersBalance;
     }
 
+    /// @dev Returns the operator share of a pool's balance.
+    /// @param poolId Unique Id of pool.
+    /// @return Operator share (integer out of 100)
+    function getOperatorShare(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return balanceByPoolId[poolId].operatorShare;
+    }
+
     /// @dev Increments a balance struct, splitting the input amount between the
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param balance Balance struct to increment.
     /// @param amount Amount to add to balance.
-    function _incrementBalanceStruct(Balance memory balance, uint256 amount)
+    /// @param operatorOnly Only give this balance to the operator.
+    /// @return portion of amount given to operator and delegators, respectively.
+    function _incrementBalanceStruct(Balance memory balance, uint256 amount, bool operatorOnly)
         private
         pure
+        returns (uint256 operatorPortion, uint256 poolPortion)
     {
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
-        uint256 operatorPortion = LibMath.getPartialAmountCeil(
-            uint256(balance.operatorShare),  // Operator share out of 1e6
-            PPM_DENOMINATOR,
-            amount
+        operatorPortion = operatorOnly
+            ? amount
+            : LibMath.getPartialAmountCeil(
+                uint256(balance.operatorShare),
+                PPM_DENOMINATOR,
+                amount
+            );
+
+        poolPortion = amount.safeSub(operatorPortion);
+
+        // compute new balances
+        uint256 newOperatorBalance = uint256(balance.operatorBalance).safeAdd(operatorPortion);
+        uint256 newMembersBalance = uint256(balance.membersBalance).safeAdd(poolPortion);
+
+        // save new balances
+        balance.operatorBalance = newOperatorBalance.downcastToUint96();
+        balance.membersBalance = newMembersBalance.downcastToUint96();
+
+        return (
+            operatorPortion,
+            poolPortion
         );
+    }
 
-        uint256 poolPortion = amount.safeSub(operatorPortion);
+    function _transferToEthVault(address from, uint256 amount)
+        private
+    {
+        // sanity check on eth vault
+        IEthVault _ethVault = ethVault;
+        if (address(_ethVault) == address(0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.EthVaultNotSetError()
+            );
+        }
 
-        // update balances
-        balance.operatorBalance = uint256(balance.operatorBalance).safeAdd(operatorPortion).downcastToUint96();
-        balance.membersBalance = uint256(balance.membersBalance).safeAdd(poolPortion).downcastToUint96();
+        // perform xfer
+        _ethVault.depositFor.value(amount)(from);
     }
 }

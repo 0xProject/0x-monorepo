@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
+import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
@@ -28,8 +29,8 @@ import "../interfaces/IStructs.sol";
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
     MixinDeploymentConstants,
-    MixinConstants,
-    Ownable
+    Ownable,
+    MixinConstants
 {
 
     constructor()
@@ -40,26 +41,28 @@ contract MixinStorage is
     // address of staking contract
     address internal stakingContract;
 
-    // mapping from Owner to Amount Staked
-    mapping (address => uint256) internal stakeByOwner;
+    // mapping from Owner to Amount of Active Stake
+    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    mapping (address => IStructs.StoredBalance) internal activeStakeByOwner;
 
-    // mapping from Owner to Amount of Instactive Stake
-    mapping (address => uint256) internal activatedStakeByOwner;
-
-    // mapping from Owner to Amount TimeLocked
-    mapping (address => IStructs.TimeLock) internal timeLockedStakeByOwner;
+    // mapping from Owner to Amount of Inactive Stake
+    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    mapping (address => IStructs.StoredBalance) internal inactiveStakeByOwner;
 
     // mapping from Owner to Amount Delegated
-    mapping (address => uint256) internal delegatedStakeByOwner;
+    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    mapping (address => IStructs.StoredBalance) internal delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
-    mapping (address => mapping (bytes32 => uint256)) internal delegatedStakeToPoolByOwner;
+    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) internal delegatedStakeByPoolId;
+    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    mapping (bytes32 => IStructs.StoredBalance) internal delegatedStakeByPoolId;
 
-    // total activated stake in the system
-    uint256 internal totalActivatedStake;
+    // mapping from Owner to Amount of Withdrawable Stake
+    mapping (address => uint256) internal withdrawableStakeByOwner;
 
     // tracking Pool Id
     bytes32 internal nextPoolId = INITIAL_POOL_ID;
@@ -80,31 +83,28 @@ contract MixinStorage is
     // current epoch start time
     uint256 internal currentEpochStartTimeInSeconds;
 
-    // current withdrawal period
-    uint256 internal currentTimeLockPeriod = INITIAL_TIMELOCK_PERIOD;
-
-    // current epoch start time
-    uint256 internal currentTimeLockPeriodStartEpoch = INITIAL_EPOCH;
-
     // fees collected this epoch
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
 
     // pools that were active in the current epoch
     bytes32[] internal activePoolsThisEpoch;
 
-    // mapping from POol Id to Shadow Rewards
-    mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
+    // mapping from Pool Id to Epoch to Reward Ratio
+    mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal cumulativeRewardsByPool;
 
-    // shadow balances by
-    mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
+    // mapping from Pool Id to Epoch
+    mapping (bytes32 => uint256) internal cumulativeRewardsByPoolLastStored;
 
     // registered 0x Exchange contracts
     mapping (address => bool) internal validExchanges;
 
-    // ZRX vault
+    // ZRX vault (stores staked ZRX)
     IZrxVault internal zrxVault;
 
-    // Rebate Vault
+    // ETH Vault (stores eth balances of stakers and pool operators)
+    IEthVault internal ethVault;
+
+    // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault internal rewardVault;
 
     // Numerator for cobb douglas alpha factor.
@@ -113,3 +113,4 @@ contract MixinStorage is
     // Denominator for cobb douglas alpha factor.
     uint256 internal cobbDouglasAlphaDenomintor = 6;
 }
+

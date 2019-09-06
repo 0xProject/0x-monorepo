@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -28,7 +28,9 @@ import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
+import "../sys/MixinScheduler.sol";
 import "./MixinStakingPoolRewardVault.sol";
+import "./MixinStakingPoolRewards.sol";
 
 
 /// @dev This mixin contains logic for staking pools.
@@ -56,10 +58,9 @@ import "./MixinStakingPoolRewardVault.sol";
 /// 3. Leverage the staking power of others by convincing them to delegate to your pool.
 contract MixinStakingPool is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinStakingPoolRewardVault
+    MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
 
@@ -117,8 +118,12 @@ contract MixinStakingPool is
         });
         poolById[poolId] = pool;
 
+        // initialize cumulative rewards for this pool;
+        // this is used to track rewards earned by delegators.
+        _initializeCumulativeRewards(poolId);
+
         // register pool in reward vault
-        _registerStakingPoolInRewardVault(poolId, operatorShare);
+        rewardVault.registerStakingPool(poolId, operatorShare);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);

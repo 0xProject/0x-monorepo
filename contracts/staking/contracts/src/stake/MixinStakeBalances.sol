@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -24,165 +24,138 @@ import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
-import "./MixinTimeLockedStake.sol";
+import "./MixinZrxVault.sol";
+import "./MixinStakeStorage.sol";
 
 
 /// @dev This mixin contains logic for querying stake balances.
 /// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
     MixinScheduler,
-    MixinTimeLockedStake
+    MixinStakeStorage
 {
     using LibSafeMath for uint256;
 
-    /// @dev Returns the total activated stake across all owners.
-    /// This stake is in the "Activated" OR "Activated & Delegated" states.
-    /// @return Total active stake.
-    function getActivatedStakeAcrossAllOwners()
-        public
-        view
-        returns (uint256)
-    {
-        return totalActivatedStake;
-    }
-
     /// @dev Returns the total stake for a given owner.
-    /// This stake can be in any state.
-    /// @param owner to query.
+    /// @param owner of stake.
     /// @return Total active stake for owner.
     function getTotalStake(address owner)
         public
         view
         returns (uint256)
     {
-        return stakeByOwner[owner];
+        return _balanceOfOwnerInZrxVault(owner);
     }
 
-    /// @dev Returns the activated stake for a given owner.
-    /// This stake is in the "Activated" OR "Activated & Delegated" states.
-    /// @param owner to query.
-    /// @return Activated stake for owner.
-    function getActivatedStake(address owner)
+    /// @dev Returns the active stake for a given owner.
+    /// @param owner of stake.
+    /// @return Active stake for owner.
+    function getActiveStake(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return activatedStakeByOwner[owner];
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(activeStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
     }
 
-    /// @dev Returns the deactivated stake for a given owner.
-    /// This stake is in the "Deactivated & TimeLocked" OR "Deactivated & Withdrawable" states.
-    /// @param owner to query.
-    /// @return Deactivated stake for owner.
-    function getDeactivatedStake(address owner)
+    /// @dev Returns the inactive stake for a given owner.
+    /// @param owner of stake.
+    /// @return Inactive stake for owner.
+    function getInactiveStake(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return getTotalStake(owner).safeSub(getActivatedStake(owner));
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(inactiveStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
     }
 
-    /// @dev Returns the activated & undelegated stake for a given owner.
-    /// This stake is in the "Activated" state.
-    /// @param owner to query.
-    /// @return Activated stake for owner.
-    function getActivatedAndUndelegatedStake(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        return activatedStakeByOwner[owner].safeSub(getStakeDelegatedByOwner(owner));
-    }
-
-    /// @dev Returns the stake that can be activated for a given owner.
-    /// This stake is in the "Deactivated & Withdrawable" state.
-    /// @param owner to query.
-    /// @return Activatable stake for owner.
-    function getActivatableStake(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        return getDeactivatedStake(owner).safeSub(getTimeLockedStake(owner));
-    }
-
-    /// @dev Returns the stake that can be withdrawn for a given owner.
-    /// This stake is in the "Deactivated & Withdrawable" state.
-    /// @param owner to query.
+    /// @dev Returns the amount stake that can be withdrawn for a given owner.
+    /// @param owner of stake.
     /// @return Withdrawable stake for owner.
     function getWithdrawableStake(address owner)
         public
         view
         returns (uint256)
     {
-        return getActivatableStake(owner);
+        return _computeWithdrawableStake(owner, withdrawableStakeByOwner[owner]);
     }
 
     /// @dev Returns the stake delegated by a given owner.
-    /// This stake is in the "Activated & Delegated" state.
-    /// @param owner to query.
+    /// @param owner of stake.
     /// @return Delegated stake for owner.
     function getStakeDelegatedByOwner(address owner)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return delegatedStakeByOwner[owner];
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
     }
 
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
-    /// This stake is in the "Activated & Delegated" state.
-    /// @param owner to query.
+    /// @param owner of stake.
     /// @param poolId Unique Id of pool.
     /// @return Stake delegaated to pool by owner.
     function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return delegatedStakeToPoolByOwner[owner][poolId];
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeToPoolByOwner[owner][poolId]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool, across all members.
-    /// This stake is in the "Activated & Delegated" state.
     /// @param poolId Unique Id of pool.
-    /// @return Total stake delegaated to pool.
+    /// @return Total stake delegated to pool.
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (uint256)
+        returns (IStructs.StakeBalance memory balance)
     {
-        return delegatedStakeByPoolId[poolId];
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeByPoolId[poolId]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
     }
 
-    /// @dev Returns the timeLocked stake for a given owner.
-    /// This stake is in the "Deactivated & TimeLocked" state.
+    /// @dev Returns the stake that can be withdrawn for a given owner.
     /// @param owner to query.
-    /// @return TimeLocked stake for owner.
-    function getTimeLockedStake(address owner)
-        public
+    /// @param lastStoredWithdrawableStake The amount of withdrawable stake that was last stored.
+    /// @return Withdrawable stake for owner.
+    function _computeWithdrawableStake(address owner, uint256 lastStoredWithdrawableStake)
+        internal
         view
         returns (uint256)
     {
-        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
-        return timeLock.total;
-    }
-
-    /// @dev Returns the starting TimeLock Period of timeLocked state for a given owner.
-    /// This stake is in the "Deactivated & TimeLocked" state.
-    /// See MixinScheduling and MixinTimeLock.
-    /// @param owner to query.
-    /// @return Start of timeLock for owner's timeLocked stake.
-    function getTimeLockStart(address owner)
-        public
-        view
-        returns (uint256)
-    {
-        (IStructs.TimeLock memory timeLock,) = _getSynchronizedTimeLock(owner);
-        return timeLock.lockedAt;
+        // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
+        // so the upper bound of withdrawable stake is always limited by the value of `next`.
+        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(inactiveStakeByOwner[owner]);
+        if (storedBalance.currentEpoch == currentEpoch) {
+            return LibSafeMath.min256(storedBalance.nextEpochBalance, lastStoredWithdrawableStake);
+        } else if (uint256(storedBalance.currentEpoch).safeAdd(1) == currentEpoch) {
+            return LibSafeMath.min256(storedBalance.nextEpochBalance, storedBalance.currentEpochBalance);
+        } else {
+            return storedBalance.nextEpochBalance;
+        }
     }
 }

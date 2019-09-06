@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
-    Authorizable,
     IZrxVault,
     MixinVaultCore
 {
@@ -159,7 +158,7 @@ contract ZrxVault is
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);
-        
+
         // withdraw ZRX to owner
         zrxToken.transfer(
             owner,

@@ -48,3 +48,69 @@ export interface SimulationParams {
     delegateInNextEpoch: boolean;
     withdrawByUndelegating: boolean;
 }
+
+export interface StakeBalance {
+    currentEpochBalance: BigNumber;
+    nextEpochBalance: BigNumber;
+}
+
+export interface StakeBalanceByPool {
+    [key: string]: StakeBalance;
+}
+
+export enum StakeStatus {
+    Active,
+    Inactive,
+    Delegated,
+}
+
+export interface StakeInfo {
+    status: StakeStatus;
+    poolId?: string;
+}
+
+export interface StakeBalances {
+    zrxBalance: BigNumber;
+    stakeBalance: BigNumber;
+    stakeBalanceInVault: BigNumber;
+    withdrawableStakeBalance: BigNumber;
+    activeStakeBalance: StakeBalance;
+    inactiveStakeBalance: StakeBalance;
+    delegatedStakeBalance: StakeBalance;
+    delegatedStakeByPool: StakeBalanceByPool;
+    totalDelegatedStakeByPool: StakeBalanceByPool;
+}
+
+export interface RewardVaultBalance {
+    poolBalance: BigNumber;
+    operatorBalance: BigNumber;
+    membersBalance: BigNumber;
+}
+
+export interface RewardVaultBalanceByPoolId {
+    [key: string]: RewardVaultBalance;
+}
+
+export interface OperatorShareByPoolId {
+    [key: string]: BigNumber;
+}
+
+export interface BalanceByOwner {
+    [key: string]: BigNumber;
+}
+
+export interface RewardByPoolId {
+    [key: string]: BigNumber;
+}
+
+export interface MemberBalancesByPoolId {
+    [key: string]: BalanceByOwner;
+}
+
+export interface OperatorByPoolId {
+    [key: string]: string;
+}
+
+export interface MembersByPoolId {
+    [key: string]: string[];
+}

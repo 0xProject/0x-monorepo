@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -41,4 +41,6 @@ contract MixinConstants is
     uint64 constant internal INITIAL_EPOCH = 0;
 
     uint64 constant internal INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
+
+    uint256 constant internal MIN_TOKEN_VALUE = 10**18;
 }

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ pragma solidity ^0.5.9;
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
+import "../libs/LibStakingRichErrors.sol";
 
 
 /// @dev This mixin contains logic for interfacing with the Staking Pool Reward Vault (vaults/StakingPoolRewardVault.sol)
@@ -28,8 +29,6 @@ import "../immutable/MixinStorage.sol";
 /// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
-    MixinDeploymentConstants,
-    MixinConstants,
     MixinStorage
 {
 
@@ -53,39 +52,6 @@ contract MixinStakingPoolRewardVault is
         return address(rewardVault);
     }
 
-    /// @dev Returns the total balance in ETH of a staking pool, as recorded in the vault.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getTotalBalanceInStakingPoolRewardVault(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOf(poolId);
-    }
-
-    /// @dev Returns the balance in ETH of the staking pool operator, as recorded in the vault.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getBalanceOfOperatorInStakingPoolRewardVault(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfOperator(poolId);
-    }
-
-    /// @dev Returns the balance in ETH co-owned by the members of a pool, as recorded in the vault.
-    /// @param poolId Unique id of pool.
-    /// @return Balance.
-    function getBalanceOfMembersInStakingPoolRewardVault(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfMembers(poolId);
-    }
-
     /// @dev Registers a staking pool in the reward vault.
     /// @param poolId Unique id of pool.
     /// @param operatorShare Portion of rewards owned by the operator, in ppm.
@@ -98,39 +64,43 @@ contract MixinStakingPoolRewardVault is
         );
     }
 
-    /// @dev Withdraws an amount in ETH of the reward for a pool operator.
-    /// @param poolId Unique id of pool.
-    /// @param amount The amount to withdraw.
-    function _withdrawFromOperatorInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
-        internal
-    {
-        rewardVault.withdrawForOperator(poolId, amount);
-    }
-
-    /// @dev Withdraws an amount in ETH of the reward for a pool member.
-    /// @param poolId Unique id of pool.
-    /// @param amount The amount to withdraw.
-    function _withdrawFromMemberInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
-        internal
-    {
-        rewardVault.withdrawForMember(poolId, amount);
-    }
-
     /// @dev Deposits an amount in ETH into the reward vault.
     /// @param amount The amount in ETH to deposit.
     function _depositIntoStakingPoolRewardVault(uint256 amount)
         internal
     {
+        // cast to payable and sanity check
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
+        if (rewardVaultAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.RewardVaultNotSetError()
+            );
+        }
+
+        // perform transfer
         rewardVaultAddress.transfer(amount);
     }
 
-    /// @dev Records an amount deposited into the reward vault for a specific pool.
-    /// @param poolId Unique id of pool.
-    /// @param amount The amount in ETH to record.
-    function _recordDepositInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
+    /// @dev Transfer from transient Reward Pool vault to ETH Vault.
+    /// @param poolId Unique Id of pool.
+    /// @param member of pool to transfer ETH to.
+    /// @param amount The amount in ETH to transfer.
+    function _transferMemberBalanceToEthVault(
+        bytes32 poolId,
+        address member,
+        uint256 amount
+    )
         internal
     {
-        rewardVault.recordDepositFor(poolId, amount);
+        // sanity check
+        IStakingPoolRewardVault _rewardVault = rewardVault;
+        if (address(_rewardVault) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.RewardVaultNotSetError()
+            );
+        }
+
+        // perform transfer
+        _rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
     }
 }

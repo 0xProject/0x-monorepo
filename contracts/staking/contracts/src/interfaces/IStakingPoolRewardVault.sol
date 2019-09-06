@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,6 +39,12 @@ interface IStakingPoolRewardVault {
         uint96 membersBalance;
     }
 
+    /// @dev Emitted when the eth vault is changed
+    /// @param newEthVault address of new rth vault.
+    event EthVaultChanged(
+        address newEthVault
+    );
+
     /// @dev Emitted when reward is deposited.
     /// @param poolId The pool the reward was deposited for.
     ///               Note that a poolId of "0" means "unknown" at time of deposit.
@@ -75,44 +81,57 @@ interface IStakingPoolRewardVault {
         uint32 operatorShare
     );
 
-    /// @dev Default constructor.
+    /// @dev Fallback function.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     function ()
         external
         payable;
 
-    /// @dev Deposit a reward in ETH for a specific pool.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
-        external
-        payable;
+    function setEthVault(address ethVaultAddress)
+        external;
 
-    /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
+     /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
     /// which is enforced by the staking contract. We do not enforce it here to save (a lot of) gas.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
     /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
-        external;
+    /// @param operatorOnly Only attribute amount to operator.
+    /// @return operatorPortion Portion of amount attributed to the operator.
+    /// @return operatorPortion Portion of amount attributed to the delegators.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 amount,
+        bool operatorOnly
+    )
+        external
+        returns (
+            uint256 operatorPortion,
+            uint256 delegatorsPortion
+        );
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function withdrawForOperator(bytes32 poolId, uint256 amount)
+    function transferOperatorBalanceToEthVault(
+        bytes32 poolId,
+        address operator,
+        uint256 amount
+    )
         external;
 
     /// @dev Withdraw some amount in ETH of a pool member.
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function withdrawForMember(bytes32 poolId, uint256 amount)
+    /// @param amount Amount in ETH to transfer.
+    function transferMemberBalanceToEthVault(
+        bytes32 poolId,
+        address member,
+        uint256 amount
+    )
         external;
 
     /// @dev Register a new staking pool.
@@ -143,6 +162,14 @@ interface IStakingPoolRewardVault {
     /// @param poolId Unique Id of pool.
     /// @return Balance in ETH.
     function balanceOfMembers(bytes32 poolId)
+        external
+        view
+        returns (uint256);
+
+    /// @dev Returns the operator share of a pool's balance.
+    /// @param poolId Unique Id of pool.
+    /// @return Operator share (integer out of 100)
+    function getOperatorShare(bytes32 poolId)
         external
         view
         returns (uint256);

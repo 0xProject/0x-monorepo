@@ -53,6 +53,10 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Added LibFractions",
+                "pr": 2118
             }
         ]
     },

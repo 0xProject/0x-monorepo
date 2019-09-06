@@ -2,7 +2,7 @@
 
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,30 +39,75 @@ contract TestStorageLayout is
                 mstore(64, 0x00000016494e434f52524543545f53544f524147455f534c4f54000000000000)
                 mstore(96, 0)
             }
-            if sub(owner_slot, 0) { revertIncorrectStorageSlot() }
-            if sub(stakingContract_slot, 1) { revertIncorrectStorageSlot() }
-            if sub(stakeByOwner_slot, 2) { revertIncorrectStorageSlot() }
-            if sub(activatedStakeByOwner_slot, 3) { revertIncorrectStorageSlot() }
-            if sub(timeLockedStakeByOwner_slot, 4) { revertIncorrectStorageSlot() }
-            if sub(delegatedStakeByOwner_slot, 5) { revertIncorrectStorageSlot() }
-            if sub(delegatedStakeToPoolByOwner_slot, 6) { revertIncorrectStorageSlot() }
-            if sub(delegatedStakeByPoolId_slot, 7) { revertIncorrectStorageSlot() }
-            if sub(totalActivatedStake_slot, 8) { revertIncorrectStorageSlot() }
-            if sub(nextPoolId_slot, 9) { revertIncorrectStorageSlot() }
-            if sub(poolById_slot, 10) { revertIncorrectStorageSlot() }
-            if sub(poolIdByMakerAddress_slot, 11) { revertIncorrectStorageSlot() }
-            if sub(makerAddressesByPoolId_slot, 12) { revertIncorrectStorageSlot() }
-            if sub(currentEpoch_slot, 13) { revertIncorrectStorageSlot() }
-            if sub(currentEpochStartTimeInSeconds_slot, 14) { revertIncorrectStorageSlot() }
-            if sub(currentTimeLockPeriod_slot, 15) { revertIncorrectStorageSlot() }
-            if sub(currentTimeLockPeriodStartEpoch_slot, 16) { revertIncorrectStorageSlot() }
-            if sub(protocolFeesThisEpochByPool_slot, 17) { revertIncorrectStorageSlot() }
-            if sub(activePoolsThisEpoch_slot, 18) { revertIncorrectStorageSlot() }
-            if sub(shadowRewardsByPoolId_slot, 19) { revertIncorrectStorageSlot() }
-            if sub(shadowRewardsInPoolByOwner_slot, 20) { revertIncorrectStorageSlot() }
-            if sub(validExchanges_slot, 21) { revertIncorrectStorageSlot() }
-            if sub(zrxVault_slot, 22) { revertIncorrectStorageSlot() }
-            if sub(rewardVault_slot, 23) { revertIncorrectStorageSlot() }
+
+            // The staking contract writes to state that's stored in the staking proxy contract; hence,
+            // we require that slots do not change across upgrades to the staking contract. We expect
+            // storage slots to match the ordering in MixinStorage.sol.
+
+            let slot := 0
+
+            if sub(owner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(stakingContract_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(activeStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(inactiveStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(delegatedStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(delegatedStakeToPoolByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(delegatedStakeByPoolId_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(withdrawableStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(nextPoolId_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(poolById_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(poolIdByMakerAddress_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(makerAddressesByPoolId_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(currentEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(currentEpochStartTimeInSeconds_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(protocolFeesThisEpochByPool_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(activePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(cumulativeRewardsByPoolLastStored_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(validExchanges_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(zrxVault_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(rewardVault_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
         }
     }
 }

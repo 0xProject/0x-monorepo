@@ -341,6 +341,8 @@ export enum RevertReason {
     TargetNotEven = 'TARGET_NOT_EVEN',
     UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
     TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
+    // Staking
+    InsufficientFunds = 'INSUFFICIENT_FUNDS',
 }
 
 export enum StatusCodes {

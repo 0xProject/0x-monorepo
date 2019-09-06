@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ interface IStructs {
         address makerAddress;
     }
 
-    /// @dev State for Staking Pools (see MixinStakingPool).
+    /// @dev Status for Staking Pools (see MixinStakingPool).
     /// @param operatorAddress Address of pool operator.
     /// @param operatorShare Portion of pool rewards owned by operator, in ppm.
     struct Pool {
@@ -47,7 +47,7 @@ interface IStructs {
         uint32 operatorShare;
     }
 
-    /// @dev State for a pool that actively traded during the current epoch.
+    /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
     /// @param poolId Unique Id of staking pool.
     /// @param feesCollected Fees collected in ETH by this pool in the current epoch.
@@ -56,15 +56,50 @@ interface IStructs {
         bytes32 poolId;
         uint256 feesCollected;
         uint256 weightedStake;
+        uint256 delegatedStake;
     }
 
-    /// @dev Tracks timeLocked stake (see MixinTimeLockedStake).
-    /// @param lockedAt The TimeLock Period that stake was most recently locked at.
-    /// @param total Amount of stake that is timeLocked.
-    /// @param pending Stake pending to be un-TimeLocked next TimeLock Period.
-    struct TimeLock {
-        uint64 lockedAt;
-        uint96 total;
-        uint96 pending;
+    /// @dev Encapsulates a balance for the current and next epochs.
+    /// Note that these balances may be stale if the current epoch
+    /// is greater than `currentEpoch`.
+    /// Always load this struct using _loadAndSyncBalance or _loadUnsyncedBalance.
+    /// @param currentEpoch the current epoch
+    /// @param currentEpochBalance balance in the current epoch.
+    /// @param nextEpochBalance balance in the next epoch.
+    struct StoredBalance {
+        uint64 currentEpoch;
+        uint96 currentEpochBalance;
+        uint96 nextEpochBalance;
+    }
+
+    /// @dev Balance struct for stake.
+    /// @param currentEpochBalance Balance in the current epoch.
+    /// @param nextEpochBalance Balance in the next epoch.
+    struct StakeBalance {
+        uint256 currentEpochBalance;
+        uint256 nextEpochBalance;
+    }
+
+    /// @dev Statuses that stake can exist in.
+    enum StakeStatus {
+        ACTIVE,
+        INACTIVE,
+        DELEGATED
+    }
+
+    /// @dev Info used to describe a status.
+    /// @param status of the stake.
+    /// @param poolId Unique Id of pool. This is set when status=DELEGATED.
+    struct StakeInfo {
+        StakeStatus status;
+        bytes32 poolId;
+    }
+
+    /// @dev Struct to represent a fraction.
+    /// @param numerator of fraction.
+    /// @param denominator of fraction.
+    struct Fraction {
+        uint256 numerator;
+        uint256 denominator;
     }
 }

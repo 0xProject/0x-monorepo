@@ -204,6 +204,24 @@ export class InvalidCobbDouglasAlphaError extends RevertError {
     }
 }
 
+export class EthVaultNotSetError extends RevertError {
+    constructor() {
+        super('EthVaultNotSetError', 'EthVaultNotSetError()');
+    }
+}
+
+export class RewardVaultNotSetError extends RevertError {
+    constructor() {
+        super('RewardVaultNotSetError', 'RewardVaultNotSetError()');
+    }
+}
+
+export class InvalidStakeStatusError extends RevertError {
+    constructor(status?: BigNumber) {
+        super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint256 status)', { status });
+    }
+}
+
 const types = [
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
@@ -230,6 +248,9 @@ const types = [
     InvalidPoolOperatorShareError,
     PoolAlreadyExistsError,
     InvalidCobbDouglasAlphaError,
+    EthVaultNotSetError,
+    RewardVaultNotSetError,
+    InvalidStakeStatusError,
 ];
 
 // Register the types we've defined.

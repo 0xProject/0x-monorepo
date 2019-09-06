@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,188 +17,227 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
 import "../staking_pools/MixinStakingPoolRewardVault.sol";
+import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../sys/MixinScheduler.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinTimeLockedStake.sol";
+import "./MixinStakeStorage.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
-/// Stake is minted when ZRX is deposited and burned when ZRX is withdrawn.
-/// Stake can exist in one of many states:
-/// 1. Activated
-/// 2. Activated & Delegated
-/// 3. Deactivated & TimeLocked
-/// 4. Deactivated & Withdrawable
-///
-/// -- State Definitions --
-/// Activated Stake
-///     Stake in this state can be used as a utility within the 0x ecosystem.
-///     For example, it carries weight when computing fee-based rewards (see MixinExchangeFees).
-///     In the future, it may be used to participate in the 0x governance system.
-///
-/// Activated & Delegated Stake
-///     Stake in this state also serves as a utility that is shared between the delegator and delegate.
-///     For example, if delegated to a staking pool then it carries weight when computing fee-based rewards for
-///     the staking pool; however, in this case, delegated stake carries less weight that regular stake (see MixinStakingPool).
-///
-/// Deactivated & TimeLocked Stake
-///     Stake in this state cannot be used as a utility within the 0x ecosystem.
-///     Stake is timeLocked when it moves out of activated states (Activated / Activated & Delagated).
-///     By limiting the portability of stake, we mitigate undesirable behavior such as switching staking pools
-///     in the middle of an epoch.
-///
-/// Deactivated & Withdrawable
-///     Stake in this state cannot be used as a utility with in the 0x ecosystem.
-///     This stake can, however, be burned and withdrawn as Zrx tokens.
-/// ----------------------------
-///
-/// -- Valid State Transtions --
-/// Activated -> Deactivated & TimeLocked
-///
-/// Activated & Delegated -> Deactivated & TimeLocked
-///
-/// Deactivated & TimeLocked -> Deactivated & Withdrawable
-///
-/// Deactivated & Withdrawable -> Activated
-/// Deactivated & Withdrawable -> Activated & Delegated
-/// Deactivated & Withdrawable -> Deactivated & Withdrawable
-/// ----------------------------
-///
-/// Freshly minted stake is in the "Deactvated & Withdrawable" State, so it can
-/// either be activated, delegated or withdrawn.
-/// See MixinDelegatedStake and MixinTimeLockedStake for more on respective state transitions.
 contract MixinStake is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
     MixinScheduler,
-    MixinStakingPoolRewardVault,
-    MixinZrxVault,
-    MixinTimeLockedStake,
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
 
-    /// @dev Deposit Zrx. This mints stake for the sender that is in the "Deactivated & Withdrawable" state.
-    /// @param amount of Zrx to deposit / Stake to mint.
-    function depositZrxAndMintDeactivatedStake(uint256 amount)
+    /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.
+    ///      Stake is in the 'Active' status.
+    /// @param amount of ZRX to stake.
+    function stake(uint256 amount)
         external
     {
-        _mintStake(msg.sender, amount);
-    }
+        address payable owner = msg.sender;
 
-    /// @dev Deposit Zrx and mint stake in the activated stake.
-    /// This is a convenience function, and can be used in-place of
-    /// calling `depositZrxAndMintDeactivatedStake` and `activateStake`.
-    /// This mints stake for the sender that is in the "Activated" state.
-    /// @param amount of Zrx to deposit / Stake to mint.
-    function depositZrxAndMintActivatedStake(uint256 amount)
-        external
-    {
-        _mintStake(msg.sender, amount);
-        activateStake(amount);
-    }
-
-    /// @dev Burns deactivated stake and withdraws the corresponding amount of Zrx.
-    /// @param amount of Stake to burn / Zrx to withdraw
-    function burnDeactivatedStakeAndWithdrawZrx(uint256 amount)
-        external
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        if (amount > getDeactivatedStake(owner)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
-                amount,
-                getDeactivatedStake(owner)
-            ));
-        }
-
-        _burnStake(owner, amount);
-    }
-
-    /// @dev Activates stake that is presently in the Deactivated & Withdrawable state.
-    /// @param amount of Stake to activate.
-    function activateStake(uint256 amount)
-        public
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        if (amount > getActivatableStake(owner)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
-                amount,
-                getActivatableStake(owner)
-            ));
-        }
-
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner].safeAdd(amount);
-        totalActivatedStake = totalActivatedStake.safeAdd(amount);
-    }
-
-    /// @dev Deactivate & TimeLock stake that is currently in the Activated state.
-    /// @param amount of Stake to deactivate and timeLock.
-    function deactivateAndTimeLockStake(uint256 amount)
-        public
-    {
-        address owner = msg.sender;
-        _syncTimeLockedStake(owner);
-        if (amount > getActivatedStake(owner)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InsufficientBalanceError(
-                amount,
-                getActivatedStake(owner)
-            ));
-        }
-
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner].safeSub(amount);
-        totalActivatedStake = totalActivatedStake.safeSub(amount);
-        _timeLockStake(owner, amount);
-    }
-
-    /// @dev Mints Stake in the Deactivated & Withdrawable state.
-    /// @param owner to mint Stake for.
-    /// @param amount of Stake to mint.
-    function _mintStake(address owner, uint256 amount)
-        internal
-    {
         // deposit equivalent amount of ZRX into vault
-        zrxVault.depositFrom(owner, amount);
+        _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
-        stakeByOwner[owner] = stakeByOwner[owner].safeAdd(amount);
+        _incrementCurrentAndNextBalance(activeStakeByOwner[owner], amount);
 
-        // emit stake event
-        emit StakeMinted(
+        // notify
+        emit Stake(
             owner,
             amount
         );
     }
 
-    /// @dev Burns Stake in the Deactivated & Withdrawable state.
-    /// @param owner to mint Stake for.
-    /// @param amount of Stake to mint.
-    function _burnStake(address owner, uint256 amount)
-        internal
+    /// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to the owner.
+    ///      Stake must be in the 'inactive' status for at least one full epoch to unstake.
+    /// @param amount of ZRX to unstake.
+    function unstake(uint256 amount)
+        external
     {
-        // burn stake
-        stakeByOwner[owner] = stakeByOwner[owner].safeSub(amount);
+        address payable owner = msg.sender;
+
+        // sanity check
+        uint256 currentWithdrawableStake = getWithdrawableStake(owner);
+        if (amount > currentWithdrawableStake) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InsufficientBalanceError(
+                    amount,
+                    currentWithdrawableStake
+                )
+            );
+        }
+
+        // burn inactive stake
+        _decrementCurrentAndNextBalance(inactiveStakeByOwner[owner], amount);
+
+        // update withdrawable field
+        withdrawableStakeByOwner[owner] = currentWithdrawableStake.safeSub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        zrxVault.withdrawFrom(owner, amount);
+        _withdrawToOwnerFromZrxVault(owner, amount);
 
         // emit stake event
-        emit StakeBurned(
+        emit Unstake(
             owner,
             amount
         );
+    }
+
+    /// @dev Moves stake between statuses: 'active', 'inactive' or 'delegated'.
+    ///      This change comes into effect next epoch.
+    /// @param from status to move stake out of.
+    /// @param to status to move stake into.
+    /// @param amount of stake to move.
+    function moveStake(
+        IStructs.StakeInfo calldata from,
+        IStructs.StakeInfo calldata to,
+        uint256 amount
+    )
+        external
+    {
+        // sanity check - do nothing if moving stake between the same status
+        if (from.status != IStructs.StakeStatus.DELEGATED && from.status == to.status) {
+            return;
+        } else if (from.status == IStructs.StakeStatus.DELEGATED && from.poolId == to.poolId) {
+            return;
+        }
+
+        address payable owner = msg.sender;
+
+        // handle delegation; this must be done before moving stake as the current
+        // (out-of-sync) status is used during delegation.
+        if (from.status == IStructs.StakeStatus.DELEGATED) {
+            _undelegateStake(
+                from.poolId,
+                owner,
+                amount
+            );
+        }
+
+        if (to.status == IStructs.StakeStatus.DELEGATED) {
+            _delegateStake(
+                to.poolId,
+                owner,
+                amount
+            );
+        }
+
+        // cache the current withdrawal amount, which may change if we're moving out of the inactive status.
+        uint256 withdrawableStake = (from.status == IStructs.StakeStatus.INACTIVE)
+            ? getWithdrawableStake(owner)
+            : 0;
+
+        // execute move
+        IStructs.StoredBalance storage fromPtr = _getBalancePtrFromStatus(owner, from.status);
+        IStructs.StoredBalance storage toPtr = _getBalancePtrFromStatus(owner, to.status);
+        _moveStake(fromPtr, toPtr, amount);
+
+        // update withdrawable field, if necessary
+        if (from.status == IStructs.StakeStatus.INACTIVE) {
+            withdrawableStakeByOwner[owner] = _computeWithdrawableStake(owner, withdrawableStake);
+        }
+
+        // notify
+        emit MoveStake(
+            owner,
+            amount,
+            uint8(from.status),
+            from.poolId,
+            uint8(to.status),
+            to.poolId
+        );
+    }
+
+    /// @dev Delegates a owners stake to a staking pool.
+    /// @param poolId Id of pool to delegate to.
+    /// @param owner who wants to delegate.
+    /// @param amount of stake to delegate.
+    function _delegateStake(
+        bytes32 poolId,
+        address payable owner,
+        uint256 amount
+    )
+        private
+    {
+        // transfer any rewards from the transient pool vault to the eth vault;
+        // this must be done before we can modify the owner's portion of the delegator pool.
+        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
+
+        // sync cumulative rewards that we'll need for future computations
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+
+        // increment how much stake the owner has delegated to the input pool
+        _incrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // increment how much stake has been delegated to pool
+        _incrementNextBalance(delegatedStakeByPoolId[poolId], amount);
+    }
+
+    /// @dev Un-Delegates a owners stake from a staking pool.
+    /// @param poolId Id of pool to un-delegate to.
+    /// @param owner who wants to un-delegate.
+    /// @param amount of stake to un-delegate.
+    function _undelegateStake(
+        bytes32 poolId,
+        address payable owner,
+        uint256 amount
+    )
+        private
+    {
+        // transfer any rewards from the transient pool vault to the eth vault;
+        // this must be done before we can modify the owner's portion of the delegator pool.
+        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
+
+        // sync cumulative rewards that we'll need for future computations
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+
+        // decrement how much stake the owner has delegated to the input pool
+        _decrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // decrement how much stake has been delegated to pool
+        _decrementNextBalance(delegatedStakeByPoolId[poolId], amount);
+    }
+
+    /// @dev Returns a storage pointer to a user's stake in a given status.
+    /// @param owner of stake to query.
+    /// @param status of user's stake to lookup.
+    /// @return a storage pointer to the corresponding stake stake
+    function _getBalancePtrFromStatus(address owner, IStructs.StakeStatus status)
+        private
+        view
+        returns (IStructs.StoredBalance storage)
+    {
+        // lookup status
+        if (status == IStructs.StakeStatus.ACTIVE) {
+            return activeStakeByOwner[owner];
+        } else if (status == IStructs.StakeStatus.INACTIVE) {
+            return inactiveStakeByOwner[owner];
+        } else if (status == IStructs.StakeStatus.DELEGATED) {
+            return delegatedStakeByOwner[owner];
+        }
+
+        // invalid status
+        LibRichErrors.rrevert(
+            LibStakingRichErrors.InvalidStakeStatusError(uint256(status))
+        );
+
+        // required to compile ~ we should never hit this.
+        revert("INVALID_STATE");
     }
 }
