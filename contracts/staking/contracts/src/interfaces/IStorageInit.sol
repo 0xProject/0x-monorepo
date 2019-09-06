@@ -19,16 +19,7 @@
 pragma solidity ^0.5.9;
 
 
-interface IStaking {
-    /// @dev Pays a protocol fee in ETH.
-    /// @param makerAddress The address of the order's maker.
-    /// @param payerAddress The address that is responsible for paying the protocol fee.
-    /// @param protocolFeePaid The amount of protocol fees that should be paid.
-    function payProtocolFee(
-        address makerAddress,
-        address payerAddress,
-        uint256 protocolFeePaid
-    )
-        external
-        payable;
+interface IStorageInit {
+    /// @dev Initialize storage owned by this contract.
+    function init() external;
 }

@@ -22,7 +22,7 @@ import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
 import "./immutable/MixinHyperParameters.sol";
-import "./interfaces/IStaking.sol";
+import "./interfaces/IStorageInit.sol";
 import "./interfaces/IStakingProxy.sol";
 
 contract StakingProxy is
@@ -72,7 +72,7 @@ contract StakingProxy is
         readOnlyProxyCallee = _stakingContract;
         // Call `init()` on the staking contract to initialize storage.
         (bool didInitSucceed, bytes memory initReturnData) =
-            _stakingContract.delegatecall(abi.encode(IStaking(0).init.selector));
+            stakingContract.delegatecall(abi.encode(IStorageInit(0).init.selector));
         if (!didInitSucceed) {
             assembly { revert(add(initReturnData, 0x20), mload(initReturnData)) }
         }
