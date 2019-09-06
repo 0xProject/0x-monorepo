@@ -122,7 +122,7 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
         0x8f8e73de;
 
-   // bytes4(keccak256("EthVaultNotSetError()"))
+    // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
 
@@ -135,8 +135,8 @@ library LibStakingRichErrors {
         0xb7161acd;
 
     // bytes4(keccak256("ProxyDestinationCannotBeNil()"))
-    bytes4 internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
-        0x01ecebea;
+    bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
+        hex"01ecebea";
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -515,9 +515,7 @@ library LibStakingRichErrors {
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(
-            PROXY_DESTINATION_CANNOT_BE_NIL
-        );
+        return PROXY_DESTINATION_CANNOT_BE_NIL;
     }
 
 }

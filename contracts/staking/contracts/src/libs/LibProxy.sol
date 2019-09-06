@@ -30,13 +30,16 @@ library LibProxy {
         NEVER_REVERT
     }
 
-    /// @dev Executes a read-only call to the staking contract, via `revertDelegateCall`.
-    ///      By routing through `revertDelegateCall` any state changes are reverted.
+    /// @dev Proxies incoming call to destination contract.
+    /// @param destination Address to call.
+    /// @param revertRule Describes scenarios in which this function reverts.
+    /// @param customEgressSelector Custom selector used to call destination contract.
+    /// @param ignoreIngressSelector Ignore the selector used to call into this contract.
     function proxyCall(
         address destination,
         RevertRule revertRule,
-        bytes4 customSelector,
-        bool ignoreSelector
+        bytes4 customEgressSelector,
+        bool ignoreIngressSelector
     )
         internal
     {
@@ -49,14 +52,14 @@ library LibProxy {
         assembly {
             // store selector of destination function
             let freeMemPtr := 0
-            if gt(customSelector, 0) {
-                mstore(0x0, customSelector)
+            if gt(customEgressSelector, 0) {
+                mstore(0x0, customEgressSelector)
                 freeMemPtr := add(freeMemPtr, 4)
             }
 
             // adjust the calldata offset, if we should ignore the selector
             let calldataOffset := 0
-            if gt(ignoreSelector, 0) {
+            if gt(ignoreIngressSelector, 0) {
                 calldataOffset := 4
             }
 

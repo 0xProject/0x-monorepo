@@ -1,6 +1,6 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { blockchainTests, describe, expect, provider, web3Wrapper } from '@0x/contracts-test-utils';
+import { blockchainTests, describe, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -10,7 +10,7 @@ import { StakingProxyReadOnlyModeSetEventArgs } from '../src';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Catastrophy Tests', () => {
+blockchainTests.resets('Catastrophe Tests', env => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     const ZERO = new BigNumber(0);
@@ -26,17 +26,17 @@ blockchainTests.resets('Catastrophy Tests', () => {
     // tests
     before(async () => {
         // create accounts
-        accounts = await web3Wrapper.getAvailableAddressesAsync();
+        accounts = await env.web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         actors = accounts.slice(2, 5);
         // deploy erc20 proxy
-        erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
+        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
 

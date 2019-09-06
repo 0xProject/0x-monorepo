@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.9;
 
-import "./immutable/MixinConstants.sol";
 import "./immutable/MixinStorage.sol";
 import "./libs/LibProxy.sol";
 
@@ -35,8 +34,8 @@ contract ReadOnlyProxy is
     {
         address(this).proxyCall(
             LibProxy.RevertRule.NEVER_REVERT,
-            this.revertDelegateCall.selector,
-            false                                   // do not ignore this selector
+            this.revertDelegateCall.selector,       // custom egress selector
+            false                                   // do not ignore ingress selector
         );
     }
 
@@ -47,8 +46,8 @@ contract ReadOnlyProxy is
     {
         readOnlyProxyCallee.proxyCall(
             LibProxy.RevertRule.ALWAYS_REVERT,
-            bytes4(0),                              // no custom selector
-            true                                    // ignore this selector
+            bytes4(0),                              // no custom egress selector
+            true                                    // ignore ingress selector
         );
     }
 }

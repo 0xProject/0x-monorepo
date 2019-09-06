@@ -49,8 +49,8 @@ contract StakingProxy is
     {
         stakingContract.proxyCall(
             LibProxy.RevertRule.REVERT_ON_ERROR,
-            bytes4(0),                              // no custom selector
-            false                                   // do not ignore this selector
+            bytes4(0),                              // no custom egress selector
+            false                                   // do not ignore ingress selector
         );
     }
 
