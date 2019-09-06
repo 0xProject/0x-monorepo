@@ -9,6 +9,11 @@ export enum MakerPoolAssignmentErrorCodes {
     PoolIsFull,
 }
 
+export enum ProtocolFeePaymentErrorCodes {
+    ZeroProtocolFeePaid,
+    MismatchedFeeAndPayment,
+}
+
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -181,13 +186,14 @@ export class InvalidStakeStatusError extends RevertError {
 
 export class InvalidProtocolFeePaymentError extends RevertError {
     constructor(
+        errorCode?: ProtocolFeePaymentErrorCodes,
         expectedProtocolFeePaid?: BigNumber | number | string,
         actualProtocolFeePaid?: BigNumber | number | string,
     ) {
         super(
             'InvalidProtocolFeePaymentError',
-            'InvalidProtocolFeePaymentError(uint256 expectedProtocolFeePaid, uint256 actualProtocolFeePaid)',
-            { expectedProtocolFeePaid, actualProtocolFeePaid },
+            'InvalidProtocolFeePaymentError(uint8 errorCode, uint256 expectedProtocolFeePaid, uint256 actualProtocolFeePaid)',
+            { errorCode, expectedProtocolFeePaid, actualProtocolFeePaid },
         );
     }
 }

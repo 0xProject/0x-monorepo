@@ -42,8 +42,8 @@ contract ZrxVault is
     // mapping from Owner to ZRX balance
     mapping (address => uint256) internal balances;
 
-    // 0x ERC20 Proxy
-    IAssetProxy internal erc20Proxy;
+    // Zrx Asset Proxy
+    IAssetProxy internal zrxAssetProxy;
 
     // Zrx Token
     IERC20Token internal zrxToken;
@@ -52,15 +52,15 @@ contract ZrxVault is
     bytes internal zrxAssetData;
 
     /// @dev Constructor.
-    /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
+    /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
     /// @param zrxTokenAddress Address of the Zrx Token.
     constructor(
-        address erc20ProxyAddress,
+        address zrxProxyAddress,
         address zrxTokenAddress
     )
         public
     {
-        erc20Proxy = IAssetProxy(erc20ProxyAddress);
+        zrxAssetProxy = IAssetProxy(zrxProxyAddress);
         zrxToken = IERC20Token(zrxTokenAddress);
         zrxAssetData = abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
@@ -68,17 +68,17 @@ contract ZrxVault is
         );
     }
 
-    /// @dev Sets the ERC20 proxy.
+    /// @dev Sets the Zrx proxy.
     /// Note that only the contract owner can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
-    function setErc20Proxy(address erc20ProxyAddress)
+    /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
+    function setZrxProxy(address zrxProxyAddress)
         external
         onlyOwner
         onlyNotInCatastrophicFailure
     {
-        erc20Proxy = IAssetProxy(erc20ProxyAddress);
-        emit Erc20ProxyChanged(erc20ProxyAddress);
+        zrxAssetProxy = IAssetProxy(zrxProxyAddress);
+        emit ZrxProxyChanged(zrxProxyAddress);
     }
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
@@ -98,7 +98,7 @@ contract ZrxVault is
         emit ZrxDepositedIntoVault(msg.sender, owner, amount);
 
         // deposit ZRX from owner
-        erc20Proxy.transferFrom(
+        zrxAssetProxy.transferFrom(
             zrxAssetData,
             owner,
             address(this),

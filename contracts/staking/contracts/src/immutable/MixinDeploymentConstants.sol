@@ -33,4 +33,22 @@ contract MixinDeploymentConstants {
     uint256 constant internal CHAIN_ID = 1;
 
     uint256 constant internal MAX_MAKERS_IN_POOL = 10;
+
+    // Mainnet WETH9 Address
+    address constant internal WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+
+    // Kovan WETH9 Address
+    // address constant internal WETH_ADDRESS = address(0xd0a1e359811322d97991e03f863a0c30c2cf029c);
+
+    // Ropsten & Rinkeby WETH9 Address
+    // address constant internal WETH_ADDRESS = address(0xc778417e063141139fce010982780140aa0cd5ab);
+
+    // Mainnet Weth Asset Data
+    bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
+    // Kovan Weth Asset Data
+    // bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c";
+
+    // Ropsten & Rinkeby Weth Asset Data
+    // bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c778417e063141139fce010982780140aa0cd5ab";
 }

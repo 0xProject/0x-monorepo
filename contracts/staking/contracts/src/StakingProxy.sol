@@ -33,13 +33,16 @@ contract StakingProxy is
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
-    constructor(address _stakingContract, address _readOnlyProxy)
+    /// @param _readOnlyProxy The address of the read only proxy.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    constructor(address _stakingContract, address _readOnlyProxy, address _wethProxyAddress)
         public
         MixinStorage()
     {
         stakingContract = _stakingContract;
         readOnlyProxyCallee = _stakingContract;
         readOnlyProxy = _readOnlyProxy;
+        wethAssetProxy = IAssetProxy(_wethProxyAddress);
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.

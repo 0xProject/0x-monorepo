@@ -126,10 +126,4 @@ interface IStakingEvents {
     event StakingPoolRewardVaultChanged(
         address rewardVaultAddress
     );
-
-    /// @dev Emitted by MixinExchangeManager when the erc20AssetProxy address changes.
-    /// @param erc20AddressProxy The new erc20 asset proxy address.
-    event ERC20AssetProxy(
-        address erc20AddressProxy
-    );
 }

@@ -41,15 +41,15 @@ blockchainTests.resets('Testing Rewards', () => {
         exchangeAddress = accounts[1];
         takerAddress = accounts[2];
         actors = accounts.slice(3);
-        // deploy erƒsc20 proxy
+        // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
         // deploy zrx token
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract);
-        await stakingWrapper.deployAndConfigureContractsAsync();
+        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, erc20ProxyContract, zrxTokenContract);
+        await stakingWrapper.deployAndConfigureContractsAsync(artifacts.TestStaking);
         // setup stakers
         stakers = [new StakerActor(actors[0], stakingWrapper), new StakerActor(actors[1], stakingWrapper)];
         // setup pools

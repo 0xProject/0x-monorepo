@@ -19,16 +19,24 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../src/Staking.sol";
 
 
 contract TestProtocolFees is
     Staking
 {
-    function setPoolIdOfMaker(bytes32 poolId, address makerAddress)
+    function setWethProxy(address wethProxyAddress)
         external
     {
-        poolIdByMakerAddress[makerAddress] = poolId;
+        wethAssetProxy = IAssetProxy(wethProxyAddress);
+    }
+
+    function addMakerToPool(bytes32 poolId, address makerAddress)
+        external
+    {
+        poolJoinedByMakerAddress[makerAddress].poolId = poolId;
+        poolJoinedByMakerAddress[makerAddress].confirmed = true;
     }
 
     function getActivePoolsByEpoch()

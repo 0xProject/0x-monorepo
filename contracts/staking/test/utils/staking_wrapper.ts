@@ -24,6 +24,7 @@ export class StakingWrapper {
     private readonly _provider: Provider;
     private readonly _logDecoder: LogDecoder;
     private readonly _ownerAddress: string;
+    private readonly _wethProxyContract: ERC20ProxyContract;
     private readonly _erc20ProxyContract: ERC20ProxyContract;
     private readonly _zrxTokenContract: DummyERC20TokenContract;
     private _stakingContractIfExists?: StakingContract;
@@ -63,6 +64,7 @@ export class StakingWrapper {
         provider: Provider,
         ownerAddres: string,
         erc20ProxyContract: any, // This needs to be the `any` type so that other types of proxies can be used
+        wethProxyContract: any, // This needs to be the `any` type so that other types of proxies can be used
         zrxTokenContract: DummyERC20TokenContract,
     ) {
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -71,6 +73,7 @@ export class StakingWrapper {
         this._logDecoder = new LogDecoder(this._web3Wrapper, decoderArtifacts);
         this._ownerAddress = ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
+        this._wethProxyContract = wethProxyContract;
         this._zrxTokenContract = zrxTokenContract;
     }
     public getStakingContract(): StakingContract {
@@ -93,7 +96,7 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._rewardVaultContractIfExists as StakingPoolRewardVaultContract;
     }
-    public async deployAndConfigureContractsAsync(): Promise<void> {
+    public async deployAndConfigureContractsAsync(customStakingArtifact?: any): Promise<void> {
         // deploy read-only proxy
         this._readOnlyProxyContractIfExists = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
             artifacts.ReadOnlyProxy,
@@ -134,7 +137,7 @@ export class StakingWrapper {
         );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
-            artifacts.Staking,
+            customStakingArtifact === undefined ? artifacts.Staking : customStakingArtifact,
             this._provider,
             txDefaults,
             artifacts,
@@ -147,6 +150,11 @@ export class StakingWrapper {
             artifacts,
             this._stakingContractIfExists.address,
             this._readOnlyProxyContractIfExists.address,
+            this._wethProxyContract.address,
+        );
+        // configure weth proxy to accept calls from staking.
+        await this._wethProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            (this._stakingProxyContractIfExists as StakingProxyContract).address, // tslint:disable-line:no-unnecessary-type-assertion
         );
         // set staking proxy contract in zrx vault
         await this._zrxVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(

@@ -20,12 +20,15 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
+import "../libs/LibStakingRichErrors.sol";
 
 
 // solhint-disable max-states-count, no-empty-blocks
@@ -34,13 +37,23 @@ contract MixinStorage is
     Ownable,
     MixinConstants
 {
+    using LibBytes for bytes;
+
+    /// @dev Ensures that the WETH_ASSET_DATA is correct.
     constructor()
         public
         Ownable()
-    {} // solhint-disable-line no-empty-blocks
+    {
+        // Ensure that the WETH_ASSET_DATA from MixinDeploymentConstants is correct.
+        if (!WETH_ASSET_DATA.equals(
+            abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
+        )) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
+        }
+    }
 
-    // 0x ERC20 Proxy
-    IAssetProxy internal erc20Proxy;
+    // WETH Asset Proxy
+    IAssetProxy internal wethAssetProxy;
 
     // address of staking contract
     address internal stakingContract;

@@ -19,8 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
@@ -105,6 +103,9 @@ contract MixinExchangeFees is
             (msg.value != protocolFeePaid && msg.value != 0)
         ) {
             LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                protocolFeePaid == 0 ?
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid :
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
                 protocolFeePaid,
                 msg.value
             ));
@@ -112,7 +113,7 @@ contract MixinExchangeFees is
 
         // Transfer the protocol fee to this address if it should be paid in WETH.
         if (msg.value == 0) {
-            erc20Proxy.transferFrom(
+            wethAssetProxy.transferFrom(
                 WETH_ASSET_DATA,
                 payerAddress,
                 address(this),
