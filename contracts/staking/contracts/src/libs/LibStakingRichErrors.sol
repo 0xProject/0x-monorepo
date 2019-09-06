@@ -28,6 +28,21 @@ library LibStakingRichErrors {
         MismatchedFeeAndPayment
     }
 
+    enum InitializationErrorCode {
+        MixinSchedulerAlreadyInitialized
+    }
+
+    enum InvalidTuningValueErrorCode {
+        InvalidCobbDouglasAlpha
+    }
+
+    enum MakerPoolAssignmentErrorCodes {
+        MakerAddressAlreadyRegistered,
+        MakerAddressNotRegistered,
+        MakerAddressNotPendingAdd,
+        PoolIsFull
+    }
+
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
     bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
         0xf7806c4e;
@@ -92,11 +107,7 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
 
-    // bytes4(keccak256("InvalidCobbDouglasAlphaError(uint256,uint256)"))
-    bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
-        0x8f8e73de;
-
-    // bytes4(keccak256("EthVaultNotSetError()"))
+   // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
 
@@ -111,6 +122,14 @@ library LibStakingRichErrors {
     // bytes4(keccak256("ProxyDestinationCannotBeNil()"))
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
         hex"01ecebea";
+
+    // bytes4(keccak256("InitializationError(uint8)"))
+    bytes4 internal constant INITIALIZATION_ERROR_SELECTOR =
+        0x0b02d773;
+
+    // bytes4(keccak256("InvalidTuningValue(uint8)"))
+    bytes4 internal constant INVALID_TUNING_VALUE_ERROR_SELECTOR =
+        0xbbfd10bb;
 
     // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
@@ -355,21 +374,6 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidCobbDouglasAlphaError(
-        uint256 numerator,
-        uint256 denominator
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR,
-            numerator,
-            denominator
-        );
-    }
-
     function EthVaultNotSetError()
         internal
         pure
@@ -377,6 +381,16 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             ETH_VAULT_NOT_SET_ERROR_SELECTOR
+        );
+    }
+
+    function RewardVaultNotSetError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
         );
     }
 
@@ -397,16 +411,6 @@ library LibStakingRichErrors {
         );
     }
 
-    function RewardVaultNotSetError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
-        );
-    }
-
     function InvalidStakeStatusError(uint256 status)
         internal
         pure
@@ -415,6 +419,28 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             INVALID_STAKE_STATUS_ERROR_SELECTOR,
             status
+        );
+    }
+
+    function InitializationError(InitializationErrorCode code)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INITIALIZATION_ERROR_SELECTOR,
+            uint8(code)
+        );
+    }
+
+    function InvalidTuningValue(InvalidTuningValueErrorCode code)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_TUNING_VALUE_ERROR_SELECTOR,
+            uint8(code)
         );
     }
 

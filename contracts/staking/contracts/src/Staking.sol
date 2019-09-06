@@ -34,10 +34,10 @@ import "./staking_pools/MixinStakingPoolRewards.sol";
 contract Staking is
     IStaking,
     IStakingEvents,
-    MixinDeploymentConstants,
     Ownable,
     MixinConstants,
     MixinStorage,
+    MixinHyperParameters,
     MixinZrxVault,
     MixinExchangeManager,
     MixinScheduler,
@@ -49,6 +49,18 @@ contract Staking is
     MixinStakingPool,
     MixinExchangeFees
 {
+    /// @dev Initialize storage owned by this contract.
+    ///      This function should not be called directly.
+    ///      The StakingProxy contract will call it in `attachStakingContract()`.
+    function init()
+        external
+        onlyOwner
+    {
+        // DANGER! When performing upgrades, take care to modify this logic
+        // not to accidentally overwrite existing state.
+        MixinStorage._initMixinScheduler();
+    }
+
     // this contract can receive ETH
     // solhint-disable no-empty-blocks
     function ()

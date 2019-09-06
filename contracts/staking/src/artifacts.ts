@@ -20,10 +20,10 @@ import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
-import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
+import * as MixinHyperParameters from '../generated-artifacts/MixinHyperParameters.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
@@ -52,7 +52,7 @@ export const artifacts = {
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
-    MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
+    MixinHyperParameters: MixinHyperParameters as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
     IEthVault: IEthVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,

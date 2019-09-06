@@ -90,7 +90,7 @@ contract MixinStakingPool is
             // Is the maker already in a pool?
             if (isMakerAssignedToStakingPool(operatorAddress)) {
                 LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                    LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                    LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                     operatorAddress,
                     getStakingPoolIdOfMaker(operatorAddress)
                 ));
@@ -122,7 +122,7 @@ contract MixinStakingPool is
         address makerAddress = msg.sender;
         if (isMakerAssignedToStakingPool(makerAddress)) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
                 getStakingPoolIdOfMaker(makerAddress)
             ));
@@ -155,7 +155,7 @@ contract MixinStakingPool is
         // Is the maker already in a pool?
         if (isMakerAssignedToStakingPool(makerAddress)) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_ALREADY_REGISTERED,
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
                 getStakingPoolIdOfMaker(makerAddress)
             ));
@@ -165,16 +165,16 @@ contract MixinStakingPool is
         bytes32 makerPendingPoolId = poolJoinedByMakerAddress[makerAddress].poolId;
         if (makerPendingPoolId != poolId) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_NOT_PENDING_ADD,
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotPendingAdd,
                 makerAddress,
                 makerPendingPoolId
             ));
         }
 
         // Is the pool already full?
-        if (getNumberOfMakersInStakingPool(poolId) == MAX_MAKERS_IN_POOL) {
+        if (getNumberOfMakersInStakingPool(poolId) == maximumMakersInPool) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.POOL_IS_FULL,
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.PoolIsFull,
                 makerAddress,
                 poolId
             ));
@@ -210,7 +210,7 @@ contract MixinStakingPool is
         bytes32 makerPoolId = getStakingPoolIdOfMaker(makerAddress);
         if (makerPoolId != poolId) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
-                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MAKER_ADDRESS_NOT_REGISTERED,
+                LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotRegistered,
                 makerAddress,
                 makerPoolId
             ));

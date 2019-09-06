@@ -20,6 +20,10 @@ pragma solidity ^0.5.9;
 
 
 interface IStaking {
+    /// @dev Initialize storage owned by this contract.
+    ///      This function should not be called directly.
+    ///      The StakingProxy contract will call it in `attachStakingContract()`.
+    function init() external;
 
     /// @dev Pays a protocol fee in ETH.
     /// @param makerAddress The address of the order's maker.

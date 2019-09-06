@@ -33,7 +33,6 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
-    MixinDeploymentConstants,
     Ownable,
     MixinConstants
 {
@@ -126,10 +125,4 @@ contract MixinStorage is
 
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault internal rewardVault;
-
-    // Numerator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaNumerator = 1;
-
-    // Denominator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaDenomintor = 6;
 }

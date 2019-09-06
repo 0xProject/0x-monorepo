@@ -31,7 +31,6 @@ import "../immutable/MixinStorage.sol";
 /// then it should be removed.
 contract MixinExchangeManager is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage
 {

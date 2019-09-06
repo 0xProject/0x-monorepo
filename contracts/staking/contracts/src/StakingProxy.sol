@@ -25,7 +25,7 @@ import "./interfaces/IStakingProxy.sol";
 
 contract StakingProxy is
     IStakingProxy,
-    MixinDeploymentConstants,
+    MixinHyperParameters,
     MixinConstants,
     MixinStorage
 {
@@ -66,6 +66,7 @@ contract StakingProxy is
     {
         stakingContract = _stakingContract;
         readOnlyProxyCallee = _stakingContract;
+        stakingContract.init.delegatecall();
         emit StakingContractAttachedToProxy(_stakingContract);
     }
 
