@@ -19,6 +19,14 @@ export enum ProtocolFeePaymentErrorCodes {
     MismatchedFeeAndPayment,
 }
 
+export enum InvalidTuningValueErrorCode {
+    InvalidCobbDouglasAlpha = 0,
+}
+
+export enum InitializationErrorCode {
+    MixinSchedulerAlreadyInitialized = 0,
+}
+
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -162,11 +170,10 @@ export class PoolAlreadyExistsError extends RevertError {
     }
 }
 
-export class InvalidCobbDouglasAlphaError extends RevertError {
-    constructor(numerator: BigNumber | number | string, denominator: BigNumber | number | string) {
-        super('InvalidCobbDouglasAlphaError', 'InvalidCobbDouglasAlphaError(uint256 numerator, uint256 denominator)', {
-            numerator,
-            denominator,
+export class InvalidTuningValueError extends RevertError {
+    constructor(error?: InvalidTuningValueErrorCode) {
+        super('InvalidTuningValue', 'InvalidTuningValue(uint8 error)', {
+            error,
         });
     }
 }
@@ -203,28 +210,36 @@ export class InvalidProtocolFeePaymentError extends RevertError {
     }
 }
 
+export class InitializationError extends RevertError {
+    constructor(error?: InitializationErrorCode) {
+        super('InitializationError', 'InitializationError(uint8 error)', { error });
+    }
+}
+
 const types = [
-    MiscalculatedRewardsError,
-    OnlyCallableByExchangeError,
+    AmountExceedsBalanceOfPoolError,
+    BlockTimestampTooLowError,
+    EthVaultNotSetError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,
+    InitializationError,
     InsufficientBalanceError,
+    InvalidProtocolFeePaymentError,
+    InvalidStakeStatusError,
+    InvalidStakeStatusError,
+    InvalidTuningValueError,
+    MakerPoolAssignmentError,
+    MiscalculatedRewardsError,
+    OnlyCallableByExchangeError,
     OnlyCallableByPoolOperatorError,
     OnlyCallableByPoolOperatorOrMakerError,
-    MakerPoolAssignmentError,
-    WithdrawAmountExceedsMemberBalanceError,
-    BlockTimestampTooLowError,
     OnlyCallableByStakingContractError,
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,
-    AmountExceedsBalanceOfPoolError,
     OperatorShareError,
     PoolAlreadyExistsError,
-    InvalidCobbDouglasAlphaError,
-    EthVaultNotSetError,
     RewardVaultNotSetError,
-    InvalidStakeStatusError,
-    InvalidProtocolFeePaymentError,
+    WithdrawAmountExceedsMemberBalanceError,
 ];
 
 // Register the types we've defined.

@@ -89,6 +89,10 @@
             {
                 "note": "Add `InvalidStakeStatusError` to error registry.",
                 "pr": 2126
+            },
+            {
+                "note": "Add `InitializationError`, `InvalidTuningValue` to `StakingRevertErrors`.",
+                "pr": 2131
             }
         ]
     },
