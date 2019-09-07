@@ -15,7 +15,7 @@ export const constants = {
         epochDurationInSeconds: new BigNumber(TWO_WEEKS),
         rewardDelegatedStakeWeight: new BigNumber(0.9 * 1e6), // 90%
         minimumPoolStake: testConstants.DUMMY_TOKEN_DECIMALS.times(100), // 100 ZRX
-        maxMakersInPool: new BigNumber(10),
+        maximumMakersInPool: new BigNumber(10),
         cobbDouglasAlphaNumerator: new BigNumber(1),
         cobbDouglasAlphaDenomintor: new BigNumber(2),
     },

@@ -32,8 +32,6 @@ contract MixinDeploymentConstants {
 
     uint256 constant internal CHAIN_ID = 1;
 
-    uint256 constant internal MAX_MAKERS_IN_POOL = 10;
-
     // Mainnet WETH9 Address
     address constant internal WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 

@@ -33,7 +33,9 @@ library LibStakingRichErrors {
     }
 
     enum InvalidTuningValueErrorCode {
-        InvalidCobbDouglasAlpha
+        InvalidCobbDouglasAlpha,
+        InvalidRewardDelegatedStakeWeight,
+        InvalidMaximumMakersInPool
     }
 
     enum MakerPoolAssignmentErrorCodes {

@@ -321,7 +321,11 @@ blockchainTests('Staking Pool Management', env => {
             const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
-            const makerAddresses = users.slice(1, stakingConstants.MAX_MAKERS_IN_POOL + 2);
+            const makerAddresses = users.slice(
+                1,
+                // tslint:disable-next-line restrict-plus-operands
+                stakingConstants.DEFAULT_HYPER_PARAMETERS.maximumMakersInPool.toNumber() + 2,
+            );
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
 
             // create pool
@@ -338,7 +342,9 @@ blockchainTests('Staking Pool Management', env => {
 
             // check the number of makers in the pool
             const numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
-            expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(stakingConstants.MAX_MAKERS_IN_POOL);
+            expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(
+                stakingConstants.DEFAULT_HYPER_PARAMETERS.maximumMakersInPool,
+            );
 
             const lastMakerAddress = _.last(makerAddresses) as string;
             // Try to add last maker to the pool

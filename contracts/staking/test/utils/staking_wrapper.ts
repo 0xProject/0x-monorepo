@@ -17,7 +17,7 @@ import {
 } from '../../src';
 
 import { constants } from './constants';
-import { HyperParameters, SignedStakingPoolApproval, StakeBalance } from './types';
+import { HyperParameters, StakeBalance } from './types';
 
 export class StakingWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
@@ -200,6 +200,7 @@ export class StakingWrapper {
             _params.epochDurationInSeconds,
             _params.rewardDelegatedStakeWeight,
             _params.minimumPoolStake,
+            _params.maximumMakersInPool,
             _params.cobbDouglasAlphaNumerator,
             _params.cobbDouglasAlphaDenomintor,
         );
