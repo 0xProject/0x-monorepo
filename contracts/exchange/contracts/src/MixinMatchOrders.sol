@@ -33,6 +33,7 @@ contract MixinMatchOrders is
 {
     using LibBytes for bytes;
     using LibSafeMath for uint256;
+    using LibOrder for LibOrder.Order;
 
     /// @dev Match complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point, and
@@ -165,7 +166,7 @@ contract MixinMatchOrders is
         bytes32 rightOrderHash
     )
         internal
-        view
+        pure
     {
         // Make sure there is a profitable spread.
         // There is a profitable spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
@@ -236,11 +237,11 @@ contract MixinMatchOrders is
         uint256 leftIdx = 0;
         uint256 rightIdx = 0;
 
-        // Keep local variables for orders, order info, and signatures for efficiency.
+        // Keep local variables for orders, order filled amounts, and signatures for efficiency.
         LibOrder.Order memory leftOrder = leftOrders[0];
         LibOrder.Order memory rightOrder = rightOrders[0];
-        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
-        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
+        (, uint256 leftOrderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(leftOrder);
+        (, uint256 rightOrderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(rightOrder);
         LibFillResults.FillResults memory leftFillResults;
         LibFillResults.FillResults memory rightFillResults;
 
@@ -256,13 +257,9 @@ contract MixinMatchOrders is
                 shouldMaximallyFillOrders
             );
 
-            // Update the orderInfo structs with the updated takerAssetFilledAmount
-            leftOrderInfo.orderTakerAssetFilledAmount = leftOrderInfo.orderTakerAssetFilledAmount.safeAdd(
-                matchResults.left.takerAssetFilledAmount
-            );
-            rightOrderInfo.orderTakerAssetFilledAmount = rightOrderInfo.orderTakerAssetFilledAmount.safeAdd(
-                matchResults.right.takerAssetFilledAmount
-            );
+            // Update the order filled amounts with the updated takerAssetFilledAmount
+            leftOrderTakerAssetFilledAmount = leftOrderTakerAssetFilledAmount.safeAdd(matchResults.left.takerAssetFilledAmount);
+            rightOrderTakerAssetFilledAmount = rightOrderTakerAssetFilledAmount.safeAdd(matchResults.right.takerAssetFilledAmount);
 
             // Aggregate the new fill results with the previous fill results for the current orders.
             leftFillResults = LibFillResults.addFillResults(
@@ -285,7 +282,7 @@ contract MixinMatchOrders is
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
-            if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
+            if (leftOrderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
                 // Update the batched fill results once the leftIdx is updated.
                 batchMatchedFillResults.left[leftIdx++] = leftFillResults;
                 // Clear the intermediate fill results value.
@@ -299,13 +296,13 @@ contract MixinMatchOrders is
                     break;
                 } else {
                     leftOrder = leftOrders[leftIdx];
-                    leftOrderInfo = getOrderInfo(leftOrder);
+                    (, leftOrderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(leftOrder);
                 }
             }
 
             // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
             // or break out of the loop if there are no more rightOrders to match.
-            if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
+            if (rightOrderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
                 // Update the batched fill results once the rightIdx is updated.
                 batchMatchedFillResults.right[rightIdx++] = rightFillResults;
                 // Clear the intermediate fill results value.
@@ -319,7 +316,7 @@ contract MixinMatchOrders is
                     break;
                 } else {
                     rightOrder = rightOrders[rightIdx];
-                    rightOrderInfo = getOrderInfo(rightOrder);
+                    (, rightOrderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(rightOrder);
                 }
             }
         }
@@ -440,6 +437,8 @@ contract MixinMatchOrders is
     )
         internal
     {
+        address leftMakerAddress = leftOrder.makerAddress;
+        address rightMakerAddress = rightOrder.makerAddress;
         address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
         address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
 
@@ -447,8 +446,8 @@ contract MixinMatchOrders is
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,
-            rightOrder.makerAddress,
-            leftOrder.makerAddress,
+            rightMakerAddress,
+            leftMakerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
 
@@ -456,8 +455,8 @@ contract MixinMatchOrders is
         _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerAssetData,
-            leftOrder.makerAddress,
-            rightOrder.makerAddress,
+            leftMakerAddress,
+            rightMakerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
 
@@ -465,7 +464,7 @@ contract MixinMatchOrders is
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerFeeAssetData,
-            rightOrder.makerAddress,
+            rightMakerAddress,
             rightFeeRecipientAddress,
             matchedFillResults.right.makerFeePaid
         );
@@ -474,7 +473,7 @@ contract MixinMatchOrders is
         _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerFeeAssetData,
-            leftOrder.makerAddress,
+            leftMakerAddress,
             leftFeeRecipientAddress,
             matchedFillResults.left.makerFeePaid
         );
@@ -483,14 +482,14 @@ contract MixinMatchOrders is
         _dispatchTransferFrom(
             leftOrderHash,
             leftOrder.makerAssetData,
-            leftOrder.makerAddress,
+            leftMakerAddress,
             takerAddress,
             matchedFillResults.profitInLeftMakerAsset
         );
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,
-            rightOrder.makerAddress,
+            rightMakerAddress,
             takerAddress,
             matchedFillResults.profitInRightMakerAsset
         );
@@ -500,8 +499,8 @@ contract MixinMatchOrders is
             leftOrderHash,
             rightOrderHash,
             matchedFillResults.left.protocolFeePaid,
-            leftOrder.makerAddress,
-            rightOrder.makerAddress,
+            leftMakerAddress,
+            rightMakerAddress,
             takerAddress
         );
 
