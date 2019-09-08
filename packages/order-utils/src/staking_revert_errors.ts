@@ -19,7 +19,7 @@ export enum ProtocolFeePaymentErrorCodes {
     MismatchedFeeAndPayment,
 }
 
-export enum InvalidTuningValueErrorCode {
+export enum InvalidParamValueErrorCode {
     InvalidCobbDouglasAlpha,
     InvalidRewardDelegatedStakeWeight,
     InvalidMaximumMakersInPool,
@@ -173,9 +173,9 @@ export class PoolAlreadyExistsError extends RevertError {
     }
 }
 
-export class InvalidTuningValueError extends RevertError {
-    constructor(error?: InvalidTuningValueErrorCode) {
-        super('InvalidTuningValue', 'InvalidTuningValue(uint8 error)', {
+export class InvalidParamValueError extends RevertError {
+    constructor(error?: InvalidParamValueErrorCode) {
+        super('InvalidParamValue', 'InvalidParamValue(uint8 error)', {
             error,
         });
     }
@@ -230,7 +230,7 @@ const types = [
     InvalidProtocolFeePaymentError,
     InvalidStakeStatusError,
     InvalidStakeStatusError,
-    InvalidTuningValueError,
+    InvalidParamValueError,
     MakerPoolAssignmentError,
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,

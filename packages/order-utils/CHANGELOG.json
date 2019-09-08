@@ -91,7 +91,7 @@
                 "pr": 2126
             },
             {
-                "note": "Add `InitializationError`, `InvalidTuningValue` to `StakingRevertErrors`.",
+                "note": "Add `InitializationError`, `InvalidParamValue` to `StakingRevertErrors`.",
                 "pr": 2131
             }
         ]
