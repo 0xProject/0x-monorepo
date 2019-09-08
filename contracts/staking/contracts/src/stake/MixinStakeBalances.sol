@@ -35,7 +35,6 @@ contract MixinStakeBalances is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinHyperParameters,
     MixinZrxVault,
     MixinScheduler,
     MixinStakeStorage

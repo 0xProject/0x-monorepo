@@ -2,24 +2,24 @@ import { blockchainTests, constants, expect, filterLogsToArguments, Numberish } 
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 
-import { artifacts, IStakingEventsTunedEventArgs, MixinHyperParametersContract } from '../src/';
+import { artifacts, IStakingEventsTunedEventArgs, MixinParamsContract } from '../src/';
 
-blockchainTests('Hyper-Parameters', env => {
-    let testContract: MixinHyperParametersContract;
+blockchainTests('Configurable Parameters', env => {
+    let testContract: MixinParamsContract;
     let ownerAddress: string;
     let notOwnerAddress: string;
 
     before(async () => {
         [ownerAddress, notOwnerAddress] = await env.getAccountAddressesAsync();
-        testContract = await MixinHyperParametersContract.deployFrom0xArtifactAsync(
-            artifacts.MixinHyperParameters,
+        testContract = await MixinParamsContract.deployFrom0xArtifactAsync(
+            artifacts.MixinParams,
             env.provider,
             env.txDefaults,
             artifacts,
         );
     });
 
-    blockchainTests.resets('tune()', () => {
+    blockchainTests.resets('setParams()', () => {
         interface HyperParameters {
             epochDurationInSeconds: Numberish;
             rewardDelegatedStakeWeight: Numberish;
@@ -40,12 +40,12 @@ blockchainTests('Hyper-Parameters', env => {
             cobbDouglasAlphaDenomintor: 2,
         };
 
-        async function tuneAndAssertAsync(params: Partial<HyperParameters>, from?: string): Promise<void> {
+        async function setParamsAndAssertAsync(params: Partial<HyperParameters>, from?: string): Promise<void> {
             const _params = {
                 ...DEFAULT_HYPER_PARAMETERS,
                 ...params,
             };
-            const receipt = await testContract.tune.awaitTransactionSuccessAsync(
+            const receipt = await testContract.setParams.awaitTransactionSuccessAsync(
                 new BigNumber(_params.epochDurationInSeconds),
                 new BigNumber(_params.rewardDelegatedStakeWeight),
                 new BigNumber(_params.minimumPoolStake),
@@ -63,8 +63,8 @@ blockchainTests('Hyper-Parameters', env => {
             expect(event.maximumMakersInPool).to.bignumber.eq(_params.maximumMakersInPool);
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(event.cobbDouglasAlphaDenomintor).to.bignumber.eq(_params.cobbDouglasAlphaDenomintor);
-            // Assert `getHyperParameters()`.
-            const actual = await testContract.getHyperParameters.callAsync();
+            // Assert `getParams()`.
+            const actual = await testContract.getParams.callAsync();
             expect(actual[0]).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(actual[1]).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(actual[2]).to.bignumber.eq(_params.minimumPoolStake);
@@ -74,13 +74,13 @@ blockchainTests('Hyper-Parameters', env => {
         }
 
         it('throws if not called by owner', async () => {
-            const tx = tuneAndAssertAsync({}, notOwnerAddress);
+            const tx = setParamsAndAssertAsync({}, notOwnerAddress);
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('works if called by owner', async () => {
-            return tuneAndAssertAsync({});
+            return setParamsAndAssertAsync({});
         });
 
         describe('rewardDelegatedStakeWeight', () => {
@@ -89,9 +89,9 @@ blockchainTests('Hyper-Parameters', env => {
                     // tslint:disable-next-line restrict-plus-operands
                     rewardDelegatedStakeWeight: constants.PPM_100_PERCENT + 1,
                 };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidRewardDelegatedStakeWeight,
+                const tx = setParamsAndAssertAsync(params);
+                const expectedError = new StakingRevertErrors.InvalidParamValueError(
+                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight,
                 );
                 return expect(tx).to.revertWith(expectedError);
             });
@@ -102,49 +102,23 @@ blockchainTests('Hyper-Parameters', env => {
                 const params = {
                     maximumMakersInPool: 0,
                 };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidMaximumMakersInPool,
+                const tx = setParamsAndAssertAsync(params);
+                const expectedError = new StakingRevertErrors.InvalidParamValueError(
+                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool,
                 );
                 return expect(tx).to.revertWith(expectedError);
             });
         });
 
         describe('cobb-douglas alpha', () => {
-            const NEGATIVE_ONE = constants.MAX_UINT256.minus(1);
-
-            it('throws with int256(numerator) < 0', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: NEGATIVE_ONE,
-                    cobbDouglasAlphaDenomintor: NEGATIVE_ONE,
-                };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidCobbDouglasAlpha,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('throws with int256(denominator) < 0', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 1,
-                    cobbDouglasAlphaDenomintor: NEGATIVE_ONE,
-                };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidCobbDouglasAlpha,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
             it('throws with denominator == 0', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 0,
                     cobbDouglasAlphaDenomintor: 0,
                 };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidCobbDouglasAlpha,
+                const tx = setParamsAndAssertAsync(params);
+                const expectedError = new StakingRevertErrors.InvalidParamValueError(
+                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
                 );
                 return expect(tx).to.revertWith(expectedError);
             });
@@ -154,9 +128,9 @@ blockchainTests('Hyper-Parameters', env => {
                     cobbDouglasAlphaNumerator: 2,
                     cobbDouglasAlphaDenomintor: 1,
                 };
-                const tx = tuneAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidTuningValueError(
-                    StakingRevertErrors.InvalidTuningValueErrorCode.InvalidCobbDouglasAlpha,
+                const tx = setParamsAndAssertAsync(params);
+                const expectedError = new StakingRevertErrors.InvalidParamValueError(
+                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
                 );
                 return expect(tx).to.revertWith(expectedError);
             });
@@ -166,7 +140,7 @@ blockchainTests('Hyper-Parameters', env => {
                     cobbDouglasAlphaNumerator: 1,
                     cobbDouglasAlphaDenomintor: 1,
                 };
-                return tuneAndAssertAsync(params);
+                return setParamsAndAssertAsync(params);
             });
 
             it('accepts numerator < denominator', async () => {
@@ -174,7 +148,7 @@ blockchainTests('Hyper-Parameters', env => {
                     cobbDouglasAlphaNumerator: 1,
                     cobbDouglasAlphaDenomintor: 2,
                 };
-                return tuneAndAssertAsync(params);
+                return setParamsAndAssertAsync(params);
             });
 
             it('accepts numerator == 0', async () => {
@@ -182,7 +156,7 @@ blockchainTests('Hyper-Parameters', env => {
                     cobbDouglasAlphaNumerator: 0,
                     cobbDouglasAlphaDenomintor: 1,
                 };
-                return tuneAndAssertAsync(params);
+                return setParamsAndAssertAsync(params);
             });
         });
     });

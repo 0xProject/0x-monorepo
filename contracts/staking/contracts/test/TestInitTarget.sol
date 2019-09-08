@@ -20,18 +20,18 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../src/immutable/MixinStorage.sol";
-import "../src/immutable/MixinHyperParameters.sol";
 
 
 contract TestInitTarget is
     Ownable,
-    MixinStorage,
-    MixinHyperParameters
+    MixinStorage
 {
     // We can't store state in this contract before it is attached, so
     // we will grant this predefined address a balance to indicate that
     // `init()`  should revert.
     address public constant SHOULD_REVERT_ADDRESS = 0x5ed6A38c6bEcEd15b0AB58566b6fD7A00463d2F7;
+    // Counter that is incremented with every call to `init()`.
+    uint256 private _initCounter = 0;
     // `msg.sender` of the last `init()` call.
     address private _initSender = address(0);
     // `address(this)` of the last `init()` call.
@@ -39,8 +39,9 @@ contract TestInitTarget is
 
     function init() external {
         if (SHOULD_REVERT_ADDRESS.balance != 0) {
-            revert("WHOOPSIE!");
+            revert("FORCED_REVERT");
         }
+        _initCounter += 1;
         _initSender = msg.sender;
         _initThisAddress = address(this);
     }
@@ -55,5 +56,9 @@ contract TestInitTarget is
     {
         initSender = _initSender;
         initThisAddress = _initThisAddress;
+    }
+
+    function getInitCounter() external view returns (uint256) {
+        return _initCounter;
     }
 }

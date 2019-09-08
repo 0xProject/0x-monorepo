@@ -22,7 +22,7 @@ export * from '../generated-wrappers/mixin_constants';
 export * from '../generated-wrappers/mixin_eth_vault';
 export * from '../generated-wrappers/mixin_exchange_fees';
 export * from '../generated-wrappers/mixin_exchange_manager';
-export * from '../generated-wrappers/mixin_hyper_parameters';
+export * from '../generated-wrappers/mixin_params';
 export * from '../generated-wrappers/mixin_scheduler';
 export * from '../generated-wrappers/mixin_stake';
 export * from '../generated-wrappers/mixin_stake_balances';

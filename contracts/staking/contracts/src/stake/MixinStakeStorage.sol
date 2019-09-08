@@ -33,7 +33,6 @@ contract MixinStakeStorage is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinHyperParameters,
     MixinScheduler
 {
     using LibSafeMath for uint256;

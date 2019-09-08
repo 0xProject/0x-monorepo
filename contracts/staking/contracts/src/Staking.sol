@@ -24,6 +24,7 @@ import "./fees/MixinExchangeManager.sol";
 import "./stake/MixinZrxVault.sol";
 import "./staking_pools/MixinStakingPoolRewardVault.sol";
 import "./sys/MixinScheduler.sol";
+import "./sys/MixinParams.sol";
 import "./stake/MixinStakeBalances.sol";
 import "./stake/MixinStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
@@ -37,7 +38,7 @@ contract Staking is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinHyperParameters,
+    MixinParams,
     MixinZrxVault,
     MixinExchangeManager,
     MixinStakingPoolRewardVault,
@@ -64,7 +65,8 @@ contract Staking is
         onlyOwner
     {
         // DANGER! When performing upgrades, take care to modify this logic
-        // not to accidentally overwrite existing state.
+        // to prevent accidentally clearing prior state.
         _initMixinScheduler();
+        _initMixinParams();
     }
 }

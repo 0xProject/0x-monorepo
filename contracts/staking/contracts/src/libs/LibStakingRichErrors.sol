@@ -29,10 +29,11 @@ library LibStakingRichErrors {
     }
 
     enum InitializationErrorCode {
-        MixinSchedulerAlreadyInitialized
+        MixinSchedulerAlreadyInitialized,
+        MixinParamsAlreadyInitialized
     }
 
-    enum InvalidTuningValueErrorCode {
+    enum InvalidParamValueErrorCode {
         InvalidCobbDouglasAlpha,
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool
@@ -129,9 +130,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INITIALIZATION_ERROR_SELECTOR =
         0x0b02d773;
 
-    // bytes4(keccak256("InvalidTuningValue(uint8)"))
-    bytes4 internal constant INVALID_TUNING_VALUE_ERROR_SELECTOR =
-        0xbbfd10bb;
+    // bytes4(keccak256("InvalidParamValue(uint8)"))
+    bytes4 internal constant INVALID_PARAM_VALUE_ERROR_SELECTOR =
+        0x7b40eece;
 
     // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
@@ -435,13 +436,13 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidTuningValue(InvalidTuningValueErrorCode code)
+    function InvalidParamValue(InvalidParamValueErrorCode code)
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            INVALID_TUNING_VALUE_ERROR_SELECTOR,
+            INVALID_PARAM_VALUE_ERROR_SELECTOR,
             uint8(code)
         );
     }

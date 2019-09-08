@@ -24,7 +24,7 @@ import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
-import * as MixinHyperParameters from '../generated-artifacts/MixinHyperParameters.json';
+import * as MixinParams from '../generated-artifacts/MixinParams.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
@@ -55,7 +55,6 @@ export const artifacts = {
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
-    MixinHyperParameters: MixinHyperParameters as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
     IEthVault: IEthVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
@@ -79,6 +78,7 @@ export const artifacts = {
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
+    MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     EthVault: EthVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,

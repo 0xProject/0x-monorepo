@@ -125,4 +125,22 @@ contract MixinStorage is
 
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault internal rewardVault;
+
+    // Minimum seconds between epochs.
+    uint256 internal epochDurationInSeconds;
+
+    // How much delegated stake is weighted vs operator stake, in ppm.
+    uint32 internal rewardDelegatedStakeWeight;
+
+    // Minimum amount of stake required in a pool to collect rewards.
+    uint256 internal minimumPoolStake;
+
+    // Maximum number of maker addresses allowed to be registered to a pool.
+    uint256 internal maximumMakersInPool;
+
+    // Numerator for cobb douglas alpha factor.
+    uint32 internal cobbDouglasAlphaNumerator;
+
+    // Denominator for cobb douglas alpha factor.
+    uint32 internal cobbDouglasAlphaDenomintor;
 }

@@ -57,7 +57,6 @@ contract MixinStakingPool is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinHyperParameters,
     MixinZrxVault,
     MixinStakingPoolRewardVault,
     MixinScheduler,

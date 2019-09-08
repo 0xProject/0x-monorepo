@@ -20,43 +20,32 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "./MixinConstants.sol";
 
 
-contract MixinHyperParameters is
+contract MixinParams is
     IStakingEvents,
     MixinConstants,
-    Ownable
+    Ownable,
+    MixinStorage
 {
-    // Minimum seconds between epochs.
-    uint256 internal epochDurationInSeconds = 2 weeks;
-    // How much delegated stake is weighted vs operator stake, in ppm.
-    uint32 internal rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
-    // Minimum amount of stake required in a pool to collect rewards.
-    uint256 internal minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
-    // Maximum number of maker addresses allowed to be registered to a pool.
-    uint256 internal maximumMakersInPool = 10;
-    // Numerator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaNumerator = 1;
-    // Denominator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaDenomintor = 2;
-
-    /// @dev Set all hyperparameters at once.
+    /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
     /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @param _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    function tune(
+    function setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
         uint256 _maximumMakersInPool,
-        uint256 _cobbDouglasAlphaNumerator,
-        uint256 _cobbDouglasAlphaDenomintor
+        uint32 _cobbDouglasAlphaNumerator,
+        uint32 _cobbDouglasAlphaDenomintor
     )
         external
         onlyOwner
@@ -85,14 +74,14 @@ contract MixinHyperParameters is
         );
     }
 
-    /// @dev Retrives all tuned values.
+    /// @dev Retrives all configurable parameter values.
     /// @return _epochDurationInSeconds Minimum seconds between epochs.
     /// @return _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @return _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @return _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    function getHyperParameters()
+    function getParams()
         external
         view
         returns (
@@ -100,8 +89,8 @@ contract MixinHyperParameters is
             uint32 _rewardDelegatedStakeWeight,
             uint256 _minimumPoolStake,
             uint256 _maximumMakersInPool,
-            uint256 _cobbDouglasAlphaNumerator,
-            uint256 _cobbDouglasAlphaDenomintor
+            uint32 _cobbDouglasAlphaNumerator,
+            uint32 _cobbDouglasAlphaDenomintor
         )
     {
         _epochDurationInSeconds = epochDurationInSeconds;
@@ -112,41 +101,68 @@ contract MixinHyperParameters is
         _cobbDouglasAlphaDenomintor = cobbDouglasAlphaDenomintor;
     }
 
+    /// @dev Initialzize storage belonging to this mixin.
+    function _initMixinParams() internal {
+        // Ensure state is uninitialized.
+        if (epochDurationInSeconds != 0 &&
+            rewardDelegatedStakeWeight != 0 &&
+            minimumPoolStake != 0 &&
+            maximumMakersInPool != 0 &&
+            cobbDouglasAlphaNumerator != 0 &&
+            cobbDouglasAlphaDenomintor != 0
+        ) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InitializationError(
+                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
+                )
+            );
+        }
+        // Set up defaults.
+        epochDurationInSeconds = 2 weeks;
+        rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
+        minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
+        maximumMakersInPool = 10;
+        cobbDouglasAlphaNumerator = 1;
+        cobbDouglasAlphaDenomintor = 2;
+    }
+
     /// @dev Asserts that cobb douglas alpha values are valid.
+    /// @param numerator Numerator for cobb douglas alpha factor.
+    /// @param denominator Denominator for cobb douglas alpha factor.
     function _assertValidCobbDouglasAlpha(
-        uint256 numerator,
-        uint256 denominator
+        uint32 numerator,
+        uint32 denominator
     )
         private
         pure
     {
-        if (int256(numerator) < 0
-            || int256(denominator) <= 0
-            || numerator > denominator
-        ) {
+        // Alpha must be 0 < x < 1
+        if (numerator > denominator || denominator == 0) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidTuningValue(
-                    LibStakingRichErrors.InvalidTuningValueErrorCode.InvalidCobbDouglasAlpha
+                LibStakingRichErrors.InvalidParamValue(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
             ));
         }
     }
 
     /// @dev Asserts that a stake weight is valid.
+    /// @param weight How much delegated stake is weighted vs operator stake, in ppm.
     function _assertValidRewardDelegatedStakeWeight(
-        uint256 weight
+        uint32 weight
     )
         private
         pure
     {
         if (weight > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidTuningValue(
-                    LibStakingRichErrors.InvalidTuningValueErrorCode.InvalidRewardDelegatedStakeWeight
+                LibStakingRichErrors.InvalidParamValue(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
             ));
         }
     }
 
     /// @dev Asserts that a maximum makers value is valid.
+    /// @param amount Maximum number of maker addresses allowed to be registered to a pool.
     function _assertValidMaximumMakersInPool(
         uint256 amount
     )
@@ -155,8 +171,8 @@ contract MixinHyperParameters is
     {
         if (amount == 0) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidTuningValue(
-                    LibStakingRichErrors.InvalidTuningValueErrorCode.InvalidMaximumMakersInPool
+                LibStakingRichErrors.InvalidParamValue(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
             ));
         }
     }

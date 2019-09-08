@@ -191,12 +191,12 @@ export class StakingWrapper {
         const balance = this._web3Wrapper.getBalanceInWeiAsync(owner);
         return balance;
     }
-    public async tuneAsync(params: Partial<HyperParameters>): Promise<TransactionReceiptWithDecodedLogs> {
+    public async setParamsAsync(params: Partial<HyperParameters>): Promise<TransactionReceiptWithDecodedLogs> {
         const _params = {
             ...constants.DEFAULT_HYPER_PARAMETERS,
             ...params,
         };
-        const calldata = this.getStakingContract().tune.getABIEncodedTransactionData(
+        const calldata = this.getStakingContract().setParams.getABIEncodedTransactionData(
             _params.epochDurationInSeconds,
             _params.rewardDelegatedStakeWeight,
             _params.minimumPoolStake,
@@ -373,9 +373,9 @@ export class StakingWrapper {
         return txReceipt;
     }
     public async getEpochDurationInSecondsAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getHyperParameters.getABIEncodedTransactionData();
+        const calldata = this.getStakingContract().getParams.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const params = this.getStakingContract().getHyperParameters.getABIDecodedReturnData(returnData);
+        const params = this.getStakingContract().getParams.getABIDecodedReturnData(returnData);
         return params[0];
     }
     public async getCurrentEpochStartTimeInSecondsAsync(): Promise<BigNumber> {

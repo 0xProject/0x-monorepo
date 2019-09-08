@@ -21,8 +21,8 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
-import "./immutable/MixinHyperParameters.sol";
 import "./interfaces/IStorageInit.sol";
+import "./interfaces/IStakingEvents.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
@@ -31,8 +31,7 @@ contract StakingProxy is
     IStakingProxy,
     MixinConstants,
     Ownable,
-    MixinStorage,
-    MixinHyperParameters
+    MixinStorage
 {
     using LibProxy for address;
 

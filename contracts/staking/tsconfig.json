@@ -22,7 +22,7 @@
         "generated-artifacts/MixinEthVault.json",
         "generated-artifacts/MixinExchangeFees.json",
         "generated-artifacts/MixinExchangeManager.json",
-        "generated-artifacts/MixinHyperParameters.json",
+        "generated-artifacts/MixinParams.json",
         "generated-artifacts/MixinScheduler.json",
         "generated-artifacts/MixinStake.json",
         "generated-artifacts/MixinStakeBalances.json",

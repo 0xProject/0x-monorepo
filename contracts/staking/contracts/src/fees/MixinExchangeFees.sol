@@ -49,7 +49,6 @@ contract MixinExchangeFees is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinHyperParameters,
     MixinZrxVault,
     MixinExchangeManager,
     MixinStakingPoolRewardVault,
