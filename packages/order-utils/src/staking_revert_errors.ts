@@ -26,7 +26,8 @@ export enum InvalidTuningValueErrorCode {
 }
 
 export enum InitializationErrorCode {
-    MixinSchedulerAlreadyInitialized = 0,
+    MixinSchedulerAlreadyInitialized,
+    MixinParamsAlreadyInitialized,
 }
 
 export class MiscalculatedRewardsError extends RevertError {
