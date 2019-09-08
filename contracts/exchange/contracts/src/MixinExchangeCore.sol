@@ -136,11 +136,8 @@ contract MixinExchangeCore is
         view
         returns (LibOrder.OrderInfo memory orderInfo)
     {
-        // Compute the order hash
-        orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
-
-        // Fetch filled amount
-        orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
+        // Compute the order hash and fetch the amount of takerAsset that has already been filled
+        (orderInfo.orderHash, orderInfo.orderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(order);
 
         // If order.makerAssetAmount is zero, we also reject the order.
         // While the Exchange contract handles them correctly, they create
@@ -487,5 +484,18 @@ contract MixinExchangeCore is
         if (!didPayProtocolFee) {
             fillResults.protocolFeePaid = 0;
         }
+    }
+
+    /// @dev Gets the order's hash and amount of takerAsset that has already been filled.
+    /// @param order Order struct containing order specifications.
+    /// @return The typed data hash and amount filled of the order.
+    function _getOrderHashAndFilledAmount(LibOrder.Order memory order)
+        internal
+        view
+        returns (bytes32 orderHash, uint256 orderTakerAssetFilledAmount)
+    {
+        orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        orderTakerAssetFilledAmount = filled[orderHash];
+        return (orderHash, orderTakerAssetFilledAmount);
     }
 }
