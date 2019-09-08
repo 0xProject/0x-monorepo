@@ -38,6 +38,7 @@ export * from '../generated-wrappers/staking';
 export * from '../generated-wrappers/staking_pool_reward_vault';
 export * from '../generated-wrappers/staking_proxy';
 export * from '../generated-wrappers/test_cobb_douglas';
+export * from '../generated-wrappers/test_exchange_fees';
 export * from '../generated-wrappers/test_init_target';
 export * from '../generated-wrappers/test_lib_fixed_math';
 export * from '../generated-wrappers/test_protocol_fees';

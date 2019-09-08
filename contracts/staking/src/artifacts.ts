@@ -40,6 +40,7 @@ import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestExchangeFees from '../generated-artifacts/TestExchangeFees.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
@@ -85,6 +86,7 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestExchangeFees: TestExchangeFees as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
