@@ -9,6 +9,7 @@ contract TestOwnable is
     function externalOnlyOwner()
         external
         onlyOwner
+        view
         returns (bool)
     {
         return true;

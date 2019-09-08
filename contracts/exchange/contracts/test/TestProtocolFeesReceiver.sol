@@ -253,6 +253,7 @@ contract TestProtocolFeesReceiver {
         uint256 expectedProtocolFeePaid
     )
         internal
+        pure
     {
         // If the expected available balance was sufficient to pay the protocol fee, the protocol fee
         // should have been paid in ether. Otherwise, no ether should be sent to pay the protocol fee.

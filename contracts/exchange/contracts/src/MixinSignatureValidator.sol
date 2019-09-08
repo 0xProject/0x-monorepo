@@ -422,7 +422,7 @@ contract MixinSignatureValidator is
         returns (SignatureType signatureType)
     {
         // Read the signatureType from the signature
-        SignatureType signatureType = _readSignatureType(
+        signatureType = _readSignatureType(
             hash,
             signerAddress,
             signature
