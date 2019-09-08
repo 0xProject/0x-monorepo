@@ -39,7 +39,7 @@
                 "pr": 2131
             },
             {
-                "note": "Replace `MixinDeploymentConstants` with `MixinHyperParameters`.",
+                "note": "Replace `MixinDeploymentConstants` with `MixinParams`.",
                 "pr": 2131
             }
         ]
