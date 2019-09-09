@@ -263,9 +263,8 @@ contract MixinExchangeFees is
             );
 
             // store pool stats
-            uint256 protocolFeeBalance = protocolFeesThisEpochByPool[poolId];
             activePools[i].poolId = poolId;
-            activePools[i].feesCollected = protocolFeeBalance;
+            activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
             activePools[i].weightedStake = weightedStake;
             activePools[i].delegatedStake = totalStakeDelegatedToPool;
 

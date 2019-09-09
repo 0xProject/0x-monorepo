@@ -25,29 +25,6 @@ import "../src/Staking.sol";
 contract TestStaking is
     Staking
 {
-    /*
-    // Stub out `payProtocolFee` to be the naive payProtocolFee function so that tests will
-    // not fail for WETH protocol fees. These tests will fail otherwise because many of them
-    // will transfer
-    function payProtocolFee(
-        address makerAddress,
-        address,
-        uint256
-    )
-        external
-        payable
-        onlyExchange
-    {
-        uint256 amount = msg.value;
-        bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
-        if (_feesCollectedThisEpoch == 0) {
-            activePoolsThisEpoch.push(poolId);
-        }
-    }
-    */
-
     // Stub out `_unwrapWETH` to prevent the calls to `finalizeFees` from failing in tests
     // that do not relate to protocol fee payments in WETH.
     function _unwrapWETH()
