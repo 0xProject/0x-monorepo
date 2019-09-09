@@ -116,8 +116,7 @@ contract MixinExchangeCore is
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    ///      Throws if order is invalid or sender does not have permission to cancel.
-    /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    /// @param order Order struct containing order specifications.
     function cancelOrder(LibOrder.Order memory order)
         public
         payable
@@ -136,11 +135,8 @@ contract MixinExchangeCore is
         view
         returns (LibOrder.OrderInfo memory orderInfo)
     {
-        // Compute the order hash
-        orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
-
-        // Fetch filled amount
-        orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
+        // Compute the order hash and fetch the amount of takerAsset that has already been filled
+        (orderInfo.orderHash, orderInfo.orderTakerAssetFilledAmount) = _getOrderHashAndFilledAmount(order);
 
         // If order.makerAssetAmount is zero, we also reject the order.
         // While the Exchange contract handles them correctly, they create
@@ -220,7 +216,12 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier, tx.gasprice);
+        fillResults = LibFillResults.calculateFillResults(
+            order,
+            takerAssetFilledAmount,
+            protocolFeeMultiplier,
+            tx.gasprice
+        );
 
         bytes32 orderHash = orderInfo.orderHash;
 
@@ -385,7 +386,7 @@ contract MixinExchangeCore is
                 )
             ) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    LibExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
+                    LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature
@@ -487,5 +488,18 @@ contract MixinExchangeCore is
         if (!didPayProtocolFee) {
             fillResults.protocolFeePaid = 0;
         }
+    }
+
+    /// @dev Gets the order's hash and amount of takerAsset that has already been filled.
+    /// @param order Order struct containing order specifications.
+    /// @return The typed data hash and amount filled of the order.
+    function _getOrderHashAndFilledAmount(LibOrder.Order memory order)
+        internal
+        view
+        returns (bytes32 orderHash, uint256 orderTakerAssetFilledAmount)
+    {
+        orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        orderTakerAssetFilledAmount = filled[orderHash];
+        return (orderHash, orderTakerAssetFilledAmount);
     }
 }

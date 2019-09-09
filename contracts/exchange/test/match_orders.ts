@@ -1300,7 +1300,7 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 orderHashHex,
                 signedOrderRight.makerAddress,
                 signedOrderRight.signature,
@@ -1327,7 +1327,7 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 orderHashHex,
                 signedOrderRight.makerAddress,
                 signedOrderRight.signature,
@@ -2381,7 +2381,7 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 orderHashHex,
                 signedOrderRight.makerAddress,
                 signedOrderRight.signature,
@@ -2408,7 +2408,7 @@ describe('matchOrders', () => {
             };
             const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrderRight);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 orderHashHex,
                 signedOrderRight.makerAddress,
                 signedOrderRight.signature,

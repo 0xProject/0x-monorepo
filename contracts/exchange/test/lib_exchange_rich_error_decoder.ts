@@ -145,13 +145,6 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
 
     (() => {
         const transactionHash = orderUtils.generatePseudoRandomOrderHash();
-        const signer = addressUtils.generatePseudoRandomAddress();
-        const signature = hexRandom(SIGNATURE_LENGTH);
-        createDecodeTest(ExchangeRevertErrors.TransactionSignatureError, [transactionHash, signer, signature]);
-    })();
-
-    (() => {
-        const transactionHash = orderUtils.generatePseudoRandomOrderHash();
         const errorData = hexRandom(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.TransactionExecutionError, [transactionHash, errorData]);
     })();

@@ -302,27 +302,6 @@ contract LibExchangeRichErrorDecoder {
         errorCode = LibExchangeRichErrors.TransactionErrorCodes(_errorCode);
     }
 
-    /// @dev Decompose an ABI-encoded TransactionSignatureError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return transactionHash Hash of the transaction.
-    /// @return signerAddress Signer of the transaction.
-    /// @return signature Full signature for the transaction.
-    function decodeTransactionSignatureError(bytes memory encoded)
-        public
-        pure
-        returns (
-            bytes32 transactionHash,
-            address signerAddress,
-            bytes memory signature
-        )
-    {
-        _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionSignatureErrorSelector());
-        (transactionHash, signerAddress, signature) = abi.decode(
-            encoded.sliceDestructive(4, encoded.length),
-            (bytes32, address, bytes)
-        );
-    }
-
     /// @dev Decompose an ABI-encoded TransactionExecutionError.
     /// @param encoded ABI-encoded revert error.
     /// @return transactionHash Hash of the transaction.

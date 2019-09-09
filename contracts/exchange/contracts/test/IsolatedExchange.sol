@@ -72,8 +72,8 @@ contract IsolatedExchange is
     /// @dev Overridden to simplify signature validation.
     ///      Unfortunately, this is `view`, so it can't log arguments.
     function _isValidOrderWithHashSignature(
-        LibOrder.Order memory order,
-        bytes32 orderHash,
+        LibOrder.Order memory,
+        bytes32,
         bytes memory signature
     )
         internal

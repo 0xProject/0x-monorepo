@@ -25,7 +25,8 @@ export enum FillErrorCode {
 }
 
 export enum SignatureErrorCode {
-    BadSignature,
+    BadOrderSignature,
+    BadTransactionSignature,
     InvalidLength,
     Unsupported,
     Illegal,
@@ -179,20 +180,6 @@ export class TransactionError extends RevertError {
     }
 }
 
-export class TransactionSignatureError extends RevertError {
-    constructor(transactionHash?: string, signer?: string, signature?: string) {
-        super(
-            'TransactionSignatureError',
-            'TransactionSignatureError(bytes32 transactionHash, address signer, bytes signature)',
-            {
-                transactionHash,
-                signer,
-                signature,
-            },
-        );
-    }
-}
-
 export class TransactionExecutionError extends RevertError {
     constructor(transactionHash?: string, errorData?: string) {
         super('TransactionExecutionError', 'TransactionExecutionError(bytes32 transactionHash, bytes errorData)', {
@@ -292,7 +279,6 @@ const types = [
     TransactionExecutionError,
     TransactionGasPriceError,
     TransactionInvalidContextError,
-    TransactionSignatureError,
 ];
 
 // Register the types we've defined.

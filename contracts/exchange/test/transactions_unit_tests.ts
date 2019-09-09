@@ -466,7 +466,8 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         it('should revert if the signer != msg.sender and the signature is not valid', async () => {
             const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[1] });
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadTransactionSignature,
                 transactionHash,
                 accounts[1],
                 INVALID_SIGNATURE,
@@ -655,7 +656,8 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         it('should revert if signer != msg.sender and the signature is invalid', async () => {
             const transaction = await generateZeroExTransactionAsync({ signerAddress: accounts[0] });
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadTransactionSignature,
                 transactionHash,
                 accounts[0],
                 INVALID_SIGNATURE,

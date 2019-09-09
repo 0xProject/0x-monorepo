@@ -50,16 +50,16 @@ contract ReentrancyTester is
     function isReentrant(bytes calldata fnCallData)
         external
         nonReentrant
-        returns (bool isReentrant)
+        returns (bool allowsReentrancy)
     {
         (bool didSucceed, bytes memory resultData) = address(this).delegatecall(fnCallData);
         if (didSucceed) {
-            isReentrant = true;
+            allowsReentrancy = true;
         } else {
             if (resultData.equals(LibReentrancyGuardRichErrors.IllegalReentrancyError())) {
-                isReentrant = false;
+                allowsReentrancy = false;
             } else {
-                isReentrant = true;
+                allowsReentrancy = true;
             }
         }
     }
@@ -96,8 +96,8 @@ contract ReentrancyTester is
     /// @dev Overridden to always succeed.
     function _fillOrder(
         LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
+        uint256,
+        bytes memory
     )
         internal
         returns (LibFillResults.FillResults memory fillResults)
@@ -111,8 +111,8 @@ contract ReentrancyTester is
     /// @dev Overridden to always succeed.
     function _fillOrKillOrder(
         LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
+        uint256,
+        bytes memory
     )
         internal
         returns (LibFillResults.FillResults memory fillResults)
@@ -125,8 +125,8 @@ contract ReentrancyTester is
 
     /// @dev Overridden to always succeed.
     function _executeTransaction(
-        LibZeroExTransaction.ZeroExTransaction memory transaction,
-        bytes memory signature
+        LibZeroExTransaction.ZeroExTransaction memory,
+        bytes memory
     )
         internal
         returns (bytes memory resultData)
@@ -139,9 +139,9 @@ contract ReentrancyTester is
     function _batchMatchOrders(
         LibOrder.Order[] memory leftOrders,
         LibOrder.Order[] memory rightOrders,
-        bytes[] memory leftSignatures,
-        bytes[] memory rightSignatures,
-        bool shouldMaximallyFillOrders
+        bytes[] memory,
+        bytes[] memory,
+        bool
     )
         internal
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
@@ -171,9 +171,9 @@ contract ReentrancyTester is
     function _matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
-        bytes memory leftSignature,
-        bytes memory rightSignature,
-        bool shouldMaximallyFillOrders
+        bytes memory,
+        bytes memory,
+        bool
     )
         internal
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)

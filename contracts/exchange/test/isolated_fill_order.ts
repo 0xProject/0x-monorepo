@@ -507,7 +507,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
             const order = createOrder();
             const signature = createBadSignature();
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 exchange.getOrderHash(order),
                 order.makerAddress,
                 signature,
@@ -523,7 +523,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
             const goodSignature = createGoodSignature(SignatureType.Wallet);
             const badSignature = createBadSignature(SignatureType.Wallet);
             const expectedError = new ExchangeRevertErrors.SignatureError(
-                ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                 exchange.getOrderHash(order),
                 order.makerAddress,
                 badSignature,
