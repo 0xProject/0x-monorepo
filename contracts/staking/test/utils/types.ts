@@ -1,5 +1,7 @@
 import { BigNumber } from '@0x/utils';
 
+import { constants } from './constants';
+
 export interface StakerBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
@@ -53,9 +55,14 @@ export enum StakeStatus {
     Delegated,
 }
 
-export interface StakeInfo {
-    status: StakeStatus;
-    poolId?: string;
+export class StakeInfo {
+    public status: StakeStatus;
+    public poolId: string;
+
+    constructor(status: StakeStatus, poolId?: string) {
+        this.status = status;
+        this.poolId = poolId !== undefined ? poolId : constants.NIL_POOL_ID;
+    }
 }
 
 export interface StakeBalances {

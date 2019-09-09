@@ -1,5 +1,6 @@
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
 import { Decimal } from 'decimal.js';
 
@@ -89,4 +90,14 @@ export function assertRoughlyEquals(actual: Numberish, expected: Numberish, prec
         return;
     }
     expect(actual).to.bignumber.eq(expected);
+}
+
+/**
+ * Converts `amount` into a base unit amount with 18 digits.
+ */
+export function toBaseUnitAmount(amount: Numberish): BigNumber {
+    const decimals = 18;
+    const amountAsBigNumber = new BigNumber(amount);
+    const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
+    return baseUnitAmount;
 }
