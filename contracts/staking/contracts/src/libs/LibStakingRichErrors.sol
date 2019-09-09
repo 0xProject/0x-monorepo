@@ -22,6 +22,12 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
 
 library LibStakingRichErrors {
+
+    enum ProtocolFeePaymentErrorCodes {
+        ZeroProtocolFeePaid,
+        MismatchedFeeAndPayment
+    }
+
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
     bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
         0xf7806c4e;
@@ -112,6 +118,14 @@ library LibStakingRichErrors {
         MAKER_ADDRESS_NOT_PENDING_ADD,
         POOL_IS_FULL
     }
+
+    // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
+    bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
+        0xefd6cb33;
+
+    // bytes4(keccak256("InvalidWethAssetDataError()"))
+    bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
+        hex"24bf322c";
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -359,6 +373,23 @@ library LibStakingRichErrors {
         );
     }
 
+    function InvalidProtocolFeePaymentError(
+        ProtocolFeePaymentErrorCodes errorCode,
+        uint256 expectedProtocolFeePaid,
+        uint256 actualProtocolFeePaid
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR,
+            errorCode,
+            expectedProtocolFeePaid,
+            actualProtocolFeePaid
+        );
+    }
+
     function RewardVaultNotSetError()
         internal
         pure
@@ -388,4 +419,11 @@ library LibStakingRichErrors {
         return PROXY_DESTINATION_CANNOT_BE_NIL;
     }
 
+    function InvalidWethAssetDataError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return INVALID_WETH_ASSET_DATA_ERROR;
+    }
 }

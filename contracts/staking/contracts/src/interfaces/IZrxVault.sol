@@ -48,17 +48,17 @@ interface IZrxVault {
         uint256 amount
     );
 
-    /// @dev Emitted when the ERC20 Proxy is changed.
-    /// @param erc20ProxyAddress Address of the new ERC20 proxy.
-    event Erc20ProxyChanged(
-        address erc20ProxyAddress
+    /// @dev Emitted when the Zrx Proxy is changed.
+    /// @param zrxProxyAddress Address of the new ERC20 proxy.
+    event ZrxProxyChanged(
+        address zrxProxyAddress
     );
 
-    /// @dev Sets the ERC20 proxy.
+    /// @dev Sets the Zrx proxy.
     /// Note that only the contract owner can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param erc20ProxyAddress Address of the 0x ERC20 Proxy.
-    function setErc20Proxy(address erc20ProxyAddress)
+    /// @param zrxProxyAddress Address of the 0x Zrx Asset Proxy.
+    function setZrxProxy(address zrxProxyAddress)
         external;
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.

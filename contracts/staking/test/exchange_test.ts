@@ -33,7 +33,13 @@ blockchainTests('Exchange Integrations', env => {
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract);
+        stakingWrapper = new StakingWrapper(
+            env.provider,
+            owner,
+            erc20ProxyContract,
+            erc20ProxyContract,
+            zrxTokenContract,
+        );
         await stakingWrapper.deployAndConfigureContractsAsync();
     });
     blockchainTests.resets('Exchange Tracking in Staking Contract', () => {

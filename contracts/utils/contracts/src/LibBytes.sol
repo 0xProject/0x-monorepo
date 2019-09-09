@@ -617,7 +617,7 @@ library LibBytes {
         );
     }
 
-    /// @dev Writes a new length to a byte array. 
+    /// @dev Writes a new length to a byte array.
     ///      Decreasing length will lead to removing the corresponding lower order bytes from the byte array.
     ///      Increasing length may lead to appending adjacent in-memory bytes to the end of the byte array.
     /// @param b Bytes array to write new length to.

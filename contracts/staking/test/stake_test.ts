@@ -5,6 +5,8 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { artifacts } from '../src';
+
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 import { StakeInfo, StakeStatus } from './utils/types';
@@ -40,8 +42,14 @@ blockchainTests.resets('Stake Statuses', env => {
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(env.provider, owner, erc20ProxyContract, zrxTokenContract);
-        await stakingWrapper.deployAndConfigureContractsAsync();
+        stakingWrapper = new StakingWrapper(
+            env.provider,
+            owner,
+            erc20ProxyContract,
+            erc20ProxyContract,
+            zrxTokenContract,
+        );
+        await stakingWrapper.deployAndConfigureContractsAsync(artifacts.TestStaking);
         // setup new staker
         staker = new StakerActor(actors[0], stakingWrapper);
         // setup pools
