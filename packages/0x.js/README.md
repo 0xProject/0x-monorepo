@@ -49,6 +49,32 @@ Download the UMD module from our [releases page](https://github.com/0xProject/0x
 <script type="text/javascript" src="0x.js"></script>
 ```
 
+#### Webpack config
+
+If bundling your project with [Webpack](https://webpack.js.org/), add the following to your `webpack.config.js`:
+
+If building for web:
+
+```js
+node: {
+    fs: 'empty';
+}
+```
+
+If building a node library:
+
+```js
+externals: {
+    fs: true;
+}
+```
+
+`ContractWrappers` uses WebAssembly to simulate Ethereum calls. This toolchain involves generated 'glue' code that requires the `fs` built-in, but won't actually use it in a web environment. We tell Webpack not to resolve them since we won't need them. The specific dependency is [here](https://github.com/ethereumjs/rustbn.js/blob/master/lib/index.asm.js).
+
+Also see:
+* https://webpack.js.org/configuration/externals
+* https://webpack.js.org/configuration/node
+
 ## Contributing
 
 We strongly recommend that the community help us make improvements and determine the future direction of 0x protocol. To report bugs within this package, please create an issue in this repository.
