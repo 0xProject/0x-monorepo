@@ -72,8 +72,9 @@ externals: {
 `ContractWrappers` uses WebAssembly to simulate Ethereum calls. This toolchain involves generated 'glue' code that requires the `fs` built-in, but won't actually use it in a web environment. We tell Webpack not to resolve them since we won't need them. The specific dependency is [here](https://github.com/ethereumjs/rustbn.js/blob/master/lib/index.asm.js).
 
 Also see:
-* https://webpack.js.org/configuration/externals
-* https://webpack.js.org/configuration/node
+
+-   https://webpack.js.org/configuration/externals
+-   https://webpack.js.org/configuration/node
 
 ## Contributing
 
