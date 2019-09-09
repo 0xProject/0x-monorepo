@@ -116,8 +116,7 @@ contract MixinExchangeCore is
     }
 
     /// @dev After calling, the order can not be filled anymore.
-    ///      Throws if order is invalid or sender does not have permission to cancel.
-    /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+    /// @param order Order struct containing order specifications.
     function cancelOrder(LibOrder.Order memory order)
         public
         payable
@@ -217,7 +216,12 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount, protocolFeeMultiplier, tx.gasprice);
+        fillResults = LibFillResults.calculateFillResults(
+            order,
+            takerAssetFilledAmount,
+            protocolFeeMultiplier,
+            tx.gasprice
+        );
 
         bytes32 orderHash = orderInfo.orderHash;
 
@@ -382,7 +386,7 @@ contract MixinExchangeCore is
                 )
             ) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    LibExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
+                    LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature

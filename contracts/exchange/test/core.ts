@@ -281,7 +281,7 @@ blockchainTests.resets('Exchange core', () => {
                     takerAssetFillAmount: fillAmount,
                 });
                 const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                     orderHashHex,
                     signedOrder.makerAddress,
                     signedOrder.signature,
@@ -312,7 +312,7 @@ blockchainTests.resets('Exchange core', () => {
                     takerAssetFillAmount: fillAmount,
                 });
                 const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                     orderHashHex,
                     signedOrder.makerAddress,
                     signedOrder.signature,
@@ -343,7 +343,7 @@ blockchainTests.resets('Exchange core', () => {
                     takerAssetFillAmount: fillAmount,
                 });
                 const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
+                    ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
                     orderHashHex,
                     signedOrder.makerAddress,
                     signedOrder.signature,

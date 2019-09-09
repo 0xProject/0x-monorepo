@@ -50,7 +50,8 @@ library LibExchangeRichErrors {
     }
 
     enum SignatureErrorCodes {
-        BAD_SIGNATURE,
+        BAD_ORDER_SIGNATURE,
+        BAD_TRANSACTION_SIGNATURE,
         INVALID_LENGTH,
         UNSUPPORTED,
         ILLEGAL,
@@ -120,10 +121,6 @@ library LibExchangeRichErrors {
     // bytes4(keccak256("TransactionError(uint8,bytes32)"))
     bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
         0xf5985184;
-
-    // bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"))
-    bytes4 internal constant TRANSACTION_SIGNATURE_ERROR_SELECTOR =
-        0xbfd56ef6;
 
     // bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"))
     bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
@@ -252,14 +249,6 @@ library LibExchangeRichErrors {
         returns (bytes4)
     {
         return TRANSACTION_ERROR_SELECTOR;
-    }
-
-    function TransactionSignatureErrorSelector()
-        internal
-        pure
-        returns (bytes4)
-    {
-        return TRANSACTION_SIGNATURE_ERROR_SELECTOR;
     }
 
     function TransactionExecutionErrorSelector()
@@ -535,23 +524,6 @@ library LibExchangeRichErrors {
             TRANSACTION_ERROR_SELECTOR,
             errorCode,
             transactionHash
-        );
-    }
-
-    function TransactionSignatureError(
-        bytes32 transactionHash,
-        address signerAddress,
-        bytes memory signature
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            TRANSACTION_SIGNATURE_ERROR_SELECTOR,
-            transactionHash,
-            signerAddress,
-            signature
         );
     }
 

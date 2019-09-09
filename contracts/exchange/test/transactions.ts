@@ -229,7 +229,8 @@ blockchainTests.resets('Exchange transactions', env => {
                     const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
                     transaction.signature = invalidSigHex;
                     const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
-                    const expectedError = new ExchangeRevertErrors.TransactionSignatureError(
+                    const expectedError = new ExchangeRevertErrors.SignatureError(
+                        ExchangeRevertErrors.SignatureErrorCode.BadTransactionSignature,
                         transactionHashHex,
                         transaction.signerAddress,
                         transaction.signature,

@@ -117,7 +117,7 @@ contract MixinTransactions is
         _setCurrentContextAddressIfRequired(signerAddress, address(0));
 
         emit TransactionExecution(transactionHash);
-
+        
         return returnData;
     }
 
@@ -178,7 +178,8 @@ contract MixinTransactions is
                 signature
             )
         ) {
-            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionSignatureError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.BAD_TRANSACTION_SIGNATURE,
                 transactionHash,
                 signerAddress,
                 signature
