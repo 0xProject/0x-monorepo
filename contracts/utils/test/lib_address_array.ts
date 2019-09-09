@@ -1,11 +1,4 @@
-import {
-    addressUtils,
-    chaiSetup,
-    expectContractCallFailedAsync,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { addressUtils, chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -55,8 +48,7 @@ describe('LibAddressArray', () => {
             const arr = _.times(3, () => addressUtils.generatePseudoRandomAddress());
             const addr = addressUtils.generatePseudoRandomAddress();
             const freeMemOffset = new BigNumber(-1);
-            return expectContractCallFailedAsync(
-                lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr),
+            return expect(lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr)).to.be.rejectedWith(
                 RevertReason.InvalidFreeMemoryPtr,
             );
         });
