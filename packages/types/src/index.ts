@@ -348,14 +348,22 @@ export interface ObjectMap<T> {
 }
 
 /**
- * baseAssetData: The address of assetData designated as the baseToken in the currency pair calculation of price
- * quoteAssetData: The address of assetData designated as the quoteToken in the currency pair calculation of price
- * limit: Maximum number of bids and asks in orderbook snapshot
+ * makerAssetData: Subscribes to new orders with the specified `makerAssetData`
+ * takerAssetData: subscribes to new orders with the specified `takerAssetData`
+ * traderAssetData: subscribes to new orders where either `makerAssetData` or `takerAssetData` has the value specified
+ * makerAssetProxyId: returns orders where the maker asset is of certain asset proxy id (example: `0xf47261b0` for ERC20, `0x02571792` for ERC721)
+ * takerAssetProxyId: returns orders where the taker asset is of certain asset proxy id(example: `0xf47261b0` for ERC20, `0x02571792` for ERC721)
+ * makerAssetAddress: subscribes to new orders where the contract address for the maker asset matches the value specified
+ * takerAssetAddress: subscribes to new orders where the contract address for the taker asset matches the value specified
  */
 export interface OrdersChannelSubscriptionOpts {
-    baseAssetData: string;
-    quoteAssetData: string;
-    limit: number;
+    makerAssetData?: string;
+    takerAssetData?: string;
+    traderAssetData?: string;
+    makerAssetProxyId?: string;
+    takerAssetProxyId?: string;
+    makerAssetAddress?: string;
+    takerAssetAddress?: string;
 }
 
 export type OrdersChannelMessage = UpdateOrdersChannelMessage | UnknownOrdersChannelMessage;
