@@ -13,7 +13,7 @@ import { MembersByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './uti
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.skip('Testing Rewards', env => {
+blockchainTests.resets.only('Testing Rewards', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
@@ -511,15 +511,27 @@ blockchainTests.resets.skip('Testing Rewards', env => {
             await payProtocolFeeAndFinalize();
             // earn reward
             await payProtocolFeeAndFinalize(rewardForDelegator);
+
+
+
+
+
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+
+
+
+
             await payProtocolFeeAndFinalize();
+
             // this should not go do the delegator
             await payProtocolFeeAndFinalize(rewardNotForDelegator);
+
+
             // sanity check final balances
             await validateEndBalances({
                 stakerEthVaultBalance_1: rewardForDelegator,
