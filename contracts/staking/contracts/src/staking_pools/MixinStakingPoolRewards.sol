@@ -175,10 +175,12 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
+        /*
         if (_hasDelegatedThisEpoch(unsyncedDelegatedStakeToPoolByOwner, currentEpoch)) {
             // sync is already up-to-date
             return;
         }
+        */
 
         // get the most recent cumulative rewards; these will serve as a reference point when updating dependencies
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
