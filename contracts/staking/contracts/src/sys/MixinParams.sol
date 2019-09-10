@@ -140,7 +140,7 @@ contract MixinParams is
         // Alpha must be 0 < x < 1
         if (numerator > denominator || denominator == 0) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValue(
+                LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
             ));
         }
@@ -156,7 +156,7 @@ contract MixinParams is
     {
         if (weight > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValue(
+                LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
             ));
         }
@@ -172,7 +172,7 @@ contract MixinParams is
     {
         if (amount == 0) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValue(
+                LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
             ));
         }
