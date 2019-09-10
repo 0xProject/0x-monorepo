@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Redirect to `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ]
+    },
+    {
         "version": "4.2.0",
         "changes": [
             {

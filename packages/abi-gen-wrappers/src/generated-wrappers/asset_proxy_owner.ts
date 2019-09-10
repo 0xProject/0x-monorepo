@@ -270,6 +270,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).removeOwner.callAsync(owner, txData);
+            const txHash = await (this as any).removeOwner.sendTransactionAsync(owner, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -335,11 +340,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).removeOwner.callAsync(owner, txData);
-            const txHash = await (this as any).removeOwner.sendTransactionAsync(owner, txData);
-            return txHash;
         },
     };
     /**
@@ -427,6 +427,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).revokeConfirmation.callAsync(transactionId, txData);
+            const txHash = await (this as any).revokeConfirmation.sendTransactionAsync(transactionId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -496,14 +504,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).revokeConfirmation.callAsync(transactionId, txData);
-            const txHash = await (this as any).revokeConfirmation.sendTransactionAsync(transactionId, txData);
-            return txHash;
         },
     };
     public isOwner = {
@@ -743,6 +743,17 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).executeRemoveAuthorizedAddressAtIndex.callAsync(transactionId, txData);
+            const txHash = await (this as any).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
+                transactionId,
+                txData,
+            );
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -815,17 +826,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).executeRemoveAuthorizedAddressAtIndex.callAsync(transactionId, txData);
-            const txHash = await (this as any).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
-                transactionId,
-                txData,
-            );
-            return txHash;
         },
     };
     public secondsTimeLocked = {
@@ -1083,6 +1083,19 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            assetProxyContract: string,
+            isRegistered: boolean,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).registerAssetProxy.callAsync(assetProxyContract, isRegistered, txData);
+            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(
+                assetProxyContract,
+                isRegistered,
+                txData,
+            );
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1161,19 +1174,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).registerAssetProxy.callAsync(assetProxyContract, isRegistered, txData);
-            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(
-                assetProxyContract,
-                isRegistered,
-                txData,
-            );
-            return txHash;
         },
     };
     /**
@@ -1261,6 +1261,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).addOwner.callAsync(owner, txData);
+            const txHash = await (this as any).addOwner.sendTransactionAsync(owner, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1324,11 +1329,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).addOwner.callAsync(owner, txData);
-            const txHash = await (this as any).addOwner.sendTransactionAsync(owner, txData);
-            return txHash;
         },
     };
     /**
@@ -1496,6 +1496,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _secondsTimeLocked: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).changeTimeLock.callAsync(_secondsTimeLocked, txData);
+            const txHash = await (this as any).changeTimeLock.sendTransactionAsync(_secondsTimeLocked, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1567,14 +1575,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _secondsTimeLocked: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).changeTimeLock.callAsync(_secondsTimeLocked, txData);
-            const txHash = await (this as any).changeTimeLock.sendTransactionAsync(_secondsTimeLocked, txData);
-            return txHash;
         },
     };
     public isAssetProxyRegistered = {
@@ -2177,6 +2177,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _required: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).changeRequirement.callAsync(_required, txData);
+            const txHash = await (this as any).changeRequirement.sendTransactionAsync(_required, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -2244,14 +2252,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _required: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).changeRequirement.callAsync(_required, txData);
-            const txHash = await (this as any).changeRequirement.sendTransactionAsync(_required, txData);
-            return txHash;
         },
     };
     /**
@@ -2339,6 +2339,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).confirmTransaction.callAsync(transactionId, txData);
+            const txHash = await (this as any).confirmTransaction.sendTransactionAsync(transactionId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -2408,14 +2416,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).confirmTransaction.callAsync(transactionId, txData);
-            const txHash = await (this as any).confirmTransaction.sendTransactionAsync(transactionId, txData);
-            return txHash;
         },
     };
     /**
@@ -2540,6 +2540,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            destination: string,
+            value: BigNumber,
+            data: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).submitTransaction.callAsync(destination, value, data, txData);
+            const txHash = await (this as any).submitTransaction.sendTransactionAsync(destination, value, data, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -2626,16 +2636,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            destination: string,
-            value: BigNumber,
-            data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).submitTransaction.callAsync(destination, value, data, txData);
-            const txHash = await (this as any).submitTransaction.sendTransactionAsync(destination, value, data, txData);
-            return txHash;
         },
     };
     public confirmationTimes = {
@@ -2936,6 +2936,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            owner: string,
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).replaceOwner.callAsync(owner, newOwner, txData);
+            const txHash = await (this as any).replaceOwner.sendTransactionAsync(owner, newOwner, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -3014,15 +3023,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            owner: string,
-            newOwner: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).replaceOwner.callAsync(owner, newOwner, txData);
-            const txHash = await (this as any).replaceOwner.sendTransactionAsync(owner, newOwner, txData);
-            return txHash;
         },
     };
     /**
@@ -3110,6 +3110,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).executeTransaction.callAsync(transactionId, txData);
+            const txHash = await (this as any).executeTransaction.sendTransactionAsync(transactionId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -3179,14 +3187,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).executeTransaction.callAsync(transactionId, txData);
-            const txHash = await (this as any).executeTransaction.sendTransactionAsync(transactionId, txData);
-            return txHash;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>;

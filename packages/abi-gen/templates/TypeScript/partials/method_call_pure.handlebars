@@ -1,0 +1,37 @@
+/**
+ * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an 
+ * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+ * since they don't modify state.
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+{{#if devdoc.return}}
+ * @returns {{devdoc.return}}
+{{/if}}
+ */
+async callAsync(
+{{> typed_params inputs=inputs}}
+    callData: Partial<CallData> = {},
+    defaultBlock?: BlockParam,
+): Promise<{{> return_type outputs=outputs}}> {
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+        schemas.addressSchema,
+        schemas.numberSchema,
+        schemas.jsNumber,
+    ]);
+    if (defaultBlock !== undefined) {
+        assert.isBlockParam('defaultBlock', defaultBlock);
+    }
+    const self = this as any as {{contractName}}Contract;
+    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
+    const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+    
+    const rawCallResult = await self.evmExecAsync(encodedDataBytes);
+    BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    // tslint:disable boolean-naming
+    const result = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(rawCallResult);
+    // tslint:enable boolean-naming
+    return result;
+},
