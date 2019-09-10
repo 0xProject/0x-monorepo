@@ -55,11 +55,13 @@ interface IStructs {
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
     /// Always load this struct using _loadAndSyncBalance or _loadUnsyncedBalance.
+    /// @param isInitialized
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in the next epoch.
     struct StoredBalance {
-        uint64 currentEpoch;
+        bool isInitialized;
+        uint32 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
     }

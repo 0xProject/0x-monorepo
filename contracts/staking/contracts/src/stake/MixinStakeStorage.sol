@@ -93,7 +93,7 @@ contract MixinStakeStorage is
         // sync
         uint256 currentEpoch = getCurrentEpoch();
         if (currentEpoch > balance.currentEpoch) {
-            balance.currentEpoch = currentEpoch.downcastToUint64();
+            balance.currentEpoch = uint32(currentEpoch);//.downcastToUint64();
             balance.currentEpochBalance = balance.nextEpochBalance;
         }
         return balance;
@@ -183,6 +183,7 @@ contract MixinStakeStorage is
     {
         // note - this compresses into a single `sstore` when optimizations are enabled,
         // since the StakeBalance struct occupies a single word of storage.
+        balancePtr.isInitialized = true;
         balancePtr.currentEpoch = balance.currentEpoch;
         balancePtr.nextEpochBalance = balance.nextEpochBalance;
         balancePtr.currentEpochBalance = balance.currentEpochBalance;

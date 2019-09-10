@@ -172,6 +172,15 @@ blockchainTests.resets.only('Testing Rewards', env => {
             await finalizer.finalizeAsync([{ reward: fee, poolId }]);
         };
         const ZERO = new BigNumber(0);
+        it('Reward balance should be zero if not delegated', async () => {
+            // sanity balances - all zero
+            await validateEndBalances({});
+        });
+        it('Reward balance should be zero if not delegated, when epoch is greater than 0', async () => {
+            await payProtocolFeeAndFinalize();
+            // sanity balances - all zero
+            await validateEndBalances({});
+        });
         it('Reward balance should be zero in same epoch as delegation', async () => {
             const amount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);

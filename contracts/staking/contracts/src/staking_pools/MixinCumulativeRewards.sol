@@ -103,11 +103,6 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        if (epoch == 0) {
-            // @todo edge case
-            return;
-        }
-
         // unrecord dependency
         uint256 newReferenceCounter = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
         cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
@@ -177,6 +172,12 @@ contract MixinCumulativeRewards is
         view
         returns (uint256)
     {
+        // sanity check
+        if (memberStakeOverInterval == 0) {
+            return 0;
+        }
+
+        // compute reward
         IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
         IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
         uint256 reward = LibFractions.scaleFractionalDifference(
