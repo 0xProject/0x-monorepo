@@ -175,7 +175,7 @@ export class PoolAlreadyExistsError extends RevertError {
 
 export class InvalidParamValueError extends RevertError {
     constructor(error?: InvalidParamValueErrorCode) {
-        super('InvalidParamValue', 'InvalidParamValue(uint8 error)', {
+        super('InvalidParamValueError', 'InvalidParamValueError(uint8 error)', {
             error,
         });
     }
