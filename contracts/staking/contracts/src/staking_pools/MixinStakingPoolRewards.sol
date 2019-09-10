@@ -130,33 +130,29 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 totalReward)
     {
-        // cache some values to reduce sloads
-        IStructs.StoredBalance memory delegatedStake = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]);
-        uint256 currentEpoch = getCurrentEpoch();
-
         // value is always zero in these two scenarios:
         //   1. The owner's delegated is current as of this epoch: their rewards have been moved to the ETH vault.
         //   2. The current epoch is zero: delegation begins at epoch 1
-        if (delegatedStake.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
+        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
 
         // compute reward accumulated during `delegatedStake.currentEpoch`;
-        uint256 rewardsAccumulatedDuringLastStoredEpoch = (delegatedStake.currentEpochBalance != 0)
+        uint256 rewardsAccumulatedDuringLastStoredEpoch = (unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance != 0)
             ? _computeMemberRewardOverInterval(
                 poolId,
-                delegatedStake.currentEpochBalance,
-                delegatedStake.currentEpoch - 1,
-                delegatedStake.currentEpoch
+                unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance,
+                unsyncedDelegatedStakeToPoolByOwner.currentEpoch - 1,
+                unsyncedDelegatedStakeToPoolByOwner.currentEpoch
             )
             : 0;
 
         // compute the reward accumulated by the `next` balance;
         // this starts at `delegatedStake.currentEpoch + 1` and goes up until the last epoch, during which
         // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > delegatedStake.currentEpoch)
+        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > unsyncedDelegatedStakeToPoolByOwner.currentEpoch)
             ? _computeMemberRewardOverInterval(
                 poolId,
-                delegatedStake.nextEpochBalance,
-                delegatedStake.currentEpoch,
+                unsyncedDelegatedStakeToPoolByOwner.nextEpochBalance,
+                unsyncedDelegatedStakeToPoolByOwner.currentEpoch,
                 cumulativeRewardsByPoolLastStored[poolId]
             )
             : 0;
@@ -164,5 +160,64 @@ contract MixinStakingPoolRewards is
         // compute the total reward
         totalReward = rewardsAccumulatedDuringLastStoredEpoch.safeAdd(rewardsAccumulatedAfterLastStoredEpoch);
         return totalReward;
+    }
+
+    /// @dev To compute a delegator's reward we must know the cumulative reward
+    ///      at the epoch before they start earning rewards. If they were already delegated then
+    ///      we also need to know the value at the epoch in which they modified
+    ///      their delegated stake for this pool. See `computeRewardBalanceOfDelegator`.
+    function _syncCumulativeRewards(
+        bytes32 poolId,
+        address member,
+        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
+        uint256 currentEpoch
+
+    )
+        internal
+    {
+        // @TODO -- do we ever need to record a dependency for currentEpoch = 0?
+        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch || currentEpoch == 0) {
+            // sync is already up-to-date
+            return;
+        }
+
+        // get the most recent cumulative rewards; these will serve as a reference point when updating dependencies
+        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
+
+        // record dependency on current epoch.
+        _recordDependencyOnCumulativeReward(
+            poolId,
+            currentEpoch,
+            mostRecentCumulativeRewardInfo
+        );
+
+        uint256 lastEpoch = currentEpoch.safeSub(1);
+        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch < lastEpoch) {
+            // record dependency on last epoch
+            _recordDependencyOnCumulativeReward(
+                poolId,
+                lastEpoch,
+                mostRecentCumulativeRewardInfo
+            );
+
+            // unrecord dependency on previously stored "current epoch"
+            _unrecordDependencyOnCumulativeReward(
+                poolId,
+                unsyncedDelegatedStakeToPoolByOwner.currentEpoch, // previously stored "current epoch"
+                currentEpoch
+            );
+        } else {
+            // do nothing because we already have a dependency on `lastEpoch`, which was created
+            // when `unsyncedDelegatedStakeToPoolByOwner.currentEpoch` was set.
+        }
+
+        // unrecord dependency on previously stored "last epoch", if it existed.
+        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch > 0) {
+            _unrecordDependencyOnCumulativeReward(
+                poolId,
+                uint256(unsyncedDelegatedStakeToPoolByOwner.currentEpoch).safeSub(1), // previously stored "last epoch"
+                currentEpoch
+            );
+        }
     }
 }

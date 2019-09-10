@@ -48,7 +48,7 @@ contract MixinCumulativeRewards is
 
     /// @dev returns true iff Cumulative Rewards are set
     function _isCumulativeRewardSet(IStructs.Fraction memory cumulativeReward)
-        private
+        internal
         pure
         returns (bool)
     {
@@ -58,67 +58,63 @@ contract MixinCumulativeRewards is
         return cumulativeReward.denominator != 0;
     }
 
-    /// @dev To compute a delegator's reward we must know the cumulative reward
-    ///      at the epoch before they start earning rewards. If they were already delegated then
-    ///      we also need to know the value at the epoch in which they modified
-    ///      their delegated stake for this pool. See `computeRewardBalanceOfDelegator`.
+    function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
+        internal
+    {
+        cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
+    }
 
-    function _syncCumulativeRewards(
+    function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
+        internal
+        returns (IStructs.CumulativeRewardInfo memory)
+    {
+        // fetch the last epoch at which we stored a cumulative reward for this pool
+        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
+
+        // query and return cumulative reward info for this pool
+        return IStructs.CumulativeRewardInfo({
+            cumulativeReward: cumulativeRewardsByPool[poolId][cumulativeRewardsLastStored],
+            cumulativeRewardEpoch: cumulativeRewardsLastStored
+        });
+    }
+
+    function _recordDependencyOnCumulativeReward(
         bytes32 poolId,
-        address member,
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
-        uint256 currentEpoch
-
+        uint256 epoch,
+        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo
     )
         internal
     {
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch) {
-            // sync is already up-to-date
+        // record dependency
+        cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
+
+        // ensure dependency has a value, otherwise copy it from the most recent reward
+        if (!_isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch])) {
+            assert(epoch > mostRecentCumulativeRewardInfo.cumulativeRewardEpoch);
+            cumulativeRewardsByPool[poolId][epoch] = mostRecentCumulativeRewardInfo.cumulativeReward;
+            cumulativeRewardsByPoolLastStored[poolId] = epoch;
+        }
+    }
+
+    function _unrecordDependencyOnCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch,
+        uint256 mostRecentCumulativeRewardEpoch
+    )
+        internal
+    {
+        if (epoch == 0) {
+            // @todo edge case
             return;
         }
 
-        // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+        // unrecord dependency
+        uint256 newReferenceCounter = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
+        cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
 
-        // fetch the last epoch at which we stored an entry for this pool
-        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
-
-        // fetch the most recent cumulative rewards entry for this pool
-        IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
-
-        // handle current epoch
-        if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[currentEpoch])) {
-            cumulativeRewardsByPoolPtr[currentEpoch] = mostRecentCumulativeRewards;
-        }
-        cumulativeRewardsByPoolReferenceCounter[poolId][currentEpoch] += 1;
-
-        // handle last epoch
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch + 1 < currentEpoch) {
-            // copy our most up-to-date cumulative rewards for last epoch, if necessary.
-            // this is necessary if the pool does not earn any rewards this epoch;
-            // if it does then this value may be overwritten when the epoch is finalized.
-            if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[currentEpoch - 1])) {
-                cumulativeRewardsByPoolPtr[currentEpoch - 1] = mostRecentCumulativeRewards;
-                cumulativeRewardsByPoolLastStored[poolId] = currentEpoch - 1;
-            }
-            cumulativeRewardsByPoolReferenceCounter[poolId][currentEpoch - 1] += 1;
-
-            // unload
-            cumulativeRewardsByPoolReferenceCounter[poolId][unsyncedDelegatedStakeToPoolByOwner.currentEpoch] -= 1;
-            if (cumulativeRewardsByPoolReferenceCounter[poolId][unsyncedDelegatedStakeToPoolByOwner.currentEpoch] == 0) {
-                // clear state that is no longer needed
-                cumulativeRewardsByPoolPtr[unsyncedDelegatedStakeToPoolByOwner.currentEpoch] = IStructs.Fraction({numerator: 0, denominator: 0});
-            }
-        }
-
-        // handle last last epoch
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch > 0) {
-            // unload
-            cumulativeRewardsByPoolReferenceCounter[poolId][unsyncedDelegatedStakeToPoolByOwner.currentEpoch - 1] -= 1;
-            if (cumulativeRewardsByPoolReferenceCounter[poolId][unsyncedDelegatedStakeToPoolByOwner.currentEpoch - 1] == 0) {
-                // clear state that is no longer needed
-                cumulativeRewardsByPoolPtr[unsyncedDelegatedStakeToPoolByOwner.currentEpoch - 1] = IStructs.Fraction({numerator: 0, denominator: 0});
-            }
+        // clear cumulative reward from state, if it is no longer needed
+        if (newReferenceCounter == 0 && epoch < mostRecentCumulativeRewardEpoch) {
+            _unsetCumulativeReward(poolId, epoch);
         }
     }
 

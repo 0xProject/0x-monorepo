@@ -110,4 +110,9 @@ interface IStructs {
         bytes32 poolId;
         bool confirmed;
     }
+
+    struct CumulativeRewardInfo {
+        IStructs.Fraction cumulativeReward;
+        uint256 cumulativeRewardEpoch;
+    }
 }
