@@ -18,6 +18,7 @@
         "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibStakingRichErrors.json",
         "generated-artifacts/MixinConstants.json",
+        "generated-artifacts/MixinCumulativeRewards.json",
         "generated-artifacts/MixinDeploymentConstants.json",
         "generated-artifacts/MixinEthVault.json",
         "generated-artifacts/MixinExchangeFees.json",

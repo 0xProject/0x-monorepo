@@ -20,6 +20,7 @@ import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
+import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
@@ -71,6 +72,7 @@ export const artifacts = {
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,
     MixinStakeStorage: MixinStakeStorage as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
+    MixinCumulativeRewards: MixinCumulativeRewards as ContractArtifact,
     MixinEthVault: MixinEthVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
