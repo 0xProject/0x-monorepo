@@ -142,7 +142,7 @@ export function getContractAddressesForNetworkOrThrow(networkId: NetworkId): Con
 export function getNetworkIdByExchangeAddressOrThrow(exchangeAddress: string): NetworkId {
     for (const networkId of Object.keys(networkToAddresses)) {
         if (networkToAddresses[networkId as any].exchange === exchangeAddress) {
-            return networkId as any;
+            return (networkId as any) as NetworkId;
         }
     }
     throw new Error(
