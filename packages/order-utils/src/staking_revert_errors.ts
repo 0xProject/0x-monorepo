@@ -10,7 +10,7 @@ export enum MakerPoolAssignmentErrorCodes {
 }
 
 export enum OperatorShareErrorCodes {
-    OperatorShareMustBeBetween0And100,
+    OperatorShareTooLarge,
     CanOnlyDecreaseOperatorShare,
 }
 
