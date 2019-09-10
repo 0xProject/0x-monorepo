@@ -96,9 +96,8 @@ contract StakingPoolRewardVault is
         )
     {
         // update balance of pool
-        Pool memory pool = poolById[poolId];
+        Pool storage pool = poolById[poolId];
         (operatorPortion, membersPortion) = _incrementPoolBalances(pool, amount, operatorOnly);
-        poolById[poolId] = pool;
         return (operatorPortion, membersPortion);
     }
 
@@ -193,7 +192,7 @@ contract StakingPoolRewardVault is
         }
 
         // pool must not exist
-        Pool memory pool = poolById[poolId];
+        Pool storage pool = poolById[poolId];
         if (pool.initialized) {
             LibRichErrors.rrevert(LibStakingRichErrors.PoolAlreadyExistsError(
                 poolId
@@ -204,7 +203,6 @@ contract StakingPoolRewardVault is
         pool.initialized = true;
         pool.operatorAddress = operatorAddress;
         pool.operatorShare = operatorShare;
-        poolById[poolId] = pool;
 
         // notify
         emit StakingPoolRegistered(poolId, operatorShare);
@@ -295,9 +293,8 @@ contract StakingPoolRewardVault is
     /// @param amount Amount to add to balance.
     /// @param operatorOnly Only give this balance to the operator.
     /// @return portion of amount given to operator and delegators, respectively.
-    function _incrementPoolBalances(Pool memory pool, uint256 amount, bool operatorOnly)
+    function _incrementPoolBalances(Pool storage pool, uint256 amount, bool operatorOnly)
         private
-        pure
         returns (uint256 operatorPortion, uint256 membersPortion)
     {
         // compute portions. One of the two must round down: the operator always receives the leftover from rounding.

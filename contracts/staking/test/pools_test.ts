@@ -381,6 +381,24 @@ blockchainTests('Staking Pool Management', env => {
             // decrease operator share
             await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, increasedOperatorShare, revertError);
         });
+        it('Should fail if operator calls decreaseStakingPoolOperatorShare but newOperatorShare == oldOperatorShare', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+
+            const revertError = new StakingRevertErrors.OperatorShareError(
+                StakingRevertErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
+                poolId,
+                operatorShare,
+            );
+            // decrease operator share
+            await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare, revertError);
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
