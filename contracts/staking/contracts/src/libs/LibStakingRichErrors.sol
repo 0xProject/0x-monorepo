@@ -135,9 +135,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INITIALIZATION_ERROR_SELECTOR =
         0x0b02d773;
 
-    // bytes4(keccak256("InvalidParamValue(uint8)"))
+    // bytes4(keccak256("InvalidParamValueError(uint8)"))
     bytes4 internal constant INVALID_PARAM_VALUE_ERROR_SELECTOR =
-        0x7b40eece;
+        0xfc45bd11;
 
     // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
@@ -429,7 +429,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidParamValue(InvalidParamValueErrorCode code)
+    function InvalidParamValueError(InvalidParamValueErrorCode code)
         internal
         pure
         returns (bytes memory)
