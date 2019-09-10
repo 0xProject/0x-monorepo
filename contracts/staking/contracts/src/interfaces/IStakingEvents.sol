@@ -53,6 +53,30 @@ interface IStakingEvents {
         uint256 earliestEndTimeInSeconds
     );
 
+    /// @dev Emitted by MixinFinalizer when an epoch has ended.
+    /// @param epoch The closing epoch.
+    /// @param numActivePools Number of active pools in the closing epoch.
+    /// @param rewardsAvailable Rewards available to all active pools.
+    /// @param totalWeightedStake Total weighted stake across all active pools.
+    /// @param totalFeesCollected Total fees collected across all active pools.
+    event EpochFinalized(
+        uint256 epoch,
+        uint256 numActivePools,
+        uint256 rewardsAvailable,
+        uint256 totalWeightedStake,
+        uint256 totalFeesCollected
+    );
+
+    /// @dev Emitted by MixinFinalizer when an epoch is fully finalized.
+    /// @param epoch The epoch being finalized.
+    /// @param rewardsPaid Total amount of rewards paid out.
+    /// @param rewardsRemaining Rewards left over.
+    event EpochFinalized(
+        uint256 epoch,
+        uint256 rewardsPaid,
+        uint256 rewardsRemaining
+    );
+
     /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.
     /// @param epochDurationInSeconds Minimum seconds between epochs.
     /// @param rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
