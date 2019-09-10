@@ -606,9 +606,7 @@ blockchainTests.resets.only('Testing Rewards', env => {
                 membersRewardVaultBalance: rewardsForDelegator[1],
             });
         });
-
-
-        it.only('Should collect fees correctly when theres a payout for `current` but not `next`', async () => {
+        it('Should collect fees correctly when there is a payout for `currentEpochBalance` but not `nextEpochBalance`', async () => {
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
@@ -630,7 +628,7 @@ blockchainTests.resets.only('Testing Rewards', env => {
             await payProtocolFeeAndFinalize(rewardForDelegator);
 
             // delegate stake ~ this will result in a payout where rewards are computed on
-            // the balance's `current` field but not the `next` field.
+            // the balance's `currentEpochBalance` field but not the `nextEpochBalance` field.
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
