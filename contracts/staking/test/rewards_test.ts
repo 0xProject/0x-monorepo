@@ -13,7 +13,7 @@ import { MembersByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './uti
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets('Testing Rewards', env => {
+blockchainTests.resets.only('Testing Rewards', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;

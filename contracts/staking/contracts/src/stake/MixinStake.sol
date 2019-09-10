@@ -180,7 +180,7 @@ contract MixinStake is
         _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // sync cumulative rewards that we'll need for future computations
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch, owner);
 
         // increment how much stake the owner has delegated to the input pool
         _incrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -205,7 +205,7 @@ contract MixinStake is
         _transferDelegatorsAccumulatedRewardsToEthVault(poolId, owner);
 
         // sync cumulative rewards that we'll need for future computations
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch, owner);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);

@@ -115,6 +115,9 @@ contract MixinStorage is
     // mapping from Pool Id to Epoch to Reward Ratio
     mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal cumulativeRewardsByPool;
 
+    // mapping from Pool Id to Epoch to Cumulative Rewards Reference Counter
+    mapping (bytes32 => mapping (uint256 => uint256)) internal cumulativeRewardsByPoolReferenceCounter;
+
     // mapping from Pool Id to Epoch
     mapping (bytes32 => uint256) internal cumulativeRewardsByPoolLastStored;
 

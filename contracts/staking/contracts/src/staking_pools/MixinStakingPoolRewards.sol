@@ -116,39 +116,63 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev To compute a delegator's reward we must know the cumulative reward
-    ///      at the epoch before they delegated. If they were already delegated then
+    ///      at the epoch before they start earning rewards. If they were already delegated then
     ///      we also need to know the value at the epoch in which they modified
     ///      their delegated stake for this pool. See `computeRewardBalanceOfDelegator`.
     /// @param poolId Unique Id of pool.
-    /// @param epoch at which the stake was delegated by the delegator.
-    function _syncCumulativeRewardsNeededByDelegator(bytes32 poolId, uint256 epoch)
+    /// @param currentEpoch at which the stake was delegated by the delegator.
+    /// @param member who we're syncing for
+    function _syncCumulativeRewardsNeededByDelegator(bytes32 poolId, uint256 currentEpoch, address member)
         internal
     {
-        // set default value if staking at epoch 0
-        if (epoch == 0) {
+        IStructs.StoredBalance memory delegatedStake = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]);
+        if (delegatedStake.currentEpoch == currentEpoch) {
+            // sync is already up-to-date
             return;
         }
 
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
         mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
 
-        // fetch the last epoch at which we stored an entry for this pool;
-        // this is the most up-to-date cumulative rewards for this pool.
+        // fetch the last epoch at which we stored an entry for this pool
         uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
+
+        // fetch the most recent cumulative rewards entry for this pool
         IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
-        // copy our most up-to-date cumulative rewards for last epoch, if necessary.
-        uint256 lastEpoch = currentEpoch.safeSub(1);
-        if (cumulativeRewardsLastStored != lastEpoch) {
-            cumulativeRewardsByPoolPtr[lastEpoch] = mostRecentCumulativeRewards;
-            cumulativeRewardsByPoolLastStored[poolId] = lastEpoch;
+        // handle current epoch
+        if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[currentEpoch])) {
+            cumulativeRewardsByPoolPtr[currentEpoch] = mostRecentCumulativeRewards;
+        }
+        cumulativeRewardsByPoolReferenceCounter[poolId][currentEpoch] += 1;
+
+        // handle last epoch
+        if (delegatedStake.currentEpoch + 1 < currentEpoch) {
+            // copy our most up-to-date cumulative rewards for last epoch, if necessary.
+            // this is necessary if the pool does not earn any rewards this epoch;
+            // if it does then this value may be overwritten when the epoch is finalized.
+            if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[currentEpoch - 1])) {
+                cumulativeRewardsByPoolPtr[currentEpoch - 1] = mostRecentCumulativeRewards;
+                cumulativeRewardsByPoolLastStored[poolId] = currentEpoch - 1;
+            }
+            cumulativeRewardsByPoolReferenceCounter[poolId][currentEpoch - 1] += 1;
+
+            // unload
+            cumulativeRewardsByPoolReferenceCounter[poolId][delegatedStake.currentEpoch] -= 1;
+            if (cumulativeRewardsByPoolReferenceCounter[poolId][delegatedStake.currentEpoch] == 0) {
+                // clear state that is no longer needed
+                cumulativeRewardsByPoolPtr[delegatedStake.currentEpoch] = IStructs.Fraction({numerator: 0, denominator: 0});
+            }
         }
 
-        // copy our most up-to-date cumulative rewards for last epoch, if necessary.
-        // this is necessary if the pool does not earn any rewards this epoch;
-        // if it does then this value may be overwritten when the epoch is finalized.
-        if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[epoch])) {
-            cumulativeRewardsByPoolPtr[epoch] = mostRecentCumulativeRewards;
+        // handle last last epoch
+        if (delegatedStake.currentEpoch > 0) {
+            // unload
+            cumulativeRewardsByPoolReferenceCounter[poolId][delegatedStake.currentEpoch - 1] -= 1;
+            if (cumulativeRewardsByPoolReferenceCounter[poolId][delegatedStake.currentEpoch - 1] == 0) {
+                // clear state that is no longer needed
+                cumulativeRewardsByPoolPtr[delegatedStake.currentEpoch - 1] = IStructs.Fraction({numerator: 0, denominator: 0});
+            }
         }
     }
 
