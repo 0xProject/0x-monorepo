@@ -155,7 +155,7 @@ blockchainTests('Migration tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('throws if already intiialized', async () => {
+        it('throws if already intitialized', async () => {
             await stakingContract.init.awaitTransactionSuccessAsync();
             const tx = stakingContract.init.awaitTransactionSuccessAsync();
             const expectedError = new StakingRevertErrors.InitializationError();
