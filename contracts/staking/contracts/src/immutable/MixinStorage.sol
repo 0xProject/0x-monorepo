@@ -18,9 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
@@ -36,20 +34,6 @@ contract MixinStorage is
     MixinConstants,
     Ownable
 {
-    using LibBytes for bytes;
-
-    /// @dev Ensures that the WETH_ASSET_DATA is correct.
-    constructor()
-        public
-        Ownable()
-    {
-        // Ensure that the WETH_ASSET_DATA from MixinDeploymentConstants is correct.
-        if (!WETH_ASSET_DATA.equals(
-            abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
-        )) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
-        }
-    }
 
     // WETH Asset Proxy
     IAssetProxy internal wethAssetProxy;

@@ -1,8 +1,14 @@
-import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, OwnableRevertErrors, StringRevertError } from '@0x/utils';
 
-import { artifacts, StakingContract, TestInitTargetContract, TestStakingProxyContract } from '../src/';
+import {
+    artifacts,
+    StakingContract,
+    TestInitTargetContract,
+    TestStakingProxyContract,
+    TestStakingProxyStakingContractAttachedToProxyEventArgs,
+} from '../src/';
 
 blockchainTests('Migration tests', env => {
     let ownerAddress: string;
@@ -96,6 +102,21 @@ blockchainTests('Migration tests', env => {
 
             it('calls init() and attaches the contract', async () => {
                 await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
+                await assertInitStateAsync(proxyContract);
+            });
+
+            it('emits a `StakingContractAttached` event', async () => {
+                const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                );
+                const logsArgs = filterLogsToArguments<TestStakingProxyStakingContractAttachedToProxyEventArgs>(
+                    receipt.logs,
+                    'StakingContractAttached',
+                );
+                expect(logsArgs.length).to.eq(1);
+                for (const args of logsArgs) {
+                    expect(args.newStakingContractAddress).to.eq(initTargetContract.address);
+                }
                 await assertInitStateAsync(proxyContract);
             });
 

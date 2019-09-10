@@ -53,14 +53,14 @@ interface IStakingEvents {
         uint256 earliestEndTimeInSeconds
     );
 
-    /// @dev Emitted whenever hyperparameters are changed via the `tune()` function.
+    /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.
     /// @param epochDurationInSeconds Minimum seconds between epochs.
     /// @param rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @param minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    event Tuned(
+    event ParamsChanged(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,

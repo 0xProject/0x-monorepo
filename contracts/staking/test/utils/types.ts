@@ -2,7 +2,7 @@ import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
 
-export interface HyperParameters {
+export interface StakingParams {
     epochDurationInSeconds: BigNumber;
     rewardDelegatedStakeWeight: BigNumber;
     minimumPoolStake: BigNumber;

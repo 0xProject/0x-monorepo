@@ -2,7 +2,7 @@ import { blockchainTests, constants, expect, filterLogsToArguments, Numberish } 
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 
-import { artifacts, IStakingEventsTunedEventArgs, MixinParamsContract } from '../src/';
+import { artifacts, IStakingEventsParamsChangedEventArgs, MixinParamsContract } from '../src/';
 
 blockchainTests('Configurable Parameters', env => {
     let testContract: MixinParamsContract;
@@ -20,7 +20,7 @@ blockchainTests('Configurable Parameters', env => {
     });
 
     blockchainTests.resets('setParams()', () => {
-        interface HyperParameters {
+        interface Params {
             epochDurationInSeconds: Numberish;
             rewardDelegatedStakeWeight: Numberish;
             minimumPoolStake: Numberish;
@@ -34,13 +34,13 @@ blockchainTests('Configurable Parameters', env => {
         const DEFAULT_PARAMS = {
             epochDurationInSeconds: TWO_WEEKS,
             rewardDelegatedStakeWeight: PPM_90_PERCENT,
-            minimumPoolStake: '100e18',
+            minimumPoolStake: constants.DUMMY_TOKEN_DECIMALS.times(100),
             maximumMakersInPool: 10,
             cobbDouglasAlphaNumerator: 1,
             cobbDouglasAlphaDenomintor: 2,
         };
 
-        async function setParamsAndAssertAsync(params: Partial<HyperParameters>, from?: string): Promise<void> {
+        async function setParamsAndAssertAsync(params: Partial<Params>, from?: string): Promise<void> {
             const _params = {
                 ...DEFAULT_PARAMS,
                 ...params,
@@ -56,7 +56,7 @@ blockchainTests('Configurable Parameters', env => {
             );
             // Assert event.
             expect(receipt.logs.length).to.eq(1);
-            const event = filterLogsToArguments<IStakingEventsTunedEventArgs>(receipt.logs, 'Tuned')[0];
+            const event = filterLogsToArguments<IStakingEventsParamsChangedEventArgs>(receipt.logs, 'ParamsChanged')[0];
             expect(event.epochDurationInSeconds).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(event.rewardDelegatedStakeWeight).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(event.minimumPoolStake).to.bignumber.eq(_params.minimumPoolStake);

@@ -16,6 +16,9 @@ import {
     ZrxVaultContract,
 } from '../../src';
 
+import { constants as stakingConstants } from './constants';
+import { StakingParams } from './types';
+
 export class StakingApiWrapper {
     public stakingContractAddress: string; // The address of the real Staking.sol contract
     public stakingContract: StakingContract; // The StakingProxy.sol contract wrapped as a StakingContract to borrow API
@@ -28,7 +31,7 @@ export class StakingApiWrapper {
         // Epoch Utils
         fastForwardToNextEpochAsync: async (): Promise<void> => {
             // increase timestamp of next block
-            const epochDurationInSeconds = await this.stakingContract.getEpochDurationInSeconds.callAsync();
+            const { epochDurationInSeconds } = await this.utils.getParamsAsync();
             await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
             // mine next block
             await this._web3Wrapper.mineBlockAsync();
@@ -62,6 +65,35 @@ export class StakingApiWrapper {
 
         getZrxTokenBalanceOfZrxVaultAsync: async (): Promise<BigNumber> => {
             return this.zrxTokenContract.balanceOf.callAsync(this.zrxVaultContract.address);
+        },
+
+        setParamsAsync: async (params: Partial<StakingParams>): Promise<TransactionReceiptWithDecodedLogs> => {
+            const _params = {
+                ...stakingConstants.DEFAULT_PARAMS,
+                ...params,
+            };
+            return this.stakingContract.setParams.awaitTransactionSuccessAsync(
+                _params.epochDurationInSeconds,
+                _params.rewardDelegatedStakeWeight,
+                _params.minimumPoolStake,
+                _params.maximumMakersInPool,
+                _params.cobbDouglasAlphaNumerator,
+                _params.cobbDouglasAlphaDenomintor,
+            );
+        },
+
+        getParamsAsync: async (): Promise<StakingParams> => {
+            return (_.zipObject(
+                [
+                    'epochDurationInSeconds',
+                    'rewardDelegatedStakeWeight',
+                    'minimumPoolStake',
+                    'maximumMakersInPool',
+                    'cobbDouglasAlphaNumerator',
+                    'cobbDouglasAlphaDenomintor',
+                ],
+                await this.stakingContract.getParams.callAsync(),
+            ) as any) as StakingParams;
         },
     };
 

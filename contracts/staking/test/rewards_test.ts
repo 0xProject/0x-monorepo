@@ -41,8 +41,8 @@ blockchainTests.resets('Testing Rewards', env => {
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
         stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
-        // set up hyper-parameters
-        await stakingApiWrapper.stakingContract.setParamsAsync({
+        // set up staking parameters
+        await stakingApiWrapper.utils.setParamsAsync({
             minimumPoolStake: new BigNumber(0),
             cobbDouglasAlphaNumerator: new BigNumber(1),
             cobbDouglasAlphaDenomintor: new BigNumber(6),

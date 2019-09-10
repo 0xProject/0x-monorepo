@@ -26,6 +26,7 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
@@ -47,6 +48,7 @@ import "./MixinExchangeManager.sol";
 contract MixinExchangeFees is
     IStakingEvents,
     MixinConstants,
+    MixinDeploymentConstants,
     Ownable,
     MixinStorage,
     MixinZrxVault,
@@ -111,7 +113,7 @@ contract MixinExchangeFees is
             if (poolStake >= minimumPoolStake) {
                 // Credit the pool.
                 uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-                protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(amount);
+                protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
                 if (_feesCollectedThisEpoch == 0) {
                     activePoolsThisEpoch.push(poolId);
                 }

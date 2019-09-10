@@ -10,7 +10,6 @@ export const constants = {
     NIL_POOL_ID: '0x0000000000000000000000000000000000000000000000000000000000000000',
     NIL_ADDRESS: '0x0000000000000000000000000000000000000000',
     INITIAL_EPOCH: new BigNumber(0),
-    CHAIN_ID: 1,
     DEFAULT_PARAMS: {
         epochDurationInSeconds: new BigNumber(TWO_WEEKS),
         rewardDelegatedStakeWeight: new BigNumber(0.9 * 1e6), // 90%

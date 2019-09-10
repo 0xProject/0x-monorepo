@@ -39,7 +39,4 @@ contract MixinConstants
     uint64 constant internal INITIAL_EPOCH = 0;
 
     uint256 constant internal MIN_TOKEN_VALUE = 10**18;
-
-    // TODO(dorothy-zbornak): Remove when signatures are removed from maker handshake.
-    uint256 constant internal CHAIN_ID = 1;
 }

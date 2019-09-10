@@ -18,19 +18,18 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "../libs/LibStakingRichErrors.sol";
 
+
+// solhint-disable separate-by-one-line-in-contract
 contract MixinDeploymentConstants {
 
+    using LibBytes for bytes;
+
     // @TODO SET THESE VALUES FOR DEPLOYMENT
-
-    uint256 constant internal EPOCH_DURATION_IN_SECONDS = 1000;
-
-    uint256 constant internal TIMELOCK_DURATION_IN_EPOCHS = 3;
-
-    // How much delegated stake is weighted vs operator stake, in ppm.
-    uint32 constant internal REWARD_DELEGATED_STAKE_WEIGHT = 900000; // 90%
-
-    uint256 constant internal CHAIN_ID = 1;
 
     // Mainnet WETH9 Address
     address constant internal WETH_ADDRESS = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
@@ -49,4 +48,14 @@ contract MixinDeploymentConstants {
 
     // Ropsten & Rinkeby Weth Asset Data
     // bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c778417e063141139fce010982780140aa0cd5ab";
+
+    /// @dev Ensures that the WETH_ASSET_DATA is correct.
+    constructor() public {
+        // Ensure that the WETH_ASSET_DATA is correct.
+        if (!WETH_ASSET_DATA.equals(
+            abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
+        )) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
+        }
+    }
 }

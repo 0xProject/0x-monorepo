@@ -321,10 +321,7 @@ blockchainTests('Staking Pool Management', env => {
             const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
-            const makerAddresses = users.slice(
-                1,
-                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool.toNumber() + 2,
-            );
+            const makerAddresses = users.slice(1, stakingConstants.DEFAULT_PARAMS.maximumMakersInPool.toNumber() + 2);
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
 
             // create pool

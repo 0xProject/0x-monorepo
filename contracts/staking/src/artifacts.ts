@@ -21,6 +21,7 @@ import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
+import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
@@ -40,7 +41,6 @@ import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
-import * as TestExchangeFees from '../generated-artifacts/TestExchangeFees.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
@@ -56,6 +56,7 @@ export const artifacts = {
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
+    MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
     IEthVault: IEthVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
@@ -86,7 +87,6 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
-    TestExchangeFees: TestExchangeFees as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,

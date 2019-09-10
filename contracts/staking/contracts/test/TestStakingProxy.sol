@@ -28,7 +28,7 @@ contract TestStakingProxy is
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
-        StakingProxy(_stakingContract, address(0))
+        StakingProxy(_stakingContract, address(0), address(0))
     {}
 
     function getAttachedContract() external view returns (address) {

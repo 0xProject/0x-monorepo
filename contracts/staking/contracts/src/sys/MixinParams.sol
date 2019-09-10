@@ -65,7 +65,7 @@ contract MixinParams is
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenomintor = _cobbDouglasAlphaDenomintor;
 
-        emit Tuned(
+        emit ParamsChanged(
             epochDurationInSeconds,
             rewardDelegatedStakeWeight,
             minimumPoolStake,
