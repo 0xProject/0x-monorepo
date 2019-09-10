@@ -37,6 +37,7 @@ blockchainTests('Staking Vaults', env => {
             let revertError = new StakingRevertErrors.PoolAlreadyExistsError(poolId);
             let tx = stakingApiWrapper.rewardVaultContract.registerStakingPool.awaitTransactionSuccessAsync(
                 poolId,
+                poolOperator,
                 operatorShare,
                 { from: stakingApiWrapper.stakingContractAddress },
             );
@@ -45,6 +46,7 @@ blockchainTests('Staking Vaults', env => {
             revertError = new StakingRevertErrors.OnlyCallableByStakingContractError(notStakingContractAddress);
             tx = stakingApiWrapper.rewardVaultContract.registerStakingPool.awaitTransactionSuccessAsync(
                 poolId,
+                poolOperator,
                 operatorShare,
                 { from: notStakingContractAddress },
             );

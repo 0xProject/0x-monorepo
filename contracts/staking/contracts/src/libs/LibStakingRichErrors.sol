@@ -84,9 +84,9 @@ library LibStakingRichErrors {
     bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR =
         0x4c5c09dd;
 
-    // bytes4(keccak256("InvalidPoolOperatorShareError(bytes32,uint32)"))
-    bytes4 internal constant INVALID_POOL_OPERATOR_SHARE_ERROR_SELECTOR =
-        0x70f55b5a;
+    // bytes4(keccak256("OperatorShareError(uint8,bytes32,uint32)"))
+    bytes4 internal constant OPERATOR_SHARE_ERROR_SELECTOR =
+        0x22df9597;
 
     // bytes4(keccak256("PoolAlreadyExistsError(bytes32)"))
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
@@ -112,13 +112,6 @@ library LibStakingRichErrors {
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
         hex"01ecebea";
 
-    enum MakerPoolAssignmentErrorCodes {
-        MAKER_ADDRESS_ALREADY_REGISTERED,
-        MAKER_ADDRESS_NOT_REGISTERED,
-        MAKER_ADDRESS_NOT_PENDING_ADD,
-        POOL_IS_FULL
-    }
-
     // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
         0xefd6cb33;
@@ -126,6 +119,18 @@ library LibStakingRichErrors {
     // bytes4(keccak256("InvalidWethAssetDataError()"))
     bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
         hex"24bf322c";
+
+    enum MakerPoolAssignmentErrorCodes {
+        MAKER_ADDRESS_ALREADY_REGISTERED,
+        MAKER_ADDRESS_NOT_REGISTERED,
+        MAKER_ADDRESS_NOT_PENDING_ADD,
+        POOL_IS_FULL
+    }
+
+    enum OperatorShareErrorCodes {
+        OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100,
+        CAN_ONLY_DECREASE_OPERATOR_SHARE
+    }
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -320,18 +325,20 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidPoolOperatorShareError(
+    function OperatorShareError(
+        OperatorShareErrorCodes errorCode,
         bytes32 poolId,
-        uint32 poolOperatorShare
+        uint32 operatorShare
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            INVALID_POOL_OPERATOR_SHARE_ERROR_SELECTOR,
+            OPERATOR_SHARE_ERROR_SELECTOR,
+            errorCode,
             poolId,
-            poolOperatorShare
+            operatorShare
         );
     }
 

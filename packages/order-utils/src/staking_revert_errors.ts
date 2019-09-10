@@ -9,6 +9,11 @@ export enum MakerPoolAssignmentErrorCodes {
     PoolIsFull,
 }
 
+export enum OperatorShareErrorCodes {
+    OperatorShareMustBeBetween0And100,
+    CanOnlyDecreaseOperatorShare,
+}
+
 export enum ProtocolFeePaymentErrorCodes {
     ZeroProtocolFeePaid,
     MismatchedFeeAndPayment,
@@ -141,13 +146,13 @@ export class AmountExceedsBalanceOfPoolError extends RevertError {
     }
 }
 
-export class InvalidPoolOperatorShareError extends RevertError {
-    constructor(poolId?: string, poolOperatorShare?: BigNumber | number | string) {
-        super(
-            'InvalidPoolOperatorShareError',
-            'InvalidPoolOperatorShareError(bytes32 poolId, uint32 poolOperatorShare)',
-            { poolId, poolOperatorShare },
-        );
+export class OperatorShareError extends RevertError {
+    constructor(error?: OperatorShareErrorCodes, poolId?: string, operatorShare?: BigNumber | number | string) {
+        super('OperatorShareError', 'OperatorShareError(uint8 error, bytes32 poolId, uint32 operatorShare)', {
+            error,
+            poolId,
+            operatorShare,
+        });
     }
 }
 
@@ -213,7 +218,7 @@ const types = [
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,
     AmountExceedsBalanceOfPoolError,
-    InvalidPoolOperatorShareError,
+    OperatorShareError,
     PoolAlreadyExistsError,
     InvalidCobbDouglasAlphaError,
     EthVaultNotSetError,
