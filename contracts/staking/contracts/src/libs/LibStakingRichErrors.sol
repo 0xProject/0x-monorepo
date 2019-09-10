@@ -23,6 +23,11 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
 library LibStakingRichErrors {
 
+    enum OperatorShareErrorCodes {
+        OperatorShareTooLarge,
+        CanOnlyDecreaseOperatorShare
+    }
+
     enum ProtocolFeePaymentErrorCodes {
         ZeroProtocolFeePaid,
         MismatchedFeeAndPayment
@@ -141,18 +146,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("InvalidWethAssetDataError()"))
     bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
         hex"24bf322c";
-
-    enum MakerPoolAssignmentErrorCodes {
-        MAKER_ADDRESS_ALREADY_REGISTERED,
-        MAKER_ADDRESS_NOT_REGISTERED,
-        MAKER_ADDRESS_NOT_PENDING_ADD,
-        POOL_IS_FULL
-    }
-
-    enum OperatorShareErrorCodes {
-        OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100,
-        CAN_ONLY_DECREASE_OPERATOR_SHARE
-    }
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(

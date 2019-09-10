@@ -50,7 +50,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
             const revertError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
                 stakingConstants.INITIAL_POOL_ID,
                 operatorShare,
             );
@@ -79,7 +79,7 @@ blockchainTests('Staking Pool Management', env => {
             const tx = poolOperator.createStakingPoolAsync(operatorShare, true);
             const expectedPoolId = stakingConstants.INITIAL_POOL_ID;
             const expectedError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
                 expectedPoolId,
                 operatorShare,
             );

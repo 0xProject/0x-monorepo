@@ -105,13 +105,13 @@ blockchainTests('Migration tests', env => {
                 await assertInitStateAsync(proxyContract);
             });
 
-            it('emits a `StakingContractAttached` event', async () => {
+            it('emits a `StakingContractAttachedToProxy` event', async () => {
                 const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
                 );
                 const logsArgs = filterLogsToArguments<TestStakingProxyStakingContractAttachedToProxyEventArgs>(
                     receipt.logs,
-                    'StakingContractAttached',
+                    'StakingContractAttachedToProxy',
                 );
                 expect(logsArgs.length).to.eq(1);
                 for (const args of logsArgs) {
