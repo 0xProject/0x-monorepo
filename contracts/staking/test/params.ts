@@ -31,7 +31,7 @@ blockchainTests('Configurable Parameters', env => {
 
         const TWO_WEEKS = 14 * 24 * 60 * 60;
         const PPM_90_PERCENT = 10 ** 6 * 0.9;
-        const DEFAULT_HYPER_PARAMETERS = {
+        const DEFAULT_PARAMS = {
             epochDurationInSeconds: TWO_WEEKS,
             rewardDelegatedStakeWeight: PPM_90_PERCENT,
             minimumPoolStake: '100e18',
@@ -42,7 +42,7 @@ blockchainTests('Configurable Parameters', env => {
 
         async function setParamsAndAssertAsync(params: Partial<HyperParameters>, from?: string): Promise<void> {
             const _params = {
-                ...DEFAULT_HYPER_PARAMETERS,
+                ...DEFAULT_PARAMS,
                 ...params,
             };
             const receipt = await testContract.setParams.awaitTransactionSuccessAsync(

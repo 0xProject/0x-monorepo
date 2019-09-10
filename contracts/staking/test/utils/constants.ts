@@ -11,7 +11,7 @@ export const constants = {
     NIL_ADDRESS: '0x0000000000000000000000000000000000000000',
     INITIAL_EPOCH: new BigNumber(0),
     CHAIN_ID: 1,
-    DEFAULT_HYPER_PARAMETERS: {
+    DEFAULT_PARAMS: {
         epochDurationInSeconds: new BigNumber(TWO_WEEKS),
         rewardDelegatedStakeWeight: new BigNumber(0.9 * 1e6), // 90%
         minimumPoolStake: testConstants.DUMMY_TOKEN_DECIMALS.times(100), // 100 ZRX

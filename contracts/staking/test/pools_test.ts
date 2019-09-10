@@ -324,7 +324,7 @@ blockchainTests('Staking Pool Management', env => {
             const makerAddresses = users.slice(
                 1,
                 // tslint:disable-next-line restrict-plus-operands
-                stakingConstants.DEFAULT_HYPER_PARAMETERS.maximumMakersInPool.toNumber() + 2,
+                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool.toNumber() + 2,
             );
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
 
@@ -343,7 +343,7 @@ blockchainTests('Staking Pool Management', env => {
             // check the number of makers in the pool
             const numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
             expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(
-                stakingConstants.DEFAULT_HYPER_PARAMETERS.maximumMakersInPool,
+                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
             );
 
             const lastMakerAddress = _.last(makerAddresses) as string;
