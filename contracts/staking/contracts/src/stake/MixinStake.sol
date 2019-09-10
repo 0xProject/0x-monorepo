@@ -175,14 +175,18 @@ contract MixinStake is
     )
         private
     {
-        // synchronizes reward state in the pool that the staker is undelegating from
-        _syncRewardsForDelegator(poolId, owner);
+        // cache amount delegated to pool by owner
+        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[owner][poolId]);
 
         // increment how much stake the owner has delegated to the input pool
         _incrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
         // increment how much stake has been delegated to pool
         _incrementNextBalance(delegatedStakeByPoolId[poolId], amount);
+
+        // synchronizes reward state in the pool that the staker is undelegating from
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[owner][poolId]);
+        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -196,14 +200,18 @@ contract MixinStake is
     )
         private
     {
-        // synchronizes reward state in the pool that the staker is undelegating from
-        _syncRewardsForDelegator(poolId, owner);
+        // cache amount delegated to pool by owner
+        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[owner][poolId]);
 
         // decrement how much stake the owner has delegated to the input pool
         _decrementNextBalance(delegatedStakeToPoolByOwner[owner][poolId], amount);
 
         // decrement how much stake has been delegated to pool
         _decrementNextBalance(delegatedStakeByPoolId[poolId], amount);
+
+        // synchronizes reward state in the pool that the staker is undelegating from
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[owner][poolId]);
+        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
     }
 
     /// @dev Returns a storage pointer to a user's stake in a given status.

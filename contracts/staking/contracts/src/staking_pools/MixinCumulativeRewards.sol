@@ -85,6 +85,11 @@ contract MixinCumulativeRewards is
     )
         internal
     {
+        /*
+        if (epoch == 0) {
+            revert("recording dependency at epoch 0");
+        }
+        */
         // record dependency
         cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
 
@@ -103,6 +108,33 @@ contract MixinCumulativeRewards is
     )
         internal
     {
+        /*
+
+        if (mostRecentCumulativeRewardEpoch == 0 && epoch == 0 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] > 0) {
+            revert("at epoch 0 we did a valid unload on a guy from epoch 0");
+        }
+
+        if (mostRecentCumulativeRewardEpoch == 1 && epoch == 0 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] > 0) {
+            revert("at epoch 1 we did a valid unload on a guy from epoch 0");
+        }
+
+        if (mostRecentCumulativeRewardEpoch == 2 && epoch == 0 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] > 0) {
+            revert("at epoch 2 we did a valid unload on a guy from epoch 0");
+        }
+
+        if (mostRecentCumulativeRewardEpoch == 2 && epoch == 0 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0) {
+            revert("at epoch 2 we failed to unload at epoch 0");
+        }
+
+        if (mostRecentCumulativeRewardEpoch == 1 && epoch == 0 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0) {
+            revert("at epoch 1 we failed to unload at epoch 0");
+        }
+
+        if (mostRecentCumulativeRewardEpoch == 1 && epoch == 1 && cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0) {
+            revert("fails at 1");
+        }
+        */
+
         // unrecord dependency
         uint256 newReferenceCounter = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
         cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
@@ -154,6 +186,10 @@ contract MixinCumulativeRewards is
             denominator: denominatorNormalized
         });
         cumulativeRewardsByPoolLastStored[poolId] = epoch;
+
+        if (epoch == 2 && denominatorNormalized == 0) {
+            revert("NO");
+        }
     }
 
     /// @dev Computes a member's reward over a given epoch interval.

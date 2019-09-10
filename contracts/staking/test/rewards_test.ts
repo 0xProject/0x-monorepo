@@ -13,7 +13,7 @@ import { MembersByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './uti
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.only('Testing Rewards', env => {
+blockchainTests.resets.skip('Testing Rewards', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
@@ -273,6 +273,9 @@ blockchainTests.resets.only('Testing Rewards', env => {
         });
         it('Should split pool reward between delegators, when they join in different epochs', async () => {
             // first staker delegates (epoch 0)
+
+
+
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStakeAmount = toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
@@ -281,8 +284,11 @@ blockchainTests.resets.only('Testing Rewards', env => {
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmounts[0],
             );
+
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
+
+
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
@@ -290,9 +296,11 @@ blockchainTests.resets.only('Testing Rewards', env => {
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmounts[1],
             );
+
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // finalize
+
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
             // sanity check final balances

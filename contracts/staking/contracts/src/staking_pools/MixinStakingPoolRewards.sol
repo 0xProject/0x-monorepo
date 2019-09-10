@@ -56,11 +56,28 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    function _syncRewardsForDelegator(bytes32 poolId, address member)
+    function syncRewardsForDelegator(bytes32 poolId, address member)
+        public
+    {
+        _syncRewardsForDelegator(
+            poolId,
+            member,
+            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]), // initial value
+            _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId]) // final value
+        );
+
+        // @todo write synced version
+
+    }
+
+    function _syncRewardsForDelegator(
+        bytes32 poolId,
+        address member,
+        IStructs.StoredBalance memory initialDelegatedStakeToPoolByOwner,
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner
+    )
         internal
     {
-        // cache some values to reduce sloads
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]);
         uint256 currentEpoch = getCurrentEpoch();
 
         // transfer any rewards from the transient pool vault to the eth vault;
@@ -68,15 +85,16 @@ contract MixinStakingPoolRewards is
         _transferDelegatorRewardsToEthVault(
             poolId,
             member,
-            unsyncedDelegatedStakeToPoolByOwner,
+            initialDelegatedStakeToPoolByOwner,
             currentEpoch
         );
 
-        // sync cumulative rewards that we'll need for future computations
-        _syncCumulativeRewards(
+        // update dependencies on cumulative rewards
+        _updateCumulativeRewardDependencies(
             poolId,
             member,
-            unsyncedDelegatedStakeToPoolByOwner,
+            initialDelegatedStakeToPoolByOwner,
+            finalDelegatedStakeToPoolByOwner,
             currentEpoch
         );
     }
@@ -140,7 +158,7 @@ contract MixinStakingPoolRewards is
             ? _computeMemberRewardOverInterval(
                 poolId,
                 unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance,
-                unsyncedDelegatedStakeToPoolByOwner.currentEpoch - 1,
+                uint256(unsyncedDelegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
                 unsyncedDelegatedStakeToPoolByOwner.currentEpoch
             )
             : 0;
@@ -162,26 +180,38 @@ contract MixinStakingPoolRewards is
         return totalReward;
     }
 
-    /// @dev To compute a delegator's reward we must know the cumulative reward
-    ///      at the epoch before they start earning rewards. If they were already delegated then
-    ///      we also need to know the value at the epoch in which they modified
-    ///      their delegated stake for this pool. See `computeRewardBalanceOfDelegator`.
-    function _syncCumulativeRewards(
+    function _updateCumulativeRewardDependencies(
         bytes32 poolId,
         address member,
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
+        IStructs.StoredBalance memory oldDelegatedStakeToPoolByOwner,
+        IStructs.StoredBalance memory newDelegatedStakeToPoolByOwner,
         uint256 currentEpoch
-
     )
         internal
     {
-        /*
-        if (_hasDelegatedThisEpoch(unsyncedDelegatedStakeToPoolByOwner, currentEpoch)) {
-            // sync is already up-to-date
-            return;
-        }
-        */
+        _setCumulativeRewardDependencies(
+            poolId,
+            member,
+            newDelegatedStakeToPoolByOwner,
+            currentEpoch
+        );
 
+        _unsetCumulativeRewardDependencies(
+            poolId,
+            member,
+            oldDelegatedStakeToPoolByOwner,
+            currentEpoch
+        );
+    }
+
+    function _setCumulativeRewardDependencies(
+        bytes32 poolId,
+        address member,
+        IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
+        uint256 currentEpoch
+    )
+        private
+    {
         // get the most recent cumulative rewards; these will serve as a reference point when updating dependencies
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
 
@@ -191,6 +221,8 @@ contract MixinStakingPoolRewards is
             currentEpoch,
             mostRecentCumulativeRewardInfo
         );
+
+        // @todo Set most recent cumulative reward here!
 
         // in epoch 0, there are no previous epochs we depend on; nor are there epochs we no longer depend on.
         if (currentEpoch == 0) {
@@ -203,39 +235,40 @@ contract MixinStakingPoolRewards is
             currentEpoch.safeSub(1),
             mostRecentCumulativeRewardInfo
         );
+    }
 
+    function _unsetCumulativeRewardDependencies(
+        bytes32 poolId,
+        address member,
+        IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
+        uint256 currentEpoch
+    )
+        private
+    {
         // if this delegator is not yet initialized then there's no dependency to unrecord.
-        if (!unsyncedDelegatedStakeToPoolByOwner.isInitialized) {
+        if (!delegatedStakeToPoolByOwner.isInitialized) {
             return;
         }
 
         // unrecord dependency on stored "current epoch"
         // (note that this may be equal to `lastEpoch` without causing a fault)
+        // @todo if (unsyncedDelegatedStakeToPoolByOwner.current > 0)
         _unrecordDependencyOnCumulativeReward(
             poolId,
-            unsyncedDelegatedStakeToPoolByOwner.currentEpoch, // previously stored "current epoch"
+            delegatedStakeToPoolByOwner.currentEpoch, // previously stored "current epoch"
             currentEpoch
         );
 
         // if this delegator last updated in epoch 0 then there is no earlier dependency to unrecord.
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == 0) {
+        if (delegatedStakeToPoolByOwner.currentEpoch == 0) {
             return;
         }
 
         // unrecord dependency on stored "last epoch"
         _unrecordDependencyOnCumulativeReward(
             poolId,
-            uint256(unsyncedDelegatedStakeToPoolByOwner.currentEpoch).safeSub(1), // previously stored "last epoch"
+            uint256(delegatedStakeToPoolByOwner.currentEpoch).safeSub(1), // previously stored "last epoch"
             currentEpoch
         );
-    }
-
-    function _hasDelegatedThisEpoch(IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner, uint256 currentEpoch)
-        internal
-        returns (bool)
-    {
-        return (currentEpoch > 0)
-            ? unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch
-            : unsyncedDelegatedStakeToPoolByOwner.isInitialized;
     }
 }

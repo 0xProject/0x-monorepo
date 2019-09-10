@@ -645,6 +645,7 @@ export class Web3Wrapper {
         timeoutMs?: number,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const receipt = await this.awaitTransactionMinedAsync(txHash, pollingIntervalMs, timeoutMs);
+        //console.log('\n', JSON.stringify(receipt, null, 4));
         if (receipt.status !== 1) {
             throw new Error(`Transaction failed: ${txHash}`);
         }
