@@ -86,7 +86,6 @@ blockchainTests('Configurable Parameters', env => {
         describe('rewardDelegatedStakeWeight', () => {
             it('throws when > PPM_100_PERCENT', async () => {
                 const params = {
-                    // tslint:disable-next-line restrict-plus-operands
                     rewardDelegatedStakeWeight: constants.PPM_100_PERCENT + 1,
                 };
                 const tx = setParamsAndAssertAsync(params);

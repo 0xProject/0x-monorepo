@@ -323,7 +323,6 @@ blockchainTests('Staking Pool Management', env => {
 
             const makerAddresses = users.slice(
                 1,
-                // tslint:disable-next-line restrict-plus-operands
                 stakingConstants.DEFAULT_PARAMS.maximumMakersInPool.toNumber() + 2,
             );
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
