@@ -229,7 +229,6 @@ const types = [
     InsufficientBalanceError,
     InvalidProtocolFeePaymentError,
     InvalidStakeStatusError,
-    InvalidStakeStatusError,
     InvalidParamValueError,
     MakerPoolAssignmentError,
     MiscalculatedRewardsError,
