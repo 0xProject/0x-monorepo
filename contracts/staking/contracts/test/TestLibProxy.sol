@@ -31,27 +31,44 @@ pragma experimental ABIEncoderV2;
 import "../src/libs/LibProxy.sol";
 
 
+// solhint-disable payable-fallback
 contract TestLibProxy {
 
     using LibProxy for address;
 
+    // The arguments of `proxyCall()`.
+    struct ProxyCallArguments {
+        address destination;
+        LibProxy.RevertRule revertRule;
+        bytes4 customEgressSelector;
+        bool ignoreIngressSelector;
+    }
+
+    // The current arguments that should be passed in the call to `proxyCall()`. This
+    // state allows us to send in the exact calldata that should be sent to `proxyCall()`
+    // while still being able to test any combination of inputs to `proxyCall()`.
+    ProxyCallArguments internal proxyCallArgs;
+
     /// @dev Exposes the `proxyCall()` library function from LibProxy.
-    /// @param destination Address to call.
-    /// @param revertRule Describes scenarios in which this function reverts.
-    /// @param customEgressSelector Custom selector used to call destination contract.
-    /// @param ignoreIngressSelector Ignore the selector used to call into this contract.
-    function externalProxyCall(
-        address destination,
-        LibProxy.RevertRule revertRule,
-        bytes4 customEgressSelector,
-        bool ignoreIngressSelector
-    )
+    function ()
         external
     {
-        destination.proxyCall(
-            revertRule,
-            customEgressSelector,
-            ignoreIngressSelector
+        proxyCallArgs.destination.proxyCall(
+            proxyCallArgs.revertRule,
+            proxyCallArgs.customEgressSelector,
+            proxyCallArgs.ignoreIngressSelector
         );
+    }
+
+    /// @dev Calls back into this contract with the calldata that should be sent in the call
+    ///      to `proxyCall()` after setting the `proxyCallArgs` appropriately.
+    /// @param args The struct that should be set to `proxyCallArgs`.
+    /// @param data The bytes that should be used to call back into this contract.
+    function publicProxyCall(ProxyCallArguments memory args, bytes memory data)
+        public
+        returns (bool success, bytes memory returnData)
+    {
+        proxyCallArgs = args;
+        (success, returnData) = address(this).call(data);
     }
 }

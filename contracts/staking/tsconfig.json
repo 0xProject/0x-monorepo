@@ -42,6 +42,7 @@
         "generated-artifacts/TestInitTarget.json",
         "generated-artifacts/TestLibFixedMath.json",
         "generated-artifacts/TestLibProxy.json",
+        "generated-artifacts/TestLibProxyReceiver.json",
         "generated-artifacts/TestProtocolFees.json",
         "generated-artifacts/TestProtocolFeesERC20Proxy.json",
         "generated-artifacts/TestStaking.json",
