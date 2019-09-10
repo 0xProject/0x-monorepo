@@ -28,7 +28,7 @@ interface IStakingEvents {
         uint8 fromStatus,
         bytes32 indexed fromPool,
         uint8 toStatus,
-        bytes32 indexed toProol
+        bytes32 indexed toPool
     );
 
     /// @dev Emitted by MixinExchangeManager when an exchange is added.
