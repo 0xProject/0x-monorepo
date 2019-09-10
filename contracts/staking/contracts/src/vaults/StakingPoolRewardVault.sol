@@ -96,8 +96,7 @@ contract StakingPoolRewardVault is
         )
     {
         // update balance of pool
-        Pool storage pool = poolById[poolId];
-        (operatorPortion, membersPortion) = _incrementPoolBalances(pool, amount, operatorOnly);
+        (operatorPortion, membersPortion) = _incrementPoolBalances(poolById[poolId], amount, operatorOnly);
         return (operatorPortion, membersPortion);
     }
 
