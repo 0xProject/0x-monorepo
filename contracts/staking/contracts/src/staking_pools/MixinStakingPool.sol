@@ -64,6 +64,7 @@ contract MixinStakingPool is
     MixinStakeBalances,
     MixinStakingPoolRewards
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Create a new staking pool. The sender will be the operator of this pool.

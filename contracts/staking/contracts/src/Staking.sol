@@ -50,6 +50,7 @@ contract Staking is
     MixinStakingPool,
     MixinExchangeFees
 {
+
     // this contract can receive ETH
     // solhint-disable no-empty-blocks
     function ()

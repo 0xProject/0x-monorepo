@@ -26,6 +26,7 @@ contract TestInitTarget is
     Ownable,
     MixinStorage
 {
+
     // We can't store state in this contract before it is attached, so
     // we will grant this predefined address a balance to indicate that
     // `init()`  should revert.

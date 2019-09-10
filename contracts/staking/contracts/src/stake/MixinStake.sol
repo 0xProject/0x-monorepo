@@ -46,6 +46,7 @@ contract MixinStake is
     MixinStakeBalances,
     MixinStakingPoolRewards
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.

@@ -58,6 +58,7 @@ contract MixinExchangeFees is
     MixinStakingPoolRewards,
     MixinStakingPool
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.

@@ -46,6 +46,7 @@ contract StakingPoolRewardVault is
     MixinConstants,
     MixinVaultCore
 {
+
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 

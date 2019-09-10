@@ -32,6 +32,7 @@ contract MixinParams is
     Ownable,
     MixinStorage
 {
+
     /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
     /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
@@ -74,7 +75,7 @@ contract MixinParams is
         );
     }
 
-    /// @dev Retrives all configurable parameter values.
+    /// @dev Retrieves all configurable parameter values.
     /// @return _epochDurationInSeconds Minimum seconds between epochs.
     /// @return _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.

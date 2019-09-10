@@ -29,6 +29,7 @@ contract MixinZrxVault is
     Ownable,
     MixinStorage
 {
+
     /// @dev Set the Zrx Vault.
     /// @param zrxVaultAddress Address of the Zrx Vault.
     function setZrxVault(address zrxVaultAddress)

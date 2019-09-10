@@ -24,6 +24,7 @@ import "../src/Staking.sol";
 contract TestExchangeFees is
     Staking
 {
+
     struct TestPool {
         uint256 stake;
         mapping(address => bool) isMaker;

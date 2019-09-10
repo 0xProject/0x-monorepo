@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 
 
 interface IStaking {
+
     /// @dev Pays a protocol fee in ETH.
     /// @param makerAddress The address of the order's maker.
     /// @param payerAddress The address that is responsible for paying the protocol fee.

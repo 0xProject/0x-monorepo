@@ -49,7 +49,7 @@ blockchainTests('Migration tests', env => {
                     ...env.txDefaults,
                     from: ownerAddress,
                     to: revertAddress,
-                    data: '0x',
+                    data: constants.NULL_BYTES,
                     value: new BigNumber(1),
                 }),
             );
@@ -112,34 +112,6 @@ blockchainTests('Migration tests', env => {
                 await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
                 const initCounter = await initTargetContract.getInitCounter.callAsync({ to: proxyContract.address });
                 expect(initCounter).to.bignumber.eq(2);
-            });
-        });
-
-        blockchainTests.resets('upgrade', async () => {
-            let proxyContract: TestStakingProxyContract;
-
-            before(async () => {
-                proxyContract = await deployStakingProxyAsync();
-            });
-
-            it('incm', async () => {
-                const attachedAddress = randomAddress();
-                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(attachedAddress, {
-                    from: notOwnerAddress,
-                });
-                const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('calls init() and attaches the contract', async () => {
-                await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
-                await assertInitStateAsync(proxyContract);
-            });
-
-            it('reverts if init() reverts', async () => {
-                await enableInitRevertsAsync();
-                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
-                return expect(tx).to.revertWith(REVERT_ERROR);
             });
         });
     });

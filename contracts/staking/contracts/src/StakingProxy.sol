@@ -33,6 +33,7 @@ contract StakingProxy is
     Ownable,
     MixinStorage
 {
+
     using LibProxy for address;
 
     /// @dev Constructor.

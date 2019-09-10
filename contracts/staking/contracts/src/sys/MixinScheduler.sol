@@ -39,6 +39,7 @@ contract MixinScheduler is
     Ownable,
     MixinStorage
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Returns the current epoch.

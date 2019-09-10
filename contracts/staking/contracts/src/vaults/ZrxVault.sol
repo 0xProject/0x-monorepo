@@ -39,6 +39,7 @@ contract ZrxVault is
     IZrxVault,
     MixinVaultCore
 {
+
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance

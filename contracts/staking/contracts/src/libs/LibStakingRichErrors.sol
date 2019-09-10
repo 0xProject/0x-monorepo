@@ -110,7 +110,7 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
 
-   // bytes4(keccak256("EthVaultNotSetError()"))
+    // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
 

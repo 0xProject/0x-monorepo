@@ -35,6 +35,7 @@ contract MixinExchangeManager is
     Ownable,
     MixinStorage
 {
+
     /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {
         if (!isValidExchangeAddress(msg.sender)) {

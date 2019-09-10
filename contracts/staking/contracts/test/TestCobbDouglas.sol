@@ -24,6 +24,7 @@ import "../src/fees/MixinExchangeFees.sol";
 contract TestCobbDouglas is
     MixinExchangeFees
 {
+
     function cobbDouglas(
         uint256 totalRewards,
         uint256 ownerFees,

@@ -39,6 +39,7 @@ contract MixinStakeBalances is
     MixinScheduler,
     MixinStakeStorage
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Returns the total stake for a given owner.

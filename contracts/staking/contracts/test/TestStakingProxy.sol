@@ -24,6 +24,7 @@ import "../src/StakingProxy.sol";
 contract TestStakingProxy is
     StakingProxy
 {
+
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
