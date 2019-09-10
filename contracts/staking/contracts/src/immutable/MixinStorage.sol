@@ -135,6 +135,33 @@ contract MixinStorage is
     // Denominator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaDenominator;
 
+    /* Finalization states */
+
+    /// @dev The total fees collected in the current epoch, built up iteratively
+    ///      in `payProtocolFee()`.
+    uint256 totalFeesCollectedThisEpoch;
+    /// @dev The total weighted stake in the current epoch, built up iteratively
+    ///      in `payProtocolFee()`.
+    uint256 totalWeightedStakeThisEpoch;
+    /// @dev State information for each active pool in an epoch.
+    ///      In practice, we only store state for `currentEpoch % 2`.
+    mapping(uint256 => mapping(bytes32 => ActivePool)) activePoolsByEpoch;
+    /// @dev Number of pools activated in the current epoch.
+    uint256 numActivePoolsThisEpoch;
+    /// @dev Rewards (ETH) available to the epoch being finalized (the previous
+    ///      epoch). This is simply the balance of the contract at the end of
+    ///      the epoch.
+    uint256 unfinalizedRewardsAvailable;
+    /// @dev The number of active pools in the last epoch that have yet to be
+    ///      finalized through `finalizePools()`.
+    uint256 unfinalizedPoolsRemaining;
+    /// @dev The total fees collected for the epoch being finalized.
+    uint256 unfinalizedTotalFeesCollected;
+    /// @dev The total fees collected for the epoch being finalized.
+    uint256 unfinalizedTotalWeightedStake;
+    /// @dev How many rewards were paid at the end of finalization.
+    uint256 totalRewardsPaidLastEpoch;
+
     /// @dev Adds owner as an authorized address.
     constructor()
         public
