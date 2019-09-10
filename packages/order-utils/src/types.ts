@@ -25,6 +25,12 @@ export interface CreateOrderOpts {
     expirationTimeSeconds?: BigNumber;
 }
 
+export interface ValidateOrderFillableOpts {
+    expectedFillTakerTokenAmount?: BigNumber;
+    validateRemainingOrderAmountIsFillable?: boolean;
+    simulationTakerAddress?: string;
+}
+
 /**
  * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
  * You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.
