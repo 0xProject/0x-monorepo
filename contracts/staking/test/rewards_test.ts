@@ -606,6 +606,45 @@ blockchainTests.resets.only('Testing Rewards', env => {
                 membersRewardVaultBalance: rewardsForDelegator[1],
             });
         });
+
+
+        it.only('Should collect fees correctly when theres a payout for `current` but not `next`', async () => {
+            // first staker delegates (epoch 0)
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                stakeAmount,
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize();
+            // undelegate stake and finalize epoch
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Active),
+                stakeAmount,
+            );
+            // this should go to the delegator
+            await payProtocolFeeAndFinalize(rewardForDelegator);
+
+            // delegate stake ~ this will result in a payout where rewards are computed on
+            // the balance's `current` field but not the `next` field.
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                stakeAmount,
+            );
+            // sanity check final balances
+            await validateEndBalances({
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: rewardForDelegator,
+                operatorRewardVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
+                membersRewardVaultBalance: ZERO,
+            });
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
