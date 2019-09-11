@@ -664,10 +664,43 @@ blockchainTests.resets('Testing Rewards', env => {
                 poolRewardVaultBalance: ZERO,
             });
         });
-        it(`should split rewards in the EthVault between two delegators when undelegating`, async () => {
+        it(`payout should be based on stake at the time of rewards`, async () => {
+            const staker = stakers[0];
+            const stakeAmount = toBaseUnitAmount(5);
+            // stake and delegate
+            await staker.stakeAsync(stakeAmount);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                stakeAmount,
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize();
+            // undelegate some stake
+            const unstakeAmount = toBaseUnitAmount(2.5);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Active),
+                unstakeAmount,
+            );
+            // finalize
+            const reward = toBaseUnitAmount(10);
+            await payProtocolFeeAndFinalize(reward);
+            // Unstake nothing to move the rewards into the EthVault.
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Active),
+                toBaseUnitAmount(0),
+            );
+            await validateEndBalances({
+                stakerRewardVaultBalance_1: toBaseUnitAmount(0),
+                stakerEthVaultBalance_1: reward,
+            });
+        });
+        it(`should split payout between two delegators when undelegating`, async () => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
-            // stake both
+            // stake and delegate both
             const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
                 Array<[StakerActor, BigNumber]>;
             for (const [staker, stakeAmount] of stakersAndStake) {
@@ -702,10 +735,10 @@ blockchainTests.resets('Testing Rewards', env => {
                 membersRewardVaultBalance: new BigNumber(1), // Rounding error
             });
         });
-        it(`delegator should not be credited EthVault rewards twice in the same epoch by undelegating twice`, async () => {
+        it(`delegator should not be credited payout twice by undelegating twice`, async () => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
-            // stake both
+            // stake and delegate both
             const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
                 Array<[StakerActor, BigNumber]>;
             for (const [staker, stakeAmount] of stakersAndStake) {
