@@ -12,7 +12,7 @@ import { toBaseUnitAmount } from './utils/number_utils';
 import { StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets.only('Stake Statuses', env => {
+blockchainTests.resets('Stake Statuses', env => {
     // constants
     const ZERO = new BigNumber(0);
     // tokens & addresses

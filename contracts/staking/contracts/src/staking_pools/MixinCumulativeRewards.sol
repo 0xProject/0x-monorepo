@@ -42,7 +42,7 @@ contract MixinCumulativeRewards is
         internal
     {
         uint256 currentEpoch = getCurrentEpoch();
-        cumulativeRewardsByPool[poolId][currentEpoch] = IStructs.Fraction({numerator: 0, denominator: MIN_TOKEN_VALUE});
+        _setCumulativeReward(poolId, currentEpoch, IStructs.Fraction({numerator: 0, denominator: MIN_TOKEN_VALUE}));
         cumulativeRewardsByPoolLastStored[poolId] = currentEpoch;
     }
 
@@ -56,6 +56,12 @@ contract MixinCumulativeRewards is
         // reward is set, as setting the cumulative reward always sets this
         // field to at least 1.
         return cumulativeReward.denominator != 0;
+    }
+
+    function _setCumulativeReward(bytes32 poolId, uint256 epoch, IStructs.Fraction memory value)
+        internal
+    {
+        cumulativeRewardsByPool[poolId][epoch] = value;
     }
 
     function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
@@ -149,10 +155,14 @@ contract MixinCumulativeRewards is
         );
 
         // store cumulative rewards
-        cumulativeRewardsByPoolPtr[epoch] = IStructs.Fraction({
-            numerator: numeratorNormalized,
-            denominator: denominatorNormalized
-        });
+        _setCumulativeReward(
+            poolId,
+            epoch,
+            IStructs.Fraction({
+                numerator: numeratorNormalized,
+                denominator: denominatorNormalized
+            })
+        );
 
         cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
