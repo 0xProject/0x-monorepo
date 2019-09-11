@@ -92,7 +92,7 @@ contract MixinCumulativeRewards is
         if (!_isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch])) {
             assert(epoch > mostRecentCumulativeRewardInfo.cumulativeRewardEpoch);
             cumulativeRewardsByPool[poolId][epoch] = mostRecentCumulativeRewardInfo.cumulativeReward;
-            cumulativeRewardsByPoolLastStored[poolId] = epoch;
+            _setMostRecentCumulativeReward(poolId, epoch);
         }
     }
 
@@ -153,6 +153,7 @@ contract MixinCumulativeRewards is
             numerator: numeratorNormalized,
             denominator: denominatorNormalized
         });
+
         cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
 
@@ -188,5 +189,22 @@ contract MixinCumulativeRewards is
             memberStakeOverInterval
         );
         return reward;
+    }
+
+    function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
+        internal
+    {
+        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
+        if (epoch <= currentMostRecentEpoch) {
+            return;
+        }
+
+        // unset the current most recent reward if it has no more references
+        if (cumulativeRewardsByPoolReferenceCounter[poolId][currentMostRecentEpoch] == 0) {
+            _unsetCumulativeReward(poolId, currentMostRecentEpoch);
+        }
+
+        // update
+        cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
 }
