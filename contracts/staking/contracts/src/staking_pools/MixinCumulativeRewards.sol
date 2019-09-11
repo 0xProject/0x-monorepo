@@ -43,7 +43,7 @@ contract MixinCumulativeRewards is
     {
         uint256 currentEpoch = getCurrentEpoch();
         _setCumulativeReward(poolId, currentEpoch, IStructs.Fraction({numerator: 0, denominator: MIN_TOKEN_VALUE}));
-        cumulativeRewardsByPoolLastStored[poolId] = currentEpoch;
+        _setMostRecentCumulativeReward(poolId, currentEpoch);
     }
 
     /// @dev returns true iff Cumulative Rewards are set
@@ -164,7 +164,7 @@ contract MixinCumulativeRewards is
             })
         );
 
-        cumulativeRewardsByPoolLastStored[poolId] = epoch;
+        _setMostRecentCumulativeReward(poolId, epoch);
     }
 
     /// @dev Computes a member's reward over a given epoch interval.

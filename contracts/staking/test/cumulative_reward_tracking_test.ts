@@ -99,6 +99,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
 
     const assertLogs = (expectedSequence: {event: string, epoch: number}[], txReceipt: TransactionReceiptWithDecodedLogs) => {
         const logs = getTestLogs(txReceipt);
+        // console.log(JSON.stringify(txReceipt.logs, null ,4));
         expect(logs.length).to.be.equal(expectedSequence.length);
         for (let i = 0; i < expectedSequence.length; i++) {
             const expectedLog = expectedSequence[i];
@@ -125,7 +126,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
             const txReceipt = await testCumulativeRewardTracking.createStakingPool.awaitTransactionSuccessAsync(0, false, {from: poolOperator});
             const expectedLogSequence = [
                 {event: 'SetCumulativeReward', epoch: 0},
-                //{event: 'SetMostRecentCumulativeReward', epoch: 0}
+                {event: 'SetMostRecentCumulativeReward', epoch: 0}
             ];
             assertLogs(expectedLogSequence, txReceipt);
         });
