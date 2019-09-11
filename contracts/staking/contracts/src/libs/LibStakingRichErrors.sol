@@ -23,9 +23,32 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
 library LibStakingRichErrors {
 
+    enum OperatorShareErrorCodes {
+        OperatorShareTooLarge,
+        CanOnlyDecreaseOperatorShare
+    }
+
     enum ProtocolFeePaymentErrorCodes {
         ZeroProtocolFeePaid,
         MismatchedFeeAndPayment
+    }
+
+    enum InitializationErrorCode {
+        MixinSchedulerAlreadyInitialized,
+        MixinParamsAlreadyInitialized
+    }
+
+    enum InvalidParamValueErrorCode {
+        InvalidCobbDouglasAlpha,
+        InvalidRewardDelegatedStakeWeight,
+        InvalidMaximumMakersInPool
+    }
+
+    enum MakerPoolAssignmentErrorCodes {
+        MakerAddressAlreadyRegistered,
+        MakerAddressNotRegistered,
+        MakerAddressNotPendingAdd,
+        PoolIsFull
     }
 
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
@@ -92,10 +115,6 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
         0x2a5e4dcf;
 
-    // bytes4(keccak256("InvalidCobbDouglasAlphaError(uint256,uint256)"))
-    bytes4 internal constant INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR =
-        0x8f8e73de;
-
     // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
@@ -112,6 +131,14 @@ library LibStakingRichErrors {
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
         hex"01ecebea";
 
+    // bytes4(keccak256("InitializationError(uint8)"))
+    bytes4 internal constant INITIALIZATION_ERROR_SELECTOR =
+        0x0b02d773;
+
+    // bytes4(keccak256("InvalidParamValueError(uint8)"))
+    bytes4 internal constant INVALID_PARAM_VALUE_ERROR_SELECTOR =
+        0xfc45bd11;
+
     // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
         0xefd6cb33;
@@ -119,18 +146,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("InvalidWethAssetDataError()"))
     bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
         hex"24bf322c";
-
-    enum MakerPoolAssignmentErrorCodes {
-        MAKER_ADDRESS_ALREADY_REGISTERED,
-        MAKER_ADDRESS_NOT_REGISTERED,
-        MAKER_ADDRESS_NOT_PENDING_ADD,
-        POOL_IS_FULL
-    }
-
-    enum OperatorShareErrorCodes {
-        OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100,
-        CAN_ONLY_DECREASE_OPERATOR_SHARE
-    }
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -355,21 +370,6 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidCobbDouglasAlphaError(
-        uint256 numerator,
-        uint256 denominator
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_COBB_DOUGLAS_ALPHA_ERROR_SELECTOR,
-            numerator,
-            denominator
-        );
-    }
-
     function EthVaultNotSetError()
         internal
         pure
@@ -377,6 +377,16 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             ETH_VAULT_NOT_SET_ERROR_SELECTOR
+        );
+    }
+
+    function RewardVaultNotSetError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
         );
     }
 
@@ -397,16 +407,6 @@ library LibStakingRichErrors {
         );
     }
 
-    function RewardVaultNotSetError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
-        );
-    }
-
     function InvalidStakeStatusError(uint256 status)
         internal
         pure
@@ -415,6 +415,28 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             INVALID_STAKE_STATUS_ERROR_SELECTOR,
             status
+        );
+    }
+
+    function InitializationError(InitializationErrorCode code)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INITIALIZATION_ERROR_SELECTOR,
+            uint8(code)
+        );
+    }
+
+    function InvalidParamValueError(InvalidParamValueErrorCode code)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            INVALID_PARAM_VALUE_ERROR_SELECTOR,
+            uint8(code)
         );
     }
 

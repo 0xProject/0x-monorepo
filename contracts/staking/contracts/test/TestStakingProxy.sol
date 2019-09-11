@@ -18,34 +18,20 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/fees/MixinExchangeFees.sol";
+import "../src/StakingProxy.sol";
 
 
-contract TestCobbDouglas is
-    MixinExchangeFees
+contract TestStakingProxy is
+    StakingProxy
 {
 
-    function cobbDouglas(
-        uint256 totalRewards,
-        uint256 ownerFees,
-        uint256 totalFees,
-        uint256 ownerStake,
-        uint256 totalStake,
-        uint256 alphaNumerator,
-        uint256 alphaDenominator
-    )
-        external
-        pure
-        returns (uint256 ownerRewards)
-    {
-        ownerRewards = _cobbDouglas(
-            totalRewards,
-            ownerFees,
-            totalFees,
-            ownerStake,
-            totalStake,
-            alphaNumerator,
-            alphaDenominator
-        );
+    // solhint-disable no-empty-blocks
+    constructor(address _stakingContract)
+        public
+        StakingProxy(_stakingContract, address(0), address(0))
+    {}
+
+    function getAttachedContract() external view returns (address) {
+        return stakingContract;
     }
 }

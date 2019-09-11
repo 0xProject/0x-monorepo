@@ -26,6 +26,7 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
@@ -47,39 +48,20 @@ import "./MixinExchangeManager.sol";
 contract MixinExchangeFees is
     IStakingEvents,
     MixinConstants,
+    MixinDeploymentConstants,
+    Ownable,
     MixinStorage,
     MixinZrxVault,
     MixinExchangeManager,
-    MixinScheduler,
     MixinStakingPoolRewardVault,
+    MixinScheduler,
     MixinStakeStorage,
     MixinStakeBalances,
     MixinStakingPoolRewards,
     MixinStakingPool
 {
-    using LibSafeMath for uint256;
 
-    /// @dev Set the cobb douglas alpha value used when calculating rewards.
-    ///      Valid inputs: 0 <= `numerator` / `denominator` <= 1.0
-    /// @param numerator The alpha numerator.
-    /// @param denominator The alpha denominator.
-    function setCobbDouglasAlpha(
-        uint256 numerator,
-        uint256 denominator
-    )
-        external
-        onlyOwner
-    {
-        if (int256(numerator) < 0 || int256(denominator) <= 0 || numerator > denominator) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidCobbDouglasAlphaError(
-                numerator,
-                denominator
-            ));
-        }
-        cobbDouglasAlphaNumerator = numerator;
-        cobbDouglasAlphaDenomintor = denominator;
-        emit CobbDouglasAlphaChanged(numerator, denominator);
-    }
+    using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.
     ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
@@ -126,15 +108,15 @@ contract MixinExchangeFees is
 
         // Only attribute the protocol fee payment to a pool if the maker is registered to a pool.
         if (poolId != NIL_POOL_ID) {
-            // Use the maker pool id to get the amount of fees collected during this epoch in the pool.
-            uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-
-            // Update the amount of protocol fees paid to this pool this epoch.
-            protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
-
-            // If there were no fees collected prior to this payment, activate the pool that is being paid.
-            if (_feesCollectedThisEpoch == 0) {
-                activePoolsThisEpoch.push(poolId);
+            uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+            // Ignore pools with dust stake.
+            if (poolStake >= minimumPoolStake) {
+                // Credit the pool.
+                uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
+                protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
+                if (_feesCollectedThisEpoch == 0) {
+                    activePoolsThisEpoch.push(poolId);
+                }
             }
         }
     }
@@ -249,6 +231,7 @@ contract MixinExchangeFees is
 
         // step 2/4 - compute stats for active maker pools
         IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](totalActivePools);
+        uint32 delegatedStakeWeight = rewardDelegatedStakeWeight;
         for (uint256 i = 0; i != totalActivePools; i++) {
             bytes32 poolId = activePoolsThisEpoch[i];
 
@@ -258,7 +241,7 @@ contract MixinExchangeFees is
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
-                    .safeMul(REWARD_DELEGATED_STAKE_WEIGHT)
+                    .safeMul(delegatedStakeWeight)
                     .safeDiv(PPM_DENOMINATOR)
             );
 

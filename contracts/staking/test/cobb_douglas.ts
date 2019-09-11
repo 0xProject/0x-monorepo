@@ -1,16 +1,10 @@
-import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
-import { BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { blockchainTests, Numberish } from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    TestCobbDouglasCobbDouglasAlphaChangedEventArgs,
-    TestCobbDouglasContract,
-    TestCobbDouglasEvents,
-} from '../src/';
+import { artifacts, TestCobbDouglasContract } from '../src/';
 
-import { assertRoughlyEquals, getRandomInteger, getRandomPortion, Numberish, toDecimal } from './utils/number_utils';
+import { assertRoughlyEquals, getRandomInteger, getRandomPortion, toDecimal } from './utils/number_utils';
 
 // tslint:disable: no-unnecessary-type-assertion
 blockchainTests('Cobb-Douglas', env => {
@@ -29,72 +23,6 @@ blockchainTests('Cobb-Douglas', env => {
             env.txDefaults,
             artifacts,
         );
-    });
-
-    blockchainTests.resets('setCobbDouglasAlpha()', () => {
-        const NEGATIVE_ONE = constants.MAX_UINT256.minus(1);
-
-        it('throws if not called by owner', async () => {
-            const [n, d] = [new BigNumber(1), new BigNumber(2)];
-            const tx = testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(n, d, { from: notOwnerAddress });
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('throws with int256(numerator) < 0', async () => {
-            const [n, d] = [NEGATIVE_ONE, NEGATIVE_ONE];
-            const tx = testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(n, d);
-            const expectedError = new StakingRevertErrors.InvalidCobbDouglasAlphaError(n, d);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('throws with int256(denominator) < 0', async () => {
-            const [n, d] = [new BigNumber(1), NEGATIVE_ONE];
-            const tx = testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(n, d);
-            const expectedError = new StakingRevertErrors.InvalidCobbDouglasAlphaError(n, d);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('throws with denominator == 0', async () => {
-            const [n, d] = [new BigNumber(0), new BigNumber(0)];
-            const tx = testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(n, d);
-            const expectedError = new StakingRevertErrors.InvalidCobbDouglasAlphaError(n, d);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('throws with numerator > denominator', async () => {
-            const [n, d] = [new BigNumber(2), new BigNumber(1)];
-            const tx = testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(n, d);
-            const expectedError = new StakingRevertErrors.InvalidCobbDouglasAlphaError(n, d);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        async function setCobbDouglasAlphaAndAssertEffectsAsync(n: Numberish, d: Numberish): Promise<void> {
-            const [_n, _d] = [new BigNumber(n), new BigNumber(d)];
-            const receipt = await testContract.setCobbDouglasAlpha.awaitTransactionSuccessAsync(_n, _d);
-            const logs = filterLogsToArguments<TestCobbDouglasCobbDouglasAlphaChangedEventArgs>(
-                receipt.logs,
-                TestCobbDouglasEvents.CobbDouglasAlphaChanged,
-            );
-            expect(logs.length).to.eq(1);
-            expect(logs[0].numerator).to.bignumber.eq(_n);
-            expect(logs[0].denominator).to.bignumber.eq(_d);
-            const [actualNumerator, actualDenominator] = await testContract.getCobbDouglasAlpha.callAsync();
-            expect(actualNumerator).to.bignumber.eq(_n);
-            expect(actualDenominator).to.bignumber.eq(_d);
-        }
-
-        it('accepts numerator == denominator', async () => {
-            return setCobbDouglasAlphaAndAssertEffectsAsync(1, 1);
-        });
-
-        it('accepts numerator < denominator', async () => {
-            return setCobbDouglasAlphaAndAssertEffectsAsync(1, 2);
-        });
-
-        it('accepts numerator == 0', async () => {
-            return setCobbDouglasAlphaAndAssertEffectsAsync(0, 1);
-        });
     });
 
     describe('cobbDouglas()', () => {

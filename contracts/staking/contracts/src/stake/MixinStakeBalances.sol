@@ -33,11 +33,13 @@ import "./MixinStakeStorage.sol";
 contract MixinStakeBalances is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
     MixinZrxVault,
     MixinScheduler,
     MixinStakeStorage
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Returns the total stake for a given owner.

@@ -25,11 +25,14 @@ import "../src/interfaces/IStructs.sol";
 
 
 contract TestStorageLayout is
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
+
     function assertExpectedStorageLayout()
         public
-        view
+        pure
     {
         assembly {
             function revertIncorrectStorageSlot() {
@@ -104,6 +107,24 @@ contract TestStorageLayout is
             slot := add(slot, 1)
 
             if sub(rewardVault_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(epochDurationInSeconds_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(rewardDelegatedStakeWeight_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(minimumPoolStake_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(maximumMakersInPool_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(cobbDouglasAlphaNumerator_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(cobbDouglasAlphaDenomintor_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
         }
     }

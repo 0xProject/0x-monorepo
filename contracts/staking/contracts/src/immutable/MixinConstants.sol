@@ -18,13 +18,11 @@
 
 pragma solidity ^0.5.9;
 
-import "./MixinDeploymentConstants.sol";
 
-
-contract MixinConstants is
-    MixinDeploymentConstants
+contract MixinConstants
 {
-    uint32 constant internal PPM_DENOMINATOR = 1000000;
+    // 100% in parts-per-million.
+    uint32 constant internal PPM_DENOMINATOR = 10**6;
 
     // The upper 16 bytes represent the pool id, so this would be pool id 1. See MixinStakinPool for more information.
     bytes32 constant internal INITIAL_POOL_ID = 0x0000000000000000000000000000000100000000000000000000000000000000;
@@ -39,8 +37,6 @@ contract MixinConstants is
     bytes32 constant internal UNKNOWN_STAKING_POOL_ID = 0x0000000000000000000000000000000000000000000000000000000000000000;
 
     uint64 constant internal INITIAL_EPOCH = 0;
-
-    uint64 constant internal INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
     uint256 constant internal MIN_TOKEN_VALUE = 10**18;
 }

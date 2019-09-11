@@ -31,9 +31,11 @@ import "./MixinZrxVault.sol";
 contract MixinStakeStorage is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
     MixinScheduler
 {
+
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
@@ -107,7 +109,7 @@ contract MixinStakeStorage is
     /// @return unsynchronized balance.
     function _loadUnsyncedBalance(IStructs.StoredBalance storage balancePtr)
         internal
-        view
+        pure
         returns (IStructs.StoredBalance memory balance)
     {
         balance = balancePtr;

@@ -53,12 +53,20 @@ interface IStakingEvents {
         uint256 earliestEndTimeInSeconds
     );
 
-    /// @dev Emitted by MixinExchangeFees when the cobb douglas alpha is updated.
-    /// @param numerator The alpha numerator.
-    /// @param denominator The alpha denominator.
-    event CobbDouglasAlphaChanged(
-        uint256 numerator,
-        uint256 denominator
+    /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.
+    /// @param epochDurationInSeconds Minimum seconds between epochs.
+    /// @param rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
+    /// @param minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
+    /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
+    /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
+    /// @param cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
+    event ParamsChanged(
+        uint256 epochDurationInSeconds,
+        uint32 rewardDelegatedStakeWeight,
+        uint256 minimumPoolStake,
+        uint256 maximumMakersInPool,
+        uint256 cobbDouglasAlphaNumerator,
+        uint256 cobbDouglasAlphaDenomintor
     );
 
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.

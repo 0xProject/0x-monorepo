@@ -30,11 +30,15 @@ import "./MixinStakingPoolRewardVault.sol";
 contract MixinStakingPoolRewards is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
-    MixinScheduler,
+    MixinZrxVault,
     MixinStakingPoolRewardVault,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakeBalances
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

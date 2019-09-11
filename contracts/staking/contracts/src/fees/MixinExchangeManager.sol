@@ -31,10 +31,11 @@ import "../immutable/MixinStorage.sol";
 /// then it should be removed.
 contract MixinExchangeManager is
     IStakingEvents,
-    MixinDeploymentConstants,
     MixinConstants,
+    Ownable,
     MixinStorage
 {
+
     /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {
         if (!isValidExchangeAddress(msg.sender)) {

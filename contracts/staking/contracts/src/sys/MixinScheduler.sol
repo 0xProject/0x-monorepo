@@ -36,8 +36,10 @@ import "../interfaces/IStakingEvents.sol";
 contract MixinScheduler is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Returns the current epoch.
@@ -48,17 +50,6 @@ contract MixinScheduler is
         returns (uint256)
     {
         return currentEpoch;
-    }
-
-    /// @dev Returns the current epoch period, measured in seconds.
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    /// @return Time in seconds.
-    function getEpochDurationInSeconds()
-        public
-        pure
-        returns (uint256)
-    {
-        return EPOCH_DURATION_IN_SECONDS;
     }
 
     /// @dev Returns the start time in seconds of the current epoch.
@@ -81,7 +72,23 @@ contract MixinScheduler is
         view
         returns (uint256)
     {
-        return getCurrentEpochStartTimeInSeconds().safeAdd(getEpochDurationInSeconds());
+        return getCurrentEpochStartTimeInSeconds().safeAdd(epochDurationInSeconds);
+    }
+
+    /// @dev Initializes state owned by this mixin.
+    ///      Fails if state was already initialized.
+    function _initMixinScheduler()
+        internal
+    {
+        if (currentEpochStartTimeInSeconds != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InitializationError(
+                    LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
+                )
+            );
+        }
+        // solhint-disable-next-line
+        currentEpochStartTimeInSeconds = block.timestamp;
     }
 
     /// @dev Moves to the next epoch, given the current epoch period has ended.
@@ -107,7 +114,9 @@ contract MixinScheduler is
         uint256 nextEpoch = currentEpoch.safeAdd(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(getEpochDurationInSeconds());
+        uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(
+            epochDurationInSeconds
+        );
 
         // notify of epoch change
         emit EpochChanged(

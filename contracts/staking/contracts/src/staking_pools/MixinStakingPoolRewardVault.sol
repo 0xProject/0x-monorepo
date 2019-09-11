@@ -30,6 +30,8 @@ import "../immutable/MixinStorage.sol";
 /// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
 

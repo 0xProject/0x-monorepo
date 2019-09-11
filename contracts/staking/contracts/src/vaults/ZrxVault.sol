@@ -34,9 +34,12 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
+    Authorizable,
+    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {
+
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance

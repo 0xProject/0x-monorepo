@@ -11,6 +11,7 @@ import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
 import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
+import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IVaultCore from '../generated-artifacts/IVaultCore.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
@@ -24,6 +25,7 @@ import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymen
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
+import * as MixinParams from '../generated-artifacts/MixinParams.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
@@ -39,10 +41,12 @@ import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestProtocolFeesERC20Proxy from '../generated-artifacts/TestProtocolFeesERC20Proxy.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
+import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
 import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
@@ -59,6 +63,7 @@ export const artifacts = {
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,
     IStakingProxy: IStakingProxy as ContractArtifact,
+    IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IVaultCore: IVaultCore as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
@@ -75,15 +80,18 @@ export const artifacts = {
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
+    MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     EthVault: EthVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestProtocolFeesERC20Proxy: TestProtocolFeesERC20Proxy as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
+    TestStakingProxy: TestStakingProxy as ContractArtifact,
     TestStorageLayout: TestStorageLayout as ContractArtifact,
 };

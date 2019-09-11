@@ -18,17 +18,22 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
+import "./interfaces/IStorageInit.sol";
+import "./interfaces/IStakingEvents.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
 contract StakingProxy is
+    IStakingEvents,
     IStakingProxy,
-    MixinDeploymentConstants,
     MixinConstants,
+    Ownable,
     MixinStorage
 {
+
     using LibProxy for address;
 
     /// @dev Constructor.
@@ -39,10 +44,9 @@ contract StakingProxy is
         public
         MixinStorage()
     {
-        stakingContract = _stakingContract;
-        readOnlyProxyCallee = _stakingContract;
         readOnlyProxy = _readOnlyProxy;
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
+        _attachStakingContract(_stakingContract);
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
@@ -64,9 +68,7 @@ contract StakingProxy is
         external
         onlyOwner
     {
-        stakingContract = _stakingContract;
-        readOnlyProxyCallee = _stakingContract;
-        emit StakingContractAttachedToProxy(_stakingContract);
+        _attachStakingContract(_stakingContract);
     }
 
     /// @dev Detach the current staking contract.
@@ -91,5 +93,20 @@ contract StakingProxy is
         }
 
         emit ReadOnlyModeSet(readOnlyMode);
+    }
+
+    /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
+    /// @param _stakingContract Address of staking contract.
+    function _attachStakingContract(address _stakingContract)
+        private
+    {
+        stakingContract = readOnlyProxyCallee = _stakingContract;
+        // Call `init()` on the staking contract to initialize storage.
+        (bool didInitSucceed, bytes memory initReturnData) =
+            _stakingContract.delegatecall(abi.encode(IStorageInit(0).init.selector));
+        if (!didInitSucceed) {
+            assembly { revert(add(initReturnData, 0x20), mload(initReturnData)) }
+        }
+        emit StakingContractAttachedToProxy(_stakingContract);
     }
 }

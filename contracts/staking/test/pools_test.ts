@@ -50,7 +50,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
             const revertError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
                 stakingConstants.INITIAL_POOL_ID,
                 operatorShare,
             );
@@ -79,7 +79,7 @@ blockchainTests('Staking Pool Management', env => {
             const tx = poolOperator.createStakingPoolAsync(operatorShare, true);
             const expectedPoolId = stakingConstants.INITIAL_POOL_ID;
             const expectedError = new StakingRevertErrors.OperatorShareError(
-                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareMustBeBetween0And100,
+                StakingRevertErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
                 expectedPoolId,
                 operatorShare,
             );
@@ -321,7 +321,7 @@ blockchainTests('Staking Pool Management', env => {
             const operatorShare = (39 / 100) * PPM_DENOMINATOR;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
 
-            const makerAddresses = users.slice(1, stakingConstants.MAX_MAKERS_IN_POOL + 2);
+            const makerAddresses = users.slice(1, stakingConstants.DEFAULT_PARAMS.maximumMakersInPool.toNumber() + 2);
             const makers = makerAddresses.map(makerAddress => new MakerActor(makerAddress, stakingApiWrapper));
 
             // create pool
@@ -338,7 +338,9 @@ blockchainTests('Staking Pool Management', env => {
 
             // check the number of makers in the pool
             const numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
-            expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(stakingConstants.MAX_MAKERS_IN_POOL);
+            expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(
+                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
+            );
 
             const lastMakerAddress = _.last(makerAddresses) as string;
             // Try to add last maker to the pool

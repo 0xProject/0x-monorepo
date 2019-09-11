@@ -24,9 +24,11 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
+import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../sys/MixinScheduler.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "./MixinZrxVault.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinStakeStorage.sol";
 
@@ -35,11 +37,16 @@ import "./MixinStakeStorage.sol";
 contract MixinStake is
     IStakingEvents,
     MixinConstants,
+    Ownable,
     MixinStorage,
+    MixinZrxVault,
+    MixinStakingPoolRewardVault,
     MixinScheduler,
+    MixinStakeStorage,
     MixinStakeBalances,
     MixinStakingPoolRewards
 {
+
     using LibSafeMath for uint256;
 
     /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.

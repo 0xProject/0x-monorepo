@@ -18,9 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
@@ -33,24 +31,9 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
-    MixinDeploymentConstants,
-    Ownable,
-    MixinConstants
+    MixinConstants,
+    Ownable
 {
-    using LibBytes for bytes;
-
-    /// @dev Ensures that the WETH_ASSET_DATA is correct.
-    constructor()
-        public
-        Ownable()
-    {
-        // Ensure that the WETH_ASSET_DATA from MixinDeploymentConstants is correct.
-        if (!WETH_ASSET_DATA.equals(
-            abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
-        )) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
-        }
-    }
 
     // WETH Asset Proxy
     IAssetProxy internal wethAssetProxy;
@@ -127,9 +110,21 @@ contract MixinStorage is
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault internal rewardVault;
 
+    // Minimum seconds between epochs.
+    uint256 internal epochDurationInSeconds;
+
+    // How much delegated stake is weighted vs operator stake, in ppm.
+    uint32 internal rewardDelegatedStakeWeight;
+
+    // Minimum amount of stake required in a pool to collect rewards.
+    uint256 internal minimumPoolStake;
+
+    // Maximum number of maker addresses allowed to be registered to a pool.
+    uint256 internal maximumMakersInPool;
+
     // Numerator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaNumerator = 1;
+    uint32 internal cobbDouglasAlphaNumerator;
 
     // Denominator for cobb douglas alpha factor.
-    uint256 internal cobbDouglasAlphaDenomintor = 6;
+    uint32 internal cobbDouglasAlphaDenomintor;
 }

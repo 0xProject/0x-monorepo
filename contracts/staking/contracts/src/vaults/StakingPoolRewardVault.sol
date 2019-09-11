@@ -40,10 +40,13 @@ import "../immutable/MixinConstants.sol";
 /// When in Catastrophic Failure Mode, the Staking contract can still
 /// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
+    Authorizable,
     IStakingPoolRewardVault,
+    IVaultCore,
     MixinConstants,
     MixinVaultCore
 {
+
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
@@ -184,7 +187,7 @@ contract StakingPoolRewardVault is
         // operator share must be a valid fraction
         if (operatorShare > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
-                LibStakingRichErrors.OperatorShareErrorCodes.OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100,
+                LibStakingRichErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
                 poolId,
                 operatorShare
             ));
@@ -221,7 +224,7 @@ contract StakingPoolRewardVault is
 
         if (newOperatorShare >= oldOperatorShare) {
             LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
-                LibStakingRichErrors.OperatorShareErrorCodes.CAN_ONLY_DECREASE_OPERATOR_SHARE,
+                LibStakingRichErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
                 poolId,
                 newOperatorShare
             ));
