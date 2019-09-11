@@ -58,7 +58,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
         stakers = [new StakerActor(actors[0], stakingApiWrapper), new StakerActor(actors[1], stakingApiWrapper)];
         // setup pools
         poolOperator = actors[2];
-        poolId = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 0, true); // add operator as maker
+        poolId = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 50, true); // add operator as maker
         // set exchange address
         await stakingApiWrapper.stakingContract.addExchangeAddress.awaitTransactionSuccessAsync(exchangeAddress);
         // associate operators for tracking in Finalizer
@@ -72,6 +72,20 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
         // create Finalizer actor
         finalizer = new FinalizerActor(actors[3], stakingApiWrapper, [poolId], operatorByPoolId, membersByPoolId);
     });
+
+    const payProtocolFeeAndFinalize = async (_fee?: BigNumber): Promise<TransactionReceiptWithDecodedLogs> => {
+        const fee = _fee !== undefined ? _fee : ZERO;
+        if (!fee.eq(ZERO)) {
+            await stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
+                poolOperator,
+                takerAddress,
+                fee,
+                { from: exchangeAddress, value: fee },
+            );
+        }
+
+        return await stakingApiWrapper.utils.skipToNextEpochAsync();
+    };
 
     const getTestLogs = (txReceipt: TransactionReceiptWithDecodedLogs): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] => {
         const logs = [];
@@ -121,12 +135,181 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                     nextEpochBalance: ZERO,
                 },
                 [],
-                new BigNumber(0)
+                ZERO,
+                ZERO
             );
             const txReceipt = await testCumulativeRewardTracking.createStakingPool.awaitTransactionSuccessAsync(0, false, {from: poolOperator});
             const expectedLogSequence = [
                 {event: 'SetCumulativeReward', epoch: 0},
                 {event: 'SetMostRecentCumulativeReward', epoch: 0}
+            ];
+            assertLogs(expectedLogSequence, txReceipt);
+        });
+
+        it('should record a cumulative reward and shift the most recent cumulative reward when a reward is earned', async () => {
+            await testCumulativeRewardTracking.initializeTest.awaitTransactionSuccessAsync(
+                stakers[0].getOwner(),
+                poolId,
+                {
+                    isInitialized: true,
+                    currentEpoch: 1,
+                    currentEpochBalance: toBaseUnitAmount(100),
+                    nextEpochBalance: toBaseUnitAmount(100),
+                },
+                [],
+                ZERO,
+                new BigNumber(1)
+            );
+            const reward = toBaseUnitAmount(10);
+            const txReceipt =  await payProtocolFeeAndFinalize(reward);
+            const expectedLogSequence = [
+                {event: 'SetCumulativeReward', epoch: 1},
+                {event: 'SetMostRecentCumulativeReward', epoch: 1}
+            ];
+            assertLogs(expectedLogSequence, txReceipt);
+        });
+
+        it('should not record a cumulative reward when one already exists', async () => {
+            await testCumulativeRewardTracking.initializeTest.awaitTransactionSuccessAsync(
+                stakers[0].getOwner(),
+                poolId,
+                {
+                    isInitialized: false,
+                    currentEpoch: 0,
+                    currentEpochBalance: toBaseUnitAmount(0),
+                    nextEpochBalance: toBaseUnitAmount(0),
+                },
+                [
+                    { // cumulative reward at epoch 0
+                        poolId,
+                        epoch: ZERO,
+                        value: {
+                            numerator: ZERO,
+                            denominator: toBaseUnitAmount(1)
+                        }
+                    }
+                ],
+                ZERO,
+                new BigNumber(0) // currently epoch 0, so no need to record the reward
+            );
+            const amountToStake = toBaseUnitAmount(100);
+            await testCumulativeRewardTracking.stake.awaitTransactionSuccessAsync(amountToStake, {from: stakers[0].getOwner()});
+            const txReceipt =  await testCumulativeRewardTracking.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Active), {status: StakeStatus.Delegated, poolId}, amountToStake, {from: stakers[0].getOwner()});
+            const expectedLogSequence: any[] = [];
+            assertLogs(expectedLogSequence, txReceipt);
+        });
+
+        it('should record a cumulative reward when adding stake ', async () => {
+            await testCumulativeRewardTracking.initializeTest.awaitTransactionSuccessAsync(
+                stakers[0].getOwner(),
+                poolId,
+                {
+                    isInitialized: false,
+                    currentEpoch: 0,
+                    currentEpochBalance: toBaseUnitAmount(0),
+                    nextEpochBalance: toBaseUnitAmount(0),
+                },
+                [
+                    { // cumulative reward at epoch 0
+                        poolId,
+                        epoch: ZERO,
+                        value: {
+                            numerator: ZERO,
+                            denominator: toBaseUnitAmount(1)
+                        }
+                    }
+                ],
+                ZERO,
+                new BigNumber(1) // now it's epoch 1, so we need to set the reward
+            );
+            const amountToStake = toBaseUnitAmount(100);
+            await testCumulativeRewardTracking.stake.awaitTransactionSuccessAsync(amountToStake, {from: stakers[0].getOwner()});
+            const txReceipt =  await testCumulativeRewardTracking.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Active), {status: StakeStatus.Delegated, poolId}, amountToStake, {from: stakers[0].getOwner()});
+            console.log(JSON.stringify(txReceipt, null, 4));
+            const expectedLogSequence = [
+                {event: 'SetCumulativeReward', epoch: 1},
+                {event: 'SetMostRecentCumulativeReward', epoch: 1}
+            ];
+            assertLogs(expectedLogSequence, txReceipt);
+        });
+
+        it('should record and unrecord a cumulative reward when adding stake for the second time in the same epoch', async () => {
+            // delegated for the first time in epoch 1 (so current epoch balance is zero).
+            // then we delegated again in epoch 1.
+            // since we're not staked right now, we don't have a dependency on epoch 0,
+            // so we only set a cumulative reward for the current epoch.
+
+            await testCumulativeRewardTracking.initializeTest.awaitTransactionSuccessAsync(
+                stakers[0].getOwner(),
+                poolId,
+                {
+                    isInitialized: true,
+                    currentEpoch: 1,
+                    currentEpochBalance: toBaseUnitAmount(0),
+                    nextEpochBalance: toBaseUnitAmount(4),
+                },
+                [
+                    { // cumulative reward at epoch 0
+                        poolId,
+                        epoch: ZERO,
+                        value: {
+                            numerator: ZERO,
+                            denominator: toBaseUnitAmount(1)
+                        }
+                    }
+                ],
+                ZERO,
+                new BigNumber(1) // now it's epoch 1, so we need to set the reward
+            );
+            const amountToStake = toBaseUnitAmount(100);
+            await testCumulativeRewardTracking.stake.awaitTransactionSuccessAsync(amountToStake, {from: stakers[0].getOwner()});
+            // it will be created
+            const txReceipt =  await testCumulativeRewardTracking.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Active), {status: StakeStatus.Delegated, poolId}, amountToStake, {from: stakers[0].getOwner()});
+            console.log(JSON.stringify(txReceipt, null, 4));
+            const expectedLogSequence = [
+                {event: 'SetCumulativeReward', epoch: 1},
+                {event: 'SetMostRecentCumulativeReward', epoch: 1},
+            ];
+            assertLogs(expectedLogSequence, txReceipt);
+        });
+
+
+
+        it.only('should record and unrecord a cumulative reward when adding stake for the second time in the same epoch', async () => {
+            // delegated for the in epoch 0 and epoch 1.
+            // it is currently epoch 1 and we are adding stake.
+            //
+            await testCumulativeRewardTracking.initializeTest.awaitTransactionSuccessAsync(
+                stakers[0].getOwner(),
+                poolId,
+                {
+                    isInitialized: true,
+                    currentEpoch: 1,
+                    currentEpochBalance: toBaseUnitAmount(4),
+                    nextEpochBalance: toBaseUnitAmount(4),
+                },
+                [
+                    { // cumulative reward at epoch 0
+                        poolId,
+                        epoch: ZERO,
+                        value: {
+                            numerator: ZERO,
+                            denominator: toBaseUnitAmount(1)
+                        }
+                    }
+                ],
+                ZERO,
+                new BigNumber(1) // now it's epoch 1, so we need to set the reward
+            );
+            const amountToStake = toBaseUnitAmount(100);
+            await testCumulativeRewardTracking.stake.awaitTransactionSuccessAsync(amountToStake, {from: stakers[0].getOwner()});
+            // it will be created
+            const txReceipt =  await testCumulativeRewardTracking.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Active), {status: StakeStatus.Delegated, poolId}, amountToStake, {from: stakers[0].getOwner()});
+            console.log(JSON.stringify(txReceipt, null, 4));
+            const expectedLogSequence = [
+                {event: 'SetCumulativeReward', epoch: 1},
+                {event: 'SetMostRecentCumulativeReward', epoch: 1},
+                {event: 'UnsetCumulativeReward', epoch: 0},
             ];
             assertLogs(expectedLogSequence, txReceipt);
         });

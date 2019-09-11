@@ -18,12 +18,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/Staking.sol";
+import "./TestStaking.sol";
 import "../src/interfaces/IStructs.sol";
 
 
 contract TestCumulativeRewardTracking is
-    Staking
+    TestStaking
 {
 
     struct CumulativeReward {
@@ -37,12 +37,14 @@ contract TestCumulativeRewardTracking is
         bytes32 poolId,
         IStructs.StoredBalance memory stakerDelegatedToPoolBalance,
         CumulativeReward[] memory initCumulativeRewards,
-        uint256 mostRecentCumulativeRewardEpoch
+        uint256 mostRecentCumulativeRewardEpoch,
+        uint256 _currentEpoch
     )
         public
     {
         delegatedStakeByOwner[staker] = stakerDelegatedToPoolBalance;
         delegatedStakeToPoolByOwner[staker][poolId] = stakerDelegatedToPoolBalance;
+        delegatedStakeByPoolId[poolId] = stakerDelegatedToPoolBalance;
 
         for (uint i = 0; i != initCumulativeRewards.length; ++i) {
             MixinCumulativeRewards._setCumulativeReward(
@@ -53,6 +55,7 @@ contract TestCumulativeRewardTracking is
         }
 
         MixinCumulativeRewards._setMostRecentCumulativeReward(poolId, mostRecentCumulativeRewardEpoch);
+        currentEpoch = _currentEpoch;
     }
 
     event SetMostRecentCumulativeReward(

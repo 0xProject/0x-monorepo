@@ -143,6 +143,8 @@ contract MixinStake is
             ? getWithdrawableStake(owner)
             : 0;
 
+
+
         // execute move
         IStructs.StoredBalance storage fromPtr = _getBalancePtrFromStatus(owner, from.status);
         IStructs.StoredBalance storage toPtr = _getBalancePtrFromStatus(owner, to.status);

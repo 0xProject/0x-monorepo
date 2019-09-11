@@ -96,8 +96,11 @@ contract MixinCumulativeRewards is
 
         // ensure dependency has a value, otherwise copy it from the most recent reward
         if (!_isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch])) {
-            assert(epoch > mostRecentCumulativeRewardInfo.cumulativeRewardEpoch);
-            cumulativeRewardsByPool[poolId][epoch] = mostRecentCumulativeRewardInfo.cumulativeReward;
+            require(
+                epoch > mostRecentCumulativeRewardInfo.cumulativeRewardEpoch,
+                "Nope"
+            );
+            _setCumulativeReward(poolId, epoch, mostRecentCumulativeRewardInfo.cumulativeReward);
             _setMostRecentCumulativeReward(poolId, epoch);
         }
     }

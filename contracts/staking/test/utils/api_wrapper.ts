@@ -37,6 +37,7 @@ export class StakingApiWrapper {
         skipToNextEpochAsync: async (): Promise<TransactionReceiptWithDecodedLogs> => {
             await this.utils.fastForwardToNextEpochAsync();
             // increment epoch in contracts
+            console.log("fast forwarded");
             const txReceipt = await this.stakingContract.finalizeFees.awaitTransactionSuccessAsync();
             logUtils.log(`Finalization costed ${txReceipt.gasUsed} gas`);
             // mine next block
