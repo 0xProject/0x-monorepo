@@ -87,13 +87,6 @@ contract MixinScheduler is
         uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(
             epochDurationInSeconds
         );
-
-        // notify of epoch change
-        emit EpochChanged(
-            currentEpoch,
-            currentEpochStartTimeInSeconds,
-            earliestEndTimeInSeconds
-        );
     }
 
     /// @dev Assert scheduler state before initializing it.
