@@ -33,8 +33,8 @@ export type TransactionExpectation<TAwaitTransactionSuccessAsyncArgs extends any
 ) => Promise<void> | void;
 
 export class BaseUnitTestHelper<TContract> {
-    protected _testContract: TContract;
-    private _logDecoder: LogDecoder;
+    protected readonly _testContract: TContract;
+    private readonly _logDecoder: LogDecoder;
 
     protected static async _verifyContractMethodRevertErrorAsync<
         TCallAsyncArgs extends any[],
