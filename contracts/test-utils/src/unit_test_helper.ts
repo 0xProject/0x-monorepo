@@ -1,16 +1,10 @@
 import { RevertError } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 
-import { ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { expect } from './chai_setup';
-import { LogDecoder } from './log_decoder';
 
-type AsyncFunction<TArgs extends any[], TResult> = (...args: TArgs) => Promise<TResult>;
-
-interface ContractArtifacts {
-    [contractName: string]: ContractArtifact;
-}
+type AsyncFunction<TArgs extends any[], TReturn> = (...args: TArgs) => PromiseLike<TReturn>;
 
 interface TransactionReturnData<TCallAsyncResult> {
     result: TCallAsyncResult;
@@ -23,7 +17,7 @@ interface ContractWrapperFunction<
     TCallAsyncResult
 > {
     callAsync: AsyncFunction<TCallAsyncArgs, TCallAsyncResult>;
-    sendTransactionAsync?: AsyncFunction<TAwaitTransactionSuccessAsyncArgs, string>;
+    awaitTransactionSuccessAsync?: AsyncFunction<TAwaitTransactionSuccessAsyncArgs, TransactionReceiptWithDecodedLogs>;
 }
 
 export type TransactionExpectation<TAwaitTransactionSuccessAsyncArgs extends any[], TCallAsyncResult> = (
@@ -33,9 +27,6 @@ export type TransactionExpectation<TAwaitTransactionSuccessAsyncArgs extends any
 ) => Promise<void> | void;
 
 export class BaseUnitTestHelper<TContract> {
-    protected readonly _testContract: TContract;
-    private readonly _logDecoder: LogDecoder;
-
     protected static async _verifyContractMethodRevertErrorAsync<
         TCallAsyncArgs extends any[],
         TAwaitTransactionSuccessAsyncArgs extends any[],
@@ -46,16 +37,13 @@ export class BaseUnitTestHelper<TContract> {
         // tslint:disable-next-line: trailing-comma
         ...args: TAwaitTransactionSuccessAsyncArgs
     ): Promise<void> {
-        const tx = contractFunction.sendTransactionAsync
-            ? contractFunction.sendTransactionAsync(...args)
+        const tx = contractFunction.awaitTransactionSuccessAsync
+            ? contractFunction.awaitTransactionSuccessAsync(...args)
             : contractFunction.callAsync(...((args as any) as TCallAsyncArgs));
-        await expect(tx).to.revertWith(expectedError);
+        return expect(tx).to.revertWith(expectedError);
     }
 
-    constructor(testContract: TContract, web3Wrapper: Web3Wrapper, artifacts: ContractArtifacts = {}) {
-        this._testContract = testContract;
-        this._logDecoder = new LogDecoder(web3Wrapper, artifacts);
-    }
+    constructor(protected readonly _testContract: TContract) {}
 
     protected async _verifyContractMethodExpectationsAsync<
         TCallAsyncArgs extends any[],
@@ -68,12 +56,10 @@ export class BaseUnitTestHelper<TContract> {
         ...args: TAwaitTransactionSuccessAsyncArgs
     ): Promise<void> {
         const result = await contractFunction.callAsync(...((args as any) as TCallAsyncArgs));
-        let receipt;
-        if (contractFunction.sendTransactionAsync !== undefined) {
-            receipt = await this._logDecoder.getTxWithDecodedLogsAsync(
-                await contractFunction.sendTransactionAsync(...args),
-            );
-        }
+        const receipt =
+            contractFunction.awaitTransactionSuccessAsync !== undefined
+                ? await contractFunction.awaitTransactionSuccessAsync(...args)
+                : undefined;
 
         for (const expectation of expectations) {
             await expectation({ result, receipt }, ...args);
