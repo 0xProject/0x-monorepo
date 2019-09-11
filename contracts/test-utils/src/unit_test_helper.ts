@@ -76,7 +76,7 @@ export class BaseUnitTestHelper<TContract> {
         }
 
         for (const expectation of expectations) {
-            await expectation({result, receipt}, ...args);
+            await expectation({ result, receipt }, ...args);
         }
     }
 }
