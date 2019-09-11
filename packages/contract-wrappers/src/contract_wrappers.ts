@@ -1,4 +1,5 @@
 import {
+    DevUtilsContract,
     DutchAuctionContract,
     ERC20ProxyContract,
     ERC721ProxyContract,
@@ -10,6 +11,7 @@ import {
 import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
+    DevUtils,
     DutchAuction,
     ERC20Proxy,
     ERC20Token,
@@ -71,6 +73,10 @@ export class ContractWrappers {
      */
     public dutchAuction: DutchAuctionContract;
     /**
+     * An instance of the DevUtilsContract class containing methods for interacting with the DevUtils smart contract.
+     */
+    public devUtils: DevUtilsContract;
+    /**
      * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorWrapper;
@@ -91,6 +97,7 @@ export class ContractWrappers {
         this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         const artifactsArray = [
             Coordinator,
+            DevUtils,
             DutchAuction,
             ERC20Proxy,
             ERC20Token,
@@ -115,6 +122,7 @@ export class ContractWrappers {
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
         this.dutchAuction = new DutchAuctionContract(contractAddresses.dutchAuction, this.getProvider());
+        this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
             this.getProvider(),
             config.networkId,
