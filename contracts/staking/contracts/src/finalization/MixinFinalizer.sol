@@ -53,7 +53,6 @@ contract MixinFinalizer is
 {
     using LibSafeMath for uint256;
 
-
     /// @dev Begins a new epoch, preparing the prior one for finalization.
     ///      Throws if not enough time has passed between epochs or if the
     ///      previous epoch was not fully finalized.
@@ -65,7 +64,7 @@ contract MixinFinalizer is
         external
         returns (uint256 _unfinalizedPoolsRemaining)
     {
-        uint256 closingEpoch = currentEpoch;
+        uint256 closingEpoch = getCurrentEpoch();
         // Make sure the previous epoch has been fully finalized.
         if (unfinalizedPoolsRemaining != 0) {
             LibRichErrors.rrevert(LibStakingRichErrors.PreviousEpochNotFinalized(
@@ -114,7 +113,7 @@ contract MixinFinalizer is
         external
         returns (uint256 rewardsPaid, uint256 _unfinalizedPoolsRemaining)
     {
-        uint256 epoch = currentEpoch.sub(1);
+        uint256 epoch = getCurrentEpoch().sub(1);
         uint256 poolsRemaining = unfinalizedPoolsRemaining;
         uint256 numPoolIds = poolIds.length;
         uint256 rewardsPaid = 0;
@@ -132,7 +131,7 @@ contract MixinFinalizer is
                 rewardsPaid = rewardsPaid.add(_creditRewardsToPool(poolId, pool));
                 // Clear the pool state so we don't finalize it again,
                 // and to recoup some gas.
-                activePools[poolId] = IStructs.ActivePool(0, 0);
+                activePools[poolId] = IStructs.ActivePool(0, 0, 0);
                 // Decrease the number of unfinalized pools left.
                 poolsRemaining = poolsRemaining.sub(1);
                 // Emit an event.
@@ -197,9 +196,10 @@ contract MixinFinalizer is
         }
     }
 
-    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
-    /// Note that in this function there is no limitation on alpha; we tend to get better rounding
-    /// on the simplified versions below.
+    /// @dev The cobb-douglas function used to compute fee-based rewards for
+    ///      staking pools in a given epoch. Note that in this function there
+    ///      is no limitation on alpha; we tend to get better rounding on the
+    ///      simplified versions below.
     /// @param totalRewards collected over an epoch.
     /// @param ownerFees Fees attributed to the owner of the staking pool.
     /// @param totalFees collected across all active staking pools in the epoch.
@@ -226,7 +226,6 @@ contract MixinFinalizer is
         if (feeRatio == 0 || stakeRatio == 0) {
             return ownerRewards = 0;
         }
-
         // The cobb-doublas function has the form:
         // `totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)`
         // This is equivalent to:
