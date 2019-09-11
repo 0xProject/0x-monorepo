@@ -1,5 +1,14 @@
 [
     {
+        "version": "12.1.0",
+        "changes": [
+            {
+                "note": "Add `devUtils` to `ContractWrappers` class.",
+                "pr": 2146
+            }
+        ]
+    },
+    {
         "version": "12.0.0",
         "changes": [
             {
