@@ -192,7 +192,8 @@ blockchainTests.resets('Testing Rewards', env => {
                 operatorEthVaultBalance: reward,
             });
         });
-        it('Operator should receive entire reward if no delegators in their pool (staker joins this epoch but is active next epoch)', async () => {
+        it(`Operator should receive entire reward if no delegators in their pool
+            (staker joins this epoch but is active next epoch)`, async () => {
             // delegate
             const amount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
@@ -662,6 +663,99 @@ blockchainTests.resets('Testing Rewards', env => {
                 operatorEthVaultBalance: ZERO,
                 poolRewardVaultBalance: ZERO,
             });
+        });
+        it(`should split rewards in the EthVault between two delegators when undelegating`, async () => {
+            const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
+            const totalStakeAmount = BigNumber.sum(...stakeAmounts);
+            // stake both
+            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
+                Array<[StakerActor, BigNumber]>;
+            for (const [staker, stakeAmount] of stakersAndStake) {
+                await staker.stakeAsync(stakeAmount);
+                await staker.moveStakeAsync(
+                    new StakeInfo(StakeStatus.Active),
+                    new StakeInfo(StakeStatus.Delegated, poolId),
+                    stakeAmount,
+                );
+            }
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize();
+            // finalize
+            const reward = toBaseUnitAmount(10);
+            await payProtocolFeeAndFinalize(reward);
+            // Undelegate 0 stake to move rewards from RewardVault into the EthVault.
+            for (const [staker] of stakersAndStake) {
+                await staker.moveStakeAsync(
+                    new StakeInfo(StakeStatus.Delegated, poolId),
+                    new StakeInfo(StakeStatus.Active),
+                    toBaseUnitAmount(0),
+                );
+            }
+            const expectedStakerRewards = stakeAmounts
+                .map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
+            await validateEndBalances({
+                stakerRewardVaultBalance_1: toBaseUnitAmount(0),
+                stakerRewardVaultBalance_2: toBaseUnitAmount(0),
+                stakerEthVaultBalance_1: expectedStakerRewards[0],
+                stakerEthVaultBalance_2: expectedStakerRewards[1],
+                poolRewardVaultBalance: new BigNumber(1), // Rounding error
+                membersRewardVaultBalance: new BigNumber(1), // Rounding error
+            });
+        });
+        it(`delegator should not be credited EthVault rewards twice in the same epoch by undelegating twice`, async () => {
+            const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
+            const totalStakeAmount = BigNumber.sum(...stakeAmounts);
+            // stake both
+            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
+                Array<[StakerActor, BigNumber]>;
+            for (const [staker, stakeAmount] of stakersAndStake) {
+                await staker.stakeAsync(stakeAmount);
+                await staker.moveStakeAsync(
+                    new StakeInfo(StakeStatus.Active),
+                    new StakeInfo(StakeStatus.Delegated, poolId),
+                    stakeAmount,
+                );
+            }
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize();
+            // finalize
+            const reward = toBaseUnitAmount(10);
+            await payProtocolFeeAndFinalize(reward);
+            const expectedStakerRewards = stakeAmounts
+                .map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
+            await validateEndBalances({
+                stakerRewardVaultBalance_1: expectedStakerRewards[0],
+                stakerRewardVaultBalance_2: expectedStakerRewards[1],
+                stakerEthVaultBalance_1: toBaseUnitAmount(0),
+                stakerEthVaultBalance_2: toBaseUnitAmount(0),
+                poolRewardVaultBalance: reward,
+                membersRewardVaultBalance: reward,
+            });
+            const undelegateZeroAsync = async (staker: StakerActor) => {
+                return staker.moveStakeAsync(
+                    new StakeInfo(StakeStatus.Delegated, poolId),
+                    new StakeInfo(StakeStatus.Active),
+                    toBaseUnitAmount(0),
+                );
+            };
+            // First staker will undelegate 0 to get rewards transferred to EthVault.
+            const sneakyStaker = stakers[0];
+            const sneakyStakerExpectedEthVaultBalance = expectedStakerRewards[0];
+            await undelegateZeroAsync(sneakyStaker);
+            // Should have been credited the correct amount of rewards.
+            let sneakyStakerEthVaultBalance = await stakingApiWrapper
+                .ethVaultContract.balanceOf
+                .callAsync(sneakyStaker.getOwner());
+            expect(sneakyStakerEthVaultBalance, 'EthVault balance after first undelegate')
+                .to.bignumber.eq(sneakyStakerExpectedEthVaultBalance);
+            // Now he'll try to do it again to see if he gets credited twice.
+            await undelegateZeroAsync(sneakyStaker);
+            /// The total amount credited should remain the same.
+            sneakyStakerEthVaultBalance = await stakingApiWrapper
+                .ethVaultContract.balanceOf
+                .callAsync(sneakyStaker.getOwner());
+            expect(sneakyStakerEthVaultBalance, 'EthVault balance after second undelegate')
+                .to.bignumber.eq(sneakyStakerExpectedEthVaultBalance);
         });
     });
 });
