@@ -48,7 +48,7 @@ class ContractAddresses(NamedTuple):
 
     coordinator: str
     """Address of the Coordinator contract."""
-    
+
     dev_utils: str
     """Address of the DevUtils contract."""
 
