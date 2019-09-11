@@ -145,7 +145,7 @@ contract MixinStorage is
     uint256 totalWeightedStakeThisEpoch;
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping(uint256 => mapping(bytes32 => ActivePool)) activePoolsByEpoch;
+    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool)) activePoolsByEpoch;
     /// @dev Number of pools activated in the current epoch.
     uint256 numActivePoolsThisEpoch;
     /// @dev Rewards (ETH) available to the epoch being finalized (the previous

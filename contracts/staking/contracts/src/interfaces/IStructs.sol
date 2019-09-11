@@ -23,11 +23,13 @@ interface IStructs {
 
     /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
-    /// @param feesCollected Fees collected in ETH by this pool in the current epoch.
-    /// @param weightedStake Amount of weighted stake currently held by the pool.
+    /// @param feesCollected Fees collected in ETH by this pool.
+    /// @param weightedStake Amount of weighted stake in the pool.
+    /// @param delegatedStake Amount of delegated, non-operator stake in the pool.
     struct ActivePool {
         uint256 feesCollected;
         uint256 weightedStake;
+        uint256 delegatedStake;
     }
 
     /// @dev Encapsulates a balance for the current and next epochs.
