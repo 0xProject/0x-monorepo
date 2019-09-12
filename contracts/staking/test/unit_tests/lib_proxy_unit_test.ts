@@ -1,4 +1,12 @@
-import { blockchainTests, constants, expect, hexConcat, hexRandom, hexSlice } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    hexConcat,
+    hexRandom,
+    hexSlice,
+    testCombinatoriallyWithReferenceFunc,
+} from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 
 import { artifacts, TestLibProxyContract, TestLibProxyReceiverContract } from '../../src';
@@ -187,6 +195,7 @@ blockchainTests.resets.only('LibProxy', env => {
         });
 
         describe('Combinatorial Tests', () => {
+            // Combinatorial Scenarios for `proxyCall()`.
             const revertRuleScenarios: RevertRule[] = [
                 RevertRule.RevertOnError,
                 RevertRule.AlwaysRevert,
@@ -199,75 +208,67 @@ blockchainTests.resets.only('LibProxy', env => {
             ];
             const calldataScenarios: string[] = [constructRandomFailureCalldata(), constructRandomSuccessCalldata()];
 
-            function createTestDescription(
+            // A reference function that returns the expected success and returndata values of a given call to `proxyCall()`.
+            async function referenceFuncAsync(
                 revertRule: RevertRule,
                 customEgressSelector: string,
-                ignoreIngressSelector: boolean,
+                shouldIgnoreIngressSelector: boolean,
                 calldata: string,
-            ): string {
-                return `should work correctly when revertRule == ${revertRule}, customEgressSelector == ${customEgressSelector},
-                    ignoreIngressSelector == ${ignoreIngressSelector}, calldata == ${calldata}`;
-            }
-
-            // Combinatorially test `proxyCall()` with all input types.
-            for (const revertRule of revertRuleScenarios) {
-                for (const customEgressSelector of customEgressScenarios) {
-                    for (const shouldIgnoreIngressSelector of ignoreIngressScenarios) {
-                        for (const calldata of calldataScenarios) {
-                            it(
-                                createTestDescription(
-                                    revertRule,
-                                    customEgressSelector,
-                                    shouldIgnoreIngressSelector,
-                                    calldata,
-                                ),
-                                async () => {
-                                    // Determine whether or not the call should succeed.
-                                    let shouldSucceed = true;
-                                    if (
-                                        ((shouldIgnoreIngressSelector &&
-                                            customEgressSelector !== constants.NULL_BYTES4) ||
-                                            (!shouldIgnoreIngressSelector &&
-                                                customEgressSelector === constants.NULL_BYTES4)) &&
-                                        calldata.length === 10 // This corresponds to a hex length of 4
-                                    ) {
-                                        shouldSucceed = false;
-                                    }
-
-                                    // Override the above success value if the RevertRule defines the success.
-                                    if (revertRule === RevertRule.AlwaysRevert) {
-                                        shouldSucceed = false;
-                                    }
-                                    if (revertRule === RevertRule.NeverRevert) {
-                                        shouldSucceed = true;
-                                    }
-
-                                    // Construct the data that should be returned.
-                                    let returnData: string = calldata;
-                                    if (shouldIgnoreIngressSelector) {
-                                        returnData = hexSlice(returnData, 4);
-                                    }
-                                    if (customEgressSelector !== constants.NULL_BYTES4) {
-                                        returnData = hexConcat(customEgressSelector, returnData);
-                                    }
-
-                                    // Ensure that the test passes as expected.
-                                    verifyPostConditions(
-                                        await publicProxyCallAsync({
-                                            calldata,
-                                            customEgressSelector,
-                                            ignoreIngressSelector: shouldIgnoreIngressSelector,
-                                            revertRule,
-                                        }),
-                                        shouldSucceed,
-                                        returnData,
-                                    );
-                                },
-                            );
-                        }
-                    }
+            ): Promise<[boolean, string]> {
+                // Determine whether or not the call should succeed.
+                let shouldSucceed = true;
+                if (
+                    ((shouldIgnoreIngressSelector && customEgressSelector !== constants.NULL_BYTES4) ||
+                        (!shouldIgnoreIngressSelector && customEgressSelector === constants.NULL_BYTES4)) &&
+                    calldata.length === 10 // This corresponds to a hex length of 4
+                ) {
+                    shouldSucceed = false;
                 }
+
+                // Override the above success value if the RevertRule defines the success.
+                if (revertRule === RevertRule.AlwaysRevert) {
+                    shouldSucceed = false;
+                }
+                if (revertRule === RevertRule.NeverRevert) {
+                    shouldSucceed = true;
+                }
+
+                // Construct the data that should be returned.
+                let returnData = calldata;
+                if (shouldIgnoreIngressSelector) {
+                    returnData = hexSlice(returnData, 4);
+                }
+                if (customEgressSelector !== constants.NULL_BYTES4) {
+                    returnData = hexConcat(customEgressSelector, returnData);
+                }
+
+                // Return the success and return data values.
+                return [shouldSucceed, returnData];
             }
+
+            // A wrapper for `publicProxyCall()` that allow us to combinatorially test `proxyCall()` for the
+            // scenarios defined above.
+            async function testFuncAsync(
+                revertRule: RevertRule,
+                customEgressSelector: string,
+                shouldIgnoreIngressSelector: boolean,
+                calldata: string,
+            ): Promise<[boolean, string]> {
+                return publicProxyCallAsync({
+                    calldata,
+                    customEgressSelector,
+                    ignoreIngressSelector: shouldIgnoreIngressSelector,
+                    revertRule,
+                });
+            }
+
+            // Combinatorially test proxy call.
+            testCombinatoriallyWithReferenceFunc('proxyCall', referenceFuncAsync, testFuncAsync, [
+                revertRuleScenarios,
+                customEgressScenarios,
+                ignoreIngressScenarios,
+                calldataScenarios,
+            ]);
         });
     });
 });
