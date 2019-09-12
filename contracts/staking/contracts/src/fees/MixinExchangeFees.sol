@@ -144,7 +144,6 @@ contract MixinExchangeFees is
         view
         returns (uint256 feesCollected)
     {
-        uint256 currentEpoch = getCurrentEpoch();
         // Look up the pool for this epoch. The epoch index is `currentEpoch % 2`
         // because we only need to remember state in the current epoch and the
         // epoch prior.
