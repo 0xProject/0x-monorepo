@@ -62,19 +62,7 @@ contract MixinExchangeFees is
         payable
         onlyExchange
     {
-        // If the protocol fee payment is invalid, revert with a rich error.
-        if (
-            protocolFeePaid == 0 ||
-            (msg.value != protocolFeePaid && msg.value != 0)
-        ) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                protocolFeePaid == 0 ?
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid :
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
-                protocolFeePaid,
-                msg.value
-            ));
-        }
+        _assertValidProtocolFee(protocolFeePaid);
 
         // Transfer the protocol fee to this address if it should be paid in WETH.
         if (msg.value == 0) {
@@ -88,25 +76,60 @@ contract MixinExchangeFees is
 
         // Get the pool id of the maker address.
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-
-        // Only attribute the protocol fee payment to a pool if the maker is registered to a pool.
-        if (poolId != NIL_POOL_ID) {
-            uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
-            // Ignore pools with dust stake.
-            if (poolStake >= minimumPoolStake) {
-                // Credit the pool.
-                uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-                protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch.safeAdd(protocolFeePaid);
-                if (_feesCollectedThisEpoch == 0) {
-                    activePoolsThisEpoch.push(poolId);
-                }
-            }
+        // Only attribute the protocol fee payment to a pool if the maker is
+        // registered to a pool.
+        if (poolId == NIL_POOL_ID) {
+            return;
         }
+        uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+        // Ignore pools with dust stake.
+        if (poolStake < minimumPoolStake) {
+            return;
+        }
+        // Look up the pool for this epoch. The epoch index is `currentEpoch % 2`
+        // because we only need to remember state in the current epoch and the
+        // epoch prior.
+        uint256 currentEpoch = getCurrentEpoch();
+        mapping (bytes32 => IStructs.ActivePool) activePoolsThisEpoch =
+            activePoolsByEpoch[currentEpoch % 2];
+        IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId]
+        // If the pool was previously inactive in this epoch, initialize it.
+        if (pool.feesCollected) {
+            // Compute weighted stake.
+            uint256 operatorStake = getStakeDelegatedToPoolByOwner(
+                rewardVault.operatorOf(poolId),
+                poolId
+            ).currentEpochBalance;
+            pool.weightedStake = operatorStake.safeAdd(
+                totalStakeDelegatedToPool
+                    .safeSub(operatorStake)
+                    .safeMul(delegatedStakeWeight)
+                    .safeDiv(PPM_DENOMINATOR)
+            );
+            // Compute delegated (non-operator) stake.
+            pool.delegatedStake = poolStake.safeSub(operatorStake);
+            // Increase the total weighted stake.
+            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(
+                pool.weightedStake
+            );
+            // Increase the numberof active pools.
+            numActivePoolsThisEpoch += 1;
+            // Emit an event so keepers know what pools to pass into `finalize()`.
+            emit StakingPoolActivated(currentEpoch, poolId);
+        }
+        // Credit the fees to the pool.
+        pool.feesCollected = protocolFeePaid;
+        // Increase the total fees collected this epoch.
+        totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(
+            protocolFeePaid
+        );
+        // Store the pool.
+        activePoolsThisEpoch[poolId] = pool;
     }
 
     /// @dev Pays the rebates for to market making pool that was active this epoch,
-    /// then updates the epoch and other time-based periods via the scheduler (see MixinScheduler).
-    /// This is intentionally permissionless, and may be called by anyone.
+    /// then updates the epoch and other time-based periods via the scheduler
+    /// (see MixinScheduler). This is intentionally permissionless, and may be called by anyone.
     function finalizeFees()
         external
     {
@@ -140,15 +163,17 @@ contract MixinExchangeFees is
         return address(this).balance.safeAdd(wethBalance);
     }
 
-    /// @dev Withdraws the entire WETH balance of the contract.
-    function _unwrapWETH()
-        internal
-    {
-        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
-
-        // Don't withdraw WETH if the WETH balance is zero as a gas optimization.
-        if (wethBalance != 0) {
-            IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
+    /// @dev Checks that the protocol fee passed into `payProtocolFee()` is valid.
+    /// @param protocolFeePaid The `protocolFeePaid` parameter to `payProtocolFee.`
+    function _assertValidProtocolFee(uint256 protocolFeePaid) private view {
+        if (protocolFeePaid == 0 || (msg.value != protocolFeePaid && msg.value != 0)) {
+            LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                protocolFeePaid == 0 ?
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid :
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
+                protocolFeePaid,
+                msg.value
+            ));
         }
     }
 

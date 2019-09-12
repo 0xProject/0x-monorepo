@@ -43,6 +43,15 @@ interface IStakingEvents {
         address exchangeAddress
     );
 
+    /// @dev Emitted by MixinExchangeFees when a pool pays protocol fees
+    ///      for the first time in an epoch.
+    /// @param epoch The epoch in which the pool was activated.
+    /// @param poolId The ID of the pool.
+    event StakingPoolActivated(
+        uint256 epoch,
+        bytes32 poolId
+    );
+
     /// @dev Emitted by MixinFinalizer when an epoch has ended.
     /// @param epoch The closing epoch.
     /// @param numActivePools Number of active pools in the closing epoch.

@@ -39,12 +39,14 @@ interface IStructs {
     /// @param isInitialized
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
-    /// @param nextEpochBalance balance in the next epoch.
+    /// @param nextEpochBalance balance in `currentEpoch+1`.
+    /// @param prevEpochBalance balance in `currentEpoch-1`.
     struct StoredBalance {
         bool isInitialized;
         uint32 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
+        uint96 prevEpochBalance;
     }
 
     /// @dev Balance struct for stake.

@@ -35,12 +35,10 @@ import "./MixinExchangeManager.sol";
 
 
 /// @dev This mixin contains functions related to finalizing epochs.
-///      Finalization occurs over multiple calls because we can only
-///      discover the `totalRewardsPaid` to all pools by summing the
-///      the reward function across all active pools at the end of an
-///      epoch. Until this value is known for epoch `e`, we cannot finalize
-///      epoch `e+1`, because the remaining balance (`balance - totalRewardsPaid`)
-///      is the reward pool for finalizing the next epoch.
+///      Finalization occurs AFTER the current epoch is ended/advanced and
+///      over (potentially) multiple blocks/transactions. This pattern prevents
+///      the contract from stalling while we finalize rewards for the previous
+///      epoch.
 contract MixinFinalizer is
     IStakingEvents,
     MixinConstants,
@@ -68,10 +66,12 @@ contract MixinFinalizer is
         // Make sure the previous epoch has been fully finalized.
         if (unfinalizedPoolsRemaining != 0) {
             LibRichErrors.rrevert(LibStakingRichErrors.PreviousEpochNotFinalized(
-                closingEpoch.sub(1),
+                closingEpoch.safeSub(1),
                 unfinalizedPoolsRemaining
             ));
         }
+        // Unrwap any WETH protocol fees.
+        _unwrapWETH();
         // Populate finalization state.
         unfinalizedPoolsRemaining = numActivePoolsThisEpoch;
         unfinalizedRewardsAvailable = address(this).balance;
@@ -99,8 +99,8 @@ contract MixinFinalizer is
         return _unfinalizedPoolsRemaining = unfinalizedPoolsRemaining;
     }
 
-    /// @dev Finalizes a pool that was active in the previous epoch, paying out
-    ///      its rewards to the reward vault. Keepers should call this function
+    /// @dev Finalizes pools that were active in the previous epoch, paying out
+    ///      rewards to the reward vault. Keepers should call this function
     ///      repeatedly until all active pools that were emitted in in a
     ///      `StakingPoolActivated` in the prior epoch have been finalized.
     ///      Pools that have already been finalized will be silently ignored.
@@ -113,7 +113,7 @@ contract MixinFinalizer is
         external
         returns (uint256 rewardsPaid, uint256 _unfinalizedPoolsRemaining)
     {
-        uint256 epoch = getCurrentEpoch().sub(1);
+        uint256 epoch = getCurrentEpoch().safeSub(1);
         uint256 poolsRemaining = unfinalizedPoolsRemaining;
         uint256 numPoolIds = poolIds.length;
         uint256 rewardsPaid = 0;
@@ -128,12 +128,12 @@ contract MixinFinalizer is
             if (pool.feesCollected != 0) {
                 // Credit the pool with rewards.
                 // We will transfer the total rewards to the vault at the end.
-                rewardsPaid = rewardsPaid.add(_creditRewardsToPool(poolId, pool));
+                rewardsPaid = rewardsPaid.safeAdd(_creditRewardsToPool(poolId, pool));
                 // Clear the pool state so we don't finalize it again,
                 // and to recoup some gas.
                 activePools[poolId] = IStructs.ActivePool(0, 0, 0);
                 // Decrease the number of unfinalized pools left.
-                poolsRemaining = poolsRemaining.sub(1);
+                poolsRemaining = poolsRemaining.safeSub(1);
                 // Emit an event.
                 emit RewardsPaid(epoch, poolId, reward);
             }
@@ -141,7 +141,7 @@ contract MixinFinalizer is
         // Deposit all the rewards at once into the RewardVault.
         _depositIntoStakingPoolRewardVault(rewardsPaid);
         // Update finalization state.
-        totalRewardsPaidLastEpoch = totalRewardsPaidLastEpoch.add(rewardsPaid);
+        totalRewardsPaidLastEpoch = totalRewardsPaidLastEpoch.safeAdd(rewardsPaid);
         _unfinalizedPoolsRemaining = unfinalizedPoolsRemaining = poolsRemaining;
         // If there are no more unfinalized pools remaining, the epoch is
         // finalized.
@@ -149,7 +149,7 @@ contract MixinFinalizer is
             emit EpochFinalized(
                 epoch,
                 totalRewardsPaidLastEpoch,
-                unfinalizedRewardsAvailable.sub(totalRewardsPaidLastEpoch)
+                unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
             );
         }
     }
@@ -190,9 +190,16 @@ contract MixinFinalizer is
             _recordRewardForDelegators(
                 poolId,
                 membersPortionOfReward,
-                pool.delegatedStake,
-                epoch
+                pool.delegatedStake
             );
+        }
+    }
+
+    /// @dev Converts the entire WETH balance of the contract into ETH.
+    function _unwrapWETH() private {
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        if (wethBalance != 0) {
+            IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
         }
     }
 

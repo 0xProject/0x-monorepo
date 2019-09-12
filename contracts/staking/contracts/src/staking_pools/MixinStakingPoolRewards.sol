@@ -116,8 +116,7 @@ contract MixinStakingPoolRewards is
     function _handleStakingPoolReward(
         bytes32 poolId,
         uint256 reward,
-        uint256 amountOfDelegatedStake,
-        uint256 epoch
+        uint256 amountOfDelegatedStake
     )
         internal
     {
