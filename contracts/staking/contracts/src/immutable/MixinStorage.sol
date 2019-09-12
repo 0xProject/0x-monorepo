@@ -74,6 +74,12 @@ contract MixinStorage is
     // mapping from Owner to Amount of Withdrawable Stake
     mapping (address => uint256) internal _withdrawableStakeByOwner;
 
+    // Mapping from Owner to Pool Id to epoch of the last rewards collected.
+    // This is the last reward epoch for a pool that a delegator collected
+    // rewards from. This is different from the epoch when the rewards were
+    // collected This will always be `<= currentEpoch`.
+    mapping (address => mapping (bytes32 => uint256)) internal lastCollectedRewardsEpochToPoolByOwner;
+
     // tracking Pool Id
     bytes32 public nextPoolId = INITIAL_POOL_ID;
 
@@ -89,12 +95,6 @@ contract MixinStorage is
 
     // current epoch start time
     uint256 public currentEpochStartTimeInSeconds;
-
-    // fees collected this epoch
-    mapping (bytes32 => uint256) public protocolFeesThisEpochByPool;
-
-    // pools that were active in the current epoch
-    bytes32[] public activePoolsThisEpoch;
 
     // mapping from Pool Id to Epoch to Reward Ratio
     mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal _cumulativeRewardsByPool;
