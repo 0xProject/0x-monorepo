@@ -109,4 +109,24 @@ library LibProxy {
             return(0, returndatasize())
         }
     }
+
+    /// @dev Proxies incoming call to destination contract with specified calldata.
+    /// @param destination Address to call.
+    /// @param data The calldata that will be sent to the destination.
+    function simpleProxyCallWithData(
+        address destination,
+        bytes memory data
+    )
+        internal
+        returns (bool, bytes memory)
+    {
+        if (destination == address(0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.ProxyDestinationCannotBeNil()
+            );
+        }
+
+        // delegatecall into the destination address, and return the result.
+        return destination.delegatecall(data);
+    }
 }

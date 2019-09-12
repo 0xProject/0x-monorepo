@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStorageInit.sol";
+import "./interfaces/IStaking.sol";
 import "./interfaces/IStakingEvents.sol";
 import "./interfaces/IStakingProxy.sol";
 
@@ -69,6 +70,36 @@ contract StakingProxy is
         onlyOwner
     {
         _attachStakingContract(_stakingContract);
+    }
+
+    /// @dev Batch executes a series of calls to the exchange contract.
+    /// @param data An array of data that encodes a sequence of functions to
+    ///             call in the staking contracts.
+    function batchExecute(bytes[] memory data)
+        public
+        returns (bytes[] memory batchReturnData)
+    {
+        bool success;
+        bytes memory returnData;
+        batchReturnData = new bytes[](data.length);
+
+        // Execute all of the calls encoded in the provided calldata.
+        for (uint256 i = 0; i < data.length; i++) {
+            // Call the staking contract with the provided calldata.
+            (success, returnData) = stakingContract.simpleProxyCallWithData(data[i]);
+
+            // Revert on failure.
+            if (!success) {
+                assembly {
+                    revert(add(0x20, returnData), mload(returnData))
+                }
+            }
+
+            // Add the returndata to the batch returndata.
+            batchReturnData[i] = returnData;
+        }
+
+        return batchReturnData
     }
 
     /// @dev Detach the current staking contract.
