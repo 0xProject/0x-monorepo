@@ -219,6 +219,12 @@ export class InitializationError extends RevertError {
     }
 }
 
+export class ProxyDestinationCannotBeNilError extends RevertError {
+    constructor() {
+        super('ProxyDestinationCannotBeNilError', 'ProxyDestinationCannotBeNilError()', {});
+    }
+}
+
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
@@ -242,6 +248,7 @@ const types = [
     PoolAlreadyExistsError,
     RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
+    ProxyDestinationCannotBeNilError,
 ];
 
 // Register the types we've defined.

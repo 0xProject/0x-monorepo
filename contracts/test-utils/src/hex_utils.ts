@@ -45,6 +45,14 @@ export function hexInvert(n: string | BigNumber | number, size: number = WORD_LE
 }
 
 /**
+ * Slices off the desired number of bytes from a hex number.
+ */
+export function hexSlice(n: string | BigNumber | number, size: number): string {
+    const hex = toHex(n);
+    return '0x'.concat(toHex(n).slice(size * 2 + 2, hex.length));
+}
+
+/**
  * Convert a string, a number, or a BigNumber into a hex string.
  * Works with negative numbers, as well.
  */

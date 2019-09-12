@@ -45,7 +45,7 @@ library LibProxy {
     {
         if (destination == address(0)) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.ProxyDestinationCannotBeNil()
+                LibStakingRichErrors.ProxyDestinationCannotBeNilError()
             );
         }
 

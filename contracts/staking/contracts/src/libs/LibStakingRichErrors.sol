@@ -127,9 +127,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
         0xb7161acd;
 
-    // bytes4(keccak256("ProxyDestinationCannotBeNil()"))
-    bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL =
-        hex"01ecebea";
+    // bytes4(keccak256("ProxyDestinationCannotBeNilError()"))
+    bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL_ERROR =
+        hex"6eff8285";
 
     // bytes4(keccak256("InitializationError(uint8)"))
     bytes4 internal constant INITIALIZATION_ERROR_SELECTOR =
@@ -440,12 +440,12 @@ library LibStakingRichErrors {
         );
     }
 
-    function ProxyDestinationCannotBeNil()
+    function ProxyDestinationCannotBeNilError()
         internal
         pure
         returns (bytes memory)
     {
-        return PROXY_DESTINATION_CANNOT_BE_NIL;
+        return PROXY_DESTINATION_CANNOT_BE_NIL_ERROR;
     }
 
     function InvalidWethAssetDataError()
