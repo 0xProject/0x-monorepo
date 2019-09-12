@@ -171,6 +171,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
         await executeActions(initActions);
         await stakingApiWrapper.stakingProxyContract.attachStakingContract.sendTransactionAsync(testCumulativeRewardTrackingContract.address);
         const testLogs = await executeActions(testActions);
+        console.log(testLogs);
         assertLogs(expectedTestLogs, testLogs);
     }
 
@@ -185,18 +186,17 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-
         it('should record a CR and shift the most recent CR when a reward is earned', async () => {
             await runTest(
-                // initialize with one pool with delegators that will earn a protocol fee on next finalization.
                 [
-                    TestAction.CreatePool,
-                    TestAction.Delegate,
-                    TestAction.Finalize,
+                    TestAction.CreatePool,      // creates CR in epoch 0
+                    TestAction.Delegate,        // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    TestAction.Finalize,        // moves to epoch 1
                     TestAction.PayProtocolFee
                 ],
-                // finalize and observe an update to the cumulative reward
-                [TestAction.Finalize],
+                [
+                    TestAction.Finalize         // adds a CR for epoch 1, plus updates most recent CR
+                ],
                 [
                     {event: 'SetCumulativeReward', epoch: 1},
                     {event: 'SetMostRecentCumulativeReward', epoch: 1}
@@ -208,33 +208,21 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
             // Ddelegating would usually record the cumulative reward for this epoch, but
             // it already exists from creating the pool.
             await runTest(
+                [
+                    TestAction.CreatePool   // creates CR in epoch 0
+                ],
 
-                [TestAction.CreatePool],
-
-                [TestAction.Delegate],
+                [
+                    TestAction.Delegate     // does nothign wrt CR, as there is alread a CR set for this epoch.
+                ],
                 []
             );
         });
         it('should (i) record cumulative reward when delegating for first time, and (ii) unset most recent cumulative reward given it has no dependents', async () => {
             // since there was no delegation in epoch 0 there is no longer a dependency on the CR for epoch 0
             await runTest(
-                [TestAction.CreatePool,
-                TestAction.Finalize
-                ],
-                [TestAction.Delegate],
-                [
-                    {event: 'SetCumulativeReward', epoch: 1},
-                    {event: 'SetMostRecentCumulativeReward', epoch: 1},
-                    {event: 'UnsetCumulativeReward', epoch: 0}
-                ]
-            );
-        });
-        it('should (i) record CR when delegating for first time, and (ii) NOT unset most recent CR given it has dependents', async () => {
-            // since we delegated in epoch 0 there is still a dependency on the CR for epoch 0
-            await runTest(
                 [
                     TestAction.CreatePool,
-                    TestAction.Delegate,
                     TestAction.Finalize
                 ],
                 [
@@ -243,27 +231,70 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 [
                     {event: 'SetCumulativeReward', epoch: 1},
                     {event: 'SetMostRecentCumulativeReward', epoch: 1},
+                    {event: 'UnsetCumulativeReward', epoch: 0}
                 ]
             );
         });
-        it('should record and unrecord a cumulative reward when adding stake for the second time in the same epoch', async () => {
-            // delegated for the first time in epoch 1 (so current epoch balance is zero).
-            // then we delegated again in epoch 1.
-            // since we're not staked right now, we don't have a dependency on epoch 0,
-            // so we only set a cumulative reward for the current epoch.
+        it('should (i) record CR when delegating for first time, and (ii) NOT unset most recent CR given it has dependents', async () => {
             await runTest(
                 [
-                    TestAction.CreatePool,
-                    TestAction.Finalize
+                    TestAction.CreatePool,  // creates CR in epoch 0
+                    TestAction.Delegate,    // does nothign wrt CR, as there is alread a CR set for this epoch.
+                    TestAction.Finalize     // moves to epoch 1
                 ],
                 [
-                    TestAction.Delegate,
-                    TestAction.Undelegate,
+                    TestAction.Delegate     // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
                 ],
                 [
                     {event: 'SetCumulativeReward', epoch: 1},
                     {event: 'SetMostRecentCumulativeReward', epoch: 1},
-                    {event: 'UnsetCumulativeReward', epoch: 0},
+                ]
+            );
+        });
+        it('should not unset the most recent CR, even if there are no delegators dependent on it', async () => {
+            await runTest(
+                [
+                    TestAction.CreatePool,  // creates CR in epoch 0
+                    TestAction.Finalize,    // moves to epoch 1
+                    TestAction.Delegate,    // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
+                ],
+                [
+                    TestAction.Undelegate,  // does nothing. This delegator no longer has dependency, but the most recent CR is 1 so we don't remove.
+                ],
+                []
+            );
+        });
+        it('should update most recent CR and set dependencies for CR when undelegating.', async () => {
+            await runTest(
+                [
+                    TestAction.CreatePool,  // creates CR in epoch 0
+                    TestAction.Finalize,    // moves to epoch 1
+                    TestAction.Delegate,    // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
+                    TestAction.Finalize,    // moves to epoch 2
+                ],
+                [
+                    TestAction.Undelegate,  // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                ],
+                [
+                    {event: 'SetCumulativeReward', epoch: 2},
+                    {event: 'SetMostRecentCumulativeReward', epoch: 2},
+                ]
+            );
+        });
+        it('should update most recent CR and set dependencies for CR when delegating.', async () => {
+            await runTest(
+                [
+                    TestAction.CreatePool,  // creates CR in epoch 0
+                    TestAction.Finalize,    // moves to epoch 1
+                    TestAction.Delegate,    // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
+                    TestAction.Finalize,    // moves to epoch 2
+                ],
+                [
+                    TestAction.Delegate,  // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                ],
+                [
+                    {event: 'SetCumulativeReward', epoch: 2},
+                    {event: 'SetMostRecentCumulativeReward', epoch: 2},
                 ]
             );
         });
