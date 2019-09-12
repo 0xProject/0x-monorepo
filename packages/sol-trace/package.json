@@ -44,7 +44,7 @@
         "web3-provider-engine": "14.0.6"
     },
     "devDependencies": {
-        "@0x/ts-doc-gen": "^0.0.21",
+        "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.0.1",
         "@types/loglevel": "^1.5.3",
         "@types/node": "*",
