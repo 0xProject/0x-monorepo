@@ -131,9 +131,7 @@ contract MixinFinalizer is
             if (pool.feesCollected != 0) {
                 // Credit the pool with rewards.
                 // We will transfer the total rewards to the vault at the end.
-                // Note that we credit the pool the rewards at the current epoch
-                // even though they were earned in the prior epoch.
-                uint256 reward = _creditRewardToPool(epoch, poolId, pool);
+                uint256 reward = _creditRewardToPool(poolId, pool);
                 rewardsPaid = rewardsPaid.safeAdd(reward);
                 // Clear the pool state so we don't finalize it again,
                 // and to recoup some gas.
@@ -226,13 +224,11 @@ contract MixinFinalizer is
     }
 
     /// @dev Computes the reward owed to a pool during finalization and
-    ///      credits it in the RewardVault.
-    /// @param epoch The epoch being finalized.
+    ///      credits it to that pool for the CURRENT epoch.
     /// @param poolId The pool's ID.
     /// @param pool The pool.
     /// @return rewards Amount of rewards for this pool.
     function _creditRewardToPool(
-        uint256 epoch,
         bytes32 poolId,
         IStructs.ActivePool memory pool
     )

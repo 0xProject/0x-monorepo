@@ -84,9 +84,6 @@ contract MixinScheduler is
         uint256 nextEpoch = currentEpoch.safeAdd(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(
-            epochDurationInSeconds
-        );
     }
 
     /// @dev Assert scheduler state before initializing it.
