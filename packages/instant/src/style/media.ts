@@ -37,7 +37,7 @@ export function stylesForMedia<T extends string | number>(
     choice: OptionallyScreenSpecific<T>,
 ): InterpolationValue {
     if (typeof choice === 'object') {
-        return`
+        return `
         ${cssPropertyName}: ${choice.default};
         ${choice.lg && media.large`${cssPropertyName}: ${choice.lg}`}
         ${choice.md && media.medium`${cssPropertyName}: ${choice.md}`}
