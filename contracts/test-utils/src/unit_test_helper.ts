@@ -4,7 +4,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { expect } from './chai_setup';
 
-type AsyncFunction<TArgs extends any[], TReturn> = (...args: TArgs) => PromiseLike<TReturn>;
+type AsyncFunction<TArgs extends any[], TReturn> = (...args: TArgs) => Promise<TReturn>;
 
 interface TransactionReturnData<TCallAsyncResult> {
     result: TCallAsyncResult;
@@ -27,25 +27,7 @@ export type TransactionExpectation<TAwaitTransactionSuccessAsyncArgs extends any
 ) => Promise<void> | void;
 
 export class BaseUnitTestHelper<TContract> {
-    protected static async _verifyContractMethodRevertErrorAsync<
-        TCallAsyncArgs extends any[],
-        TAwaitTransactionSuccessAsyncArgs extends any[],
-        TCallAsyncResult
-    >(
-        contractFunction: ContractWrapperFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TCallAsyncResult>,
-        expectedError: RevertError,
-        // tslint:disable-next-line: trailing-comma
-        ...args: TAwaitTransactionSuccessAsyncArgs
-    ): Promise<void> {
-        const tx = contractFunction.awaitTransactionSuccessAsync
-            ? contractFunction.awaitTransactionSuccessAsync(...args)
-            : contractFunction.callAsync(...((args as any) as TCallAsyncArgs));
-        return expect(tx).to.revertWith(expectedError);
-    }
-
-    constructor(protected readonly _testContract: TContract) {}
-
-    protected async _verifyContractMethodExpectationsAsync<
+    protected static async _verifyContractMethodExpectationsAsync<
         TCallAsyncArgs extends any[],
         TAwaitTransactionSuccessAsyncArgs extends any[],
         TCallAsyncResult
@@ -65,4 +47,22 @@ export class BaseUnitTestHelper<TContract> {
             await expectation({ result, receipt }, ...args);
         }
     }
+
+    protected static async _verifyContractMethodRevertErrorAsync<
+        TCallAsyncArgs extends any[],
+        TAwaitTransactionSuccessAsyncArgs extends any[],
+        TCallAsyncResult
+    >(
+        contractFunction: ContractWrapperFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TCallAsyncResult>,
+        expectedError: RevertError,
+        // tslint:disable-next-line: trailing-comma
+        ...args: TAwaitTransactionSuccessAsyncArgs
+    ): Promise<void> {
+        const tx = contractFunction.awaitTransactionSuccessAsync
+            ? contractFunction.awaitTransactionSuccessAsync(...args)
+            : contractFunction.callAsync(...((args as any) as TCallAsyncArgs));
+        return expect(tx).to.revertWith(expectedError);
+    }
+
+    constructor(protected readonly _testContract: TContract) {}
 }
