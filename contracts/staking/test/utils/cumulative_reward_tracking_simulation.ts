@@ -63,14 +63,12 @@ export class CumulativeRewardTrackingSimulation {
         await this._executeActionsAsync(initActions);
         await this._stakingApiWrapper.stakingProxyContract.attachStakingContract.awaitTransactionSuccessAsync(this.getTestCumulativeRewardTrackingContract().address);
         const testLogs = await this._executeActionsAsync(testActions);
-        console.log(testLogs);
         this._assertLogs(expectedTestLogs, testLogs);
     }
 
      private _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-
             if ((log as any).event === 'SetMostRecentCumulativeReward') {
                 logs.push({
                     event: 'SetMostRecentCumulativeReward',
@@ -88,12 +86,12 @@ export class CumulativeRewardTrackingSimulation {
                 });
             }
         }
-
         return logs;
     }
 
     private _assertLogs(expectedSequence: {event: string, epoch: number}[], txReceiptLogs: DecodedLogArgs[]) {
         const logs = this._extractTestLogs(txReceiptLogs);
+        console.log(JSON.stringify(logs, null ,4));
         expect(logs.length).to.be.equal(expectedSequence.length);
         for (let i = 0; i < expectedSequence.length; i++) {
             const expectedLog = expectedSequence[i];
