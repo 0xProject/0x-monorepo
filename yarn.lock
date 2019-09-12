@@ -3835,7 +3835,7 @@ buffer@^3.0.1:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-buffer@^5.0.3, buffer@^5.0.5:
+buffer@^5.0.5:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.1.0.tgz#c913e43678c7cb7c8bd16afbcddb6c5505e8f9fe"
   dependencies:
@@ -4310,10 +4310,6 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.0, classnames@^2.2.3, classnames@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.npmjs.org/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
-
 cli-boxes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-1.0.0.tgz#4fa917c3e59c94a004cd61f8ee509da651687143"
@@ -4376,14 +4372,6 @@ cliff@~0.1.9:
     colors "~1.0.3"
     eyes "~0.1.8"
     winston "0.8.x"
-
-clipboard@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/clipboard/-/clipboard-2.0.1.tgz#a12481e1c13d8a50f5f036b0560fe5d16d74e46a"
-  dependencies:
-    good-listener "^1.2.2"
-    select "^1.1.2"
-    tiny-emitter "^2.0.0"
 
 cliui@^3.2.0:
   version "3.2.0"
@@ -5054,14 +5042,6 @@ css-select@~1.2.0:
     domutils "1.5.1"
     nth-check "~1.0.1"
 
-css-to-react-native@^2.0.3:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/css-to-react-native/-/css-to-react-native-2.2.0.tgz#d524ef7f39a2747a8914e86563669ba35b7cf2e7"
-  dependencies:
-    css-color-keywords "^1.0.0"
-    fbjs "^0.8.5"
-    postcss-value-parser "^3.3.0"
-
 css-to-react-native@^2.2.2:
   version "2.2.2"
   resolved "https://registry.npmjs.org/css-to-react-native/-/css-to-react-native-2.2.2.tgz#c077d0f7bf3e6c915a539e7325821c9dd01f9965"
@@ -5207,10 +5187,6 @@ decamelize@^2.0.0:
   resolved "https://registry.npmjs.org/decamelize/-/decamelize-2.0.0.tgz#656d7bbc8094c4c788ea53c5840908c9c7d063c7"
   dependencies:
     xregexp "4.0.0"
-
-decko@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/decko/-/decko-1.2.0.tgz#fd43c735e967b8013306884a56fbe665996b6817"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -5410,10 +5386,6 @@ del@^3.0.0:
 delayed-stream@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
-
-delegate@^3.1.2:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/delegate/-/delegate-3.2.0.tgz#b66b71c3158522e8ab5744f720d8ca0c2af59166"
 
 delegates@^1.0.0:
   version "1.0.0"
@@ -5621,10 +5593,6 @@ domhandler@^2.3.0:
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.1.tgz#892e47000a99be55bbf3774ffea0561d8879c259"
   dependencies:
     domelementtype "1"
-
-dompurify@^1.0.6:
-  version "1.0.7"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-1.0.7.tgz#33e5c4a5fc84df93b58ca162d1d3f28537aa3ec2"
 
 domutils@1.5.1:
   version "1.5.1"
@@ -6662,10 +6630,6 @@ eventemitter3@1.x.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
 
-eventemitter3@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
-
 eventemitter3@^3.1.0:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.2.tgz#2d3d48f9c346698fce83a85d7d664e98535df6e7"
@@ -7011,7 +6975,7 @@ fast-json-stable-stringify@2.x, fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
-fast-levenshtein@^2.0.6, fast-levenshtein@~2.0.4:
+fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
@@ -7305,7 +7269,7 @@ for-own@^1.0.0:
   dependencies:
     for-in "^1.0.1"
 
-foreach@^2.0.4, foreach@^2.0.5:
+foreach@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
 
@@ -7926,7 +7890,7 @@ global-prefix@^1.0.1:
     is-windows "^1.0.1"
     which "^1.2.14"
 
-global@^4.3.0, global@~4.3.0:
+global@~4.3.0:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/global/-/global-4.3.2.tgz#e76989268a6c74c38908b1305b10fc0e394e9d0f"
   dependencies:
@@ -8000,12 +7964,6 @@ glogg@^1.0.0:
   resolved "https://registry.yarnpkg.com/glogg/-/glogg-1.0.1.tgz#dcf758e44789cc3f3d32c1f3562a3676e6a34810"
   dependencies:
     sparkles "^1.0.0"
-
-good-listener@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
-  dependencies:
-    delegate "^3.1.2"
 
 got@7.1.0, got@^7.1.0:
   version "7.1.0"
@@ -8162,7 +8120,7 @@ handle-thing@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-1.2.5.tgz#fd7aad726bf1a5fd16dfc29b2f7a6601d27139c4"
 
-handlebars@^4.0.1, handlebars@^4.0.11, handlebars@^4.0.2, handlebars@^4.0.3, handlebars@^4.1.0, handlebars@^4.1.2:
+handlebars@^4.0.1, handlebars@^4.0.2, handlebars@^4.0.3, handlebars@^4.1.0, handlebars@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.1.2.tgz#b6b37c1ced0306b221e094fc7aca3ec23b131b67"
   dependencies:
@@ -9194,10 +9152,6 @@ isarray@1.0.0, isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
 
-isarray@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/isarray/-/isarray-2.0.4.tgz#38e7bcbb0f3ba1b7933c86ba1894ddfc3781bbb7"
-
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
@@ -9756,12 +9710,6 @@ jsesc@~0.5.0:
 json-parse-better-errors@^1.0.0, json-parse-better-errors@^1.0.1, json-parse-better-errors@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
-
-json-pointer@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.npmjs.org/json-pointer/-/json-pointer-0.6.0.tgz#8e500550a6aac5464a473377da57aa6cc22828d7"
-  dependencies:
-    foreach "^2.0.4"
 
 json-rpc-engine@^3.4.0, json-rpc-engine@^3.6.0:
   version "3.6.1"
@@ -10648,10 +10596,6 @@ ltgt@~2.1.1:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ltgt/-/ltgt-2.1.3.tgz#10851a06d9964b971178441c23c9e52698eece34"
 
-lunr@^2.3.0:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/lunr/-/lunr-2.3.1.tgz#113616a2b602ddc10932a7bf8a4e6e57ebfecdf2"
-
 lunr@^2.3.6:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/lunr/-/lunr-2.3.6.tgz#f278beee7ffd56ad86e6e478ce02ab2b98c78dd5"
@@ -10756,14 +10700,6 @@ map-visit@^1.0.0:
   resolved "https://registry.yarnpkg.com/map-visit/-/map-visit-1.0.0.tgz#ecdca8f13144e660f1b5bd41f12f3479d98dfb8f"
   dependencies:
     object-visit "^1.0.0"
-
-mark.js@^8.11.1:
-  version "8.11.1"
-  resolved "https://registry.npmjs.org/mark.js/-/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
-
-marked@0.3.18:
-  version "0.3.18"
-  resolved "https://registry.npmjs.org/marked/-/marked-0.3.18.tgz#3ef058cd926101849b92a7a7c15db18c7fc76b2f"
 
 marked@^0.7.0:
   version "0.7.0"
@@ -11170,17 +11106,6 @@ mkdirp@*, mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@0.x, mkdirp@0.x.x, "mkdirp@>=0.5 0"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
-
-mobx-react@^5.2.3:
-  version "5.2.5"
-  resolved "https://registry.npmjs.org/mobx-react/-/mobx-react-5.2.5.tgz#fc44ac17e1798f6b590f064b831d8a1d89850ef0"
-  dependencies:
-    hoist-non-react-statics "^2.5.0"
-    react-lifecycles-compat "^3.0.2"
-
-mobx@^4.2.0:
-  version "4.3.1"
-  resolved "https://registry.npmjs.org/mobx/-/mobx-4.3.1.tgz#334e5aab4916b1d43f0faf3605a64b1b4b3ccb8d"
 
 mocha@^6.2.0:
   version "6.2.0"
@@ -12063,12 +11988,6 @@ ono@^4.0.5:
   dependencies:
     format-util "^1.0.3"
 
-openapi-sampler@1.0.0-beta.13:
-  version "1.0.0-beta.13"
-  resolved "https://registry.npmjs.org/openapi-sampler/-/openapi-sampler-1.0.0-beta.13.tgz#bb8ea6f38471d6f0140c716e5f89242d1d277093"
-  dependencies:
-    json-pointer "^0.6.0"
-
 openapi-schema-validation@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npmjs.org/openapi-schema-validation/-/openapi-schema-validation-0.4.1.tgz#927e1277082ef61688239730470bfbbdd0f1268d"
@@ -12593,10 +12512,6 @@ pend@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/pend/-/pend-1.2.0.tgz#7a57eb550a6783f9115331fcf4663d5c8e007a50"
 
-perfect-scrollbar@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-1.4.0.tgz#5d014ef9775e1f43058a1dbae9ed1daf0e7091f1"
-
 performance-now@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
@@ -12668,10 +12583,6 @@ pn@^1.1.0:
 polished@^1.9.2:
   version "1.9.2"
   resolved "https://registry.npmjs.org/polished/-/polished-1.9.2.tgz#d705cac66f3a3ed1bd38aad863e2c1e269baf6b6"
-
-polished@^1.9.3:
-  version "1.9.3"
-  resolved "https://registry.npmjs.org/polished/-/polished-1.9.3.tgz#d61b8a0c4624efe31e2583ff24a358932b6b75e1"
 
 popper.js@1.14.3:
   version "1.14.3"
@@ -12783,12 +12694,6 @@ prettyjson@^1.1.2:
     colors "^1.1.2"
     minimist "^1.2.0"
 
-prismjs@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.npmjs.org/prismjs/-/prismjs-1.15.0.tgz#8801d332e472091ba8def94976c8877ad60398d9"
-  optionalDependencies:
-    clipboard "^2.0.0"
-
 private@^0.1.6, private@^0.1.7, private@^0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
@@ -12888,18 +12793,18 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@^15.5.0, prop-types@^15.6.2:
-  version "15.6.2"
-  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
-  dependencies:
-    loose-envify "^1.3.1"
-    object-assign "^4.1.1"
-
-prop-types@^15.5.4, prop-types@^15.6.0, prop-types@^15.6.1:
+prop-types@^15.5.4, prop-types@^15.6.0:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
     fbjs "^0.8.16"
+    loose-envify "^1.3.1"
+    object-assign "^4.1.1"
+
+prop-types@^15.6.2:
+  version "15.6.2"
+  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
+  dependencies:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
@@ -13248,15 +13153,6 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-dom@^16.3.2:
-  version "16.4.2"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-16.4.2.tgz#4afed569689f2c561d2b8da0b819669c38a0bda4"
-  dependencies:
-    fbjs "^0.8.16"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.0"
-
 react-dom@^16.5.2:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.9.0.tgz#5e65527a5e26f22ae3701131bcccaee9fb0d3962"
@@ -13266,27 +13162,6 @@ react-dom@^16.5.2:
     prop-types "^15.6.2"
     scheduler "^0.15.0"
 
-react-dropdown@^1.3.0:
-  version "1.5.0"
-  resolved "https://registry.npmjs.org/react-dropdown/-/react-dropdown-1.5.0.tgz#3a08f0dd574b64d8eddde60ce51e45b72edc81c3"
-  dependencies:
-    classnames "^2.2.3"
-
-react-hot-loader@^4.3.3:
-  version "4.3.4"
-  resolved "https://registry.npmjs.org/react-hot-loader/-/react-hot-loader-4.3.4.tgz#4f9bdd55bb20d77a6ae8931fa1c187e5f0ce6279"
-  dependencies:
-    fast-levenshtein "^2.0.6"
-    global "^4.3.0"
-    hoist-non-react-statics "^2.5.0"
-    prop-types "^15.6.1"
-    react-lifecycles-compat "^3.0.4"
-    shallowequal "^1.0.2"
-
-react-is@^16.3.1:
-  version "16.4.0"
-  resolved "https://registry.npmjs.org/react-is/-/react-is-16.4.0.tgz#cc9fdc855ac34d2e7d9d2eb7059bbc240d35ffcf"
-
 react-is@^16.4.2, react-is@^16.5.2:
   version "16.5.2"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.5.2.tgz#e2a7b7c3f5d48062eb769fcb123505eb928722e3"
@@ -13294,10 +13169,6 @@ react-is@^16.4.2, react-is@^16.5.2:
 react-is@^16.6.0:
   version "16.6.3"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.3.tgz#d2d7462fcfcbe6ec0da56ad69047e47e56e7eac0"
-
-react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.npmjs.org/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
 
 react-redux@^5.0.7:
   version "5.0.7"
@@ -13310,13 +13181,6 @@ react-redux@^5.0.7:
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
 
-react-tabs@^2.0.0:
-  version "2.2.2"
-  resolved "https://registry.npmjs.org/react-tabs/-/react-tabs-2.2.2.tgz#2f2935da379889484751d1df47c1b639e5ee835d"
-  dependencies:
-    classnames "^2.2.0"
-    prop-types "^15.5.0"
-
 react-test-renderer@^16.0.0-0:
   version "16.5.2"
   resolved "https://registry.npmjs.org/react-test-renderer/-/react-test-renderer-16.5.2.tgz#92e9d2c6f763b9821b2e0b22f994ee675068b5ae"
@@ -13325,15 +13189,6 @@ react-test-renderer@^16.0.0-0:
     prop-types "^15.6.2"
     react-is "^16.5.2"
     schedule "^0.5.0"
-
-react@^16.3.2:
-  version "16.4.2"
-  resolved "https://registry.npmjs.org/react/-/react-16.4.2.tgz#2cd90154e3a9d9dd8da2991149fdca3c260e129f"
-  dependencies:
-    fbjs "^0.8.16"
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.0"
 
 react@^16.5.2:
   version "16.9.0"
@@ -13507,48 +13362,6 @@ redent@^2.0.0:
   dependencies:
     indent-string "^3.0.0"
     strip-indent "^2.0.0"
-
-redoc-cli@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.npmjs.org/redoc-cli/-/redoc-cli-0.6.1.tgz#497fd9d4c5f3aff7cb0d1b043222f2546789b48e"
-  dependencies:
-    handlebars "^4.0.11"
-    isarray "^2.0.4"
-    mkdirp "^0.5.1"
-    mobx "^4.2.0"
-    react "^16.3.2"
-    react-dom "^16.3.2"
-    redoc "^2.0.0-alpha.29"
-    tslib "^1.9.0"
-    yargs "^11.0.0"
-
-redoc@^2.0.0-alpha.29:
-  version "2.0.0-alpha.34"
-  resolved "https://registry.npmjs.org/redoc/-/redoc-2.0.0-alpha.34.tgz#3c46aa3902212ac20c5cbe2b7d0d7621f175f7e9"
-  dependencies:
-    classnames "^2.2.6"
-    decko "^1.2.0"
-    dompurify "^1.0.6"
-    eventemitter3 "^3.0.0"
-    json-pointer "^0.6.0"
-    json-schema-ref-parser "^5.1.1"
-    lunr "^2.3.0"
-    mark.js "^8.11.1"
-    marked "0.3.18"
-    memoize-one "^4.0.0"
-    mobx-react "^5.2.3"
-    openapi-sampler "1.0.0-beta.13"
-    perfect-scrollbar "^1.4.0"
-    polished "^1.9.3"
-    prismjs "^1.15.0"
-    prop-types "^15.6.2"
-    react-dropdown "^1.3.0"
-    react-hot-loader "^4.3.3"
-    react-tabs "^2.0.0"
-    slugify "^1.2.1"
-    stickyfill "^1.1.1"
-    styled-components "^3.3.3"
-    tslib "^1.9.3"
 
 redux-devtools-extension@^2.13.5:
   version "2.13.5"
@@ -14197,10 +14010,6 @@ select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
 
-select@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/select/-/select-1.1.2.tgz#0e7350acdec80b1108528786ec1d4418d11b396d"
-
 selfsigned@^1.9.1:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/selfsigned/-/selfsigned-1.10.2.tgz#b4449580d99929b65b10a48389301a6592088758"
@@ -14393,10 +14202,6 @@ sha3@^1.1.0:
   dependencies:
     nan "2.10.0"
 
-shallowequal@^1.0.2:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/shallowequal/-/shallowequal-1.1.0.tgz#188d521de95b9087404fd4dcb68b13df0ae4e7f8"
-
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"
@@ -14514,10 +14319,6 @@ slice-ansi@2.0.0:
 slide@^1.1.3, slide@^1.1.5, slide@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
-
-slugify@^1.2.1:
-  version "1.3.1"
-  resolved "https://registry.npmjs.org/slugify/-/slugify-1.3.1.tgz#f572127e8535329fbc6c1edb74ab856b61ad7de2"
 
 smart-buffer@^4.0.1:
   version "4.0.1"
@@ -14892,10 +14693,6 @@ stealthy-require@^1.1.0:
   version "1.1.1"
   resolved "https://registry.npmjs.org/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
 
-stickyfill@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/stickyfill/-/stickyfill-1.1.1.tgz#39413fee9d025c74a7e59ceecb23784cc0f17f02"
-
 stream-browserify@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/stream-browserify/-/stream-browserify-2.0.1.tgz#66266ee5f9bdb9940a4e4514cafb43bb71e5c9db"
@@ -15122,20 +14919,6 @@ styled-components@4.1.2:
     stylis-rule-sheet "^0.0.10"
     supports-color "^5.5.0"
 
-styled-components@^3.3.3:
-  version "3.4.2"
-  resolved "https://registry.npmjs.org/styled-components/-/styled-components-3.4.2.tgz#8f518419932327e47fe9144824e3184b3e2da95d"
-  dependencies:
-    buffer "^5.0.3"
-    css-to-react-native "^2.0.3"
-    fbjs "^0.8.16"
-    hoist-non-react-statics "^2.5.0"
-    prop-types "^15.5.4"
-    react-is "^16.3.1"
-    stylis "^3.5.0"
-    stylis-rule-sheet "^0.0.10"
-    supports-color "^3.2.3"
-
 stylis-rule-sheet@^0.0.10:
   version "0.0.10"
   resolved "https://registry.npmjs.org/stylis-rule-sheet/-/stylis-rule-sheet-0.0.10.tgz#44e64a2b076643f4b52e5ff71efc04d8c3c4a430"
@@ -15154,7 +14937,7 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-supports-color@^3.1.0, supports-color@^3.1.2, supports-color@^3.2.3:
+supports-color@^3.1.0, supports-color@^3.1.2:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-3.2.3.tgz#65ac0504b3954171d8a64946b2ae3cbb8a5f54f6"
   dependencies:
@@ -15514,10 +15297,6 @@ timespan@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/timespan/-/timespan-2.3.0.tgz#4902ce040bd13d845c8f59b27e9d59bad6f39929"
 
-tiny-emitter@^2.0.0:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/tiny-emitter/-/tiny-emitter-2.0.2.tgz#82d27468aca5ade8e5fd1e6d22b57dd43ebdfb7c"
-
 title-case@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/title-case/-/title-case-2.1.1.tgz#3e127216da58d2bc5becf137ab91dae3a7cd8faa"
@@ -15713,7 +15492,7 @@ tslib@1.9.0, tslib@^1.8.0, tslib@^1.8.1:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
 
-tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
