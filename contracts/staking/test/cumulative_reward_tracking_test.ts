@@ -1,17 +1,10 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, describe, expect, txDefaults } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
-import { TransactionReceiptWithDecodedLogs, DecodedLogArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, TestCumulativeRewardTrackingEventArgs , TestCumulativeRewardTrackingSetMostRecentCumulativeRewardEventArgs, TestCumulativeRewardTrackingSetCumulativeRewardEventArgs, TestCumulativeRewardTrackingUnsetCumulativeRewardEventArgs} from '../src';
+import { artifacts } from '../src';
 
-import { FinalizerActor } from './actors/finalizer_actor';
-import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
-import { toBaseUnitAmount } from './utils/number_utils';
-import { MembersByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './utils/types';
-import { TestCumulativeRewardTrackingContract } from '../generated-wrappers/test_cumulative_reward_tracking';
 import { CumulativeRewardTrackingSimulation,  TestAction} from './utils/cumulative_reward_tracking_simulation';
 
 // tslint:disable:no-unnecessary-type-assertion
@@ -41,7 +34,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
     });
 
     describe('Tracking Cumulative Rewards (CR)', () => {
-        it('should set cumulative reward when a pool is created', async () => {
+        it('should set CR and Most Recent CR when a pool is created', async () => {
             await simulation.runTestAsync(
                 [],
                 [
@@ -53,7 +46,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-        it('should record a CR and shift the most recent CR when a reward is earned', async () => {
+        it('should set CR and Most Recent CR when a reward is earned', async () => {
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool,      // creates CR in epoch 0
@@ -70,10 +63,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-        it('should not record a CR when one already exists', async () => {
-            // A CR is recorded when we create the pool. A staker then delegates in the same epoch,
-            // Ddelegating would usually record the cumulative reward for this epoch, but
-            // it already exists from creating the pool.
+        it('should not set CR or Most Recent CR when values already exist for the current epoch', async () => {
             return await simulation.runTestAsync(
                 [
                     TestAction.CreatePool   // creates CR in epoch 0
@@ -85,7 +75,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 []
             );
         });
-        it('should (i) record cumulative reward when delegating for first time, and (ii) unset most recent cumulative reward given it has no dependents', async () => {
+        it('should (i) set CR and Most Recent CR when delegating, and (ii) unset previous Most Recent CR if there are no dependencies', async () => {
             // since there was no delegation in epoch 0 there is no longer a dependency on the CR for epoch 0
             await simulation.runTestAsync(
                 [
@@ -102,7 +92,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-        it('should (i) record CR when delegating for first time, and (ii) NOT unset most recent CR given it has dependents', async () => {
+        it('should (i) set CR and Most Recent CR when delegating, and (ii) NOT unset previous Most Recent CR if there are dependencies', async () => {
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool,  // creates CR in epoch 0
@@ -118,7 +108,8 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-        it('should not unset the most recent CR, even if there are no delegators dependent on it', async () => {
+        it('should not unset the current Most Recent CR, even if there are no dependencies', async () => {
+            // note - we never unset the current Most Recent CR; only ever a previous value - given there are no depencies from delegators.
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool,  // creates CR in epoch 0
@@ -131,7 +122,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 []
             );
         });
-        it('should update most recent CR and set dependencies for CR when undelegating.', async () => {
+        it('should set CR and update Most Recent CR when undelegating', async () => {
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool,  // creates CR in epoch 0
@@ -148,7 +139,7 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
                 ]
             );
         });
-        it('should update most recent CR and set dependencies for CR when delegating.', async () => {
+        it('should set CR and update Most Recent CR when delegating more stake', async () => {
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool,  // creates CR in epoch 0
