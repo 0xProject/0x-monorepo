@@ -6,7 +6,7 @@ import { artifacts, TestProtocolFeesContract, TestProtocolFeesReceiverContract }
 // The contents of this test suite does not inform the reader about the assertions made in these
 // tests. For more information and a more accurate view of the tests, check out
 // "contracts/test/TestProtocolFeesReceiver.sol".
-blockchainTests('Protocol Fee Payments', env => {
+blockchainTests.only('Protocol Fee Payments', env => {
     let testProtocolFees: TestProtocolFeesContract;
     let testProtocolFeesReceiver: TestProtocolFeesReceiverContract;
 
@@ -19,13 +19,13 @@ blockchainTests('Protocol Fee Payments', env => {
             artifacts.TestProtocolFees,
             env.provider,
             env.txDefaults,
-            {},
+            artifacts,
         );
         testProtocolFeesReceiver = await TestProtocolFeesReceiverContract.deployFrom0xArtifactAsync(
             artifacts.TestProtocolFeesReceiver,
             env.provider,
             env.txDefaults,
-            {},
+            artifacts,
         );
     });
 
