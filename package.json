@@ -52,7 +52,7 @@
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "contract-wrappers 0x.js connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer asset-swapper migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
-        "ignoreDependencyVersionsForPackage": "instant dev-tools-pages contract-wrappers"
+        "ignoreDependencyVersionsForPackage": "instant contract-wrappers"
     },
     "bundlewatch": {
         "files": [

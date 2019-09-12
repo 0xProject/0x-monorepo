@@ -78,8 +78,6 @@ TODO.md
 # VSCode file
 .vscode
 
-packages/dev-tools-pages/public/bundle*
-
 # server cli
 packages/testnet-faucets/server/
 
