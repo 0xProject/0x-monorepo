@@ -62,8 +62,8 @@ contract MixinStakingPoolRewards is
         _syncRewardsForDelegator(
             poolId,
             member,
-            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]), // initial value
-            _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId]) // final value
+            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),  // initial value
+            _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId])    // final value
         );
 
         // @todo write synced version

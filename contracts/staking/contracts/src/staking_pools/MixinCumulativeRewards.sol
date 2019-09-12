@@ -96,10 +96,6 @@ contract MixinCumulativeRewards is
 
         // ensure dependency has a value, otherwise copy it from the most recent reward
         if (!_isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch])) {
-            require(
-                epoch > mostRecentCumulativeRewardInfo.cumulativeRewardEpoch,
-                "Nope"
-            );
             _setCumulativeReward(poolId, epoch, mostRecentCumulativeRewardInfo.cumulativeReward);
             _setMostRecentCumulativeReward(poolId, epoch);
         }
@@ -207,17 +203,21 @@ contract MixinCumulativeRewards is
     function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
-        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
-        if (epoch <= currentMostRecentEpoch) {
+        if (epoch == 0) {
+            // this is the default value, no need to update
             return;
         }
+
+        // load the current value, sanity check that we're not trying to rewind.
+        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
+        assert(epoch > currentMostRecentEpoch);
 
         // unset the current most recent reward if it has no more references
         if (cumulativeRewardsByPoolReferenceCounter[poolId][currentMostRecentEpoch] == 0) {
             _unsetCumulativeReward(poolId, currentMostRecentEpoch);
         }
 
-        // update
+        // update state to reflect the most recent cumulative reward
         cumulativeRewardsByPoolLastStored[poolId] = epoch;
     }
 }
