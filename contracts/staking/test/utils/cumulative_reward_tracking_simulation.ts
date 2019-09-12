@@ -33,7 +33,7 @@ export class CumulativeRewardTrackingSimulation {
 
     constructor(stakingApiWrapper: StakingApiWrapper, actors: string[]) {
         this._stakingApiWrapper = stakingApiWrapper;
-        // setup stakers
+        // setup actors
         this._staker = actors[0];
         this._poolOperator = actors[1];
         this._takerAddress = actors[2];
@@ -64,41 +64,6 @@ export class CumulativeRewardTrackingSimulation {
         await this._stakingApiWrapper.stakingProxyContract.attachStakingContract.awaitTransactionSuccessAsync(this.getTestCumulativeRewardTrackingContract().address);
         const testLogs = await this._executeActionsAsync(testActions);
         this._assertLogs(expectedTestLogs, testLogs);
-    }
-
-     private _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] {
-        const logs = [];
-        for (const log of txReceiptLogs) {
-            if ((log as any).event === 'SetMostRecentCumulativeReward') {
-                logs.push({
-                    event: 'SetMostRecentCumulativeReward',
-                    args: (log as any).args as TestCumulativeRewardTrackingSetMostRecentCumulativeRewardEventArgs
-                });
-            } else if ((log as any).event === 'SetCumulativeReward') {
-                logs.push({
-                    event: 'SetCumulativeReward',
-                    args: (log as any).args as TestCumulativeRewardTrackingSetCumulativeRewardEventArgs
-                });
-            } else if ((log as any).event === 'UnsetCumulativeReward') {
-                logs.push({
-                    event: 'UnsetCumulativeReward',
-                    args: (log as any).args as TestCumulativeRewardTrackingUnsetCumulativeRewardEventArgs
-                });
-            }
-        }
-        return logs;
-    }
-
-    private _assertLogs(expectedSequence: {event: string, epoch: number}[], txReceiptLogs: DecodedLogArgs[]) {
-        const logs = this._extractTestLogs(txReceiptLogs);
-        console.log(JSON.stringify(logs, null ,4));
-        expect(logs.length).to.be.equal(expectedSequence.length);
-        for (let i = 0; i < expectedSequence.length; i++) {
-            const expectedLog = expectedSequence[i];
-            const actualLog = logs[i];
-            expect(expectedLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(actualLog.event);
-            expect(expectedLog.epoch, `testing epoch of ${JSON.stringify(expectedLog)}`).to.be.equal(actualLog.args.epoch.toNumber());
-        }
     }
 
     private async _executeActionsAsync(actions: TestAction[]): Promise<DecodedLogArgs[]> {
@@ -135,5 +100,39 @@ export class CumulativeRewardTrackingSimulation {
             logs = logs.concat(txReceipt.logs);
         }
         return logs;
+    }
+
+    private _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] {
+        const logs = [];
+        for (const log of txReceiptLogs) {
+            if ((log as any).event === 'SetMostRecentCumulativeReward') {
+                logs.push({
+                    event: 'SetMostRecentCumulativeReward',
+                    args: (log as any).args as TestCumulativeRewardTrackingSetMostRecentCumulativeRewardEventArgs
+                });
+            } else if ((log as any).event === 'SetCumulativeReward') {
+                logs.push({
+                    event: 'SetCumulativeReward',
+                    args: (log as any).args as TestCumulativeRewardTrackingSetCumulativeRewardEventArgs
+                });
+            } else if ((log as any).event === 'UnsetCumulativeReward') {
+                logs.push({
+                    event: 'UnsetCumulativeReward',
+                    args: (log as any).args as TestCumulativeRewardTrackingUnsetCumulativeRewardEventArgs
+                });
+            }
+        }
+        return logs;
+    }
+
+    private _assertLogs(expectedSequence: {event: string, epoch: number}[], txReceiptLogs: DecodedLogArgs[]) {
+        const logs = this._extractTestLogs(txReceiptLogs);
+        expect(logs.length).to.be.equal(expectedSequence.length);
+        for (let i = 0; i < expectedSequence.length; i++) {
+            const expectedLog = expectedSequence[i];
+            const actualLog = logs[i];
+            expect(expectedLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(actualLog.event);
+            expect(expectedLog.epoch, `testing epoch of ${JSON.stringify(expectedLog)}`).to.be.equal(actualLog.args.epoch.toNumber());
+        }
     }
 }
