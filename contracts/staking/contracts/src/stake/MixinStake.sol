@@ -49,6 +49,9 @@ contract MixinStake is
         // mint stake
         _incrementCurrentAndNextBalance(_activeStakeByOwner[owner], amount);
 
+        // update global total of active stake
+        _incrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
+
         // notify
         emit Stake(
             owner,
@@ -77,6 +80,9 @@ contract MixinStake is
 
         // burn inactive stake
         _decrementCurrentAndNextBalance(_inactiveStakeByOwner[owner], amount);
+
+        // update global total of inactive stake
+        _decrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
 
         // update withdrawable field
         _withdrawableStakeByOwner[owner] = currentWithdrawableStake.safeSub(amount);
@@ -139,6 +145,13 @@ contract MixinStake is
         IStructs.StoredBalance storage fromPtr = _getBalancePtrFromStatus(owner, from.status);
         IStructs.StoredBalance storage toPtr = _getBalancePtrFromStatus(owner, to.status);
         _moveStake(fromPtr, toPtr, amount);
+
+        // update global total of stake in the statuses being moved between
+        _moveStake(
+            globalStakeByStatus[uint8(from.status)],
+            globalStakeByStatus[uint8(to.status)],
+            amount
+        );
 
         // update withdrawable field, if necessary
         if (from.status == IStructs.StakeStatus.INACTIVE) {

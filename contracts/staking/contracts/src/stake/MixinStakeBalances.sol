@@ -31,6 +31,54 @@ contract MixinStakeBalances is
 {
     using LibSafeMath for uint256;
 
+    /// @dev Returns the total active stake across the entire staking system.
+    /// @return Global active stake.
+    function getGlobalActiveStake()
+        external
+        view
+        returns (IStructs.StakeBalance memory balance)
+    {
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+            globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)]
+        );
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
+    }
+
+    /// @dev Returns the total inactive stake across the entire staking system.
+    /// @return Global inactive stake.
+    function getGlobalInactiveStake()
+        external
+        view
+        returns (IStructs.StakeBalance memory balance)
+    {
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+            globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)]
+        );
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
+    }
+
+    /// @dev Returns the total stake delegated across the entire staking system.
+    /// @return Global delegated stake.
+    function getGlobalDelegatedStake()
+        external
+        view
+        returns (IStructs.StakeBalance memory balance)
+    {
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+            globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
+        );
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
+    }
+
     /// @dev Returns the total stake for a given owner.
     /// @param owner of stake.
     /// @return Total active stake for owner.
