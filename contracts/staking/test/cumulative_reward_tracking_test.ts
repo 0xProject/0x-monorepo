@@ -1,7 +1,7 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, describe, expect, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs, DecodedLogArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, TestCumulativeRewardTrackingEventArgs , TestCumulativeRewardTrackingSetMostRecentCumulativeRewardEventArgs, TestCumulativeRewardTrackingSetCumulativeRewardEventArgs, TestCumulativeRewardTrackingUnsetCumulativeRewardEventArgs} from '../src';
@@ -96,9 +96,11 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
         return await stakingApiWrapper.utils.skipToNextEpochAsync();
     };
 
-    const getTestLogs = (txReceipt: TransactionReceiptWithDecodedLogs): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] => {
+    const getTestLogs = (txReceiptLogs: DecodedLogArgs[]): {event: string, args: TestCumulativeRewardTrackingEventArgs}[] => {
         const logs = [];
-        for (const log of txReceipt.logs) {
+        for (const log of txReceiptLogs) {
+            console.log(`LOG TO MAYBE ASSERT - ${JSON.stringify(log, null, 4)}`);
+
             if ((log as any).event === 'SetMostRecentCumulativeReward') {
                 logs.push({
                     event: 'SetMostRecentCumulativeReward',
@@ -117,11 +119,12 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
             }
         }
 
+        console.log(`LOGS TO ASSERT = ${JSON.stringify(logs, null ,4)}`);
         return logs;
     }
 
-    const assertLogs = (expectedSequence: {event: string, epoch: number}[], txReceipt: TransactionReceiptWithDecodedLogs) => {
-        const logs = getTestLogs(txReceipt);
+    const assertLogs = (expectedSequence: {event: string, epoch: number}[], txReceiptLogs: DecodedLogArgs[]) => {
+        const logs = getTestLogs(txReceiptLogs);
         // console.log(JSON.stringify(txReceipt.logs, null ,4));
         expect(logs.length).to.be.equal(expectedSequence.length);
         for (let i = 0; i < expectedSequence.length; i++) {
@@ -137,67 +140,99 @@ blockchainTests.resets.only('Cumulative Reward Tracking', env => {
         Finalize,
         Delegate,
         Undelegate,
-        PayProtocolFee
+        PayProtocolFee,
+        CreatePool
     };
     interface TestParams {
         shouldDelegate: Boolean;
     }
 
-
-    const initTest = async (actions: TestAction[]) => {
+    const executeActions = async (actions: TestAction[]): Promise<DecodedLogArgs[]> => {
         const staker = stakers[0].getOwner();
         const amountToStake = toBaseUnitAmount(100);
         const protocolFeeAmount = new BigNumber(10);
 
+        let logs: DecodedLogArgs[] = [];
         for (const action of actions) {
+            let txReceipt: TransactionReceiptWithDecodedLogs;
             switch (action) {
                 case TestAction.Finalize:
-                    await stakingApiWrapper.utils.skipToNextEpochAsync();
+                    txReceipt = await stakingApiWrapper.utils.skipToNextEpochAsync();
                     break;
 
                 case TestAction.Delegate:
                     await stakingApiWrapper.stakingContract.stake.sendTransactionAsync(amountToStake, {from: staker});
-                    await stakingApiWrapper.stakingContract.moveStake.sendTransactionAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Delegated, poolId), amountToStake, {from: staker});
+                    txReceipt = await stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Delegated, poolId), amountToStake, {from: staker});
                     break;
 
                 case TestAction.Undelegate:
-                    await stakingApiWrapper.stakingContract.moveStake.sendTransactionAsync(new StakeInfo(StakeStatus.Delegated, poolId), new StakeInfo(StakeStatus.Active), amountToStake, {from: staker});
+                    txReceipt = await stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(new StakeInfo(StakeStatus.Delegated, poolId), new StakeInfo(StakeStatus.Active), amountToStake, {from: staker});
                     break;
 
                 case TestAction.PayProtocolFee:
-                    await stakingApiWrapper.stakingContract.payProtocolFee.sendTransactionAsync(poolOperator, takerAddress, protocolFeeAmount, {from: exchangeAddress, value: protocolFeeAmount});
+                    txReceipt = await stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(poolOperator, takerAddress, protocolFeeAmount, {from: exchangeAddress, value: protocolFeeAmount});
                     break;
+
+                case TestAction.CreatePool:
+                    console.log('creating pool');
+                    txReceipt = await stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(0, false, {from: poolOperator});
+                    break;
+
+                default:
+                    throw new Error('Unrecognized test action');
             }
+            logs = logs.concat(txReceipt.logs);
         }
+
+        return logs;
+    }
+
+    const runTest = async (initActions: TestAction[], testActions: TestAction[], expectedTestLogs: {event: string, epoch: number}[]) => {
+        await executeActions(initActions);
         await stakingApiWrapper.stakingProxyContract.attachStakingContract.sendTransactionAsync(testCumulativeRewardTrackingContract.address);
+        const testLogs = await executeActions(testActions);
+        console.log(JSON.stringify(testLogs, null, 4));
+        assertLogs(expectedTestLogs, testLogs);
     }
 
     describe('Cumulative Reward Tracking', () => {
         it('should set cumulative reward when a pool is created', async () => {
-            await initTest([]);
-            const txReceipt = await stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(0, false, {from: poolOperator});
-            const expectedLogSequence = [
-                {event: 'SetCumulativeReward', epoch: 0},
-                {event: 'SetMostRecentCumulativeReward', epoch: 0}
-            ];
-            assertLogs(expectedLogSequence, txReceipt);
+            await runTest(
+                [],
+                [TestAction.CreatePool],
+                [
+                    {event: 'SetCumulativeReward', epoch: 0},
+                    {event: 'SetMostRecentCumulativeReward', epoch: 0}
+                ]
+            );
         });
 
-        it.only('should record a cumulative reward and shift the most recent cumulative reward when a reward is earned', async () => {
-            // initialize with one pool with delegators that will earn a protocol fee on next finalization.
-            await initTest([
-                TestAction.Delegate,
-                TestAction.Finalize,
-                TestAction.PayProtocolFee
-            ]);
-            // finalize and observe an update to the cumulative reward.
-            const txReceipt = await stakingApiWrapper.utils.skipToNextEpochAsync();
-            console.log(JSON.stringify(txReceipt, null, 4));
-            const expectedLogSequence = [
-                {event: 'SetCumulativeReward', epoch: 1},
-                {event: 'SetMostRecentCumulativeReward', epoch: 1}
-            ];
-            assertLogs(expectedLogSequence, txReceipt);
+        it('should record a cumulative reward and shift the most recent cumulative reward when a reward is earned', async () => {
+            await runTest(
+                // initialize with one pool with delegators that will earn a protocol fee on next finalization.
+                [
+                    TestAction.Delegate,
+                    TestAction.Finalize,
+                    TestAction.PayProtocolFee
+                ],
+                // finalize and observe an update to the cumulative reward
+                [TestAction.Finalize],
+                [
+                    {event: 'SetCumulativeReward', epoch: 1},
+                    {event: 'SetMostRecentCumulativeReward', epoch: 1}
+                ]
+            );
+        });
+
+        it.only('should not record a cumulative reward when one already exists', async () => {
+            await runTest(
+                // the test pool was created in epoch 0, so there is already a cumulative reward.
+                [],
+                // delegating would usually record the cumulative reward for this epoch, but
+                // it already exists from creating the pool.
+                [TestAction.Delegate],
+                []
+            );
         });
 
         /*
