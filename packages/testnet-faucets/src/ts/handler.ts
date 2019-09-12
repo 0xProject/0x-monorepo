@@ -9,9 +9,7 @@ import {
     SignedOrder,
     Web3ProviderEngine,
 } from '0x.js';
-import {
-    getContractAddressesForNetworkOrThrow,
-} from '@0x/contract-addresses';
+import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
