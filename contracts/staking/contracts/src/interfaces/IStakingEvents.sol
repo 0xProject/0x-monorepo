@@ -62,8 +62,8 @@ interface IStakingEvents {
         uint256 epoch,
         uint256 numActivePools,
         uint256 rewardsAvailable,
-        uint256 totalWeightedStake,
-        uint256 totalFeesCollected
+        uint256 totalFeesCollected,
+        uint256 totalWeightedStake
     );
 
     /// @dev Emitted by MixinFinalizer when an epoch is fully finalized.
@@ -81,9 +81,9 @@ interface IStakingEvents {
     /// @param poolId The pool's ID.
     /// @param reward Amount of reward paid.
     event RewardsPaid(
-        uint255 epoch,
+        uint256 epoch,
         bytes32 poolId,
-        uint255 reward
+        uint256 reward
     );
 
     /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.

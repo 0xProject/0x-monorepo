@@ -88,12 +88,6 @@ contract TestStorageLayout is
             if sub(currentEpochStartTimeInSeconds_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(protocolFeesThisEpochByPool_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(activePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
             if sub(_cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
@@ -128,6 +122,33 @@ contract TestStorageLayout is
             slot := add(slot, 1)
 
             if sub(cobbDouglasAlphaDenominator_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(totalFeesCollectedThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(totalWeightedStakeThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(activePoolsByEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(numActivePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(unfinalizedRewardsAvailable_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(unfinalizedPoolsRemaining_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(unfinalizedTotalFeesCollected_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(unfinalizedTotalWeightedStake_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(totalRewardsPaidLastEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
         }
     }

@@ -162,6 +162,10 @@ library LibStakingRichErrors {
     bytes4 internal constant CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR =
         0x1f806d55;
 
+    // bytes4(keccak256("PreviousEpochNotFinalizedError(uint256,uint256)"))
+    bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
+        0x614b800a;
+
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
         uint256 totalRewardsPaid,
@@ -489,6 +493,21 @@ library LibStakingRichErrors {
             poolId,
             beginEpoch,
             endEpoch
+        );
+    }
+
+    function PreviousEpochNotFinalizedError(
+        uint256 unfinalizedEpoch,
+        uint256 unfinalizedPoolsRemaining
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR,
+            unfinalizedEpoch,
+            unfinalizedPoolsRemaining
         );
     }
 }

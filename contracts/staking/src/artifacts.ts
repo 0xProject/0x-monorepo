@@ -27,6 +27,7 @@ import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeR
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
+import * as MixinFinalizer from '../generated-artifacts/MixinFinalizer.json';
 import * as MixinParams from '../generated-artifacts/MixinParams.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
@@ -63,6 +64,7 @@ export const artifacts = {
     StakingProxy: StakingProxy as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
+    MixinFinalizer: MixinFinalizer as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
