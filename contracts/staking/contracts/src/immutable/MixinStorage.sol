@@ -117,6 +117,8 @@ contract MixinStorage is
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault public rewardVault;
 
+    /* Tweakable parameters */
+
     // Minimum seconds between epochs.
     uint256 public epochDurationInSeconds;
 
@@ -139,26 +141,34 @@ contract MixinStorage is
 
     /// @dev The total fees collected in the current epoch, built up iteratively
     ///      in `payProtocolFee()`.
-    uint256 totalFeesCollectedThisEpoch;
+    uint256 internal totalFeesCollectedThisEpoch;
+
     /// @dev The total weighted stake in the current epoch, built up iteratively
     ///      in `payProtocolFee()`.
-    uint256 totalWeightedStakeThisEpoch;
+    uint256 internal totalWeightedStakeThisEpoch;
+
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool)) activePoolsByEpoch;
+    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool)) internal activePoolsByEpoch;
+
     /// @dev Number of pools activated in the current epoch.
-    uint256 numActivePoolsThisEpoch;
+    uint256 internal numActivePoolsThisEpoch;
+
     /// @dev Rewards (ETH) available to the epoch being finalized (the previous
     ///      epoch). This is simply the balance of the contract at the end of
     ///      the epoch.
-    uint256 unfinalizedRewardsAvailable;
+    uint256 internal unfinalizedRewardsAvailable;
+
     /// @dev The number of active pools in the last epoch that have yet to be
     ///      finalized through `finalizePools()`.
-    uint256 unfinalizedPoolsRemaining;
+    uint256 internal unfinalizedPoolsRemaining;
+
     /// @dev The total fees collected for the epoch being finalized.
-    uint256 unfinalizedTotalFeesCollected;
+    uint256 internal unfinalizedTotalFeesCollected;
+
     /// @dev The total fees collected for the epoch being finalized.
-    uint256 unfinalizedTotalWeightedStake;
+    uint256 internal unfinalizedTotalWeightedStake;
+
     /// @dev How many rewards were paid at the end of finalization.
     uint256 totalRewardsPaidLastEpoch;
 
