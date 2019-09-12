@@ -41,7 +41,7 @@
         "test": "wsrun test $PKG --fast-exit --serial --exclude-missing",
         "test:contracts": "wsrun test -p ${npm_package_config_contractsPackages} -c --fast-exit --serial --exclude-missing",
         "generate_doc": "node ./packages/monorepo-scripts/lib/doc_generate.js",
-        "upload_md_docs": "wsrun s3:sync_md_docs --exclude-missing",
+        "upload_md_docs": "aws s3 rm --recursive s3://docs-markdown; wsrun s3:sync_md_docs --exclude-missing",
         "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i || break -1; done;",
         "bundlewatch": "bundlewatch",
