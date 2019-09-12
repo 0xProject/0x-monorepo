@@ -1,14 +1,42 @@
 import * as wrappers from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
-import { assetDataUtils } from '@0x/order-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { SupportedProvider, TxData } from 'ethereum-types';
+import { MethodAbi, SupportedProvider, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { erc20TokenInfo, erc721TokenInfo } from './utils/token_info';
+
+// HACK (xianny): Copied from @0x/order-utils to get rid of circular dependency
+/**
+ * Encodes an ERC20 token address into a hex encoded assetData string, usable in the makerAssetData or
+ * takerAssetData fields in a 0x order.
+ * @param tokenAddress  The ERC20 token address to encode
+ * @return The hex encoded assetData string
+ */
+function encodeERC20AssetData(tokenAddress: string): string {
+    const ERC20_METHOD_ABI: MethodAbi = {
+        constant: false,
+        inputs: [
+            {
+                name: 'tokenContract',
+                type: 'address',
+            },
+        ],
+        name: 'ERC20Token',
+        outputs: [],
+        payable: false,
+        stateMutability: 'nonpayable',
+        type: 'function',
+    };
+    const encodingRules: AbiEncoder.EncodingRules = { shouldOptimize: true };
+    const abiEncoder = new AbiEncoder.Method(ERC20_METHOD_ABI);
+    const args = [tokenAddress];
+    const assetData = abiEncoder.encode(args, encodingRules);
+    return assetData;
+}
 
 /**
  * Creates and deploys all the contracts that are required for the latest
@@ -55,7 +83,7 @@ export async function runMigrationsAsync(
     );
 
     // Exchange
-    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+    const zrxAssetData = encodeERC20AssetData(zrxToken.address);
     const exchange = await wrappers.ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
@@ -173,8 +201,8 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
-        assetDataUtils.encodeERC20AssetData(zrxToken.address),
-        assetDataUtils.encodeERC20AssetData(etherToken.address),
+        encodeERC20AssetData(zrxToken.address),
+        encodeERC20AssetData(etherToken.address),
     );
 
     // OrderValidator

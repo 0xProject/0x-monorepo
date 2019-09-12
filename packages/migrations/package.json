@@ -59,7 +59,6 @@
         "@0x/base-contract": "^5.3.3",
         "@0x/contract-addresses": "^3.1.0",
         "@0x/contract-artifacts": "^2.2.1",
-        "@0x/order-utils": "^8.3.1",
         "@0x/sol-compiler": "^3.1.14",
         "@0x/subproviders": "^5.0.3",
         "@0x/typescript-typings": "^4.2.5",

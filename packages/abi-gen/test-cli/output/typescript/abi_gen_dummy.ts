@@ -68,19 +68,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simpleRequire()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
             // tslint:disable boolean-naming
@@ -135,19 +125,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('acceptsAnArrayOfBytes(bytes[])', [a]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
             // tslint:disable boolean-naming
@@ -207,19 +187,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simpleInputSimpleOutput(uint256)', [index_0]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simpleInputSimpleOutput(uint256)');
             // tslint:disable boolean-naming
@@ -334,6 +304,11 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).withdraw.callAsync(wad, txData);
+            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -396,11 +371,6 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
-        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).withdraw.callAsync(wad, txData);
-            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
-            return txHash;
-        },
     };
     /**
      * Tests decoding when the input and output are complex and have more than one argument.
@@ -435,19 +405,9 @@ export class AbiGenDummyContract extends BaseContract {
                 index_1,
                 index_2,
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('multiInputMultiOutput(uint256,bytes,string)');
             // tslint:disable boolean-naming
@@ -530,19 +490,9 @@ export class AbiGenDummyContract extends BaseContract {
                 r,
                 s,
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
             // tslint:disable boolean-naming
@@ -606,19 +556,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('acceptsBytes(bytes)', [a]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
             // tslint:disable boolean-naming
@@ -672,19 +612,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('noInputSimpleOutput()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('noInputSimpleOutput()');
             // tslint:disable boolean-naming
@@ -734,19 +664,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('revertWithConstant()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
             // tslint:disable boolean-naming
@@ -796,19 +716,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simpleRevert()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
             // tslint:disable boolean-naming
@@ -864,19 +774,9 @@ export class AbiGenDummyContract extends BaseContract {
                 'methodUsingNestedStructWithInnerStructNotUsedElsewhere()',
                 [],
             );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
             // tslint:disable boolean-naming
@@ -937,19 +837,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nestedStructOutput()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
             // tslint:disable boolean-naming
@@ -1018,19 +908,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('requireWithConstant()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
             // tslint:disable boolean-naming
@@ -1096,19 +976,9 @@ export class AbiGenDummyContract extends BaseContract {
                 'withAddressInput(address,uint256,uint256,address,uint256)',
                 [x.toLowerCase(), a, b, y.toLowerCase(), c],
             );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
             // tslint:disable boolean-naming
@@ -1170,19 +1040,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('structInput((bytes,uint32,bytes[],string))', [s]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
             // tslint:disable boolean-naming
@@ -1298,6 +1158,11 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).nonPureMethod.callAsync(txData);
+            const txHash = await (this as any).nonPureMethod.sendTransactionAsync(txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1358,11 +1223,6 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethod.callAsync(txData);
-            const txHash = await (this as any).nonPureMethod.sendTransactionAsync(txData);
-            return txHash;
-        },
     };
     /**
      * Tests decoding when the input and output are complex.
@@ -1395,19 +1255,9 @@ export class AbiGenDummyContract extends BaseContract {
             const encodedData = self._strictEncodeArguments('complexInputComplexOutput((uint256,bytes,string))', [
                 complexInput,
             ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('complexInputComplexOutput((uint256,bytes,string))');
             // tslint:disable boolean-naming
@@ -1482,19 +1332,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('noInputNoOutput()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('noInputNoOutput()');
             // tslint:disable boolean-naming
@@ -1545,19 +1385,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simplePureFunctionWithInput(uint256)', [x]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
             // tslint:disable boolean-naming
@@ -1666,6 +1496,11 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).nonPureMethodThatReturnsNothing.callAsync(txData);
+            const txHash = await (this as any).nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1726,11 +1561,6 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethodThatReturnsNothing.callAsync(txData);
-            const txHash = await (this as any).nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
-            return txHash;
-        },
     };
     public simplePureFunction = {
         /**
@@ -1749,19 +1579,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simplePureFunction()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
             // tslint:disable boolean-naming
@@ -1826,19 +1646,9 @@ export class AbiGenDummyContract extends BaseContract {
                 'nestedStructInput(((bytes,uint32,bytes[],string),string))',
                 [n],
             );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
             // tslint:disable boolean-naming
@@ -1899,19 +1709,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
             // tslint:disable boolean-naming
@@ -1964,19 +1764,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
             // tslint:disable boolean-naming
@@ -2043,19 +1833,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('structOutput()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('structOutput()');
             // tslint:disable boolean-naming
@@ -2124,19 +1904,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('pureFunctionWithConstant()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
             // tslint:disable boolean-naming
@@ -2194,19 +1964,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('simpleInputNoOutput(uint256)', [index_0]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('simpleInputNoOutput(uint256)');
             // tslint:disable boolean-naming
@@ -2258,19 +2018,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('overloadedMethod(string)', [a]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
             // tslint:disable boolean-naming
@@ -2322,19 +2072,9 @@ export class AbiGenDummyContract extends BaseContract {
             }
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('overloadedMethod(int256)', [a]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
             // tslint:disable boolean-naming

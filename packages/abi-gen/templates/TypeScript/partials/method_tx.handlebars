@@ -1,15 +1,14 @@
-public {{languageSpecificName}} = {
-    /**
-     * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-     * Ethereum operation and will cost gas.
-    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData Additional data for transaction
-     * @returns The hash of the transaction
-     */
-    async sendTransactionAsync(
-    {{> typed_params inputs=inputs}}
-    txData?: Partial<TxData> | undefined,
-    ): Promise<string> {
+/**
+ * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+ * Ethereum operation and will cost gas.
+ {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ * @param txData Additional data for transaction
+ * @returns The hash of the transaction
+ */
+async sendTransactionAsync(
+{{> typed_params inputs=inputs}}
+txData?: Partial<TxData> | undefined,
+): Promise<string> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
@@ -33,21 +32,21 @@ public {{languageSpecificName}} = {
 
     const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
     return txHash;
-    },
-    /**
-     * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-     * If the transaction was mined, but reverted, an error is thrown.
-    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData Additional data for transaction
-     * @param pollingIntervalMs Interval at which to poll for success
-     * @returns A promise that resolves when the transaction is successful
-     */
-    awaitTransactionSuccessAsync(
-    {{> typed_params inputs=inputs}}
-        txData?: Partial<TxData>,
-        pollingIntervalMs?: number,
-        timeoutMs?: number,
-    ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+},
+/**
+ * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+ * If the transaction was mined, but reverted, an error is thrown.
+ {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ * @param txData Additional data for transaction
+ * @param pollingIntervalMs Interval at which to poll for success
+ * @returns A promise that resolves when the transaction is successful
+ */
+awaitTransactionSuccessAsync(
+{{> typed_params inputs=inputs}}
+    txData?: Partial<TxData>,
+    pollingIntervalMs?: number,
+    timeoutMs?: number,
+): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
@@ -68,17 +67,17 @@ public {{languageSpecificName}} = {
             );
         })(),
     );
-    },
-    /**
-     * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData Additional data for transaction
-     * @returns The hash of the transaction
-     */
-    async estimateGasAsync(
-    {{> typed_params inputs=inputs}}
-        txData?: Partial<TxData> | undefined,
-    ): Promise<number> {
+},
+/**
+ * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+ {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ * @param txData Additional data for transaction
+ * @returns The hash of the transaction
+ */
+async estimateGasAsync(
+{{> typed_params inputs=inputs}}
+    txData?: Partial<TxData> | undefined,
+): Promise<number> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
@@ -95,27 +94,25 @@ public {{languageSpecificName}} = {
     if (txDataWithDefaults.from !== undefined) {
         txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
     }
-    
+
     const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
     return gas;
-    },
-    {{> callAsync}}
-    async validateAndSendTransactionAsync(
-        {{> typed_params inputs=inputs}}
-        txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-        await (this as any).{{languageSpecificName}}.callAsync(
-        {{#each inputs~}}
-            {{name}},
-        {{/each~}}
-            txData,
-        );
-        const txHash =  await (this as any).{{languageSpecificName}}.sendTransactionAsync(
-        {{#each inputs~}}
-            {{name}},
-        {{/each~}}
-            txData,
-        ); 
-        return txHash;
-    }
-};
+},
+async validateAndSendTransactionAsync(
+    {{> typed_params inputs=inputs}}
+    txData?: Partial<TxData> | undefined,
+    ): Promise<string> {
+    await (this as any).{{languageSpecificName}}.callAsync(
+    {{#each inputs~}}
+        {{name}},
+    {{/each~}}
+        txData,
+    );
+    const txHash =  await (this as any).{{languageSpecificName}}.sendTransactionAsync(
+    {{#each inputs~}}
+        {{name}},
+    {{/each~}}
+        txData,
+    ); 
+    return txHash;
+},

@@ -80,6 +80,7 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingTakerFillAmount,
     OrdersAndRemainingMakerFillAmount,
+    ValidateOrderFillableOpts,
 } from './types';
 
 export { NetworkId } from '@0x/contract-addresses';

@@ -131,6 +131,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            coordinatorEndpoint: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
+            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -200,14 +208,6 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
-            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
-            return txHash;
         },
     };
     /**

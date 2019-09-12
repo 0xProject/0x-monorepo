@@ -13,7 +13,7 @@
         "test": "yarn run_mocha",
         "rebuild_and_test": "run-s build test",
         "test:circleci": "yarn test:coverage",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --timeout 10000 --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "clean": "shx rm -rf lib generated_docs",
@@ -40,6 +40,8 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
         "@0x/dev-utils": "^2.3.2",
+        "@0x/migrations": "^4.3.1",
+        "@0x/subproviders": "^5.0.3",
         "@0x/ts-doc-gen": "^0.0.21",
         "@0x/tslint-config": "^3.0.1",
         "@types/bn.js": "^4.11.0",

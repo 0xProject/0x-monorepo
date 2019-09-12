@@ -246,6 +246,15 @@ export class ERC721TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _approved: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(_approved, _tokenId, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -324,15 +333,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _approved: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_approved, _tokenId, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
-            return txHash;
         },
     };
     /**
@@ -460,6 +460,16 @@ export class ERC721TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -545,16 +555,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
     };
     /**
@@ -680,6 +680,16 @@ export class ERC721TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
+            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -765,16 +775,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
     };
     /**
@@ -1038,6 +1038,15 @@ export class ERC721TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
+            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1116,15 +1125,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
-            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
-            return txHash;
         },
     };
     /**
@@ -1273,6 +1273,23 @@ export class ERC721TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
+            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
+                _from,
+                _to,
+                _tokenId,
+                _data,
+                txData,
+            );
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1363,23 +1380,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
-            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
-                _from,
-                _to,
-                _tokenId,
-                _data,
-                txData,
-            );
-            return txHash;
         },
     };
     public isApprovedForAll = {

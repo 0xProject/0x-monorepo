@@ -104,8 +104,7 @@ describe('Mixins tests', () => {
                 transaction.signature.length - 2,
             )}${illegalSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expectContractCallFailedAsync(
-                mixins.getSignerAddress.callAsync(transactionHash, transaction.signature),
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
                 RevertReason.SignatureIllegal,
             );
         });
@@ -115,8 +114,7 @@ describe('Mixins tests', () => {
             const invalidSignatureByte = ethUtil.toBuffer(SignatureType.Invalid).toString('hex');
             transaction.signature = `0x${invalidSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expectContractCallFailedAsync(
-                mixins.getSignerAddress.callAsync(transactionHash, transaction.signature),
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
                 RevertReason.SignatureInvalid,
             );
         });
@@ -129,8 +127,7 @@ describe('Mixins tests', () => {
                 transaction.signature.length - 2,
             )}${invalidSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expectContractCallFailedAsync(
-                mixins.getSignerAddress.callAsync(transactionHash, transaction.signature),
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
                 RevertReason.SignatureUnsupported,
             );
         });
@@ -193,8 +190,7 @@ describe('Mixins tests', () => {
         });
         it('should revert if data is less than 4 bytes long', async () => {
             const data = '0x010203';
-            await expectContractCallFailedAsync(
-                mixins.decodeOrdersFromFillData.callAsync(data),
+            expect(mixins.decodeOrdersFromFillData.callAsync(data)).to.be.rejectedWith(
                 RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
             );
         });
