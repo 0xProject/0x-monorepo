@@ -78,17 +78,20 @@ contract TestCumulativeRewardTracking is
         internal
     {
         emit SetMostRecentCumulativeReward(poolId, epoch);
+        MixinCumulativeRewards._setMostRecentCumulativeReward(poolId, epoch);
     }
 
     function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
         emit UnsetCumulativeReward(poolId, epoch);
+        MixinCumulativeRewards._unsetCumulativeReward(poolId, epoch);
     }
 
     function _setCumulativeReward(bytes32 poolId, uint256 epoch, IStructs.Fraction memory value)
         internal
     {
         emit SetCumulativeReward(poolId, epoch, value);
+        MixinCumulativeRewards._setCumulativeReward(poolId, epoch, value);
     }
 }
