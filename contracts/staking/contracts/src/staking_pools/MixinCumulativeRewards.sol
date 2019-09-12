@@ -153,7 +153,7 @@ contract MixinCumulativeRewards is
             denominator.safeDiv(MIN_TOKEN_VALUE)
         );
 
-        // store cumulative rewards
+        // store cumulative rewards and set most recent
         _setCumulativeReward(
             poolId,
             epoch,
@@ -162,7 +162,6 @@ contract MixinCumulativeRewards is
                 denominator: denominatorNormalized
             })
         );
-
         _setMostRecentCumulativeReward(poolId, epoch);
     }
 
@@ -203,14 +202,14 @@ contract MixinCumulativeRewards is
     function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
-        if (epoch == 0) {
-            // this is the default value, no need to update
+        // load the current value, sanity check that we're not trying to go back in time
+        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
+        assert(epoch >= currentMostRecentEpoch);
+
+        // check if we should do any work
+        if (epoch == currentMostRecentEpoch) {
             return;
         }
-
-        // load the current value, sanity check that we're not trying to rewind.
-        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
-        assert(epoch > currentMostRecentEpoch);
 
         // unset the current most recent reward if it has no more references
         if (cumulativeRewardsByPoolReferenceCounter[poolId][currentMostRecentEpoch] == 0) {

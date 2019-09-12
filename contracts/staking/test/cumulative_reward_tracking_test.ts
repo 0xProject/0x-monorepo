@@ -9,7 +9,7 @@ import { CumulativeRewardTrackingSimulation,  TestAction} from './utils/cumulati
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.only('Cumulative Reward Tracking', env => {
+blockchainTests.resets('Cumulative Reward Tracking', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
