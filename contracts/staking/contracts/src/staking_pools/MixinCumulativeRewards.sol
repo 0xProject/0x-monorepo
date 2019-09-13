@@ -167,53 +167,6 @@ contract MixinCumulativeRewards is
         }
     }
 
-    /// @dev Records a reward for delegators. This adds to the `cumulativeRewardsByPool`.
-    /// @param poolId Unique Id of pool.
-    /// @param reward to record for delegators.
-    /// @param amountOfDelegatedStake the amount of delegated stake that will split this reward.
-    /// @param epoch at which this was earned.
-    function _recordRewardForDelegators(
-        bytes32 poolId,
-        uint256 reward,
-        uint256 amountOfDelegatedStake,
-        uint256 epoch
-    )
-        internal
-    {
-        // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
-
-        // fetch the last epoch at which we stored an entry for this pool;
-        // this is the most up-to-date cumulative rewards for this pool.
-        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
-
-        // compute new cumulative reward
-        (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
-            mostRecentCumulativeRewards.numerator,
-            mostRecentCumulativeRewards.denominator,
-            reward,
-            amountOfDelegatedStake
-        );
-
-        // normalize fraction components by dividing by the min token value (10^18)
-        (uint256 numeratorNormalized, uint256 denominatorNormalized) = (
-            numerator.safeDiv(MIN_TOKEN_VALUE),
-            denominator.safeDiv(MIN_TOKEN_VALUE)
-        );
-
-        // store cumulative rewards and set most recent
-        _setCumulativeReward(
-            poolId,
-            epoch,
-            IStructs.Fraction({
-                numerator: numeratorNormalized,
-                denominator: denominatorNormalized
-            })
-        );
-        _setMostRecentCumulativeReward(poolId, epoch);
-    }
-
     /// @dev Computes a member's reward over a given epoch interval.
     /// @param poolId Uniqud Id of pool.
     /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
