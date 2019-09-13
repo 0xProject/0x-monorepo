@@ -155,7 +155,7 @@ contract AssetProxyOwner is
             // Ensure that function call was successful
             require(
                 didSucceed,
-                "EXECUTION_FAILURE"
+                "FAILED_EXECUTION"
             );
         }
         emit Execution(transactionId);

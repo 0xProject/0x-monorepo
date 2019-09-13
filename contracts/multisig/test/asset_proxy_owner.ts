@@ -586,6 +586,30 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId);
             expect(tx).to.revertWith(RevertReason.TxAlreadyExecuted);
         });
+        it('should revert if the only call is unsuccessful', async () => {
+            const alwaysRevertSelector = '0xF1F2F3F4';
+            const data = [alwaysRevertSelector];
+            const destinations = [receiver.address];
+            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+                data,
+                destinations,
+                signerAddresses,
+                DEFAULT_TIME_LOCK,
+            );
+            expect(tx).to.revertWith(RevertReason.FailedExecution);
+        });
+        it('should revert if the any call is unsuccessful', async () => {
+            const alwaysRevertSelector = '0xF1F2F3F4';
+            const data = [hexRandom(), alwaysRevertSelector];
+            const destinations = [receiver.address, receiver.address];
+            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+                data,
+                destinations,
+                signerAddresses,
+                DEFAULT_TIME_LOCK,
+            );
+            expect(tx).to.revertWith(RevertReason.FailedExecution);
+        });
         it('should be able to call registerFunctionCall after the default timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
             const data = [
