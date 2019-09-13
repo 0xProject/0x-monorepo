@@ -89,13 +89,20 @@ contract MixinStakingPoolRewards is
             currentEpoch
         );
 
-        // update dependencies on cumulative rewards
-        _updateCumulativeRewardDependencies(
+        // add dependencies on cumulative rewards for this epoch and the previous epoch, if necessary.
+        _setCumulativeRewardDependenciesForDelegator(
+            poolId,
+            member,
+            finalDelegatedStakeToPoolByOwner,
+            true
+        );
+
+        // remove dependencies on previous cumulative rewards, if they are no longer needed.
+        _setCumulativeRewardDependenciesForDelegator(
             poolId,
             member,
             initialDelegatedStakeToPoolByOwner,
-            finalDelegatedStakeToPoolByOwner,
-            currentEpoch
+            false
         );
     }
 
@@ -180,99 +187,40 @@ contract MixinStakingPoolRewards is
         return totalReward;
     }
 
-    function _updateCumulativeRewardDependencies(
-        bytes32 poolId,
-        address member,
-        IStructs.StoredBalance memory oldDelegatedStakeToPoolByOwner,
-        IStructs.StoredBalance memory newDelegatedStakeToPoolByOwner,
-        uint256 currentEpoch
-    )
-        internal
-    {
-        _setCumulativeRewardDependencies(
-            poolId,
-            member,
-            newDelegatedStakeToPoolByOwner,
-            currentEpoch
-        );
-
-        _unsetCumulativeRewardDependencies(
-            poolId,
-            member,
-            oldDelegatedStakeToPoolByOwner,
-            currentEpoch
-        );
-    }
-
-    function _setCumulativeRewardDependencies(
+    function _setCumulativeRewardDependenciesForDelegator(
         bytes32 poolId,
         address member,
         IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
-        uint256 currentEpoch
+        bool isDependent
     )
         private
     {
+
+        // if this delegator is not yet initialized then there's no dependency to unset.
+        if (!isDependent && !delegatedStakeToPoolByOwner.isInitialized) {
+            return;
+        }
+
         // get the most recent cumulative rewards; these will serve as a reference point when updating dependencies
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
 
-
-        /*
-
-        // in epoch 0, there are no previous epochs we depend on; nor are there epochs we no longer depend on.
-        if (currentEpoch == 0) {
-            return;
-        }
-        */
-
         // record dependency on `lastEpoch`
-        if (currentEpoch > 0 && delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
-            _recordDependencyOnCumulativeReward(
+        if (delegatedStakeToPoolByOwner.currentEpoch > 0 && delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
+            _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                currentEpoch.safeSub(1),
-                mostRecentCumulativeRewardInfo
+                uint256(delegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
+                mostRecentCumulativeRewardInfo,
+                isDependent
             );
         }
 
         // record dependency on current epoch.
         if (delegatedStakeToPoolByOwner.currentEpochBalance != 0 || delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
-            _recordDependencyOnCumulativeReward(
+            _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                currentEpoch,
-                mostRecentCumulativeRewardInfo
-            );
-        }
-    }
-
-    function _unsetCumulativeRewardDependencies(
-        bytes32 poolId,
-        address member,
-        IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
-        uint256 currentEpoch
-    )
-        private
-    {
-
-        // if this delegator is not yet initialized then there's no dependency to unrecord.
-        if (!delegatedStakeToPoolByOwner.isInitialized) {
-            return;
-        }
-
-        // unrecord dependency on stored "last epoch"
-        if (delegatedStakeToPoolByOwner.currentEpoch > 0 && delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
-            _unrecordDependencyOnCumulativeReward(
-                poolId,
-                uint256(delegatedStakeToPoolByOwner.currentEpoch).safeSub(1), // previously stored "last epoch"
-                currentEpoch
-            );
-        }
-
-        // unrecord dependency on stored "current epoch"
-        // (note that this may be equal to `lastEpoch` without causing a fault)
-        if (delegatedStakeToPoolByOwner.currentEpochBalance != 0 || delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
-            _unrecordDependencyOnCumulativeReward(
-                poolId,
-                delegatedStakeToPoolByOwner.currentEpoch, // previously stored "current epoch"
-                currentEpoch
+                delegatedStakeToPoolByOwner.currentEpoch,
+                mostRecentCumulativeRewardInfo,
+                isDependent
             );
         }
     }

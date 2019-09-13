@@ -58,17 +58,28 @@ contract MixinCumulativeRewards is
         return cumulativeReward.denominator != 0;
     }
 
-    function _setCumulativeReward(bytes32 poolId, uint256 epoch, IStructs.Fraction memory value)
+    /// @dev Sets a cumulative reward for `poolId` at `epoch`.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch of cumulative reward.
+    /// @param value of cumulative reward.
+    function _setCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch,
+        IStructs.Fraction memory value
+    )
         internal
     {
         cumulativeRewardsByPool[poolId][epoch] = value;
     }
 
+    /// @dev Unsets the cumulative reward for `poolId` at `epoch`.
     function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
+        assert(cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0);
         cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
     }
+
 
     function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
         internal
@@ -84,14 +95,46 @@ contract MixinCumulativeRewards is
         });
     }
 
-    function _recordDependencyOnCumulativeReward(
+    /// @dev Adds a dependency on a cumulative reward for a given epoch.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch to remove dependency from.
+    /// @param mostRecentCumulativeRewardInfo Epoch of the most recent cumulative reward.
+    /// @param isDependent still FGREG EEGGEGREG
+    function _addOrRemoveDependencyOnCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch,
+        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo,
+        bool isDependent
+    )
+        internal
+    {
+       if (isDependent) {
+           _addDependencyOnCumulativeReward(
+               poolId,
+               epoch,
+            mostRecentCumulativeRewardInfo
+           );
+       } else {
+           _removeDependencyOnCumulativeReward(
+               poolId,
+               epoch,
+               mostRecentCumulativeRewardInfo.cumulativeRewardEpoch
+           );
+       }
+    }
+
+    /// @dev Adds a dependency on a cumulative reward for a given epoch.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch to remove dependency from.
+    /// @param mostRecentCumulativeRewardInfo Info on the most recent cumulative reward.
+    function _addDependencyOnCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo
     )
         internal
     {
-        // record dependency
+        // add dependency by increasing the reference counter
         cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
 
         // ensure dependency has a value, otherwise copy it from the most recent reward
@@ -101,14 +144,18 @@ contract MixinCumulativeRewards is
         }
     }
 
-    function _unrecordDependencyOnCumulativeReward(
+    /// @dev Removes a dependency on a cumulative reward for a given epoch.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch to remove dependency from.
+    /// @param mostRecentCumulativeRewardEpoch Epoch of the most recent cumulative reward.
+    function _removeDependencyOnCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
         uint256 mostRecentCumulativeRewardEpoch
     )
         internal
     {
-        // unrecord dependency
+        // remove dependency by decreasing reference counter
         uint256 newReferenceCounter = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
         cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
 
@@ -199,6 +246,9 @@ contract MixinCumulativeRewards is
         return reward;
     }
 
+    /// @dev Sets the most recent cumulative reward for the pool.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch The epoch of the most recent cumulative reward.
     function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
