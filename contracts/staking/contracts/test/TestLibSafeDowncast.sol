@@ -23,11 +23,19 @@ import "../src/libs/LibSafeDowncast.sol";
 
 contract TestLibSafeDowncast {
 
-    function downcastToUint96(uint256 a) external pure returns (uint96) {
+    function downcastToUint96(uint256 a)
+        external
+        pure
+        returns (uint96)
+    {
         return LibSafeDowncast.downcastToUint96(a);
     }
 
-    function downcastToUint64(uint256 a) external pure returns (uint64) {
+    function downcastToUint64(uint256 a)
+        external
+        pure
+        returns (uint64)
+    {
         return LibSafeDowncast.downcastToUint64(a);
     }
 }
