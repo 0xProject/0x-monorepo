@@ -45,50 +45,77 @@ contract MultiSigWallet {
      *  Modifiers
      */
     modifier onlyWallet() {
-        require(msg.sender == address(this));
+        require(
+            msg.sender == address(this),
+            "ONLY_CALLABLE_BY_WALLET"
+        );
         _;
     }
 
     modifier ownerDoesNotExist(address owner) {
-        require(!isOwner[owner]);
+        require(
+            !isOwner[owner],
+            "OWNER_EXISTS"
+        );
         _;
     }
 
     modifier ownerExists(address owner) {
-        require(isOwner[owner]);
+        require(
+            isOwner[owner],
+            "OWNER_DOESNT_EXIST"
+        );
         _;
     }
 
     modifier transactionExists(uint transactionId) {
-        require(transactions[transactionId].destination != address(0));
+        require(
+            transactions[transactionId].destination != address(0),
+            "TX_DOESNT_EXIST"
+        );
         _;
     }
 
     modifier confirmed(uint transactionId, address owner) {
-        require(confirmations[transactionId][owner]);
+        require(
+            confirmations[transactionId][owner],
+            "TX_NOT_CONFIRMED"
+        );
         _;
     }
 
     modifier notConfirmed(uint transactionId, address owner) {
-        require(!confirmations[transactionId][owner]);
+        require(
+            !confirmations[transactionId][owner],
+            "TX_ALREADY_CONFIRMED"
+        );
         _;
     }
 
     modifier notExecuted(uint transactionId) {
-        require(!transactions[transactionId].executed);
+        require(
+            !transactions[transactionId].executed,
+            "TX_ALREADY_EXECUTED"
+        );
         _;
     }
 
     modifier notNull(address _address) {
-        require(_address != address(0));
+        require(
+            _address != address(0),
+            "NULL_ADDRESS"
+        );
         _;
     }
 
     modifier validRequirement(uint ownerCount, uint _required) {
-        require(ownerCount <= MAX_OWNER_COUNT
+        require(
+            ownerCount <= MAX_OWNER_COUNT
             && _required <= ownerCount
             && _required != 0
-            && ownerCount != 0);
+            && ownerCount != 0,
+            "INVALID_REQUIREMENTS"
+        );
         _;
     }
 
