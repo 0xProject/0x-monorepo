@@ -43,6 +43,7 @@ export * from '../generated-wrappers/test_init_target';
 export * from '../generated-wrappers/test_lib_fixed_math';
 export * from '../generated-wrappers/test_lib_proxy';
 export * from '../generated-wrappers/test_lib_proxy_receiver';
+export * from '../generated-wrappers/test_lib_safe_downcast';
 export * from '../generated-wrappers/test_protocol_fees';
 export * from '../generated-wrappers/test_protocol_fees_erc20_proxy';
 export * from '../generated-wrappers/test_staking';
