@@ -1,28 +1,34 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils';
+import { BlockchainTestsEnvironment, constants, filterLogsToArguments, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { BlockParamLiteral, ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
     artifacts,
     EthVaultContract,
+    IStakingEventsEpochEndedEventArgs,
+    IStakingEventsStakingPoolActivatedEventArgs,
     ReadOnlyProxyContract,
     StakingContract,
+    StakingEvents,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
     ZrxVaultContract,
 } from '../../src';
 
 import { constants as stakingConstants } from './constants';
-import { StakingParams } from './types';
+import { EndOfEpochInfo, StakingParams } from './types';
 
 export class StakingApiWrapper {
-    public stakingContractAddress: string; // The address of the real Staking.sol contract
-    public stakingContract: StakingContract; // The StakingProxy.sol contract wrapped as a StakingContract to borrow API
-    public stakingProxyContract: StakingProxyContract; // The StakingProxy.sol contract as a StakingProxyContract
+    // The address of the real Staking.sol contract
+    public stakingContractAddress: string;
+    // The StakingProxy.sol contract wrapped as a StakingContract to borrow API
+    public stakingContract: StakingContract;
+    // The StakingProxy.sol contract as a StakingProxyContract
+    public stakingProxyContract: StakingProxyContract;
     public zrxVaultContract: ZrxVaultContract;
     public ethVaultContract: EthVaultContract;
     public rewardVaultContract: StakingPoolRewardVaultContract;
@@ -30,21 +36,53 @@ export class StakingApiWrapper {
     public utils = {
         // Epoch Utils
         fastForwardToNextEpochAsync: async (): Promise<void> => {
-            // increase timestamp of next block
-            const { epochDurationInSeconds } = await this.utils.getParamsAsync();
-            await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
+            // increase timestamp of next block by how many seconds we need to
+            // get to the next epoch.
+            const epochEndTime = await this.stakingContract.getCurrentEpochEarliestEndTimeInSeconds.callAsync();
+            const lastBlockTime = await this._web3Wrapper.getBlockTimestampAsync('latest');
+            const dt = Math.max(0, epochEndTime.minus(lastBlockTime).toNumber());
+            await this._web3Wrapper.increaseTimeAsync(dt);
             // mine next block
             await this._web3Wrapper.mineBlockAsync();
         },
 
-        skipToNextEpochAsync: async (): Promise<TransactionReceiptWithDecodedLogs> => {
+        skipToNextEpochAndFinalizeAsync: async (): Promise<TransactionReceiptWithDecodedLogs> => {
             await this.utils.fastForwardToNextEpochAsync();
-            // increment epoch in contracts
-            const txReceipt = await this.stakingContract.finalizeFees.awaitTransactionSuccessAsync();
-            logUtils.log(`Finalization costed ${txReceipt.gasUsed} gas`);
-            // mine next block
-            await this._web3Wrapper.mineBlockAsync();
-            return txReceipt;
+            const endOfEpochInfo = await this.utils.endEpochAsync();
+            const receipt = await this.stakingContract.finalizePools.awaitTransactionSuccessAsync(
+                endOfEpochInfo.activePoolIds,
+            );
+            logUtils.log(`Finalization cost ${receipt.gasUsed} gas`);
+            return receipt;
+        },
+
+        endEpochAsync: async (): Promise<EndOfEpochInfo> => {
+            const activePoolIds = await this.utils.findActivePoolIdsAsync();
+            const receipt = await this.stakingContract.endEpoch.awaitTransactionSuccessAsync();
+            const [epochEndedEvent] = filterLogsToArguments<IStakingEventsEpochEndedEventArgs>(
+                receipt.logs,
+                StakingEvents.EpochEnded,
+            );
+            return {
+                closingEpoch: epochEndedEvent.epoch,
+                activePoolIds,
+                rewardsAvailable: epochEndedEvent.rewardsAvailable,
+                totalFeesCollected: epochEndedEvent.totalFeesCollected,
+                totalWeightedStake: epochEndedEvent.totalWeightedStake,
+            };
+        },
+
+        findActivePoolIdsAsync: async (epoch?: number): Promise<string[]> => {
+            const _epoch = epoch !== undefined ? epoch : await this.stakingContract.getCurrentEpoch.callAsync();
+            const events = filterLogsToArguments<IStakingEventsStakingPoolActivatedEventArgs>(
+                await this.stakingContract.getLogsAsync(
+                    StakingEvents.StakingPoolActivated,
+                    { fromBlock: BlockParamLiteral.Earliest, toBlock: BlockParamLiteral.Latest },
+                    { epoch: _epoch },
+                ),
+                StakingEvents.StakingPoolActivated,
+            );
+            return events.map(e => e.poolId);
         },
 
         // Other Utils

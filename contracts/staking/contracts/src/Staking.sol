@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
 import "./sys/MixinParams.sol";
+import "./sys/MixinFinalizer.sol";
 import "./stake/MixinStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
@@ -31,7 +32,7 @@ contract Staking is
     MixinParams,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees
+    MixinExchangeFees,
 {
     // this contract can receive ETH
     // solhint-disable no-empty-blocks

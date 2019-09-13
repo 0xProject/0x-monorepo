@@ -335,6 +335,15 @@ contract MixinFinalizer is
         rewards.membersStake = pool.delegatedStake;
     }
 
+    /// @dev Converts the entire WETH balance of the contract into ETH.
+    function _unwrapWETH() internal {
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS)
+            .balanceOf(address(this));
+        if (wethBalance != 0) {
+            IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
+        }
+    }
+
     /// @dev Computes the reward owed to a pool during finalization and
     ///      credits it to that pool for the CURRENT epoch.
     /// @param poolId The pool's ID.
@@ -375,15 +384,6 @@ contract MixinFinalizer is
                 rewards.membersReward,
                 pool.delegatedStake
             );
-        }
-    }
-
-    /// @dev Converts the entire WETH balance of the contract into ETH.
-    function _unwrapWETH() private {
-        uint256 wethBalance = IEtherToken(WETH_ADDRESS)
-            .balanceOf(address(this));
-        if (wethBalance != 0) {
-            IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
         }
     }
 }

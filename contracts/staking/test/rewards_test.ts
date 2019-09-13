@@ -701,8 +701,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
-            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
-                Array<[StakerActor, BigNumber]>;
+            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as Array<[StakerActor, BigNumber]>;
             for (const [staker, stakeAmount] of stakersAndStake) {
                 await staker.stakeAsync(stakeAmount);
                 await staker.moveStakeAsync(
@@ -724,8 +723,7 @@ blockchainTests.resets('Testing Rewards', env => {
                     toBaseUnitAmount(0),
                 );
             }
-            const expectedStakerRewards = stakeAmounts
-                .map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
+            const expectedStakerRewards = stakeAmounts.map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
             await validateEndBalances({
                 stakerRewardVaultBalance_1: toBaseUnitAmount(0),
                 stakerRewardVaultBalance_2: toBaseUnitAmount(0),
@@ -739,8 +737,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
-            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as
-                Array<[StakerActor, BigNumber]>;
+            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as Array<[StakerActor, BigNumber]>;
             for (const [staker, stakeAmount] of stakersAndStake) {
                 await staker.stakeAsync(stakeAmount);
                 await staker.moveStakeAsync(
@@ -754,8 +751,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            const expectedStakerRewards = stakeAmounts
-                .map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
+            const expectedStakerRewards = stakeAmounts.map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
             await validateEndBalances({
                 stakerRewardVaultBalance_1: expectedStakerRewards[0],
                 stakerRewardVaultBalance_2: expectedStakerRewards[1],
@@ -776,19 +772,21 @@ blockchainTests.resets('Testing Rewards', env => {
             const sneakyStakerExpectedEthVaultBalance = expectedStakerRewards[0];
             await undelegateZeroAsync(sneakyStaker);
             // Should have been credited the correct amount of rewards.
-            let sneakyStakerEthVaultBalance = await stakingApiWrapper
-                .ethVaultContract.balanceOf
-                .callAsync(sneakyStaker.getOwner());
-            expect(sneakyStakerEthVaultBalance, 'EthVault balance after first undelegate')
-                .to.bignumber.eq(sneakyStakerExpectedEthVaultBalance);
+            let sneakyStakerEthVaultBalance = await stakingApiWrapper.ethVaultContract.balanceOf.callAsync(
+                sneakyStaker.getOwner(),
+            );
+            expect(sneakyStakerEthVaultBalance, 'EthVault balance after first undelegate').to.bignumber.eq(
+                sneakyStakerExpectedEthVaultBalance,
+            );
             // Now he'll try to do it again to see if he gets credited twice.
             await undelegateZeroAsync(sneakyStaker);
             /// The total amount credited should remain the same.
-            sneakyStakerEthVaultBalance = await stakingApiWrapper
-                .ethVaultContract.balanceOf
-                .callAsync(sneakyStaker.getOwner());
-            expect(sneakyStakerEthVaultBalance, 'EthVault balance after second undelegate')
-                .to.bignumber.eq(sneakyStakerExpectedEthVaultBalance);
+            sneakyStakerEthVaultBalance = await stakingApiWrapper.ethVaultContract.balanceOf.callAsync(
+                sneakyStaker.getOwner(),
+            );
+            expect(sneakyStakerEthVaultBalance, 'EthVault balance after second undelegate').to.bignumber.eq(
+                sneakyStakerExpectedEthVaultBalance,
+            );
         });
     });
 });
