@@ -104,14 +104,22 @@ contract StakingProxy is
         public
         returns (bytes[] memory batchReturnData)
     {
+        // Initialize commonly used variables.
         bool success;
         bytes memory returnData;
         batchReturnData = new bytes[](data.length);
 
+        // Ensure that a staking contract has been attached to the proxy.
+        if (stakingContract == address(0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.ProxyDestinationCannotBeNilError()
+            );
+        }
+
         // Execute all of the calls encoded in the provided calldata.
         for (uint256 i = 0; i < data.length; i++) {
             // Call the staking contract with the provided calldata.
-            (success, returnData) = stakingContract.simpleProxyCallWithData(data[i]);
+            (success, returnData) = stakingContract.delegatecall(data[i]);
 
             // Revert on failure.
             if (!success) {

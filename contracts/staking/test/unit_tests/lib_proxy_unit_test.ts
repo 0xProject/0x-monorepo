@@ -271,33 +271,4 @@ blockchainTests.resets('LibProxy', env => {
             ]);
         });
     });
-
-    describe('simpleProxyCallWithData', () => {
-        it('should revert if address zero is the destination', async () => {
-            const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
-            const tx = proxy.publicSimpleProxyCallWithData.awaitTransactionSuccessAsync(
-                constants.NULL_ADDRESS,
-                constants.NULL_BYTES,
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should call the receiver with the correct calldata and report a success when the receiver succeeds', async () => {
-            const calldata = constructRandomSuccessCalldata();
-            verifyPostConditions(
-                await proxy.publicSimpleProxyCallWithData.callAsync(receiver.address, calldata),
-                true,
-                calldata,
-            );
-        });
-
-        it('should call the receiver with the correct calldata and report a success when the receiver succeeds', async () => {
-            const calldata = constructRandomFailureCalldata();
-            verifyPostConditions(
-                await proxy.publicSimpleProxyCallWithData.callAsync(receiver.address, calldata),
-                false,
-                calldata,
-            );
-        });
-    });
 });

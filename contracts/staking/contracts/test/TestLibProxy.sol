@@ -71,14 +71,4 @@ contract TestLibProxy {
         proxyCallArgs = args;
         (success, returnData) = address(this).call(data);
     }
-
-    /// @dev Calls the destination with the provided calldata.
-    /// @param destination The contract that should be called by the proxy call.
-    /// @param data The bytes that should be used to call into the destination contract.
-    function publicSimpleProxyCallWithData(address destination, bytes memory data)
-        public
-        returns (bool success, bytes memory returnData)
-    {
-        return destination.simpleProxyCallWithData(data);
-    }
 }
