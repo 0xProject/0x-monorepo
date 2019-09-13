@@ -22,6 +22,7 @@ import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRich
 import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
+import * as MixinAbstract from '../generated-artifacts/MixinAbstract.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
@@ -64,7 +65,6 @@ export const artifacts = {
     StakingProxy: StakingProxy as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
-    MixinFinalizer: MixinFinalizer as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
@@ -92,6 +92,8 @@ export const artifacts = {
     MixinStakingPoolMakers: MixinStakingPoolMakers as ContractArtifact,
     MixinStakingPoolModifiers: MixinStakingPoolModifiers as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
+    MixinAbstract: MixinAbstract as ContractArtifact,
+    MixinFinalizer: MixinFinalizer as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     EthVault: EthVault as ContractArtifact,

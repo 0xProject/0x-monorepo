@@ -81,7 +81,7 @@ contract StakingPoolRewardVault is
     function balanceOf(bytes32 poolId)
         external
         view
-        returns (uint256)
+        returns (uint256 balance)
     {
         return _balanceByPoolId[poolId];
     }

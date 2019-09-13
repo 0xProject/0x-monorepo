@@ -32,6 +32,16 @@ interface IStructs {
         uint256 delegatedStake;
     }
 
+    /// @dev Rewards credited to a pool during finalization.
+    /// @param operatorReward The amount of reward credited to the pool operator.
+    /// @param membersReward The amount of reward credited to the pool members.
+    /// @param membersStake The amount of members/delegated stake in the pool.
+    struct PoolRewards {
+        uint256 operatorReward;
+        uint256 membersReward;
+        uint256 membersStake;
+    }
+
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
@@ -40,13 +50,11 @@ interface IStructs {
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in `currentEpoch+1`.
-    /// @param prevEpochBalance balance in `currentEpoch-1`.
     struct StoredBalance {
         bool isInitialized;
         uint32 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
-        uint96 prevEpochBalance;
     }
 
     /// @dev Balance struct for stake.

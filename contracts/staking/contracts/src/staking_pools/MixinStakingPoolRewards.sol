@@ -23,10 +23,12 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
+import "../sys/MixinAbstract.sol";
 
 
 contract MixinStakingPoolRewards is
-    MixinCumulativeRewards
+    MixinCumulativeRewards,
+    MixinAbstract
 {
     using LibSafeMath for uint256;
 
@@ -59,7 +61,35 @@ contract MixinStakingPoolRewards is
     function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
         public
         view
-        returns (uint256 totalReward)
+        returns (uint256 reward)
+    {
+        IStructs.PoolRewards memory unfinalizedPoolReward =
+            _getUnfinalizedPoolReward(poolId);
+        reward = _computeRewardBalanceOfDelegator(
+            poolId,
+            member,
+            unfinalizedPoolReward.membersReward,
+            unfinalizedPoolReward.membersStake
+        );
+    }
+
+    /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    /// @param poolId Unique id of pool.
+    /// @param member The member of the pool.
+    /// @param unfinalizedMembersReward Unfinalized memeber reward for
+    ///        this pool in the current epoch.
+    /// @param unfinalizedDelegatedStake Unfinalized total delegated stake for
+    ///        this pool in the current epoch.
+    /// @return totalReward Balance in ETH.
+    function _computeRewardBalanceOfDelegator(
+        bytes32 poolId,
+        address member,
+        uint256 unfinalizedMembersReward,
+        uint256 unfinalizedDelegatedStake
+    )
+        internal
+        view
+        returns (uint256 reward)
     {
         return _computeRewardBalanceOfDelegator(
             poolId,
@@ -144,12 +174,12 @@ contract MixinStakingPoolRewards is
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
         mapping (uint256 => IStructs.Fraction) storage _cumulativeRewardsByPoolPtr = _cumulativeRewardsByPool[poolId];
 
-        // fetch the last epoch at which we stored an entry for this pool;
+        // Fetch the last epoch at which we stored an entry for this pool;
         // this is the most up-to-date cumulative rewards for this pool.
         uint256 cumulativeRewardsLastStored = _cumulativeRewardsByPoolLastStored[poolId];
         IStructs.Fraction memory mostRecentCumulativeRewards = _cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
-        // compute new cumulative reward
+        // Compute new cumulative reward
         (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
             mostRecentCumulativeRewards.numerator,
             mostRecentCumulativeRewards.denominator,
@@ -157,7 +187,8 @@ contract MixinStakingPoolRewards is
             amountOfDelegatedStake
         );
 
-        // normalize fraction components by dividing by the min token value (10^18)
+        // Normalize fraction components by dividing by the min token value
+        // (10^18)
         (uint256 numeratorNormalized, uint256 denominatorNormalized) = (
             numerator.safeDiv(MIN_TOKEN_VALUE),
             denominator.safeDiv(MIN_TOKEN_VALUE)

@@ -27,12 +27,16 @@ library LibFractions {
             uint256 denominator
         )
     {
+        if (n1 == 0) {
+            return (numerator = n2, denominator = d2);
+        }
+        if (n2 == 0) {
+            return (numerator = n1, denominator = d1);
+        }
         numerator = n1
             .safeMul(d2)
             .safeAdd(n2.safeMul(d1));
-
         denominator = d1.safeMul(d2);
-        return (numerator, denominator);
     }
 
     /// @dev Safely scales the difference between two fractions.
@@ -53,14 +57,17 @@ library LibFractions {
         pure
         returns (uint256 result)
     {
+        if (n2 == 0) {
+            return result = s
+                .safeMul(n1)
+                .safeDiv(d1);
+        }
         uint256 numerator = n1
             .safeMul(d2)
             .safeSub(n2.safeMul(d1));
-
         uint256 tmp = numerator.safeDiv(d2);
         result = s
             .safeMul(tmp)
             .safeDiv(d1);
-        return result;
     }
 }

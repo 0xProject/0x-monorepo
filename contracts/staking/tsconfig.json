@@ -20,6 +20,7 @@
         "generated-artifacts/LibProxy.json",
         "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibStakingRichErrors.json",
+        "generated-artifacts/MixinAbstract.json",
         "generated-artifacts/MixinConstants.json",
         "generated-artifacts/MixinCumulativeRewards.json",
         "generated-artifacts/MixinDeploymentConstants.json",
