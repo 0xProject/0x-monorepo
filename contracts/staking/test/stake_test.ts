@@ -113,6 +113,61 @@ blockchainTests.resets('Stake Statuses', env => {
             );
         });
     });
+    describe('Stake and Move', () => {
+        it("should be able to rebalance next epoch's stake", async () => {
+            // epoch 1
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAndMoveAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
+                amount,
+            );
+            // still epoch 1 ~ should be able to move stake again
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Inactive),
+                new StakeInfo(StakeStatus.Delegated, poolIds[0]),
+                amount,
+            );
+        });
+        it('should fail to move the same stake more than once', async () => {
+            // epoch 1
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAndMoveAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
+                amount,
+            );
+            // stake is now inactive, should not be able to move it out of active status again
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
+                amount,
+                new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
+            );
+        });
+        it('should fail to reassign stake', async () => {
+            // epoch 1
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAndMoveAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
+                amount,
+            );
+            // still epoch 1 ~ should be able to move stake again
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Inactive),
+                new StakeInfo(StakeStatus.Delegated, poolIds[0]),
+                amount,
+            );
+            // stake is now delegated; should fail to re-assign it from inactive back to active
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Inactive),
+                new StakeInfo(StakeStatus.Active),
+                amount,
+                new StakingRevertErrors.InsufficientBalanceError(amount, ZERO),
+            );
+        });
+    });
     describe('Move Zero Stake', () => {
         it('active -> active', async () => {
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Active), ZERO);
