@@ -11,7 +11,7 @@ import { StakingRevertErrors } from '@0x/order-utils';
 
 import { artifacts, TestLibProxyContract, TestLibProxyReceiverContract } from '../../src';
 
-blockchainTests.resets.only('LibProxy', env => {
+blockchainTests.resets('LibProxy', env => {
     let proxy: TestLibProxyContract;
     let receiver: TestLibProxyReceiverContract;
 
