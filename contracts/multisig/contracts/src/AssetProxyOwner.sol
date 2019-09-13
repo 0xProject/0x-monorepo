@@ -123,6 +123,7 @@ contract AssetProxyOwner is
         // Decode batch transaction data from transaction.data
         // `destination` and `value` fields of transaction are ignored
         // Note that `destination` must be non-0, or the transaction cannot be submitted
+        // solhint-disable
         (
             bytes[] memory data,
             address[] memory destinations,
@@ -131,6 +132,7 @@ contract AssetProxyOwner is
             transaction.data,
             (bytes[], address[], uint256[])
         );
+        // solhint-enable
 
         // Ensure lengths of array properties are equal
         uint256 length = data.length;
@@ -148,6 +150,7 @@ contract AssetProxyOwner is
                 destinations[i]
             );
             // Call each function
+            // solhint-disable-next-line avoid-call-value
             (bool didSucceed,) = destinations[i].call.value(values[i])(data[i]);
             // Ensure that function call was successful
             require(
@@ -200,6 +203,7 @@ contract AssetProxyOwner is
     {
         bytes4 functionSelector = data.readBytes4(0);
         TimeLock storage timeLock = functionCallTimeLocks[functionSelector][destination];
+        // solhint-disable not-rely-on-time
         if (timeLock.hasCustomTimeLock) {
             require(
                 block.timestamp >= transactionConfirmationTime.safeAdd(timeLock.secondsTimeLocked),
@@ -211,5 +215,6 @@ contract AssetProxyOwner is
                 "DEFAULT_TIME_LOCK_INCOMPLETE"
             );
         }
+        // solhint-enable not-rely-on-time
     }
 }

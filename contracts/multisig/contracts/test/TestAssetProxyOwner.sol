@@ -45,7 +45,7 @@ contract TestAssetProxyOwner is
         )
     {}
     
-    function registerFunctionCallBypassWalet(
+    function registerFunctionCallBypassWallet(
         bool hasCustomTimeLock,
         bytes4 functionSelector,
         address destination,

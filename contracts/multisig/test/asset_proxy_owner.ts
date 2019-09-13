@@ -14,6 +14,7 @@ import {
     TestAssetProxyOwnerContract,
 } from '../src';
 
+// tslint:disable: no-unnecessary-type-assertion
 blockchainTests.resets('AssetProxyOwner', env => {
     let assetProxyOwner: TestAssetProxyOwnerContract;
     let assetProxyOwnerWrapper: AssetProxyOwnerWrapper;
@@ -182,7 +183,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should register a function call', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const txReceipt = await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            const txReceipt = await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -205,14 +206,14 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should be able to overwrite existing function calls', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
             );
             const newTimeLock = reg.functionCallTimeLockSeconds[0].plus(1000);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -227,13 +228,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should clear the function timelock if hasCustomTimeLock is set to false', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
             );
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 false,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -275,7 +276,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should revert if a registered function is called before the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -303,7 +304,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should be successful if a registered function is called after the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -320,7 +321,22 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             expect(result).to.be.fulfilled('');
         });
-        it('should allow a custom timelock to be set to 0', async () => {});
+        it('should allow a custom timelock to be set to 0', async () => {
+            const reg = createFunctionRegistration(1, 1, 1);
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+                true,
+                reg.functionSelectors[0],
+                reg.destinations[0],
+                constants.ZERO_AMOUNT,
+            );
+            const latestTimestamp = await getLatestBlockTimestampAsync();
+            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+                new BigNumber(latestTimestamp),
+                reg.functionSelectors[0],
+                reg.destinations[0],
+            );
+            expect(result).to.be.fulfilled('');
+        });
     });
 
     blockchainTests.resets('executeTransaction', () => {
@@ -381,7 +397,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
@@ -399,7 +415,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = constants.ZERO_AMOUNT;
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
@@ -417,7 +433,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
@@ -467,7 +483,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
@@ -485,7 +501,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWalet.awaitTransactionSuccessAsync(
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
@@ -598,3 +614,4 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
     });
 });
+// tslint:disable: max-file-line-count
