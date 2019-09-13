@@ -93,7 +93,7 @@ contract MixinFinalizer is
         // Emit an event.
         emit EpochEnded(
             closingEpoch,
-            numActivePoolsThisEpoch,
+            unfinalizedPoolsRemaining,
             unfinalizedRewardsAvailable,
             unfinalizedTotalFeesCollected,
             unfinalizedTotalWeightedStake
@@ -179,7 +179,9 @@ contract MixinFinalizer is
         }
 
         // Deposit all the rewards at once into the RewardVault.
-        _depositIntoStakingPoolRewardVault(rewardsPaid);
+        if (rewardsPaid != 0) {
+            _depositIntoStakingPoolRewardVault(rewardsPaid);
+        }
 
         // Update finalization states.
         totalRewardsPaidLastEpoch =
@@ -310,6 +312,11 @@ contract MixinFinalizer is
 
         IStructs.ActivePool memory pool =
             _getActivePoolFromEpoch(epoch - 1, poolId);
+        // There can't be any rewards if the pool was active or if it has
+        // no stake.
+        if (pool.feesCollected == 0 || pool.weightedStake == 0) {
+            return rewards;
+        }
 
         // Use the cobb-douglas function to compute the total reward.
         uint256 totalReward = LibCobbDouglas._cobbDouglas(
@@ -323,16 +330,13 @@ contract MixinFinalizer is
         );
 
         // Split the reward between the operator and delegators.
-        if (pool.delegatedStake == 0) {
+        if (pool.membersStake == 0) {
             rewards.operatorReward = totalReward;
         } else {
             (rewards.operatorReward, rewards.membersReward) =
-                rewardVault.splitAmountBetweenOperatorAndMembers(
-                    poolId,
-                    totalReward
-                );
+                _splitAmountBetweenOperatorAndMembers(poolId, totalReward);
         }
-        rewards.membersStake = pool.delegatedStake;
+        rewards.membersStake = pool.membersStake;
     }
 
     /// @dev Converts the entire WETH balance of the contract into ETH.
@@ -342,6 +346,48 @@ contract MixinFinalizer is
         if (wethBalance != 0) {
             IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
         }
+    }
+
+    /// @dev Splits an amount between the pool operator and members of the
+    ///      pool based on the pool operator's share.
+    /// @param poolId The ID of the pool.
+    /// @param amount Amount to to split.
+    /// @return operatorPortion Portion of `amount` attributed to the operator.
+    /// @return membersPortion Portion of `amount` attributed to the pool.
+    function _splitAmountBetweenOperatorAndMembers(
+        bytes32 poolId,
+        uint256 amount
+    )
+        internal
+        view
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        (operatorReward, membersReward) =
+            rewardVault.splitAmountBetweenOperatorAndMembers(poolId, amount);
+    }
+
+    /// @dev Record a deposit for a pool in the RewardVault.
+    /// @param poolId ID of the pool.
+    /// @param amount Amount in ETH to record.
+    /// @param operatorOnly Only attribute amount to operator.
+    /// @return operatorPortion Portion of `amount` attributed to the operator.
+    /// @return membersPortion Portion of `amount` attributed to the pool.
+    function _recordDepositInRewardVaultFor(
+        bytes32 poolId,
+        uint256 amount,
+        bool operatorOnly
+    )
+        internal
+        returns (
+            uint256 operatorPortion,
+            uint256 membersPortion
+        )
+    {
+        (operatorPortion, membersPortion) = rewardVault.recordDepositFor(
+            poolId,
+            amount,
+            operatorOnly
+        );
     }
 
     /// @dev Computes the reward owed to a pool during finalization and
@@ -356,6 +402,12 @@ contract MixinFinalizer is
         private
         returns (IStructs.PoolRewards memory rewards)
     {
+        // There can't be any rewards if the pool was active or if it has
+        // no stake.
+        if (pool.feesCollected == 0 || pool.weightedStake == 0) {
+            return rewards;
+        }
+
         // Use the cobb-douglas function to compute the total reward.
         uint256 totalReward = LibCobbDouglas._cobbDouglas(
             unfinalizedRewardsAvailable,
@@ -369,20 +421,20 @@ contract MixinFinalizer is
 
         // Credit the pool the reward in the RewardVault.
         (rewards.operatorReward, rewards.membersReward) =
-            rewardVault.recordDepositFor(
+            _recordDepositInRewardVaultFor(
                 poolId,
                 totalReward,
                 // If no delegated stake, all rewards go to the operator.
-                pool.delegatedStake == 0
+                pool.membersStake == 0
             );
-        rewards.membersStake = pool.delegatedStake;
+        rewards.membersStake = pool.membersStake;
 
         // Sync delegator rewards.
         if (rewards.membersReward != 0) {
             _recordRewardForDelegators(
                 poolId,
                 rewards.membersReward,
-                pool.delegatedStake
+                pool.membersStake
             );
         }
     }

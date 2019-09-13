@@ -146,6 +146,15 @@ export class StakerActor extends BaseActor {
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(initZrxBalanceOfVault);
     }
 
+    public async stakeWithPoolAsync(poolId: string, amount: BigNumber): Promise<void> {
+        await this.stakeAsync(amount);
+        await this.moveStakeAsync(
+            new StakeInfo(StakeStatus.Active),
+            new StakeInfo(StakeStatus.Delegated, poolId),
+            amount,
+        );
+    }
+
     public async goToNextEpochAsync(): Promise<void> {
         // cache balances
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();

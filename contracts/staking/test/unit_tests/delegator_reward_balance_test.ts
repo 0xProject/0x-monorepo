@@ -7,7 +7,7 @@ blockchainTests('delegator rewards', env => {
 
     before(async () => {
         testContract = await TestDelegatorRewardsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibFixedMath,
+            artifacts.TestDelegatorRewards,
             env.provider,
             env.txDefaults,
             artifacts,

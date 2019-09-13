@@ -4,6 +4,7 @@ import {
     expect,
     filterLogsToArguments,
     hexRandom,
+    Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
@@ -54,9 +55,26 @@ blockchainTests('Protocol Fee Unit Tests', env => {
         wethAssetData = await testContract.getWethAssetData.callAsync();
     });
 
-    async function createTestPoolAsync(stake: BigNumber, makers: string[]): Promise<string> {
+    interface CreatePoolOpts {
+        operatorStake: Numberish;
+        membersStake: Numberish;
+        makers: string[];
+    }
+
+    async function createTestPoolAsync(opts: Partial<CreatePoolOpts>): Promise<string> {
+        const _opts = {
+            operatorStake: 0,
+            membersStake: 0,
+            makers: [],
+            ...opts,
+        };
         const poolId = hexRandom();
-        await testContract.createTestPool.awaitTransactionSuccessAsync(poolId, stake, makers);
+        await testContract.createTestPool.awaitTransactionSuccessAsync(
+            poolId,
+            new BigNumber(_opts.operatorStake),
+            new BigNumber(_opts.membersStake),
+            _opts.makers,
+        );
         return poolId;
     }
 
@@ -154,7 +172,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             }
 
             it('should not transfer WETH if value is sent', async () => {
-                await createTestPoolAsync(minimumStake, []);
+                await createTestPoolAsync({ operatorStake: minimumStake });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -164,8 +182,8 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 assertNoWETHTransferLogs(receipt.logs);
             });
 
-            it('should update `protocolFeesThisEpochByPool` if the maker is in a pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+            it('should credit pool if the maker is in a pool', async () => {
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -177,8 +195,8 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 expect(poolFees).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
 
-            it('should not update `protocolFeesThisEpochByPool` if maker is not in a pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, []);
+            it('should not credit the pool if maker is not in a pool', async () => {
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -191,7 +209,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('fees paid to the same maker should go to the same pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async () => {
                     const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                         makerAddress,
@@ -225,7 +243,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             }
 
             it('should transfer WETH if no value is sent and the maker is not in a pool', async () => {
-                await createTestPoolAsync(minimumStake, []);
+                await createTestPoolAsync({ operatorStake: minimumStake });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -236,7 +254,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('should update `protocolFeesThisEpochByPool` if the maker is in a pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -249,7 +267,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('should not update `protocolFeesThisEpochByPool` if maker is not in a pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, []);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake });
                 const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -262,7 +280,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('fees paid to the same maker should go to the same pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async () => {
                     const receipt = await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                         makerAddress,
@@ -280,7 +298,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('fees paid to the same maker in WETH then ETH should go to the same pool', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 const payAsync = async (inWETH: boolean) => {
                     await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                         makerAddress,
@@ -303,7 +321,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
         describe('Multiple makers', () => {
             it('fees paid to different makers in the same pool go to that pool', async () => {
                 const otherMakerAddress = randomAddress();
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress, otherMakerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress, otherMakerAddress] });
                 const payAsync = async (_makerAddress: string) => {
                     await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                         _makerAddress,
@@ -322,8 +340,8 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             it('fees paid to makers in different pools go to their respective pools', async () => {
                 const [fee, otherFee] = _.times(2, () => getRandomPortion(DEFAULT_PROTOCOL_FEE_PAID));
                 const otherMakerAddress = randomAddress();
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
-                const otherPoolId = await createTestPoolAsync(minimumStake, [otherMakerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
+                const otherPoolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [otherMakerAddress]});
                 const payAsync = async (_poolId: string, _makerAddress: string, _fee: BigNumber) => {
                     // prettier-ignore
                     await testContract.payProtocolFee.awaitTransactionSuccessAsync(
@@ -346,7 +364,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
 
         describe('Dust stake', () => {
             it('credits pools with stake > minimum', async () => {
-                const poolId = await createTestPoolAsync(minimumStake.plus(1), [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake.plus(1), makers: [makerAddress] });
                 await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     constants.NULL_ADDRESS,
@@ -358,7 +376,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('credits pools with stake == minimum', async () => {
-                const poolId = await createTestPoolAsync(minimumStake, [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake, makers: [makerAddress] });
                 await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     constants.NULL_ADDRESS,
@@ -370,7 +388,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             });
 
             it('does not credit pools with stake < minimum', async () => {
-                const poolId = await createTestPoolAsync(minimumStake.minus(1), [makerAddress]);
+                const poolId = await createTestPoolAsync({ operatorStake: minimumStake.minus(1), makers: [makerAddress] });
                 await testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     constants.NULL_ADDRESS,

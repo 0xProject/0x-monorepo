@@ -113,6 +113,17 @@ contract MixinStakingPool is
         return poolById[poolId];
     }
 
+    /// @dev Look up the operator of a pool.
+    /// @param poolId The ID of the pool.
+    /// @return operatorAddress The pool operator.
+    function getPoolOperator(bytes32 poolId)
+        public
+        view
+        returns (address operatorAddress)
+    {
+        return rewardVault.operatorOf(poolId);
+    }
+
     /// @dev Computes the unique id that comes after the input pool id.
     /// @param poolId Unique id of pool.
     /// @return Next pool id after input pool.
