@@ -20,6 +20,7 @@ export * from '../generated-wrappers/lib_fixed_math_rich_errors';
 export * from '../generated-wrappers/lib_proxy';
 export * from '../generated-wrappers/lib_safe_downcast';
 export * from '../generated-wrappers/lib_staking_rich_errors';
+export * from '../generated-wrappers/mixin_abstract';
 export * from '../generated-wrappers/mixin_constants';
 export * from '../generated-wrappers/mixin_cumulative_rewards';
 export * from '../generated-wrappers/mixin_deployment_constants';

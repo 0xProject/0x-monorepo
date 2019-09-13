@@ -22,8 +22,8 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "../libs/LibCobbDouglas.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibFixedMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinDeploymentConstants.sol";
@@ -44,7 +44,6 @@ contract MixinFinalizer is
     IStakingEvents,
     MixinConstants,
     MixinDeploymentConstants,
-    Ownable,
     MixinStorage,
     MixinStakingPoolRewardVault,
     MixinScheduler,
@@ -65,21 +64,28 @@ contract MixinFinalizer is
         returns (uint256 _unfinalizedPoolsRemaining)
     {
         uint256 closingEpoch = getCurrentEpoch();
+
         // Make sure the previous epoch has been fully finalized.
         if (unfinalizedPoolsRemaining != 0) {
-            LibRichErrors.rrevert(LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                closingEpoch.safeSub(1),
-                unfinalizedPoolsRemaining
-            ));
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PreviousEpochNotFinalizedError(
+                    closingEpoch.safeSub(1),
+                    unfinalizedPoolsRemaining
+                )
+            );
         }
+
         // Unrwap any WETH protocol fees.
         _unwrapWETH();
+
         // Populate finalization state.
-        unfinalizedPoolsRemaining = numActivePoolsThisEpoch;
+        unfinalizedPoolsRemaining =
+            _unfinalizedPoolsRemaining = numActivePoolsThisEpoch;
         unfinalizedRewardsAvailable = address(this).balance;
         unfinalizedTotalFeesCollected = totalFeesCollectedThisEpoch;
         unfinalizedTotalWeightedStake = totalWeightedStakeThisEpoch;
         totalRewardsPaidLastEpoch = 0;
+
         // Emit an event.
         emit EpochEnded(
             closingEpoch,
@@ -88,17 +94,19 @@ contract MixinFinalizer is
             unfinalizedTotalFeesCollected,
             unfinalizedTotalWeightedStake
         );
+
         // Reset current epoch state.
         totalFeesCollectedThisEpoch = 0;
         totalWeightedStakeThisEpoch = 0;
         numActivePoolsThisEpoch = 0;
+
         // Advance the epoch. This will revert if not enough time has passed.
         _goToNextEpoch();
+
         // If there were no active pools, the epoch is already finalized.
         if (unfinalizedPoolsRemaining == 0) {
             emit EpochFinalized(closingEpoch, 0, unfinalizedRewardsAvailable);
         }
-        return _unfinalizedPoolsRemaining = unfinalizedPoolsRemaining;
     }
 
     /// @dev Finalizes pools that were active in the previous epoch, paying out
@@ -109,44 +117,121 @@ contract MixinFinalizer is
     ///      We deliberately try not to revert here in case multiple parties
     ///      are finalizing pools.
     /// @param poolIds List of active pool IDs to finalize.
-    /// @return rewardsPaid Total rewards paid to the pools passed in.
     /// @return _unfinalizedPoolsRemaining The number of unfinalized pools left.
     function finalizePools(bytes32[] calldata poolIds)
         external
-        returns (uint256 rewardsPaid, uint256 _unfinalizedPoolsRemaining)
+        returns (_unfinalizedPoolsRemaining)
     {
         uint256 epoch = getCurrentEpoch();
-        uint256 priorEpoch = epoch.safeSub(1);
+        // There are no pools to finalize at epoch 0.
+        if (epoch == 0) {
+            return;
+        }
+
         uint256 poolsRemaining = unfinalizedPoolsRemaining;
+        // If there are no more unfinalized pools remaining, there's nothing
+        // to do.
+        if (poolsRemaining == 0) {
+            return;
+        }
+
+        // Pointer to the active pools in the last epoch.
+        mapping(bytes32 => IStructs.ActivePool) storage activePools =
+            _getActivePoolsFromEpoch(epoch - 1);
         uint256 numPoolIds = poolIds.length;
         uint256 rewardsPaid = 0;
-        // Pointer to the active pools in the last epoch.
-        // We use `(currentEpoch - 1) % 2` as the index to reuse state.
-        mapping(bytes32 => IStructs.ActivePool) storage activePools =
-            activePoolsByEpoch[priorEpoch % 2];
-        for (uint256 i = 0; i < numPoolIds && poolsRemaining != 0; i++) {
+
+        for (uint256 i = 0; i != numPoolIds && poolsRemaining != 0; ++i) {
             bytes32 poolId = poolIds[i];
             IStructs.ActivePool memory pool = activePools[poolId];
+
             // Ignore pools that aren't active.
-            if (pool.feesCollected != 0) {
-                // Credit the pool with rewards.
-                // We will transfer the total rewards to the vault at the end.
-                uint256 reward = _creditRewardToPool(poolId, pool);
-                rewardsPaid = rewardsPaid.safeAdd(reward);
-                // Clear the pool state so we don't finalize it again,
-                // and to recoup some gas.
-                activePools[poolId] = IStructs.ActivePool(0, 0, 0);
-                // Decrease the number of unfinalized pools left.
-                poolsRemaining = poolsRemaining.safeSub(1);
-                // Emit an event.
-                emit RewardsPaid(epoch, poolId, reward);
+            if (pool.feesCollected == 0) {
+                continue;
             }
+
+            // Clear the pool state so we don't finalize it again, and to
+            // recoup some gas.
+            delete activePools[poolId];
+
+            // Credit the pool with rewards.
+            // We will transfer the total rewards to the vault at the end.
+            uint256 reward = _creditRewardToPool(poolId, pool);
+            rewardsPaid = rewardsPaid.safeAdd(reward);
+
+            // Decrease the number of unfinalized pools left.
+            poolsRemaining = poolsRemaining.safeSub(1);
+
+            // Emit an event.
+            emit RewardsPaid(epoch, poolId, reward);
         }
+
         // Deposit all the rewards at once into the RewardVault.
         _depositIntoStakingPoolRewardVault(rewardsPaid);
-        // Update finalization state.
-        totalRewardsPaidLastEpoch = totalRewardsPaidLastEpoch.safeAdd(rewardsPaid);
-        _unfinalizedPoolsRemaining = unfinalizedPoolsRemaining = poolsRemaining;
+
+        // Update finalization states.
+        totalRewardsPaidLastEpoch =
+            totalRewardsPaidLastEpoch.safeAdd(rewardsPaid);
+        unfinalizedPoolsRemaining = _unfinalizedPoolsRemaining = poolsRemaining;
+
+        // If there are no more unfinalized pools remaining, the epoch is
+        // finalized.
+        if (poolsRemaining == 0) {
+            emit EpochFinalized(
+                epoch - 1,
+                totalRewardsPaidLastEpoch,
+                unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
+            );
+        }
+    }
+
+    /// @dev Instantly finalizes a single pool that was active in the previous
+    ///      epoch, crediting it rewards and sending those rewards to the reward
+    ///      vault. This can be called by internal functions that need to
+    ///      finalize a pool immediately. Does nothing if the pool is already
+    ///      finalized.
+    /// @param poolId The pool ID to finalize.
+    /// @return rewards Rewards.
+    /// @return rewards The rewards credited to the pool.
+    function _finalizePool(bytes32 poolId)
+        internal
+        returns (IStructs.PoolRewards memory rewards)
+    {
+        uint256 epoch = getCurrentEpoch();
+        // There are no pools to finalize at epoch 0.
+        if (epoch == 0) {
+            return;
+        }
+
+        // Get the active pool.
+        IStructs.ActivePool memory pool =
+            _getActivePoolFromEpoch(epoch - 1, poolId);
+
+        // Ignore pools that weren't active.
+        if (pool.feesCollected == 0) {
+            return;
+        }
+
+        // Clear the pool state so we don't finalize it again, and to recoup
+        // some gas.
+        delete activePools[poolId];
+
+        // Credit the pool with rewards.
+        // We will transfer the total rewards to the vault at the end.
+        rewards = _creditRewardToPool(poolId, pool);
+        totalRewardsPaidLastEpoch = totalRewardsPaidLastEpoch.safeAdd(reward);
+
+        // Decrease the number of unfinalized pools left.
+        uint256 poolsRemaining =
+            unfinalizedPoolsRemaining =
+            unfinalizedPoolsRemaining.safeSub(1);
+
+        // Emit an event.
+        emit RewardsPaid(epoch, poolId, reward);
+
+        // Deposit all the rewards at once into the RewardVault.
+        _depositIntoStakingPoolRewardVault(rewardsPaid);
+
         // If there are no more unfinalized pools remaining, the epoch is
         // finalized.
         if (poolsRemaining == 0) {
@@ -158,69 +243,72 @@ contract MixinFinalizer is
         }
     }
 
-    /// @dev The cobb-douglas function used to compute fee-based rewards for
-    ///      staking pools in a given epoch. Note that in this function there
-    ///      is no limitation on alpha; we tend to get better rounding on the
-    ///      simplified versions below.
-    /// @param totalRewards collected over an epoch.
-    /// @param ownerFees Fees attributed to the owner of the staking pool.
-    /// @param totalFees collected across all active staking pools in the epoch.
-    /// @param ownerStake Stake attributed to the owner of the staking pool.
-    /// @param totalStake collected across all active staking pools in the epoch.
-    /// @param alphaNumerator Numerator of `alpha` in the cobb-dougles function.
-    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
-    /// @return ownerRewards Rewards for the owner.
-    function _cobbDouglas(
-        uint256 totalRewards,
-        uint256 ownerFees,
-        uint256 totalFees,
-        uint256 ownerStake,
-        uint256 totalStake,
-        uint256 alphaNumerator,
-        uint256 alphaDenominator
+    /// @dev Get an active pool from an epoch by its ID.
+    /// @param epoch The epoch the pool was/will be active in.
+    /// @param poolId The ID of the pool.
+    /// @return pool The pool with ID `poolId` that was active in `epoch`.
+    function _getActivePoolFromEpoch(
+        uint256 epoch,
+        bytes32 poolId
     )
         internal
-        pure
-        returns (uint256 ownerRewards)
+        view
+        returns (IStructs.ActivePool memory pool)
     {
-        int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
-        int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
-        if (feeRatio == 0 || stakeRatio == 0) {
-            return ownerRewards = 0;
-        }
-        // The cobb-doublas function has the form:
-        // `totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)`
-        // This is equivalent to:
-        // `totalRewards * stakeRatio * e^(alpha * (ln(feeRatio / stakeRatio)))`
-        // However, because `ln(x)` has the domain of `0 < x < 1`
-        // and `exp(x)` has the domain of `x < 0`,
-        // and fixed-point math easily overflows with multiplication,
-        // we will choose the following if `stakeRatio > feeRatio`:
-        // `totalRewards * stakeRatio / e^(alpha * (ln(stakeRatio / feeRatio)))`
+        pool = _getActivePoolFromEpoch(epoch)[poolId];
+    }
 
-        // Compute
-        // `e^(alpha * (ln(feeRatio/stakeRatio)))` if feeRatio <= stakeRatio
-        // or
-        // `e^(ln(stakeRatio/feeRatio))` if feeRatio > stakeRatio
-        int256 n = feeRatio <= stakeRatio ?
-            LibFixedMath._div(feeRatio, stakeRatio) :
-            LibFixedMath._div(stakeRatio, feeRatio);
-        n = LibFixedMath._exp(
-            LibFixedMath._mulDiv(
-                LibFixedMath._ln(n),
-                int256(alphaNumerator),
-                int256(alphaDenominator)
-            )
+    /// @dev Get a mapping of active pools from an epoch.
+    ///      This uses the formula `epoch % 2` as the epoch index in order
+    ///      to reuse state, because we only need to remember, at most, two
+    ///      epochs at once.
+    /// @return activePools The pools that were active in `epoch`.
+    function _getActivePoolsFromEpoch(
+        uint256 epoch
+    )
+        internal
+        view
+        returns (mapping (bytes32 => IStructs.ActivePool) storage activePools)
+    {
+        activePools = activePoolsByEpoch[epoch % 2];
+    }
+
+    /// @dev Computes the reward owed to a pool during finalization.
+    ///      Does nothing if the pool is already finalized.
+    /// @param poolId The pool's ID.
+    /// @return rewards Amount of rewards for this pool.
+    function _getUnfinalizedPoolReward(bytes32 poolId)
+        internal
+        view
+        returns (IStructs.PoolRewards memory rewards)
+    {
+        uint256 epoch = getCurrentEpoch();
+        // There can't be any rewards in the first epoch.
+        if (epoch == 0) {
+            return;
+        }
+
+        IStructs.ActivePool memory pool =
+            _getActivePoolFromEpoch(epoch - 1, poolId);
+
+        // Use the cobb-douglas function to compute the total reward.
+        totalReward = LibCobbDouglas._cobbDouglas(
+            unfinalizedRewardsAvailable,
+            pool.feesCollected,
+            unfinalizedTotalFeesCollected,
+            pool.weightedStake,
+            unfinalizedTotalWeightedStake,
+            cobbDouglasAlphaNumerator,
+            cobbDouglasAlphaDenomintor
         );
-        // Compute
-        // `totalRewards * n` if feeRatio <= stakeRatio
-        // or
-        // `totalRewards / n` if stakeRatio > feeRatio
-        n = feeRatio <= stakeRatio ?
-            LibFixedMath._mul(stakeRatio, n) :
-            LibFixedMath._div(stakeRatio, n);
-        // Multiply the above with totalRewards.
-        ownerRewards = LibFixedMath._uintMul(n, totalRewards);
+
+        // Split the reward between the operator and delegators.
+        (rewards.operatorReward, rewards.membersReward) =
+            rewardVault.splitAmountBetweenOperatorAndMembers(
+                poolId,
+                totalReward
+            );
+        rewards.delegatedStake = pool.delegatedStake;
     }
 
     /// @dev Computes the reward owed to a pool during finalization and
@@ -233,10 +321,10 @@ contract MixinFinalizer is
         IStructs.ActivePool memory pool
     )
         private
-        returns (uint256 reward)
+        returns (PoolRewards memory rewards)
     {
-        // Use the cobb-douglas function to compute the reward.
-        reward = _cobbDouglas(
+        // Use the cobb-douglas function to compute the total reward.
+        totalReward = LibCobbDouglas._cobbDouglas(
             unfinalizedRewardsAvailable,
             pool.feesCollected,
             unfinalizedTotalFeesCollected,
@@ -245,13 +333,17 @@ contract MixinFinalizer is
             cobbDouglasAlphaNumerator,
             cobbDouglasAlphaDenomintor
         );
+
         // Credit the pool the reward in the RewardVault.
-        (, uint256 membersPortionOfReward) = rewardVault.recordDepositFor(
-            poolId,
-            reward,
-            // If no delegated stake, all rewards go to the operator.
-            pool.delegatedStake == 0
-        );
+        (rewards.operatorReward, rewards.membersReward) =
+            rewardVault.recordDepositFor(
+                poolId,
+                reward,
+                // If no delegated stake, all rewards go to the operator.
+                pool.delegatedStake == 0
+            );
+        rewards.delegatedStake = pool.delegatedStake;
+
         // Sync delegator rewards.
         if (membersPortionOfReward != 0) {
             _recordRewardForDelegators(
@@ -264,10 +356,10 @@ contract MixinFinalizer is
 
     /// @dev Converts the entire WETH balance of the contract into ETH.
     function _unwrapWETH() private {
-        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS)
+            .balanceOf(address(this));
         if (wethBalance != 0) {
             IEtherToken(WETH_ADDRESS).withdraw(wethBalance);
         }
     }
-
 }

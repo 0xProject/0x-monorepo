@@ -25,28 +25,35 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibCobbDouglas.sol";
 import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStructs.sol";
+import "../stake/MixinStakeBalances.sol";
+import "../sys/MixinAbstract.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 
 
 /// @dev This mixin contains the logic for 0x protocol fees.
-/// Protocol fees are sent by 0x exchanges every time there is a trade.
-/// If the maker has associated their address with a pool (see MixinStakingPool.sol), then
-/// the fee will be attributed to their pool. At the end of an epoch the maker and
-/// their pool will receive a rebate that is proportional to (i) the fee volume attributed
-/// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
-/// their delegators. Note that delegated stake (see MixinStake) is weighted less than
-/// stake provided by directly by the maker; this is a disincentive for market makers to
-/// monopolize a single pool that they all delegate to.
+///      Protocol fees are sent by 0x exchanges every time there is a trade.
+///      If the maker has associated their address with a pool (see
+///      MixinStakingPool.sol), then the fee will be attributed to their pool.
+///      At the end of an epoch the maker and their pool will receive a rebate
+///      that is proportional to (i) the fee volume attributed to their pool
+///      over the epoch, and (ii) the amount of stake provided by the maker and
+///      their delegators. Note that delegated stake (see MixinStake) is
+///      weighted less than stake provided by directly by the maker; this is a
+///      disincentive for market makers to monopolize a single pool that they
+///      all delegate to.
 contract MixinExchangeFees is
     MixinDeploymentConstants,
     MixinExchangeManager,
+    MixinAbstract,
+    MixinStakeBalances,
     MixinStakingPool
 {
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.
-    ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
+    ///      Only a known 0x exchange can call this method. See
+    ///      (MixinExchangeManager).
     /// @param makerAddress The address of the order's maker.
     /// @param payerAddress The address of the protocol fee payer.
     /// @param protocolFeePaid The protocol fee that should be paid.
@@ -80,18 +87,19 @@ contract MixinExchangeFees is
         if (poolId == NIL_POOL_ID) {
             return;
         }
+
         uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
         // Ignore pools with dust stake.
         if (poolStake < minimumPoolStake) {
             return;
         }
-        // Look up the pool for this epoch. The epoch index is `currentEpoch % 2`
-        // because we only need to remember state in the current epoch and the
-        // epoch prior.
+
+        // Look up the pool for this epoch.
         uint256 currentEpoch = getCurrentEpoch();
         mapping (bytes32 => IStructs.ActivePool) storage activePoolsThisEpoch =
-            activePoolsByEpoch[currentEpoch % 2];
+            _getActivePoolsFromEpoch(currentEpoch);
         IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId];
+
         // If the pool was previously inactive in this epoch, initialize it.
         if (pool.feesCollected == 0) {
             // Compute weighted stake.
@@ -105,23 +113,30 @@ contract MixinExchangeFees is
                     .safeMul(rewardDelegatedStakeWeight)
                     .safeDiv(PPM_DENOMINATOR)
             );
+
             // Compute delegated (non-operator) stake.
             pool.delegatedStake = poolStake.safeSub(operatorStake);
+
             // Increase the total weighted stake.
             totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(
                 pool.weightedStake
             );
+
             // Increase the numberof active pools.
             numActivePoolsThisEpoch += 1;
+
             // Emit an event so keepers know what pools to pass into `finalize()`.
             emit StakingPoolActivated(currentEpoch, poolId);
         }
+
         // Credit the fees to the pool.
         pool.feesCollected = protocolFeePaid;
+
         // Increase the total fees collected this epoch.
         totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(
             protocolFeePaid
         );
+
         // Store the pool.
         activePoolsThisEpoch[poolId] = pool;
     }
@@ -147,7 +162,8 @@ contract MixinExchangeFees is
         // Look up the pool for this epoch. The epoch index is `currentEpoch % 2`
         // because we only need to remember state in the current epoch and the
         // epoch prior.
-        IStructs.ActivePool memory pool = activePoolsByEpoch[getCurrentEpoch() % 2][poolId];
+        IStructs.ActivePool memory pool =
+            _getActivePoolFromEpoch(getCurrentEpoch(), poolId);
         feesCollected = pool.feesCollected;
     }
 

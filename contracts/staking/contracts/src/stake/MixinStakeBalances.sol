@@ -162,7 +162,8 @@ contract MixinStakeBalances is
         });
     }
 
-    /// @dev Returns the total stake delegated to a specific staking pool, across all members.
+    /// @dev Returns the total stake delegated to a specific staking pool,
+    ///      across all members.
     /// @param poolId Unique Id of pool.
     /// @return Total stake delegated to pool.
     function getTotalStakeDelegatedToPool(bytes32 poolId)
@@ -179,9 +180,13 @@ contract MixinStakeBalances is
 
     /// @dev Returns the stake that can be withdrawn for a given owner.
     /// @param owner to query.
-    /// @param lastStoredWithdrawableStake The amount of withdrawable stake that was last stored.
+    /// @param lastStoredWithdrawableStake The amount of withdrawable stake
+    ///        that was last stored.
     /// @return Withdrawable stake for owner.
-    function _computeWithdrawableStake(address owner, uint256 lastStoredWithdrawableStake)
+    function _computeWithdrawableStake(
+        address owner,
+        uint256 lastStoredWithdrawableStake
+    )
         internal
         view
         returns (uint256)
@@ -190,9 +195,15 @@ contract MixinStakeBalances is
         // so the upper bound of withdrawable stake is always limited by the value of `next`.
         IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(_inactiveStakeByOwner[owner]);
         if (storedBalance.currentEpoch == currentEpoch) {
-            return LibSafeMath.min256(storedBalance.nextEpochBalance, lastStoredWithdrawableStake);
+            return LibSafeMath.min256(
+                storedBalance.nextEpochBalance,
+                lastStoredWithdrawableStake
+            );
         } else if (uint256(storedBalance.currentEpoch).safeAdd(1) == currentEpoch) {
-            return LibSafeMath.min256(storedBalance.nextEpochBalance, storedBalance.currentEpochBalance);
+            return LibSafeMath.min256(
+                storedBalance.nextEpochBalance,
+                storedBalance.currentEpochBalance
+            );
         } else {
             return storedBalance.nextEpochBalance;
         }

@@ -55,19 +55,19 @@ contract MixinStorage is
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
 
-    // mapping from Owner to Amount of Inactive Stake
+    // Mapping from Owner to Amount of Inactive Stake
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
 
-    // mapping from Owner to Amount Delegated
+    // Mapping from Owner to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
 
-    // mapping from Owner to Pool Id to Amount Delegated
+    // Mapping from Owner to Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
-    // mapping from Pool Id to Amount Delegated
+    // Mapping from Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
@@ -149,7 +149,9 @@ contract MixinStorage is
 
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool)) internal activePoolsByEpoch;
+    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool))
+        internal
+        activePoolsByEpoch;
 
     /// @dev Number of pools activated in the current epoch.
     uint256 internal numActivePoolsThisEpoch;
