@@ -19,44 +19,11 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./TestStaking.sol";
-import "../src/interfaces/IStructs.sol";
 
 
 contract TestCumulativeRewardTracking is
     TestStaking
 {
-
-    struct CumulativeReward {
-        bytes32 poolId;
-        uint256 epoch;
-        IStructs.Fraction value;
-    }
-
-    function initializeTest(
-        address staker,
-        bytes32 poolId,
-        IStructs.StoredBalance memory stakerDelegatedToPoolBalance,
-        CumulativeReward[] memory initCumulativeRewards,
-        uint256 mostRecentCumulativeRewardEpoch,
-        uint256 _currentEpoch
-    )
-        public
-    {
-        delegatedStakeByOwner[staker] = stakerDelegatedToPoolBalance;
-        delegatedStakeToPoolByOwner[staker][poolId] = stakerDelegatedToPoolBalance;
-        delegatedStakeByPoolId[poolId] = stakerDelegatedToPoolBalance;
-
-        for (uint i = 0; i != initCumulativeRewards.length; ++i) {
-            MixinCumulativeRewards._setCumulativeReward(
-                initCumulativeRewards[i].poolId,
-                initCumulativeRewards[i].epoch,
-                initCumulativeRewards[i].value
-            );
-        }
-
-        MixinCumulativeRewards._setMostRecentCumulativeReward(poolId, mostRecentCumulativeRewardEpoch);
-        currentEpoch = _currentEpoch;
-    }
 
     event SetMostRecentCumulativeReward(
         bytes32 poolId,
@@ -70,8 +37,7 @@ contract TestCumulativeRewardTracking is
 
     event SetCumulativeReward(
         bytes32 poolId,
-        uint256 epoch,
-        IStructs.Fraction value
+        uint256 epoch
     );
 
     function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
@@ -91,7 +57,7 @@ contract TestCumulativeRewardTracking is
     function _setCumulativeReward(bytes32 poolId, uint256 epoch, IStructs.Fraction memory value)
         internal
     {
-        emit SetCumulativeReward(poolId, epoch, value);
+        emit SetCumulativeReward(poolId, epoch);
         MixinCumulativeRewards._setCumulativeReward(poolId, epoch, value);
     }
 }

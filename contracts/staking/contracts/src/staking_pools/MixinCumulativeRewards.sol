@@ -73,6 +73,8 @@ contract MixinCumulativeRewards is
     }
 
     /// @dev Unsets the cumulative reward for `poolId` at `epoch`.
+    /// @param poolId Unique id of pool.
+    /// @param epoch of cumulative reward to unset.
     function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
@@ -80,7 +82,7 @@ contract MixinCumulativeRewards is
         cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
     }
 
-
+    /// @dev Returns info on most recent cumulative reward.
     function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
         internal
         returns (IStructs.CumulativeRewardInfo memory)
@@ -108,19 +110,19 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-       if (isDependent) {
-           _addDependencyOnCumulativeReward(
-               poolId,
-               epoch,
-            mostRecentCumulativeRewardInfo
-           );
-       } else {
-           _removeDependencyOnCumulativeReward(
-               poolId,
-               epoch,
-               mostRecentCumulativeRewardInfo.cumulativeRewardEpoch
-           );
-       }
+        if (isDependent) {
+            _addDependencyOnCumulativeReward(
+                poolId,
+                epoch,
+                mostRecentCumulativeRewardInfo
+            );
+        } else {
+            _removeDependencyOnCumulativeReward(
+                poolId,
+                epoch,
+                mostRecentCumulativeRewardInfo.cumulativeRewardEpoch
+            );
+        }
     }
 
     /// @dev Adds a dependency on a cumulative reward for a given epoch.

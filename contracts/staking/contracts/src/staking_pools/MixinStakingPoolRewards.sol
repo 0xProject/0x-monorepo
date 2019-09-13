@@ -50,7 +50,6 @@ contract MixinStakingPoolRewards is
     {
         return _computeRewardBalanceOfDelegator(
             poolId,
-            member,
             _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),
             getCurrentEpoch()
         );
@@ -84,7 +83,6 @@ contract MixinStakingPoolRewards is
         // add dependencies on cumulative rewards for this epoch and the previous epoch, if necessary.
         _setCumulativeRewardDependenciesForDelegator(
             poolId,
-            member,
             finalDelegatedStakeToPoolByOwner,
             true
         );
@@ -92,7 +90,6 @@ contract MixinStakingPoolRewards is
         // remove dependencies on previous cumulative rewards, if they are no longer needed.
         _setCumulativeRewardDependenciesForDelegator(
             poolId,
-            member,
             initialDelegatedStakeToPoolByOwner,
             false
         );
@@ -114,7 +111,6 @@ contract MixinStakingPoolRewards is
         // compute balance owed to delegator
         uint256 balance = _computeRewardBalanceOfDelegator(
             poolId,
-            member,
             unsyncedDelegatedStakeToPoolByOwner,
             currentEpoch
         );
@@ -128,13 +124,11 @@ contract MixinStakingPoolRewards is
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
     /// @param unsyncedDelegatedStakeToPoolByOwner Unsynced delegated stake to pool by owner
     /// @param currentEpoch The epoch in which this call is executing
     /// @return totalReward Balance in ETH.
     function _computeRewardBalanceOfDelegator(
         bytes32 poolId,
-        address member,
         IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
         uint256 currentEpoch
     )
@@ -178,12 +172,10 @@ contract MixinStakingPoolRewards is
     /// A delegator always depends on the cumulative reward for the current epoch.
     /// They will also depend on the previous epoch's reward, if they are already staked with the input pool.
     /// @param poolId Unique id of pool.
-    /// @param member of the pool.
     /// @param delegatedStakeToPoolByOwner Amount of stake the member has delegated to the pool.
     /// @param isDependent is true iff adding a dependency. False, otherwise.
     function _setCumulativeRewardDependenciesForDelegator(
         bytes32 poolId,
-        address member,
         IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
         bool isDependent
     )
@@ -194,7 +186,7 @@ contract MixinStakingPoolRewards is
             return;
         }
 
-        // get the most recent cumulative rewards; these will serve as a reference point when updating dependencies
+        // get the most recent cumulative reward, which will serve as a reference point when updating dependencies
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
 
         // record dependency on `lastEpoch`

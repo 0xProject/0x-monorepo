@@ -1,5 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, describe, expect, txDefaults } from '@0x/contracts-test-utils';
+import { blockchainTests, describe } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
 import { artifacts } from '../src';
@@ -42,7 +42,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
             );
         });
         it('should not set CR or Most Recent CR when values already exist for the current epoch', async () => {
-            return await simulation.runTestAsync(
+            await simulation.runTestAsync(
                 [
                     TestAction.CreatePool, // creates CR in epoch 0
                 ],
@@ -54,7 +54,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
             );
         });
         it('should not set CR or Most Recent CR when user re-delegates and values already exist for the current epoch', async () => {
-            return await simulation.runTestAsync(
+            await simulation.runTestAsync(
                 [
                     TestAction.CreatePool, // creates CR in epoch 0
                     TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
@@ -66,7 +66,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
             );
         });
         it('should not set CR or Most Recent CR when user undelegagtes and values already exist for the current epoch', async () => {
-            return await simulation.runTestAsync(
+            await simulation.runTestAsync(
                 [
                     TestAction.CreatePool, // creates CR in epoch 0
                     TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
