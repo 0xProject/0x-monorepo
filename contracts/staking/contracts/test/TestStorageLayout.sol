@@ -29,7 +29,6 @@ contract TestStorageLayout is
     Ownable,
     MixinStorage
 {
-
     function assertExpectedStorageLayout()
         public
         pure
