@@ -31,12 +31,19 @@ contract ContractCallReceiver {
         uint256 value
     );
 
+    bytes4 constant internal ALWAYS_REVERT_SELECTOR = 0xF1F2F3F4;
+
     function ()
         external
         payable
     {
+        bytes4 selector = msg.data.readBytes4(0);
+        if (selector == ALWAYS_REVERT_SELECTOR) {
+            revert();
+        }
+
         emit ContractCall(
-            msg.data.readBytes4(0),
+            selector,
             msg.data,
             msg.value
         );
