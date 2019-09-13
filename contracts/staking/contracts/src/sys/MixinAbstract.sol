@@ -67,7 +67,7 @@ contract MixinAbstract {
     /// @param poolId The pool ID to finalize.
     /// @return rewards Rewards.
     /// @return rewards The rewards credited to the pool.
-    function _finalizePool(bytes32 poolIds)
+    function _finalizePool(bytes32 poolId)
         internal
         returns (IStructs.PoolRewards memory rewards);
 }
