@@ -24,13 +24,11 @@ blockchainTests('LibSafeDowncast', env => {
             const actual = await testContract.downcastToUint96.callAsync(new BigNumber(n));
             expect(actual).to.bignumber.eq(n);
         }
-        async function verifyDowncastErrorAsync(n: Numberish): Promise<void> {
-            const expectedError = new SafeMathRevertErrors.Uint256DowncastError(
+        function toDowncastError(n: Numberish): SafeMathRevertErrors.Uint256DowncastError {
+            return new SafeMathRevertErrors.Uint256DowncastError(
                 SafeMathRevertErrors.DowncastErrorCodes.ValueTooLargeToDowncastToUint96,
                 new BigNumber(n),
             );
-            const tx = testContract.downcastToUint96.callAsync(new BigNumber(n));
-            expect(tx).to.revertWith(expectedError);
         }
 
         it('correctly downcasts 0', async () => {
@@ -43,10 +41,12 @@ blockchainTests('LibSafeDowncast', env => {
             return verifyCorrectDowncastAsync(MAX_UINT_96);
         });
         it('reverts on MAX_UINT_96 + 1', async () => {
-            return verifyDowncastErrorAsync(MAX_UINT_96.plus(1));
+            const n = MAX_UINT_96.plus(1);
+            return expect(verifyCorrectDowncastAsync(n)).to.revertWith(toDowncastError(n));
         });
         it('reverts on MAX_UINT_256', async () => {
-            return verifyDowncastErrorAsync(MAX_UINT_256);
+            const n = MAX_UINT_256;
+            return expect(verifyCorrectDowncastAsync(n)).to.revertWith(toDowncastError(n));
         });
     });
 
@@ -55,13 +55,11 @@ blockchainTests('LibSafeDowncast', env => {
             const actual = await testContract.downcastToUint64.callAsync(new BigNumber(n));
             expect(actual).to.bignumber.eq(n);
         }
-        async function verifyDowncastErrorAsync(n: Numberish): Promise<void> {
-            const expectedError = new SafeMathRevertErrors.Uint256DowncastError(
+        function toDowncastError(n: Numberish): SafeMathRevertErrors.Uint256DowncastError {
+            return new SafeMathRevertErrors.Uint256DowncastError(
                 SafeMathRevertErrors.DowncastErrorCodes.ValueTooLargeToDowncastToUint64,
                 new BigNumber(n),
             );
-            const tx = testContract.downcastToUint64.callAsync(new BigNumber(n));
-            expect(tx).to.revertWith(expectedError);
         }
 
         it('correctly downcasts 0', async () => {
@@ -74,10 +72,12 @@ blockchainTests('LibSafeDowncast', env => {
             return verifyCorrectDowncastAsync(MAX_UINT_64);
         });
         it('reverts on MAX_UINT_64 + 1', async () => {
-            return verifyDowncastErrorAsync(MAX_UINT_64.plus(1));
+            const n = MAX_UINT_64.plus(1);
+            return expect(verifyCorrectDowncastAsync(n)).to.revertWith(toDowncastError(n));
         });
         it('reverts on MAX_UINT_256', async () => {
-            return verifyDowncastErrorAsync(MAX_UINT_256);
+            const n = MAX_UINT_256;
+            return expect(verifyCorrectDowncastAsync(n)).to.revertWith(toDowncastError(n));
         });
     });
 });
