@@ -162,6 +162,16 @@ contract MixinStake is
     )
         private
     {
+        // revert if pool with given poolId doesn't exist
+        if (rewardVault.operatorOf(poolId) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolExistenceError(
+                    poolId,
+                    false
+                )
+            );
+        }
+
         // cache amount delegated to pool by owner
         IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
 
@@ -177,7 +187,7 @@ contract MixinStake is
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
-    /// @param poolId Id of pool to un-delegate to.
+    /// @param poolId Id of pool to un-delegate from.
     /// @param owner who wants to un-delegate.
     /// @param amount of stake to un-delegate.
     function _undelegateStake(
@@ -187,6 +197,16 @@ contract MixinStake is
     )
         private
     {
+        // revert if pool with given poolId doesn't exist
+        if (rewardVault.operatorOf(poolId) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolExistenceError(
+                    poolId,
+                    false
+                )
+            );
+        }
+
         // cache amount delegated to pool by owner
         IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
 

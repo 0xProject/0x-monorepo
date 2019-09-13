@@ -34,7 +34,7 @@ blockchainTests('Staking Vaults', env => {
             const poolId = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, operatorShare, true);
             const notStakingContractAddress = poolOperator;
             // should fail to create pool if it already exists
-            let revertError = new StakingRevertErrors.PoolAlreadyExistsError(poolId);
+            let revertError = new StakingRevertErrors.PoolExistenceError(poolId, true);
             let tx = stakingApiWrapper.rewardVaultContract.registerStakingPool.awaitTransactionSuccessAsync(
                 poolId,
                 poolOperator,

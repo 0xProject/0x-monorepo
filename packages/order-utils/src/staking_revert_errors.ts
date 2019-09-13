@@ -178,9 +178,12 @@ export class OperatorShareError extends RevertError {
     }
 }
 
-export class PoolAlreadyExistsError extends RevertError {
-    constructor(poolId?: string) {
-        super('PoolAlreadyExistsError', 'PoolAlreadyExistsError(bytes32 poolId)', { poolId });
+export class PoolExistenceError extends RevertError {
+    constructor(poolId?: string, alreadyExists?: boolean) {
+        super('PoolExistenceError', 'PoolExistenceError(bytes32 poolId, bool alreadyExists)', {
+            poolId,
+            alreadyExists,
+        });
     }
 }
 
@@ -285,7 +288,7 @@ const types = [
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,
     OperatorShareError,
-    PoolAlreadyExistsError,
+    PoolExistenceError,
     RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
     ProxyDestinationCannotBeNilError,

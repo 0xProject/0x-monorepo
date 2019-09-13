@@ -29,12 +29,10 @@ pragma experimental ABIEncoderV2;
 interface IStakingPoolRewardVault {
 
     /// @dev Holds the balances and other data for a staking pool.
-    /// @param initialzed True iff the balance struct is initialized.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
     /// @param operatorBalance Balance in ETH of the operator.
     /// @param membersBalance Balance in ETH co-owned by the pool members.
     struct Pool {
-        bool initialized;
         uint32 operatorShare;
         uint96 operatorBalance;
         uint96 membersBalance;
