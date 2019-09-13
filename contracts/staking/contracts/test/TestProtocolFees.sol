@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
+import "../src/interfaces/IStructs.sol";
 import "../src/Staking.sol";
 
 
@@ -27,7 +28,8 @@ contract TestProtocolFees is
     Staking
 {
     struct TestPool {
-        uint256 stake;
+        uint256 operatorStake;
+        uint256 membersStake;
         mapping(address => bool) isMaker;
     }
 
@@ -58,13 +60,15 @@ contract TestProtocolFees is
     /// @dev Create a test pool.
     function createTestPool(
         bytes32 poolId,
-        uint256 stake,
+        uint256 operatorStake,
+        uint256 membersStake,
         address[] memory makerAddresses
     )
         public
     {
         TestPool storage pool = _testPools[poolId];
-        pool.stake = stake;
+        pool.operatorStake = operatorStake;
+        pool.membersStake = membersStake;
         for (uint256 i = 0; i < makerAddresses.length; ++i) {
             pool.isMaker[makerAddresses[i]] = true;
             _makersToTestPoolIds[makerAddresses[i]] = poolId;
@@ -86,10 +90,34 @@ contract TestProtocolFees is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        uint256 stake = _testPools[poolId].stake;
+        TestPool memory pool = _testPools[poolId];
+        uint256 stake = pool.operatorStake + pool.membersStake;
         return IStructs.StakeBalance({
             currentEpochBalance: stake,
             nextEpochBalance: stake
         });
+    }
+
+    /// @dev Overridden to use test pools.
+    function getStakeDelegatedToPoolByOwner(address, bytes32 poolId)
+        public
+        view
+        returns (IStructs.StakeBalance memory balance)
+    {
+        TestPool memory pool = _testPools[poolId];
+        return IStructs.StakeBalance({
+            currentEpochBalance: pool.operatorStake,
+            nextEpochBalance: pool.operatorStake
+        });
+    }
+
+    /// @dev Overridden to use test pools.
+    function getPoolOperator(bytes32)
+        public
+        view
+        returns (address operatorAddress)
+    {
+        // Just return nil, we won't use it.
+        return address(0);
     }
 }

@@ -25,11 +25,11 @@ interface IStructs {
     /// (see MixinExchangeFees).
     /// @param feesCollected Fees collected in ETH by this pool.
     /// @param weightedStake Amount of weighted stake in the pool.
-    /// @param delegatedStake Amount of delegated, non-operator stake in the pool.
+    /// @param membersStake Amount of non-operator stake in the pool.
     struct ActivePool {
         uint256 feesCollected;
         uint256 weightedStake;
-        uint256 delegatedStake;
+        uint256 membersStake;
     }
 
     /// @dev Rewards credited to a pool during finalization.

@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
@@ -71,7 +72,8 @@ contract MixinExchangeFees is
     {
         _assertValidProtocolFee(protocolFeePaid);
 
-        // Transfer the protocol fee to this address if it should be paid in WETH.
+        // Transfer the protocol fee to this address if it should be paid in
+        // WETH.
         if (msg.value == 0) {
             wethAssetProxy.transferFrom(
                 WETH_ASSET_DATA,
@@ -89,7 +91,8 @@ contract MixinExchangeFees is
             return;
         }
 
-        uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+        uint256 poolStake =
+            getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
         // Ignore pools with dust stake.
         if (poolStake < minimumPoolStake) {
             return;
@@ -103,35 +106,24 @@ contract MixinExchangeFees is
 
         // If the pool was previously inactive in this epoch, initialize it.
         if (pool.feesCollected == 0) {
-            // Compute weighted stake.
-            uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-                rewardVault.operatorOf(poolId),
-                poolId
-            ).currentEpochBalance;
-            pool.weightedStake = operatorStake.safeAdd(
-                poolStake
-                    .safeSub(operatorStake)
-                    .safeMul(rewardDelegatedStakeWeight)
-                    .safeDiv(PPM_DENOMINATOR)
-            );
-
-            // Compute delegated (non-operator) stake.
-            pool.delegatedStake = poolStake.safeSub(operatorStake);
+            // Compute member and total weighted stake.
+            (pool.membersStake, pool.weightedStake) =
+                _computeMembersAndWeightedStake(poolId, poolStake);
 
             // Increase the total weighted stake.
-            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(
-                pool.weightedStake
-            );
+            totalWeightedStakeThisEpoch =
+                totalWeightedStakeThisEpoch.safeAdd(pool.weightedStake);
 
             // Increase the numberof active pools.
             numActivePoolsThisEpoch += 1;
 
-            // Emit an event so keepers know what pools to pass into `finalize()`.
+            // Emit an event so keepers know what pools to pass into
+            // `finalize()`.
             emit StakingPoolActivated(currentEpoch, poolId);
         }
 
         // Credit the fees to the pool.
-        pool.feesCollected = protocolFeePaid;
+        pool.feesCollected = pool.feesCollected.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
         totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(
@@ -142,7 +134,8 @@ contract MixinExchangeFees is
         activePoolsThisEpoch[poolId] = pool;
     }
 
-    /// @dev Returns the total amount of fees collected thus far, in the current epoch.
+    /// @dev Returns the total amount of fees collected thus far, in the current
+    ///      epoch.
     /// @return _totalFeesCollectedThisEpoch Total fees collected this epoch.
     function getTotalProtocolFeesThisEpoch()
         external
@@ -152,9 +145,21 @@ contract MixinExchangeFees is
         _totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch;
     }
 
+    /// @dev Returns the total balance of this contract, including WETH.
+    /// @return totalBalance Total balance.
+    function getTotalBalance()
+        external
+        view
+        returns (uint256 totalBalance)
+    {
+        totalBalance = address(this).balance +
+            IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+    }
+
     /// @dev Returns the amount of fees attributed to the input pool this epoch.
     /// @param poolId Pool Id to query.
-    /// @return feesCollectedByPool Amount of fees collected by the pool this epoch.
+    /// @return feesCollectedByPool Amount of fees collected by the pool this
+    ///         epoch.
     function getProtocolFeesThisEpochByPool(bytes32 poolId)
         external
         view
@@ -168,20 +173,55 @@ contract MixinExchangeFees is
         feesCollected = pool.feesCollected;
     }
 
-    /// @dev Checks that the protocol fee passed into `payProtocolFee()` is valid.
-    /// @param protocolFeePaid The `protocolFeePaid` parameter to `payProtocolFee.`
+    /// @dev Computes the members and weighted stake for a pool at the current
+    ///      epoch.
+    /// @param poolId ID of the pool.
+    /// @param totalStake Total (unweighted) stake in the pool.
+    /// @return membersStake Non-operator stake in the pool.
+    /// @return weightedStake Weighted stake of the pool.
+    function _computeMembersAndWeightedStake(
+            bytes32 poolId,
+            uint256 totalStake
+    )
+        private
+        view
+        returns (uint256 membersStake, uint256 weightedStake)
+    {
+        uint256 operatorStake = getStakeDelegatedToPoolByOwner(
+            getPoolOperator(poolId),
+            poolId
+        ).currentEpochBalance;
+        membersStake = totalStake.safeSub(operatorStake);
+        weightedStake = operatorStake.safeAdd(
+            membersStake
+                .safeMul(rewardDelegatedStakeWeight)
+                .safeDiv(PPM_DENOMINATOR)
+        );
+    }
+
+    /// @dev Checks that the protocol fee passed into `payProtocolFee()` is
+    ///      valid.
+    /// @param protocolFeePaid The `protocolFeePaid` parameter to
+    ///        `payProtocolFee.`
     function _assertValidProtocolFee(uint256 protocolFeePaid)
         private
         view
     {
-        if (protocolFeePaid == 0 || (msg.value != protocolFeePaid && msg.value != 0)) {
-            LibRichErrors.rrevert(LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                protocolFeePaid == 0 ?
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid :
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
-                protocolFeePaid,
-                msg.value
-            ));
+        if (protocolFeePaid == 0 ||
+                (msg.value != protocolFeePaid && msg.value != 0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                    protocolFeePaid == 0 ?
+                        LibStakingRichErrors
+                            .ProtocolFeePaymentErrorCodes
+                            .ZeroProtocolFeePaid :
+                        LibStakingRichErrors
+                            .ProtocolFeePaymentErrorCodes
+                            .MismatchedFeeAndPayment,
+                    protocolFeePaid,
+                    msg.value
+                )
+            );
         }
     }
 }
