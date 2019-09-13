@@ -23,6 +23,8 @@ import "./libs/LibProxy.sol";
 
 
 contract ReadOnlyProxy is
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
     using LibProxy for address;

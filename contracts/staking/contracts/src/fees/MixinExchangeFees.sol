@@ -47,6 +47,7 @@ contract MixinExchangeFees is
     MixinExchangeManager,
     MixinAbstract,
     MixinStakeBalances,
+    MixinStakingPoolRewards,
     MixinStakingPool
 {
     using LibSafeMath for uint256;
