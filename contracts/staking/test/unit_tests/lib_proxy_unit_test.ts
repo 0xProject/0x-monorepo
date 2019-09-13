@@ -11,7 +11,7 @@ import { StakingRevertErrors } from '@0x/order-utils';
 
 import { artifacts, TestLibProxyContract, TestLibProxyReceiverContract } from '../../src';
 
-blockchainTests.resets.only('LibProxy', env => {
+blockchainTests.resets('LibProxy', env => {
     let proxy: TestLibProxyContract;
     let receiver: TestLibProxyReceiverContract;
 
@@ -37,6 +37,14 @@ blockchainTests.resets.only('LibProxy', env => {
         NeverRevert,
     }
 
+    interface PublicProxyCallArgs {
+        destination: string;
+        revertRule: RevertRule;
+        customEgressSelector: string;
+        ignoreIngressSelector: boolean;
+        calldata: string;
+    }
+
     // Choose a random 4 byte string of calldata to send and prepend with `0x00` to ensure
     // that it does not call `externalProxyCall` by accident. This calldata will make the fallback
     // in `TestLibProxyReceiver` fail because it is 4 bytes long.
@@ -49,14 +57,6 @@ blockchainTests.resets.only('LibProxy', env => {
     // in `TestLibProxyReceiver` succeed because it isn't 4 bytes long.
     function constructRandomSuccessCalldata(): string {
         return hexConcat('0x00', hexRandom(35));
-    }
-
-    interface PublicProxyCallArgs {
-        destination: string;
-        revertRule: RevertRule;
-        customEgressSelector: string;
-        ignoreIngressSelector: boolean;
-        calldata: string;
     }
 
     // Exposes `publicProxyCall()` with useful default arguments.
@@ -72,27 +72,27 @@ blockchainTests.resets.only('LibProxy', env => {
         );
     }
 
+    // Verifies that the result of a given call to `proxyCall()` results in specified outcome
+    function verifyPostConditions(result: [boolean, string], success: boolean, calldata: string): void {
+        expect(result[0]).to.be.eq(success);
+        expect(result[1]).to.be.eq(calldata);
+    }
+
+    // Verifies that the result of a given call to `proxyCall()` results in `ProxyDestinationCannotBeNilError`
+    function verifyDestinationZeroError(result: [boolean, string]): void {
+        const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
+        expect(result[0]).to.be.false();
+        expect(result[1]).to.be.eq(expectedError.encode());
+    }
+
     describe('proxyCall', () => {
-        // Verifies that the result of a given call to `proxyCall()` results in specified outcome
-        function verifyPostConditions(result: [boolean, string], success: boolean, calldata: string): void {
-            expect(result[0]).to.be.eq(success);
-            expect(result[1]).to.be.eq(calldata);
-        }
-
         describe('Failure Conditions', () => {
-            // Verifies that the result of a given call to `proxyCall()` results in `ProxyDestinationCannotBeNilError`
-            function checkDestinationZeroError(result: [boolean, string]): void {
-                const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
-                expect(result[0]).to.be.false();
-                expect(result[1]).to.be.eq(expectedError.encode());
-            }
-
             it('should revert when the destination is address zero', async () => {
-                checkDestinationZeroError(await publicProxyCallAsync({ destination: constants.NULL_ADDRESS }));
+                verifyDestinationZeroError(await publicProxyCallAsync({ destination: constants.NULL_ADDRESS }));
             });
 
             it('should revert when the destination is address zero and revertRule == AlwaysRevert', async () => {
-                checkDestinationZeroError(
+                verifyDestinationZeroError(
                     await publicProxyCallAsync({
                         destination: constants.NULL_ADDRESS,
                         revertRule: RevertRule.AlwaysRevert,
@@ -101,7 +101,7 @@ blockchainTests.resets.only('LibProxy', env => {
             });
 
             it('should revert when the destination is address zero and revertRule == NeverRevert', async () => {
-                checkDestinationZeroError(
+                verifyDestinationZeroError(
                     await publicProxyCallAsync({
                         destination: constants.NULL_ADDRESS,
                         revertRule: RevertRule.NeverRevert,
@@ -269,6 +269,35 @@ blockchainTests.resets.only('LibProxy', env => {
                 ignoreIngressScenarios,
                 calldataScenarios,
             ]);
+        });
+    });
+
+    describe('simpleProxyCallWithData', () => {
+        it('should revert if address zero is the destination', async () => {
+            const expectedError = new StakingRevertErrors.ProxyDestinationCannotBeNilError();
+            const tx = proxy.publicSimpleProxyCallWithData.awaitTransactionSuccessAsync(
+                constants.NULL_ADDRESS,
+                constants.NULL_BYTES,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should call the receiver with the correct calldata and report a success when the receiver succeeds', async () => {
+            const calldata = constructRandomSuccessCalldata();
+            verifyPostConditions(
+                await proxy.publicSimpleProxyCallWithData.callAsync(receiver.address, calldata),
+                true,
+                calldata,
+            );
+        });
+
+        it('should call the receiver with the correct calldata and report a success when the receiver succeeds', async () => {
+            const calldata = constructRandomFailureCalldata();
+            verifyPostConditions(
+                await proxy.publicSimpleProxyCallWithData.callAsync(receiver.address, calldata),
+                false,
+                calldata,
+            );
         });
     });
 });

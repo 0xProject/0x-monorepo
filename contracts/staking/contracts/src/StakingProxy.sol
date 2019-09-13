@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
@@ -72,6 +73,30 @@ contract StakingProxy is
         _attachStakingContract(_stakingContract);
     }
 
+    /// @dev Detach the current staking contract.
+    /// Note that this is callable only by this contract's owner.
+    function detachStakingContract()
+        external
+        onlyOwner
+    {
+        stakingContract = NIL_ADDRESS;
+        emit StakingContractDetachedFromProxy();
+    }
+
+    /// @dev Set read-only mode (state cannot be changed).
+    function setReadOnlyMode(bool readOnlyMode)
+        external
+        onlyOwner
+    {
+        if (readOnlyMode) {
+            stakingContract = readOnlyProxy;
+        } else {
+            stakingContract = readOnlyProxyCallee;
+        }
+
+        emit ReadOnlyModeSet(readOnlyMode);
+    }
+
     /// @dev Batch executes a series of calls to the exchange contract.
     /// @param data An array of data that encodes a sequence of functions to
     ///             call in the staking contracts.
@@ -99,31 +124,7 @@ contract StakingProxy is
             batchReturnData[i] = returnData;
         }
 
-        return batchReturnData
-    }
-
-    /// @dev Detach the current staking contract.
-    /// Note that this is callable only by this contract's owner.
-    function detachStakingContract()
-        external
-        onlyOwner
-    {
-        stakingContract = NIL_ADDRESS;
-        emit StakingContractDetachedFromProxy();
-    }
-
-    /// @dev Set read-only mode (state cannot be changed).
-    function setReadOnlyMode(bool readOnlyMode)
-        external
-        onlyOwner
-    {
-        if (readOnlyMode) {
-            stakingContract = readOnlyProxy;
-        } else {
-            stakingContract = readOnlyProxyCallee;
-        }
-
-        emit ReadOnlyModeSet(readOnlyMode);
+        return batchReturnData;
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
