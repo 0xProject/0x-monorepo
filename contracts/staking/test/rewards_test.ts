@@ -274,8 +274,6 @@ blockchainTests.resets.only('Testing Rewards', env => {
         it('Should split pool reward between delegators, when they join in different epochs', async () => {
             // first staker delegates (epoch 0)
 
-
-
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStakeAmount = toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
@@ -287,7 +285,6 @@ blockchainTests.resets.only('Testing Rewards', env => {
 
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
-
 
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
@@ -512,10 +509,6 @@ blockchainTests.resets.only('Testing Rewards', env => {
             // earn reward
             await payProtocolFeeAndFinalize(rewardForDelegator);
 
-
-
-
-
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
@@ -523,14 +516,10 @@ blockchainTests.resets.only('Testing Rewards', env => {
                 stakeAmount,
             );
 
-
-
-
             await payProtocolFeeAndFinalize();
 
             // this should not go do the delegator
             await payProtocolFeeAndFinalize(rewardNotForDelegator);
-
 
             // sanity check final balances
             await validateEndBalances({
