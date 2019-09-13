@@ -51,7 +51,7 @@ contract Staking is
         address _wethProxyAddress,
         address _ethVaultAddress,
         address payable _rewardVaultAddress,
-        address _zrxVaultAddress        
+        address _zrxVaultAddress
     )
         external
         onlyAuthorized

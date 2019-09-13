@@ -42,11 +42,15 @@ import "./MixinScheduler.sol";
 ///      epoch.
 contract MixinFinalizer is
     IStakingEvents,
+    MixinAbstract,
     MixinConstants,
     MixinDeploymentConstants,
+    Ownable,
     MixinStorage,
-    MixinStakingPoolRewardVault,
+    MixinZrxVault,
     MixinScheduler,
+    MixinStakingPoolRewardVault,
+    MixinStakeStorage,
     MixinStakeBalances,
     MixinStakingPoolRewards
 {
@@ -120,19 +124,19 @@ contract MixinFinalizer is
     /// @return _unfinalizedPoolsRemaining The number of unfinalized pools left.
     function finalizePools(bytes32[] calldata poolIds)
         external
-        returns (_unfinalizedPoolsRemaining)
+        returns (uint256 _unfinalizedPoolsRemaining)
     {
         uint256 epoch = getCurrentEpoch();
         // There are no pools to finalize at epoch 0.
         if (epoch == 0) {
-            return;
+            return _unfinalizedPoolsRemaining = 0;
         }
 
         uint256 poolsRemaining = unfinalizedPoolsRemaining;
         // If there are no more unfinalized pools remaining, there's nothing
         // to do.
         if (poolsRemaining == 0) {
-            return;
+            return _unfinalizedPoolsRemaining = 0;
         }
 
         // Pointer to the active pools in the last epoch.
@@ -156,14 +160,22 @@ contract MixinFinalizer is
 
             // Credit the pool with rewards.
             // We will transfer the total rewards to the vault at the end.
-            uint256 reward = _creditRewardToPool(poolId, pool);
-            rewardsPaid = rewardsPaid.safeAdd(reward);
+            IStructs.PoolRewards memory poolRewards =
+                _creditRewardToPool(poolId, pool);
+            rewardsPaid = rewardsPaid.safeAdd(
+                poolRewards.operatorReward + poolRewards.membersReward
+            );
 
             // Decrease the number of unfinalized pools left.
             poolsRemaining = poolsRemaining.safeSub(1);
 
             // Emit an event.
-            emit RewardsPaid(epoch, poolId, reward);
+            emit RewardsPaid(
+                epoch,
+                poolId,
+                poolRewards.operatorReward,
+                poolRewards.membersReward
+            );
         }
 
         // Deposit all the rewards at once into the RewardVault.
@@ -200,16 +212,17 @@ contract MixinFinalizer is
         uint256 epoch = getCurrentEpoch();
         // There are no pools to finalize at epoch 0.
         if (epoch == 0) {
-            return;
+            return rewards;
         }
 
         // Get the active pool.
-        IStructs.ActivePool memory pool =
-            _getActivePoolFromEpoch(epoch - 1, poolId);
+        mapping (bytes32 => IStructs.ActivePool) storage activePools =
+            _getActivePoolsFromEpoch(epoch - 1);
+        IStructs.ActivePool memory pool = activePools[poolId];
 
         // Ignore pools that weren't active.
         if (pool.feesCollected == 0) {
-            return;
+            return rewards;
         }
 
         // Clear the pool state so we don't finalize it again, and to recoup
@@ -219,7 +232,9 @@ contract MixinFinalizer is
         // Credit the pool with rewards.
         // We will transfer the total rewards to the vault at the end.
         rewards = _creditRewardToPool(poolId, pool);
-        totalRewardsPaidLastEpoch = totalRewardsPaidLastEpoch.safeAdd(reward);
+        uint256 totalReward = rewards.membersReward + rewards.operatorReward;
+        totalRewardsPaidLastEpoch =
+            totalRewardsPaidLastEpoch.safeAdd(totalReward);
 
         // Decrease the number of unfinalized pools left.
         uint256 poolsRemaining =
@@ -227,16 +242,21 @@ contract MixinFinalizer is
             unfinalizedPoolsRemaining.safeSub(1);
 
         // Emit an event.
-        emit RewardsPaid(epoch, poolId, reward);
+        emit RewardsPaid(
+            epoch,
+            poolId,
+            rewards.operatorReward,
+            rewards.membersReward
+        );
 
         // Deposit all the rewards at once into the RewardVault.
-        _depositIntoStakingPoolRewardVault(rewardsPaid);
+        _depositIntoStakingPoolRewardVault(totalReward);
 
         // If there are no more unfinalized pools remaining, the epoch is
         // finalized.
         if (poolsRemaining == 0) {
             emit EpochFinalized(
-                priorEpoch,
+                epoch - 1,
                 totalRewardsPaidLastEpoch,
                 unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
             );
@@ -255,7 +275,7 @@ contract MixinFinalizer is
         view
         returns (IStructs.ActivePool memory pool)
     {
-        pool = _getActivePoolFromEpoch(epoch)[poolId];
+        pool = _getActivePoolsFromEpoch(epoch)[poolId];
     }
 
     /// @dev Get a mapping of active pools from an epoch.
@@ -285,14 +305,14 @@ contract MixinFinalizer is
         uint256 epoch = getCurrentEpoch();
         // There can't be any rewards in the first epoch.
         if (epoch == 0) {
-            return;
+            return rewards;
         }
 
         IStructs.ActivePool memory pool =
             _getActivePoolFromEpoch(epoch - 1, poolId);
 
         // Use the cobb-douglas function to compute the total reward.
-        totalReward = LibCobbDouglas._cobbDouglas(
+        uint256 totalReward = LibCobbDouglas._cobbDouglas(
             unfinalizedRewardsAvailable,
             pool.feesCollected,
             unfinalizedTotalFeesCollected,
@@ -303,12 +323,16 @@ contract MixinFinalizer is
         );
 
         // Split the reward between the operator and delegators.
-        (rewards.operatorReward, rewards.membersReward) =
-            rewardVault.splitAmountBetweenOperatorAndMembers(
-                poolId,
-                totalReward
-            );
-        rewards.delegatedStake = pool.delegatedStake;
+        if (pool.delegatedStake == 0) {
+            rewards.operatorReward = totalReward;
+        } else {
+            (rewards.operatorReward, rewards.membersReward) =
+                rewardVault.splitAmountBetweenOperatorAndMembers(
+                    poolId,
+                    totalReward
+                );
+        }
+        rewards.membersStake = pool.delegatedStake;
     }
 
     /// @dev Computes the reward owed to a pool during finalization and
@@ -321,10 +345,10 @@ contract MixinFinalizer is
         IStructs.ActivePool memory pool
     )
         private
-        returns (PoolRewards memory rewards)
+        returns (IStructs.PoolRewards memory rewards)
     {
         // Use the cobb-douglas function to compute the total reward.
-        totalReward = LibCobbDouglas._cobbDouglas(
+        uint256 totalReward = LibCobbDouglas._cobbDouglas(
             unfinalizedRewardsAvailable,
             pool.feesCollected,
             unfinalizedTotalFeesCollected,
@@ -338,17 +362,17 @@ contract MixinFinalizer is
         (rewards.operatorReward, rewards.membersReward) =
             rewardVault.recordDepositFor(
                 poolId,
-                reward,
+                totalReward,
                 // If no delegated stake, all rewards go to the operator.
                 pool.delegatedStake == 0
             );
-        rewards.delegatedStake = pool.delegatedStake;
+        rewards.membersStake = pool.delegatedStake;
 
         // Sync delegator rewards.
-        if (membersPortionOfReward != 0) {
+        if (rewards.membersReward != 0) {
             _recordRewardForDelegators(
                 poolId,
-                membersPortionOfReward,
+                rewards.membersReward,
                 pool.delegatedStake
             );
         }

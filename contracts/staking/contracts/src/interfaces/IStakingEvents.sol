@@ -79,11 +79,13 @@ interface IStakingEvents {
     /// @dev Emitted by MixinFinalizer when rewards are paid out to a pool.
     /// @param epoch The epoch when the rewards were earned.
     /// @param poolId The pool's ID.
-    /// @param reward Amount of reward paid.
+    /// @param operatorReward Amount of reward paid to pool operator.
+    /// @param membersReward Amount of reward paid to pool members.
     event RewardsPaid(
         uint256 epoch,
         bytes32 poolId,
-        uint256 reward
+        uint256 operatorReward,
+        uint256 membersReward
     );
 
     /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.
