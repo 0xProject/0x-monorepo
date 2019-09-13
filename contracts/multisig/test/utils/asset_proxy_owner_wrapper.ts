@@ -4,6 +4,7 @@ import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-
 
 import { AssetProxyOwnerContract, AssetProxyOwnerSubmissionEventArgs, TestAssetProxyOwnerContract } from '../../src';
 
+// tslint:disable: no-unnecessary-type-assertion
 export class AssetProxyOwnerWrapper {
     private readonly _assetProxyOwner: AssetProxyOwnerContract | TestAssetProxyOwnerContract;
     constructor(assetproxyOwnerContract: AssetProxyOwnerContract | TestAssetProxyOwnerContract) {
