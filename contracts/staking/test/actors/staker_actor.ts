@@ -151,7 +151,7 @@ export class StakerActor extends BaseActor {
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         const initBalances = await this._getBalancesAsync();
         // go to next epoch
-        await this._stakingApiWrapper.utils.skipToNextEpochAsync();
+        await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
         // check balances
         const expectedBalances = this._getNextEpochBalances(initBalances);
         await this._assertBalancesAsync(expectedBalances);

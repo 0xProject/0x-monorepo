@@ -53,6 +53,14 @@ export interface SimulationParams {
     withdrawByUndelegating: boolean;
 }
 
+export interface EndOfEpochInfo {
+    closingEpoch: BigNumber;
+    activePoolIds: string[];
+    rewardsAvailable: BigNumber;
+    totalFeesCollected: BigNumber;
+    totalWeightedStake: BigNumber;
+}
+
 export interface StakeBalance {
     currentEpochBalance: BigNumber;
     nextEpochBalance: BigNumber;

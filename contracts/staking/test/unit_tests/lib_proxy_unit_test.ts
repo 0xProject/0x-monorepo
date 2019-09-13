@@ -8,6 +8,7 @@ import {
     testCombinatoriallyWithReferenceFunc,
 } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
+import { cartesianProduct } from 'js-combinatorics';
 
 import { artifacts, TestLibProxyContract, TestLibProxyReceiverContract } from '../../src';
 
@@ -196,79 +197,88 @@ blockchainTests.resets('LibProxy', env => {
 
         describe('Combinatorial Tests', () => {
             // Combinatorial Scenarios for `proxyCall()`.
-            const revertRuleScenarios: RevertRule[] = [
-                RevertRule.RevertOnError,
-                RevertRule.AlwaysRevert,
-                RevertRule.NeverRevert,
-            ];
-            const ignoreIngressScenarios: boolean[] = [false, true];
-            const customEgressScenarios: string[] = [
-                constants.NULL_BYTES4,
-                constructRandomFailureCalldata(), // Random failure calldata is used because it is nonzero and won't collide.
-            ];
-            const calldataScenarios: string[] = [constructRandomFailureCalldata(), constructRandomSuccessCalldata()];
-
-            // A reference function that returns the expected success and returndata values of a given call to `proxyCall()`.
-            async function referenceFuncAsync(
-                revertRule: RevertRule,
-                customEgressSelector: string,
-                shouldIgnoreIngressSelector: boolean,
-                calldata: string,
-            ): Promise<[boolean, string]> {
-                // Determine whether or not the call should succeed.
-                let shouldSucceed = true;
-                if (
-                    ((shouldIgnoreIngressSelector && customEgressSelector !== constants.NULL_BYTES4) ||
-                        (!shouldIgnoreIngressSelector && customEgressSelector === constants.NULL_BYTES4)) &&
-                    calldata.length === 10 // This corresponds to a hex length of 4
-                ) {
-                    shouldSucceed = false;
-                }
-
-                // Override the above success value if the RevertRule defines the success.
-                if (revertRule === RevertRule.AlwaysRevert) {
-                    shouldSucceed = false;
-                }
-                if (revertRule === RevertRule.NeverRevert) {
-                    shouldSucceed = true;
-                }
-
-                // Construct the data that should be returned.
-                let returnData = calldata;
-                if (shouldIgnoreIngressSelector) {
-                    returnData = hexSlice(returnData, 4);
-                }
-                if (customEgressSelector !== constants.NULL_BYTES4) {
-                    returnData = hexConcat(customEgressSelector, returnData);
-                }
-
-                // Return the success and return data values.
-                return [shouldSucceed, returnData];
+            function getCombinatorialTestDescription(params: [RevertRule, boolean, string, string]): string {
+                const REVERT_RULE_NAMES = [
+                    'RevertOnError',
+                    'AlwaysRevert',
+                    'NeverRevert',
+                ];
+                return [
+                    `revertRule: ${REVERT_RULE_NAMES[params[0]]}`,
+                    `ignoreIngressSelector: ${params[1]}`,
+                    `customEgressSelector: ${params[2]}`,
+                    `calldata: ${
+                        params[3].length / 2 - 2 > 4
+                            ? // tslint:disable-next-line
+                              hexSlice(params[3], 0, 4) + '...'
+                            : params[3]
+                    }`,
+                ].join(', ');
             }
 
-            // A wrapper for `publicProxyCall()` that allow us to combinatorially test `proxyCall()` for the
-            // scenarios defined above.
-            async function testFuncAsync(
-                revertRule: RevertRule,
-                customEgressSelector: string,
-                shouldIgnoreIngressSelector: boolean,
-                calldata: string,
-            ): Promise<[boolean, string]> {
-                return publicProxyCallAsync({
-                    calldata,
-                    customEgressSelector,
-                    ignoreIngressSelector: shouldIgnoreIngressSelector,
-                    revertRule,
+            const scenarios = [
+                // revertRule
+                [
+                    RevertRule.RevertOnError,
+                    RevertRule.AlwaysRevert,
+                    RevertRule.NeverRevert,
+                ],
+                // ignoreIngressSelector
+                [false, true],
+                // customEgressSelector
+                [
+                    constants.NULL_BYTES4,
+                    // Random failure calldata is used because it is nonzero and
+                    // won't collide.
+                    constructRandomFailureCalldata(),
+                ],
+                // calldata
+                [
+                    constructRandomFailureCalldata(),
+                    constructRandomSuccessCalldata(),
+                ],
+            ] as [RevertRule[], boolean[], string[], string[]];
+
+            for (const params of cartesianProduct(...scenarios).toArray()) {
+                const [revertRule, shouldIgnoreIngressSelector, customEgressSelector, calldata] = params;
+                it(getCombinatorialTestDescription(params), async () => {
+                    // Determine whether or not the call should succeed.
+                    let shouldSucceed = true;
+                    if (
+                        ((shouldIgnoreIngressSelector && customEgressSelector !== constants.NULL_BYTES4) ||
+                            (!shouldIgnoreIngressSelector && customEgressSelector === constants.NULL_BYTES4)) &&
+                        calldata.length === 10 // This corresponds to a hex length of 4
+                    ) {
+                        shouldSucceed = false;
+                    }
+
+                    // Override the above success value if the RevertRule defines the success.
+                    if (revertRule === RevertRule.AlwaysRevert) {
+                        shouldSucceed = false;
+                    }
+                    if (revertRule === RevertRule.NeverRevert) {
+                        shouldSucceed = true;
+                    }
+
+                    // Construct the data that should be returned.
+                    let returnData = calldata;
+                    if (shouldIgnoreIngressSelector) {
+                        returnData = hexSlice(returnData, 4);
+                    }
+                    if (customEgressSelector !== constants.NULL_BYTES4) {
+                        returnData = hexConcat(customEgressSelector, returnData);
+                    }
+
+                    const [didSucceed, actualReturnData] = await publicProxyCallAsync({
+                        calldata,
+                        customEgressSelector,
+                        ignoreIngressSelector: shouldIgnoreIngressSelector,
+                        revertRule,
+                    });
+                    expect(didSucceed).to.be.eq(shouldSucceed);
+                    expect(actualReturnData).to.be.eq(returnData);
                 });
             }
-
-            // Combinatorially test proxy call.
-            testCombinatoriallyWithReferenceFunc('proxyCall', referenceFuncAsync, testFuncAsync, [
-                revertRuleScenarios,
-                customEgressScenarios,
-                ignoreIngressScenarios,
-                calldataScenarios,
-            ]);
         });
     });
 });

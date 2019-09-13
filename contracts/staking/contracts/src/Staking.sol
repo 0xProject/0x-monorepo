@@ -21,6 +21,8 @@ pragma experimental ABIEncoderV2;
 
 import "./fees/MixinExchangeFees.sol";
 import "./interfaces/IStaking.sol";
+import "./sys/MixinParams.sol";
+import "./sys/MixinFinalizer.sol";
 import "./stake/MixinStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./sys/MixinParams.sol";
@@ -31,7 +33,7 @@ contract Staking is
     MixinParams,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees
+    MixinExchangeFees,
 {
     /// @dev This constructor will ensure that the storage layout of this contract
     ///      is compatible with the original staking storage layout.

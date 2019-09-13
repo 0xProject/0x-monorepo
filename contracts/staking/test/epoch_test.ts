@@ -38,7 +38,7 @@ blockchainTests('Epochs', env => {
                 expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH);
             }
             ///// 3/3 Increment Epoch (TimeLock Should Not Increment) /////
-            await stakingApiWrapper.utils.skipToNextEpochAsync();
+            await stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
             {
                 // epoch
                 const currentEpoch = await stakingApiWrapper.stakingContract.currentEpoch.callAsync();
