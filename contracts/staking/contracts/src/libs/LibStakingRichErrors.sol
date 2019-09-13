@@ -117,9 +117,9 @@ library LibStakingRichErrors {
     bytes4 internal constant OPERATOR_SHARE_ERROR_SELECTOR =
         0x22df9597;
 
-    // bytes4(keccak256("PoolAlreadyExistsError(bytes32)"))
-    bytes4 internal constant POOL_ALREADY_EXISTS_ERROR_SELECTOR =
-        0x2a5e4dcf;
+    // bytes4(keccak256("PoolExistenceError(bytes32,bool)"))
+    bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
+        0x9ae94f01;
 
     // bytes4(keccak256("EthVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
@@ -367,16 +367,18 @@ library LibStakingRichErrors {
         );
     }
 
-    function PoolAlreadyExistsError(
-        bytes32 poolId
+    function PoolExistenceError(
+        bytes32 poolId,
+        bool alreadyExists
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            POOL_ALREADY_EXISTS_ERROR_SELECTOR,
-            poolId
+            POOL_EXISTENCE_ERROR_SELECTOR,
+            poolId,
+            alreadyExists
         );
     }
 

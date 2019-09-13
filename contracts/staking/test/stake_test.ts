@@ -25,6 +25,7 @@ blockchainTests.resets('Stake Statuses', env => {
     // stake actor
     let staker: StakerActor;
     let poolIds: string[];
+    let unusedPoolId: string;
     let poolOperator: string;
     // tests
     before(async () => {
@@ -45,6 +46,7 @@ blockchainTests.resets('Stake Statuses', env => {
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 4, false),
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 5, false),
         ]);
+        unusedPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
     });
     describe('Stake', () => {
         it('should successfully stake zero ZRX', async () => {
@@ -286,6 +288,52 @@ blockchainTests.resets('Stake Statuses', env => {
             await testMovePartialStake(
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 new StakeInfo(StakeStatus.Delegated, poolIds[1]),
+            );
+        });
+        it('active -> delegated (non-existent pool)', async () => {
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAsync(amount);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, unusedPoolId),
+                amount,
+                new StakingRevertErrors.PoolExistenceError(unusedPoolId, false),
+            );
+        });
+        it('inactive -> delegated (non-existent pool)', async () => {
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAsync(amount);
+            await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Inactive),
+                new StakeInfo(StakeStatus.Delegated, unusedPoolId),
+                amount,
+                new StakingRevertErrors.PoolExistenceError(unusedPoolId, false),
+            );
+        });
+        it('delegated -> delegated (non-existent pool)', async () => {
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAsync(amount);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolIds[0]),
+                amount,
+            );
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Delegated, poolIds[0]),
+                new StakeInfo(StakeStatus.Delegated, unusedPoolId),
+                amount,
+                new StakingRevertErrors.PoolExistenceError(unusedPoolId, false),
+            );
+        });
+        it('delegated (non-existent pool) -> active', async () => {
+            const amount = toBaseUnitAmount(10);
+            await staker.stakeAsync(amount);
+            await staker.moveStakeAsync(
+                new StakeInfo(StakeStatus.Delegated, unusedPoolId),
+                new StakeInfo(StakeStatus.Active),
+                amount,
+                new StakingRevertErrors.PoolExistenceError(unusedPoolId, false),
             );
         });
     });

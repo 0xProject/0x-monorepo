@@ -193,16 +193,16 @@ contract StakingPoolRewardVault is
             ));
         }
 
-        // pool must not exist
+        // pool must not already exist
         Pool storage pool = poolById[poolId];
-        if (pool.initialized) {
-            LibRichErrors.rrevert(LibStakingRichErrors.PoolAlreadyExistsError(
-                poolId
+        if (pool.operatorAddress != NIL_ADDRESS) {
+            LibRichErrors.rrevert(LibStakingRichErrors.PoolExistenceError(
+                poolId,
+                true
             ));
         }
 
         // initialize pool
-        pool.initialized = true;
         pool.operatorAddress = operatorAddress;
         pool.operatorShare = operatorShare;
 
