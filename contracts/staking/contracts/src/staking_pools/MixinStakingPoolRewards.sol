@@ -56,20 +56,12 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    function syncRewardsForDelegator(bytes32 poolId, address member)
-        public
-    {
-        _syncRewardsForDelegator(
-            poolId,
-            member,
-            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),  // initial value
-            _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId])    // final value
-        );
-
-        // @todo write synced version
-
-    }
-
+    /// @dev Syncs rewards for a delegator. This includes transferring rewards from
+    /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
+    /// @param poolId Unique id of pool.
+    /// @param member of the pool.
+    /// @param initialDelegatedStakeToPoolByOwner The member's delegated balance at the beginning of this transaction.
+    /// @param finalDelegatedStakeToPoolByOwner The member's delegated balance at the end of this transaction.
     function _syncRewardsForDelegator(
         bytes32 poolId,
         address member,
@@ -119,11 +111,6 @@ contract MixinStakingPoolRewards is
     )
         private
     {
-        // there are no delegators in the first epoch
-        if (currentEpoch == 0) {
-            return;
-        }
-
         // compute balance owed to delegator
         uint256 balance = _computeRewardBalanceOfDelegator(
             poolId,
@@ -187,6 +174,13 @@ contract MixinStakingPoolRewards is
         return totalReward;
     }
 
+    /// @dev Adds or removes cumulative reward dependencies for a delegator.
+    /// A delegator always depends on the cumulative reward for the current epoch.
+    /// They will also depend on the previous epoch's reward, if they are already staked with the input pool.
+    /// @param poolId Unique id of pool.
+    /// @param member of the pool.
+    /// @param delegatedStakeToPoolByOwner Amount of stake the member has delegated to the pool.
+    /// @param isDependent is true iff adding a dependency. False, otherwise.
     function _setCumulativeRewardDependenciesForDelegator(
         bytes32 poolId,
         address member,
@@ -195,7 +189,6 @@ contract MixinStakingPoolRewards is
     )
         private
     {
-
         // if this delegator is not yet initialized then there's no dependency to unset.
         if (!isDependent && !delegatedStakeToPoolByOwner.isInitialized) {
             return;

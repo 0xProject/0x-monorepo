@@ -97,13 +97,6 @@ interface IStructs {
         uint256 denominator;
     }
 
-    /// @param fraction
-    /// @param referenceCounter
-    struct ReferenceCounter {
-        uint256 referenceCount;
-        mapping (address => bool) hasReference;
-    }
-
     /// @dev State for keeping track of which pool a maker has joined, and if the operator has
     /// added them (see MixinStakingPool).
     /// @param poolId Unique Id of staking pool.
