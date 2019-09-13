@@ -16,7 +16,8 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "../src/AssetProxyOwner.sol";
 
@@ -26,33 +27,52 @@ contract TestAssetProxyOwner is
     AssetProxyOwner
 {
     constructor (
+        bytes4[] memory _functionSelectors,
+        address[] memory _destinations,
+        uint128[] memory _functionCallTimeLockSeconds,
         address[] memory _owners,
-        address[] memory _assetProxyContracts,
         uint256 _required,
-        uint256 _secondsTimeLocked
+        uint256 _defaultSecondsTimeLocked
     )
         public
-        AssetProxyOwner(_owners, _assetProxyContracts, _required, _secondsTimeLocked)
+        AssetProxyOwner(
+            _functionSelectors,
+            _destinations,
+            _functionCallTimeLockSeconds,
+            _owners,
+            _required,
+            _defaultSecondsTimeLocked
+        )
     {}
     
-    function testValidRemoveAuthorizedAddressAtIndexTx(uint256 id)
-        public
-        view
-        validRemoveAuthorizedAddressAtIndexTx(id)
-        returns (bool)
+    function registerFunctionCallBypassWalet(
+        bool hasCustomTimeLock,
+        bytes4 functionSelector,
+        address destination,
+        uint128 newSecondsTimeLocked
+    )
+        external
     {
-        // Do nothing. We expect reverts through the modifier
-        return true;
+        _registerFunctionCall(
+            hasCustomTimeLock,
+            functionSelector,
+            destination,
+            newSecondsTimeLocked
+        );
     }
-    
-    /// @dev Compares first 4 bytes of byte array to `removeAuthorizedAddressAtIndex` function selector.
-    /// @param data Transaction data.
-    /// @return Successful if data is a call to `removeAuthorizedAddressAtIndex`.
-    function isFunctionRemoveAuthorizedAddressAtIndex(bytes memory data)
-        public
-        pure
-        returns (bool)
+
+    function assertValidFunctionCall(
+        uint256 transactionConfirmationTime,
+        bytes calldata data,
+        address destination
+    )
+        external
+        view
     {
-        return data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR;
+        _assertValidFunctionCall(
+            transactionConfirmationTime,
+            data,
+            destination
+        );
     }
 }
