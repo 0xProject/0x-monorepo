@@ -198,11 +198,7 @@ blockchainTests.resets('LibProxy', env => {
         describe('Combinatorial Tests', () => {
             // Combinatorial Scenarios for `proxyCall()`.
             function getCombinatorialTestDescription(params: [RevertRule, boolean, string, string]): string {
-                const REVERT_RULE_NAMES = [
-                    'RevertOnError',
-                    'AlwaysRevert',
-                    'NeverRevert',
-                ];
+                const REVERT_RULE_NAMES = ['RevertOnError', 'AlwaysRevert', 'NeverRevert'];
                 return [
                     `revertRule: ${REVERT_RULE_NAMES[params[0]]}`,
                     `ignoreIngressSelector: ${params[1]}`,
@@ -218,11 +214,7 @@ blockchainTests.resets('LibProxy', env => {
 
             const scenarios = [
                 // revertRule
-                [
-                    RevertRule.RevertOnError,
-                    RevertRule.AlwaysRevert,
-                    RevertRule.NeverRevert,
-                ],
+                [RevertRule.RevertOnError, RevertRule.AlwaysRevert, RevertRule.NeverRevert],
                 // ignoreIngressSelector
                 [false, true],
                 // customEgressSelector
@@ -233,10 +225,7 @@ blockchainTests.resets('LibProxy', env => {
                     constructRandomFailureCalldata(),
                 ],
                 // calldata
-                [
-                    constructRandomFailureCalldata(),
-                    constructRandomSuccessCalldata(),
-                ],
+                [constructRandomFailureCalldata(), constructRandomSuccessCalldata()],
             ] as [RevertRule[], boolean[], string[], string[]];
 
             for (const params of cartesianProduct(...scenarios).toArray()) {

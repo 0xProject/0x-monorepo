@@ -154,12 +154,8 @@ contract MixinFinalizer is
                 continue;
             }
 
-            // Clear the pool state so we don't finalize it again, and to recoup
-            // some gas.
-            delete activePools[poolId];
-
             IStructs.PoolRewards memory poolRewards =
-                _finalizePool(epoch, poolId, pool, true);
+                _creditRewardsToPool(epoch, poolId, pool);
 
             rewardsPaid = rewardsPaid.safeAdd(
                 poolRewards.operatorReward + poolRewards.membersReward
@@ -194,6 +190,7 @@ contract MixinFinalizer is
     ///      epoch, crediting it rewards and sending those rewards to the reward
     ///      vault. This can be called by internal functions that need to
     ///      finalize a pool immediately. Does nothing if the pool is already
+    ///      finalized. Does nothing if the pool was not active or was already
     ///      finalized.
     /// @param poolId The pool ID to finalize.
     /// @return rewards Rewards.
@@ -207,12 +204,37 @@ contract MixinFinalizer is
         if (epoch == 0) {
             return rewards;
         }
-        rewards = _finalizePool(
-            epoch,
-            poolId,
-            _getActivePoolFromEpoch(epoch - 1, poolId),
-            false
-        );
+
+        IStructs.ActivePool memory pool =
+            _getActivePoolFromEpoch(epoch - 1, poolId);
+        // Do nothing if the pool was not active (has no fees).
+        if (pool.feesCollected == 0) {
+            return rewards;
+        }
+
+        rewards = _creditRewardsToPool(epoch, poolId, pool);
+        uint256 totalReward =
+            rewards.membersReward.safeAdd(rewards.operatorReward);
+
+        if (totalReward > 0) {
+            totalRewardsPaidLastEpoch =
+                totalRewardsPaidLastEpoch.safeAdd(totalReward);
+            _depositIntoStakingPoolRewardVault(totalReward);
+        }
+
+        // Decrease the number of unfinalized pools left.
+        uint256 poolsRemaining = unfinalizedPoolsRemaining;
+        unfinalizedPoolsRemaining = poolsRemaining = poolsRemaining.safeSub(1);
+
+        // If there are no more unfinalized pools remaining, the epoch is
+        // finalized.
+        if (poolsRemaining == 0) {
+            emit EpochFinalized(
+                epoch - 1,
+                totalRewardsPaidLastEpoch,
+                unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
+            );
+        }
     }
 
     /// @dev Computes the reward owed to a pool during finalization.
@@ -358,33 +380,24 @@ contract MixinFinalizer is
         rewards.membersStake = pool.membersStake;
     }
 
-    /// @dev Either fully or partially finalizes a single pool that was active
-    ///      in the previous epoch. If `batchedMode` is `true`, this function
-    ///      will NOT:
-    ///         - transfer ether into the reward vault
-    ///         - update `poolsRemaining`
-    ///         - update `totalRewardsPaidLastEpoch`
-    ///         - clear the pool from `activePoolsByEpoch`
-    ///         - emit an `EpochFinalized` event.
+    /// @dev Credits finalization rewards to a pool that was active in the
+    ///      last epoch.
     /// @param epoch The current epoch.
     /// @param poolId The pool ID to finalize.
     /// @param pool The active pool to finalize.
-    /// @param batchedMode Only calculate and credit rewards.
     /// @return rewards Rewards.
     /// @return rewards The rewards credited to the pool.
-    function _finalizePool(
+    function _creditRewardsToPool(
         uint256 epoch,
         bytes32 poolId,
-        IStructs.ActivePool memory pool,
-        bool batchedMode
+        IStructs.ActivePool memory pool
     )
         private
         returns (IStructs.PoolRewards memory rewards)
     {
-        // Ignore pools that weren't active.
-        if (pool.feesCollected == 0) {
-            return rewards;
-        }
+        // Clear the pool state so we don't finalize it again, and to recoup
+        // some gas.
+        delete _getActivePoolsFromEpoch(epoch - 1)[poolId];
 
         // Compute the rewards.
         rewards = _getUnfinalizedPoolRewards(poolId, pool);
@@ -415,33 +428,5 @@ contract MixinFinalizer is
             rewards.operatorReward,
             rewards.membersReward
         );
-
-        if (batchedMode) {
-            return rewards;
-        }
-
-        // Clear the pool state so we don't finalize it again, and to recoup
-        // some gas.
-        delete _getActivePoolsFromEpoch(epoch)[poolId];
-
-        if (totalReward > 0) {
-            totalRewardsPaidLastEpoch =
-                totalRewardsPaidLastEpoch.safeAdd(totalReward);
-            _depositIntoStakingPoolRewardVault(totalReward);
-        }
-
-        // Decrease the number of unfinalized pools left.
-        uint256 poolsRemaining = unfinalizedPoolsRemaining;
-        unfinalizedPoolsRemaining = poolsRemaining = poolsRemaining.safeSub(1);
-
-        // If there are no more unfinalized pools remaining, the epoch is
-        // finalized.
-        if (poolsRemaining == 0) {
-            emit EpochFinalized(
-                epoch - 1,
-                totalRewardsPaidLastEpoch,
-                unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
-            );
-        }
     }
 }
