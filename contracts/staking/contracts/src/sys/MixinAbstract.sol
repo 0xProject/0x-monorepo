@@ -30,7 +30,7 @@ contract MixinAbstract {
     ///      Does nothing if the pool is already finalized.
     /// @param poolId The pool's ID.
     /// @return rewards Amount of rewards for this pool.
-    function _getUnfinalizedPoolReward(bytes32 poolId)
+    function _getUnfinalizedPoolRewards(bytes32 poolId)
         internal
         view
         returns (IStructs.PoolRewards memory rewards);

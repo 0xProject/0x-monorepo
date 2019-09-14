@@ -63,13 +63,13 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
-        IStructs.PoolRewards memory unfinalizedPoolReward =
-            _getUnfinalizedPoolReward(poolId);
+        IStructs.PoolRewards memory unfinalizedPoolRewards =
+            _getUnfinalizedPoolRewards(poolId);
         reward = _computeRewardBalanceOfDelegator(
             poolId,
             member,
-            unfinalizedPoolReward.membersReward,
-            unfinalizedPoolReward.membersStake
+            unfinalizedPoolRewards.membersReward,
+            unfinalizedPoolRewards.membersStake
         );
     }
 
