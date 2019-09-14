@@ -63,7 +63,7 @@ blockchainTests.resets.only('finalization tests', env => {
     async function addActivePoolAsync(opts?: Partial<ActivePoolOpts>): Promise<ActivePoolOpts> {
          const _opts = {
              poolId: hexRandom(),
-             operatorShare: Math.random(),
+             operatorShare: Math.floor(Math.random() * constants.PPM_DENOMINATOR) / constants.PPM_DENOMINATOR,
              feesCollected: getRandomInteger(0, ONE_ETHER),
              membersStake: getRandomInteger(0, ONE_ETHER),
              weightedStake: getRandomInteger(0, ONE_ETHER),
@@ -445,14 +445,40 @@ blockchainTests.resets.only('finalization tests', env => {
 
     function assertPoolRewards(actual: PoolRewards, expected: Partial<PoolRewards>): void {
         if (expected.operatorReward !== undefined) {
-            expect(actual.operatorReward).to.bignumber.eq(actual.operatorReward);
+            expect(actual.operatorReward).to.bignumber.eq(expected.operatorReward);
         }
         if (expected.membersReward !== undefined) {
-            expect(actual.membersReward).to.bignumber.eq(actual.membersReward);
+            expect(actual.membersReward).to.bignumber.eq(expected.membersReward);
         }
         if (expected.membersStake !== undefined) {
-            expect(actual.membersStake).to.bignumber.eq(actual.membersStake);
+            expect(actual.membersStake).to.bignumber.eq(expected.membersStake);
         }
+    }
+
+    async function callCobbDouglasAsync(
+        totalRewards: Numberish,
+        fees: Numberish,
+        totalFees: Numberish,
+        stake: Numberish,
+        totalStake: Numberish,
+    ): Promise<BigNumber> {
+        return testContract.cobbDouglas.callAsync(
+            new BigNumber(totalRewards),
+            new BigNumber(fees),
+            new BigNumber(totalFees),
+            new BigNumber(stake),
+            new BigNumber(totalStake),
+        );
+    }
+
+    function splitRewards(pool: ActivePoolOpts, totalReward: Numberish): [BigNumber, BigNumber] {
+        if (new BigNumber(pool.membersStake).isZero()) {
+            return [new BigNumber(totalReward), ZERO_AMOUNT];
+        }
+        const operatorShare = new BigNumber(totalReward)
+            .times(pool.operatorShare).integerValue(BigNumber.ROUND_DOWN);
+        const membersShare = new BigNumber(totalReward).minus(operatorShare);
+        return [operatorShare, membersShare];
     }
 
     describe('_getUnfinalizedPoolReward()', () => {
@@ -477,6 +503,13 @@ blockchainTests.resets.only('finalization tests', env => {
             assertPoolRewards(rewards, ZERO_REWARDS);
         });
 
+        it('returns empty if pool is active only in the current epoch', async () => {
+            const pool = await addActivePoolAsync();
+            const rewards = await testContract
+                .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(rewards, ZERO_REWARDS);
+        });
+
         it('returns empty if pool was only active in the 2 epochs ago', async () => {
             const pool = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
@@ -488,12 +521,88 @@ blockchainTests.resets.only('finalization tests', env => {
 
         it('returns empty if pool was already finalized', async () => {
             const pools = await Promise.all(_.times(3, () => addActivePoolAsync()));
-            const pool = _.sample(pools) as ActivePoolOpts;
+            const [pool] = _.sampleSize(pools, 1);
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             await testContract.finalizePools.awaitTransactionSuccessAsync([pool.poolId]);
             const rewards = await testContract
                 .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
             assertPoolRewards(rewards, ZERO_REWARDS);
         });
+
+        it('computes one reward among one pool', async () => {
+            const pool = await addActivePoolAsync();
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const expectedTotalRewards = INITIAL_BALANCE;
+            const [expectedOperatorReward, expectedMembersReward] =
+                splitRewards(pool, expectedTotalRewards);
+            const actualRewards = await testContract
+                .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(
+                actualRewards,
+                {
+                    operatorReward: expectedOperatorReward,
+                    membersReward: expectedMembersReward,
+                    membersStake: pool.membersStake,
+                },
+            );
+        });
+
+        it('computes one reward among multiple pools', async () => {
+            const pools = await Promise.all(_.times(3, () => addActivePoolAsync()));
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const [pool] = _.sampleSize(pools, 1);
+            const totalFeesCollected = BigNumber.sum(...pools.map(p => p.feesCollected));
+            const totalWeightedStake = BigNumber.sum(...pools.map(p => p.weightedStake));
+            const expectedTotalRewards = await callCobbDouglasAsync(
+                INITIAL_BALANCE,
+                pool.feesCollected,
+                totalFeesCollected,
+                pool.weightedStake,
+                totalWeightedStake,
+            );
+            const [expectedOperatorReward, expectedMembersReward] =
+                splitRewards(pool, expectedTotalRewards);
+            const actualRewards = await testContract
+                .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(
+                actualRewards,
+                {
+                    operatorReward: expectedOperatorReward,
+                    membersReward: expectedMembersReward,
+                    membersStake: pool.membersStake,
+                },
+            );
+        });
+
+        it('computes a reward with 0% operatorShare', async () => {
+            const pool = await addActivePoolAsync({ operatorShare: 0 });
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const actualRewards = await testContract
+                .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(
+                actualRewards,
+                {
+                    operatorReward: 0,
+                    membersReward: INITIAL_BALANCE,
+                    membersStake: pool.membersStake,
+                },
+            );
+        });
+
+        it('computes a reward with 100% operatorShare', async () => {
+            const pool = await addActivePoolAsync({ operatorShare: 1 });
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const actualRewards = await testContract
+                .internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(
+                actualRewards,
+                {
+                    operatorReward: INITIAL_BALANCE,
+                    membersReward: 0,
+                    membersStake: pool.membersStake,
+                },
+            );
+        });
     });
 });
+// tslint:disable: max-file-line-count
