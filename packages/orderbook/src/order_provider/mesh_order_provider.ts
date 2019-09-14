@@ -53,7 +53,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
     }
 
     /**
-     * Returns the available asset pairs. If no subscription to Mesh exists (and therefor no orders) it is
+     * Returns the available asset pairs. If no subscription to Mesh exists (and therefore no orders) it is
      * created and awaited on. Once the connection has been initialized the orders in the store are returned
      * as asset pairs.
      */

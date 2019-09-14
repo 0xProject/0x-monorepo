@@ -98,8 +98,8 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
  * Represents the varying smart contracts that can consume a valid swap quote
  */
 export enum ConsumerType {
-    Forwarder,
-    Exchange,
+    Forwarder = 'FORWARDER',
+    Exchange = 'EXCHANGE',
 }
 
 /**

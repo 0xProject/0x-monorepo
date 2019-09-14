@@ -1,6 +1,6 @@
 ## @0x/orderbook
 
-Package to help fetch orders from a remote source ([Standard Relayer API](https://github.com/0xProject/standard-relayer-api), Mesh) and keep the local orderbook synced and up to date.
+Package to help fetch orders from a remote source ([Standard Relayer API](https://github.com/0xProject/standard-relayer-api), Mesh) and keep the local orderbook synced and up-to-date.
 
 Supported Order Providers:
 
