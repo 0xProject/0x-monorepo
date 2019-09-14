@@ -97,6 +97,10 @@
             {
                 "note": "Add `CumulativeRewardIntervalError`.",
                 "pr": 2154
+            },
+            {
+                "note": "Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`.",
+                "pr": 2155
             }
         ]
     },

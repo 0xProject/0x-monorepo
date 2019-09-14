@@ -254,9 +254,23 @@ export class CumulativeRewardIntervalError extends RevertError {
     }
 }
 
+export class PreviousEpochNotFinalizedError extends RevertError {
+    constructor(
+        closingEpoch?: BigNumber | number | string,
+        unfinalizedPoolsRemaining?: BigNumber | number | string,
+    ) {
+        super(
+            'PreviousEpochNotFinalizedError',
+            'PreviousEpochNotFinalizedError(uint256 closingEpoch, uint256 unfinalizedPoolsRemaining)',
+            { closingEpoch, unfinalizedPoolsRemaining },
+        );
+    }
+}
+
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
+    CumulativeRewardIntervalError,
     EthVaultNotSetError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,
@@ -275,10 +289,10 @@ const types = [
     OnlyCallableIfNotInCatastrophicFailureError,
     OperatorShareError,
     PoolExistenceError,
+    PreviousEpochNotFinalizedError,
+    ProxyDestinationCannotBeNilError,
     RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
-    ProxyDestinationCannotBeNilError,
-    CumulativeRewardIntervalError,
 ];
 
 // Register the types we've defined.
