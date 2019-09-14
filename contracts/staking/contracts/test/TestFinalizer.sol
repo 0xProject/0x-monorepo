@@ -26,37 +26,58 @@ import "../src/Staking.sol";
 contract TestFinalizer is
     Staking
 {
-    struct RecordedReward {
-        uint256 membersReward;
-        uint256 membersStake;
-    }
+    event RecordRewardForDelegatorsCall(
+        bytes32 poolId,
+        uint256 membersReward,
+        uint256 membersStake
+    );
 
-    struct DepositedReward {
-        uint256 totalReward;
-        bool operatorOnly;
-    }
+    event RecordDepositInRewardVaultForCall(
+        bytes32 poolId,
+        uint256 totalReward,
+        bool operatorOnly
+    );
+
+    event DepositIntoStakingPoolRewardVaultCall(
+        uint256 amount
+    );
+
     mapping (bytes32 => uint32) internal _operatorSharesByPool;
-    mapping (bytes32 => RecordedReward) internal _recordedRewardsByPool;
-    mapping (bytes32 => DepositedReward) internal _depositedRewardsByPool;
 
+    constructor() public {
+        init();
+    }
+
+    /// @dev Get finalization-related state variables.
     function getFinalizationState()
         external
         view
         returns (
+            uint256 _balance,
+            uint256 _currentEpoch,
             uint256 _closingEpoch,
+            uint256 _numActivePoolsThisEpoch,
+            uint256 _totalFeesCollectedThisEpoch,
+            uint256 _totalWeightedStakeThisEpoch,
             uint256 _unfinalizedPoolsRemaining,
             uint256 _unfinalizedRewardsAvailable,
             uint256 _unfinalizedTotalFeesCollected,
             uint256 _unfinalizedTotalWeightedStake
         )
     {
+        _balance = address(this).balance;
+        _currentEpoch = currentEpoch;
         _closingEpoch = currentEpoch - 1;
+        _numActivePoolsThisEpoch = numActivePoolsThisEpoch;
+        _totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch;
+        _totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch;
         _unfinalizedPoolsRemaining = unfinalizedPoolsRemaining;
         _unfinalizedRewardsAvailable = unfinalizedRewardsAvailable;
         _unfinalizedTotalFeesCollected = unfinalizedTotalFeesCollected;
         _unfinalizedTotalWeightedStake = unfinalizedTotalWeightedStake;
     }
 
+    /// @dev Activate a pool in the current epoch.
     function addActivePool(
         bytes32 poolId,
         uint32 operatorShare,
@@ -66,9 +87,10 @@ contract TestFinalizer is
     )
         external
     {
+        require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
         mapping (bytes32 => IStructs.ActivePool) storage activePools =
             _getActivePoolsFromEpoch(currentEpoch);
-        assert(activePools[poolId].feesCollected == 0);
+        require(feesCollected > 0, "POOL_ALREADY_ADDED");
         _operatorSharesByPool[poolId] = operatorShare;
         activePools[poolId] = IStructs.ActivePool({
             feesCollected: feesCollected,
@@ -80,6 +102,34 @@ contract TestFinalizer is
         numActivePoolsThisEpoch += 1;
     }
 
+    /// @dev Expose `_getUnfinalizedPoolReward()`
+    function internalGetUnfinalizedPoolRewards(bytes32 poolId)
+        external
+        view
+        returns (IStructs.PoolRewards memory rewards)
+    {
+        rewards = _getUnfinalizedPoolRewards(poolId);
+    }
+
+
+    /// @dev Expose `_getActivePoolFromEpoch`.
+    function internalGetActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
+        external
+        view
+        returns (IStructs.ActivePool memory pool)
+    {
+        pool = _getActivePoolFromEpoch(epoch, poolId);
+    }
+
+
+    /// @dev Expose `_finalizePool()`
+    function internalFinalizePool(bytes32 poolId)
+        external
+        returns (IStructs.PoolRewards memory rewards)
+    {
+        rewards = _finalizePool(poolId);
+    }
+
     /// @dev Overridden to just store inputs.
     function _recordRewardForDelegators(
         bytes32 poolId,
@@ -88,10 +138,16 @@ contract TestFinalizer is
     )
         internal
     {
-        _recordedRewardsByPool[poolId] = RecordedReward({
-            membersReward: membersReward,
-            membersStake: membersStake
-        });
+        emit RecordRewardForDelegatorsCall(
+            poolId,
+            membersReward,
+            membersStake
+        );
+    }
+
+    /// @dev Overridden to store inputs and do some really basic math.
+    function _depositIntoStakingPoolRewardVault(uint256 amount) internal {
+        emit DepositIntoStakingPoolRewardVaultCall(amount);
     }
 
     /// @dev Overridden to store inputs and do some really basic math.
@@ -106,21 +162,25 @@ contract TestFinalizer is
             uint256 membersPortion
         )
     {
-        _depositedRewardsByPool[poolId] = DepositedReward({
-            totalReward: totalReward,
-            operatorOnly: operatorOnly
-        });
+        emit RecordDepositInRewardVaultForCall(
+            poolId,
+            totalReward,
+            operatorOnly
+        );
 
         if (operatorOnly) {
             operatorPortion = totalReward;
         } else {
             (operatorPortion, membersPortion) =
-                _splitAmountBetweenOperatorAndMembers(poolId, totalReward);
+                _splitRewardAmountBetweenOperatorAndMembers(
+                    poolId,
+                    totalReward
+                );
         }
     }
 
     /// @dev Overridden to do some really basic math.
-    function _splitAmountBetweenOperatorAndMembers(
+    function _splitRewardAmountBetweenOperatorAndMembers(
         bytes32 poolId,
         uint256 amount
     )
@@ -133,7 +193,7 @@ contract TestFinalizer is
         membersPortion = amount - operatorPortion;
     }
 
-    /// @dev Overriden to always succeed.
+    /// @dev Overriden to just increase the epoch counter.
     function _goToNextEpoch() internal {
         currentEpoch += 1;
     }
