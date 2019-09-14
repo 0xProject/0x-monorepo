@@ -22,12 +22,33 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
+import "./MixinEthVault.sol";
 
 
 contract MixinStakingPoolRewards is
     MixinCumulativeRewards
 {
     using LibSafeMath for uint256;
+
+    /// @dev Syncs rewards for a delegator. This includes transferring rewards from
+    /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
+    /// @param poolId Unique id of pool.
+    function syncDelegatorRewards(bytes32 poolId)
+        external
+    {
+        address member = msg.sender;
+
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId]);
+        _syncRewardsForDelegator(
+            poolId,
+            member,
+            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
+            finalDelegatedStakeToPoolByOwner
+        );
+
+        // update stored balance with synchronized version; this prevents redundant withdrawals.
+        delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
+    }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
@@ -88,7 +109,7 @@ contract MixinStakingPoolRewards is
     /// @param reward to record for delegators.
     /// @param amountOfDelegatedStake the amount of delegated stake that will split this reward.
     /// @param epoch at which this was earned.
-    function _recordRewardForDelegators(
+    function _handleStakingPoolReward(
         bytes32 poolId,
         uint256 reward,
         uint256 amountOfDelegatedStake,
@@ -96,6 +117,31 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
+        IStructs.Pool memory pool = poolById[poolId];
+
+        // compute the operator's portion of the reward and transfer it to the ETH vault (we round in favor of the operator).
+        uint256 operatorPortion = amountOfDelegatedStake == 0
+            ? reward
+            : LibMath.getPartialAmountCeil(
+                uint256(pool.operatorShare),
+                PPM_DENOMINATOR,
+                reward
+            );
+
+        _transferOperatorRewardToEthVault(
+            poolId,
+            pool.operator,
+            operatorPortion
+        );
+
+        // compute the reward portion for the pool members and transfer it to the Reward Vault.
+        uint256 membersPortion = reward.safeSub(operatorPortion);
+        if (membersPortion == 0) {
+            return;
+        }
+
+        rewardVault.depositFor.value(membersPortion)(poolId);
+
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
         mapping (uint256 => IStructs.Fraction) storage _cumulativeRewardsByPoolPtr = _cumulativeRewardsByPool[poolId];
 
@@ -108,7 +154,7 @@ contract MixinStakingPoolRewards is
         (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
             mostRecentCumulativeRewards.numerator,
             mostRecentCumulativeRewards.denominator,
-            reward,
+            membersPortion,
             amountOfDelegatedStake
         );
 
