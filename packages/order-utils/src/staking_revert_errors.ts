@@ -255,10 +255,7 @@ export class CumulativeRewardIntervalError extends RevertError {
 }
 
 export class PreviousEpochNotFinalizedError extends RevertError {
-    constructor(
-        closingEpoch?: BigNumber | number | string,
-        unfinalizedPoolsRemaining?: BigNumber | number | string,
-    ) {
+    constructor(closingEpoch?: BigNumber | number | string, unfinalizedPoolsRemaining?: BigNumber | number | string) {
         super(
             'PreviousEpochNotFinalizedError',
             'PreviousEpochNotFinalizedError(uint256 closingEpoch, uint256 unfinalizedPoolsRemaining)',
