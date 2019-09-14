@@ -21,26 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
-import "../stake/MixinStakeBalances.sol";
-import "./MixinStakingPoolRewardVault.sol";
 import "./MixinCumulativeRewards.sol";
 
 
 contract MixinStakingPoolRewards is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
     MixinCumulativeRewards
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

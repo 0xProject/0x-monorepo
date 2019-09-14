@@ -21,9 +21,7 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 
 
@@ -35,11 +33,8 @@ import "../interfaces/IStakingEvents.sol";
 /// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Returns the current epoch.

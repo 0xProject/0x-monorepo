@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/Authorizable.sol";
+import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IVaultCore.sol";
@@ -36,10 +36,9 @@ import "../interfaces/IVaultCore.sol";
 /// a vault cannot be reset to normal mode; this prevents corruption of related
 /// status in the staking contract.
 contract MixinVaultCore is
-    Authorizable,
+    Ownable,
     IVaultCore
 {
-
     // Address of staking contract
     address payable internal stakingContractAddress;
 

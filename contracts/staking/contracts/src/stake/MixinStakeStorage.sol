@@ -21,21 +21,13 @@ pragma solidity ^0.5.9;
 import "../libs/LibSafeDowncast.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
-import "./MixinZrxVault.sol";
 
 
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
     MixinScheduler
 {
-
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 

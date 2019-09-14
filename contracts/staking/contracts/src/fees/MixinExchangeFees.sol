@@ -24,15 +24,9 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinDeploymentConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
-import "../stake/MixinStakeBalances.sol";
-import "../sys/MixinScheduler.sol";
 import "../staking_pools/MixinStakingPool.sol";
-import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "./MixinExchangeManager.sol";
 
 
@@ -46,18 +40,8 @@ import "./MixinExchangeManager.sol";
 /// stake provided by directly by the maker; this is a disincentive for market makers to
 /// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
-    IStakingEvents,
-    MixinConstants,
     MixinDeploymentConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
     MixinExchangeManager,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
     MixinStakingPool
 {
 

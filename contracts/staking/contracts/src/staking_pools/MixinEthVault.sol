@@ -18,17 +18,12 @@
 
 pragma solidity ^0.5.9;
 
-import "../interfaces/IStakingEvents.sol";
-import "../interfaces/IEthVault.sol";
 import "../immutable/MixinStorage.sol";
 
 
 /// @dev This mixin contains logic for managing and interfacing with the Eth Vault.
 /// (see vaults/EthVault.sol).
 contract MixinEthVault is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
 

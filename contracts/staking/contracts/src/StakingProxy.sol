@@ -19,23 +19,16 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStorageInit.sol";
-import "./interfaces/IStaking.sol";
-import "./interfaces/IStakingEvents.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
 contract StakingProxy is
-    IStakingEvents,
     IStakingProxy,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
-
     using LibProxy for address;
 
     /// @dev Constructor.

@@ -40,13 +40,11 @@ import "../immutable/MixinConstants.sol";
 /// When in Catastrophic Failure Mode, the Staking contract can still
 /// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
-    Authorizable,
     IStakingPoolRewardVault,
     IVaultCore,
     MixinConstants,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 

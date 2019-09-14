@@ -20,32 +20,15 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
-import "./fees/MixinExchangeManager.sol";
-import "./stake/MixinZrxVault.sol";
-import "./staking_pools/MixinStakingPoolRewardVault.sol";
-import "./sys/MixinScheduler.sol";
 import "./sys/MixinParams.sol";
-import "./stake/MixinStakeBalances.sol";
 import "./stake/MixinStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
-import "./staking_pools/MixinStakingPoolRewards.sol";
 
 
 contract Staking is
     IStaking,
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
     MixinParams,
-    MixinZrxVault,
-    MixinExchangeManager,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
     MixinStake,
     MixinStakingPool,
     MixinExchangeFees
