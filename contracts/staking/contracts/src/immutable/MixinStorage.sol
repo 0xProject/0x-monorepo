@@ -77,8 +77,8 @@ contract MixinStorage is
     // whether the operator of that pool has subsequently added the maker.
     mapping (address => IStructs.MakerPoolJoinStatus) public poolJoinedByMakerAddress;
 
-    // mapping from Pool Id to number of makers assigned to that pool
-    mapping (bytes32 => uint256) public numMakersByPoolId;
+    // mapping from Pool Id to Pool
+    mapping (bytes32 => IStructs.Pool) internal poolById;
 
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;

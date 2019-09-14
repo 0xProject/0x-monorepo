@@ -79,7 +79,7 @@ contract TestStorageLayout is
             if sub(poolJoinedByMakerAddress_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(numMakersByPoolId_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(poolById_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(currentEpoch_slot, slot) { revertIncorrectStorageSlot() }

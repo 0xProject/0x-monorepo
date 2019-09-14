@@ -32,51 +32,25 @@ contract MixinStakingPoolRewardVault is
     IStakingEvents,
     MixinStorage
 {
-    /// @dev Asserts that the sender is the operator of the input pool.
-    /// @param poolId Pool sender must be operator of.
-    modifier onlyStakingPoolOperator(bytes32 poolId) {
-        address poolOperator = rewardVault.operatorOf(poolId);
-        if (msg.sender != poolOperator) {
-            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByPoolOperatorError(
-                msg.sender,
-                poolOperator
-            ));
-        }
 
-        _;
-    }
-
-    /// @dev Asserts that the sender is the operator of the input pool or the input maker.
-    /// @param poolId Pool sender must be operator of.
-    /// @param makerAddress Address of a maker in the pool.
-    modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        address poolOperator;
-        if (
-            msg.sender != makerAddress &&
-            msg.sender != (poolOperator = rewardVault.operatorOf(poolId))
-        ) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(
-                    msg.sender,
-                    poolOperator,
-                    makerAddress
-                )
-            );
-        }
-
-        _;
-    }
-
-    /// @dev Decreases the operator share for the given pool (i.e. increases pool rewards for members).
-    /// Note that this is only callable by the pool operator, and will revert if the new operator
-    /// share value is greater than the old value.
-    /// @param poolId Unique Id of pool.
-    /// @param newOperatorShare The newly decreased percentage of any rewards owned by the operator.
-    function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShare)
+    /// @dev Sets the address of the reward vault.
+    /// This can only be called by the owner of this contract.
+    function setStakingPoolRewardVault(address payable rewardVaultAddress)
         external
-        onlyStakingPoolOperator(poolId)
+        onlyOwner
     {
-        rewardVault.decreaseOperatorShare(poolId, newOperatorShare);
+        rewardVault = IStakingPoolRewardVault(rewardVaultAddress);
+        emit StakingPoolRewardVaultChanged(rewardVaultAddress);
+    }
+
+    /// @dev Returns the staking pool reward vault
+    /// @return Address of reward vault.
+    function getStakingPoolRewardVault()
+        public
+        view
+        returns (address)
+    {
+        return address(rewardVault);
     }
 
     /// @dev Deposits an amount in ETH into the reward vault.
@@ -116,6 +90,6 @@ contract MixinStakingPoolRewardVault is
         }
 
         // perform transfer
-        _rewardVault.transferMemberBalanceToEthVault(poolId, member, amount);
+        _rewardVault.transferToEthVault(poolId, member, amount);
     }
 }

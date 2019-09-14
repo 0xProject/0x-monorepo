@@ -136,4 +136,30 @@ interface IStakingEvents {
         bytes32 poolId,
         address makerAddress
     );
+
+    /// @dev Emitted by MixinStakingPoolRewardVault when the vault's address is changed.
+    /// @param rewardVaultAddress Address of new reward vault.
+    event StakingPoolRewardVaultChanged(
+        address rewardVaultAddress
+    );
+
+    /// @dev Emitted when a staking pool's operator share is decreased.
+    /// @param poolId Unique Id of pool.
+    /// @param oldOperatorShare Previous share of rewards owned by operator.
+    /// @param newOperatorShare Newly decreased share of rewards owned by operator.
+    event OperatorShareDecreased(
+        bytes32 poolId,
+        uint32 oldOperatorShare,
+        uint32 newOperatorShare
+    );
+
+    /// @dev Emitted when an operator reward is transferred to the Eth vault.
+    /// @param amount The amount in ETH withdrawn.
+    /// @param operator of the pool.
+    /// @param poolId The pool the reward was deposited for.
+    event OperatorRewardTransferredToEthVault(
+        bytes32 poolId,
+        address operator,
+        uint256 amount
+    );
 }
