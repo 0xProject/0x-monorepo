@@ -129,7 +129,7 @@ contract MixinStakingPool is
     function _assertStakingPoolExists(bytes32 poolId)
         internal
         view
-        returns (bool)
+        returns (bytes32)
     {
         if (poolById[poolId].operator == NIL_ADDRESS) {
             // we use the pool's operator as a proxy for its existence
@@ -153,6 +153,31 @@ contract MixinStakingPool is
     )
         private
         pure
+    {
+        // sanity checks
+        if (newOperatorShare > PPM_DENOMINATOR) {
+            // operator share must be a valid fraction
+            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
+                LibStakingRichErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
+                poolId,
+                newOperatorShare
+            ));
+        } else if (newOperatorShare >= currentOperatorShare) {
+            // new share must be less than the current share
+            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
+                LibStakingRichErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
+                poolId,
+                newOperatorShare
+            ));
+        }
+    }
+
+    function _assertNewOperatorShare(
+        bytes32 poolId,
+        uint32 currentOperatorShare,
+        uint32 newOperatorShare
+    )
+        private
     {
         // sanity checks
         if (newOperatorShare > PPM_DENOMINATOR) {

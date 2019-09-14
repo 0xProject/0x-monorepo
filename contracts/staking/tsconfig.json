@@ -33,6 +33,7 @@
         "generated-artifacts/MixinStakingPool.json",
         "generated-artifacts/MixinStakingPoolMakers.json",
         "generated-artifacts/MixinStakingPoolModifiers.json",
+        "generated-artifacts/MixinStakingPoolRewardVault.json",
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
         "generated-artifacts/MixinVaultCore.json",

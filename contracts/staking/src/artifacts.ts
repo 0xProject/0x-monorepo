@@ -88,6 +88,7 @@ export const artifacts = {
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolMakers: MixinStakingPoolMakers as ContractArtifact,
     MixinStakingPoolModifiers: MixinStakingPoolModifiers as ContractArtifact,
+    MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
