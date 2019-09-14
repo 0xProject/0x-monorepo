@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
+import "../src/libs/LibCobbDouglas.sol";
 import "../src/Staking.sol";
 
 
@@ -100,6 +101,29 @@ contract TestFinalizer is
         totalFeesCollectedThisEpoch += feesCollected;
         totalWeightedStakeThisEpoch += weightedStake;
         numActivePoolsThisEpoch += 1;
+    }
+
+    /// @dev Compute Cobb-Douglas.
+    function cobbDouglas(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake
+    )
+        external
+        view
+        returns (uint256 ownerRewards)
+    {
+        ownerRewards = LibCobbDouglas._cobbDouglas(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            cobbDouglasAlphaNumerator,
+            cobbDouglasAlphaDenominator
+        );
     }
 
     /// @dev Expose `_getUnfinalizedPoolReward()`

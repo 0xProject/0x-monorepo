@@ -342,7 +342,7 @@ contract MixinFinalizer is
             pool.weightedStake,
             unfinalizedTotalWeightedStake,
             cobbDouglasAlphaNumerator,
-            cobbDouglasAlphaDenomintor
+            cobbDouglasAlphaDenominator
         );
 
         // Split the reward between the operator and delegators.
