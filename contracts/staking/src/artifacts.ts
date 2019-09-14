@@ -23,7 +23,6 @@ import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErro
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
-import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
 import * as MixinParams from '../generated-artifacts/MixinParams.json';
@@ -82,7 +81,6 @@ export const artifacts = {
     MixinStakeStorage: MixinStakeStorage as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
     MixinCumulativeRewards: MixinCumulativeRewards as ContractArtifact,
-    MixinEthVault: MixinEthVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,

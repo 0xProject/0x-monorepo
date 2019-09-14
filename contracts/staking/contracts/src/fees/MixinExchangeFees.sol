@@ -132,23 +132,12 @@ contract MixinExchangeFees is
     /// @dev Returns the total amount of fees collected thus far, in the current epoch.
     /// @return Amount of fees.
     function getTotalProtocolFeesThisEpoch()
-        public
+        external
         view
         returns (uint256)
     {
         uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
         return address(this).balance.safeAdd(wethBalance);
-    }
-
-    /// @dev Returns the amount of fees attributed to the input pool.
-    /// @param poolId Pool Id to query.
-    /// @return Amount of fees.
-    function getProtocolFeesThisEpochByPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return protocolFeesThisEpochByPool[poolId];
     }
 
     /// @dev Withdraws the entire WETH balance of the contract.

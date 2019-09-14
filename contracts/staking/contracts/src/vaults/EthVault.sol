@@ -31,7 +31,7 @@ contract EthVault is
     using LibSafeMath for uint256;
 
     // mapping from Owner to ETH balance
-    mapping (address => uint256) internal balances;
+    mapping (address => uint256) public balances;
 
     /// @dev Constructor.
     constructor()
@@ -76,16 +76,6 @@ contract EthVault is
         // withdraw ETH to owner
         _withdrawFrom(owner, totalBalance);
         return totalBalance;
-    }
-
-    /// @dev Returns the balance in ETH of the `owner`
-    /// @return Balance in ETH.
-    function balanceOf(address owner)
-        external
-        view
-        returns (uint256)
-    {
-        return balances[owner];
     }
 
     /// @dev Withdraw an `amount` of ETH to `owner` from the vault.

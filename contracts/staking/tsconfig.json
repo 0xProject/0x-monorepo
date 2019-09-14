@@ -21,7 +21,6 @@
         "generated-artifacts/MixinConstants.json",
         "generated-artifacts/MixinCumulativeRewards.json",
         "generated-artifacts/MixinDeploymentConstants.json",
-        "generated-artifacts/MixinEthVault.json",
         "generated-artifacts/MixinExchangeFees.json",
         "generated-artifacts/MixinExchangeManager.json",
         "generated-artifacts/MixinParams.json",

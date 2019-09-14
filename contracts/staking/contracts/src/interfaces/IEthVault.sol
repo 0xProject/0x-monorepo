@@ -42,6 +42,14 @@ interface IEthVault {
         uint256 amount
     );
 
+    /// @dev Gets the owner's ZRX balance in the vault.
+    /// @param owner Address of ZRX owner.
+    /// @return ZRX balance of owner in vault.
+    function balances(address owner)
+        external
+        view
+        returns (uint256);
+
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catostrophic Failure mode.
@@ -60,12 +68,5 @@ interface IEthVault {
     /// @dev Withdraw ALL ETH to `msg.sender` from the vault.
     function withdrawAll()
         external
-        returns (uint256);
-
-    /// @dev Returns the balance in ETH of the `owner`
-    /// @return Balance in ETH.
-    function balanceOf(address owner)
-        external
-        view
         returns (uint256);
 }

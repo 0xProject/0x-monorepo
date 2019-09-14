@@ -107,9 +107,8 @@ contract MixinStakingPool is
         return poolId;
     }
 
-    function joinStakingPoolAsMaker(
-        bytes32 poolId
-    )
+    // TODO: comment
+    function joinStakingPoolAsMaker(bytes32 poolId)
         external
     {
         // Is the maker already in a pool?
@@ -166,7 +165,7 @@ contract MixinStakingPool is
         }
 
         // Is the pool already full?
-        if (getNumberOfMakersInStakingPool(poolId) == maximumMakersInPool) {
+        if (numMakersByPoolId[poolId] == maximumMakersInPool) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.PoolIsFull,
                 makerAddress,
@@ -249,27 +248,6 @@ contract MixinStakingPool is
         returns (bool)
     {
         return poolJoinedByMakerAddress[makerAddress].confirmed;
-    }
-
-    /// @dev Returns the current number of makers in a given pool.
-    /// @param poolId Unique id of pool.
-    /// @return Size of pool.
-    function getNumberOfMakersInStakingPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return numMakersByPoolId[poolId];
-    }
-
-    /// @dev Returns the unique id that will be assigned to the next pool that is created.
-    /// @return Pool id.
-    function getNextStakingPoolId()
-        public
-        view
-        returns (bytes32)
-    {
-        return nextPoolId;
     }
 
     /// @dev Computes the unique id that comes after the input pool id.

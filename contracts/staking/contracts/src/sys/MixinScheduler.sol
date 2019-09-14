@@ -37,27 +37,6 @@ contract MixinScheduler is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Returns the current epoch.
-    /// @return Epoch.
-    function getCurrentEpoch()
-        public
-        view
-        returns (uint256)
-    {
-        return currentEpoch;
-    }
-
-    /// @dev Returns the start time in seconds of the current epoch.
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    /// @return Time in seconds.
-    function getCurrentEpochStartTimeInSeconds()
-        public
-        view
-        returns (uint256)
-    {
-        return currentEpochStartTimeInSeconds;
-    }
-
     /// @dev Returns the earliest end time in seconds of this epoch.
     ///      The next epoch can begin once this time is reached.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
@@ -67,7 +46,7 @@ contract MixinScheduler is
         view
         returns (uint256)
     {
-        return getCurrentEpochStartTimeInSeconds().safeAdd(epochDurationInSeconds);
+        return currentEpochStartTimeInSeconds.safeAdd(epochDurationInSeconds);
     }
 
     /// @dev Assert scheduler state before initializing it.

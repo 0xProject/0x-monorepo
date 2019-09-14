@@ -37,16 +37,6 @@ contract MixinZrxVault is
         zrxVault = IZrxVault(zrxVaultAddress);
     }
 
-    /// @dev Return the current Zrx Vault
-    /// @return Zrx Vault
-    function getZrxVault()
-        public
-        view
-        returns (address)
-    {
-        return address(zrxVault);
-    }
-
     /// @dev Deposits Zrx Tokens from the `owner` into the vault.
     /// @param owner of Zrx Tokens
     /// @param amount of tokens to deposit.
@@ -87,6 +77,6 @@ contract MixinZrxVault is
             address(_zrxVault) != address(0),
             "INVALID_ZRX_VAULT"
         );
-        return _zrxVault.balanceOf(owner);
+        return _zrxVault.balances(owner);
     }
 }

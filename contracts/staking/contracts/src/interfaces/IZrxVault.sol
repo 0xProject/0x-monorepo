@@ -54,6 +54,21 @@ interface IZrxVault {
         address zrxProxyAddress
     );
 
+    /// @dev Gets the address of the AssetProxy contract used to transfer ZRX.
+    /// @return Address of the AssetProxy contract used to transfer ZRX.
+    function zrxAssetProxy()
+        external
+        view
+        returns (address);
+
+    /// @dev Gets the owner's ZRX balance in the vault.
+    /// @param owner Address of ZRX owner.
+    /// @return ZRX balance of owner in vault.
+    function balances(address owner)
+        external
+        view
+        returns (uint256);
+
     /// @dev Sets the Zrx proxy.
     /// Note that only the contract owner can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
@@ -82,12 +97,5 @@ interface IZrxVault {
     /// @param owner of Zrx Tokens.
     function withdrawAllFrom(address owner)
         external
-        returns (uint256);
-
-    /// @dev Returns the balance in Zrx Tokens of the `owner`
-    /// @return Balance in Zrx.
-    function balanceOf(address owner)
-        external
-        view
         returns (uint256);
 }

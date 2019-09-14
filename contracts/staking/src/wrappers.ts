@@ -21,7 +21,6 @@ export * from '../generated-wrappers/lib_staking_rich_errors';
 export * from '../generated-wrappers/mixin_constants';
 export * from '../generated-wrappers/mixin_cumulative_rewards';
 export * from '../generated-wrappers/mixin_deployment_constants';
-export * from '../generated-wrappers/mixin_eth_vault';
 export * from '../generated-wrappers/mixin_exchange_fees';
 export * from '../generated-wrappers/mixin_exchange_manager';
 export * from '../generated-wrappers/mixin_params';

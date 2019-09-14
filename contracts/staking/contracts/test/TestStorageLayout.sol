@@ -55,22 +55,22 @@ contract TestStorageLayout is
             if sub(stakingContract_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(activeStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_activeStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(inactiveStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_inactiveStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(delegatedStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_delegatedStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(delegatedStakeToPoolByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_delegatedStakeToPoolByOwner_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(delegatedStakeByPoolId_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_delegatedStakeByPoolId_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(withdrawableStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_withdrawableStakeByOwner_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(nextPoolId_slot, slot) { revertIncorrectStorageSlot() }
@@ -94,13 +94,13 @@ contract TestStorageLayout is
             if sub(activePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(cumulativeRewardsByPoolReferenceCounter_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_cumulativeRewardsByPoolReferenceCounter_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(cumulativeRewardsByPoolLastStored_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_cumulativeRewardsByPoolLastStored_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(validExchanges_slot, slot) { revertIncorrectStorageSlot() }

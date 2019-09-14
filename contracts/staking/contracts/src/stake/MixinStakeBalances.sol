@@ -52,7 +52,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(activeStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_activeStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -67,7 +67,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(inactiveStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_inactiveStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -82,7 +82,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return _computeWithdrawableStake(owner, withdrawableStakeByOwner[owner]);
+        return _computeWithdrawableStake(owner, _withdrawableStakeByOwner[owner]);
     }
 
     /// @dev Returns the stake delegated by a given owner.
@@ -93,7 +93,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -109,7 +109,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeToPoolByOwner[owner][poolId]);
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -124,7 +124,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(delegatedStakeByPoolId[poolId]);
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByPoolId[poolId]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -142,7 +142,7 @@ contract MixinStakeBalances is
     {
         // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
         // so the upper bound of withdrawable stake is always limited by the value of `next`.
-        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(inactiveStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(_inactiveStakeByOwner[owner]);
         if (storedBalance.currentEpoch == currentEpoch) {
             return LibSafeMath.min256(storedBalance.nextEpochBalance, lastStoredWithdrawableStake);
         } else if (uint256(storedBalance.currentEpoch).safeAdd(1) == currentEpoch) {

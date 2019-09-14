@@ -32,10 +32,9 @@ contract MixinExchangeManager is
     IStakingEvents,
     MixinStorage
 {
-
     /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {
-        if (!isValidExchangeAddress(msg.sender)) {
+        if (!validExchanges[msg.sender]) {
             LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByExchangeError(
                 msg.sender
             ));
@@ -71,16 +70,5 @@ contract MixinExchangeManager is
         }
         validExchanges[addr] = false;
         emit ExchangeRemoved(addr);
-    }
-
-    /// @dev Returns true iff the address is a valid exchange.
-    /// @param addr Address of exchange contract.
-    /// @return True iff input address is a valid exchange.
-    function isValidExchangeAddress(address addr)
-        public
-        view
-        returns (bool)
-    {
-        return validExchanges[addr];
     }
 }

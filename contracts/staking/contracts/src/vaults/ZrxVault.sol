@@ -40,31 +40,31 @@ contract ZrxVault is
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
-    mapping (address => uint256) internal balances;
+    mapping (address => uint256) public balances;
 
     // Zrx Asset Proxy
-    IAssetProxy internal zrxAssetProxy;
+    IAssetProxy public zrxAssetProxy;
 
     // Zrx Token
-    IERC20Token internal zrxToken;
+    IERC20Token internal _zrxToken;
 
     // Asset data for the ERC20 Proxy
-    bytes internal zrxAssetData;
+    bytes internal _zrxAssetData;
 
     /// @dev Constructor.
     /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
-    /// @param zrxTokenAddress Address of the Zrx Token.
+    /// @param _zrxTokenAddress Address of the Zrx Token.
     constructor(
         address zrxProxyAddress,
-        address zrxTokenAddress
+        address _zrxTokenAddress
     )
         public
     {
         zrxAssetProxy = IAssetProxy(zrxProxyAddress);
-        zrxToken = IERC20Token(zrxTokenAddress);
-        zrxAssetData = abi.encodeWithSelector(
+        _zrxToken = IERC20Token(_zrxTokenAddress);
+        _zrxAssetData = abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
-            zrxTokenAddress
+            _zrxTokenAddress
         );
     }
 
@@ -99,7 +99,7 @@ contract ZrxVault is
 
         // deposit ZRX from owner
         zrxAssetProxy.transferFrom(
-            zrxAssetData,
+            _zrxAssetData,
             owner,
             address(this),
             amount
@@ -135,16 +135,6 @@ contract ZrxVault is
         return totalBalance;
     }
 
-    /// @dev Returns the balance in Zrx Tokens of the `owner`
-    /// @return Balance in Zrx.
-    function balanceOf(address owner)
-        external
-        view
-        returns (uint256)
-    {
-        return balances[owner];
-    }
-
     /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
@@ -160,7 +150,7 @@ contract ZrxVault is
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);
 
         // withdraw ZRX to owner
-        zrxToken.transfer(
+        _zrxToken.transfer(
             owner,
             amount
         );
