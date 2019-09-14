@@ -90,17 +90,15 @@ export interface StakeBalances {
     totalDelegatedStakeByPool: StakeBalanceByPool;
 }
 
-export interface RewardVaultBalance {
-    poolBalance: BigNumber;
-    operatorBalance: BigNumber;
-    membersBalance: BigNumber;
-}
-
 export interface RewardVaultBalanceByPoolId {
-    [key: string]: RewardVaultBalance;
+    [key: string]: BigNumber;
 }
 
 export interface OperatorShareByPoolId {
+    [key: string]: BigNumber;
+}
+
+export interface OperatorBalanceByPoolId {
     [key: string]: BigNumber;
 }
 

@@ -210,7 +210,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(rewardVault.operatorOf(poolId), poolId).currentEpochBalance;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(poolById[poolId].operator, poolId).currentEpochBalance;
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
@@ -255,23 +255,13 @@ contract MixinExchangeFees is
                 cobbDouglasAlphaDenominator
             );
 
-            // record reward in vault
-            (, uint256 membersPortion) = rewardVault.recordDepositFor(
+            // pay reward to pool
+            _handleStakingPoolReward(
                 activePools[i].poolId,
                 reward,
-                activePools[i].delegatedStake == 0 // true -> reward is for operator only
+                activePools[i].delegatedStake,
+                currentEpoch
             );
-            totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
-
-            // sync cumulative rewards, if necessary.
-            if (membersPortion > 0) {
-                _recordRewardForDelegators(
-                    activePools[i].poolId,
-                    membersPortion,
-                    activePools[i].delegatedStake,
-                    currentEpoch
-                );
-            }
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;
