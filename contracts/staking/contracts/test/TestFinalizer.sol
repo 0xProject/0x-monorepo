@@ -43,9 +43,13 @@ contract TestFinalizer is
         uint256 amount
     );
 
-    mapping (bytes32 => uint32) internal _operatorSharesByPool;
+    address payable private _rewardReceiver;
+    mapping (bytes32 => uint32) private _operatorSharesByPool;
 
-    constructor() public {
+    /// @param rewardReceiver The address to transfer rewards into when
+    ///        a pool is finalized.
+    constructor(address payable rewardReceiver) public {
+        _rewardReceiver = rewardReceiver;
         init();
     }
 
@@ -91,7 +95,8 @@ contract TestFinalizer is
         require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
         mapping (bytes32 => IStructs.ActivePool) storage activePools =
             _getActivePoolsFromEpoch(currentEpoch);
-        require(feesCollected > 0, "POOL_ALREADY_ADDED");
+        IStructs.ActivePool memory pool = activePools[poolId];
+        require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
         _operatorSharesByPool[poolId] = operatorShare;
         activePools[poolId] = IStructs.ActivePool({
             feesCollected: feesCollected,
@@ -172,6 +177,7 @@ contract TestFinalizer is
     /// @dev Overridden to store inputs and do some really basic math.
     function _depositIntoStakingPoolRewardVault(uint256 amount) internal {
         emit DepositIntoStakingPoolRewardVaultCall(amount);
+        _rewardReceiver.transfer(amount);
     }
 
     /// @dev Overridden to store inputs and do some really basic math.
