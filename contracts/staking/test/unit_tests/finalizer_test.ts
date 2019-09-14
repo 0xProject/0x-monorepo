@@ -756,6 +756,28 @@ blockchainTests.resets('finalizer tests', env => {
                 membersStake: pool.membersStake,
             });
         });
+
+        it('gives all rewards to operator if membersStake is zero', async () => {
+            const pool = await addActivePoolAsync({ membersStake: 0 });
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const actualRewards = await testContract.internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(actualRewards, {
+                operatorReward: INITIAL_BALANCE,
+                membersReward: 0,
+                membersStake: pool.membersStake,
+            });
+        });
+
+        it('gives all rewards to operator if membersStake is zero, even if operatorShare is zero', async () => {
+            const pool = await addActivePoolAsync({ membersStake: 0, operatorShare: 0 });
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const actualRewards = await testContract.internalGetUnfinalizedPoolRewards.callAsync(pool.poolId);
+            assertPoolRewards(actualRewards, {
+                operatorReward: INITIAL_BALANCE,
+                membersReward: 0,
+                membersStake: pool.membersStake,
+            });
+        });
     });
 });
 // tslint:disable: max-file-line-count
