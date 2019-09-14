@@ -44,7 +44,6 @@ contract MixinExchangeFees is
     MixinExchangeManager,
     MixinStakingPool
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.
@@ -137,7 +136,8 @@ contract MixinExchangeFees is
         view
         returns (uint256)
     {
-        return address(this).balance;
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        return address(this).balance.safeAdd(wethBalance);
     }
 
     /// @dev Returns the amount of fees attributed to the input pool.
