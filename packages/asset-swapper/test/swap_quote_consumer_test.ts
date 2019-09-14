@@ -1,6 +1,5 @@
 import { ContractAddresses, ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -8,10 +7,7 @@ import * as chai from 'chai';
 import 'mocha';
 
 import { SwapQuote, SwapQuoteConsumer } from '../src';
-import { constants } from '../src/constants';
-import {
-    ConsumerType,
-} from '../src/types';
+import { ConsumerType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -34,11 +30,9 @@ describe('SwapQuoteConsumer', () => {
     let contractWrappers: ContractWrappers;
     let erc20Token: ERC20TokenContract;
     let userAddresses: string[];
-    let erc20TokenContract: ERC20TokenContract;
     let coinbaseAddress: string;
     let makerAddress: string;
     let takerAddress: string;
-    let fillScenarios: FillScenarios;
     let feeRecipient: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
@@ -58,14 +52,6 @@ describe('SwapQuoteConsumer', () => {
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        fillScenarios = new FillScenarios(
-            provider,
-            userAddresses,
-            contractAddresses.zrxToken,
-            contractAddresses.exchange,
-            contractAddresses.erc20Proxy,
-            contractAddresses.erc721Proxy,
-        );
         const config = {
             networkId,
             contractAddresses,
@@ -79,7 +65,6 @@ describe('SwapQuoteConsumer', () => {
             assetDataUtils.encodeERC20AssetData(takerTokenAddress),
             assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
-        erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -159,17 +144,15 @@ describe('SwapQuoteConsumer', () => {
         describe('valid swap quote', async () => {
             // TODO(david) Check for valid MethodAbi
             it('should provide correct and optimized smart contract params for Forwarder contract when provided corresponding useConsumerType option', async () => {
-                const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
-                    marketSellSwapQuote,
-                    { useConsumerType: ConsumerType.Forwarder },
-                );
+                const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
+                    useConsumerType: ConsumerType.Forwarder,
+                });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
             it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
-                const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
-                    marketSellSwapQuote,
-                    { useConsumerType: ConsumerType.Exchange },
-                );
+                const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
+                    useConsumerType: ConsumerType.Exchange,
+                });
                 expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
             });
         });
@@ -178,17 +161,15 @@ describe('SwapQuoteConsumer', () => {
     describe('getCalldataOrThrow', () => {
         describe('valid swap quote', async () => {
             it('should provide correct and optimized calldata options for Forwarder contract when provided corresponding useConsumerType option', async () => {
-                const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
-                    marketSellSwapQuote,
-                    { useConsumerType: ConsumerType.Forwarder },
-                );
+                const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
+                    useConsumerType: ConsumerType.Forwarder,
+                });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
             it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
-                const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
-                    marketSellSwapQuote,
-                    { useConsumerType: ConsumerType.Exchange },
-                );
+                const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
+                    useConsumerType: ConsumerType.Exchange,
+                });
                 expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
             });
         });
