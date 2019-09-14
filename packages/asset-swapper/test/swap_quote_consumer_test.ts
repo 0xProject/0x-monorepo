@@ -7,7 +7,7 @@ import * as chai from 'chai';
 import 'mocha';
 
 import { SwapQuote, SwapQuoteConsumer } from '../src';
-import { ConsumerType } from '../src/types';
+import { ExtensionContractType } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -145,13 +145,13 @@ describe('SwapQuoteConsumer', () => {
             // TODO(david) Check for valid MethodAbi
             it('should provide correct and optimized smart contract params for Forwarder contract when provided corresponding useConsumerType option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
-                    useConsumerType: ConsumerType.Forwarder,
+                    useExtensionContract: ExtensionContractType.Forwarder,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
             it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
-                    useConsumerType: ConsumerType.Exchange,
+                    useExtensionContract: ExtensionContractType.None,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
             });
@@ -162,13 +162,13 @@ describe('SwapQuoteConsumer', () => {
         describe('valid swap quote', async () => {
             it('should provide correct and optimized calldata options for Forwarder contract when provided corresponding useConsumerType option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
-                    useConsumerType: ConsumerType.Forwarder,
+                    useExtensionContract: ExtensionContractType.Forwarder,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
             it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
-                    useConsumerType: ConsumerType.Exchange,
+                    useExtensionContract: ExtensionContractType.None,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
             });
