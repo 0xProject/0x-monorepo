@@ -33,7 +33,7 @@ export {
     SwapQuote,
     SwapQuoteConsumerOpts,
     CalldataInfo,
-    ConsumerType,
+    ExtensionContractType,
     SwapQuoteGetOutputOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteInfo,
