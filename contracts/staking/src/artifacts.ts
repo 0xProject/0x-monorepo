@@ -11,6 +11,7 @@ import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
 import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
+import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IVaultCore from '../generated-artifacts/IVaultCore.json';
@@ -67,6 +68,7 @@ export const artifacts = {
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,
     IStakingProxy: IStakingProxy as ContractArtifact,
+    IStorage: IStorage as ContractArtifact,
     IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IVaultCore: IVaultCore as ContractArtifact,

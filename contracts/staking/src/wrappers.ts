@@ -9,6 +9,7 @@ export * from '../generated-wrappers/i_staking';
 export * from '../generated-wrappers/i_staking_events';
 export * from '../generated-wrappers/i_staking_pool_reward_vault';
 export * from '../generated-wrappers/i_staking_proxy';
+export * from '../generated-wrappers/i_storage';
 export * from '../generated-wrappers/i_storage_init';
 export * from '../generated-wrappers/i_structs';
 export * from '../generated-wrappers/i_vault_core';

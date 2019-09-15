@@ -9,6 +9,7 @@
         "generated-artifacts/IStakingEvents.json",
         "generated-artifacts/IStakingPoolRewardVault.json",
         "generated-artifacts/IStakingProxy.json",
+        "generated-artifacts/IStorage.json",
         "generated-artifacts/IStorageInit.json",
         "generated-artifacts/IStructs.json",
         "generated-artifacts/IVaultCore.json",

@@ -23,6 +23,7 @@ import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./MixinConstants.sol";
+import "../interfaces/IStorage.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
@@ -32,6 +33,7 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
+    IStorage,
     MixinConstants,
     Ownable
 {
