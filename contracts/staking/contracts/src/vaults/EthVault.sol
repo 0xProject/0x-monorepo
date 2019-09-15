@@ -31,7 +31,7 @@ contract EthVault is
     using LibSafeMath for uint256;
 
     // mapping from Owner to ETH balance
-    mapping (address => uint256) public balances;
+    mapping (address => uint256) internal _balances;
 
     /// @dev Constructor.
     constructor()
@@ -48,7 +48,7 @@ contract EthVault is
     {
         // update balance
         uint256 amount = msg.value;
-        balances[owner] = balances[owner].safeAdd(msg.value);
+        _balances[owner] = _balances[owner].safeAdd(msg.value);
 
         // notify
         emit EthDepositedIntoVault(msg.sender, owner, amount);
@@ -71,11 +71,21 @@ contract EthVault is
     {
         // get total balance
         address payable owner = msg.sender;
-        totalBalance = balances[owner];
+        totalBalance = _balances[owner];
 
         // withdraw ETH to owner
         _withdrawFrom(owner, totalBalance);
         return totalBalance;
+    }
+
+    /// @dev Returns the balance in ETH of the `owner`
+    /// @return Balance in ETH.
+    function balanceOf(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _balances[owner];
     }
 
     /// @dev Withdraw an `amount` of ETH to `owner` from the vault.
@@ -87,7 +97,7 @@ contract EthVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner].safeSub(amount);
+        _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
         emit EthWithdrawnFromVault(msg.sender, owner, amount);

@@ -40,7 +40,7 @@ contract ZrxVault is
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
-    mapping (address => uint256) public balances;
+    mapping (address => uint256) internal _balances;
 
     // Zrx Asset Proxy
     IAssetProxy public zrxAssetProxy;
@@ -92,7 +92,7 @@ contract ZrxVault is
         onlyNotInCatastrophicFailure
     {
         // update balance
-        balances[owner] = balances[owner].safeAdd(amount);
+        _balances[owner] = _balances[owner].safeAdd(amount);
 
         // notify
         emit ZrxDepositedIntoVault(msg.sender, owner, amount);
@@ -128,11 +128,21 @@ contract ZrxVault is
         returns (uint256)
     {
         // get total balance
-        uint256 totalBalance = balances[owner];
+        uint256 totalBalance = _balances[owner];
 
         // withdraw ZRX to owner
         _withdrawFrom(owner, totalBalance);
         return totalBalance;
+    }
+
+    /// @dev Returns the balance in Zrx Tokens of the `owner`
+    /// @return Balance in Zrx.
+    function balanceOf(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _balances[owner];
     }
 
     /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
@@ -144,7 +154,7 @@ contract ZrxVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner].safeSub(amount);
+        _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);

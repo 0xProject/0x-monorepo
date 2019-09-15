@@ -86,7 +86,7 @@ contract MixinStakeStorage is
         balance = balancePtr;
         // sync
         uint256 currentEpoch_ = currentEpoch;
-        if (currentEpoch > balance.currentEpoch) {
+        if (currentEpoch_ > balance.currentEpoch) {
             balance.currentEpoch = currentEpoch_.downcastToUint32();
             balance.currentEpochBalance = balance.nextEpochBalance;
         }

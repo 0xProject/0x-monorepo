@@ -129,15 +129,15 @@ blockchainTests.resets('Testing Rewards', env => {
                     poolId,
                     stakers[0].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balances.callAsync(stakers[0].getOwner()),
+                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[0].getOwner()),
                 // staker 2
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
                     poolId,
                     stakers[1].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balances.callAsync(stakers[1].getOwner()),
+                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
                 // operator
-                stakingApiWrapper.ethVaultContract.balances.callAsync(poolOperator),
+                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
             ]);
             expect(finalEndBalancesAsArray[0], 'stakerRewardVaultBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_1,

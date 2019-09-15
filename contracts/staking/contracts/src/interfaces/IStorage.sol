@@ -26,7 +26,7 @@ import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
-contract IStorage {
+interface IStorage {
 
     function wethAssetProxy()
         external
