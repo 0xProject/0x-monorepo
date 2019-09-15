@@ -21,6 +21,9 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
+import "../interfaces/IEthVault.sol";
+import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IZrxVault.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
@@ -34,39 +37,37 @@ contract MixinParams is
     /// @param _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
-    /// @param _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
+    /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
         uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
-        uint32 _cobbDouglasAlphaDenomintor
+        uint32 _cobbDouglasAlphaDenominator,
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
     )
         external
         onlyOwner
     {
-        _assertValidRewardDelegatedStakeWeight(_rewardDelegatedStakeWeight);
-        _assertValidMaximumMakersInPool(_maximumMakersInPool);
-        _assertValidCobbDouglasAlpha(
+        _setParams(
+            _epochDurationInSeconds,
+            _rewardDelegatedStakeWeight,
+            _minimumPoolStake,
+            _maximumMakersInPool,
             _cobbDouglasAlphaNumerator,
-            _cobbDouglasAlphaDenomintor
-        );
-
-        epochDurationInSeconds = _epochDurationInSeconds;
-        rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
-        minimumPoolStake = _minimumPoolStake;
-        maximumMakersInPool = _maximumMakersInPool;
-        cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
-        cobbDouglasAlphaDenomintor = _cobbDouglasAlphaDenomintor;
-
-        emit ParamsChanged(
-            epochDurationInSeconds,
-            rewardDelegatedStakeWeight,
-            minimumPoolStake,
-            maximumMakersInPool,
-            cobbDouglasAlphaNumerator,
-            cobbDouglasAlphaDenomintor
+            _cobbDouglasAlphaDenominator,
+            _wethProxyAddress,
+            _ethVaultAddress,
+            _rewardVaultAddress,
+            _zrxVaultAddress
         );
     }
 
@@ -76,7 +77,11 @@ contract MixinParams is
     /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @return _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
-    /// @return _cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
+    /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
+    /// @return _wethProxyAddress The address that can transfer WETH for fees.
+    /// @return _ethVaultAddress Address of the EthVault contract.
+    /// @return _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @return _zrxVaultAddress Address of the ZrxVault contract.
     function getParams()
         external
         view
@@ -86,7 +91,11 @@ contract MixinParams is
             uint256 _minimumPoolStake,
             uint256 _maximumMakersInPool,
             uint32 _cobbDouglasAlphaNumerator,
-            uint32 _cobbDouglasAlphaDenomintor
+            uint32 _cobbDouglasAlphaDenominator,
+            address _wethProxyAddress,
+            address _ethVaultAddress,
+            address _rewardVaultAddress,
+            address _zrxVaultAddress
         )
     {
         _epochDurationInSeconds = epochDurationInSeconds;
@@ -94,7 +103,11 @@ contract MixinParams is
         _minimumPoolStake = minimumPoolStake;
         _maximumMakersInPool = maximumMakersInPool;
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
-        _cobbDouglasAlphaDenomintor = cobbDouglasAlphaDenomintor;
+        _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenomintor;
+        _wethProxyAddress = address(wethAssetProxy);
+        _ethVaultAddress = address(ethVault);
+        _rewardVaultAddress = address(rewardVault);
+        _zrxVaultAddress = address(_zrxVaultAddress);
     }
 
     /// @dev Assert param values before initializing them.
@@ -108,7 +121,11 @@ contract MixinParams is
             minimumPoolStake != 0 &&
             maximumMakersInPool != 0 &&
             cobbDouglasAlphaNumerator != 0 &&
-            cobbDouglasAlphaDenomintor != 0
+            cobbDouglasAlphaDenomintor != 0 &&
+            address(wethAssetProxy) != NIL_ADDRESS &&
+            address(ethVault) != NIL_ADDRESS &&
+            address(rewardVault) != NIL_ADDRESS &&
+            address(zrxVault) != NIL_ADDRESS
         ) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
@@ -118,20 +135,105 @@ contract MixinParams is
         }
     }
 
-    /// @dev Initialize storage belonging to this mixin.
-    function _initMixinParams()
+    /// @dev Initialzize storage belonging to this mixin.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function _initMixinParams(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
+    )
         internal
     {
         // assert the current values before overwriting them.
         _assertMixinParamsBeforeInit();
 
         // Set up defaults.
-        epochDurationInSeconds = 2 weeks;
-        rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
-        minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
-        maximumMakersInPool = 10;
-        cobbDouglasAlphaNumerator = 1;
-        cobbDouglasAlphaDenomintor = 2;
+        _epochDurationInSeconds = 2 weeks;
+        _rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
+        _minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
+        _maximumMakersInPool = 10;
+        _cobbDouglasAlphaNumerator = 1;
+        _cobbDouglasAlphaDenomintor = 2;
+        _setParams(
+            _epochDurationInSeconds,
+            _rewardDelegatedStakeWeight,
+            _minimumPoolStake,
+            _maximumMakersInPool,
+            _cobbDouglasAlphaNumerator,
+            _cobbDouglasAlphaDenomintor,
+            _wethProxyAddress,
+            _ethVaultAddress,
+            _rewardVaultAddress,
+            _zrxVaultAddress
+        );
+    }
+
+    /// @dev Set all configurable parameters at once.
+    /// @param _epochDurationInSeconds Minimum seconds between epochs.
+    /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
+    /// @param _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
+    /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
+    /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
+    /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function _setParams(
+        uint256 _epochDurationInSeconds,
+        uint32 _rewardDelegatedStakeWeight,
+        uint256 _minimumPoolStake,
+        uint256 _maximumMakersInPool,
+        uint32 _cobbDouglasAlphaNumerator,
+        uint32 _cobbDouglasAlphaDenominator,
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
+    )
+        internal
+    {
+        _assertValidRewardDelegatedStakeWeight(_rewardDelegatedStakeWeight);
+        _assertValidMaximumMakersInPool(_maximumMakersInPool);
+        _assertValidCobbDouglasAlpha(
+            _cobbDouglasAlphaNumerator,
+            _cobbDouglasAlphaDenominator
+        );
+        _assertValidAddresses(
+            _wethProxyAddress,
+            _ethVaultAddress,
+            _rewardVaultAddress,
+            _zrxVaultAddress
+        );
+        // TODO: set boundaries on some of these params
+
+        epochDurationInSeconds = _epochDurationInSeconds;
+        rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
+        minimumPoolStake = _minimumPoolStake;
+        maximumMakersInPool = _maximumMakersInPool;
+        cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
+        cobbDouglasAlphaDenomintor = _cobbDouglasAlphaDenominator;
+        wethAssetProxy = IAssetProxy(_wethProxyAddress);
+        ethVault = IEthVault(_ethVaultAddress);
+        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
+        zrxVault = IZrxVault(_zrxVaultAddress);
+
+        emit ParamsSet(
+            _epochDurationInSeconds,
+            _rewardDelegatedStakeWeight,
+            _minimumPoolStake,
+            _maximumMakersInPool,
+            _cobbDouglasAlphaNumerator,
+            _cobbDouglasAlphaDenominator,
+            _wethProxyAddress,
+            _ethVaultAddress,
+            _rewardVaultAddress,
+            _zrxVaultAddress
+        );
     }
 
     /// @dev Asserts that cobb douglas alpha values are valid.
@@ -181,6 +283,49 @@ contract MixinParams is
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
+            ));
+        }
+    }
+
+    /// @dev Asserts that passed in addresses are non-zero.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function _assertValidVaultAddresses(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
+    )
+        private
+        pure
+    {
+        if (_wethProxyAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidWethProxyAddress
+            ));
+        }
+
+        if (_ethVaultAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress
+            ));
+        }
+
+        if (_rewardVaultAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress
+            ));
+        }
+
+        if (_zrxVaultAddress == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidZrxVaultAddress
             ));
         }
     }

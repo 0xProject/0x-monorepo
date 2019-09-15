@@ -41,7 +41,11 @@ library LibStakingRichErrors {
     enum InvalidParamValueErrorCode {
         InvalidCobbDouglasAlpha,
         InvalidRewardDelegatedStakeWeight,
-        InvalidMaximumMakersInPool
+        InvalidMaximumMakersInPool,
+        InvalidWethProxyAddress,
+        InvalidEthVaultAddress,
+        InvalidRewardVaultAddress,
+        InvalidZrxVaultAddress
     }
 
     enum MakerPoolAssignmentErrorCodes {

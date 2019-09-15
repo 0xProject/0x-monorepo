@@ -60,13 +60,19 @@ interface IStakingEvents {
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    event ParamsChanged(
+    /// @param ethVaultAddress Address of the EthVault contract.
+    /// @param rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param zrxVaultAddress Address of the ZrxVault contract.
+    event ParamsSet(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,
         uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
-        uint256 cobbDouglasAlphaDenomintor
+        uint256 cobbDouglasAlphaDenomintor,
+        address ethVaultAddress,
+        address rewardVaultAddress,
+        address zrxVaultAddress
     );
 
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.

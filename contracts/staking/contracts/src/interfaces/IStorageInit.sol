@@ -22,5 +22,15 @@ pragma solidity ^0.5.9;
 interface IStorageInit {
 
     /// @dev Initialize storage owned by this contract.
-    function init() external;
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function init(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
+    )
+        external;
 }
