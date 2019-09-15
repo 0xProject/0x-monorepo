@@ -167,7 +167,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
                 assertNoWETHTransferLogs(receipt.logs);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
 
@@ -180,7 +180,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
                 assertNoWETHTransferLogs(receipt.logs);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(ZERO_AMOUNT);
             });
 
@@ -198,7 +198,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 await payAsync();
                 await payAsync();
                 const expectedTotalFees = DEFAULT_PROTOCOL_FEE_PAID.times(2);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(expectedTotalFees);
             });
         });
@@ -238,7 +238,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     { from: exchangeAddress, value: ZERO_AMOUNT },
                 );
                 assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
 
@@ -251,7 +251,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     { from: exchangeAddress, value: ZERO_AMOUNT },
                 );
                 assertWETHTransferLogs(receipt.logs, payerAddress, DEFAULT_PROTOCOL_FEE_PAID);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(ZERO_AMOUNT);
             });
 
@@ -269,7 +269,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 await payAsync();
                 await payAsync();
                 const expectedTotalFees = DEFAULT_PROTOCOL_FEE_PAID.times(2);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(expectedTotalFees);
             });
 
@@ -289,7 +289,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 await payAsync(true);
                 await payAsync(false);
                 const expectedTotalFees = DEFAULT_PROTOCOL_FEE_PAID.times(2);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(expectedTotalFees);
             });
         });
@@ -309,7 +309,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 await payAsync(makerAddress);
                 await payAsync(otherMakerAddress);
                 const expectedTotalFees = DEFAULT_PROTOCOL_FEE_PAID.times(2);
-                const poolFees = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const poolFees = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(poolFees).to.bignumber.eq(expectedTotalFees);
             });
 
@@ -330,8 +330,8 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                 await payAsync(poolId, makerAddress, fee);
                 await payAsync(otherPoolId, otherMakerAddress, otherFee);
                 const [poolFees, otherPoolFees] = await Promise.all([
-                    testContract.getProtocolFeesThisEpochByPool.callAsync(poolId),
-                    testContract.getProtocolFeesThisEpochByPool.callAsync(otherPoolId),
+                    testContract.protocolFeesThisEpochByPool.callAsync(poolId),
+                    testContract.protocolFeesThisEpochByPool.callAsync(otherPoolId),
                 ]);
                 expect(poolFees).to.bignumber.eq(fee);
                 expect(otherPoolFees).to.bignumber.eq(otherFee);
@@ -347,7 +347,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     DEFAULT_PROTOCOL_FEE_PAID,
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
-                const feesCredited = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const feesCredited = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
 
@@ -359,7 +359,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     DEFAULT_PROTOCOL_FEE_PAID,
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
-                const feesCredited = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const feesCredited = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);
             });
 
@@ -371,7 +371,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
                     DEFAULT_PROTOCOL_FEE_PAID,
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
-                const feesCredited = await testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+                const feesCredited = await testContract.protocolFeesThisEpochByPool.callAsync(poolId);
                 expect(feesCredited).to.bignumber.eq(0);
             });
         });

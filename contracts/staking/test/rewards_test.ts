@@ -119,25 +119,25 @@ blockchainTests.resets('Testing Rewards', env => {
                         ? _expectedEndBalances.membersRewardVaultBalance
                         : ZERO,
             };
+            const pool = await stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
+            const operatorBalance = pool[2];
+            const membersBalance = pool[3];
+            const poolBalances = { poolBalance: operatorBalance.plus(membersBalance), operatorBalance, membersBalance };
             const finalEndBalancesAsArray = await Promise.all([
                 // staker 1
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
                     poolId,
                     stakers[0].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[0].getOwner()),
+                stakingApiWrapper.ethVaultContract.balances.callAsync(stakers[0].getOwner()),
                 // staker 2
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
                     poolId,
                     stakers[1].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
+                stakingApiWrapper.ethVaultContract.balances.callAsync(stakers[1].getOwner()),
                 // operator
-                stakingApiWrapper.rewardVaultContract.balanceOfOperator.callAsync(poolId),
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
-                // undivided balance in reward pool
-                stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(poolId),
-                stakingApiWrapper.rewardVaultContract.balanceOfMembers.callAsync(poolId),
+                stakingApiWrapper.ethVaultContract.balances.callAsync(poolOperator),
             ]);
             expect(finalEndBalancesAsArray[0], 'stakerRewardVaultBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_1,
@@ -151,16 +151,17 @@ blockchainTests.resets('Testing Rewards', env => {
             expect(finalEndBalancesAsArray[3], 'stakerEthVaultBalance_2').to.be.bignumber.equal(
                 expectedEndBalances.stakerEthVaultBalance_2,
             );
-            expect(finalEndBalancesAsArray[4], 'operatorRewardVaultBalance').to.be.bignumber.equal(
-                expectedEndBalances.operatorRewardVaultBalance,
-            );
-            expect(finalEndBalancesAsArray[5], 'operatorEthVaultBalance').to.be.bignumber.equal(
+
+            expect(finalEndBalancesAsArray[4], 'operatorEthVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.operatorEthVaultBalance,
             );
-            expect(finalEndBalancesAsArray[6], 'poolRewardVaultBalance').to.be.bignumber.equal(
+            expect(poolBalances.operatorBalance, 'operatorRewardVaultBalance').to.be.bignumber.equal(
+                expectedEndBalances.operatorRewardVaultBalance,
+            );
+            expect(poolBalances.poolBalance, 'poolRewardVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.poolRewardVaultBalance,
             );
-            expect(finalEndBalancesAsArray[7], 'membersRewardVaultBalance').to.be.bignumber.equal(
+            expect(poolBalances.membersBalance, 'membersRewardVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.membersRewardVaultBalance,
             );
         };

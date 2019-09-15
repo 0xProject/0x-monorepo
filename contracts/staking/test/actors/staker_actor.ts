@@ -171,7 +171,7 @@ export class StakerActor extends BaseActor {
         const stakerBalances: StakeBalances = {
             zrxBalance: await this._stakingApiWrapper.zrxTokenContract.balanceOf.callAsync(this._owner),
             stakeBalance: await this._stakingApiWrapper.stakingContract.getTotalStake.callAsync(this._owner),
-            stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balanceOf.callAsync(this._owner),
+            stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balances.callAsync(this._owner),
             withdrawableStakeBalance: await this._stakingApiWrapper.stakingContract.getWithdrawableStake.callAsync(
                 this._owner,
             ),

@@ -40,7 +40,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const nextPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
+            const nextPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
             expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
         });
         it('Should fail to create a pool with operator share > 100', async () => {
@@ -66,7 +66,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const nextPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
+            const nextPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
             expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
         });
         it('Should throw if operatorShare is > PPM_DENOMINATOR', async () => {
@@ -138,7 +138,7 @@ blockchainTests('Staking Pool Management', env => {
             );
 
             // check the number of makers in the pool
-            let numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
+            let numMakers = await stakingApiWrapper.stakingContract.numMakersByPoolId.callAsync(poolId);
             expect(numMakers, 'number of makers in pool after adding').to.be.bignumber.equal(3);
 
             // remove maker from pool
@@ -149,7 +149,7 @@ blockchainTests('Staking Pool Management', env => {
             );
 
             // check the number of makers in the pool
-            numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
+            numMakers = await stakingApiWrapper.stakingContract.numMakersByPoolId.callAsync(poolId);
             expect(numMakers, 'number of makers in pool after removing').to.be.bignumber.equal(0);
         });
         it('Should fail if maker already assigned to another pool tries to join', async () => {
@@ -337,7 +337,7 @@ blockchainTests('Staking Pool Management', env => {
             );
 
             // check the number of makers in the pool
-            const numMakers = await stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(poolId);
+            const numMakers = await stakingApiWrapper.stakingContract.numMakersByPoolId.callAsync(poolId);
             expect(numMakers, 'number of makers in pool').to.be.bignumber.equal(
                 stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
             );

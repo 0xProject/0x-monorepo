@@ -27,18 +27,14 @@ blockchainTests('Exchange Integrations', env => {
     });
     blockchainTests.resets('Exchange Tracking in Staking Contract', () => {
         it('basic exchange tracking', async () => {
-            const {
-                isValidExchangeAddress,
-                addExchangeAddress,
-                removeExchangeAddress,
-            } = stakingApiWrapper.stakingContract;
+            const { validExchanges, addExchangeAddress, removeExchangeAddress } = stakingApiWrapper.stakingContract;
             // 1 try querying an invalid addresses
             const invalidAddress = '0x0000000000000000000000000000000000000001';
-            const isInvalidAddressValid = await isValidExchangeAddress.callAsync(invalidAddress);
+            const isInvalidAddressValid = await validExchanges.callAsync(invalidAddress);
             expect(isInvalidAddressValid).to.be.false();
             // 2 add valid address
             await addExchangeAddress.awaitTransactionSuccessAsync(exchange);
-            const isValidAddressValid = await isValidExchangeAddress.callAsync(exchange);
+            const isValidAddressValid = await validExchanges.callAsync(exchange);
             expect(isValidAddressValid).to.be.true();
             // 3 try adding valid address again
             let revertError = new StakingRevertErrors.ExchangeAddressAlreadyRegisteredError(exchange);
@@ -46,7 +42,7 @@ blockchainTests('Exchange Integrations', env => {
             await expect(tx).to.revertWith(revertError);
             // 4 remove valid address
             await removeExchangeAddress.awaitTransactionSuccessAsync(exchange);
-            const isValidAddressStillValid = await isValidExchangeAddress.callAsync(exchange);
+            const isValidAddressStillValid = await validExchanges.callAsync(exchange);
             expect(isValidAddressStillValid).to.be.false();
             // 5 try removing valid address again
             revertError = new StakingRevertErrors.ExchangeAddressNotRegisteredError(exchange);
