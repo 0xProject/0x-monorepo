@@ -37,7 +37,7 @@ contract MixinStakeBalances is
     /// @param owner of stake.
     /// @return Total active stake for owner.
     function getTotalStake(address owner)
-        public
+        external
         view
         returns (uint256)
     {
@@ -48,7 +48,7 @@ contract MixinStakeBalances is
     /// @param owner of stake.
     /// @return Active stake for owner.
     function getActiveStake(address owner)
-        public
+        external
         view
         returns (IStructs.StakeBalance memory balance)
     {
@@ -63,11 +63,26 @@ contract MixinStakeBalances is
     /// @param owner of stake.
     /// @return Inactive stake for owner.
     function getInactiveStake(address owner)
-        public
+        external
         view
         returns (IStructs.StakeBalance memory balance)
     {
         IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_inactiveStakeByOwner[owner]);
+        return IStructs.StakeBalance({
+            currentEpochBalance: storedBalance.currentEpochBalance,
+            nextEpochBalance: storedBalance.nextEpochBalance
+        });
+    }
+
+    /// @dev Returns the stake delegated by a given owner.
+    /// @param owner of stake.
+    /// @return Delegated stake for owner.
+    function getStakeDelegatedByOwner(address owner)
+        external
+        view
+        returns (IStructs.StakeBalance memory balance)
+    {
+        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -83,21 +98,6 @@ contract MixinStakeBalances is
         returns (uint256)
     {
         return _computeWithdrawableStake(owner, _withdrawableStakeByOwner[owner]);
-    }
-
-    /// @dev Returns the stake delegated by a given owner.
-    /// @param owner of stake.
-    /// @return Delegated stake for owner.
-    function getStakeDelegatedByOwner(address owner)
-        public
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByOwner[owner]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
     }
 
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
