@@ -107,7 +107,8 @@ contract MixinStakingPool is
         return poolId;
     }
 
-    // TODO: comment
+    /// @dev Allows caller to join a staking pool if already assigned.
+    /// @param poolId Unique id of pool.
     function joinStakingPoolAsMaker(bytes32 poolId)
         external
     {
