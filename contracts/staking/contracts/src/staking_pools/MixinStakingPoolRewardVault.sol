@@ -67,16 +67,6 @@ contract MixinStakingPoolRewardVault is
         _;
     }
 
-    /// @dev Sets the address of the reward vault.
-    /// This can only be called by the owner of this contract.
-    function setStakingPoolRewardVault(address payable rewardVaultAddress)
-        external
-        onlyOwner
-    {
-        rewardVault = IStakingPoolRewardVault(rewardVaultAddress);
-        emit StakingPoolRewardVaultChanged(rewardVaultAddress);
-    }
-
     /// @dev Decreases the operator share for the given pool (i.e. increases pool rewards for members).
     /// Note that this is only callable by the pool operator, and will revert if the new operator
     /// share value is greater than the old value.

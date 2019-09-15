@@ -134,10 +134,4 @@ interface IStakingEvents {
         bytes32 poolId,
         address makerAddress
     );
-
-    /// @dev Emitted by MixinStakingPoolRewardVault when the vault's address is changed.
-    /// @param rewardVaultAddress Address of new reward vault.
-    event StakingPoolRewardVaultChanged(
-        address rewardVaultAddress
-    );
 }

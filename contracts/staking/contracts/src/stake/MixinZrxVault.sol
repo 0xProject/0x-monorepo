@@ -27,15 +27,6 @@ import "../immutable/MixinStorage.sol";
 contract MixinZrxVault is
     MixinStorage
 {
-    /// @dev Set the Zrx Vault.
-    /// @param zrxVaultAddress Address of the Zrx Vault.
-    function setZrxVault(address zrxVaultAddress)
-        external
-        onlyOwner
-    {
-        zrxVault = IZrxVault(zrxVaultAddress);
-    }
-
     /// @dev Deposits Zrx Tokens from the `owner` into the vault.
     /// @param owner of Zrx Tokens
     /// @param amount of tokens to deposit.
@@ -43,10 +34,6 @@ contract MixinZrxVault is
         internal
     {
         IZrxVault _zrxVault = zrxVault;
-        require(
-            address(_zrxVault) != address(0),
-            "INVALID_ZRX_VAULT"
-        );
         _zrxVault.depositFrom(owner, amount);
     }
 
@@ -57,10 +44,6 @@ contract MixinZrxVault is
         internal
     {
         IZrxVault _zrxVault = zrxVault;
-        require(
-            address(_zrxVault) != address(0),
-            "INVALID_ZRX_VAULT"
-        );
         _zrxVault.withdrawFrom(owner, amount);
     }
 
@@ -72,10 +55,6 @@ contract MixinZrxVault is
         returns (uint256)
     {
         IZrxVault _zrxVault = zrxVault;
-        require(
-            address(_zrxVault) != address(0),
-            "INVALID_ZRX_VAULT"
-        );
         return _zrxVault.balanceOf(owner);
     }
 }
