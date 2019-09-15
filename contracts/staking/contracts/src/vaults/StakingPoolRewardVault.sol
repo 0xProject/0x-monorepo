@@ -57,7 +57,7 @@ contract StakingPoolRewardVault is
     function ()
         external
         payable
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
@@ -89,7 +89,7 @@ contract StakingPoolRewardVault is
         bool operatorOnly
     )
         external
-        onlyStakingContract
+        onlyStakingProxy
         returns (
             uint256 operatorPortion,
             uint256 membersPortion
@@ -110,7 +110,7 @@ contract StakingPoolRewardVault is
         uint256 amount
     )
         external
-        onlyStakingContract
+        onlyStakingProxy
     {
         if (amount == 0) {
             return;
@@ -144,7 +144,7 @@ contract StakingPoolRewardVault is
         uint256 amount
     )
         external
-        onlyStakingContract
+        onlyStakingProxy
     {
         if (amount == 0) {
             return;
@@ -178,7 +178,7 @@ contract StakingPoolRewardVault is
         uint32 operatorShare
     )
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // operator share must be a valid fraction
@@ -214,7 +214,7 @@ contract StakingPoolRewardVault is
     /// @param newOperatorShare The newly decreased percentage of any rewards owned by the operator.
     function decreaseOperatorShare(bytes32 poolId, uint32 newOperatorShare)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         uint32 oldOperatorShare = poolById[poolId].operatorShare;

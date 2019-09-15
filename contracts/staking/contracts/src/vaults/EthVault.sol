@@ -34,8 +34,9 @@ contract EthVault is
     mapping (address => uint256) internal _balances;
 
     /// @dev Constructor.
-    constructor()
+    constructor(address _stakingProxyAddress)
         public
+        MixinVaultCore(_stakingProxyAddress)
     {} // solhint-disable-line no-empty-blocks
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
