@@ -48,7 +48,6 @@ export {
     MarketSellSwapQuoteWithAffiliateFee,
     LiquidityForAssetData,
     OrdersAndFillableAmounts,
-    OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,

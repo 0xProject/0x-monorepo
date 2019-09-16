@@ -74,9 +74,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
     }
 
     /**
-     * Retrieves the entire orderbook for the asset pair. If websocket is available
-     * a subscription will be created to keep these orders up to date. If no websocket
-     * connection is available calling this function will fetch orders from the SRA endpoint.
+     * Creates a subscription for all asset pairs in Mesh.
      * @param makerAssetData the Maker Asset Data
      * @param takerAssetData the Taker Asset Data
      */

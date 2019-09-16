@@ -42,7 +42,7 @@
     "dependencies": {
         "@0x/orderbook": "^0.0.1",
         "@0x/assert": "^2.1.4",
-        "@0x/connect": "^5.0.17",
+        "@0x/connect": "^5.0.18",
         "@0x/contract-addresses": "^3.1.0",
         "@0x/contract-wrappers": "^12.0.0",
         "@0x/dev-utils": "^2.3.2",

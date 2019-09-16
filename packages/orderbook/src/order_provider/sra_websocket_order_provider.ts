@@ -83,15 +83,15 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
             }
         }
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        const subcriptionOpts = {
+        const subscriptionOpts = {
             makerAssetData,
             takerAssetData,
         };
-        this._wsSubscriptions.set(assetPairKey, subcriptionOpts);
+        this._wsSubscriptions.set(assetPairKey, subscriptionOpts);
         // Subscribe to both sides of the book
-        this._ordersChannel.subscribe(subcriptionOpts);
+        this._ordersChannel.subscribe(subscriptionOpts);
         this._ordersChannel.subscribe({
-            ...subcriptionOpts,
+            ...subscriptionOpts,
             makerAssetData: takerAssetData,
             takerAssetData: makerAssetData,
         });

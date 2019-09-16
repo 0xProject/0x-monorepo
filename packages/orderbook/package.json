@@ -27,7 +27,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
-        "@0x/types": "^2.4.1",
+        "@0x/types": "^2.4.2",
         "@types/jest": "^24.0.17",
         "@types/sinon": "^2.2.2",
         "@types/websocket": "^0.0.39",
@@ -38,10 +38,10 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/assert": "^2.1.4",
-        "@0x/connect": "^5.0.17",
+        "@0x/assert": "^2.1.5",
+        "@0x/connect": "^5.0.18",
         "@0x/mesh-rpc-client": "^3.0.1-beta",
-        "@0x/order-utils": "^8.3.0",
-        "@0x/utils": "^4.5.0"
+        "@0x/order-utils": "^8.3.1",
+        "@0x/utils": "^4.5.1"
     }
 }

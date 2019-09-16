@@ -29,17 +29,6 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
 }
 
 /**
- * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
- * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
- * getAvailableTakerAssetDatasAsync: Given a maker asset data string, return all availabled paired taker asset data strings.
- */
-export interface OrderProvider {
-    getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
-    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
-    getAvailableTakerAssetDatasAsync: (makerAssetData: string) => Promise<string[]>;
-}
-
-/**
  * Represents the metadata to call a smart contract with calldata.
  * calldataHexString: The hexstring of the calldata.
  * methodAbi: The ABI of the smart contract method to call.
