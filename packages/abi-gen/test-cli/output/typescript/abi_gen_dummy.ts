@@ -31,11 +31,11 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-export type AbiGenDummyEventArgs = AbiGenDummyWithdrawalEventArgs | AbiGenDummyAnEventEventArgs;
+export type AbiGenDummyEventArgs = AbiGenDummyWithdrawalEventArgs | AbiGenDummySimpleEventEventArgs;
 
 export enum AbiGenDummyEvents {
     Withdrawal = 'Withdrawal',
-    AnEvent = 'AnEvent',
+    SimpleEvent = 'SimpleEvent',
 }
 
 export interface AbiGenDummyWithdrawalEventArgs extends DecodedLogArgs {
@@ -43,8 +43,9 @@ export interface AbiGenDummyWithdrawalEventArgs extends DecodedLogArgs {
     _value: BigNumber;
 }
 
-export interface AbiGenDummyAnEventEventArgs extends DecodedLogArgs {
-    param: number;
+export interface AbiGenDummySimpleEventEventArgs extends DecodedLogArgs {
+    someBytes: string;
+    someString: string;
 }
 
 /* istanbul ignore next */
@@ -1809,6 +1810,147 @@ export class AbiGenDummyContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    public emitSimpleEvent = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.emitSimpleEvent.estimateGasAsync.bind(self),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            const self = (this as any) as AbiGenDummyContract;
+            const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).emitSimpleEvent.callAsync(txData);
+            const txHash = await (this as any).emitSimpleEvent.sendTransactionAsync(txData);
+            return txHash;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('emitSimpleEvent()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('emitSimpleEvent()', []);
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('emitSimpleEvent()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('emitSimpleEvent()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
     /**
      * a method that returns a struct
      */
@@ -2713,6 +2855,15 @@ export class AbiGenDummyContract extends BaseContract {
                 type: 'function',
             },
             {
+                constant: false,
+                inputs: [],
+                name: 'emitSimpleEvent',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
                 constant: true,
                 inputs: [],
                 name: 'structOutput',
@@ -2822,12 +2973,17 @@ export class AbiGenDummyContract extends BaseContract {
                 anonymous: false,
                 inputs: [
                     {
-                        name: 'param',
-                        type: 'uint8',
+                        name: 'someBytes',
+                        type: 'bytes',
+                        indexed: false,
+                    },
+                    {
+                        name: 'someString',
+                        type: 'string',
                         indexed: false,
                     },
                 ],
-                name: 'AnEvent',
+                name: 'SimpleEvent',
                 outputs: [],
                 type: 'event',
             },
