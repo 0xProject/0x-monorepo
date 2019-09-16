@@ -48,9 +48,6 @@ export {
     MarketSellSwapQuoteWithAffiliateFee,
     LiquidityForAssetData,
     OrdersAndFillableAmounts,
-    OrderProviderRequest,
-    OrderProviderResponse,
-    SignedOrderWithRemainingFillableMakerAssetAmount,
     SwapQuoteConsumerBase,
     SwapQuoteRequestOpts,
 } from './types';
