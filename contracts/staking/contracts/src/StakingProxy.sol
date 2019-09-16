@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
+
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
@@ -96,7 +97,7 @@ contract StakingProxy is
         emit ReadOnlyModeSet(readOnlyMode);
     }
 
-    /// @dev Batch executes a series of calls to the exchange contract.
+    /// @dev Batch executes a series of calls to the staking contract.
     /// @param data An array of data that encodes a sequence of functions to
     ///             call in the staking contracts.
     function batchExecute(bytes[] calldata data)
