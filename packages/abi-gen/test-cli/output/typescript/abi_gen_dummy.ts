@@ -82,12 +82,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRequire()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
@@ -95,6 +101,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
@@ -140,6 +151,7 @@ export class AbiGenDummyContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param a the array of bytes being accepted
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(a: string[]): string {
             assert.isArray('a', a);
@@ -147,13 +159,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('acceptsAnArrayOfBytes(bytes[])', [a]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string[]] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string[]]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
@@ -201,6 +223,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -210,6 +233,11 @@ export class AbiGenDummyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleInputSimpleOutput(uint256)');
@@ -217,6 +245,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleInputSimpleOutput(uint256)');
@@ -350,6 +383,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(wad: BigNumber): string {
             assert.isBigNumber('wad', wad);
@@ -357,13 +391,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [BigNumber] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
@@ -419,6 +463,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: BigNumber, index_1: string, index_2: string): string {
             assert.isBigNumber('index_0', index_0);
@@ -431,13 +476,23 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [string, string, string] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [BigNumber, string, string] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('multiInputMultiOutput(uint256,bytes,string)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, string]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, string, string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [string, string, string] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('multiInputMultiOutput(uint256,bytes,string)');
@@ -510,6 +565,7 @@ export class AbiGenDummyContract extends BaseContract {
          * @param v some v, recovery id
          * @param r ECDSA r output
          * @param s ECDSA s output
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(hash: string, v: number | BigNumber, r: string, s: string): string {
             assert.isString('hash', hash);
@@ -523,6 +579,11 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
@@ -530,6 +591,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
@@ -570,6 +636,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(a: string): string {
             assert.isString('a', a);
@@ -577,13 +644,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('acceptsBytes(bytes)', [a]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
@@ -626,19 +703,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('noInputSimpleOutput()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('noInputSimpleOutput()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('noInputSimpleOutput()');
@@ -678,12 +766,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('revertWithConstant()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
@@ -691,6 +785,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
@@ -730,12 +829,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRevert()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
@@ -743,6 +848,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
@@ -788,6 +898,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
@@ -797,13 +908,23 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): { innerStruct: { aField: BigNumber } } {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<{ innerStruct: { aField: BigNumber } }>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): { innerStruct: { aField: BigNumber } } {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
@@ -854,27 +975,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nestedStructOutput()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(
-            callData: string,
-        ): {
-            innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
-            description: string;
-        } {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<{
-                innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
-                description: string;
-            }>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {
@@ -922,12 +1046,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('requireWithConstant()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
@@ -935,6 +1065,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
@@ -990,6 +1125,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(x: string, a: BigNumber, b: BigNumber, y: string, c: BigNumber): string {
             assert.isString('x', x);
@@ -1004,6 +1140,11 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
@@ -1011,6 +1152,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
@@ -1054,6 +1200,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(s: {
             someBytes: string;
@@ -1068,13 +1215,27 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }]
+            >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
@@ -1203,19 +1364,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethod()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nonPureMethod()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nonPureMethod()');
@@ -1274,6 +1446,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(complexInput: { foo: BigNumber; bar: string; car: string }): string {
             const self = (this as any) as AbiGenDummyContract;
@@ -1283,20 +1456,23 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(
-            callData: string,
-        ): { input: { foo: BigNumber; bar: string; car: string }; lorem: string; ipsum: string; dolor: string } {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): { foo: BigNumber; bar: string; car: string } {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('complexInputComplexOutput((uint256,bytes,string))');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<{
-                input: { foo: BigNumber; bar: string; car: string };
-                lorem: string;
-                ipsum: string;
-                dolor: string;
-            }>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<{ foo: BigNumber; bar: string; car: string }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): { input: { foo: BigNumber; bar: string; car: string }; lorem: string; ipsum: string; dolor: string } {
@@ -1346,12 +1522,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('noInputNoOutput()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('noInputNoOutput()');
@@ -1359,6 +1541,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('noInputNoOutput()');
@@ -1399,6 +1586,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
@@ -1406,6 +1594,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunctionWithInput(uint256)', [x]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
@@ -1413,6 +1606,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
@@ -1541,12 +1739,18 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nonPureMethodThatReturnsNothing()');
@@ -1554,6 +1758,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nonPureMethodThatReturnsNothing()');
@@ -1593,19 +1802,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunction()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
@@ -1660,6 +1880,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(n: {
             innerStruct: {
@@ -1677,13 +1898,42 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+                description: string;
+            }
+        ] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        innerStruct: {
+                            someBytes: string;
+                            anInteger: number;
+                            aDynamicArrayOfBytes: string[];
+                            aString: string;
+                        };
+                        description: string;
+                    }
+                ]
+            >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
@@ -1723,19 +1973,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [BigNumber, string] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, string]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [BigNumber, string] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
@@ -1780,23 +2041,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(
-            callData: string,
-        ): Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<
-                Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
-            >(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
@@ -1852,26 +2120,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('structOutput()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(
-            callData: string,
-        ): { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string } {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('structOutput()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<{
-                someBytes: string;
-                anInteger: number;
-                aDynamicArrayOfBytes: string[];
-                aString: string;
-            }>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string } {
@@ -1918,19 +2190,30 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('pureFunctionWithConstant()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
@@ -1978,6 +2261,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -1985,13 +2269,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleInputNoOutput(uint256)', [index_0]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [BigNumber] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleInputNoOutput(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleInputNoOutput(uint256)');
@@ -2032,6 +2326,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(a: string): string {
             assert.isString('a', a);
@@ -2039,13 +2334,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('overloadedMethod(string)', [a]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
@@ -2086,6 +2391,7 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(a: BigNumber): string {
             assert.isBigNumber('a', a);
@@ -2093,13 +2399,23 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('overloadedMethod(int256)', [a]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [BigNumber] {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');

@@ -3,6 +3,7 @@
  * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
  * to create a 0x transaction (see protocol spec for more details).
 {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ * @returns The ABI encoded transaction data as a string
  */
 getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
@@ -14,15 +15,25 @@ getABIEncodedTransactionData(
     const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     return abiEncodedTransactionData;
 },
+/**
+ * Decode the ABI-encoded transaction data into its input arguments
+ * @param callData The ABI-encoded transaction data
+ * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+ */
 getABIDecodedTransactionData(
     callData: string
-): ({{> return_type inputs=inputs ~}}) {
+): ({{> return_type outputs=inputs ~}}) {
     const self = this as any as {{contractName}}Contract;
     const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
     // tslint:disable boolean-naming
-    const abiDecodedCallData = abiEncoder.strictDecode<{{> return_type inputs=inputs}}>(callData);
+    const abiDecodedCallData = abiEncoder.strictDecode<{{> return_type outputs=inputs}}>(callData);
     return abiDecodedCallData;
 },
+/**
+ * Decode the ABI-encoded return data from a transaction
+ * @param returnData the data returned after transaction execution
+ * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+ */
 getABIDecodedReturnData(
     returnData: string
 ): ({{> return_type outputs=outputs ~}}) {
