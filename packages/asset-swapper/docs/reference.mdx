@@ -1,210 +1,5 @@
 
 
-# Class: BasicOrderProvider
-
-
-##  Implements
-
-* [OrderProvider](#interface-orderprovider)
-
-
-##  Constructors
-
-
-
-\+ **new BasicOrderProvider**(`orders`: `SignedOrder`[]): *[BasicOrderProvider](#class-basicorderprovider)*
-
-*Defined in [asset-swapper/src/order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/basic_order_provider.ts#L9)*
-
-Instantiates a new BasicOrderProvider instance
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`orders` | `SignedOrder`[] | An array of objects that conform to SignedOrder to fetch from. |
-
-**Returns:** *[BasicOrderProvider](#class-basicorderprovider)*
-
-An instance of BasicOrderProvider
-
-## Properties
-
-###  orders
-
-• **orders**: *`SignedOrder`[]*
-
-*Defined in [asset-swapper/src/order_providers/basic_order_provider.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/basic_order_provider.ts#L9)*
-
-## Methods
-
-###  getAvailableMakerAssetDatasAsync
-
-▸ **getAvailableMakerAssetDatasAsync**(`takerAssetData`: string): *`Promise<string[]>`*
-
-*Defined in [asset-swapper/src/order_providers/basic_order_provider.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/basic_order_provider.ts#L37)*
-
-Given a taker asset data string, return all availabled paired maker asset data strings.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`takerAssetData` | string | A string representing the taker asset data. |
-
-**Returns:** *`Promise<string[]>`*
-
-An array of asset data strings that can be purchased using takerAssetData.
-
-___
-
-###  getAvailableTakerAssetDatasAsync
-
-▸ **getAvailableTakerAssetDatasAsync**(`makerAssetData`: string): *`Promise<string[]>`*
-
-*Defined in [asset-swapper/src/order_providers/basic_order_provider.ts:46](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/basic_order_provider.ts#L46)*
-
-Given a maker asset data string, return all availabled paired taker asset data strings.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`makerAssetData` | string | A string representing the maker asset data. |
-
-**Returns:** *`Promise<string[]>`*
-
-An array of asset data strings that can be used to purchased makerAssetData.
-
-___
-
-###  getOrdersAsync
-
-▸ **getOrdersAsync**(`orderProviderRequest`: [OrderProviderRequest](#interface-orderproviderrequest)): *`Promise<OrderProviderResponse>`*
-
-*Defined in [asset-swapper/src/order_providers/basic_order_provider.ts:24](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/basic_order_provider.ts#L24)*
-
-Given an object that conforms to OrderFetcherRequest, return the corresponding OrderProviderResponse that satisfies the request.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`orderProviderRequest` | [OrderProviderRequest](#interface-orderproviderrequest) | An instance of OrderFetcherRequest. See type for more information. |
-
-**Returns:** *`Promise<OrderProviderResponse>`*
-
-An instance of OrderProviderResponse. See type for more information.
-
-<hr />
-
-# Class: StandardRelayerAPIOrderProvider
-
-
-##  Implements
-
-* [OrderProvider](#interface-orderprovider)
-
-
-##  Constructors
-
-
-
-\+ **new StandardRelayerAPIOrderProvider**(`apiUrl`: string, `networkId`: number): *[StandardRelayerAPIOrderProvider](#class-standardrelayerapiorderprovider)*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:49](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L49)*
-
-Instantiates a new StandardRelayerAPIOrderProvider instance
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`apiUrl` | string | The standard relayer API base HTTP url you would like to source orders from. |
-`networkId` | number | The ethereum network id. |
-
-**Returns:** *[StandardRelayerAPIOrderProvider](#class-standardrelayerapiorderprovider)*
-
-An instance of StandardRelayerAPIOrderProvider
-
-## Properties
-
-###  apiUrl
-
-• **apiUrl**: *string*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L18)*
-
-___
-
-###  networkId
-
-• **networkId**: *number*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L19)*
-
-## Methods
-
-###  getAvailableMakerAssetDatasAsync
-
-▸ **getAvailableMakerAssetDatasAsync**(`takerAssetData`: string): *`Promise<string[]>`*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:92](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L92)*
-
-Given a taker asset data string, return all available paired maker asset data strings.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`takerAssetData` | string | A string representing the taker asset data. |
-
-**Returns:** *`Promise<string[]>`*
-
-An array of asset data strings that can be purchased using takerAssetData.
-
-___
-
-###  getAvailableTakerAssetDatasAsync
-
-▸ **getAvailableTakerAssetDatasAsync**(`makerAssetData`: string): *`Promise<string[]>`*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:120](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L120)*
-
-Given a maker asset data string, return all availabled paired taker asset data strings.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`makerAssetData` | string | A string representing the maker asset data. |
-
-**Returns:** *`Promise<string[]>`*
-
-An array of asset data strings that can be used to purchased makerAssetData.
-
-___
-
-###  getOrdersAsync
-
-▸ **getOrdersAsync**(`orderProviderRequest`: [OrderProviderRequest](#interface-orderproviderrequest)): *`Promise<OrderProviderResponse>`*
-
-*Defined in [asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/order_providers/standard_relayer_api_order_provider.ts#L68)*
-
-Given an object that conforms to OrderProviderRequest, return the corresponding OrderProviderResponse that satisfies the request.
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`orderProviderRequest` | [OrderProviderRequest](#interface-orderproviderrequest) | An instance of OrderProviderRequest. See type for more information. |
-
-**Returns:** *`Promise<OrderProviderResponse>`*
-
-An instance of OrderProviderResponse. See type for more information.
-
-<hr />
-
 # Class: SwapQuoteConsumer
 
 
@@ -219,7 +14,7 @@ An instance of OrderProviderResponse. See type for more information.
 
 \+ **new SwapQuoteConsumer**(`supportedProvider`: [SupportedProvider](#supportedprovider), `options`: `Partial<SwapQuoteConsumerOpts>`): *[SwapQuoteConsumer](#class-swapquoteconsumer)*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L30)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:30](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L30)*
 
 **Parameters:**
 
@@ -236,7 +31,7 @@ Name | Type | Default |
 
 • **networkId**: *number*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:26](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L26)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:26](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L26)*
 
 ___
 
@@ -244,7 +39,7 @@ ___
 
 • **provider**: *`ZeroExProvider`*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:25](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L25)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:25](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L25)*
 
 ## Methods
 
@@ -254,16 +49,16 @@ ___
 
 *Implementation of [SwapQuoteConsumerBase](#interface-swapquoteconsumerbase)*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:80](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L80)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:80](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L80)*
 
 Given a SwapQuote and desired rate (in takerAsset), attempt to execute the swap.
 
 **Parameters:**
 
-Name | Type | Description |
------- | ------ | ------ |
-`quote` | [SwapQuote](#swapquote) | An object that conforms to SwapQuote. See type definition for more information. |
-`opts` | `Partial<SwapQuoteExecutionOpts>` | Options for getting CalldataInfo. See type definition for more information.  |
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`quote` | [SwapQuote](#swapquote) | - | An object that conforms to SwapQuote. See type definition for more information. |
+`opts` | `Partial<SwapQuoteExecutionOpts>` |  {} | Options for getting CalldataInfo. See type definition for more information.  |
 
 **Returns:** *`Promise<string>`*
 
@@ -275,16 +70,16 @@ ___
 
 *Implementation of [SwapQuoteConsumerBase](#interface-swapquoteconsumerbase)*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:52](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L52)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:52](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L52)*
 
 Given a SwapQuote, returns 'CalldataInfo' for a 0x exchange call. See type definition of CalldataInfo for more information.
 
 **Parameters:**
 
-Name | Type | Description |
------- | ------ | ------ |
-`quote` | [SwapQuote](#swapquote) | An object that conforms to SwapQuote. See type definition for more information. |
-`opts` | `Partial<SwapQuoteGetOutputOpts>` | Options for getting SmartContractParams. See type definition for more information.  |
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`quote` | [SwapQuote](#swapquote) | - | An object that conforms to SwapQuote. See type definition for more information. |
+`opts` | `Partial<SwapQuoteGetOutputOpts>` |  {} | Options for getting SmartContractParams. See type definition for more information.  |
 
 **Returns:** *`Promise<CalldataInfo>`*
 
@@ -296,16 +91,16 @@ ___
 
 *Implementation of [SwapQuoteConsumerBase](#interface-swapquoteconsumerbase)*
 
-*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:66](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L66)*
+*Defined in [asset-swapper/src/quote_consumers/swap_quote_consumer.ts:66](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/quote_consumers/swap_quote_consumer.ts#L66)*
 
 Given a SwapQuote, returns 'SmartContractParamsInfo' for a 0x exchange call. See type definition of SmartContractParamsInfo for more information.
 
 **Parameters:**
 
-Name | Type | Description |
------- | ------ | ------ |
-`quote` | [SwapQuote](#swapquote) | An object that conforms to SwapQuote. See type definition for more information. |
-`opts` | `Partial<SwapQuoteGetOutputOpts>` | Options for getting SmartContractParams. See type definition for more information.  |
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`quote` | [SwapQuote](#swapquote) | - | An object that conforms to SwapQuote. See type definition for more information. |
+`opts` | `Partial<SwapQuoteGetOutputOpts>` |  {} | Options for getting SmartContractParams. See type definition for more information.  |
 
 **Returns:** *`Promise<SmartContractParamsInfo<SmartContractParams>>`*
 
@@ -318,9 +113,9 @@ Name | Type | Description |
 
 
 
-\+ **new SwapQuoter**(`supportedProvider`: [SupportedProvider](#supportedprovider), `orderProvider`: [OrderProvider](#interface-orderprovider), `options`: `Partial<SwapQuoterOpts>`): *[SwapQuoter](#class-swapquoter)*
+\+ **new SwapQuoter**(`supportedProvider`: [SupportedProvider](#supportedprovider), `orderbook`: `Orderbook`, `options`: `Partial<SwapQuoterOpts>`): *[SwapQuoter](#class-swapquoter)*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:92](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L92)*
+*Defined in [asset-swapper/src/swap_quoter.ts:125](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L125)*
 
 Instantiates a new SwapQuoter instance
 
@@ -329,7 +124,7 @@ Instantiates a new SwapQuoter instance
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
 `supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
-`orderProvider` | [OrderProvider](#interface-orderprovider) | - | An object that conforms to OrderProvider, see type for definition. |
+`orderbook` | `Orderbook` | - | An object that conforms to Orderbook, see type for definition. |
 `options` | `Partial<SwapQuoterOpts>` |  {} | Initialization options for the SwapQuoter. See type definition for details.  |
 
 **Returns:** *[SwapQuoter](#class-swapquoter)*
@@ -342,31 +137,15 @@ An instance of SwapQuoter
 
 • **expiryBufferMs**: *number*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:40](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L40)*
+*Defined in [asset-swapper/src/swap_quoter.ts:29](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L29)*
 
 ___
 
-###  networkId
+###  orderbook
 
-• **networkId**: *number*
+• **orderbook**: *`Orderbook`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:38](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L38)*
-
-___
-
-###  orderProvider
-
-• **orderProvider**: *[OrderProvider](#interface-orderprovider)*
-
-*Defined in [asset-swapper/src/swap_quoter.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L37)*
-
-___
-
-###  orderRefreshIntervalMs
-
-• **orderRefreshIntervalMs**: *number*
-
-*Defined in [asset-swapper/src/swap_quoter.ts:39](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L39)*
+*Defined in [asset-swapper/src/swap_quoter.ts:28](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L28)*
 
 ___
 
@@ -374,15 +153,27 @@ ___
 
 • **provider**: *`ZeroExProvider`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:36](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L36)*
+*Defined in [asset-swapper/src/swap_quoter.ts:27](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L27)*
 
 ## Methods
+
+###  destroyAsync
+
+▸ **destroyAsync**(): *`Promise<void>`*
+
+*Defined in [asset-swapper/src/swap_quoter.ts:390](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L390)*
+
+Destroys any subscriptions or connections.
+
+**Returns:** *`Promise<void>`*
+
+___
 
 ###  getAvailableMakerAssetDatasAsync
 
 ▸ **getAvailableMakerAssetDatasAsync**(`takerAssetData`: string): *`Promise<string[]>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:290](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L290)*
+*Defined in [asset-swapper/src/swap_quoter.ts:308](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L308)*
 
 Get the asset data of all assets that are purchaseable with takerAssetData in the order provider passed in at init.
 
@@ -402,7 +193,7 @@ ___
 
 ▸ **getAvailableTakerAssetDatasAsync**(`makerAssetData`: string): *`Promise<string[]>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:279](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L279)*
+*Defined in [asset-swapper/src/swap_quoter.ts:293](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L293)*
 
 Get the asset data of all assets that can be used to purchase makerAssetData in the order provider passed in at init.
 
@@ -420,20 +211,19 @@ ___
 
 ###  getLiquidityForMakerTakerAssetDataPairAsync
 
-▸ **getLiquidityForMakerTakerAssetDataPairAsync**(`makerAssetData`: string, `takerAssetData`: string, `options`: `Partial<LiquidityRequestOpts>`): *`Promise<LiquidityForAssetData>`*
+▸ **getLiquidityForMakerTakerAssetDataPairAsync**(`makerAssetData`: string, `takerAssetData`: string): *`Promise<LiquidityForAssetData>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:245](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L245)*
+*Defined in [asset-swapper/src/swap_quoter.ts:267](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L267)*
 
 Returns information about available liquidity for an asset
 Does not factor in slippage or fees
 
 **Parameters:**
 
-Name | Type | Default | Description |
------- | ------ | ------ | ------ |
-`makerAssetData` | string | - | The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md). |
-`takerAssetData` | string | - | The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md). |
-`options` | `Partial<LiquidityRequestOpts>` |  {} | Options for the request. See type definition for more information.  |
+Name | Type | Description |
+------ | ------ | ------ |
+`makerAssetData` | string | The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md). |
+`takerAssetData` | string | The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).  |
 
 **Returns:** *`Promise<LiquidityForAssetData>`*
 
@@ -445,7 +235,7 @@ ___
 
 ▸ **getMarketBuySwapQuoteAsync**(`makerTokenAddress`: string, `takerTokenAddress`: string, `makerAssetBuyAmount`: `BigNumber`, `options`: `Partial<SwapQuoteRequestOpts>`): *`Promise<SwapQuote>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:186](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L186)*
+*Defined in [asset-swapper/src/swap_quoter.ts:209](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L209)*
 
 Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
 You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
@@ -469,7 +259,7 @@ ___
 
 ▸ **getMarketBuySwapQuoteForAssetDataAsync**(`makerAssetData`: string, `takerAssetData`: string, `makerAssetBuyAmount`: `BigNumber`, `options`: `Partial<SwapQuoteRequestOpts>`): *`Promise<MarketBuySwapQuote>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:161](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L161)*
+*Defined in [asset-swapper/src/swap_quoter.ts:184](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L184)*
 
 Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
 You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
@@ -493,7 +283,7 @@ ___
 
 ▸ **getMarketSellSwapQuoteAsync**(`makerTokenAddress`: string, `takerTokenAddress`: string, `takerAssetSellAmount`: `BigNumber`, `options`: `Partial<SwapQuoteRequestOpts>`): *`Promise<SwapQuote>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:216](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L216)*
+*Defined in [asset-swapper/src/swap_quoter.ts:239](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L239)*
 
 Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
 You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
@@ -517,7 +307,7 @@ ___
 
 ▸ **getMarketSellSwapQuoteForAssetDataAsync**(`makerAssetData`: string, `takerAssetData`: string, `takerAssetSellAmount`: `BigNumber`, `options`: `Partial<SwapQuoteRequestOpts>`): *`Promise<MarketSellSwapQuote>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:135](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L135)*
+*Defined in [asset-swapper/src/swap_quoter.ts:158](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L158)*
 
 Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
 You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
@@ -539,9 +329,9 @@ ___
 
 ###  getOrdersAndFillableAmountsAsync
 
-▸ **getOrdersAndFillableAmountsAsync**(`makerAssetData`: string, `takerAssetData`: string, `shouldForceOrderRefresh`: boolean): *`Promise<OrdersAndFillableAmounts>`*
+▸ **getOrdersAndFillableAmountsAsync**(`makerAssetData`: string, `takerAssetData`: string): *`Promise<OrdersAndFillableAmounts>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:319](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L319)*
+*Defined in [asset-swapper/src/swap_quoter.ts:340](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L340)*
 
 Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
 
@@ -550,8 +340,7 @@ Grab orders from the map, if there is a miss or it is time to refresh, fetch and
 Name | Type | Description |
 ------ | ------ | ------ |
 `makerAssetData` | string | The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md). |
-`takerAssetData` | string | The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md). |
-`shouldForceOrderRefresh` | boolean | If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.  |
+`takerAssetData` | string | The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).  |
 
 **Returns:** *`Promise<OrdersAndFillableAmounts>`*
 
@@ -561,7 +350,7 @@ ___
 
 ▸ **isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync**(`swapQuote`: [SwapQuote](#swapquote), `takerAddress`: string): *`Promise<[boolean, boolean]>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:380](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L380)*
+*Defined in [asset-swapper/src/swap_quoter.ts:371](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L371)*
 
 Util function to check if takerAddress's allowance is enough for 0x exchange contracts to conduct the swap specified by the swapQuote.
 
@@ -580,7 +369,7 @@ ___
 
 ▸ **isTakerMakerAssetDataPairAvailableAsync**(`makerAssetData`: string, `takerAssetData`: string): *`Promise<boolean>`*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:301](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L301)*
+*Defined in [asset-swapper/src/swap_quoter.ts:323](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L323)*
 
 Validates the taker + maker asset pair is available from the order provider provided to `SwapQuote`.
 
@@ -597,11 +386,33 @@ A boolean on if the taker, maker pair exists
 
 ___
 
+### `Static` getSwapQuoterForMeshEndpoint
+
+▸ **getSwapQuoterForMeshEndpoint**(`supportedProvider`: [SupportedProvider](#supportedprovider), `meshEndpoint`: string, `options`: `Partial<SwapQuoterOpts & MeshOrderProviderOpts>`): *[SwapQuoter](#class-swapquoter)*
+
+*Defined in [asset-swapper/src/swap_quoter.ts:112](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L112)*
+
+Instantiates a new SwapQuoter instance given a 0x Mesh endpoint. This pulls all available liquidity stored in Mesh
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
+`meshEndpoint` | string | - | The standard relayer API base HTTP url you would like to source orders from. |
+`options` | `Partial<SwapQuoterOpts & MeshOrderProviderOpts>` |  {} | Initialization options for the SwapQuoter. See type definition for details.  |
+
+**Returns:** *[SwapQuoter](#class-swapquoter)*
+
+An instance of SwapQuoter
+
+___
+
 ### `Static` getSwapQuoterForProvidedOrders
 
 ▸ **getSwapQuoterForProvidedOrders**(`supportedProvider`: [SupportedProvider](#supportedprovider), `orders`: `SignedOrder`[], `options`: `Partial<SwapQuoterOpts>`): *[SwapQuoter](#class-swapquoter)*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:53](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L53)*
+*Defined in [asset-swapper/src/swap_quoter.ts:40](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L40)*
 
 Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
 
@@ -621,9 +432,9 @@ ___
 
 ### `Static` getSwapQuoterForStandardRelayerAPIUrl
 
-▸ **getSwapQuoterForStandardRelayerAPIUrl**(`supportedProvider`: [SupportedProvider](#supportedprovider), `sraApiUrl`: string, `options`: `Partial<SwapQuoterOpts>`): *[SwapQuoter](#class-swapquoter)*
+▸ **getSwapQuoterForStandardRelayerAPIUrl**(`supportedProvider`: [SupportedProvider](#supportedprovider), `sraApiUrl`: string, `options`: `Partial<SwapQuoterOpts & SRAPollingOrderProviderOpts>`): *[SwapQuoter](#class-swapquoter)*
 
-*Defined in [asset-swapper/src/swap_quoter.ts:73](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/swap_quoter.ts#L73)*
+*Defined in [asset-swapper/src/swap_quoter.ts:60](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L60)*
 
 Instantiates a new SwapQuoter instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
 
@@ -633,11 +444,549 @@ Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
 `supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
 `sraApiUrl` | string | - | The standard relayer API base HTTP url you would like to source orders from. |
+`options` | `Partial<SwapQuoterOpts & SRAPollingOrderProviderOpts>` |  {} | Initialization options for the SwapQuoter. See type definition for details.  |
+
+**Returns:** *[SwapQuoter](#class-swapquoter)*
+
+An instance of SwapQuoter
+
+___
+
+### `Static` getSwapQuoterForStandardRelayerAPIWebsocket
+
+▸ **getSwapQuoterForStandardRelayerAPIWebsocket**(`supportedProvider`: [SupportedProvider](#supportedprovider), `sraApiUrl`: string, `sraWebsocketAPIUrl`: string, `options`: `Partial<SwapQuoterOpts>`): *[SwapQuoter](#class-swapquoter)*
+
+*Defined in [asset-swapper/src/swap_quoter.ts:87](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/swap_quoter.ts#L87)*
+
+Instantiates a new SwapQuoter instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
+and a websocket endpoint. This is more effecient than `getSwapQuoterForStandardRelayerAPIUrl` when requesting multiple quotes.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`supportedProvider` | [SupportedProvider](#supportedprovider) | - | The Provider instance you would like to use for interacting with the Ethereum network. |
+`sraApiUrl` | string | - | The standard relayer API base HTTP url you would like to source orders from. |
+`sraWebsocketAPIUrl` | string | - | - |
 `options` | `Partial<SwapQuoterOpts>` |  {} | Initialization options for the SwapQuoter. See type definition for details.  |
 
 **Returns:** *[SwapQuoter](#class-swapquoter)*
 
 An instance of SwapQuoter
+
+<hr />
+
+# Class: BaseOrderProvider
+
+
+##   Constructors
+
+
+
+\+ **new BaseOrderProvider**(`orderStore`: [OrderStore](_orderbook_src_order_store_.orderstore.md)): *[BaseOrderProvider](#class-baseorderprovider)*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:7](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L7)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orderStore` | [OrderStore](#class-orderstore) |
+
+**Returns:** *[BaseOrderProvider](#class-baseorderprovider)*
+
+## Properties
+
+###  _orderStore
+
+• **_orderStore**: *[OrderStore](#class-orderstore)*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:7](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L7)*
+
+## Methods
+
+### `Abstract` addOrdersAsync
+
+▸ **addOrdersAsync**(`orders`: `SignedOrder`[]): *`Promise<AcceptedRejectedOrders>`*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:22](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L22)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`orders` | `SignedOrder`[] |
+
+**Returns:** *`Promise<AcceptedRejectedOrders>`*
+
+___
+
+### `Abstract` createSubscriptionForAssetPairAsync
+
+▸ **createSubscriptionForAssetPairAsync**(`makerAssetData`: string, `takerAssetData`: string): *`Promise<void>`*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:13](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L13)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`makerAssetData` | string |
+`takerAssetData` | string |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+### `Abstract` destroyAsync
+
+▸ **destroyAsync**(): *`Promise<void>`*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:20](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L20)*
+
+**Returns:** *`Promise<void>`*
+
+___
+
+### `Abstract` getAvailableAssetDatasAsync
+
+▸ **getAvailableAssetDatasAsync**(): *`Promise<AssetPairsItem[]>`*
+
+*Defined in [orderbook/src/order_provider/base_order_provider.ts:18](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_provider/base_order_provider.ts#L18)*
+
+**Returns:** *`Promise<AssetPairsItem[]>`*
+
+<hr />
+
+# Class: OrderSet
+
+
+##   Constructors
+
+
+
+\+ **new OrderSet**(`orders`: `APIOrder`[]): *[OrderSet](#class-orderset)*
+
+*Defined in [orderbook/src/order_set.ts:6](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L6)*
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`orders` | `APIOrder`[] |  [] |
+
+**Returns:** *[OrderSet](#class-orderset)*
+
+## Methods
+
+###  add
+
+▸ **add**(`item`: `APIOrder`): *void*
+
+*Defined in [orderbook/src/order_set.ts:19](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L19)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`item` | `APIOrder` |
+
+**Returns:** *void*
+
+___
+
+###  addMany
+
+▸ **addMany**(`items`: `APIOrder`[]): *void*
+
+*Defined in [orderbook/src/order_set.ts:25](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L25)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`items` | `APIOrder`[] |
+
+**Returns:** *void*
+
+___
+
+###  delete
+
+▸ **delete**(`item`: `APIOrder`): *boolean*
+
+*Defined in [orderbook/src/order_set.ts:57](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L57)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`item` | `APIOrder` |
+
+**Returns:** *boolean*
+
+___
+
+###  deleteMany
+
+▸ **deleteMany**(`items`: `APIOrder`[]): *void*
+
+*Defined in [orderbook/src/order_set.ts:61](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L61)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`items` | `APIOrder`[] |
+
+**Returns:** *void*
+
+___
+
+###  diff
+
+▸ **diff**(`other`: [OrderSet](#class-orderset)): *object*
+
+*Defined in [orderbook/src/order_set.ts:35](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L35)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`other` | [OrderSet](#class-orderset) |
+
+**Returns:** *object*
+
+___
+
+###  has
+
+▸ **has**(`order`: `APIOrder`): *boolean*
+
+*Defined in [orderbook/src/order_set.ts:31](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L31)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`order` | `APIOrder` |
+
+**Returns:** *boolean*
+
+___
+
+###  size
+
+▸ **size**(): *number*
+
+*Defined in [orderbook/src/order_set.ts:15](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L15)*
+
+**Returns:** *number*
+
+___
+
+###  values
+
+▸ **values**(): *`IterableIterator<APIOrder>`*
+
+*Defined in [orderbook/src/order_set.ts:53](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_set.ts#L53)*
+
+**Returns:** *`IterableIterator<APIOrder>`*
+
+<hr />
+
+# Class: OrderStore
+
+
+##   Methods
+
+###  getOrderSetForAssetPair
+
+▸ **getOrderSetForAssetPair**(`assetPairKey`: string): *[OrderSet](#class-orderset)*
+
+*Defined in [orderbook/src/order_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L19)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetPairKey` | string |
+
+**Returns:** *[OrderSet](#class-orderset)*
+
+___
+
+###  getOrderSetForAssets
+
+▸ **getOrderSetForAssets**(`makerAssetData`: string, `takerAssetData`: string): *[OrderSet](#class-orderset)*
+
+*Defined in [orderbook/src/order_store.ts:15](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L15)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`makerAssetData` | string |
+`takerAssetData` | string |
+
+**Returns:** *[OrderSet](#class-orderset)*
+
+___
+
+###  has
+
+▸ **has**(`assetPairKey`: string): *boolean*
+
+*Defined in [orderbook/src/order_store.ts:34](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L34)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetPairKey` | string |
+
+**Returns:** *boolean*
+
+___
+
+###  keys
+
+▸ **keys**(): *`IterableIterator<string>`*
+
+*Defined in [orderbook/src/order_store.ts:40](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L40)*
+
+**Returns:** *`IterableIterator<string>`*
+
+___
+
+###  update
+
+▸ **update**(`addedRemoved`: [AddedRemovedOrders](#interface-addedremovedorders)): *void*
+
+*Defined in [orderbook/src/order_store.ts:28](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L28)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`addedRemoved` | [AddedRemovedOrders](#interface-addedremovedorders) |
+
+**Returns:** *void*
+
+___
+
+###  values
+
+▸ **values**(`assetPairKey`: string): *`APIOrder`[]*
+
+*Defined in [orderbook/src/order_store.ts:37](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L37)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetPairKey` | string |
+
+**Returns:** *`APIOrder`[]*
+
+___
+
+### `Static` assetPairKeyToAssets
+
+▸ **assetPairKeyToAssets**(`assetPairKey`: string): *string[]*
+
+*Defined in [orderbook/src/order_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L12)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`assetPairKey` | string |
+
+**Returns:** *string[]*
+
+___
+
+### `Static` getKeyForAssetPair
+
+▸ **getKeyForAssetPair**(`makerAssetData`: string, `takerAssetData`: string): *string*
+
+*Defined in [orderbook/src/order_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/order_store.ts#L9)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`makerAssetData` | string |
+`takerAssetData` | string |
+
+**Returns:** *string*
+
+<hr />
+
+# Class: Orderbook
+
+
+##   Constructors
+
+
+
+\+ **new Orderbook**(`orderProvider`: [BaseOrderProvider](_orderbook_src_order_provider_base_order_provider_.baseorderprovider.md), `orderStore`: [OrderStore](_orderbook_src_order_store_.orderstore.md)): *[Orderbook](#class-orderbook)*
+
+*Defined in [orderbook/src/orderbook.ts:55](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L55)*
+
+Creates an Orderbook with the order provider. All order updates are stored
+in the `OrderStore`.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orderProvider` | [BaseOrderProvider](#class-baseorderprovider) | the order provider, e.g SRAWebbsocketOrderProvider |
+`orderStore` | [OrderStore](#class-orderstore) | the order store where orders are added and deleted  |
+
+**Returns:** *[Orderbook](#class-orderbook)*
+
+## Methods
+
+###  addOrdersAsync
+
+▸ **addOrdersAsync**(`orders`: `SignedOrder`[]): *`Promise<AcceptedRejectedOrders>`*
+
+*Defined in [orderbook/src/orderbook.ts:98](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L98)*
+
+Adds the orders to the Order Provider. All accepted orders will be returned
+and rejected orders will be returned with an message indicating a reason for its rejection
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orders` | `SignedOrder`[] | The set of Orders to add to the Order Provider  |
+
+**Returns:** *`Promise<AcceptedRejectedOrders>`*
+
+___
+
+###  destroyAsync
+
+▸ **destroyAsync**(): *`Promise<void>`*
+
+*Defined in [orderbook/src/orderbook.ts:104](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L104)*
+
+Destroys any subscriptions or connections.
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  getAvailableAssetDatasAsync
+
+▸ **getAvailableAssetDatasAsync**(): *`Promise<AssetPairsItem[]>`*
+
+*Defined in [orderbook/src/orderbook.ts:90](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L90)*
+
+Returns all of the Available Asset Pairs for the provided Order Provider.
+
+**Returns:** *`Promise<AssetPairsItem[]>`*
+
+___
+
+###  getOrdersAsync
+
+▸ **getOrdersAsync**(`makerAssetData`: string, `takerAssetData`: string): *`Promise<APIOrder[]>`*
+
+*Defined in [orderbook/src/orderbook.ts:75](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L75)*
+
+Returns all orders where the order.makerAssetData == makerAssetData and
+order.takerAssetData == takerAssetData. This pair is then subscribed to
+and all future updates will be stored. The first request
+to `getOrdersAsync` might fetch the orders from the Order Provider and create a subscription.
+Subsequent requests will be quick and up to date and synced with the Order Provider state.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`makerAssetData` | string | the maker asset data |
+`takerAssetData` | string | the taker asset data  |
+
+**Returns:** *`Promise<APIOrder[]>`*
+
+___
+
+### `Static` getOrderbookForMeshProvider
+
+▸ **getOrderbookForMeshProvider**(`opts`: [MeshOrderProviderOpts](#interface-meshorderprovideropts)): *[Orderbook](#class-orderbook)*
+
+*Defined in [orderbook/src/orderbook.ts:52](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L52)*
+
+Creates an Orderbook with a Mesh Order Provider. This Provider fetches ALL orders
+and subscribes to updates on ALL orders.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`opts` | [MeshOrderProviderOpts](#interface-meshorderprovideropts) | the `MeshOrderProviderOpts`  |
+
+**Returns:** *[Orderbook](#class-orderbook)*
+
+___
+
+### `Static` getOrderbookForPollingProvider
+
+▸ **getOrderbookForPollingProvider**(`opts`: [SRAPollingOrderProviderOpts](#interface-srapollingorderprovideropts)): *[Orderbook](#class-orderbook)*
+
+*Defined in [orderbook/src/orderbook.ts:43](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L43)*
+
+Creates an Orderbook with SRA Polling Provider. This Provider simply polls every interval.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`opts` | [SRAPollingOrderProviderOpts](#interface-srapollingorderprovideropts) | the `SRAPollingOrderProviderOpts`  |
+
+**Returns:** *[Orderbook](#class-orderbook)*
+
+___
+
+### `Static` getOrderbookForProvidedOrders
+
+▸ **getOrderbookForProvidedOrders**(`orders`: `SignedOrder`[]): *[Orderbook](#class-orderbook)*
+
+*Defined in [orderbook/src/orderbook.ts:26](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L26)*
+
+Creates an Orderbook with the provided orders. This provider simply stores the
+orders and allows querying. No validation or subscriptions occur.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`orders` | `SignedOrder`[] | the set of SignedOrders  |
+
+**Returns:** *[Orderbook](#class-orderbook)*
+
+___
+
+### `Static` getOrderbookForWebsocketProvider
+
+▸ **getOrderbookForWebsocketProvider**(`opts`: [SRAWebsocketOrderProviderOpts](#interface-srawebsocketorderprovideropts)): *[Orderbook](#class-orderbook)*
+
+*Defined in [orderbook/src/orderbook.ts:35](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/orderbook.ts#L35)*
+
+Creates an Orderbook with the SRA Websocket Provider. This Provider fetches orders via
+the SRA http endpoint and then subscribes to the asset pair for future updates.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`opts` | [SRAWebsocketOrderProviderOpts](#interface-srawebsocketorderprovideropts) | the `SRAWebsocketOrderProviderOpts`  |
+
+**Returns:** *[Orderbook](#class-orderbook)*
 
 <hr />
 
@@ -650,17 +999,17 @@ Represents the varying smart contracts that can consume a valid swap quote
 
 ###  Exchange
 
-• **Exchange**:
+• **Exchange**: = "EXCHANGE"
 
-*Defined in [asset-swapper/src/types.ts:102](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L102)*
+*Defined in [asset-swapper/src/types.ts:91](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L91)*
 
 ___
 
 ###  Forwarder
 
-• **Forwarder**:
+• **Forwarder**: = "FORWARDER"
 
-*Defined in [asset-swapper/src/types.ts:101](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L101)*
+*Defined in [asset-swapper/src/types.ts:90](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L90)*
 
 <hr />
 
@@ -677,7 +1026,7 @@ Possible error messages thrown by an SwapQuoter instance or associated static me
 
 • **AssetUnavailable**: = "ASSET_UNAVAILABLE"
 
-*Defined in [asset-swapper/src/types.ts:320](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L320)*
+*Defined in [asset-swapper/src/types.ts:301](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L301)*
 
 ___
 
@@ -685,7 +1034,7 @@ ___
 
 • **InsufficientAssetLiquidity**: = "INSUFFICIENT_ASSET_LIQUIDITY"
 
-*Defined in [asset-swapper/src/types.ts:317](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L317)*
+*Defined in [asset-swapper/src/types.ts:298](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L298)*
 
 ___
 
@@ -693,7 +1042,7 @@ ___
 
 • **InsufficientZrxLiquidity**: = "INSUFFICIENT_ZRX_LIQUIDITY"
 
-*Defined in [asset-swapper/src/types.ts:318](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L318)*
+*Defined in [asset-swapper/src/types.ts:299](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L299)*
 
 ___
 
@@ -701,7 +1050,7 @@ ___
 
 • **InvalidOrderProviderResponse**: = "INVALID_ORDER_PROVIDER_RESPONSE"
 
-*Defined in [asset-swapper/src/types.ts:319](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L319)*
+*Defined in [asset-swapper/src/types.ts:300](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L300)*
 
 ___
 
@@ -709,7 +1058,7 @@ ___
 
 • **NoEtherTokenContractFound**: = "NO_ETHER_TOKEN_CONTRACT_FOUND"
 
-*Defined in [asset-swapper/src/types.ts:314](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L314)*
+*Defined in [asset-swapper/src/types.ts:295](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L295)*
 
 ___
 
@@ -717,7 +1066,7 @@ ___
 
 • **NoZrxTokenContractFound**: = "NO_ZRX_TOKEN_CONTRACT_FOUND"
 
-*Defined in [asset-swapper/src/types.ts:315](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L315)*
+*Defined in [asset-swapper/src/types.ts:296](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L296)*
 
 ___
 
@@ -725,7 +1074,7 @@ ___
 
 • **StandardRelayerApiError**: = "STANDARD_RELAYER_API_ERROR"
 
-*Defined in [asset-swapper/src/types.ts:316](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L316)*
+*Defined in [asset-swapper/src/types.ts:297](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L297)*
 
 <hr />
 
@@ -776,7 +1125,7 @@ ethAmount: If provided, the eth amount in wei to send with the smart contract ca
 
 • **calldataHexString**: *string*
 
-*Defined in [asset-swapper/src/types.ts:50](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L50)*
+*Defined in [asset-swapper/src/types.ts:39](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L39)*
 
 ___
 
@@ -784,7 +1133,7 @@ ___
 
 • **ethAmount**? : *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:53](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L53)*
+*Defined in [asset-swapper/src/types.ts:42](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L42)*
 
 ___
 
@@ -792,7 +1141,7 @@ ___
 
 • **methodAbi**: *`MethodAbi`*
 
-*Defined in [asset-swapper/src/types.ts:51](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L51)*
+*Defined in [asset-swapper/src/types.ts:40](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L40)*
 
 ___
 
@@ -800,7 +1149,7 @@ ___
 
 • **toAddress**: *string*
 
-*Defined in [asset-swapper/src/types.ts:52](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L52)*
+*Defined in [asset-swapper/src/types.ts:41](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L41)*
 
 <hr />
 
@@ -823,9 +1172,9 @@ ___
 
 • **ethAmount**? : *`BigNumber`*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[ethAmount](#optional-ethamount)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[ethAmount](#optional-ethamount)*
 
-*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L192)*
+*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L181)*
 
 ___
 
@@ -833,9 +1182,9 @@ ___
 
 • **feePercentage**: *number*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feePercentage](#feepercentage)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feePercentage](#feepercentage)*
 
-*Defined in [asset-swapper/src/types.ts:190](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L190)*
+*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L179)*
 
 ___
 
@@ -843,9 +1192,9 @@ ___
 
 • **feeRecipient**: *string*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feeRecipient](#feerecipient)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feeRecipient](#feerecipient)*
 
-*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L191)*
+*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L180)*
 
 ___
 
@@ -853,9 +1202,9 @@ ___
 
 • **gasLimit**? : *undefined | number*
 
-*Inherited from [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[gasLimit](#optional-gaslimit)*
+*Inherited from [SwapQuoteExecutionOptsBase](#interface-swapquoteexecutionoptsbase).[gasLimit](#optional-gaslimit)*
 
-*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L180)*
+*Defined in [asset-swapper/src/types.ts:169](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L169)*
 
 ___
 
@@ -863,9 +1212,9 @@ ___
 
 • **gasPrice**? : *`BigNumber`*
 
-*Inherited from [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[gasPrice](#optional-gasprice)*
+*Inherited from [SwapQuoteExecutionOptsBase](#interface-swapquoteexecutionoptsbase).[gasPrice](#optional-gasprice)*
 
-*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L181)*
+*Defined in [asset-swapper/src/types.ts:170](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L170)*
 
 ___
 
@@ -873,9 +1222,9 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Inherited from [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[takerAddress](#optional-takeraddress)*
+*Inherited from [SwapQuoteExecutionOptsBase](#interface-swapquoteexecutionoptsbase).[takerAddress](#optional-takeraddress)*
 
-*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L179)*
+*Defined in [asset-swapper/src/types.ts:168](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L168)*
 
 <hr />
 
@@ -892,7 +1241,7 @@ ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
 
 • **ethAmount**? : *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L192)*
+*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L181)*
 
 ___
 
@@ -900,7 +1249,7 @@ ___
 
 • **feePercentage**: *number*
 
-*Defined in [asset-swapper/src/types.ts:190](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L190)*
+*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L179)*
 
 ___
 
@@ -908,7 +1257,7 @@ ___
 
 • **feeRecipient**: *string*
 
-*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L191)*
+*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L180)*
 
 <hr />
 
@@ -923,7 +1272,7 @@ Represents available liquidity for a given assetData
 
 • **makerTokensAvailableInBaseUnits**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:336](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L336)*
+*Defined in [asset-swapper/src/types.ts:317](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L317)*
 
 ___
 
@@ -931,7 +1280,7 @@ ___
 
 • **takerTokensAvailableInBaseUnits**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:337](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L337)*
+*Defined in [asset-swapper/src/types.ts:318](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L318)*
 
 <hr />
 
@@ -947,9 +1296,9 @@ type: Specified MarketOperation the SwapQuote is provided for
 
 • **bestCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[bestCaseQuoteInfo](#bestcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[bestCaseQuoteInfo](#bestcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:226](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L226)*
+*Defined in [asset-swapper/src/types.ts:215](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L215)*
 
 ___
 
@@ -957,9 +1306,9 @@ ___
 
 • **feeOrders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[feeOrders](#feeorders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[feeOrders](#feeorders)*
 
-*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L225)*
+*Defined in [asset-swapper/src/types.ts:214](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L214)*
 
 ___
 
@@ -967,9 +1316,9 @@ ___
 
 • **makerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[makerAssetData](#makerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[makerAssetData](#makerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:223](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L223)*
+*Defined in [asset-swapper/src/types.ts:212](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L212)*
 
 ___
 
@@ -977,7 +1326,7 @@ ___
 
 • **makerAssetFillAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:244](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L244)*
+*Defined in [asset-swapper/src/types.ts:233](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L233)*
 
 ___
 
@@ -985,9 +1334,9 @@ ___
 
 • **orders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[orders](#orders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[orders](#orders)*
 
-*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L224)*
+*Defined in [asset-swapper/src/types.ts:213](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L213)*
 
 ___
 
@@ -995,9 +1344,9 @@ ___
 
 • **takerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[takerAssetData](#takerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[takerAssetData](#takerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:222](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L222)*
+*Defined in [asset-swapper/src/types.ts:211](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L211)*
 
 ___
 
@@ -1005,7 +1354,7 @@ ___
 
 • **type**: *`Buy`*
 
-*Defined in [asset-swapper/src/types.ts:245](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L245)*
+*Defined in [asset-swapper/src/types.ts:234](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L234)*
 
 ___
 
@@ -1013,9 +1362,9 @@ ___
 
 • **worstCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[worstCaseQuoteInfo](#worstcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[worstCaseQuoteInfo](#worstcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:227](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L227)*
+*Defined in [asset-swapper/src/types.ts:216](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L216)*
 
 <hr />
 
@@ -1028,9 +1377,9 @@ ___
 
 • **bestCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[bestCaseQuoteInfo](#bestcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[bestCaseQuoteInfo](#bestcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:226](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L226)*
+*Defined in [asset-swapper/src/types.ts:215](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L215)*
 
 ___
 
@@ -1038,9 +1387,9 @@ ___
 
 • **feeOrders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[feeOrders](#feeorders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[feeOrders](#feeorders)*
 
-*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L225)*
+*Defined in [asset-swapper/src/types.ts:214](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L214)*
 
 ___
 
@@ -1048,9 +1397,9 @@ ___
 
 • **feePercentage**: *number*
 
-*Inherited from [SwapQuoteWithAffiliateFeeBase](_asset_swapper_src_types_.swapquotewithaffiliatefeebase.md).[feePercentage](#feepercentage)*
+*Inherited from [SwapQuoteWithAffiliateFeeBase](#interface-swapquotewithaffiliatefeebase).[feePercentage](#feepercentage)*
 
-*Defined in [asset-swapper/src/types.ts:249](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L249)*
+*Defined in [asset-swapper/src/types.ts:238](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L238)*
 
 ___
 
@@ -1058,9 +1407,9 @@ ___
 
 • **makerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[makerAssetData](#makerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[makerAssetData](#makerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:223](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L223)*
+*Defined in [asset-swapper/src/types.ts:212](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L212)*
 
 ___
 
@@ -1068,9 +1417,9 @@ ___
 
 • **makerAssetFillAmount**: *`BigNumber`*
 
-*Inherited from [MarketBuySwapQuote](_asset_swapper_src_types_.marketbuyswapquote.md).[makerAssetFillAmount](#makerassetfillamount)*
+*Inherited from [MarketBuySwapQuote](#interface-marketbuyswapquote).[makerAssetFillAmount](#makerassetfillamount)*
 
-*Defined in [asset-swapper/src/types.ts:244](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L244)*
+*Defined in [asset-swapper/src/types.ts:233](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L233)*
 
 ___
 
@@ -1078,9 +1427,9 @@ ___
 
 • **orders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[orders](#orders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[orders](#orders)*
 
-*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L224)*
+*Defined in [asset-swapper/src/types.ts:213](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L213)*
 
 ___
 
@@ -1088,9 +1437,9 @@ ___
 
 • **takerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[takerAssetData](#takerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[takerAssetData](#takerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:222](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L222)*
+*Defined in [asset-swapper/src/types.ts:211](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L211)*
 
 ___
 
@@ -1098,9 +1447,9 @@ ___
 
 • **type**: *`Buy`*
 
-*Inherited from [MarketBuySwapQuote](_asset_swapper_src_types_.marketbuyswapquote.md).[type](#type)*
+*Inherited from [MarketBuySwapQuote](#interface-marketbuyswapquote).[type](#type)*
 
-*Defined in [asset-swapper/src/types.ts:245](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L245)*
+*Defined in [asset-swapper/src/types.ts:234](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L234)*
 
 ___
 
@@ -1108,9 +1457,9 @@ ___
 
 • **worstCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[worstCaseQuoteInfo](#worstcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[worstCaseQuoteInfo](#worstcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:227](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L227)*
+*Defined in [asset-swapper/src/types.ts:216](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L216)*
 
 <hr />
 
@@ -1126,9 +1475,9 @@ type: Specified MarketOperation the SwapQuote is provided for
 
 • **bestCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[bestCaseQuoteInfo](#bestcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[bestCaseQuoteInfo](#bestcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:226](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L226)*
+*Defined in [asset-swapper/src/types.ts:215](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L215)*
 
 ___
 
@@ -1136,9 +1485,9 @@ ___
 
 • **feeOrders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[feeOrders](#feeorders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[feeOrders](#feeorders)*
 
-*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L225)*
+*Defined in [asset-swapper/src/types.ts:214](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L214)*
 
 ___
 
@@ -1146,9 +1495,9 @@ ___
 
 • **makerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[makerAssetData](#makerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[makerAssetData](#makerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:223](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L223)*
+*Defined in [asset-swapper/src/types.ts:212](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L212)*
 
 ___
 
@@ -1156,9 +1505,9 @@ ___
 
 • **orders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[orders](#orders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[orders](#orders)*
 
-*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L224)*
+*Defined in [asset-swapper/src/types.ts:213](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L213)*
 
 ___
 
@@ -1166,9 +1515,9 @@ ___
 
 • **takerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[takerAssetData](#takerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[takerAssetData](#takerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:222](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L222)*
+*Defined in [asset-swapper/src/types.ts:211](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L211)*
 
 ___
 
@@ -1176,7 +1525,7 @@ ___
 
 • **takerAssetFillAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:235](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L235)*
+*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L224)*
 
 ___
 
@@ -1184,7 +1533,7 @@ ___
 
 • **type**: *`Sell`*
 
-*Defined in [asset-swapper/src/types.ts:236](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L236)*
+*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L225)*
 
 ___
 
@@ -1192,9 +1541,9 @@ ___
 
 • **worstCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[worstCaseQuoteInfo](#worstcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[worstCaseQuoteInfo](#worstcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:227](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L227)*
+*Defined in [asset-swapper/src/types.ts:216](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L216)*
 
 <hr />
 
@@ -1207,9 +1556,9 @@ ___
 
 • **bestCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[bestCaseQuoteInfo](#bestcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[bestCaseQuoteInfo](#bestcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:226](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L226)*
+*Defined in [asset-swapper/src/types.ts:215](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L215)*
 
 ___
 
@@ -1217,9 +1566,9 @@ ___
 
 • **feeOrders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[feeOrders](#feeorders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[feeOrders](#feeorders)*
 
-*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L225)*
+*Defined in [asset-swapper/src/types.ts:214](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L214)*
 
 ___
 
@@ -1227,9 +1576,9 @@ ___
 
 • **feePercentage**: *number*
 
-*Inherited from [SwapQuoteWithAffiliateFeeBase](_asset_swapper_src_types_.swapquotewithaffiliatefeebase.md).[feePercentage](#feepercentage)*
+*Inherited from [SwapQuoteWithAffiliateFeeBase](#interface-swapquotewithaffiliatefeebase).[feePercentage](#feepercentage)*
 
-*Defined in [asset-swapper/src/types.ts:249](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L249)*
+*Defined in [asset-swapper/src/types.ts:238](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L238)*
 
 ___
 
@@ -1237,9 +1586,9 @@ ___
 
 • **makerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[makerAssetData](#makerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[makerAssetData](#makerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:223](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L223)*
+*Defined in [asset-swapper/src/types.ts:212](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L212)*
 
 ___
 
@@ -1247,9 +1596,9 @@ ___
 
 • **orders**: *`SignedOrder`[]*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[orders](#orders)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[orders](#orders)*
 
-*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L224)*
+*Defined in [asset-swapper/src/types.ts:213](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L213)*
 
 ___
 
@@ -1257,9 +1606,9 @@ ___
 
 • **takerAssetData**: *string*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[takerAssetData](#takerassetdata)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[takerAssetData](#takerassetdata)*
 
-*Defined in [asset-swapper/src/types.ts:222](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L222)*
+*Defined in [asset-swapper/src/types.ts:211](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L211)*
 
 ___
 
@@ -1267,9 +1616,9 @@ ___
 
 • **takerAssetFillAmount**: *`BigNumber`*
 
-*Inherited from [MarketSellSwapQuote](_asset_swapper_src_types_.marketsellswapquote.md).[takerAssetFillAmount](#takerassetfillamount)*
+*Inherited from [MarketSellSwapQuote](#interface-marketsellswapquote).[takerAssetFillAmount](#takerassetfillamount)*
 
-*Defined in [asset-swapper/src/types.ts:235](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L235)*
+*Defined in [asset-swapper/src/types.ts:224](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L224)*
 
 ___
 
@@ -1277,9 +1626,9 @@ ___
 
 • **type**: *`Sell`*
 
-*Inherited from [MarketSellSwapQuote](_asset_swapper_src_types_.marketsellswapquote.md).[type](#type)*
+*Inherited from [MarketSellSwapQuote](#interface-marketsellswapquote).[type](#type)*
 
-*Defined in [asset-swapper/src/types.ts:236](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L236)*
+*Defined in [asset-swapper/src/types.ts:225](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L225)*
 
 ___
 
@@ -1287,9 +1636,9 @@ ___
 
 • **worstCaseQuoteInfo**: *[SwapQuoteInfo](#class-swapquoteinfo)*
 
-*Inherited from [SwapQuoteBase](_asset_swapper_src_types_.swapquotebase.md).[worstCaseQuoteInfo](#worstcasequoteinfo)*
+*Inherited from [SwapQuoteBase](#interface-swapquotebase).[worstCaseQuoteInfo](#worstcasequoteinfo)*
 
-*Defined in [asset-swapper/src/types.ts:227](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L227)*
+*Defined in [asset-swapper/src/types.ts:216](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L216)*
 
 <hr />
 
@@ -1300,162 +1649,6 @@ ___
 
 
 
-
-# Interface: SignedOrderWithRemainingFillableMakerAssetAmount
-
-A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
-remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled
-
-
-##   Properties
-
-###  exchangeAddress
-
-• **exchangeAddress**: *string*
-
-
-
-Defined in types/lib/index.d.ts:14
-
-___
-
-###  expirationTimeSeconds
-
-• **expirationTimeSeconds**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:16
-
-___
-
-###  feeRecipientAddress
-
-• **feeRecipientAddress**: *string*
-
-
-
-Defined in types/lib/index.d.ts:15
-
-___
-
-###  makerAddress
-
-• **makerAddress**: *string*
-
-
-
-Defined in types/lib/index.d.ts:5
-
-___
-
-###  makerAssetAmount
-
-• **makerAssetAmount**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:9
-
-___
-
-###  makerAssetData
-
-• **makerAssetData**: *string*
-
-
-
-Defined in types/lib/index.d.ts:11
-
-___
-
-###  makerFee
-
-• **makerFee**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:7
-
-___
-
-### `Optional` remainingFillableMakerAssetAmount
-
-• **remainingFillableMakerAssetAmount**? : *`BigNumber`*
-
-*Defined in [asset-swapper/src/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L28)*
-
-___
-
-###  salt
-
-• **salt**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:13
-
-___
-
-###  senderAddress
-
-• **senderAddress**: *string*
-
-
-
-Defined in types/lib/index.d.ts:4
-
-___
-
-###  signature
-
-• **signature**: *string*
-
-
-
-Defined in types/lib/index.d.ts:33
-
-___
-
-###  takerAddress
-
-• **takerAddress**: *string*
-
-
-
-Defined in types/lib/index.d.ts:6
-
-___
-
-###  takerAssetAmount
-
-• **takerAssetAmount**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:10
-
-___
-
-###  takerAssetData
-
-• **takerAssetData**: *string*
-
-
-
-Defined in types/lib/index.d.ts:12
-
-___
-
-###  takerFee
-
-• **takerFee**: *`BigNumber`*
-
-
-
-Defined in types/lib/index.d.ts:8
-
-<hr />
 
 
 
@@ -1478,7 +1671,7 @@ methodAbi: The ABI of the smart contract method to call with params.
 
 • **ethAmount**? : *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:66](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L66)*
+*Defined in [asset-swapper/src/types.ts:55](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L55)*
 
 ___
 
@@ -1486,7 +1679,7 @@ ___
 
 • **methodAbi**: *`MethodAbi`*
 
-*Defined in [asset-swapper/src/types.ts:67](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L67)*
+*Defined in [asset-swapper/src/types.ts:56](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L56)*
 
 ___
 
@@ -1494,7 +1687,7 @@ ___
 
 • **params**: *`T`*
 
-*Defined in [asset-swapper/src/types.ts:64](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L64)*
+*Defined in [asset-swapper/src/types.ts:53](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L53)*
 
 ___
 
@@ -1502,7 +1695,7 @@ ___
 
 • **toAddress**: *string*
 
-*Defined in [asset-swapper/src/types.ts:65](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L65)*
+*Defined in [asset-swapper/src/types.ts:54](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L54)*
 
 <hr />
 
@@ -1531,7 +1724,7 @@ executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens wit
 
 ▸ **executeSwapQuoteOrThrowAsync**(`quote`: [SwapQuote](#swapquote), `opts`: `Partial<SwapQuoteExecutionOptsBase>`): *`Promise<string>`*
 
-*Defined in [asset-swapper/src/types.ts:158](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L158)*
+*Defined in [asset-swapper/src/types.ts:147](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L147)*
 
 **Parameters:**
 
@@ -1548,7 +1741,7 @@ ___
 
 ▸ **getCalldataOrThrowAsync**(`quote`: [SwapQuote](#swapquote), `opts`: `Partial<SwapQuoteGetOutputOptsBase>`): *`Promise<CalldataInfo>`*
 
-*Defined in [asset-swapper/src/types.ts:153](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L153)*
+*Defined in [asset-swapper/src/types.ts:142](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L142)*
 
 **Parameters:**
 
@@ -1565,7 +1758,7 @@ ___
 
 ▸ **getSmartContractParamsOrThrowAsync**(`quote`: [SwapQuote](#swapquote), `opts`: `Partial<SwapQuoteGetOutputOptsBase>`): *`Promise<SmartContractParamsInfo<T>>`*
 
-*Defined in [asset-swapper/src/types.ts:154](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L154)*
+*Defined in [asset-swapper/src/types.ts:143](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L143)*
 
 **Parameters:**
 
@@ -1589,7 +1782,7 @@ networkId: The networkId that the desired orders should be for.
 
 • **networkId**: *number*
 
-*Defined in [asset-swapper/src/types.ts:165](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L165)*
+*Defined in [asset-swapper/src/types.ts:154](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L154)*
 
 <hr />
 
@@ -1604,11 +1797,11 @@ Represents the options for executing a swap quote with SwapQuoteConsumer
 
 • **ethAmount**? : *`BigNumber`*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[ethAmount](#optional-ethamount)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[ethAmount](#optional-ethamount)*
 
 *Overrides [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[ethAmount](#optional-ethamount)*
 
-*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L192)*
+*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L181)*
 
 ___
 
@@ -1616,11 +1809,11 @@ ___
 
 • **feePercentage**: *number*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feePercentage](#feepercentage)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feePercentage](#feepercentage)*
 
 *Overrides [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feePercentage](#feepercentage)*
 
-*Defined in [asset-swapper/src/types.ts:190](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L190)*
+*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L179)*
 
 ___
 
@@ -1628,11 +1821,11 @@ ___
 
 • **feeRecipient**: *string*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feeRecipient](#feerecipient)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feeRecipient](#feerecipient)*
 
 *Overrides [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feeRecipient](#feerecipient)*
 
-*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L191)*
+*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L180)*
 
 ___
 
@@ -1640,9 +1833,9 @@ ___
 
 • **gasLimit**? : *undefined | number*
 
-*Inherited from [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[gasLimit](#optional-gaslimit)*
+*Inherited from [SwapQuoteExecutionOptsBase](#interface-swapquoteexecutionoptsbase).[gasLimit](#optional-gaslimit)*
 
-*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L180)*
+*Defined in [asset-swapper/src/types.ts:169](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L169)*
 
 ___
 
@@ -1650,9 +1843,9 @@ ___
 
 • **gasPrice**? : *`BigNumber`*
 
-*Inherited from [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[gasPrice](#optional-gasprice)*
+*Inherited from [SwapQuoteExecutionOptsBase](#interface-swapquoteexecutionoptsbase).[gasPrice](#optional-gasprice)*
 
-*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L181)*
+*Defined in [asset-swapper/src/types.ts:170](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L170)*
 
 ___
 
@@ -1660,11 +1853,11 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Inherited from [SwapQuoteGetOutputOpts](_asset_swapper_src_types_.swapquotegetoutputopts.md).[takerAddress](#optional-takeraddress)*
+*Inherited from [SwapQuoteGetOutputOpts](#interface-swapquotegetoutputopts).[takerAddress](#optional-takeraddress)*
 
 *Overrides [SwapQuoteExecutionOptsBase](_asset_swapper_src_types_.swapquoteexecutionoptsbase.md).[takerAddress](#optional-takeraddress)*
 
-*Defined in [asset-swapper/src/types.ts:202](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L202)*
+*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L191)*
 
 ___
 
@@ -1672,9 +1865,9 @@ ___
 
 • **useConsumerType**? : *[ConsumerType](#enumeration-consumertype)*
 
-*Inherited from [SwapQuoteGetOutputOpts](_asset_swapper_src_types_.swapquotegetoutputopts.md).[useConsumerType](#optional-useconsumertype)*
+*Inherited from [SwapQuoteGetOutputOpts](#interface-swapquotegetoutputopts).[useConsumerType](#optional-useconsumertype)*
 
-*Defined in [asset-swapper/src/types.ts:203](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L203)*
+*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L192)*
 
 <hr />
 
@@ -1691,7 +1884,7 @@ gasPrice: Gas price in Wei to use for a transaction
 
 • **gasLimit**? : *undefined | number*
 
-*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L180)*
+*Defined in [asset-swapper/src/types.ts:169](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L169)*
 
 ___
 
@@ -1699,7 +1892,7 @@ ___
 
 • **gasPrice**? : *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L181)*
+*Defined in [asset-swapper/src/types.ts:170](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L170)*
 
 ___
 
@@ -1707,7 +1900,7 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L179)*
+*Defined in [asset-swapper/src/types.ts:168](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L168)*
 
 <hr />
 
@@ -1723,9 +1916,9 @@ useConsumerType: If provided, defaults the SwapQuoteConsumer to create output co
 
 • **ethAmount**? : *`BigNumber`*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[ethAmount](#optional-ethamount)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[ethAmount](#optional-ethamount)*
 
-*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L192)*
+*Defined in [asset-swapper/src/types.ts:181](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L181)*
 
 ___
 
@@ -1733,9 +1926,9 @@ ___
 
 • **feePercentage**: *number*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feePercentage](#feepercentage)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feePercentage](#feepercentage)*
 
-*Defined in [asset-swapper/src/types.ts:190](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L190)*
+*Defined in [asset-swapper/src/types.ts:179](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L179)*
 
 ___
 
@@ -1743,9 +1936,9 @@ ___
 
 • **feeRecipient**: *string*
 
-*Inherited from [ForwarderSwapQuoteGetOutputOpts](_asset_swapper_src_types_.forwarderswapquotegetoutputopts.md).[feeRecipient](#feerecipient)*
+*Inherited from [ForwarderSwapQuoteGetOutputOpts](#interface-forwarderswapquotegetoutputopts).[feeRecipient](#feerecipient)*
 
-*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L191)*
+*Defined in [asset-swapper/src/types.ts:180](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L180)*
 
 ___
 
@@ -1753,7 +1946,7 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Defined in [asset-swapper/src/types.ts:202](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L202)*
+*Defined in [asset-swapper/src/types.ts:191](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L191)*
 
 ___
 
@@ -1761,7 +1954,7 @@ ___
 
 • **useConsumerType**? : *[ConsumerType](#enumeration-consumertype)*
 
-*Defined in [asset-swapper/src/types.ts:203](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L203)*
+*Defined in [asset-swapper/src/types.ts:192](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L192)*
 
 <hr />
 
@@ -1781,7 +1974,7 @@ Represents the options provided to a generic SwapQuoteConsumer
 
 • **feeTakerTokenAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:265](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L265)*
+*Defined in [asset-swapper/src/types.ts:254](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L254)*
 
 ___
 
@@ -1789,7 +1982,7 @@ ___
 
 • **makerTokenAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:268](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L268)*
+*Defined in [asset-swapper/src/types.ts:257](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L257)*
 
 ___
 
@@ -1797,7 +1990,7 @@ ___
 
 • **takerTokenAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:267](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L267)*
+*Defined in [asset-swapper/src/types.ts:256](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L256)*
 
 ___
 
@@ -1805,13 +1998,12 @@ ___
 
 • **totalTakerTokenAmount**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/types.ts:266](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L266)*
+*Defined in [asset-swapper/src/types.ts:255](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L255)*
 
 <hr />
 
 # Interface: SwapQuoteRequestOpts
 
-shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
 shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
 slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
 
@@ -1822,15 +2014,7 @@ slippagePercentage: The percentage buffer to add to account for slippage. Affect
 
 • **shouldDisableRequestingFeeOrders**: *boolean*
 
-*Defined in [asset-swapper/src/types.ts:278](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L278)*
-
-___
-
-###  shouldForceOrderRefresh
-
-• **shouldForceOrderRefresh**: *boolean*
-
-*Defined in [asset-swapper/src/types.ts:277](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L277)*
+*Defined in [asset-swapper/src/types.ts:265](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L265)*
 
 ___
 
@@ -1838,7 +2022,7 @@ ___
 
 • **slippagePercentage**: *number*
 
-*Defined in [asset-swapper/src/types.ts:279](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L279)*
+*Defined in [asset-swapper/src/types.ts:266](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L266)*
 
 <hr />
 
@@ -1855,7 +2039,7 @@ expiryBufferMs: The number of seconds to add when calculating whether an order i
 
 • **expiryBufferMs**: *number*
 
-*Defined in [asset-swapper/src/types.ts:296](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L296)*
+*Defined in [asset-swapper/src/types.ts:277](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L277)*
 
 ___
 
@@ -1863,7 +2047,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [asset-swapper/src/types.ts:294](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L294)*
+*Defined in [asset-swapper/src/types.ts:275](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L275)*
 
 ___
 
@@ -1871,7 +2055,7 @@ ___
 
 • **orderRefreshIntervalMs**: *number*
 
-*Defined in [asset-swapper/src/types.ts:295](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L295)*
+*Defined in [asset-swapper/src/types.ts:276](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L276)*
 
 <hr />
 
@@ -1914,7 +2098,7 @@ ___
 
 • **components**? : *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L131)*
+*Defined in [ethereum-types/src/index.ts:131](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L131)*
 
 ___
 
@@ -1922,7 +2106,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -1930,7 +2114,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
@@ -1949,7 +2133,7 @@ ___
 
 • **isEIP1193**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L73)*
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L73)*
 
 ## Methods
 
@@ -1957,7 +2141,7 @@ ___
 
 ▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
 
-*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L75)*
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L75)*
 
 **Parameters:**
 
@@ -1981,7 +2165,7 @@ ___
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L74)*
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L74)*
 
 **Parameters:**
 
@@ -2015,7 +2199,7 @@ Name | Type |
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L14)*
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L14)*
 
 **Parameters:**
 
@@ -2039,7 +2223,7 @@ Name | Type |
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L324)*
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L324)*
 
 ___
 
@@ -2047,7 +2231,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L325)*
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L325)*
 
 ___
 
@@ -2055,7 +2239,7 @@ ___
 
 • **method**: *string*
 
-*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L323)*
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L323)*
 
 ___
 
@@ -2063,7 +2247,7 @@ ___
 
 • **params**: *any[]*
 
-*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L322)*
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L322)*
 
 <hr />
 
@@ -2076,7 +2260,7 @@ ___
 
 • **code**: *number*
 
-*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L330)*
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L330)*
 
 ___
 
@@ -2084,7 +2268,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L329)*
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L329)*
 
 <hr />
 
@@ -2097,7 +2281,7 @@ ___
 
 • **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
 
-*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L337)*
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L337)*
 
 ___
 
@@ -2105,7 +2289,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L335)*
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L335)*
 
 ___
 
@@ -2113,7 +2297,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L336)*
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L336)*
 
 ___
 
@@ -2121,7 +2305,7 @@ ___
 
 • **result**: *any*
 
-*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L334)*
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L334)*
 
 <hr />
 
@@ -2140,7 +2324,7 @@ ___
 
 • **constant**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L94)*
+*Defined in [ethereum-types/src/index.ts:94](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L94)*
 
 ___
 
@@ -2148,7 +2332,7 @@ ___
 
 • **inputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L92)*
+*Defined in [ethereum-types/src/index.ts:92](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L92)*
 
 ___
 
@@ -2156,7 +2340,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L91)*
+*Defined in [ethereum-types/src/index.ts:91](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L91)*
 
 ___
 
@@ -2164,7 +2348,7 @@ ___
 
 • **outputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L93)*
+*Defined in [ethereum-types/src/index.ts:93](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L93)*
 
 ___
 
@@ -2172,7 +2356,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L96)*
+*Defined in [ethereum-types/src/index.ts:96](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L96)*
 
 ___
 
@@ -2180,7 +2364,7 @@ ___
 
 • **stateMutability**: *[StateMutability](#statemutability)*
 
-*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L95)*
+*Defined in [ethereum-types/src/index.ts:95](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L95)*
 
 ___
 
@@ -2188,9 +2372,17 @@ ___
 
 • **type**: *string*
 
-*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L90)*
+*Defined in [ethereum-types/src/index.ts:90](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L90)*
 
 <hr />
+
+
+
+
+
+
+
+
 
 
 
@@ -2221,7 +2413,7 @@ Error class representing insufficient asset liquidity
 
 \+ **new InsufficientAssetLiquidityError**(`amountAvailableToFill`: `BigNumber`): *[InsufficientAssetLiquidityError](#class-insufficientassetliquidityerror)*
 
-*Defined in [asset-swapper/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/errors.ts#L12)*
+*Defined in [asset-swapper/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/errors.ts#L12)*
 
 **Parameters:**
 
@@ -2237,7 +2429,7 @@ Name | Type | Description |
 
 • **amountAvailableToFill**: *`BigNumber`*
 
-*Defined in [asset-swapper/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/errors.ts#L12)*
+*Defined in [asset-swapper/src/errors.ts:12](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/errors.ts#L12)*
 
 The amount availabe to fill (in base units) factoring in slippage.
 
@@ -2283,14 +2475,6 @@ ___
 
 <hr />
 
-
-
-
-
-
-
-
-
 # Interface: TupleDataItem
 
 
@@ -2302,7 +2486,7 @@ ___
 
 *Overrides [DataItem](_ethereum_types_src_index_.dataitem.md).[components](#optional-components)*
 
-*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L135)*
+*Defined in [ethereum-types/src/index.ts:135](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L135)*
 
 ___
 
@@ -2310,9 +2494,9 @@ ___
 
 • **name**: *string*
 
-*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[name](#name)*
+*Inherited from [DataItem](#interface-dataitem).[name](#name)*
 
-*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [ethereum-types/src/index.ts:129](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -2320,9 +2504,9 @@ ___
 
 • **type**: *string*
 
-*Inherited from [DataItem](_ethereum_types_src_index_.dataitem.md).[type](#type)*
+*Inherited from [DataItem](#interface-dataitem).[type](#type)*
 
-*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [ethereum-types/src/index.ts:130](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
@@ -2343,7 +2527,7 @@ This interface allowed sending synchonous requests, support for which was later 
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
 
-*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L45)*
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L45)*
 
 **Parameters:**
 
@@ -2359,7 +2543,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L44)*
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L44)*
 
 **Parameters:**
 
@@ -2385,7 +2569,7 @@ before the first attempts to conform to EIP1193
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L54)*
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L54)*
 
 **Parameters:**
 
@@ -2411,7 +2595,7 @@ however it does not conform entirely.
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L63)*
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L63)*
 
 **Parameters:**
 
@@ -2437,7 +2621,7 @@ add here
 
 • **isMetaMask**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L31)*
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L31)*
 
 ___
 
@@ -2445,7 +2629,7 @@ ___
 
 • **isParity**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L32)*
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L32)*
 
 ___
 
@@ -2453,7 +2637,7 @@ ___
 
 • **isZeroExProvider**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L30)*
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L30)*
 
 ## Methods
 
@@ -2461,7 +2645,7 @@ ___
 
 ▸ **enable**(): *`Promise<void>`*
 
-*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L34)*
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L34)*
 
 **Returns:** *`Promise<void>`*
 
@@ -2471,7 +2655,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L35)*
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L35)*
 
 **Parameters:**
 
@@ -2488,19 +2672,256 @@ ___
 
 ▸ **stop**(): *void*
 
-*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L33)*
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L33)*
 
 **Returns:** *void*
 
 <hr />
 
+# Interface: AcceptedRejectedOrders
+
+
+##   Properties
+
+###  accepted
+
+• **accepted**: *`SignedOrder`[]*
+
+*Defined in [orderbook/src/types.ts:15](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L15)*
+
+___
+
+###  rejected
+
+• **rejected**: *[RejectedOrder](#class-rejectedorder)[]*
+
+*Defined in [orderbook/src/types.ts:16](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L16)*
+
+<hr />
+
+# Interface: AddedRemovedOrders
+
+
+##   Properties
+
+###  added
+
+• **added**: *`APIOrder`[]*
+
+*Defined in [orderbook/src/types.ts:6](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L6)*
+
+___
+
+###  assetPairKey
+
+• **assetPairKey**: *string*
+
+*Defined in [orderbook/src/types.ts:5](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L5)*
+
+___
+
+###  removed
+
+• **removed**: *`APIOrder`[]*
+
+*Defined in [orderbook/src/types.ts:7](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L7)*
+
+<hr />
+
+# Interface: MeshOrderProviderOpts
+
+Constructor options for a Mesh Order Provider
+
+
+##   Properties
+
+###  websocketEndpoint
+
+• **websocketEndpoint**: *string*
+
+*Defined in [orderbook/src/types.ts:52](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L52)*
+
+___
+
+### `Optional` wsOpts
+
+• **wsOpts**? : *`WSOpts`*
+
+*Defined in [orderbook/src/types.ts:54](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L54)*
+
+<hr />
+
+# Interface: RejectedOrder
+
+
+##   Properties
+
+###  message
+
+• **message**: *string*
+
+*Defined in [orderbook/src/types.ts:11](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L11)*
+
+___
+
+###  order
+
+• **order**: *`SignedOrder`*
+
+*Defined in [orderbook/src/types.ts:12](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L12)*
+
+<hr />
+
+# Interface: SRAPollingOrderProviderOpts
+
+Constructor options for a SRA Polling Order Provider
+
+
+##   Properties
+
+###  httpEndpoint
+
+• **httpEndpoint**: *string*
+
+*Defined in [orderbook/src/types.ts:38](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L38)*
+
+___
+
+### `Optional` networkId
+
+• **networkId**? : *undefined | number*
+
+*Defined in [orderbook/src/types.ts:44](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L44)*
+
+___
+
+### `Optional` perPage
+
+• **perPage**? : *undefined | number*
+
+*Defined in [orderbook/src/types.ts:42](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L42)*
+
+___
+
+###  pollingIntervalMs
+
+• **pollingIntervalMs**: *number*
+
+*Defined in [orderbook/src/types.ts:40](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L40)*
+
+<hr />
+
+# Interface: SRAWebsocketOrderProviderOpts
+
+Constructor options for a SRA Websocket Order Provider
+
+
+##   Properties
+
+###  httpEndpoint
+
+• **httpEndpoint**: *string*
+
+*Defined in [orderbook/src/types.ts:26](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L26)*
+
+___
+
+### `Optional` networkId
+
+• **networkId**? : *undefined | number*
+
+*Defined in [orderbook/src/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L30)*
+
+___
+
+###  websocketEndpoint
+
+• **websocketEndpoint**: *string*
+
+*Defined in [orderbook/src/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/orderbook/src/types.ts#L28)*
+
+<hr />
+
+# Interface: APIOrder
+
+
+##   Properties
+
+###  metaData
+
+• **metaData**: *object*
+
+*Defined in [types/src/index.ts:403](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L403)*
+
+___
+
+###  order
+
+• **order**: *[SignedOrder](#class-signedorder)*
+
+*Defined in [types/src/index.ts:402](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L402)*
+
+<hr />
 
 
 
+# Interface: Asset
 
 
+##   Properties
+
+###  assetData
+
+• **assetData**: *string*
+
+*Defined in [types/src/index.ts:419](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L419)*
+
+___
+
+###  maxAmount
+
+• **maxAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:421](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L421)*
+
+___
+
+###  minAmount
+
+• **minAmount**: *`BigNumber`*
+
+*Defined in [types/src/index.ts:420](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L420)*
+
+___
+
+###  precision
+
+• **precision**: *number*
+
+*Defined in [types/src/index.ts:422](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L422)*
+
+<hr />
+
+# Interface: AssetPairsItem
 
 
+##   Properties
+
+###  assetDataA
+
+• **assetDataA**: *[Asset](#class-asset)*
+
+*Defined in [types/src/index.ts:414](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L414)*
+
+___
+
+###  assetDataB
+
+• **assetDataB**: *[Asset](#class-asset)*
+
+*Defined in [types/src/index.ts:415](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L415)*
+
+<hr />
 
 
 
@@ -2597,9 +3018,9 @@ ___
 
 • **exchangeAddress**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[exchangeAddress](#exchangeaddress)*
+*Inherited from [Order](#interface-order).[exchangeAddress](#exchangeaddress)*
 
-*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L20)*
+*Defined in [types/src/index.ts:20](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L20)*
 
 ___
 
@@ -2607,9 +3028,9 @@ ___
 
 • **expirationTimeSeconds**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[expirationTimeSeconds](#expirationtimeseconds)*
+*Inherited from [Order](#interface-order).[expirationTimeSeconds](#expirationtimeseconds)*
 
-*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L22)*
+*Defined in [types/src/index.ts:22](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L22)*
 
 ___
 
@@ -2617,9 +3038,9 @@ ___
 
 • **feeRecipientAddress**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[feeRecipientAddress](#feerecipientaddress)*
+*Inherited from [Order](#interface-order).[feeRecipientAddress](#feerecipientaddress)*
 
-*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L21)*
+*Defined in [types/src/index.ts:21](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L21)*
 
 ___
 
@@ -2627,9 +3048,9 @@ ___
 
 • **makerAddress**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[makerAddress](#makeraddress)*
+*Inherited from [Order](#interface-order).[makerAddress](#makeraddress)*
 
-*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L11)*
+*Defined in [types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L11)*
 
 ___
 
@@ -2637,9 +3058,9 @@ ___
 
 • **makerAssetAmount**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[makerAssetAmount](#makerassetamount)*
+*Inherited from [Order](#interface-order).[makerAssetAmount](#makerassetamount)*
 
-*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L15)*
+*Defined in [types/src/index.ts:15](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L15)*
 
 ___
 
@@ -2647,9 +3068,9 @@ ___
 
 • **makerAssetData**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[makerAssetData](#makerassetdata)*
+*Inherited from [Order](#interface-order).[makerAssetData](#makerassetdata)*
 
-*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L17)*
+*Defined in [types/src/index.ts:17](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L17)*
 
 ___
 
@@ -2657,9 +3078,9 @@ ___
 
 • **makerFee**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[makerFee](#makerfee)*
+*Inherited from [Order](#interface-order).[makerFee](#makerfee)*
 
-*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L13)*
+*Defined in [types/src/index.ts:13](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L13)*
 
 ___
 
@@ -2667,9 +3088,9 @@ ___
 
 • **salt**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[salt](#salt)*
+*Inherited from [Order](#interface-order).[salt](#salt)*
 
-*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L19)*
+*Defined in [types/src/index.ts:19](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L19)*
 
 ___
 
@@ -2677,9 +3098,9 @@ ___
 
 • **senderAddress**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[senderAddress](#senderaddress)*
+*Inherited from [Order](#interface-order).[senderAddress](#senderaddress)*
 
-*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L10)*
+*Defined in [types/src/index.ts:10](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L10)*
 
 ___
 
@@ -2687,7 +3108,7 @@ ___
 
 • **signature**: *string*
 
-*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L41)*
+*Defined in [types/src/index.ts:41](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L41)*
 
 ___
 
@@ -2695,9 +3116,9 @@ ___
 
 • **takerAddress**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[takerAddress](#takeraddress)*
+*Inherited from [Order](#interface-order).[takerAddress](#takeraddress)*
 
-*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L12)*
+*Defined in [types/src/index.ts:12](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L12)*
 
 ___
 
@@ -2705,9 +3126,9 @@ ___
 
 • **takerAssetAmount**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[takerAssetAmount](#takerassetamount)*
+*Inherited from [Order](#interface-order).[takerAssetAmount](#takerassetamount)*
 
-*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L16)*
+*Defined in [types/src/index.ts:16](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L16)*
 
 ___
 
@@ -2715,9 +3136,9 @@ ___
 
 • **takerAssetData**: *string*
 
-*Inherited from [Order](_types_src_index_.order.md).[takerAssetData](#takerassetdata)*
+*Inherited from [Order](#interface-order).[takerAssetData](#takerassetdata)*
 
-*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L18)*
+*Defined in [types/src/index.ts:18](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L18)*
 
 ___
 
@@ -2725,9 +3146,9 @@ ___
 
 • **takerFee**: *`BigNumber`*
 
-*Inherited from [Order](_types_src_index_.order.md).[takerFee](#takerfee)*
+*Inherited from [Order](#interface-order).[takerFee](#takerfee)*
 
-*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L14)*
+*Defined in [types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/types/src/index.ts#L14)*
 
 <hr />
 
@@ -2816,14 +3237,6 @@ ___
 
 
 
-<hr /> 
-
-
-
-<hr /> 
-
-
-
 
 ##  Type aliases
 
@@ -2831,21 +3244,13 @@ ___
 
 
 
-###  LiquidityRequestOpts
-
-Ƭ **LiquidityRequestOpts**: *`Pick<SwapQuoteRequestOpts, "shouldForceOrderRefresh">`*
-
-*Defined in [asset-swapper/src/types.ts:286](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L286)*
-
-___
-
 
 
 ###  SwapQuote
 
 Ƭ **SwapQuote**: *[MarketBuySwapQuote](#interface-marketbuyswapquote) | [MarketSellSwapQuote](#interface-marketsellswapquote)*
 
-*Defined in [asset-swapper/src/types.ts:195](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/asset-swapper/src/types.ts#L195)*
+*Defined in [asset-swapper/src/types.ts:184](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/asset-swapper/src/types.ts#L184)*
 
 ___
 
@@ -2864,7 +3269,7 @@ ___
 
 Ƭ **ConstructorStateMutability**: *"nonpayable" | "payable"*
 
-*Defined in [ethereum-types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L84)*
+*Defined in [ethereum-types/src/index.ts:84](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L84)*
 
 ___
 
@@ -2876,7 +3281,7 @@ ___
 
 Ƭ **EIP1193Event**: *"accountsChanged" | "networkChanged" | "close" | "connect" | "notification"*
 
-*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L70)*
+*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L70)*
 
 Interface for providers that conform to EIP 1193
 Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
@@ -2893,7 +3298,7 @@ ___
 
 Ƭ **JSONRPCErrorCallback**: *function*
 
-*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L3)*
+*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L3)*
 
 #### Type declaration:
 
@@ -2920,7 +3325,7 @@ ___
 
 Ƭ **StateMutability**: *"pure" | "view" | [ConstructorStateMutability](#constructorstatemutability)*
 
-*Defined in [ethereum-types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L85)*
+*Defined in [ethereum-types/src/index.ts:85](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L85)*
 
 ___
 
@@ -2928,7 +3333,7 @@ ___
 
 Ƭ **SupportedProvider**: *[Web3JsProvider](_ethereum_types_src_index_.md#web3jsprovider) | [GanacheProvider](#interface-ganacheprovider) | [EIP1193Provider](#interface-eip1193provider) | [ZeroExProvider](#interface-zeroexprovider)*
 
-*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L9)*
+*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L9)*
 
 Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
 Read more about Providers in the guides section of the 0x docs.
@@ -2943,7 +3348,30 @@ ___
 
 Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
 
-*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L11)*
+*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/5c18b394a/packages/ethereum-types/src/index.ts#L11)*
 
 <hr />
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+<hr /> 
+
+
+
+
+##  Type aliases
+
+
 

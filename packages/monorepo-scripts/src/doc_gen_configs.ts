@@ -24,6 +24,7 @@ export const docGenConfigs: DocGenConfigs = {
         // HACK: Asset-swapper specifies marketSell and marketBuy quotes with a descriminant MarketOperation Type to ignore the error, linking Buy and Sell to MarketOperation
         Buy: true,
         Sell: true,
+        IterableIterator: true,
     },
     // Some types are not explicitly part of the public interface like params, return values, etc... But we still
     // want them exported. E.g error enum types that can be thrown by methods. These must be manually added to this
