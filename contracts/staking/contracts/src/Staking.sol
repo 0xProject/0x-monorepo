@@ -43,13 +43,27 @@ contract Staking is
     /// @dev Initialize storage owned by this contract.
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
-    function init()
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function init(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address payable _rewardVaultAddress,
+        address _zrxVaultAddress        
+    )
         external
         onlyOwner
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // to prevent accidentally clearing prior state.
         _initMixinScheduler();
-        _initMixinParams();
+        _initMixinParams(
+            _wethProxyAddress,
+            _ethVaultAddress,
+            _rewardVaultAddress,
+            _zrxVaultAddress
+        );
     }
 }

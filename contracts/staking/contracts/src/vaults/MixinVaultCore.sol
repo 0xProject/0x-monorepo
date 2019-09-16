@@ -45,13 +45,6 @@ contract MixinVaultCore is
     // True iff vault has been set to Catastrophic Failure Mode
     bool public isInCatastrophicFailure;
 
-    /// @dev Constructor.
-    constructor(address _stakingProxyAddress)
-        public
-    {
-        _setStakingProxy(_stakingProxyAddress);
-    }
-
     /// @dev Asserts that the sender (`msg.sender`) is the staking contract.
     modifier onlyStakingProxy {
         if (msg.sender != stakingProxyAddress) {
@@ -80,12 +73,13 @@ contract MixinVaultCore is
 
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract owner can call this function.
-    /// @param _stakingContractAddress Address of Staking proxy contract.
+    /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external
         onlyOwner
     {
-        _setStakingProxy(_stakingProxyContract);
+        stakingProxyAddress = _stakingProxyAddress;
+        emit StakingProxySet(_stakingProxyAddress);
     }
 
     /// @dev Vault enters into Catastrophic Failure Mode.
@@ -97,14 +91,5 @@ contract MixinVaultCore is
     {
         isInCatastrophicFailure = true;
         emit InCatastrophicFailureMode(msg.sender);
-    }
-
-    /// @dev Sets the address of the StakingProxy contract.
-    /// @param _stakingContractAddress Address of Staking proxy contract.
-    function _setStakingProxy(address payable _stakingProxyAddress)
-        internal
-    {
-        stakingProxyAddress = _stakingProxyAddress;
-        emit StakingProxySet(_stakingProxyAddress);
     }
 }

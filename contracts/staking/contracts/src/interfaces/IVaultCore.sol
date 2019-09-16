@@ -41,7 +41,7 @@ interface IVaultCore {
 
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract owner can call this function.
-    /// @param _stakingContractAddress Address of Staking proxy contract.
+    /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external;
 

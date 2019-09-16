@@ -52,7 +52,7 @@ contract MixinParams is
         uint32 _cobbDouglasAlphaDenominator,
         address _wethProxyAddress,
         address _ethVaultAddress,
-        address _rewardVaultAddress,
+        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         external
@@ -111,31 +111,6 @@ contract MixinParams is
         _zrxVaultAddress = address(_zrxVaultAddress);
     }
 
-    /// @dev Assert param values before initializing them.
-    /// This must be updated for each migration.
-    function _assertMixinParamsBeforeInit()
-        internal
-    {
-        // Ensure state is uninitialized.
-        if (epochDurationInSeconds != 0 &&
-            rewardDelegatedStakeWeight != 0 &&
-            minimumPoolStake != 0 &&
-            maximumMakersInPool != 0 &&
-            cobbDouglasAlphaNumerator != 0 &&
-            cobbDouglasAlphaDenomintor != 0 &&
-            address(wethAssetProxy) != NIL_ADDRESS &&
-            address(ethVault) != NIL_ADDRESS &&
-            address(rewardVault) != NIL_ADDRESS &&
-            address(zrxVault) != NIL_ADDRESS
-        ) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
-                )
-            );
-        }
-    }
-
     /// @dev Initialzize storage belonging to this mixin.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     /// @param _ethVaultAddress Address of the EthVault contract.
@@ -144,28 +119,23 @@ contract MixinParams is
     function _initMixinParams(
         address _wethProxyAddress,
         address _ethVaultAddress,
-        address _rewardVaultAddress,
+        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         internal
     {
-        // assert the current values before overwriting them.
-        _assertMixinParamsBeforeInit();
+        // Ensure state is uninitialized.
+        _assertStorageNotInitialized();
 
         // Set up defaults.
-        _epochDurationInSeconds = 2 weeks;
-        _rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%
-        _minimumPoolStake = 100 * MIN_TOKEN_VALUE; // 100 ZRX
-        _maximumMakersInPool = 10;
-        _cobbDouglasAlphaNumerator = 1;
-        _cobbDouglasAlphaDenomintor = 2;
+        // These cannot be set to variables, or we go over the stack variable limit.
         _setParams(
-            _epochDurationInSeconds,
-            _rewardDelegatedStakeWeight,
-            _minimumPoolStake,
-            _maximumMakersInPool,
-            _cobbDouglasAlphaNumerator,
-            _cobbDouglasAlphaDenomintor,
+            2 weeks,                       // epochDurationInSeconds
+            (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
+            100 * MIN_TOKEN_VALUE,         // minimumPoolStake
+            10,                            // maximumMakersInPool
+            1,                             // cobbDouglasAlphaNumerator
+            2,                             // cobbDouglasAlphaDenomintor
             _wethProxyAddress,
             _ethVaultAddress,
             _rewardVaultAddress,
@@ -193,10 +163,10 @@ contract MixinParams is
         uint32 _cobbDouglasAlphaDenominator,
         address _wethProxyAddress,
         address _ethVaultAddress,
-        address _rewardVaultAddress,
+        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
-        internal
+        private
     {
         _assertValidRewardDelegatedStakeWeight(_rewardDelegatedStakeWeight);
         _assertValidMaximumMakersInPool(_maximumMakersInPool);
@@ -235,6 +205,29 @@ contract MixinParams is
             _rewardVaultAddress,
             _zrxVaultAddress
         );
+    }
+
+    function _assertStorageNotInitialized()
+        private
+        view
+    {
+        if (epochDurationInSeconds != 0 &&
+            rewardDelegatedStakeWeight != 0 &&
+            minimumPoolStake != 0 &&
+            maximumMakersInPool != 0 &&
+            cobbDouglasAlphaNumerator != 0 &&
+            cobbDouglasAlphaDenomintor != 0 &&
+            address(wethAssetProxy) != NIL_ADDRESS &&
+            address(ethVault) != NIL_ADDRESS &&
+            address(rewardVault) != NIL_ADDRESS &&
+            address(zrxVault) != NIL_ADDRESS
+        ) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InitializationError(
+                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
+                )
+            );
+        }
     }
 
     /// @dev Asserts that cobb douglas alpha values are valid.
@@ -293,7 +286,7 @@ contract MixinParams is
     /// @param _ethVaultAddress Address of the EthVault contract.
     /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _assertValidVaultAddresses(
+    function _assertValidAddresses(
         address _wethProxyAddress,
         address _ethVaultAddress,
         address _rewardVaultAddress,

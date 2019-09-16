@@ -60,6 +60,7 @@ interface IStakingEvents {
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
+    /// @param wethProxyAddress The address that can transfer WETH for fees.
     /// @param ethVaultAddress Address of the EthVault contract.
     /// @param rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param zrxVaultAddress Address of the ZrxVault contract.
@@ -70,6 +71,7 @@ interface IStakingEvents {
         uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
         uint256 cobbDouglasAlphaDenomintor,
+        address wethProxyAddress,
         address ethVaultAddress,
         address rewardVaultAddress,
         address zrxVaultAddress

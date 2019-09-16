@@ -50,7 +50,7 @@ contract StakingProxy is
         MixinStorage()
     {
         readOnlyProxy = _readOnlyProxy;
-        _attachStakingContract(
+        _init(
             _stakingContract,
             _wethProxyAddress,
             _ethVaultAddress,
@@ -74,27 +74,11 @@ contract StakingProxy is
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// Note that this is callable only by this contract's owner.
     /// @param _stakingContract Address of staking contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function attachStakingContract(
-        address _stakingContract,
-        address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
-        address _zrxVaultAddress
-    )
+    function attachStakingContract(address _stakingContract)
         external
         onlyOwner
     {
-        _attachStakingContract(
-            _stakingContract,
-            _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
-            _zrxVaultAddress
-        );
+        _attachStakingContract(_stakingContract);
     }
 
     /// @dev Detach the current staking contract.
@@ -117,7 +101,6 @@ contract StakingProxy is
         } else {
             stakingContract = readOnlyProxyCallee;
         }
-
         emit ReadOnlyModeSet(readOnlyMode);
     }
 
@@ -163,11 +146,20 @@ contract StakingProxy is
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// @param _stakingContract Address of staking contract.
+    function _attachStakingContract(address _stakingContract)
+        private
+    {
+        stakingContract = readOnlyProxyCallee = _stakingContract;
+        emit StakingContractAttachedToProxy(_stakingContract);
+    }
+
+    /// @dev Initializes Staking contract specific state.
+    /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     /// @param _ethVaultAddress Address of the EthVault contract.
     /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _attachStakingContract(
+    function _init(
         address _stakingContract,
         address _wethProxyAddress,
         address _ethVaultAddress,
@@ -176,9 +168,11 @@ contract StakingProxy is
     )
         private
     {
-        stakingContract = readOnlyProxyCallee = _stakingContract;
+        // Attach the Staking contract
+        _attachStakingContract(_stakingContract);
+
         // Call `init()` on the staking contract to initialize storage.
-        (bool didInitSucceed, bytes memory initReturnData) = _stakingContract.delegatecall(
+        (bool didInitSucceed, bytes memory initReturnData) = stakingContract.delegatecall(
             abi.encodeWithSelector(
                 IStorageInit(0).init.selector,
                 _wethProxyAddress,
@@ -188,8 +182,9 @@ contract StakingProxy is
             )
         );
         if (!didInitSucceed) {
-            assembly { revert(add(initReturnData, 0x20), mload(initReturnData)) }
+            assembly {
+                revert(add(initReturnData, 0x20), mload(initReturnData))
+            }
         }
-        emit StakingContractAttachedToProxy(_stakingContract);
     }
 }

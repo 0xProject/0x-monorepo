@@ -36,8 +36,12 @@ contract TestProtocolFees is
 
     constructor(address exchangeAddress, address wethProxyAddress) public {
         validExchanges[exchangeAddress] = true;
-        wethAssetProxy = IAssetProxy(wethProxyAddress);
-        _initMixinParams();
+        _initMixinParams(
+            wethProxyAddress,
+            NIL_ADDRESS,
+            address(0),
+            NIL_ADDRESS
+        );
     }
 
     function addMakerToPool(bytes32 poolId, address makerAddress)

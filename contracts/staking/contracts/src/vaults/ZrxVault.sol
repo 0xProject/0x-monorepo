@@ -52,16 +52,13 @@ contract ZrxVault is
     bytes internal _zrxAssetData;
 
     /// @dev Constructor.
-    /// @param _stakingProxyAddress Address of StakingProxy contract.
     /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
     /// @param _zrxTokenAddress Address of the Zrx Token.
     constructor(
-        address _stakingProxyAddress,
         address _zrxProxyAddress,
         address _zrxTokenAddress
     )
         public
-        MixinVaultCore(_stakingProxyAddress)
     {
         zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
         _zrxToken = IERC20Token(_zrxTokenAddress);
