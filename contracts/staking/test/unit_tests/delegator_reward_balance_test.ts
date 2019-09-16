@@ -18,7 +18,7 @@ import {
 
 import { assertRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
-blockchainTests.resets('delegator unit rewards', env => {
+blockchainTests.resets.only('delegator unit rewards', env => {
     let testContract: TestDelegatorRewardsContract;
 
     before(async () => {
@@ -304,7 +304,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it.only('has correct reward immediately after unstaking, restaking, and rewarding fees', async () => {
+        it('has correct reward immediately after unstaking, restaking, and rewarding fees', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)
@@ -323,7 +323,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             expect(delegatorReward).to.bignumber.eq(reward);
         });
 
-        it('computes correct rewards for 2 staggered delegators', async () => {
+        it.only('computes correct rewards for 2 staggered delegators', async () => {
             const poolId = hexRandom();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake A now active)
@@ -347,7 +347,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             assertRoughlyEquals(delegatorRewardA, expectedDelegatorRewardA);
             const delegatorRewardB = await getDelegatorRewardAsync(poolId, delegatorB);
             const expectedDelegatorRewardB = BigNumber.sum(
-                computeDelegatorRewards(reward2, stakeB, totalStake),
+                computeDelegatorRewards(BigNumber.sum(reward1, reward2), stakeB, totalStake),
             );
             assertRoughlyEquals(delegatorRewardB, expectedDelegatorRewardB);
         });
