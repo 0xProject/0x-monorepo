@@ -20,7 +20,7 @@ export {
     ConstructorStateMutability,
 } from 'ethereum-types';
 
-export { SignedOrder } from '@0x/types';
+export { SignedOrder, AssetPairsItem, APIOrder, Asset } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
@@ -52,4 +52,17 @@ export {
     SwapQuoteRequestOpts,
 } from './types';
 
-export { Orderbook, MeshOrderProviderOpts, SRAPollingOrderProviderOpts } from '@0x/orderbook';
+export {
+    Orderbook,
+    MeshOrderProviderOpts,
+    SRAPollingOrderProviderOpts,
+    SRAWebsocketOrderProviderOpts,
+    BaseOrderProvider,
+    OrderStore,
+    AcceptedRejectedOrders,
+    RejectedOrder,
+    AddedRemovedOrders,
+    OrderSet,
+} from '@0x/orderbook';
+
+export { WSOpts } from '@0x/mesh-rpc-client';

@@ -33,7 +33,7 @@
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
-    "author": "",
+    "author": "David Sun",
     "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"

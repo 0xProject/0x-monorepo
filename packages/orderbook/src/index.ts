@@ -10,4 +10,8 @@ export {
     SRAPollingOrderProviderOpts,
     SRAWebsocketOrderProviderOpts,
     AcceptedRejectedOrders,
+    AddedRemovedOrders,
+    RejectedOrder,
 } from './types';
+
+export { WSOpts } from '@0x/mesh-rpc-client';

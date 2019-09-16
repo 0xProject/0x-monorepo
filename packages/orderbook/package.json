@@ -13,7 +13,7 @@
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
     "scripts": {
-        "clean": "shx rm -rf lib",
+        "clean": "shx rm -rf lib generated_docs",
         "test": "jest",
         "test:coverage": "jest --coverage",
         "build": "tsc -p tsconfig.json",
