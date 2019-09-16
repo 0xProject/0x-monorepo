@@ -101,6 +101,10 @@
             {
                 "note": "Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`.",
                 "pr": 2155
+            },
+            {
+                "note": "Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`.",
+                "pr": 2155
             }
         ]
     },
