@@ -121,7 +121,7 @@ export interface RewardByPoolId {
     [key: string]: BigNumber;
 }
 
-export interface MemberBalancesByPoolId {
+export interface DelegatorBalancesByPoolId {
     [key: string]: BalanceByOwner;
 }
 
@@ -129,6 +129,6 @@ export interface OperatorByPoolId {
     [key: string]: string;
 }
 
-export interface MembersByPoolId {
+export interface DelegatorsByPoolId {
     [key: string]: string[];
 }

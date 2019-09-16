@@ -57,6 +57,9 @@ library LibFractions {
         pure
         returns (uint256 result)
     {
+        if (s == 0) {
+            return 0;
+        }
         if (n2 == 0) {
             return result = s
                 .safeMul(n1)

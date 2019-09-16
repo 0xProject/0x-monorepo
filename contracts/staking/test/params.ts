@@ -6,7 +6,7 @@ import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from
 import { constants as stakingConstants } from './utils/constants';
 import { StakingParams } from './utils/types';
 
-blockchainTests('Configurable Parameters', env => {
+blockchainTests('Configurable Parameters unit tests', env => {
     let testContract: MixinParamsContract;
     let authorizedAddress: string;
     let notAuthorizedAddress: string;

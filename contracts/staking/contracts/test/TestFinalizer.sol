@@ -21,11 +21,11 @@ pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
 import "../src/libs/LibCobbDouglas.sol";
-import "../src/Staking.sol";
+import "./TestStaking.sol";
 
 
 contract TestFinalizer is
-    Staking
+    TestStaking
 {
     event RecordRewardForDelegatorsCall(
         bytes32 poolId,
