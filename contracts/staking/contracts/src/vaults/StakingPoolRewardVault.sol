@@ -252,6 +252,7 @@ contract StakingPoolRewardVault is
     {
         return poolById[poolId].operatorBalance + poolById[poolId].membersBalance;
     }
+
     /// @dev Increments a balances in a Pool struct, splitting the input amount between the
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param pool Pool struct with the balances to increment.

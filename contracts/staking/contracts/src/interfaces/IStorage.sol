@@ -120,6 +120,7 @@ interface IStorage {
 
     function maximumMakersInPool()
         external
+        view
         returns(uint256);
 
     function cobbDouglasAlphaNumerator()
