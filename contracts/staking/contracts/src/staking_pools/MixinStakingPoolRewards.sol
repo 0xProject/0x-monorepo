@@ -187,11 +187,15 @@ contract MixinStakingPoolRewards is
             amountOfDelegatedStake
         );
 
-        // Normalize fraction components by dividing by the min token value
-        // (10^18)
+        // Normalize fraction components by dividing by the minimum denominator.
+        uint256 minDenominator =
+            mostRecentCumulativeRewards.denominator <= amountOfDelegatedStake ?
+            mostRecentCumulativeRewards.denominator :
+            amountOfDelegatedStake;
+        minDenominator = minDenominator == 0 ? 1 : minDenominator;
         (uint256 numeratorNormalized, uint256 denominatorNormalized) = (
-            numerator.safeDiv(MIN_TOKEN_VALUE),
-            denominator.safeDiv(MIN_TOKEN_VALUE)
+            numerator.safeDiv(minDenominator),
+            denominator.safeDiv(minDenominator)
         );
 
         // store cumulative rewards and set most recent

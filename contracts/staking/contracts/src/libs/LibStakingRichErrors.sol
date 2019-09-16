@@ -47,6 +47,7 @@ library LibStakingRichErrors {
         InvalidCobbDouglasAlpha,
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool,
+        InvalidMinimumPoolStake,
         InvalidWethProxyAddress,
         InvalidEthVaultAddress,
         InvalidRewardVaultAddress,

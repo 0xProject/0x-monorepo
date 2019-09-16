@@ -23,16 +23,14 @@ import {
 } from '../../src';
 import { getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
-blockchainTests.resets('finalizer tests', env => {
+blockchainTests.resets('finalizer unit tests', env => {
     const { ZERO_AMOUNT } = constants;
     const INITIAL_EPOCH = 0;
     const INITIAL_BALANCE = toBaseUnitAmount(32);
-    let senderAddress: string;
     let rewardReceiverAddress: string;
     let testContract: TestFinalizerContract;
 
     before(async () => {
-        [senderAddress] = await env.getAccountAddressesAsync();
         rewardReceiverAddress = hexRandom(constants.ADDRESS_LENGTH);
         testContract = await TestFinalizerContract.deployFrom0xArtifactAsync(
             artifacts.TestFinalizer,
@@ -48,7 +46,7 @@ blockchainTests.resets('finalizer tests', env => {
     async function sendEtherAsync(to: string, amount: Numberish): Promise<void> {
         await env.web3Wrapper.awaitTransactionSuccessAsync(
             await env.web3Wrapper.sendTransactionAsync({
-                from: senderAddress,
+                from: (await env.getAccountAddressesAsync())[0],
                 to,
                 value: new BigNumber(amount),
             }),

@@ -10,7 +10,7 @@ import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';
-import { MembersByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './utils/types';
+import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
@@ -67,14 +67,14 @@ blockchainTests.resets('Testing Rewards', env => {
         const operatorByPoolId: OperatorByPoolId = {};
         operatorByPoolId[poolId] = poolOperator.getOwner();
         // associate actors with pools for tracking in Finalizer
-        const membersByPoolId: MembersByPoolId = {};
-        membersByPoolId[poolId] = [actors[0], actors[1]];
+        const stakersByPoolId: DelegatorsByPoolId = {};
+        stakersByPoolId[poolId] = actors.slice(0, 3);
         // create Finalizer actor
-        finalizer = new FinalizerActor(actors[3], stakingApiWrapper, [poolId], operatorByPoolId, membersByPoolId);
+        finalizer = new FinalizerActor(actors[3], stakingApiWrapper, [poolId], operatorByPoolId, stakersByPoolId);
         // Skip to next epoch so operator stake is realized.
         await stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
     });
-    describe('Reward Simulation', () => {
+    describe.skip('Reward Simulation', () => {
         interface EndBalances {
             // staker 1
             stakerRewardVaultBalance_1?: BigNumber;
@@ -399,12 +399,9 @@ blockchainTests.resets('Testing Rewards', env => {
                 toBaseUnitAmount(0),
                 toBaseUnitAmount(17),
             ];
-            const totalRewardsAfterAddingMoreStake = new BigNumber(
-                _.sumBy(rewardsAfterAddingMoreStake, v => {
-                    return v.toNumber();
-                }),
-            );
+            const totalRewardsAfterAddingMoreStake = BigNumber.sum(...rewardsAfterAddingMoreStake);
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
+            const totalStake = BigNumber.sum(...stakeAmounts);
             // first staker delegates (epoch 0)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmounts[0]);
             // skip epoch, so first staker can start earning rewards
@@ -419,7 +416,16 @@ blockchainTests.resets('Testing Rewards', env => {
             }
             // sanity check final balances
             await validateEndBalances({
-                stakerRewardVaultBalance_1: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
+                stakerRewardVaultBalance_1: rewardBeforeAddingMoreStake.plus(
+                    totalRewardsAfterAddingMoreStake
+                        .times(stakeAmounts[0])
+                        .dividedBy(totalStake)
+                        .integerValue(BigNumber.ROUND_DOWN),
+                ),
+                stakerRewardVaultBalance_2: totalRewardsAfterAddingMoreStake
+                    .times(stakeAmounts[1])
+                    .dividedBy(totalStake)
+                    .integerValue(BigNumber.ROUND_DOWN),
                 poolRewardVaultBalance: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
                 membersRewardVaultBalance: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
             });
@@ -464,11 +470,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 toBaseUnitAmount(0),
                 toBaseUnitAmount(17),
             ];
-            const totalRewardsNotForDelegator = new BigNumber(
-                _.sumBy(rewardsNotForDelegator, v => {
-                    return v.toNumber();
-                }),
-            );
+            const totalRewardsNotForDelegator = BigNumber.sum(...rewardsNotForDelegator);
             const stakeAmount = toBaseUnitAmount(4);
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmount);
             // skip epoch, so first staker can start earning rewards
@@ -492,7 +494,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 operatorEthVaultBalance: totalRewardsNotForDelegator,
             });
         });
-        it('Should collect fees correctly when leaving and returning to a pool', async () => {
+        it.only('Should collect fees correctly when leaving and returning to a pool', async () => {
             // first staker delegates (epoch 0)
             const rewardsForDelegator = [toBaseUnitAmount(10), toBaseUnitAmount(15)];
             const rewardNotForDelegator = toBaseUnitAmount(7);
