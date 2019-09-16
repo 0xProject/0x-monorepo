@@ -1,6 +1,6 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { BlockchainTestsEnvironment, constants, txDefaults } from '@0x/contracts-test-utils';
+import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -131,7 +131,7 @@ export class StakingApiWrapper {
             stakingProxyContract.address,
             env.provider,
             {
-                ...txDefaults,
+                ...env.txDefaults,
                 from: ownerAddress,
                 to: stakingProxyContract.address,
                 gas: 3e6,
@@ -162,35 +162,35 @@ export async function deployAndConfigureContractsAsync(
     const stakingContract = await StakingContract.deployFrom0xArtifactAsync(
         customStakingArtifact !== undefined ? customStakingArtifact : artifacts.Staking,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
     );
     // deploy read-only proxy
     const readOnlyProxyContract = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
         artifacts.ReadOnlyProxy,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
     );
     // deploy eth vault
     const ethVaultContract = await EthVaultContract.deployFrom0xArtifactAsync(
         artifacts.EthVault,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
     );
     // deploy reward vault
     const rewardVaultContract = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
         artifacts.StakingPoolRewardVault,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
     );
     // deploy zrx vault
     const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
         artifacts.ZrxVault,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
         erc20ProxyContract.address,
         zrxTokenContract.address,
@@ -199,7 +199,7 @@ export async function deployAndConfigureContractsAsync(
     const stakingProxyContract = await StakingProxyContract.deployFrom0xArtifactAsync(
         artifacts.StakingProxy,
         env.provider,
-        txDefaults,
+        env.txDefaults,
         artifacts,
         stakingContract.address,
         readOnlyProxyContract.address,
