@@ -51,3 +51,5 @@ export {
     SwapQuoteConsumerBase,
     SwapQuoteRequestOpts,
 } from './types';
+
+export { Orderbook, MeshOrderProviderOpts, SRAPollingOrderProviderOpts } from '@0x/orderbook';
