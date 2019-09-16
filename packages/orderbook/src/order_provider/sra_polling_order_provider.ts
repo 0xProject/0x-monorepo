@@ -7,8 +7,6 @@ import { SRAPollingOrderProviderOpts } from '../types';
 
 import { BaseSRAOrderProvider } from './base_sra_order_provider';
 
-const PER_PAGE_DEFAULT = 100;
-
 export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
     private readonly _assetPairKeyToPollingIntervalId: Map<string, number> = new Map();
     private readonly _pollingIntervalMs: number;
@@ -20,7 +18,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAPollingOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, opts.perPage || PER_PAGE_DEFAULT, opts.networkId);
+        super(orderStore, opts.httpEndpoint, opts.perPage, opts.networkId);
         assert.isNumber('pollingIntervalMs', opts.pollingIntervalMs);
         this._pollingIntervalMs = opts.pollingIntervalMs;
     }

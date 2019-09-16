@@ -13,9 +13,7 @@ import { OrderStore } from '../order_store';
 import { AddedRemovedOrders, SRAWebsocketOrderProviderOpts } from '../types';
 import { utils } from '../utils';
 
-import { BaseSRAOrderProvider } from './base_sra_order_provider';
-
-const PER_PAGE_DEFAULT = 100;
+import { BaseSRAOrderProvider, PER_PAGE_DEFAULT } from './base_sra_order_provider';
 
 export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
     private readonly _websocketEndpoint: string;
@@ -147,7 +145,6 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
                 ordersChannelHandler,
             );
         } catch (e) {
-            // TODO(dave4506) Provide a more informative error
             throw new Error(`Creating websocket connection to ${this._websocketEndpoint}`);
         }
     }

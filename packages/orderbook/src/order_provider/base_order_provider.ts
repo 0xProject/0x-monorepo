@@ -3,6 +3,11 @@ import { AssetPairsItem, SignedOrder } from '@0x/types';
 import { OrderStore } from '../order_store';
 import { AcceptedRejectedOrders, AddedRemovedOrders } from '../types';
 
+// AssetPairItem requires precision but some OrderProviders may not
+// enforce any precision. This is not the token decimal but the
+// maximum precision for an orderbook.
+export const DEFAULT_TOKEN_PRECISION = 18;
+
 export abstract class BaseOrderProvider {
     public readonly _orderStore: OrderStore;
 

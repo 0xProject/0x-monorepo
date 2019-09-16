@@ -6,6 +6,7 @@ import { AcceptedRejectedOrders, RejectedOrder } from '../types';
 import { utils } from '../utils';
 
 import { BaseOrderProvider } from './base_order_provider';
+export const PER_PAGE_DEFAULT = 100;
 
 export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
     protected readonly _httpClient: HttpClient;
@@ -15,7 +16,7 @@ export abstract class BaseSRAOrderProvider extends BaseOrderProvider {
     /**
      * This is an internal class for Websocket and Polling Order Providers
      */
-    constructor(orderStore: OrderStore, httpEndpoint: string, perPage: number, networkId?: number) {
+    constructor(orderStore: OrderStore, httpEndpoint: string, perPage: number = PER_PAGE_DEFAULT, networkId?: number) {
         super(orderStore);
         this._httpClient = new HttpClient(httpEndpoint);
         this._perPage = perPage;

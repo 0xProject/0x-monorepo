@@ -14,7 +14,7 @@ import { OrderStore } from '../order_store';
 import { AcceptedRejectedOrders, AddedRemovedOrders, MeshOrderProviderOpts } from '../types';
 import { utils } from '../utils';
 
-import { BaseOrderProvider } from './base_order_provider';
+import { BaseOrderProvider, DEFAULT_TOKEN_PRECISION } from './base_order_provider';
 
 export class MeshOrderProvider extends BaseOrderProvider {
     private readonly _wsClient: WSClient;
@@ -62,7 +62,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
         const assetPairsItems: AssetPairsItem[] = [];
         const minAmount = new BigNumber(0);
         const maxAmount = new BigNumber(2).pow(256).minus(1);
-        const precision = 18;
+        const precision = DEFAULT_TOKEN_PRECISION;
         for (const assetPairKey of this._orderStore.keys()) {
             const [assetA, assetB] = OrderStore.assetPairKeyToAssets(assetPairKey);
             const assetDataA: Asset = { assetData: assetA, minAmount, maxAmount, precision };
