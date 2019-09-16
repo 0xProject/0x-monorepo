@@ -4,6 +4,8 @@ import { AbiDefinition, ContractAbi, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
+import { OrdersAndFillableAmounts } from '../types';
+import { SignedOrder } from '@0x/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const utils = {
@@ -24,5 +26,13 @@ export const utils = {
                 }
             },
         ) as MethodAbi | undefined;
+    },
+    isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts: OrdersAndFillableAmounts): boolean {
+        const { orders, remainingFillableMakerAssetAmounts } = ordersAndFillableAmounts;
+        return _.some(orders, (order: SignedOrder, index: number): boolean => {
+            const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
+            // If makerFee is a non zero value and order is still fillable, fee orders are required
+            return !order.makerFee.isZero() && !remainingFillableMakerAssetAmount.isZero();
+        });
     },
 };
