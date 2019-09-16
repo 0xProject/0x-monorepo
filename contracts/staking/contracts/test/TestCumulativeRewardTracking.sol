@@ -25,7 +25,7 @@ contract TestCumulativeRewardTracking is
     TestStaking
 {
 
-    event SetMostRecentCumulativeReward(
+    event SetCumulativeReward(
         bytes32 poolId,
         uint256 epoch
     );
@@ -35,29 +35,41 @@ contract TestCumulativeRewardTracking is
         uint256 epoch
     );
 
-    event SetCumulativeReward(
+    event SetMostRecentCumulativeReward(
         bytes32 poolId,
         uint256 epoch
     );
 
-    function _setMostRecentCumulativeReward(bytes32 poolId, uint256 epoch)
-        internal
-    {
-        emit SetMostRecentCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._setMostRecentCumulativeReward(poolId, epoch);
-    }
-
-    function _unsetCumulativeReward(bytes32 poolId, uint256 epoch)
-        internal
-    {
-        emit UnsetCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._unsetCumulativeReward(poolId, epoch);
-    }
-
-    function _setCumulativeReward(bytes32 poolId, uint256 epoch, IStructs.Fraction memory value)
+    function _forceSetCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch,
+        IStructs.Fraction memory value
+    )
         internal
     {
         emit SetCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._setCumulativeReward(poolId, epoch, value);
+        MixinCumulativeRewards._forceSetCumulativeReward(poolId, epoch, value);
     }
+
+    function _forceUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
+        internal
+    {
+        emit UnsetCumulativeReward(poolId, epoch);
+        MixinCumulativeRewards._forceUnsetCumulativeReward(poolId, epoch);
+    }
+
+    function _forceSetMostRecentCumulativeRewardEpoch(bytes32 poolId, uint256 epoch)
+        internal
+    {
+        emit SetMostRecentCumulativeReward(poolId, epoch);
+        MixinCumulativeRewards._forceSetMostRecentCumulativeRewardEpoch(poolId, epoch);
+    }
+
+    function _assertMixinParamsBeforeInit()
+        internal
+    {}
+
+    function _assertMixinSchedulerBeforeInit()
+        internal
+    {}
 }

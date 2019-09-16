@@ -75,9 +75,9 @@ contract MixinScheduler is
         return getCurrentEpochStartTimeInSeconds().safeAdd(epochDurationInSeconds);
     }
 
-    /// @dev Initializes state owned by this mixin.
-    ///      Fails if state was already initialized.
-    function _initMixinScheduler()
+    /// @dev Assert scheduler state before initializing it.
+    /// This must be updated for each migration.
+    function _assertMixinSchedulerBeforeInit()
         internal
     {
         if (currentEpochStartTimeInSeconds != 0) {
@@ -87,6 +87,16 @@ contract MixinScheduler is
                 )
             );
         }
+    }
+
+    /// @dev Initializes state owned by this mixin.
+    ///      Fails if state was already initialized.
+    function _initMixinScheduler()
+        internal
+    {
+        // assert the current values before overwriting them.
+        _assertMixinSchedulerBeforeInit();
+
         // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
     }

@@ -135,7 +135,7 @@ contract MixinStakingPoolRewards is
         );
 
         // store cumulative rewards and set most recent
-        _setCumulativeReward(
+        _trySetCumulativeReward(
             poolId,
             epoch,
             IStructs.Fraction({
@@ -143,7 +143,6 @@ contract MixinStakingPoolRewards is
                 denominator: denominatorNormalized
             })
         );
-        _setMostRecentCumulativeReward(poolId, epoch);
     }
 
     /// @dev Transfers a delegators accumulated rewards from the transient pool Reward Pool vault
@@ -187,8 +186,8 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 totalReward)
     {
-        // value is always zero in these two scenarios:
-        //   1. The owner's delegated is current as of this epoch: their rewards have been moved to the ETH vault.
+        // reward balance is always zero in these two scenarios:
+        //   1. The owner's delegated stake is current as of this epoch: their rewards have been moved to the ETH vault.
         //   2. The current epoch is zero: delegation begins at epoch 1
         if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
 

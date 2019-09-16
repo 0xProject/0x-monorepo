@@ -34,11 +34,18 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
     });
 
     describe('Tracking Cumulative Rewards (CR)', () => {
-        it('should set CR and Most Recent CR when a pool is created', async () => {
+        it('should set CR hen a pool is created is epoch 0', async () => {
             await simulation.runTestAsync(
                 [],
                 [TestAction.CreatePool],
-                [{ event: 'SetCumulativeReward', epoch: 0 }, { event: 'SetMostRecentCumulativeReward', epoch: 0 }],
+                [{ event: 'SetCumulativeReward', epoch: 0 }],
+            );
+        });
+        it('should set CR and Most Recent CR when a pool is created in epoch >0', async () => {
+            await simulation.runTestAsync(
+                [TestAction.Finalize],
+                [TestAction.CreatePool],
+                [{ event: 'SetCumulativeReward', epoch: 1 }, { event: 'SetMostRecentCumulativeReward', epoch: 1 }],
             );
         });
         it('should not set CR or Most Recent CR when values already exist for the current epoch', async () => {
