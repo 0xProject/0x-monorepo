@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
-
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
@@ -100,26 +99,28 @@ contract StakingProxy is
     /// @dev Batch executes a series of calls to the exchange contract.
     /// @param data An array of data that encodes a sequence of functions to
     ///             call in the staking contracts.
-    function batchExecute(bytes[] memory data)
-        public
+    function batchExecute(bytes[] calldata data)
+        external
         returns (bytes[] memory batchReturnData)
     {
         // Initialize commonly used variables.
         bool success;
         bytes memory returnData;
         batchReturnData = new bytes[](data.length);
+        address staking = stakingContract;
+        uint256 dataLength = data.length;
 
         // Ensure that a staking contract has been attached to the proxy.
-        if (stakingContract == address(0)) {
+        if (staking == address(0)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.ProxyDestinationCannotBeNilError()
             );
         }
 
         // Execute all of the calls encoded in the provided calldata.
-        for (uint256 i = 0; i < data.length; i++) {
+        for (uint256 i = 0; i != dataLength; i++) {
             // Call the staking contract with the provided calldata.
-            (success, returnData) = stakingContract.delegatecall(data[i]);
+            (success, returnData) = staking.delegatecall(data[i]);
 
             // Revert on failure.
             if (!success) {
