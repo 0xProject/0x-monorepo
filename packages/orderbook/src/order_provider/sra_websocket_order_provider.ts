@@ -15,7 +15,7 @@ import { utils } from '../utils';
 
 import { BaseSRAOrderProvider } from './base_sra_order_provider';
 
-const RECORD_COUNT = 100;
+const PER_PAGE_DEFAULT = 100;
 
 export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
     private readonly _websocketEndpoint: string;
@@ -30,7 +30,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAWebsocketOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, RECORD_COUNT, opts.networkId);
+        super(orderStore, opts.httpEndpoint, PER_PAGE_DEFAULT, opts.networkId);
         assert.isUri('websocketEndpoint', opts.websocketEndpoint);
         this._websocketEndpoint = opts.websocketEndpoint;
     }
@@ -83,23 +83,23 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
             }
         }
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        const susbcriptionOpts = {
+        const subcriptionOpts = {
             baseAssetData: makerAssetData,
             quoteAssetData: takerAssetData,
-            limit: RECORD_COUNT,
+            limit: PER_PAGE_DEFAULT,
         };
-        this._wsSubscriptions.set(assetPairKey, susbcriptionOpts);
+        this._wsSubscriptions.set(assetPairKey, subcriptionOpts);
         // Subscribe to both sides of the book
-        this._ordersChannel.subscribe(susbcriptionOpts);
+        this._ordersChannel.subscribe(subcriptionOpts);
         this._ordersChannel.subscribe({
-            ...susbcriptionOpts,
+            ...subcriptionOpts,
             baseAssetData: takerAssetData,
             quoteAssetData: makerAssetData,
         });
     }
 
     private async _fetchAndCreateSubscriptionAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
-        // Create the subscription first to get any updates during waiting for the request
+        // Create the subscription first to get any updates while waiting for the request
         await this._createWebsocketSubscriptionAsync(makerAssetData, takerAssetData);
         // first time we have had this request, preload the local storage
         const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
@@ -148,7 +148,7 @@ export class SRAWebsocketOrderProvider extends BaseSRAOrderProvider {
                 ordersChannelHandler,
             );
         } catch (e) {
-            // Provide a more informative error
+            // TODO(dave4506) Provide a more informative error
             throw new Error(`Creating websocket connection to ${this._websocketEndpoint}`);
         }
     }

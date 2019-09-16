@@ -7,7 +7,7 @@ import { utils } from '../utils';
 
 import { BaseOrderProvider } from './base_order_provider';
 
-export class ProvidedOrdersOrderProvider extends BaseOrderProvider {
+export class CustomOrderProvider extends BaseOrderProvider {
     constructor(orders: SignedOrder[], orderStore: OrderStore) {
         super(orderStore);
         void this.addOrdersAsync(orders);

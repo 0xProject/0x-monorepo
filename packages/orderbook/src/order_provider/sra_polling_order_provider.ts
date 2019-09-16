@@ -1,4 +1,5 @@
 import { assert } from '@0x/assert';
+import { intervalUtils } from '@0x/utils';
 
 import { OrderSet } from '../order_set';
 import { OrderStore } from '../order_store';
@@ -6,10 +7,10 @@ import { SRAPollingOrderProviderOpts } from '../types';
 
 import { BaseSRAOrderProvider } from './base_sra_order_provider';
 
-const RECORD_COUNT = 100;
+const PER_PAGE_DEFAULT = 100;
 
 export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
-    private readonly _httpPollingIntervalId: Map<string, number> = new Map();
+    private readonly _assetPairKeyToPollingIntervalId: Map<string, number> = new Map();
     private readonly _pollingIntervalMs: number;
 
     /**
@@ -19,7 +20,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
      * @param orderStore The `OrderStore` where orders are added and removed from
      */
     constructor(opts: SRAPollingOrderProviderOpts, orderStore: OrderStore) {
-        super(orderStore, opts.httpEndpoint, opts.perPage || RECORD_COUNT, opts.networkId);
+        super(orderStore, opts.httpEndpoint, opts.perPage || PER_PAGE_DEFAULT, opts.networkId);
         assert.isNumber('pollingIntervalMs', opts.pollingIntervalMs);
         this._pollingIntervalMs = opts.pollingIntervalMs;
     }
@@ -32,7 +33,7 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
     public async createSubscriptionForAssetPairAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
         // Do nothing if we already have a polling interval or websocket created for this asset pair
-        if (this._httpPollingIntervalId.has(assetPairKey)) {
+        if (this._assetPairKeyToPollingIntervalId.has(assetPairKey)) {
             return;
         }
         await this._fetchAndCreatePollingAsync(makerAssetData, takerAssetData);
@@ -42,14 +43,14 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
      * Destroys the order provider, removing any subscriptions
      */
     public async destroyAsync(): Promise<void> {
-        for (const [assetPairKey, id] of this._httpPollingIntervalId) {
+        for (const [assetPairKey, id] of this._assetPairKeyToPollingIntervalId) {
             clearInterval(id);
-            this._httpPollingIntervalId.delete(assetPairKey);
+            this._assetPairKeyToPollingIntervalId.delete(assetPairKey);
         }
     }
 
     /**
-     * Fetches all of the orders for both sides of the orderbook and stores. A polling subscription
+     * Fetches all of the orders for both sides of the orderbook and stores them. A polling subscription
      * is created performing this action every pollingIntervalMs
      */
     private async _fetchAndCreatePollingAsync(makerAssetData: string, takerAssetData: string): Promise<void> {
@@ -59,21 +60,28 @@ export class SRAPollingOrderProvider extends BaseSRAOrderProvider {
         // Set the OrderSet for the polling to diff against
         this._updateStore({ added: orders, removed: [], assetPairKey });
         // Create a HTTP polling subscription
-        const pollingIntervalId = this._createPollingSubscription(makerAssetData, takerAssetData);
-        this._httpPollingIntervalId.set(assetPairKey, pollingIntervalId);
+        const pollingIntervalId = (this._createPollingSubscription(makerAssetData, takerAssetData) as any) as number;
+        this._assetPairKeyToPollingIntervalId.set(assetPairKey, pollingIntervalId);
     }
 
     /**
      * Creates the polling interval fetching the orders, calculating the diff and updating the store
      */
-    private _createPollingSubscription(makerAssetData: string, takerAssetData: string): any {
+    private _createPollingSubscription(makerAssetData: string, takerAssetData: string): NodeJS.Timer {
         const assetPairKey = OrderStore.getKeyForAssetPair(makerAssetData, takerAssetData);
-        const pollingIntervalId = setInterval(async () => {
-            const previousOrderSet = this._orderStore.getOrderSetForAssetPair(assetPairKey);
-            const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
-            const diff = previousOrderSet.diff(new OrderSet(orders));
-            this._updateStore({ ...diff, assetPairKey });
-        }, this._pollingIntervalMs);
+        const pollingIntervalId = intervalUtils.setAsyncExcludingInterval(
+            async () => {
+                const previousOrderSet = this._orderStore.getOrderSetForAssetPair(assetPairKey);
+                const orders = await this._fetchLatestOrdersAsync(makerAssetData, takerAssetData);
+                const diff = previousOrderSet.diff(new OrderSet(orders));
+                this._updateStore({ ...diff, assetPairKey });
+            },
+            this._pollingIntervalMs,
+            (_: Error) => {
+                // TODO(dave4506) Add richer errors
+                throw new Error(`Fetching latest orders for asset pair ${makerAssetData}/${takerAssetData}`);
+            },
+        );
         return pollingIntervalId;
     }
 }

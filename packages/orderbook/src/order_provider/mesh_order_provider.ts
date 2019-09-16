@@ -81,7 +81,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
      * @param takerAssetData the Taker Asset Data
      */
     public async createSubscriptionForAssetPairAsync(_makerAssetData: string, _takerAssetData: string): Promise<void> {
-        // Create the subscription first to get any updates during waiting for the request
+        // Create the subscription first to get any updates while waiting for the request
         await this._initializeIfRequiredAsync();
     }
 

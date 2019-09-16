@@ -3,8 +3,8 @@ import { APIOrder } from '@0x/connect';
 import { AssetPairsItem, SignedOrder } from '@0x/types';
 
 import { BaseOrderProvider } from './order_provider/base_order_provider';
+import { CustomOrderProvider } from './order_provider/custom_order_provider';
 import { MeshOrderProvider } from './order_provider/mesh_order_provider';
-import { ProvidedOrdersOrderProvider } from './order_provider/provider_orders_order_provider';
 import { SRAPollingOrderProvider } from './order_provider/sra_polling_order_provider';
 import { SRAWebsocketOrderProvider } from './order_provider/sra_websocket_order_provider';
 import { OrderStore } from './order_store';
@@ -25,7 +25,7 @@ export class Orderbook {
      */
     public static getOrderbookForProvidedOrders(orders: SignedOrder[]): Orderbook {
         const orderStore = new OrderStore();
-        return new Orderbook(new ProvidedOrdersOrderProvider(orders, orderStore), orderStore);
+        return new Orderbook(new CustomOrderProvider(orders, orderStore), orderStore);
     }
     /**
      * Creates an Orderbook with the SRA Websocket Provider. This Provider fetches orders via
