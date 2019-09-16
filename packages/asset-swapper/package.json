@@ -69,6 +69,7 @@
         "chai-bignumber": "^3.0.0",
         "dirty-chai": "^2.0.1",
         "make-promises-safe": "^1.1.0",
+        "@0x/mesh-rpc-client": "^4.0.1-beta",
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
