@@ -273,7 +273,22 @@ blockchainTests.resets('delegator unit rewards', env => {
             assertRoughlyEquals(delegatorReward, expectedDelegatorRewards);
         });
 
-        it.only('has correct reward immediately after unstaking', async () => {
+        it('has correct reward immediately after unstaking', async () => {
+            const poolId = hexRandom();
+            const { delegator, stake } = await delegateStakeAsync(poolId);
+            await advanceEpochAsync(); // epoch 1 (stake now active)
+            await advanceEpochAsync(); // epoch 2
+            // rewards paid for stake in epoch 1.
+            const { reward }  = await rewardPoolMembersAsync(
+                { poolId, stake },
+            );
+            const { deposit } = await undelegateStakeAsync(poolId, delegator);
+            expect(deposit).to.bignumber.eq(reward);
+            const delegatorReward = await getDelegatorRewardAsync(poolId, delegator);
+            expect(delegatorReward).to.bignumber.eq(0);
+        });
+
+        it('has correct reward immediately after unstaking and restaking', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)
@@ -282,8 +297,28 @@ blockchainTests.resets('delegator unit rewards', env => {
             const { reward } = await rewardPoolMembersAsync(
                 { poolId, stake },
             );
+            const { deposit } = await undelegateStakeAsync(poolId, delegator);
+            expect(deposit).to.bignumber.eq(reward);
+            await delegateStakeAsync(poolId, { delegator, stake });
+            const delegatorReward = await getDelegatorRewardAsync(poolId, delegator);
+            expect(delegatorReward).to.bignumber.eq(0);
+        });
+
+        it.only('has correct reward immediately after unstaking, restaking, and rewarding fees', async () => {
+            const poolId = hexRandom();
+            const { delegator, stake } = await delegateStakeAsync(poolId);
+            await advanceEpochAsync(); // epoch 1 (stake now active)
+            await advanceEpochAsync(); // epoch 2
+            // rewards paid for stake in epoch 1.
+            await rewardPoolMembersAsync({ poolId, stake });
             await undelegateStakeAsync(poolId, delegator);
+            await delegateStakeAsync(poolId, { delegator, stake });
             await advanceEpochAsync(); // epoch 3
+            await advanceEpochAsync(); // epoch 4
+            // rewards paid for stake in epoch 3.
+            const { reward } = await rewardPoolMembersAsync(
+                { poolId, stake },
+            );
             const delegatorReward = await getDelegatorRewardAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(reward);
         });

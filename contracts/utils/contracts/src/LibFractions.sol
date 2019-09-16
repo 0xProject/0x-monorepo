@@ -57,7 +57,7 @@ library LibFractions {
         pure
         returns (uint256 result)
     {
-        if (s == 0) {
+        if (s == 0 || d1 == 0) {
             return 0;
         }
         if (n2 == 0) {

@@ -255,36 +255,80 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 totalReward)
     {
-        // reward balance is always zero in these two scenarios:
-        //   1. The owner's delegated stake is current as of this epoch: their rewards have been moved to the ETH vault.
-        //   2. The current epoch is zero: delegation begins at epoch 1
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
+        uint256 currentEpoch = getCurrentEpoch();
+        // There can be no rewards in epoch 0 because there is no delegated
+        // stake.
+        if (currentEpoch == 0) {
+            return reward = 0;
+        }
 
-        // compute reward accumulated during `delegatedStake.currentEpoch`;
-        uint256 rewardsAccumulatedDuringLastStoredEpoch = (unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance != 0)
-            ? _computeMemberRewardOverInterval(
+        IStructs.StoredBalance memory stake =
+            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]);
+        // There can be no rewards if the last epoch when stake was synced is
+        // equal to the current epoch, because all prior rewards, including
+        // rewards finalized this epoch have been claimed.
+        if (stake.currentEpoch == currentEpoch) {
+            return reward = 0;
+        }
+
+        // From here we know:
+        //   1. `currentEpoch > 0`
+        //   2. `stake.currentEpoch < currentEpoch`.
+
+        // Get the last epoch where a reward was credited to this pool.
+        uint256 lastRewardEpoch = cumulativeRewardsByPoolLastStored[poolId];
+
+        // If there are unfinalized rewards this epoch, compute the member's
+        // share.
+        if (unfinalizedMembersReward != 0 && unfinalizedDelegatedStake != 0) {
+            // Unfinalized rewards are always earned from stake in
+            // the prior epoch so we want the stake at `currentEpoch-1`.
+            uint256 _stake = stake.currentEpoch == currentEpoch - 1 ?
+                stake.currentEpochBalance :
+                stake.nextEpochBalance;
+            if (_stake != 0) {
+                reward = _stake
+                    .safeMul(unfinalizedMembersReward)
+                    .safeDiv(unfinalizedDelegatedStake);
+            }
+            // Add rewards up to the last reward epoch.
+            if (lastRewardEpoch != 0 && lastRewardEpoch > stake.currentEpoch) {
+                reward = reward.safeAdd(
+                    _computeMemberRewardOverInterval(
+                        poolId,
+                        stake,
+                        stake.currentEpoch,
+                        stake.currentEpoch + 1
+                    )
+                );
+                if (lastRewardEpoch > stake.currentEpoch + 1) {
+                    reward = reward.safeAdd(
+                        _computeMemberRewardOverInterval(
+                            poolId,
+                            stake,
+                            stake.currentEpoch + 1,
+                            lastRewardEpoch
+                        )
+                    );
+                }
+            }
+        // Otherwise get the rewards earned up to the last reward epoch.
+        } else if (stake.currentEpoch < lastRewardEpoch) {
+            reward = _computeMemberRewardOverInterval(
                 poolId,
-                unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance,
-                uint256(unsyncedDelegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
-                unsyncedDelegatedStakeToPoolByOwner.currentEpoch
-            )
-            : 0;
-
-        // compute the reward accumulated by the `next` balance;
-        // this starts at `delegatedStake.currentEpoch + 1` and goes up until the last epoch, during which
-        // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (_cumulativeRewardsByPoolLastStored[poolId] > unsyncedDelegatedStakeToPoolByOwner.currentEpoch)
-            ? _computeMemberRewardOverInterval(
-                poolId,
-                unsyncedDelegatedStakeToPoolByOwner.nextEpochBalance,
-                unsyncedDelegatedStakeToPoolByOwner.currentEpoch,
-                _cumulativeRewardsByPoolLastStored[poolId]
-            )
-            : 0;
-
-        // compute the total reward
-        totalReward = rewardsAccumulatedDuringLastStoredEpoch.safeAdd(rewardsAccumulatedAfterLastStoredEpoch);
-        return totalReward;
+                stake,
+                stake.currentEpoch,
+                stake.currentEpoch + 1
+            );
+            if (lastRewardEpoch > stake.currentEpoch + 1) {
+                reward = _computeMemberRewardOverInterval(
+                    poolId,
+                    stake,
+                    stake.currentEpoch + 1,
+                    lastRewardEpoch
+                ).safeSub(reward);
+            }
+        }
     }
 
     /// @dev Adds or removes cumulative reward dependencies for a delegator.
