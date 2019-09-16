@@ -1,15 +1,21 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-
+import { BlockParamLiteral, Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as ChaiBigNumber from 'chai-bignumber';
 import * as dirtyChai from 'dirty-chai';
 import * as Sinon from 'sinon';
+import { constants } from 'websocket';
 
-import { AbiGenDummyContract, AbiGenDummyEvents, artifacts, TestLibDummyContract } from '../src';
+import {
+    AbiGenDummyContract,
+    AbiGenDummyEvents,
+    AbiGenDummyWithdrawalEventArgs,
+    artifacts,
+    TestLibDummyContract,
+} from '../src';
 
 const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -160,6 +166,45 @@ describe('AbiGenDummy Contract', () => {
             );
             abiGenDummy.unsubscribeAll();
             done();
+        });
+    });
+
+    describe('getLogsAsync', () => {
+        const blockRange = {
+            fromBlock: 0,
+            toBlock: BlockParamLiteral.Latest,
+        };
+        it('should get logs with decoded args emitted by EventWithStruct', async () => {
+            await abiGenDummy.emitSimpleEvent.awaitTransactionSuccessAsync();
+            const eventName = AbiGenDummyEvents.SimpleEvent;
+            const indexFilterValues = {};
+            const logs = await abiGenDummy.getLogsAsync(eventName, blockRange, indexFilterValues);
+            expect(logs).to.have.length(1);
+            expect(logs[0].event).to.be.equal(eventName);
+        });
+        it('should only get the logs with the correct event name', async () => {
+            await abiGenDummy.emitSimpleEvent.awaitTransactionSuccessAsync();
+            const differentEventName = AbiGenDummyEvents.Withdrawal;
+            const indexFilterValues = {};
+            const logs = await abiGenDummy.getLogsAsync(differentEventName, blockRange, indexFilterValues);
+            expect(logs).to.have.length(0);
+        });
+        it('should only get the logs with the correct indexed fields', async () => {
+            const [addressOne, addressTwo] = await web3Wrapper.getAvailableAddressesAsync();
+            await abiGenDummy.withdraw.awaitTransactionSuccessAsync(new BigNumber(1), { from: addressOne });
+            await abiGenDummy.withdraw.awaitTransactionSuccessAsync(new BigNumber(1), { from: addressTwo });
+            const eventName = AbiGenDummyEvents.Withdrawal;
+            const indexFilterValues = {
+                _owner: addressOne,
+            };
+            const logs = await abiGenDummy.getLogsAsync<AbiGenDummyWithdrawalEventArgs>(
+                eventName,
+                blockRange,
+                indexFilterValues,
+            );
+            expect(logs).to.have.length(1);
+            const args = logs[0].args;
+            expect(args._owner).to.be.equal(addressOne);
         });
     });
 
