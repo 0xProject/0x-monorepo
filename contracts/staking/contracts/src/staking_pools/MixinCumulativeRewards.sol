@@ -162,29 +162,37 @@ contract MixinCumulativeRewards is
     function _trySetMostRecentCumulativeRewardEpoch(bytes32 poolId, uint256 epoch)
         internal
     {
-        // load the current value, sanity check that we're not trying to go back in time
-        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
-        assert(epoch >= currentMostRecentEpoch);
-
         // check if we should do any work
+        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
         if (epoch == currentMostRecentEpoch) {
             return;
         }
 
         // update state to reflect the most recent cumulative reward
-        _forceSetMostRecentCumulativeRewardEpoch(poolId, epoch);
-
-        // unset the previous most recent reward, if it is no longer needed
-        _tryUnsetCumulativeReward(poolId, currentMostRecentEpoch);
+        _forceSetMostRecentCumulativeRewardEpoch(
+            poolId,
+            currentMostRecentEpoch,
+            epoch
+        );
     }
 
     /// @dev Forcefully sets the epoch of the most recent cumulative reward.
     /// @param poolId Unique Id of pool.
-    /// @param epoch of the most recent cumulative reward.
-    function _forceSetMostRecentCumulativeRewardEpoch(bytes32 poolId, uint256 epoch)
+    /// @param currentMostRecentEpoch of the most recent cumulative reward.
+    /// @param newMostRecentEpoch of the new most recent cumulative reward.
+    function _forceSetMostRecentCumulativeRewardEpoch(
+        bytes32 poolId,
+        uint256 currentMostRecentEpoch,
+        uint256 newMostRecentEpoch
+    )
         internal
     {
-        cumulativeRewardsByPoolLastStored[poolId] = epoch;
+        // sanity check that we're not trying to go back in time
+        assert(newMostRecentEpoch >= currentMostRecentEpoch);
+        cumulativeRewardsByPoolLastStored[poolId] = newMostRecentEpoch;
+
+        // unset the previous most recent reward, if it is no longer needed
+        _tryUnsetCumulativeReward(poolId, currentMostRecentEpoch);
     }
 
     /// @dev Adds a dependency on a cumulative reward for a given epoch.
@@ -209,8 +217,7 @@ contract MixinCumulativeRewards is
         } else {
             _removeDependencyOnCumulativeReward(
                 poolId,
-                epoch,
-                mostRecentCumulativeRewardInfo.cumulativeRewardEpoch
+                epoch
             );
         }
     }
@@ -240,11 +247,9 @@ contract MixinCumulativeRewards is
     /// @dev Removes a dependency on a cumulative reward for a given epoch.
     /// @param poolId Unique Id of pool.
     /// @param epoch to remove dependency from.
-    /// @param mostRecentCumulativeRewardEpoch Epoch of the most recent cumulative reward.
     function _removeDependencyOnCumulativeReward(
         bytes32 poolId,
-        uint256 epoch,
-        uint256 mostRecentCumulativeRewardEpoch
+        uint256 epoch
     )
         internal
     {

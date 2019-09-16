@@ -48,7 +48,11 @@ contract TestCumulativeRewardTracking is
         internal
     {
         emit SetCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._forceSetCumulativeReward(poolId, epoch, value);
+        MixinCumulativeRewards._forceSetCumulativeReward(
+            poolId,
+            epoch,
+            value
+        );
     }
 
     function _forceUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
@@ -58,18 +62,26 @@ contract TestCumulativeRewardTracking is
         MixinCumulativeRewards._forceUnsetCumulativeReward(poolId, epoch);
     }
 
-    function _forceSetMostRecentCumulativeRewardEpoch(bytes32 poolId, uint256 epoch)
+    function _forceSetMostRecentCumulativeRewardEpoch(
+        bytes32 poolId,
+        uint256 currentMostRecentEpoch,
+        uint256 newMostRecentEpoch
+    )
         internal
     {
-        emit SetMostRecentCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._forceSetMostRecentCumulativeRewardEpoch(poolId, epoch);
+        emit SetMostRecentCumulativeReward(poolId, newMostRecentEpoch);
+        MixinCumulativeRewards._forceSetMostRecentCumulativeRewardEpoch(
+            poolId,
+            currentMostRecentEpoch,
+            newMostRecentEpoch
+        );
     }
 
     function _assertMixinParamsBeforeInit()
         internal
-    {}
+    {} // solhint-disable-line no-empty-blocks
 
     function _assertMixinSchedulerBeforeInit()
         internal
-    {}
+    {} // solhint-disable-line no-empty-blocks
 }

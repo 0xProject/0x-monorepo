@@ -135,7 +135,7 @@ contract MixinStakingPoolRewards is
         );
 
         // store cumulative rewards and set most recent
-        _trySetCumulativeReward(
+        _forceSetCumulativeReward(
             poolId,
             epoch,
             IStructs.Fraction({

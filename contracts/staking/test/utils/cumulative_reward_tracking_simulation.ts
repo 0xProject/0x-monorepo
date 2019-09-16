@@ -37,20 +37,20 @@ export class CumulativeRewardTrackingSimulation {
     private static _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): TestLog[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-            if ((log as DecodedLogArgs).event === 'SetMostRecentCumulativeReward') {
+            if (log.event === 'SetMostRecentCumulativeReward') {
                 logs.push({
                     event: 'SetMostRecentCumulativeReward',
-                    epoch: (log as DecodedLogArgs).args.epoch.toNumber(),
+                    epoch: log.args.epoch.toNumber(),
                 });
-            } else if ((log as DecodedLogArgs).event === 'SetCumulativeReward') {
+            } else if (log.event === 'SetCumulativeReward') {
                 logs.push({
                     event: 'SetCumulativeReward',
-                    epoch: (log as DecodedLogArgs).args.epoch.toNumber(),
+                    epoch: log.args.epoch.toNumber(),
                 });
-            } else if ((log as DecodedLogArgs).event === 'UnsetCumulativeReward') {
+            } else if (log.event === 'UnsetCumulativeReward') {
                 logs.push({
                     event: 'UnsetCumulativeReward',
-                    epoch: (log as DecodedLogArgs).args.epoch.toNumber(),
+                    epoch: log.args.epoch.toNumber(),
                 });
             }
         }
@@ -159,6 +159,7 @@ export class CumulativeRewardTrackingSimulation {
                         { from: this._poolOperator },
                     );
                     const createStakingPoolLog = txReceipt.logs[0];
+                    // tslint:disable-next-line no-unnecessary-type-assertion
                     this._poolId = (createStakingPoolLog as DecodedLogArgs).args.poolId;
                     break;
 
