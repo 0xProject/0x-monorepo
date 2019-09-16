@@ -1,11 +1,6 @@
-import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { crypto } from '@0x/order-utils/lib/src/crypto';
+import { constants } from './constants';
+import { hexRandom } from './hex_utils';
 
-export const addressUtils = {
-    generatePseudoRandomAddress(): string {
-        const randomBigNum = generatePseudoRandomSalt();
-        const randomBuff = crypto.solSHA3([randomBigNum]);
-        const randomAddress = `0x${randomBuff.slice(0, 20).toString('hex')}`;
-        return randomAddress;
-    },
-};
+export function randomAddress(): string {
+    return hexRandom(constants.ADDRESS_LENGTH);
+}

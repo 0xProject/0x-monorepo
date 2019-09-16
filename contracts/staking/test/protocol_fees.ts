@@ -1,4 +1,11 @@
-import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    filterLogsToArguments,
+    hexRandom,
+    randomAddress,
+} from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
@@ -54,7 +61,6 @@ blockchainTests('Protocol Fee Unit Tests', env => {
     }
 
     blockchainTests.resets('payProtocolFee()', () => {
-        const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
         const DEFAULT_PROTOCOL_FEE_PAID = new BigNumber(150e3).times(1e9);
         const { ZERO_AMOUNT } = constants;
         const makerAddress = randomAddress();

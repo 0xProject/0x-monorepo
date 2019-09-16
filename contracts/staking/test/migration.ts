@@ -1,4 +1,4 @@
-import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments, randomAddress } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber, OwnableRevertErrors, StringRevertError } from '@0x/utils';
 
@@ -42,10 +42,6 @@ blockchainTests('Migration tests', env => {
             );
         });
 
-        function randomAddress(): string {
-            return hexRandom(constants.ADDRESS_LENGTH);
-        }
-
         async function enableInitRevertsAsync(): Promise<void> {
             const revertAddress = await initTargetContract.SHOULD_REVERT_ADDRESS.callAsync();
             // Deposit some ether into `revertAddress` to signal `initTargetContract`
@@ -67,7 +63,7 @@ blockchainTests('Migration tests', env => {
             });
             expect(senderAddress).to.eq(ownerAddress);
             expect(thisAddress).to.eq(proxyContract.address);
-            const attachedAddress = await proxyContract.getAttachedContract.callAsync();
+            const attachedAddress = await proxyContract.stakingContract.callAsync();
             expect(attachedAddress).to.eq(initTargetContract.address);
         }
 
@@ -150,14 +146,32 @@ blockchainTests('Migration tests', env => {
         });
 
         it('throws if not called by owner', async () => {
-            const tx = stakingContract.init.awaitTransactionSuccessAsync({ from: notOwnerAddress });
+            const tx = stakingContract.init.awaitTransactionSuccessAsync(
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+                {
+                    from: notOwnerAddress,
+                },
+            );
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('throws if already intitialized', async () => {
-            await stakingContract.init.awaitTransactionSuccessAsync();
-            const tx = stakingContract.init.awaitTransactionSuccessAsync();
+            await stakingContract.init.awaitTransactionSuccessAsync(
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+            );
+            const tx = stakingContract.init.awaitTransactionSuccessAsync(
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+                randomAddress(),
+            );
             const expectedError = new StakingRevertErrors.InitializationError();
             return expect(tx).to.revertWith(expectedError);
         });

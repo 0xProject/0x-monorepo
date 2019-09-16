@@ -4,11 +4,15 @@ import { constants } from './constants';
 
 export interface StakingParams {
     epochDurationInSeconds: BigNumber;
-    rewardDelegatedStakeWeight: BigNumber;
+    rewardDelegatedStakeWeight: number | BigNumber;
     minimumPoolStake: BigNumber;
-    maxMakersInPool: BigNumber;
-    cobbDouglasAlphaNumerator: BigNumber;
-    cobbDouglasAlphaDenomintor: BigNumber;
+    maximumMakersInPool: BigNumber;
+    cobbDouglasAlphaNumerator: number | BigNumber;
+    cobbDouglasAlphaDenomintor: number | BigNumber;
+    wethProxyAddress: string;
+    ethVaultAddress: string;
+    rewardVaultAddress: string;
+    zrxVaultAddress: string;
 }
 
 export interface StakerBalances {

@@ -79,6 +79,10 @@ export class StakingApiWrapper {
                 _params.maximumMakersInPool,
                 _params.cobbDouglasAlphaNumerator,
                 _params.cobbDouglasAlphaDenomintor,
+                _params.wethProxyAddress,
+                _params.ethVaultAddress,
+                _params.rewardVaultAddress,
+                _params.zrxVaultAddress,
             );
         },
 
@@ -164,38 +168,6 @@ export async function deployAndConfigureContractsAsync(
         txDefaults,
         artifacts,
     );
-    // deploy staking proxy
-    const stakingProxyContract = await StakingProxyContract.deployFrom0xArtifactAsync(
-        artifacts.StakingProxy,
-        env.provider,
-        txDefaults,
-        artifacts,
-        stakingContract.address,
-        readOnlyProxyContract.address,
-        erc20ProxyContract.address,
-    );
-
-    // deploy zrx vault
-    const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
-        artifacts.ZrxVault,
-        env.provider,
-        txDefaults,
-        artifacts,
-        erc20ProxyContract.address,
-        zrxTokenContract.address,
-    );
-    // configure erc20 proxy to accept calls from zrx vault
-    await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
-    // set staking proxy contract in zrx vault
-    await zrxVaultContract.setStakingContract.awaitTransactionSuccessAsync(stakingProxyContract.address);
-    // set zrx vault in staking contract
-    const setZrxVaultCalldata = stakingContract.setZrxVault.getABIEncodedTransactionData(zrxVaultContract.address);
-    const setZrxVaultTxData = {
-        from: ownerAddress,
-        to: stakingProxyContract.address,
-        data: setZrxVaultCalldata,
-    };
-    await env.web3Wrapper.awaitTransactionSuccessAsync(await env.web3Wrapper.sendTransactionAsync(setZrxVaultTxData));
     // deploy eth vault
     const ethVaultContract = await EthVaultContract.deployFrom0xArtifactAsync(
         artifacts.EthVault,
@@ -210,22 +182,35 @@ export async function deployAndConfigureContractsAsync(
         txDefaults,
         artifacts,
     );
-    // set eth vault in reward vault
-    await rewardVaultContract.setEthVault.sendTransactionAsync(ethVaultContract.address);
-    // set staking proxy contract in reward vault
-    await rewardVaultContract.setStakingContract.awaitTransactionSuccessAsync(stakingProxyContract.address);
-    // set reward vault in staking contract
-    const setStakingPoolRewardVaultCalldata = stakingContract.setStakingPoolRewardVault.getABIEncodedTransactionData(
+    // deploy zrx vault
+    const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
+        artifacts.ZrxVault,
+        env.provider,
+        txDefaults,
+        artifacts,
+        erc20ProxyContract.address,
+        zrxTokenContract.address,
+    );
+    // deploy staking proxy
+    const stakingProxyContract = await StakingProxyContract.deployFrom0xArtifactAsync(
+        artifacts.StakingProxy,
+        env.provider,
+        txDefaults,
+        artifacts,
+        stakingContract.address,
+        readOnlyProxyContract.address,
+        erc20ProxyContract.address,
+        ethVaultContract.address,
         rewardVaultContract.address,
+        zrxVaultContract.address,
     );
-    const setStakingPoolRewardVaultTxData = {
-        from: ownerAddress,
-        to: stakingProxyContract.address,
-        data: setStakingPoolRewardVaultCalldata,
-    };
-    await env.web3Wrapper.awaitTransactionSuccessAsync(
-        await env.web3Wrapper.sendTransactionAsync(setStakingPoolRewardVaultTxData),
-    );
+
+    // configure erc20 proxy to accept calls from zrx vault
+    await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
+    // set staking proxy contract in zrx vault
+    await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
+    // set staking proxy contract in reward vault
+    await rewardVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
 
     return new StakingApiWrapper(
         env,
