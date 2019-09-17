@@ -24,14 +24,30 @@ import "../src/StakingProxy.sol";
 contract TestStakingProxy is
     StakingProxy
 {
-
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
-        StakingProxy(_stakingContract, address(0), address(0))
+        StakingProxy(
+            _stakingContract,
+            NIL_ADDRESS,
+            NIL_ADDRESS,
+            NIL_ADDRESS,
+            NIL_ADDRESS,
+            NIL_ADDRESS
+        )
     {}
 
-    function getAttachedContract() external view returns (address) {
-        return stakingContract;
+    function setAddressParams(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address payable _rewardVaultAddress,
+        address _zrxVaultAddress        
+    )
+        external
+    {
+        wethAssetProxy = IAssetProxy(_wethProxyAddress);
+        ethVault = IEthVault(_ethVaultAddress);
+        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
+        zrxVault = IZrxVault(_zrxVaultAddress);
     }
 }

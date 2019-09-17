@@ -36,8 +36,12 @@ contract TestProtocolFees is
 
     constructor(address exchangeAddress, address wethProxyAddress) public {
         validExchanges[exchangeAddress] = true;
-        wethAssetProxy = IAssetProxy(wethProxyAddress);
-        _initMixinParams();
+        _initMixinParams(
+            wethProxyAddress,
+            address(1), // vault addresses must be non-zero
+            address(1),
+            address(1)
+        );
     }
 
     function addMakerToPool(bytes32 poolId, address makerAddress)
@@ -49,14 +53,6 @@ contract TestProtocolFees is
 
     function getWethAssetData() external pure returns (bytes memory) {
         return WETH_ASSET_DATA;
-    }
-
-    function getActivePoolsByEpoch()
-        external
-        view
-        returns (bytes32[] memory)
-    {
-        return activePoolsThisEpoch;
     }
 
     /// @dev Create a test pool.

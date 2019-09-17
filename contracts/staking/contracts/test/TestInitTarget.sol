@@ -18,15 +18,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../src/immutable/MixinStorage.sol";
 
 
 contract TestInitTarget is
-    Ownable,
     MixinStorage
 {
-
     // We can't store state in this contract before it is attached, so
     // we will grant this predefined address a balance to indicate that
     // `init()`  should revert.
@@ -38,13 +35,33 @@ contract TestInitTarget is
     // `address(this)` of the last `init()` call.
     address private _initThisAddress = address(0);
 
-    function init() external {
+    event InitAddresses(
+        address wethProxyAddress,
+        address ethVaultAddress,
+        address rewardVaultAddress,
+        address zrxVaultAddress          
+    );
+
+    function init(
+        address wethProxyAddress,
+        address ethVaultAddress,
+        address rewardVaultAddress,
+        address zrxVaultAddress           
+    )
+        external
+    {
         if (SHOULD_REVERT_ADDRESS.balance != 0) {
             revert("FORCED_REVERT");
         }
         _initCounter += 1;
         _initSender = msg.sender;
         _initThisAddress = address(this);
+        emit InitAddresses(
+            wethProxyAddress,
+            ethVaultAddress,
+            rewardVaultAddress,
+            zrxVaultAddress
+        );
     }
 
     function getInitState()

@@ -22,7 +22,7 @@ export { typeEncodingUtils } from './type_encoding_utils';
 export { profiler } from './profiler';
 export { coverage } from './coverage';
 export { Web3ProviderEngine } from '@0x/subproviders';
-export { addressUtils } from './address_utils';
+export { randomAddress } from './address_utils';
 export { OrderFactory } from './order_factory';
 export { bytes32Values, testCombinatoriallyWithReferenceFunc, uint256Values } from './combinatorial_utils';
 export { TransactionFactory } from './transaction_factory';

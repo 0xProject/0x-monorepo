@@ -59,14 +59,22 @@ interface IStakingEvents {
     /// @param minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
-    /// @param cobbDouglasAlphaDenomintor Denominator for cobb douglas alpha factor.
-    event ParamsChanged(
+    /// @param cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
+    /// @param wethProxyAddress The address that can transfer WETH for fees.
+    /// @param ethVaultAddress Address of the EthVault contract.
+    /// @param rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param zrxVaultAddress Address of the ZrxVault contract.
+    event ParamsSet(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,
         uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
-        uint256 cobbDouglasAlphaDenomintor
+        uint256 cobbDouglasAlphaDenominator,
+        address wethProxyAddress,
+        address ethVaultAddress,
+        address rewardVaultAddress,
+        address zrxVaultAddress
     );
 
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.
@@ -127,11 +135,5 @@ interface IStakingEvents {
     event MakerRemovedFromStakingPool(
         bytes32 poolId,
         address makerAddress
-    );
-
-    /// @dev Emitted by MixinStakingPoolRewardVault when the vault's address is changed.
-    /// @param rewardVaultAddress Address of new reward vault.
-    event StakingPoolRewardVaultChanged(
-        address rewardVaultAddress
     );
 }

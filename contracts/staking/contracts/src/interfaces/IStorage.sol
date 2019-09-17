@@ -128,7 +128,7 @@ interface IStorage {
         view
         returns (uint32);
 
-    function cobbDouglasAlphaDenomintor()
+    function cobbDouglasAlphaDenominator()
         external
         view
         returns (uint32);

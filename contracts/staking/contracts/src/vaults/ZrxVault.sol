@@ -52,15 +52,15 @@ contract ZrxVault is
     bytes internal _zrxAssetData;
 
     /// @dev Constructor.
-    /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
+    /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
     /// @param _zrxTokenAddress Address of the Zrx Token.
     constructor(
-        address zrxProxyAddress,
+        address _zrxProxyAddress,
         address _zrxTokenAddress
     )
         public
     {
-        zrxAssetProxy = IAssetProxy(zrxProxyAddress);
+        zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
         _zrxToken = IERC20Token(_zrxTokenAddress);
         _zrxAssetData = abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
@@ -71,14 +71,14 @@ contract ZrxVault is
     /// @dev Sets the Zrx proxy.
     /// Note that only the contract owner can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
-    function setZrxProxy(address zrxProxyAddress)
+    /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
+    function setZrxProxy(address _zrxProxyAddress)
         external
         onlyOwner
         onlyNotInCatastrophicFailure
     {
-        zrxAssetProxy = IAssetProxy(zrxProxyAddress);
-        emit ZrxProxyChanged(zrxProxyAddress);
+        zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
+        emit ZrxProxySet(_zrxProxyAddress);
     }
 
     /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
@@ -88,7 +88,7 @@ contract ZrxVault is
     /// @param amount of Zrx Tokens to deposit.
     function depositFrom(address owner, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // update balance
@@ -113,7 +113,7 @@ contract ZrxVault is
     /// @param amount of Zrx Tokens to withdraw.
     function withdrawFrom(address owner, uint256 amount)
         external
-        onlyStakingContract
+        onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         _withdrawFrom(owner, amount);

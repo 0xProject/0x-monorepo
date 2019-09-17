@@ -252,7 +252,7 @@ contract MixinExchangeFees is
                 totalWeightedStake != 0 ? activePools[i].weightedStake : 1, // only rewards are accounted for if no one has staked
                 totalWeightedStake != 0 ? totalWeightedStake : 1, // this is to avoid divide-by-zero in cobb douglas
                 cobbDouglasAlphaNumerator,
-                cobbDouglasAlphaDenomintor
+                cobbDouglasAlphaDenominator
             );
 
             // record reward in vault

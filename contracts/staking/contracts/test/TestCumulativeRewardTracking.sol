@@ -77,11 +77,13 @@ contract TestCumulativeRewardTracking is
         );
     }
 
-    function _assertMixinParamsBeforeInit()
+    function _assertParamsNotInitialized()
         internal
+        view
     {} // solhint-disable-line no-empty-blocks
 
-    function _assertMixinSchedulerBeforeInit()
+    function _assertSchedulerNotInitialized()
         internal
+        view
     {} // solhint-disable-line no-empty-blocks
 }
