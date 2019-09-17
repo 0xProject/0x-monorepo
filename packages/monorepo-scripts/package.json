@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@0x/monorepo-scripts",
-    "version": "1.0.34",
+    "version": "1.0.37",
     "engines": {
         "node": ">=6.12"
     },
@@ -20,7 +20,7 @@
         "script:prepublish_checks": "node ./lib/prepublish_checks.js",
         "script:publish": "IS_DRY_RUN=true node ./lib/publish.js",
         "script:find_unused_deps": "node ./lib/find_unused_dependencies.js",
-        "script:doc_generate_and_upload": "node ./lib/doc_generate_and_upload.js",
+        "script:doc_generate": "node ./lib/doc_generate.js",
         "script:publish_release_notes": "node ./lib/publish_release_notes.js"
     },
     "repository": {
@@ -36,7 +36,6 @@
         "@types/glob": "5.0.35",
         "@types/mkdirp": "^0.5.2",
         "@types/node": "*",
-        "@types/opn": "^5.1.0",
         "@types/rimraf": "^2.0.2",
         "@types/semver": "5.5.0",
         "@types/yargs": "^11.0.0",
@@ -48,8 +47,8 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/types": "^2.4.1",
-        "@0x/utils": "^4.5.0",
+        "@0x/types": "^2.4.3",
+        "@0x/utils": "^4.5.2",
         "@lerna/batch-packages": "^3.0.0-beta.18",
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",
@@ -60,7 +59,6 @@
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
         "moment": "2.21.0",
-        "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
         "prompt": "^1.0.0",
         "publish-release": "https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed",
@@ -68,7 +66,7 @@
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
         "semver-sort": "0.0.4",
-        "typedoc": "0.13.0",
+        "typedoc": "^0.15.0",
         "yargs": "^10.0.3"
     },
     "publishConfig": {

@@ -1,6 +1,6 @@
 [
     {
-        "version": "8.3.0",
+        "version": "9.0.0",
         "changes": [
             {
                 "note": "Add `chainId` `OrderValidationUtils`, `OrderFactory`",
@@ -99,6 +99,39 @@
                 "pr": 2154
             }
         ]
+    },
+    {
+        "version": "8.4.0",
+        "changes": [
+            {
+                "note": "Implement `simpleValidateOrderFillableOrThrowAsync`",
+                "pr": 2096
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "8.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "8.3.0",
+        "changes": [
+            {
+                "note": "Fix isValidValidatorSignatureAsync, allow to pass exchangeAddress to isValidSignatureAsync.",
+                "pr": 2017
+            },
+            {
+                "note": "Fix `Wallet` and `Validator` signature validation",
+                "pr": 2078
+            }
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

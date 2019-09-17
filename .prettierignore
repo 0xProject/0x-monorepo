@@ -43,7 +43,6 @@ lib
 /packages/json-schemas/schemas
 /python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 /packages/sra-spec/public/
-/packages/dev-tools-pages/ts/**/data.json
 package.json
 scripts/postpublish_utils.js
 packages/sol-coverage/test/fixtures/artifacts
@@ -53,3 +52,4 @@ packages/sol-coverage/test/fixtures/artifacts
 packages/abi-gen/test-cli/fixtures/artifacts/AbiGenDummy.json
 packages/abi-gen/test-cli/fixtures/artifacts/LibDummy.json
 packages/abi-gen/test-cli/fixtures/artifacts/TestLibDummy.json
+packages/*/docs

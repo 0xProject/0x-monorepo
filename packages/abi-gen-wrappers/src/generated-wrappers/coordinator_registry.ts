@@ -3,7 +3,6 @@
 // tslint:disable:no-unused-variable
 import {
     BaseContract,
-    BlockRange,
     EventCallback,
     IndexedFilterValues,
     SubscriptionManager,
@@ -13,6 +12,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -58,6 +58,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * @returns The hash of the transaction
          */
         async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -72,13 +73,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -118,6 +113,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * @returns The hash of the transaction
          */
         async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
+            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -131,15 +127,17 @@ export class CoordinatorRegistryContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            coordinatorEndpoint: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
+            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -193,6 +191,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
@@ -202,27 +201,29 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
-            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
-            return txHash;
         },
     };
     /**
@@ -283,6 +284,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorOperator operator of the Coordinator endpoint.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(coordinatorOperator: string): string {
             assert.isString('coordinatorOperator', coordinatorOperator);
@@ -292,6 +294,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
@@ -299,6 +306,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');

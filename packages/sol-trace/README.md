@@ -2,7 +2,7 @@
 
 Prints a stack trace when a revert is encountered.
 
-### Read the [Documentation](https://0xproject.com/docs/sol-trace).
+### Read the [Documentation](https://0x.org/docs/tools/sol-trace).
 
 ## Installation
 

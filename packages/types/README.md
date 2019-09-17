@@ -1,6 +1,6 @@
 ## @0x/types
 
-Typescript types shared across 0x projects and packages
+TypeScript types shared across 0x projects and packages
 
 ## Installation
 

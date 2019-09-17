@@ -1,10 +1,29 @@
 [
     {
-        "version": "4.3.0",
+        "version": "4.4.0",
         "changes": [
             {
                 "note": "Add types for `@0x/dev-utils` chai helpers in `types/@0x`",
                 "pr": 1761
+            }
+        ]
+    },
+    {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Add declaration for `ethereumjs-vm`",
+                "pr": 2108
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "4.2.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

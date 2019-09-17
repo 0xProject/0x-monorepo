@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.4.0 - _September 17, 2019_
+
+    * Add `evmExecAsync` to use local EVM instead of eth_call for pure functions (#2108)
+
+## v5.3.3 - _September 3, 2019_
+
+    * Dependencies updated
+
+## v5.3.2 - _August 22, 2019_
+
+    * Updated to ethereumjs-blockstream@^7.0.0 (#2089)
+
 ## v5.3.1 - _August 8, 2019_
 
     * Dependencies updated

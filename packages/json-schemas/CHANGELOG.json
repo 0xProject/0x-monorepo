@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.0.1",
+        "version": "4.0.3",
         "changes": [
             {
                 "note": "Add `eip712DomainSchema` schema",
@@ -21,12 +21,31 @@
         ]
     },
     {
+        "timestamp": 1568744790,
+        "version": "4.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "4.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.0.0",
         "changes": [
             {
                 "note": "Removed @0x/order-watcher"
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

@@ -1,6 +1,6 @@
 {
     "name": "@0x/sra-spec",
-    "version": "2.0.14",
+    "version": "2.0.17",
     "engines": {
         "node": ">=6.12"
     },
@@ -8,7 +8,6 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "serve": "redoc-cli serve lib/api.json --watch",
         "watch_without_deps": "run-p build:watch serve",
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
@@ -36,7 +35,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0x/json-schemas": "^3.1.13",
+        "@0x/json-schemas": "^4.0.2",
         "@loopback/openapi-v3-types": "^0.8.2"
     },
     "devDependencies": {
@@ -51,7 +50,6 @@
         "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
-        "redoc-cli": "^0.6.1",
         "shx": "^0.2.2",
         "swagger-cli": "^2.1.1",
         "ts-node": "^7.0.0",

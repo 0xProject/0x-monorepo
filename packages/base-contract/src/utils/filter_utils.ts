@@ -1,10 +1,10 @@
-import { ContractAbi, EventAbi, FilterObject, LogEntry } from 'ethereum-types';
+import { BlockRange, ContractAbi, EventAbi, FilterObject, LogEntry } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
 
-import { BlockRange, IndexedFilterValues } from '../types';
+import { IndexedFilterValues } from '../types';
 
 const TOPIC_LENGTH = 32;
 

@@ -3,7 +3,6 @@
 // tslint:disable:no-unused-variable
 import {
     BaseContract,
-    BlockRange,
     EventCallback,
     IndexedFilterValues,
     SubscriptionManager,
@@ -13,6 +12,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -71,8 +71,13 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_spender', _spender);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender, _value]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
+                _spender.toLowerCase(),
+                _value,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -80,18 +85,12 @@ export class ERC20TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, _spender, _value),
+                self.approve.estimateGasAsync.bind(self, _spender.toLowerCase(), _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -139,8 +138,13 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_spender', _spender);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender, _value]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
+                _spender.toLowerCase(),
+                _value,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -152,15 +156,18 @@ export class ERC20TokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            _spender: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(_spender, _value, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -222,6 +229,7 @@ export class ERC20TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _spender The address of the account able to transfer the tokens
          * @param _value The amount of wei to be approved for transfer
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_spender: string, _value: BigNumber): string {
             assert.isString('_spender', _spender);
@@ -233,28 +241,29 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _spender: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_spender, _value, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
-            return txHash;
         },
     };
     /**
@@ -307,19 +316,30 @@ export class ERC20TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
@@ -347,10 +367,13 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _value,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -360,18 +383,12 @@ export class ERC20TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, _from, _to, _value),
+                self.transferFrom.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -429,10 +446,13 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _value,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -446,15 +466,19 @@ export class ERC20TokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -521,6 +545,7 @@ export class ERC20TokenContract extends BaseContract {
          * @param _from The address of the sender
          * @param _to The address of the recipient
          * @param _value The amount of token to be transferred
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_from: string, _to: string, _value: BigNumber): string {
             assert.isString('_from', _from);
@@ -534,29 +559,29 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
-            return txHash;
         },
     };
     /**
@@ -616,6 +641,7 @@ export class ERC20TokenContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param _owner The address from which the balance will be retrieved
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
@@ -623,13 +649,23 @@ export class ERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
@@ -655,8 +691,10 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to, _value]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to.toLowerCase(), _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -664,18 +702,12 @@ export class ERC20TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(self, _to, _value),
+                self.transfer.estimateGasAsync.bind(self, _to.toLowerCase(), _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -719,8 +751,10 @@ export class ERC20TokenContract extends BaseContract {
          * @returns The hash of the transaction
          */
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             const self = (this as any) as ERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to, _value]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to.toLowerCase(), _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -732,15 +766,18 @@ export class ERC20TokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transfer.callAsync(_to, _value, txData);
+            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -799,6 +836,7 @@ export class ERC20TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _to The address of the recipient
          * @param _value The amount of token to be transferred
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_to: string, _value: BigNumber): string {
             assert.isString('_to', _to);
@@ -810,28 +848,29 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transfer.callAsync(_to, _value, txData);
-            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
-            return txHash;
         },
     };
     public allowance = {
@@ -895,6 +934,7 @@ export class ERC20TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _owner The address of the account owning tokens
          * @param _spender The address of the account able to transfer the tokens
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_owner: string, _spender: string): string {
             assert.isString('_owner', _owner);
@@ -906,13 +946,23 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');

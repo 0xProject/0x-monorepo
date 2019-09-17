@@ -23,7 +23,7 @@
         "compile": "sol-compiler",
         "watch": "sol-compiler -w",
         "clean": "shx rm -rf lib generated-artifacts generated-wrappers",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output generated-wrappers --backend ethers",
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --output generated-wrappers --backend ethers",
         "lint": "tslint --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "fix": "tslint --fix --format stylish --project . --exclude ./generated-wrappers/**/* --exclude ./generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
         "coverage:report:text": "istanbul report text",

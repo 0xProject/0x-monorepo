@@ -6,12 +6,12 @@
             {
                 "constant": true,
                 "inputs": [
-                    { "name": "hash", "type": "bytes32" },
-                    { "name": "signerAddress", "type": "address" },
-                    { "name": "signature", "type": "bytes" }
+                    { "internalType": "bytes32", "name": "hash", "type": "bytes32" },
+                    { "internalType": "address", "name": "signerAddress", "type": "address" },
+                    { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "name": "isValidSignature",
-                "outputs": [{ "name": "isValid", "type": "bool" }],
+                "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -26,7 +26,7 @@
                         "signature": "Proof of signing.",
                         "signerAddress": "Address that should have signed the given hash."
                     },
-                    "return": "Validity of order signature."
+                    "return": "Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(\"isValidValidatorSignature(address,bytes32,address,bytes)\"))"
                 }
             }
         },

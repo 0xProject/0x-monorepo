@@ -1,6 +1,6 @@
 [
     {
-        "version": "11.2.0",
+        "version": "12.2.0",
         "changes": [
             {
                 "note": "Use new `Order` and `ZeroExTransaction` structures with `domain` field",
@@ -13,13 +13,38 @@
         ]
     },
     {
+        "version": "12.1.0",
+        "changes": [
+            {
+                "note": "Add `devUtils` to `ContractWrappers` class.",
+                "pr": 2146
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "version": "12.0.0",
+        "changes": [
+            {
+                "note": "Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package.",
+                "pr": 2086
+            },
+            {
+                "note": "Change CoordinatorWrapper constructor to take a provider instead of a Web3Wrapper instance",
+                "pr": 2023
+            }
+        ],
+        "timestamp": 1567521715
+    },
+    {
         "version": "11.1.0",
         "changes": [
             {
                 "note": "Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo.",
                 "pr": 2068
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "11.0.0",

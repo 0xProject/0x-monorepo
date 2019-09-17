@@ -2,7 +2,7 @@
 
 A TypeScript/Javascript library for interacting with the 0x protocol. It is a high level package which combines a number of underlying packages such as order-utils and asset-data-utils.
 
-### Read the [Documentation](https://0xproject.com/docs/0x.js).
+### Read the [Documentation](https://0x.org/docs/tools/0x.js).
 
 ## Installation
 
@@ -48,6 +48,33 @@ Download the UMD module from our [releases page](https://github.com/0xProject/0x
 ```html
 <script type="text/javascript" src="0x.js"></script>
 ```
+
+#### Webpack config
+
+If bundling your project with [Webpack](https://webpack.js.org/), add the following to your `webpack.config.js`:
+
+If building for web:
+
+```js
+node: {
+    fs: 'empty';
+}
+```
+
+If building a node library:
+
+```js
+externals: {
+    fs: true;
+}
+```
+
+`ContractWrappers` uses WebAssembly to simulate Ethereum calls. This toolchain involves generated 'glue' code that requires the `fs` built-in, but won't actually use it in a web environment. We tell Webpack not to resolve them since we won't need them. The specific dependency is [here](https://github.com/ethereumjs/rustbn.js/blob/master/lib/index.asm.js).
+
+Also see:
+
+-   https://webpack.js.org/configuration/externals
+-   https://webpack.js.org/configuration/node
 
 ## Contributing
 

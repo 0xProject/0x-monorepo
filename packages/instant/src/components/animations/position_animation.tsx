@@ -87,7 +87,7 @@ const defaultAnimation = (positionSettings: OptionallyScreenSpecific<PositionAni
 const animationForSize = (
     positionSettings: OptionallyScreenSpecific<PositionAnimationSettings>,
     sizeKey: 'sm' | 'md' | 'lg',
-    mediaFn: (...args: any[]) => InterpolationValue[],
+    mediaFn: (...args: any[]) => InterpolationValue,
 ) => {
     // checking default makes sure we have a PositionAnimationSettings object
     // and then we check to see if we have a setting for the specific `sizeKey`

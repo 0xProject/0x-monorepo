@@ -9,13 +9,33 @@
         ]
     },
     {
+        "version": "4.3.2",
+        "changes": [
+            {
+                "note": "Removed dependency on @0x/order-utils",
+                "pr": 2096
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "4.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.3.0",
         "changes": [
             {
                 "note": "Added DevUtils to migration script",
                 "pr": 2060
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "version": "4.2.0",
