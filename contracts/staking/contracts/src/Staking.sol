@@ -29,8 +29,8 @@ import "./sys/MixinParams.sol";
 contract Staking is
     IStaking,
     MixinParams,
-    MixinStake,
     MixinStakingPool,
+    MixinStake,
     MixinExchangeFees
 {
     /// @dev This constructor will ensure that the storage layout of this contract

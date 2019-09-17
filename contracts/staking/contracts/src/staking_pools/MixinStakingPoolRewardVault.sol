@@ -58,15 +58,8 @@ contract MixinStakingPoolRewardVault is
     function _depositIntoStakingPoolRewardVault(uint256 amount)
         internal
     {
-        // cast to payable and sanity check
+        // cast to payable then transfer
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
-        if (rewardVaultAddress == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.RewardVaultNotSetError()
-            );
-        }
-
-        // perform transfer
         rewardVaultAddress.transfer(amount);
     }
 
@@ -81,15 +74,11 @@ contract MixinStakingPoolRewardVault is
     )
         internal
     {
-        // sanity check
-        IStakingPoolRewardVault _rewardVault = rewardVault;
-        if (address(_rewardVault) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.RewardVaultNotSetError()
-            );
-        }
-
-        // perform transfer
-        _rewardVault.transferToEthVault(poolId, member, amount);
+        rewardVault.transferToEthVault(
+            poolId,
+            member,
+            amount,
+            address(ethVault)
+        );
     }
 }

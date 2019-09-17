@@ -35,10 +35,10 @@ export class PoolOperatorActor extends BaseActor {
             );
             expect(poolIdOfMaker, 'pool id of maker').to.be.equal(poolId);
             // check the number of makers in the pool
-            const numMakersAfterRemoving = await this._stakingApiWrapper.stakingContract.numMakersByPoolId.callAsync(
+            const pool = await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(
                 poolId,
             );
-            expect(numMakersAfterRemoving, 'number of makers in pool').to.be.bignumber.equal(1);
+            expect(pool.numberOfMakers, 'number of makers in pool').to.be.bignumber.equal(1);
         }
         return poolId;
     }
