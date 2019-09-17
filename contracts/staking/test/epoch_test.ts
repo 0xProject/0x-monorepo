@@ -34,14 +34,14 @@ blockchainTests('Epochs', env => {
             ///// 2/3 Validate Initial Epoch & TimeLock Period /////
             {
                 // epoch
-                const currentEpoch = await stakingApiWrapper.stakingContract.getCurrentEpoch.callAsync();
+                const currentEpoch = await stakingApiWrapper.stakingContract.currentEpoch.callAsync();
                 expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH);
             }
             ///// 3/3 Increment Epoch (TimeLock Should Not Increment) /////
             await stakingApiWrapper.utils.skipToNextEpochAsync();
             {
                 // epoch
-                const currentEpoch = await stakingApiWrapper.stakingContract.getCurrentEpoch.callAsync();
+                const currentEpoch = await stakingApiWrapper.stakingContract.currentEpoch.callAsync();
                 expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH.plus(1));
             }
         });

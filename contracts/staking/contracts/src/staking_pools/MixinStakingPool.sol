@@ -23,9 +23,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
-import "../interfaces/IStakingEvents.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
 import "./MixinStakingPoolRewards.sol";
 
 
@@ -53,18 +50,8 @@ import "./MixinStakingPoolRewards.sol";
 /// 2. Add the addresses that you use to market make on 0x.
 /// 3. Leverage the staking power of others by convincing them to delegate to your pool.
 contract MixinStakingPool is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
     MixinStakingPoolRewards
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Create a new staking pool. The sender will be the operator of this pool.
@@ -120,9 +107,9 @@ contract MixinStakingPool is
         return poolId;
     }
 
-    function joinStakingPoolAsMaker(
-        bytes32 poolId
-    )
+    /// @dev Allows caller to join a staking pool if already assigned.
+    /// @param poolId Unique id of pool.
+    function joinStakingPoolAsMaker(bytes32 poolId)
         external
     {
         // Is the maker already in a pool?
@@ -179,7 +166,7 @@ contract MixinStakingPool is
         }
 
         // Is the pool already full?
-        if (getNumberOfMakersInStakingPool(poolId) == maximumMakersInPool) {
+        if (numMakersByPoolId[poolId] == maximumMakersInPool) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.PoolIsFull,
                 makerAddress,
@@ -262,27 +249,6 @@ contract MixinStakingPool is
         returns (bool)
     {
         return poolJoinedByMakerAddress[makerAddress].confirmed;
-    }
-
-    /// @dev Returns the current number of makers in a given pool.
-    /// @param poolId Unique id of pool.
-    /// @return Size of pool.
-    function getNumberOfMakersInStakingPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return numMakersByPoolId[poolId];
-    }
-
-    /// @dev Returns the unique id that will be assigned to the next pool that is created.
-    /// @return Pool id.
-    function getNextStakingPoolId()
-        public
-        view
-        returns (bytes32)
-    {
-        return nextPoolId;
     }
 
     /// @dev Computes the unique id that comes after the input pool id.

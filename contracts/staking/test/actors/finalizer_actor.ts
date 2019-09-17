@@ -164,7 +164,8 @@ export class FinalizerActor extends BaseActor {
     private async _getOperatorShareByPoolIdAsync(poolIds: string[]): Promise<OperatorShareByPoolId> {
         const operatorShareByPoolId: OperatorShareByPoolId = {};
         for (const poolId of poolIds) {
-            const operatorShare = await this._stakingApiWrapper.rewardVaultContract.getOperatorShare.callAsync(poolId);
+            const pool = await this._stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
+            const operatorShare = new BigNumber(pool[1]);
             operatorShareByPoolId[poolId] = operatorShare;
         }
         return operatorShareByPoolId;
@@ -179,15 +180,13 @@ export class FinalizerActor extends BaseActor {
     }
 
     private async _getRewardVaultBalanceAsync(poolId: string): Promise<RewardVaultBalance> {
-        const balances = await Promise.all([
-            this._stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(poolId),
-            this._stakingApiWrapper.rewardVaultContract.balanceOfOperator.callAsync(poolId),
-            this._stakingApiWrapper.rewardVaultContract.balanceOfMembers.callAsync(poolId),
-        ]);
+        const pool = await this._stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
+        const operatorBalance = pool[2];
+        const membersBalance = pool[3];
         return {
-            poolBalance: balances[0],
-            operatorBalance: balances[1],
-            membersBalance: balances[2],
+            poolBalance: operatorBalance.plus(membersBalance),
+            operatorBalance,
+            membersBalance,
         };
     }
 }

@@ -30,11 +30,8 @@ import "../immutable/MixinStorage.sol";
 /// from within this contract.
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
-
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
     modifier onlyStakingPoolOperator(bytes32 poolId) {
@@ -80,23 +77,13 @@ contract MixinStakingPoolRewardVault is
         emit StakingPoolRewardVaultChanged(rewardVaultAddress);
     }
 
-    /// @dev Returns the staking pool reward vault
-    /// @return Address of reward vault.
-    function getStakingPoolRewardVault()
-        public
-        view
-        returns (address)
-    {
-        return address(rewardVault);
-    }
-
     /// @dev Decreases the operator share for the given pool (i.e. increases pool rewards for members).
     /// Note that this is only callable by the pool operator, and will revert if the new operator
     /// share value is greater than the old value.
     /// @param poolId Unique Id of pool.
     /// @param newOperatorShare The newly decreased percentage of any rewards owned by the operator.
     function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShare)
-        public
+        external
         onlyStakingPoolOperator(poolId)
     {
         rewardVault.decreaseOperatorShare(poolId, newOperatorShare);

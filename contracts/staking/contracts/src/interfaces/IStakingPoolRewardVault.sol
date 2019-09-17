@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 
 /// @dev This vault manages staking pool rewards.
@@ -176,30 +177,6 @@ interface IStakingPoolRewardVault {
     /// @param poolId Unique Id of pool.
     /// @return Balance in ETH.
     function balanceOf(bytes32 poolId)
-        external
-        view
-        returns (uint256);
-
-    /// @dev Returns the balance of a pool operator.
-    /// @param poolId Unique Id of pool.
-    /// @return Balance in ETH.
-    function balanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256);
-
-    /// @dev Returns the balance co-owned by members of a pool.
-    /// @param poolId Unique Id of pool.
-    /// @return Balance in ETH.
-    function balanceOfMembers(bytes32 poolId)
-        external
-        view
-        returns (uint256);
-
-    /// @dev Returns the operator share of a pool's balance.
-    /// @param poolId Unique Id of pool.
-    /// @return Operator share (integer out of 100)
-    function getOperatorShare(bytes32 poolId)
         external
         view
         returns (uint256);

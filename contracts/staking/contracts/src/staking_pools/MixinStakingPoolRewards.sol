@@ -21,26 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
-import "../stake/MixinStakeBalances.sol";
-import "./MixinStakingPoolRewardVault.sol";
 import "./MixinCumulativeRewards.sol";
 
 
 contract MixinStakingPoolRewards is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
     MixinCumulativeRewards
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -54,8 +40,8 @@ contract MixinStakingPoolRewards is
     {
         return _computeRewardBalanceOfDelegator(
             poolId,
-            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),
-            getCurrentEpoch()
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
+            currentEpoch
         );
     }
 
@@ -73,8 +59,6 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
-        uint256 currentEpoch = getCurrentEpoch();
-
         // transfer any rewards from the transient pool vault to the eth vault;
         // this must be done before we can modify the owner's portion of the delegator pool.
         _transferDelegatorRewardsToEthVault(
@@ -99,7 +83,7 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    /// @dev Records a reward for delegators. This adds to the `cumulativeRewardsByPool`.
+    /// @dev Records a reward for delegators. This adds to the `_cumulativeRewardsByPool`.
     /// @param poolId Unique Id of pool.
     /// @param reward to record for delegators.
     /// @param amountOfDelegatedStake the amount of delegated stake that will split this reward.
@@ -113,12 +97,12 @@ contract MixinStakingPoolRewards is
         internal
     {
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.Fraction) storage cumulativeRewardsByPoolPtr = cumulativeRewardsByPool[poolId];
+        mapping (uint256 => IStructs.Fraction) storage _cumulativeRewardsByPoolPtr = _cumulativeRewardsByPool[poolId];
 
         // fetch the last epoch at which we stored an entry for this pool;
         // this is the most up-to-date cumulative rewards for this pool.
-        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.Fraction memory mostRecentCumulativeRewards = cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
+        uint256 cumulativeRewardsLastStored = _cumulativeRewardsByPoolLastStored[poolId];
+        IStructs.Fraction memory mostRecentCumulativeRewards = _cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
 
         // compute new cumulative reward
         (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
@@ -204,12 +188,12 @@ contract MixinStakingPoolRewards is
         // compute the reward accumulated by the `next` balance;
         // this starts at `delegatedStake.currentEpoch + 1` and goes up until the last epoch, during which
         // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (cumulativeRewardsByPoolLastStored[poolId] > unsyncedDelegatedStakeToPoolByOwner.currentEpoch)
+        uint256 rewardsAccumulatedAfterLastStoredEpoch = (_cumulativeRewardsByPoolLastStored[poolId] > unsyncedDelegatedStakeToPoolByOwner.currentEpoch)
             ? _computeMemberRewardOverInterval(
                 poolId,
                 unsyncedDelegatedStakeToPoolByOwner.nextEpochBalance,
                 unsyncedDelegatedStakeToPoolByOwner.currentEpoch,
-                cumulativeRewardsByPoolLastStored[poolId]
+                _cumulativeRewardsByPoolLastStored[poolId]
             )
             : 0;
 
@@ -222,17 +206,17 @@ contract MixinStakingPoolRewards is
     /// A delegator always depends on the cumulative reward for the current epoch.
     /// They will also depend on the previous epoch's reward, if they are already staked with the input pool.
     /// @param poolId Unique id of pool.
-    /// @param delegatedStakeToPoolByOwner Amount of stake the member has delegated to the pool.
+    /// @param _delegatedStakeToPoolByOwner Amount of stake the member has delegated to the pool.
     /// @param isDependent is true iff adding a dependency. False, otherwise.
     function _setCumulativeRewardDependenciesForDelegator(
         bytes32 poolId,
-        IStructs.StoredBalance memory delegatedStakeToPoolByOwner,
+        IStructs.StoredBalance memory _delegatedStakeToPoolByOwner,
         bool isDependent
     )
         private
     {
         // if this delegator is not yet initialized then there's no dependency to unset.
-        if (!isDependent && !delegatedStakeToPoolByOwner.isInitialized) {
+        if (!isDependent && !_delegatedStakeToPoolByOwner.isInitialized) {
             return;
         }
 
@@ -240,20 +224,20 @@ contract MixinStakingPoolRewards is
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
 
         // record dependency on `lastEpoch`
-        if (delegatedStakeToPoolByOwner.currentEpoch > 0 && delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
+        if (_delegatedStakeToPoolByOwner.currentEpoch > 0 && _delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
             _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                uint256(delegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
+                uint256(_delegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
                 mostRecentCumulativeRewardInfo,
                 isDependent
             );
         }
 
         // record dependency on current epoch.
-        if (delegatedStakeToPoolByOwner.currentEpochBalance != 0 || delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
+        if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0 || _delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
             _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                delegatedStakeToPoolByOwner.currentEpoch,
+                _delegatedStakeToPoolByOwner.currentEpoch,
                 mostRecentCumulativeRewardInfo,
                 isDependent
             );

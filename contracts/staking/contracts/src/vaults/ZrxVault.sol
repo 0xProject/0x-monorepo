@@ -34,40 +34,37 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
-    Authorizable,
-    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
-    mapping (address => uint256) internal balances;
+    mapping (address => uint256) internal _balances;
 
     // Zrx Asset Proxy
-    IAssetProxy internal zrxAssetProxy;
+    IAssetProxy public zrxAssetProxy;
 
     // Zrx Token
-    IERC20Token internal zrxToken;
+    IERC20Token internal _zrxToken;
 
     // Asset data for the ERC20 Proxy
-    bytes internal zrxAssetData;
+    bytes internal _zrxAssetData;
 
     /// @dev Constructor.
     /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
-    /// @param zrxTokenAddress Address of the Zrx Token.
+    /// @param _zrxTokenAddress Address of the Zrx Token.
     constructor(
         address zrxProxyAddress,
-        address zrxTokenAddress
+        address _zrxTokenAddress
     )
         public
     {
         zrxAssetProxy = IAssetProxy(zrxProxyAddress);
-        zrxToken = IERC20Token(zrxTokenAddress);
-        zrxAssetData = abi.encodeWithSelector(
+        _zrxToken = IERC20Token(_zrxTokenAddress);
+        _zrxAssetData = abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
-            zrxTokenAddress
+            _zrxTokenAddress
         );
     }
 
@@ -95,14 +92,14 @@ contract ZrxVault is
         onlyNotInCatastrophicFailure
     {
         // update balance
-        balances[owner] = balances[owner].safeAdd(amount);
+        _balances[owner] = _balances[owner].safeAdd(amount);
 
         // notify
         emit ZrxDepositedIntoVault(msg.sender, owner, amount);
 
         // deposit ZRX from owner
         zrxAssetProxy.transferFrom(
-            zrxAssetData,
+            _zrxAssetData,
             owner,
             address(this),
             amount
@@ -131,7 +128,7 @@ contract ZrxVault is
         returns (uint256)
     {
         // get total balance
-        uint256 totalBalance = balances[owner];
+        uint256 totalBalance = _balances[owner];
 
         // withdraw ZRX to owner
         _withdrawFrom(owner, totalBalance);
@@ -145,7 +142,7 @@ contract ZrxVault is
         view
         returns (uint256)
     {
-        return balances[owner];
+        return _balances[owner];
     }
 
     /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
@@ -157,13 +154,13 @@ contract ZrxVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner].safeSub(amount);
+        _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
         emit ZrxWithdrawnFromVault(msg.sender, owner, amount);
 
         // withdraw ZRX to owner
-        zrxToken.transfer(
+        _zrxToken.transfer(
             owner,
             amount
         );

@@ -40,21 +40,18 @@ import "../immutable/MixinConstants.sol";
 /// When in Catastrophic Failure Mode, the Staking contract can still
 /// perform withdrawals on behalf of its users.
 contract StakingPoolRewardVault is
-    Authorizable,
     IStakingPoolRewardVault,
-    IVaultCore,
     MixinConstants,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
     // mapping from poolId to Pool metadata
-    mapping (bytes32 => Pool) internal poolById;
+    mapping (bytes32 => Pool) public poolById;
 
     // address of ether vault
-    IEthVault internal ethVault;
+    IEthVault internal _ethVault;
 
     /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
@@ -73,7 +70,7 @@ contract StakingPoolRewardVault is
         external
         onlyOwner
     {
-        ethVault = IEthVault(ethVaultAddress);
+        _ethVault = IEthVault(ethVaultAddress);
         emit EthVaultChanged(ethVaultAddress);
     }
 
@@ -256,39 +253,6 @@ contract StakingPoolRewardVault is
         return poolById[poolId].operatorBalance + poolById[poolId].membersBalance;
     }
 
-    /// @dev Returns the balance of a pool operator.
-    /// @param poolId Unique Id of pool.
-    /// @return Balance in ETH.
-    function balanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return poolById[poolId].operatorBalance;
-    }
-
-    /// @dev Returns the balance co-owned by members of a pool.
-    /// @param poolId Unique Id of pool.
-    /// @return Balance in ETH.
-    function balanceOfMembers(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return poolById[poolId].membersBalance;
-    }
-
-    /// @dev Returns the operator share of a pool's balance.
-    /// @param poolId Unique Id of pool.
-    /// @return Operator share (integer out of 100)
-    function getOperatorShare(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return poolById[poolId].operatorShare;
-    }
-
     /// @dev Increments a balances in a Pool struct, splitting the input amount between the
     /// pool operator and members of the pool based on the pool operator's share.
     /// @param pool Pool struct with the balances to increment.
@@ -328,14 +292,14 @@ contract StakingPoolRewardVault is
         private
     {
         // sanity check on eth vault
-        IEthVault _ethVault = ethVault;
-        if (address(_ethVault) == address(0)) {
+        IEthVault ethVault_ = _ethVault;
+        if (address(ethVault_) == address(0)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.EthVaultNotSetError()
             );
         }
 
         // perform xfer
-        _ethVault.depositFor.value(amount)(from);
+        ethVault_.depositFor.value(amount)(from);
     }
 }

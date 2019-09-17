@@ -24,15 +24,9 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinDeploymentConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
-import "../stake/MixinStakeBalances.sol";
-import "../sys/MixinScheduler.sol";
 import "../staking_pools/MixinStakingPool.sol";
-import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "./MixinExchangeManager.sol";
 
 
@@ -46,21 +40,10 @@ import "./MixinExchangeManager.sol";
 /// stake provided by directly by the maker; this is a disincentive for market makers to
 /// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
-    IStakingEvents,
-    MixinConstants,
     MixinDeploymentConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
     MixinExchangeManager,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
     MixinStakingPool
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.
@@ -149,22 +132,12 @@ contract MixinExchangeFees is
     /// @dev Returns the total amount of fees collected thus far, in the current epoch.
     /// @return Amount of fees.
     function getTotalProtocolFeesThisEpoch()
-        public
+        external
         view
         returns (uint256)
     {
-        return address(this).balance;
-    }
-
-    /// @dev Returns the amount of fees attributed to the input pool.
-    /// @param poolId Pool Id to query.
-    /// @return Amount of fees.
-    function getProtocolFeesThisEpochByPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return protocolFeesThisEpochByPool[poolId];
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        return address(this).balance.safeAdd(wethBalance);
     }
 
     /// @dev Withdraws the entire WETH balance of the contract.
