@@ -36,6 +36,11 @@ export enum CumulativeRewardIntervalErrorCode {
     EndEpochDoesNotHaveReward,
 }
 
+export enum StorageLayoutErrorCodes {
+    UnexpectedSlot,
+    UnexpectedOffset,
+}
+
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -246,6 +251,20 @@ export class CumulativeRewardIntervalError extends RevertError {
     }
 }
 
+export class StorageLayoutError extends RevertError {
+    constructor(
+        errorCode?: StorageLayoutErrorCodes,
+        expected?: BigNumber | number | string,
+        actual?: BigNumber | number | string,
+    ) {
+        super('StorageLayoutError', 'StorageLayoutError(uint8 errorCode, uint256 expected, uint256 actual)', {
+            errorCode,
+            expected,
+            actual,
+        });
+    }
+}
+
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
@@ -271,6 +290,7 @@ const types = [
     WithdrawAmountExceedsMemberBalanceError,
     ProxyDestinationCannotBeNilError,
     CumulativeRewardIntervalError,
+    StorageLayoutError,
 ];
 
 // Register the types we've defined.
