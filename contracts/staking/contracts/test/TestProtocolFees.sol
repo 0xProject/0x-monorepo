@@ -38,9 +38,9 @@ contract TestProtocolFees is
         validExchanges[exchangeAddress] = true;
         _initMixinParams(
             wethProxyAddress,
-            NIL_ADDRESS,
-            address(0),
-            NIL_ADDRESS
+            address(1), // vault addresses must be non-zero
+            address(1),
+            address(1)
         );
     }
 
@@ -53,14 +53,6 @@ contract TestProtocolFees is
 
     function getWethAssetData() external pure returns (bytes memory) {
         return WETH_ASSET_DATA;
-    }
-
-    function getActivePoolsByEpoch()
-        external
-        view
-        returns (bytes32[] memory)
-    {
-        return activePoolsThisEpoch;
     }
 
     /// @dev Create a test pool.

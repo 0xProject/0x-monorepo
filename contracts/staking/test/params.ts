@@ -43,7 +43,7 @@ blockchainTests('Configurable Parameters', env => {
             );
             // Assert event.
             expect(receipt.logs.length).to.eq(1);
-            const event = filterLogsToArguments<IStakingEventsParamsSetEventArgs>(receipt.logs, 'ParamsChanged')[0];
+            const event = filterLogsToArguments<IStakingEventsParamsSetEventArgs>(receipt.logs, 'ParamsSet')[0];
             expect(event.epochDurationInSeconds).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(event.rewardDelegatedStakeWeight).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(event.minimumPoolStake).to.bignumber.eq(_params.minimumPoolStake);

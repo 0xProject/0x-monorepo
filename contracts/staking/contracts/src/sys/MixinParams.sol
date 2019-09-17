@@ -108,7 +108,7 @@ contract MixinParams is
         _wethProxyAddress = address(wethAssetProxy);
         _ethVaultAddress = address(ethVault);
         _rewardVaultAddress = address(rewardVault);
-        _zrxVaultAddress = address(_zrxVaultAddress);
+        _zrxVaultAddress = address(zrxVault);
     }
 
     /// @dev Initialzize storage belonging to this mixin.
@@ -207,6 +207,7 @@ contract MixinParams is
         );
     }
 
+    /// @dev Asserts that upgradable storage has not yet been initialized.
     function _assertStorageNotInitialized()
         private
         view

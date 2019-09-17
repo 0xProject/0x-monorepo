@@ -24,7 +24,6 @@ import "../src/StakingProxy.sol";
 contract TestStakingProxy is
     StakingProxy
 {
-
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
@@ -37,4 +36,18 @@ contract TestStakingProxy is
             NIL_ADDRESS
         )
     {}
+
+    function setAddressParams(
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address payable _rewardVaultAddress,
+        address _zrxVaultAddress        
+    )
+        external
+    {
+        wethAssetProxy = IAssetProxy(_wethProxyAddress);
+        ethVault = IEthVault(_ethVaultAddress);
+        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
+        zrxVault = IZrxVault(_zrxVaultAddress);
+    }
 }

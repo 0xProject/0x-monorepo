@@ -6,6 +6,7 @@ import {
     artifacts,
     StakingContract,
     TestInitTargetContract,
+    TestInitTargetInitAddressesEventArgs,
     TestStakingProxyContract,
     TestStakingProxyStakingContractAttachedToProxyEventArgs,
 } from '../src/';
@@ -89,21 +90,38 @@ blockchainTests('Migration tests', env => {
 
             it('throws if not called by owner', async () => {
                 const attachedAddress = randomAddress();
-                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(attachedAddress, {
-                    from: notOwnerAddress,
-                });
+                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    attachedAddress,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    {
+                        from: notOwnerAddress,
+                    },
+                );
                 const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
                 return expect(tx).to.revertWith(expectedError);
             });
 
             it('calls init() and attaches the contract', async () => {
-                await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
+                await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                );
                 await assertInitStateAsync(proxyContract);
             });
 
             it('emits a `StakingContractAttachedToProxy` event', async () => {
                 const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
                 );
                 const logsArgs = filterLogsToArguments<TestStakingProxyStakingContractAttachedToProxyEventArgs>(
                     receipt.logs,
@@ -118,15 +136,74 @@ blockchainTests('Migration tests', env => {
 
             it('reverts if init() reverts', async () => {
                 await enableInitRevertsAsync();
-                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
+                const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                );
                 return expect(tx).to.revertWith(REVERT_ERROR);
+            });
+
+            it('calls init with initialized addresses if passed in args are null', async () => {
+                const wethProxyAddress = randomAddress();
+                const ethVaultAddress = randomAddress();
+                const rewardVaultAddress = randomAddress();
+                const zrxVaultAddress = randomAddress();
+                await proxyContract.setAddressParams.awaitTransactionSuccessAsync(
+                    wethProxyAddress,
+                    ethVaultAddress,
+                    rewardVaultAddress,
+                    zrxVaultAddress,
+                );
+                const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                );
+                const logsArgs = filterLogsToArguments<TestInitTargetInitAddressesEventArgs>(
+                    receipt.logs,
+                    'InitAddresses',
+                );
+                for (const args of logsArgs) {
+                    expect(args.wethProxyAddress).to.eq(wethProxyAddress);
+                }
+            });
+            it('calls init with passed in addresses if they are not null', async () => {
+                const wethProxyAddress = randomAddress();
+                const ethVaultAddress = randomAddress();
+                const rewardVaultAddress = randomAddress();
+                const zrxVaultAddress = randomAddress();
+                const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                    wethProxyAddress,
+                    ethVaultAddress,
+                    rewardVaultAddress,
+                    zrxVaultAddress,
+                );
+                const logsArgs = filterLogsToArguments<TestInitTargetInitAddressesEventArgs>(
+                    receipt.logs,
+                    'InitAddresses',
+                );
+                for (const args of logsArgs) {
+                    expect(args.wethProxyAddress).to.eq(wethProxyAddress);
+                }
             });
         });
 
         blockchainTests.resets('upgrades', async () => {
             it('modifies prior state', async () => {
                 const proxyContract = await deployStakingProxyAsync(initTargetContract.address);
-                await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(initTargetContract.address);
+                await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
+                    initTargetContract.address,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                    constants.NULL_ADDRESS,
+                );
                 const initCounter = await initTargetContract.getInitCounter.callAsync({ to: proxyContract.address });
                 expect(initCounter).to.bignumber.eq(2);
             });
