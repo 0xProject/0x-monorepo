@@ -45,6 +45,10 @@
             {
                 "note": "Reference counting for cumulative rewards.",
                 "pr": 2154
+            },
+            {
+                "note": "Refactored Staking Reward Vault. Moved pool management logic into staking contract.",
+                "pr": 2156
             }
         ]
     }
