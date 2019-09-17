@@ -60,7 +60,7 @@ contract StakingPoolRewardVault is
     function depositFor(bytes32 poolId)
         external
         payable
-        onlyStakingContract
+        onlyStakingProxy
     {
         balanceByPoolId[poolId] = balanceByPoolId[poolId].safeAdd(msg.value);
         emit EthDepositedIntoVault(msg.sender, poolId, msg.value);
