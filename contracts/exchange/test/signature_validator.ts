@@ -1,5 +1,4 @@
 import {
-    addressUtils,
     blockchainTests,
     constants,
     expect,
@@ -8,6 +7,7 @@ import {
     LogDecoder,
     OrderFactory,
     orderUtils,
+    randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
 import {
@@ -428,11 +428,11 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             const defaultOrderParams = {
                 ...constants.STATIC_ORDER_PARAMS,
                 makerAddress,
-                feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
-                makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+                feeRecipientAddress: randomAddress(),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
+                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
+                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
                 domain: {
