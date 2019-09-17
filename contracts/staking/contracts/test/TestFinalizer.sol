@@ -53,6 +53,40 @@ contract TestFinalizer is
         init();
     }
 
+    /// @dev Activate a pool in the current epoch.
+    function addActivePool(
+        bytes32 poolId,
+        uint32 operatorShare,
+        uint256 feesCollected,
+        uint256 membersStake,
+        uint256 weightedStake
+    )
+        external
+    {
+        require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
+        mapping (bytes32 => IStructs.ActivePool) storage activePools =
+            _getActivePoolsFromEpoch(currentEpoch);
+        IStructs.ActivePool memory pool = activePools[poolId];
+        require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
+        _operatorSharesByPool[poolId] = operatorShare;
+        activePools[poolId] = IStructs.ActivePool({
+            feesCollected: feesCollected,
+            membersStake: membersStake,
+            weightedStake: weightedStake
+        });
+        totalFeesCollectedThisEpoch += feesCollected;
+        totalWeightedStakeThisEpoch += weightedStake;
+        numActivePoolsThisEpoch += 1;
+    }
+
+    /// @dev Expose `_finalizePool()`
+    function internalFinalizePool(bytes32 poolId)
+        external
+        returns (IStructs.PoolRewards memory rewards)
+    {
+        rewards = _finalizePool(poolId);
+    }
+
     /// @dev Get finalization-related state variables.
     function getFinalizationState()
         external
@@ -80,32 +114,6 @@ contract TestFinalizer is
         _unfinalizedRewardsAvailable = unfinalizedRewardsAvailable;
         _unfinalizedTotalFeesCollected = unfinalizedTotalFeesCollected;
         _unfinalizedTotalWeightedStake = unfinalizedTotalWeightedStake;
-    }
-
-    /// @dev Activate a pool in the current epoch.
-    function addActivePool(
-        bytes32 poolId,
-        uint32 operatorShare,
-        uint256 feesCollected,
-        uint256 membersStake,
-        uint256 weightedStake
-    )
-        external
-    {
-        require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
-        mapping (bytes32 => IStructs.ActivePool) storage activePools =
-            _getActivePoolsFromEpoch(currentEpoch);
-        IStructs.ActivePool memory pool = activePools[poolId];
-        require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
-        _operatorSharesByPool[poolId] = operatorShare;
-        activePools[poolId] = IStructs.ActivePool({
-            feesCollected: feesCollected,
-            membersStake: membersStake,
-            weightedStake: weightedStake
-        });
-        totalFeesCollectedThisEpoch += feesCollected;
-        totalWeightedStakeThisEpoch += weightedStake;
-        numActivePoolsThisEpoch += 1;
     }
 
     /// @dev Compute Cobb-Douglas.
@@ -140,7 +148,6 @@ contract TestFinalizer is
         rewards = _getUnfinalizedPoolRewards(poolId);
     }
 
-
     /// @dev Expose `_getActivePoolFromEpoch`.
     function internalGetActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
         external
@@ -148,15 +155,6 @@ contract TestFinalizer is
         returns (IStructs.ActivePool memory pool)
     {
         pool = _getActivePoolFromEpoch(epoch, poolId);
-    }
-
-
-    /// @dev Expose `_finalizePool()`
-    function internalFinalizePool(bytes32 poolId)
-        external
-        returns (IStructs.PoolRewards memory rewards)
-    {
-        rewards = _finalizePool(poolId);
     }
 
     /// @dev Overridden to just store inputs.
@@ -228,8 +226,7 @@ contract TestFinalizer is
         currentEpoch += 1;
     }
 
+    // solhint-disable no-empty-blocks
     /// @dev Overridden to do nothing.
-    function _unwrapWETH() internal {
-        // NOOP
-    }
+    function _unwrapWETH() internal {}
 }
