@@ -74,7 +74,7 @@ blockchainTests.resets('Testing Rewards', env => {
         // Skip to next epoch so operator stake is realized.
         await stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
     });
-    describe.skip('Reward Simulation', () => {
+    describe('Reward Simulation', () => {
         interface EndBalances {
             // staker 1
             stakerRewardVaultBalance_1?: BigNumber;
@@ -494,7 +494,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 operatorEthVaultBalance: totalRewardsNotForDelegator,
             });
         });
-        it.only('Should collect fees correctly when leaving and returning to a pool', async () => {
+        it('Should collect fees correctly when leaving and returning to a pool', async () => {
             // first staker delegates (epoch 0)
             const rewardsForDelegator = [toBaseUnitAmount(10), toBaseUnitAmount(15)];
             const rewardNotForDelegator = toBaseUnitAmount(7);
@@ -628,13 +628,13 @@ blockchainTests.resets('Testing Rewards', env => {
             for (const [staker, stakeAmount] of stakersAndStake) {
                 await staker.stakeWithPoolAsync(poolId, stakeAmount);
             }
-            // skip epoch, so staker can start earning rewards
+            // skip epoch, so stakers can start earning rewards
             await payProtocolFeeAndFinalize();
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
             // Undelegate 0 stake to move rewards from RewardVault into the EthVault.
-            for (const [staker] of stakersAndStake) {
+            for (const [staker] of _.reverse(stakersAndStake)) {
                 await staker.moveStakeAsync(
                     new StakeInfo(StakeStatus.Delegated, poolId),
                     new StakeInfo(StakeStatus.Active),

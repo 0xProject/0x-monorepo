@@ -1,12 +1,4 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    hexConcat,
-    hexRandom,
-    hexSlice,
-    testCombinatoriallyWithReferenceFunc,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, hexConcat, hexRandom, hexSlice } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { cartesianProduct } from 'js-combinatorics';
 

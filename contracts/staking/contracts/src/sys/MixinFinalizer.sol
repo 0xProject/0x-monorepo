@@ -165,14 +165,11 @@ contract MixinFinalizer is
             poolsRemaining = poolsRemaining.safeSub(1);
         }
 
-        // Deposit all the rewards at once into the RewardVault.
-        if (rewardsPaid != 0) {
-            _depositIntoStakingPoolRewardVault(rewardsPaid);
-        }
-
         // Update finalization states.
-        totalRewardsPaidLastEpoch =
-            totalRewardsPaidLastEpoch.safeAdd(rewardsPaid);
+        if (rewardsPaid != 0) {
+            totalRewardsPaidLastEpoch =
+                totalRewardsPaidLastEpoch.safeAdd(rewardsPaid);
+        }
         unfinalizedPoolsRemaining = _unfinalizedPoolsRemaining = poolsRemaining;
 
         // If there are no more unfinalized pools remaining, the epoch is
@@ -184,6 +181,12 @@ contract MixinFinalizer is
                 unfinalizedRewardsAvailable.safeSub(totalRewardsPaidLastEpoch)
             );
         }
+
+        // Deposit all the rewards at once into the RewardVault.
+        if (rewardsPaid != 0) {
+            _depositIntoStakingPoolRewardVault(rewardsPaid);
+        }
+
     }
 
     /// @dev Instantly finalizes a single pool that was active in the previous
