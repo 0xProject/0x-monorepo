@@ -103,6 +103,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -110,6 +111,11 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
@@ -117,6 +123,11 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
@@ -258,6 +269,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param target Address to authorize.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
@@ -267,13 +279,23 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
@@ -328,6 +350,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -335,13 +358,23 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
@@ -402,6 +435,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetProxyId Id of the asset proxy.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetProxyId: string): string {
             assert.isString('assetProxyId', assetProxyId);
@@ -409,6 +443,11 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
@@ -416,6 +455,11 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
@@ -557,6 +601,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param target Address to remove authorization from.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
@@ -566,13 +611,23 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
@@ -622,19 +677,30 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
@@ -820,6 +886,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param target Address to remove authorization from.
          * @param index Index of target in authorities array.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(target: string, index: BigNumber): string {
             assert.isString('target', target);
@@ -831,13 +898,23 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
@@ -881,19 +958,30 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
@@ -948,6 +1036,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -957,13 +1046,23 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
@@ -1113,6 +1212,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetProxy Address of new asset proxy to register.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetProxy: string): string {
             assert.isString('assetProxy', assetProxy);
@@ -1122,13 +1222,23 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
@@ -1182,19 +1292,30 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string[] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string[] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
@@ -1328,6 +1449,7 @@ export class MultiAssetProxyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -1337,13 +1459,23 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.2 - _September 17, 2019_
+
+    * Redirect `callAsync` to use local EVM instead of eth_call for pure functions (#2108)
+
 ## v5.3.1 - _September 3, 2019_
 
     * Dependencies updated

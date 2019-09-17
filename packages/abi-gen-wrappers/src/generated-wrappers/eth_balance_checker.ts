@@ -80,6 +80,7 @@ export class EthBalanceCheckerContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param addresses Array of addresses.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(addresses: string[]): string {
             assert.isArray('addresses', addresses);
@@ -87,13 +88,23 @@ export class EthBalanceCheckerContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber[] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string[] {
             const self = (this as any) as EthBalanceCheckerContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber[] {
             const self = (this as any) as EthBalanceCheckerContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');

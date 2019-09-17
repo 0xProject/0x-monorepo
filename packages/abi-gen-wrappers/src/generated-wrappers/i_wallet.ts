@@ -84,6 +84,7 @@ export class IWalletContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param hash Message hash that is signed.
          * @param signature Proof of signing.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(hash: string, signature: string): string {
             assert.isString('hash', hash);
@@ -95,6 +96,11 @@ export class IWalletContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as IWalletContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
@@ -102,6 +108,11 @@ export class IWalletContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as IWalletContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');

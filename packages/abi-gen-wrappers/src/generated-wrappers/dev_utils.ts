@@ -72,6 +72,7 @@ export class DevUtilsContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetData AssetProxy-compliant asset data describing an ERC-721
          *     asset.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetData: string): string {
             assert.isString('assetData', assetData);
@@ -79,13 +80,23 @@ export class DevUtilsContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC721AssetData(bytes)', [assetData]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC721AssetData(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [string, string, BigNumber] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC721AssetData(bytes)');
@@ -155,6 +166,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Details of asset, encoded per the AssetProxy contract
          *     specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -166,13 +178,23 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [BigNumber, BigNumber] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAssetProxyAllowance(address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, BigNumber]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [BigNumber, BigNumber] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAssetProxyAllowance(address,bytes)');
@@ -222,19 +244,30 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ERC1155_PROXY_ID()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC1155_PROXY_ID()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC1155_PROXY_ID()');
@@ -304,6 +337,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Address of the owner of the asset.
          * @param assetData Description of tokens, per the AssetProxy contract
          *     specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -315,13 +349,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getTransferableAssetAmount(address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getTransferableAssetAmount(address,bytes)');
@@ -391,6 +435,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Array of asset details, each encoded per the AssetProxy
          *     contract specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string[]): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -402,13 +447,23 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber[] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchAssetProxyAllowances(address,bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber[] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchAssetProxyAllowances(address,bytes[])');
@@ -463,6 +518,7 @@ export class DevUtilsContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param tokenAddress The address of the ERC-20 contract hosting the asset to
          *     be traded.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(tokenAddress: string): string {
             assert.isString('tokenAddress', tokenAddress);
@@ -472,6 +528,11 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC20AssetData(address)');
@@ -479,6 +540,11 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC20AssetData(address)');
@@ -571,6 +637,7 @@ export class DevUtilsContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param transactionData ABI-encoded calldata for an Exchange     contract
          *     method call.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(transactionData: string): string {
             assert.isString('transactionData', transactionData);
@@ -580,53 +647,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(
-            callData: string,
-        ): [
-            string,
-            Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            BigNumber[],
-            string[]
-        ] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeZeroExTransactionData(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<
-                [
-                    string,
-                    Array<{
-                        makerAddress: string;
-                        takerAddress: string;
-                        feeRecipientAddress: string;
-                        senderAddress: string;
-                        makerAssetAmount: BigNumber;
-                        takerAssetAmount: BigNumber;
-                        makerFee: BigNumber;
-                        takerFee: BigNumber;
-                        expirationTimeSeconds: BigNumber;
-                        salt: BigNumber;
-                        makerAssetData: string;
-                        takerAssetData: string;
-                    }>,
-                    BigNumber[],
-                    string[]
-                ]
-            >(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): [
@@ -736,6 +773,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Details of asset, encoded per the AssetProxy contract
          *     specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -747,13 +785,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBalance(address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBalance(address,bytes)');
@@ -852,6 +900,7 @@ export class DevUtilsContract extends BaseContract {
          * @param signatures Array of signatures provided by makers that prove the
          *     authenticity of the orders. `0x01` can always be provided if a signature
          *     does not need to be validated.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -879,12 +928,29 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): [
-            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-            BigNumber[],
-            boolean[]
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            string[]
         ] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -893,13 +959,30 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<
                 [
-                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-                    BigNumber[],
-                    boolean[]
+                    Array<{
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                    }>,
+                    string[]
                 ]
             >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): [
@@ -963,19 +1046,30 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ERC20_PROXY_ID()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC20_PROXY_ID()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC20_PROXY_ID()');
@@ -1026,6 +1120,7 @@ export class DevUtilsContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetData AssetProxy-compliant asset data describing an ERC-20 asset.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetData: string): string {
             assert.isString('assetData', assetData);
@@ -1033,13 +1128,23 @@ export class DevUtilsContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC20AssetData(bytes)', [assetData]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [string, string] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC20AssetData(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [string, string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC20AssetData(bytes)');
@@ -1129,6 +1234,7 @@ export class DevUtilsContract extends BaseContract {
          * @param signature Signature provided by maker that proves the order's
          *     authenticity. `0x01` can always be provided if the signature does not
          *     need to be validated.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             order: {
@@ -1155,19 +1261,61 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
-        ): [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean] {
+        ): [
+            {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            string
+        ] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder(
                 'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<
-                [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
+                [
+                    {
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                    },
+                    string
+                ]
             >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean] {
@@ -1228,6 +1376,7 @@ export class DevUtilsContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetData AssetProxy-compliant asset data describing an ERC-1155 set
          *     of assets.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetData: string): string {
             assert.isString('assetData', assetData);
@@ -1235,15 +1384,23 @@ export class DevUtilsContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decodeERC1155AssetData(bytes)', [assetData]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber[], BigNumber[], string] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC1155AssetData(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber[], BigNumber[], string]>(
-                callData,
-            );
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [string, string, BigNumber[], BigNumber[], string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeERC1155AssetData(bytes)');
@@ -1306,6 +1463,7 @@ export class DevUtilsContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param addresses Array of addresses.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(addresses: string[]): string {
             assert.isArray('addresses', addresses);
@@ -1313,13 +1471,23 @@ export class DevUtilsContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber[] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string[] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber[] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
@@ -1369,19 +1537,30 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ERC721_PROXY_ID()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC721_PROXY_ID()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('ERC721_PROXY_ID()');
@@ -1441,6 +1620,7 @@ export class DevUtilsContract extends BaseContract {
          * @param tokenAddress The address of the ERC-721 contract hosting the asset to
          *     be traded.
          * @param tokenId The identifier of the specific asset to be traded.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(tokenAddress: string, tokenId: BigNumber): string {
             assert.isString('tokenAddress', tokenAddress);
@@ -1452,6 +1632,11 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC721AssetData(address,uint256)');
@@ -1459,6 +1644,11 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC721AssetData(address,uint256)');
@@ -1508,19 +1698,30 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('MULTI_ASSET_PROXY_ID()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('MULTI_ASSET_PROXY_ID()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('MULTI_ASSET_PROXY_ID()');
@@ -1590,6 +1791,7 @@ export class DevUtilsContract extends BaseContract {
          * @param tokenValues The amounts of each asset to be traded.
          * @param callbackData Data to be passed to receiving contracts when a transfer
          *     is performed.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             tokenAddress: string,
@@ -1608,6 +1810,11 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC1155AssetData(address,uint256[],uint256[],bytes)');
@@ -1615,6 +1822,11 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeERC1155AssetData(address,uint256[],uint256[],bytes)');
@@ -1682,6 +1894,7 @@ export class DevUtilsContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param tokenAddress Address of ERC721 asset.
          * @param tokenId The identifier for the specific NFT.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(tokenAddress: string, tokenId: BigNumber): string {
             assert.isString('tokenAddress', tokenAddress);
@@ -1693,6 +1906,11 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
@@ -1700,6 +1918,11 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
@@ -1750,6 +1973,7 @@ export class DevUtilsContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param assetData AssetProxy-compliant data describing a multi-asset basket.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(assetData: string): string {
             assert.isString('assetData', assetData);
@@ -1757,13 +1981,23 @@ export class DevUtilsContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decodeMultiAssetData(bytes)', [assetData]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [string, BigNumber[], string[]] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeMultiAssetData(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber[], string[]]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [string, BigNumber[], string[]] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('decodeMultiAssetData(bytes)');
@@ -1835,6 +2069,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Array of asset details, each encoded per the AssetProxy
          *     contract specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string[]): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -1846,13 +2081,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber[] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchBalances(address,bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber[] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchBalances(address,bytes[])');
@@ -1922,6 +2167,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Details of asset, encoded per the AssetProxy contract
          *     specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -1933,13 +2179,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getAssetProxyAllowance(address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getAssetProxyAllowance(address,bytes)');
@@ -1999,6 +2255,7 @@ export class DevUtilsContract extends BaseContract {
          * @param amounts The amounts of each asset to be traded.
          * @param nestedAssetData AssetProxy-compliant data describing each asset to be
          *     traded.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(amounts: BigNumber[], nestedAssetData: string[]): string {
             assert.isArray('amounts', amounts);
@@ -2010,13 +2267,23 @@ export class DevUtilsContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): BigNumber[] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeMultiAssetData(uint256[],bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('encodeMultiAssetData(uint256[],bytes[])');
@@ -2066,19 +2333,30 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('STATIC_CALL_PROXY_ID()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('STATIC_CALL_PROXY_ID()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('STATIC_CALL_PROXY_ID()');
@@ -2148,6 +2426,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Owner of the assets specified by assetData.
          * @param assetData Array of asset details, each encoded per the AssetProxy
          *     contract specification.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(ownerAddress: string, assetData: string[]): string {
             assert.isString('ownerAddress', ownerAddress);
@@ -2159,13 +2438,23 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [BigNumber[], BigNumber[]] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string[]] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchBalancesAndAssetProxyAllowances(address,bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber[], BigNumber[]]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string[]]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [BigNumber[], BigNumber[]] {
             const self = (this as any) as DevUtilsContract;
             const abiEncoder = self._lookupAbiEncoder('getBatchBalancesAndAssetProxyAllowances(address,bytes[])');

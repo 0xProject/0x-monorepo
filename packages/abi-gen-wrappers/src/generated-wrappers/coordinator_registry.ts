@@ -186,6 +186,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
@@ -195,13 +196,23 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
@@ -263,6 +274,7 @@ export class CoordinatorRegistryContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorOperator operator of the Coordinator endpoint.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(coordinatorOperator: string): string {
             assert.isString('coordinatorOperator', coordinatorOperator);
@@ -272,6 +284,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
@@ -279,6 +296,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');

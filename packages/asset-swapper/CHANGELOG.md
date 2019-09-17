@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.0 - _September 17, 2019_
+
+    * AssetSwapper to use `@0x/orderbook` to fetch and subscribe to order updates (#2056)
+
 ## v1.0.3 - _September 3, 2019_
 
     * Dependencies updated

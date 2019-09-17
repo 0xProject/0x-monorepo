@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v12.1.0 - _September 17, 2019_
+
+    * Add `devUtils` to `ContractWrappers` class. (#2146)
+
 ## v12.0.0 - _September 3, 2019_
 
     * Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package. (#2086)

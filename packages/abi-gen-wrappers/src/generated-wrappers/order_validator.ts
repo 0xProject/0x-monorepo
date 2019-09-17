@@ -121,6 +121,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             order: {
@@ -147,20 +148,29 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): [
-            { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
             {
-                makerBalance: BigNumber;
-                makerAllowance: BigNumber;
-                takerBalance: BigNumber;
-                takerAllowance: BigNumber;
-                makerZrxBalance: BigNumber;
-                makerZrxAllowance: BigNumber;
-                takerZrxBalance: BigNumber;
-                takerZrxAllowance: BigNumber;
-            }
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            string
         ] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -169,21 +179,30 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<
                 [
-                    { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
                     {
-                        makerBalance: BigNumber;
-                        makerAllowance: BigNumber;
-                        takerBalance: BigNumber;
-                        takerAllowance: BigNumber;
-                        makerZrxBalance: BigNumber;
-                        makerZrxAllowance: BigNumber;
-                        takerZrxBalance: BigNumber;
-                        takerZrxAllowance: BigNumber;
-                    }
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                    },
+                    string
                 ]
             >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): [
@@ -273,6 +292,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(target: string, assetData: string): string {
             assert.isString('target', target);
@@ -284,13 +304,23 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [BigNumber, BigNumber] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, BigNumber]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [BigNumber, BigNumber] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
@@ -393,6 +423,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -420,20 +451,29 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): [
-            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
             Array<{
-                makerBalance: BigNumber;
-                makerAllowance: BigNumber;
-                takerBalance: BigNumber;
-                takerAllowance: BigNumber;
-                makerZrxBalance: BigNumber;
-                makerZrxAllowance: BigNumber;
-                takerZrxBalance: BigNumber;
-                takerZrxAllowance: BigNumber;
-            }>
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            string[]
         ] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -442,21 +482,30 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<
                 [
-                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
                     Array<{
-                        makerBalance: BigNumber;
-                        makerAllowance: BigNumber;
-                        takerBalance: BigNumber;
-                        takerAllowance: BigNumber;
-                        makerZrxBalance: BigNumber;
-                        makerZrxAllowance: BigNumber;
-                        takerZrxBalance: BigNumber;
-                        takerZrxAllowance: BigNumber;
-                    }>
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                    }>,
+                    string[]
                 ]
             >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): [
@@ -583,6 +632,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -610,17 +660,26 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): Array<{
-            makerBalance: BigNumber;
-            makerAllowance: BigNumber;
-            takerBalance: BigNumber;
-            takerAllowance: BigNumber;
-            makerZrxBalance: BigNumber;
-            makerZrxAllowance: BigNumber;
-            takerZrxBalance: BigNumber;
-            takerZrxAllowance: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         }> {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -629,18 +688,27 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<
                 Array<{
-                    makerBalance: BigNumber;
-                    makerAllowance: BigNumber;
-                    takerBalance: BigNumber;
-                    takerAllowance: BigNumber;
-                    makerZrxBalance: BigNumber;
-                    makerZrxAllowance: BigNumber;
-                    takerZrxBalance: BigNumber;
-                    takerZrxAllowance: BigNumber;
+                    makerAddress: string;
+                    takerAddress: string;
+                    feeRecipientAddress: string;
+                    senderAddress: string;
+                    makerAssetAmount: BigNumber;
+                    takerAssetAmount: BigNumber;
+                    makerFee: BigNumber;
+                    takerFee: BigNumber;
+                    expirationTimeSeconds: BigNumber;
+                    salt: BigNumber;
+                    makerAssetData: string;
+                    takerAssetData: string;
                 }>
             >(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): Array<{
@@ -724,6 +792,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(token: string, tokenId: BigNumber): string {
             assert.isString('token', token);
@@ -735,6 +804,11 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
@@ -742,6 +816,11 @@ export class OrderValidatorContract extends BaseContract {
             const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
@@ -801,6 +880,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(target: string, assetData: string[]): string {
             assert.isString('target', target);
@@ -812,13 +892,23 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): [BigNumber[], BigNumber[]] {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string[]] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber[], BigNumber[]]>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string[]]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): [BigNumber[], BigNumber[]] {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
@@ -910,6 +1000,7 @@ export class OrderValidatorContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             order: {
@@ -936,17 +1027,26 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): {
-            makerBalance: BigNumber;
-            makerAllowance: BigNumber;
-            takerBalance: BigNumber;
-            takerAllowance: BigNumber;
-            makerZrxBalance: BigNumber;
-            makerZrxAllowance: BigNumber;
-            takerZrxBalance: BigNumber;
-            takerZrxAllowance: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         } {
             const self = (this as any) as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -954,17 +1054,26 @@ export class OrderValidatorContract extends BaseContract {
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<{
-                makerBalance: BigNumber;
-                makerAllowance: BigNumber;
-                takerBalance: BigNumber;
-                takerAllowance: BigNumber;
-                makerZrxBalance: BigNumber;
-                makerZrxAllowance: BigNumber;
-                takerZrxBalance: BigNumber;
-                takerZrxAllowance: BigNumber;
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
             }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {

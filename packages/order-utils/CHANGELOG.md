@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.4.0 - _September 17, 2019_
+
+    * Implement `simpleValidateOrderFillableOrThrowAsync` (#2096)
+
 ## v8.3.1 - _September 3, 2019_
 
     * Dependencies updated

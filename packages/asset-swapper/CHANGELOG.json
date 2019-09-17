@@ -6,7 +6,8 @@
                 "note": "AssetSwapper to use `@0x/orderbook` to fetch and subscribe to order updates",
                 "pr": 2056
             }
-        ]
+        ],
+        "timestamp": 1568744790
     },
     {
         "timestamp": 1567521715,

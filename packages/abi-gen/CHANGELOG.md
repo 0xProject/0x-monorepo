@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.2.1 - _September 17, 2019_
+
+    * Redirect to `evmExecAsync` to use local EVM instead of eth_call for pure functions (#2108)
+
 ## v4.2.0 - _September 3, 2019_
 
     * Provide a default set of templates for code generation, used when --template and --partials are left unspecified (#2082)

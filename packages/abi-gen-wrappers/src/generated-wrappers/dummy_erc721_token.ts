@@ -105,19 +105,30 @@ export class DummyERC721TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('name()');
@@ -178,6 +189,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param _tokenId The NFT to find the approved address for
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
             assert.isBigNumber('_tokenId', _tokenId);
@@ -185,13 +197,23 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
@@ -371,6 +393,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _approved The new approved NFT controller
          * @param _tokenId The NFT to approve
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_approved: string, _tokenId: BigNumber): string {
             assert.isString('_approved', _approved);
@@ -382,13 +405,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
@@ -591,6 +624,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * @param _from The current owner of the NFT
          * @param _to The new owner
          * @param _tokenId The NFT to transfer
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
             assert.isString('_from', _from);
@@ -604,13 +638,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
@@ -780,6 +824,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _to Address of the beneficiary that will own the minted token
          * @param _tokenId ID of the token to be minted by the msg.sender
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_to: string, _tokenId: BigNumber): string {
             assert.isString('_to', _to);
@@ -791,13 +836,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
@@ -998,6 +1053,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * @param _from The current owner of the NFT
          * @param _to The new owner
          * @param _tokenId The NFT to transfer
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
             assert.isString('_from', _from);
@@ -1011,13 +1067,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
@@ -1079,6 +1145,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param _tokenId The identifier for an NFT
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1086,13 +1153,23 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
@@ -1154,6 +1231,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param _owner An address for whom to query the balance
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
@@ -1161,13 +1239,23 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): BigNumber {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
@@ -1217,19 +1305,30 @@ export class DummyERC721TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
@@ -1279,19 +1378,30 @@ export class DummyERC721TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): string {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
@@ -1461,6 +1571,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _owner Owner of token with given token ID
          * @param _tokenId ID of the token to be burned by the msg.sender
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_owner: string, _tokenId: BigNumber): string {
             assert.isString('_owner', _owner);
@@ -1472,13 +1583,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
@@ -1661,6 +1782,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _operator Address to add to the set of authorized operators
          * @param _approved True if the operator is approved, false to revoke approval
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_operator: string, _approved: boolean): string {
             assert.isString('_operator', _operator);
@@ -1672,13 +1794,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, boolean] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, boolean]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
@@ -1914,6 +2046,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * @param _to The new owner
          * @param _tokenId The NFT to transfer
          * @param _data Additional data with no specified format, sent in call to `_to`
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber, _data: string): string {
             assert.isString('_from', _from);
@@ -1927,13 +2060,23 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string, string, BigNumber, string] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber, string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
@@ -1998,6 +2141,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param _owner The address that owns the NFTs
          * @param _operator The address that acts on behalf of the owner
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(_owner: string, _operator: string): string {
             assert.isString('_owner', _owner);
@@ -2009,13 +2153,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
@@ -2149,6 +2303,7 @@ export class DummyERC721TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -2158,13 +2313,23 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): void {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');

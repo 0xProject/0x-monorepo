@@ -261,6 +261,7 @@ export class DutchAuctionContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param order The sell order
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
@@ -283,15 +284,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): {
-            beginTimeSeconds: BigNumber;
-            endTimeSeconds: BigNumber;
-            beginAmount: BigNumber;
-            endAmount: BigNumber;
-            currentAmount: BigNumber;
-            currentTimeSeconds: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         } {
             const self = (this as any) as DutchAuctionContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -299,15 +311,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<{
-                beginTimeSeconds: BigNumber;
-                endTimeSeconds: BigNumber;
-                beginAmount: BigNumber;
-                endAmount: BigNumber;
-                currentAmount: BigNumber;
-                currentTimeSeconds: BigNumber;
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
             }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {
@@ -720,6 +743,7 @@ export class DutchAuctionContract extends BaseContract {
          *     the end of the auction).
          * @param buySignature Proof that order was created by the buyer.
          * @param sellSignature Proof that order was created by the seller.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             buyOrder: {
@@ -762,22 +786,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): {
-            left: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            right: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            leftMakerAssetSpreadAmount: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         } {
             const self = (this as any) as DutchAuctionContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -785,22 +813,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<{
-                left: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                right: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                leftMakerAssetSpreadAmount: BigNumber;
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
             }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {

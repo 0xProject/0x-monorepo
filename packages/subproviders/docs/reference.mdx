@@ -12,7 +12,7 @@ It intercepts the `eth_estimateGas` JSON RPC call and always returns a constant 
 
 \+ **new FakeGasEstimateSubprovider**(`constantGasAmount`: number): *[FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)*
 
-*Defined in [subproviders/src/subproviders/fake_gas_estimate_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L17)*
+*Defined in [subproviders/src/subproviders/fake_gas_estimate_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L17)*
 
 Instantiates an instance of the FakeGasEstimateSubprovider
 
@@ -30,9 +30,9 @@ Name | Type | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -56,7 +56,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/fake_gas_estimate_subprovider.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L35)*
+*Defined in [subproviders/src/subproviders/fake_gas_estimate_subprovider.ts:35](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L35)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -78,9 +78,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -108,7 +108,7 @@ It intercepts all JSON RPC requests and relays them to an in-process ganache ins
 
 \+ **new GanacheSubprovider**(`opts`: `GanacheOpts`): *[GanacheSubprovider](#class-ganachesubprovider)*
 
-*Defined in [subproviders/src/subproviders/ganache.ts:13](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ganache.ts#L13)*
+*Defined in [subproviders/src/subproviders/ganache.ts:13](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ganache.ts#L13)*
 
 Instantiates a GanacheSubprovider
 
@@ -126,9 +126,9 @@ Name | Type | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -152,7 +152,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/ganache.ts:31](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ganache.ts#L31)*
+*Defined in [subproviders/src/subproviders/ganache.ts:31](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ganache.ts#L31)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -174,9 +174,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -205,7 +205,7 @@ re-routes them to a Ledger device plugged into the users computer.
 
 \+ **new LedgerSubprovider**(`config`: [LedgerSubproviderConfigs](#interface-ledgersubproviderconfigs)): *[LedgerSubprovider](#class-ledgersubprovider)*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:41](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L41)*
+*Defined in [subproviders/src/subproviders/ledger.ts:41](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L41)*
 
 Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
 TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
@@ -226,9 +226,9 @@ LedgerSubprovider instance
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -252,7 +252,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:87](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L87)*
+*Defined in [subproviders/src/subproviders/ledger.ts:87](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L87)*
 
 Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
 master public key and chain code. Because of this, you can request as many accounts
@@ -276,7 +276,7 @@ ___
 
 ▸ **getPath**(): *string*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L68)*
+*Defined in [subproviders/src/subproviders/ledger.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L68)*
 
 Retrieve the set derivation path
 
@@ -294,7 +294,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -316,9 +316,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -338,7 +338,7 @@ ___
 
 ▸ **setPath**(`basDerivationPath`: string): *void*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:75](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L75)*
+*Defined in [subproviders/src/subproviders/ledger.ts:75](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L75)*
 
 Set a desired derivation path when computing the available user addresses
 
@@ -358,7 +358,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:158](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L158)*
+*Defined in [subproviders/src/subproviders/ledger.ts:158](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L158)*
 
 Sign a personal Ethereum signed message. The signing account will be the account
 associated with the provided address.
@@ -386,7 +386,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:101](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L101)*
+*Defined in [subproviders/src/subproviders/ledger.ts:101](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L101)*
 
 Signs a transaction on the Ledger with the account specificed by the `from` field in txParams.
 If you've added the LedgerSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
@@ -411,7 +411,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/ledger.ts:196](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/ledger.ts#L196)*
+*Defined in [subproviders/src/subproviders/ledger.ts:196](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/ledger.ts#L196)*
 
 eth_signTypedData is currently not supported on Ledger devices.
 
@@ -444,7 +444,7 @@ are passed onwards for subsequent subproviders to handle.
 
 \+ **new MetamaskSubprovider**(`supportedProvider`: [SupportedProvider](#supportedprovider)): *[MetamaskSubprovider](#class-metamasksubprovider)*
 
-*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/metamask_subprovider.ts#L19)*
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:19](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/metamask_subprovider.ts#L19)*
 
 Instantiates a new MetamaskSubprovider
 
@@ -462,9 +462,9 @@ Name | Type | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -488,7 +488,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:39](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/metamask_subprovider.ts#L39)*
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:39](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/metamask_subprovider.ts#L39)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -510,7 +510,7 @@ ___
 
 ▸ **sendAsync**(`payload`: `JSONRPCRequestPayload`, `callback`: [ErrorCallback](#errorcallback)): *void*
 
-*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:117](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/metamask_subprovider.ts#L117)*
+*Defined in [subproviders/src/subproviders/metamask_subprovider.ts:117](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/metamask_subprovider.ts#L117)*
 
 This method conforms to the provider sendAsync interface.
 Allowing the MetamaskSubprovider to be used as a generic provider (outside of Web3ProviderEngine) with the
@@ -533,9 +533,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -564,7 +564,7 @@ all requests with accounts derived from the supplied mnemonic.
 
 \+ **new MnemonicWalletSubprovider**(`config`: [MnemonicWalletSubproviderConfigs](#interface-mnemonicwalletsubproviderconfigs)): *[MnemonicWalletSubprovider](#class-mnemonicwalletsubprovider)*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:27](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L27)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:27](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L27)*
 
 Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.
 This is the default in TestRPC/Ganache, it can be overridden if desired.
@@ -585,9 +585,9 @@ MnemonicWalletSubprovider instance
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -611,7 +611,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:70](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L70)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:70](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L70)*
 
 Retrieve the accounts associated with the mnemonic.
 This method is implicitly called when issuing a `eth_accounts` JSON RPC request
@@ -633,7 +633,7 @@ ___
 
 ▸ **getPath**(): *string*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:52](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L52)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:52](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L52)*
 
 Retrieve the set derivation path
 
@@ -651,7 +651,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -673,9 +673,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -695,7 +695,7 @@ ___
 
 ▸ **setPath**(`baseDerivationPath`: string): *void*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:59](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L59)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:59](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L59)*
 
 Set a desired derivation path when computing the available user addresses
 
@@ -715,7 +715,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:102](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L102)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:102](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L102)*
 
 Sign a personal Ethereum signed message. The signing account will be the account
 associated with the provided address. If you've added the MnemonicWalletSubprovider to
@@ -742,7 +742,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:84](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L84)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:84](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L84)*
 
 Signs a transaction with the account specificed by the `from` field in txParams.
 If you've added this Subprovider to your  app's provider, you can simply send
@@ -767,7 +767,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:122](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L122)*
+*Defined in [subproviders/src/subproviders/mnemonic_wallet.ts:122](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L122)*
 
 Sign an EIP712 Typed Data message. The signing account will be the account
 associated with the provided address. If you've added this MnemonicWalletSubprovider to
@@ -801,9 +801,9 @@ We added the additional feature of clearing the cached nonce value when a `nonce
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -827,7 +827,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/nonce_tracker.ts:57](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/nonce_tracker.ts#L57)*
+*Defined in [subproviders/src/subproviders/nonce_tracker.ts:57](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/nonce_tracker.ts#L57)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -849,9 +849,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -880,7 +880,7 @@ all requests with the supplied Ethereum private key.
 
 \+ **new PrivateKeyWalletSubprovider**(`privateKey`: string): *[PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)*
 
-*Defined in [subproviders/src/subproviders/private_key_wallet.ts:19](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/private_key_wallet.ts#L19)*
+*Defined in [subproviders/src/subproviders/private_key_wallet.ts:19](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/private_key_wallet.ts#L19)*
 
 Instantiates a PrivateKeyWalletSubprovider.
 
@@ -900,9 +900,9 @@ PrivateKeyWalletSubprovider instance
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -926,7 +926,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/private_key_wallet.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/private_key_wallet.ts#L37)*
+*Defined in [subproviders/src/subproviders/private_key_wallet.ts:37](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/private_key_wallet.ts#L37)*
 
 Retrieve the account associated with the supplied private key.
 This method is implicitly called when issuing a `eth_accounts` JSON RPC request
@@ -946,7 +946,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -968,9 +968,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -992,7 +992,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/private_key_wallet.ts:72](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/private_key_wallet.ts#L72)*
+*Defined in [subproviders/src/subproviders/private_key_wallet.ts:72](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/private_key_wallet.ts#L72)*
 
 Sign a personal Ethereum signed message. The signing address will be calculated from the private key.
 The address must be provided it must match the address calculated from the private key.
@@ -1019,7 +1019,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/private_key_wallet.ts:48](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/private_key_wallet.ts#L48)*
+*Defined in [subproviders/src/subproviders/private_key_wallet.ts:48](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/private_key_wallet.ts#L48)*
 
 Sign a transaction with the private key. If you've added this Subprovider to your
 app's provider, you can simply send an `eth_sendTransaction` JSON RPC request, and
@@ -1044,7 +1044,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/private_key_wallet.ts:99](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/private_key_wallet.ts#L99)*
+*Defined in [subproviders/src/subproviders/private_key_wallet.ts:99](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/private_key_wallet.ts#L99)*
 
 Sign an EIP712 Typed Data message. The signing address will be calculated from the private key.
 The address must be provided it must match the address calculated from the private key.
@@ -1078,7 +1078,7 @@ set of JSON RPC endpoints.
 
 \+ **new RedundantSubprovider**(`subproviders`: [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md)[]): *[RedundantSubprovider](#class-redundantsubprovider)*
 
-*Defined in [subproviders/src/subproviders/redundant_subprovider.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/redundant_subprovider.ts#L33)*
+*Defined in [subproviders/src/subproviders/redundant_subprovider.ts:33](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/redundant_subprovider.ts#L33)*
 
 Instantiates a new RedundantSubprovider
 
@@ -1096,9 +1096,9 @@ Name | Type | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -1122,7 +1122,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/redundant_subprovider.ts:51](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/redundant_subprovider.ts#L51)*
+*Defined in [subproviders/src/subproviders/redundant_subprovider.ts:51](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/redundant_subprovider.ts#L51)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -1159,9 +1159,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -1189,7 +1189,7 @@ It forwards on JSON RPC requests to the supplied `rpcUrl` endpoint
 
 \+ **new RPCSubprovider**(`rpcUrl`: string, `requestTimeoutMs`: number): *[RPCSubprovider](#class-rpcsubprovider)*
 
-*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/rpc_subprovider.ts#L17)*
+*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/rpc_subprovider.ts#L17)*
 
 **Parameters:**
 
@@ -1206,9 +1206,9 @@ Name | Type | Default | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -1232,7 +1232,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:38](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/rpc_subprovider.ts#L38)*
+*Defined in [subproviders/src/subproviders/rpc_subprovider.ts:38](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/rpc_subprovider.ts#L38)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -1254,9 +1254,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -1286,7 +1286,7 @@ are passed onwards for subsequent subproviders to handle.
 
 \+ **new SignerSubprovider**(`supportedProvider`: [SupportedProvider](#supportedprovider)): *[SignerSubprovider](#class-signersubprovider)*
 
-*Defined in [subproviders/src/subproviders/signer.ts:15](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/signer.ts#L15)*
+*Defined in [subproviders/src/subproviders/signer.ts:15](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/signer.ts#L15)*
 
 Instantiates a new SignerSubprovider.
 
@@ -1304,9 +1304,9 @@ Name | Type | Description |
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -1330,7 +1330,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/signer.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/signer.ts#L33)*
+*Defined in [subproviders/src/subproviders/signer.ts:33](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/signer.ts#L33)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -1352,9 +1352,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -1382,7 +1382,7 @@ This one has an async/await `emitPayloadAsync` and also defined types.
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -1404,7 +1404,7 @@ ___
 
 ▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#callback), `end`: [ErrorCallback](#errorcallback)): *`Promise<void>`*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:42](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L42)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:42](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L42)*
 
 **Parameters:**
 
@@ -1422,7 +1422,7 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -1447,7 +1447,7 @@ Name | Type | Description |
 
 \+ **new TrezorSubprovider**(`config`: [TrezorSubproviderConfig](#interface-trezorsubproviderconfig)): *[TrezorSubprovider](#class-trezorsubprovider)*
 
-*Defined in [subproviders/src/subproviders/trezor.ts:32](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/trezor.ts#L32)*
+*Defined in [subproviders/src/subproviders/trezor.ts:32](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/trezor.ts#L32)*
 
 Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'/0/`.
 Must be initialized with trezor-connect API module https://github.com/trezor/connect.
@@ -1468,9 +1468,9 @@ TrezorSubprovider instance
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -1494,7 +1494,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/trezor.ts:56](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/trezor.ts#L56)*
+*Defined in [subproviders/src/subproviders/trezor.ts:56](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/trezor.ts#L56)*
 
 Retrieve a users Trezor account. This method is automatically called
 when issuing a `eth_accounts` JSON RPC request via your providerEngine
@@ -1520,7 +1520,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+*Defined in [subproviders/src/subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -1542,9 +1542,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -1566,7 +1566,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/trezor.ts:129](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/trezor.ts#L129)*
+*Defined in [subproviders/src/subproviders/trezor.ts:129](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/trezor.ts#L129)*
 
 Sign a personal Ethereum signed message. The signing account will be the account
 associated with the provided address. If you've added the TrezorSubprovider to
@@ -1593,7 +1593,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/trezor.ts:70](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/trezor.ts#L70)*
+*Defined in [subproviders/src/subproviders/trezor.ts:70](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/trezor.ts#L70)*
 
 Signs a transaction on the Trezor with the account specificed by the `from` field in txParams.
 If you've added the TrezorSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
@@ -1618,7 +1618,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/subproviders/trezor.ts:161](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/trezor.ts#L161)*
+*Defined in [subproviders/src/subproviders/trezor.ts:161](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/trezor.ts#L161)*
 
 TODO:: eth_signTypedData is currently not supported on Trezor devices.
 
@@ -1654,7 +1654,7 @@ Signature hex string (order: rsv)
 
 • **CannotDetermineAddressFromPayload**: = "CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD"
 
-*Defined in [subproviders/src/types.ts:121](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L121)*
+*Defined in [subproviders/src/types.ts:121](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L121)*
 
 ___
 
@@ -1662,7 +1662,7 @@ ___
 
 • **EmptyParametersFound**: = "EMPTY_PARAMETERS_FOUND"
 
-*Defined in [subproviders/src/types.ts:120](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L120)*
+*Defined in [subproviders/src/types.ts:120](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L120)*
 
 <hr />
 
@@ -1705,7 +1705,7 @@ ___
 
 Ƭ **EIP712ObjectValue**: *string | number | [EIP712Object](#interface-eip712object)*
 
-*Defined in [types/src/index.ts:711](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L711)*
+*Defined in [types/src/index.ts:719](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L719)*
 
 ___
 
@@ -1764,7 +1764,7 @@ ___
 
 • **isEIP1193**: *boolean*
 
-*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L73)*
+*Defined in [ethereum-types/src/index.ts:73](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L73)*
 
 ## Methods
 
@@ -1772,7 +1772,7 @@ ___
 
 ▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
 
-*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L75)*
+*Defined in [ethereum-types/src/index.ts:75](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L75)*
 
 **Parameters:**
 
@@ -1796,7 +1796,7 @@ ___
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L74)*
+*Defined in [ethereum-types/src/index.ts:74](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L74)*
 
 **Parameters:**
 
@@ -1830,7 +1830,7 @@ Name | Type |
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L14)*
+*Defined in [ethereum-types/src/index.ts:14](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L14)*
 
 **Parameters:**
 
@@ -1854,7 +1854,7 @@ Name | Type |
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L324)*
+*Defined in [ethereum-types/src/index.ts:324](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L324)*
 
 ___
 
@@ -1862,7 +1862,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L325)*
+*Defined in [ethereum-types/src/index.ts:325](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L325)*
 
 ___
 
@@ -1870,7 +1870,7 @@ ___
 
 • **method**: *string*
 
-*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L323)*
+*Defined in [ethereum-types/src/index.ts:323](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L323)*
 
 ___
 
@@ -1878,7 +1878,7 @@ ___
 
 • **params**: *any[]*
 
-*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L322)*
+*Defined in [ethereum-types/src/index.ts:322](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L322)*
 
 <hr />
 
@@ -1891,7 +1891,7 @@ ___
 
 • **code**: *number*
 
-*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L330)*
+*Defined in [ethereum-types/src/index.ts:330](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L330)*
 
 ___
 
@@ -1899,7 +1899,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L329)*
+*Defined in [ethereum-types/src/index.ts:329](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L329)*
 
 <hr />
 
@@ -1912,7 +1912,7 @@ ___
 
 • **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
 
-*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L337)*
+*Defined in [ethereum-types/src/index.ts:337](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L337)*
 
 ___
 
@@ -1920,7 +1920,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L335)*
+*Defined in [ethereum-types/src/index.ts:335](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L335)*
 
 ___
 
@@ -1928,7 +1928,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L336)*
+*Defined in [ethereum-types/src/index.ts:336](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L336)*
 
 ___
 
@@ -1936,7 +1936,7 @@ ___
 
 • **result**: *any*
 
-*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L334)*
+*Defined in [ethereum-types/src/index.ts:334](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L334)*
 
 <hr />
 
@@ -1995,7 +1995,7 @@ This interface allowed sending synchonous requests, support for which was later 
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md)): *[JSONRPCResponsePayload](#class-jsonrpcresponsepayload)*
 
-*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L45)*
+*Defined in [ethereum-types/src/index.ts:45](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L45)*
 
 **Parameters:**
 
@@ -2011,7 +2011,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L44)*
+*Defined in [ethereum-types/src/index.ts:44](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L44)*
 
 **Parameters:**
 
@@ -2037,7 +2037,7 @@ before the first attempts to conform to EIP1193
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L54)*
+*Defined in [ethereum-types/src/index.ts:54](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L54)*
 
 **Parameters:**
 
@@ -2063,7 +2063,7 @@ however it does not conform entirely.
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L63)*
+*Defined in [ethereum-types/src/index.ts:63](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L63)*
 
 **Parameters:**
 
@@ -2089,7 +2089,7 @@ add here
 
 • **isMetaMask**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L31)*
+*Defined in [ethereum-types/src/index.ts:31](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L31)*
 
 ___
 
@@ -2097,7 +2097,7 @@ ___
 
 • **isParity**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L32)*
+*Defined in [ethereum-types/src/index.ts:32](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L32)*
 
 ___
 
@@ -2105,7 +2105,7 @@ ___
 
 • **isZeroExProvider**? : *undefined | false | true*
 
-*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L30)*
+*Defined in [ethereum-types/src/index.ts:30](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L30)*
 
 ## Methods
 
@@ -2113,7 +2113,7 @@ ___
 
 ▸ **enable**(): *`Promise<void>`*
 
-*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L34)*
+*Defined in [ethereum-types/src/index.ts:34](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L34)*
 
 **Returns:** *`Promise<void>`*
 
@@ -2123,7 +2123,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](_ethereum_types_src_index_.jsonrpcrequestpayload.md), `callback`: [JSONRPCErrorCallback](#jsonrpcerrorcallback)): *void*
 
-*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L35)*
+*Defined in [ethereum-types/src/index.ts:35](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L35)*
 
 **Parameters:**
 
@@ -2140,7 +2140,7 @@ ___
 
 ▸ **stop**(): *void*
 
-*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L33)*
+*Defined in [ethereum-types/src/index.ts:33](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L33)*
 
 **Returns:** *void*
 
@@ -2160,7 +2160,7 @@ shouldAskForOnDeviceConfirmation: Whether you wish to prompt the user on their L
 
 • **addressSearchLimit**? : *undefined | number*
 
-*Defined in [subproviders/src/types.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L55)*
+*Defined in [subproviders/src/types.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L55)*
 
 ___
 
@@ -2168,7 +2168,7 @@ ___
 
 • **numAddressesToReturn**? : *undefined | number*
 
-*Defined in [subproviders/src/types.ts:56](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L56)*
+*Defined in [subproviders/src/types.ts:56](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L56)*
 
 ___
 
@@ -2176,7 +2176,7 @@ ___
 
 • **shouldAskForOnDeviceConfirmation**? : *undefined | false | true*
 
-*Defined in [subproviders/src/types.ts:57](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L57)*
+*Defined in [subproviders/src/types.ts:57](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L57)*
 
 <hr />
 
@@ -2191,7 +2191,7 @@ ___
 
 • **r**: *string*
 
-*Defined in [subproviders/src/types.ts:29](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L29)*
+*Defined in [subproviders/src/types.ts:29](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L29)*
 
 ___
 
@@ -2199,7 +2199,7 @@ ___
 
 • **s**: *string*
 
-*Defined in [subproviders/src/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L30)*
+*Defined in [subproviders/src/types.ts:30](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L30)*
 
 ___
 
@@ -2207,7 +2207,7 @@ ___
 
 • **v**: *string*
 
-*Defined in [subproviders/src/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L28)*
+*Defined in [subproviders/src/types.ts:28](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L28)*
 
 <hr />
 
@@ -2242,7 +2242,7 @@ ___
 
 *Overrides void*
 
-*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L136)*
+*Defined in [subproviders/src/types.ts:136](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L136)*
 
 ___
 
@@ -2274,7 +2274,7 @@ NodeJs and Browser communication are supported.
 
 • **getAddress**: *function*
 
-*Defined in [subproviders/src/types.ts:17](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L17)*
+*Defined in [subproviders/src/types.ts:17](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L17)*
 
 #### Type declaration:
 
@@ -2294,7 +2294,7 @@ ___
 
 • **signPersonalMessage**: *function*
 
-*Defined in [subproviders/src/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L23)*
+*Defined in [subproviders/src/types.ts:23](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L23)*
 
 #### Type declaration:
 
@@ -2313,7 +2313,7 @@ ___
 
 • **signTransaction**: *function*
 
-*Defined in [subproviders/src/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L22)*
+*Defined in [subproviders/src/types.ts:22](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L22)*
 
 #### Type declaration:
 
@@ -2332,7 +2332,7 @@ ___
 
 • **transport**: *[LedgerCommunicationClient](#class-ledgercommunicationclient)*
 
-*Defined in [subproviders/src/types.ts:24](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L24)*
+*Defined in [subproviders/src/types.ts:24](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L24)*
 
 <hr />
 
@@ -2345,7 +2345,7 @@ ___
 
 • **address**: *string*
 
-*Defined in [subproviders/src/types.ts:79](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L79)*
+*Defined in [subproviders/src/types.ts:79](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L79)*
 
 ___
 
@@ -2353,7 +2353,7 @@ ___
 
 • **chainCode**: *string*
 
-*Defined in [subproviders/src/types.ts:81](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L81)*
+*Defined in [subproviders/src/types.ts:81](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L81)*
 
 ___
 
@@ -2361,7 +2361,7 @@ ___
 
 • **publicKey**: *string*
 
-*Defined in [subproviders/src/types.ts:80](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L80)*
+*Defined in [subproviders/src/types.ts:80](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L80)*
 
 <hr />
 
@@ -2379,7 +2379,7 @@ accountFetchingConfigs: configs related to fetching accounts from a Ledger
 
 • **accountFetchingConfigs**? : *[AccountFetchingConfigs](#class-accountfetchingconfigs)*
 
-*Defined in [subproviders/src/types.ts:45](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L45)*
+*Defined in [subproviders/src/types.ts:45](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L45)*
 
 ___
 
@@ -2387,7 +2387,7 @@ ___
 
 • **baseDerivationPath**? : *undefined | string*
 
-*Defined in [subproviders/src/types.ts:44](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L44)*
+*Defined in [subproviders/src/types.ts:44](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L44)*
 
 ___
 
@@ -2395,7 +2395,7 @@ ___
 
 • **ledgerEthereumClientFactoryAsync**: *[LedgerEthereumClientFactoryAsync](#ledgerethereumclientfactoryasync)*
 
-*Defined in [subproviders/src/types.ts:43](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L43)*
+*Defined in [subproviders/src/types.ts:43](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L43)*
 
 ___
 
@@ -2403,7 +2403,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [subproviders/src/types.ts:42](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L42)*
+*Defined in [subproviders/src/types.ts:42](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L42)*
 
 <hr />
 
@@ -2420,7 +2420,7 @@ baseDerivationPath: The base derivation path (e.g 44'/60'/0'/0)
 
 • **addressSearchLimit**? : *undefined | number*
 
-*Defined in [subproviders/src/types.ts:67](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L67)*
+*Defined in [subproviders/src/types.ts:67](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L67)*
 
 ___
 
@@ -2428,7 +2428,7 @@ ___
 
 • **baseDerivationPath**? : *undefined | string*
 
-*Defined in [subproviders/src/types.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L68)*
+*Defined in [subproviders/src/types.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L68)*
 
 ___
 
@@ -2436,7 +2436,7 @@ ___
 
 • **mnemonic**: *string*
 
-*Defined in [subproviders/src/types.ts:66](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L66)*
+*Defined in [subproviders/src/types.ts:66](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L66)*
 
 <hr />
 
@@ -2449,7 +2449,7 @@ ___
 
 • **chainId**: *number*
 
-*Defined in [subproviders/src/types.ts:92](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L92)*
+*Defined in [subproviders/src/types.ts:92](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L92)*
 
 ___
 
@@ -2457,7 +2457,7 @@ ___
 
 • **data**? : *undefined | string*
 
-*Defined in [subproviders/src/types.ts:91](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L91)*
+*Defined in [subproviders/src/types.ts:91](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L91)*
 
 ___
 
@@ -2465,7 +2465,7 @@ ___
 
 • **from**: *string*
 
-*Defined in [subproviders/src/types.ts:89](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L89)*
+*Defined in [subproviders/src/types.ts:89](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L89)*
 
 ___
 
@@ -2473,7 +2473,7 @@ ___
 
 • **gas**: *string*
 
-*Defined in [subproviders/src/types.ts:87](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L87)*
+*Defined in [subproviders/src/types.ts:87](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L87)*
 
 ___
 
@@ -2481,7 +2481,7 @@ ___
 
 • **gasPrice**? : *undefined | string*
 
-*Defined in [subproviders/src/types.ts:86](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L86)*
+*Defined in [subproviders/src/types.ts:86](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L86)*
 
 ___
 
@@ -2489,7 +2489,7 @@ ___
 
 • **nonce**: *string*
 
-*Defined in [subproviders/src/types.ts:85](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L85)*
+*Defined in [subproviders/src/types.ts:85](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L85)*
 
 ___
 
@@ -2497,7 +2497,7 @@ ___
 
 • **to**: *string*
 
-*Defined in [subproviders/src/types.ts:88](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L88)*
+*Defined in [subproviders/src/types.ts:88](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L88)*
 
 ___
 
@@ -2505,7 +2505,7 @@ ___
 
 • **value**? : *undefined | string*
 
-*Defined in [subproviders/src/types.ts:90](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L90)*
+*Defined in [subproviders/src/types.ts:90](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L90)*
 
 <hr />
 
@@ -2525,9 +2525,9 @@ It intercepts the `eth_accounts` JSON RPC requests and never returns any address
 
 ▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[emitPayloadAsync](#emitpayloadasync)*
+*Inherited from [Subprovider](#interface-subprovider).[emitPayloadAsync](#emitpayloadasync)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L55)*
 
 Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
 this subprovider is a part of. The payload will cascade down the subprovider middleware
@@ -2551,7 +2551,7 @@ ___
 
 *Overrides [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[handleRequest](#abstract-handlerequest)*
 
-*Defined in [subproviders/src/subproviders/empty_wallet_subprovider.ts:21](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/empty_wallet_subprovider.ts#L21)*
+*Defined in [subproviders/src/subproviders/empty_wallet_subprovider.ts:21](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/empty_wallet_subprovider.ts#L21)*
 
 This method conforms to the web3-provider-engine interface.
 It is called internally by the ProviderEngine when it is this subproviders
@@ -2573,9 +2573,9 @@ ___
 
 ▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
 
-*Inherited from [Subprovider](_subproviders_src_subproviders_subprovider_.subprovider.md).[setEngine](#setengine)*
+*Inherited from [Subprovider](#interface-subprovider).[setEngine](#setengine)*
 
-*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+*Defined in [subproviders/src/subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/subproviders/subprovider.ts#L68)*
 
 Set's the subprovider's engine to the ProviderEngine it is added to.
 This is only called within the ProviderEngine source code, do not call
@@ -2608,7 +2608,7 @@ Name | Type | Description |
 
 • **accountFetchingConfigs**: *[AccountFetchingConfigs](#class-accountfetchingconfigs)*
 
-*Defined in [subproviders/src/types.ts:140](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L140)*
+*Defined in [subproviders/src/types.ts:140](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L140)*
 
 ___
 
@@ -2616,7 +2616,7 @@ ___
 
 • **networkId**: *number*
 
-*Defined in [subproviders/src/types.ts:142](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L142)*
+*Defined in [subproviders/src/types.ts:142](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L142)*
 
 ___
 
@@ -2624,7 +2624,7 @@ ___
 
 • **trezorConnectClientApi**: *any*
 
-*Defined in [subproviders/src/types.ts:141](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L141)*
+*Defined in [subproviders/src/types.ts:141](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L141)*
 
 <hr />
 
@@ -2663,7 +2663,7 @@ Elliptic Curve signature
 
 • **r**: *string*
 
-*Defined in [types/src/index.ts:68](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L68)*
+*Defined in [types/src/index.ts:68](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L68)*
 
 ___
 
@@ -2671,7 +2671,7 @@ ___
 
 • **s**: *string*
 
-*Defined in [types/src/index.ts:69](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L69)*
+*Defined in [types/src/index.ts:69](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L69)*
 
 ___
 
@@ -2679,7 +2679,7 @@ ___
 
 • **v**: *number*
 
-*Defined in [types/src/index.ts:67](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L67)*
+*Defined in [types/src/index.ts:67](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L67)*
 
 <hr />
 
@@ -2699,7 +2699,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [types/src/index.ts:703](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L703)*
+*Defined in [types/src/index.ts:711](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L711)*
 
 ___
 
@@ -2707,7 +2707,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [types/src/index.ts:704](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L704)*
+*Defined in [types/src/index.ts:712](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L712)*
 
 <hr />
 
@@ -2720,7 +2720,7 @@ ___
 
 • **domain**: *[EIP712Object](#class-eip712object)*
 
-*Defined in [types/src/index.ts:719](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L719)*
+*Defined in [types/src/index.ts:727](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L727)*
 
 ___
 
@@ -2728,7 +2728,7 @@ ___
 
 • **message**: *[EIP712Object](#class-eip712object)*
 
-*Defined in [types/src/index.ts:720](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L720)*
+*Defined in [types/src/index.ts:728](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L728)*
 
 ___
 
@@ -2736,7 +2736,7 @@ ___
 
 • **primaryType**: *string*
 
-*Defined in [types/src/index.ts:721](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L721)*
+*Defined in [types/src/index.ts:729](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L729)*
 
 ___
 
@@ -2744,7 +2744,7 @@ ___
 
 • **types**: *[EIP712Types](#class-eip712types)*
 
-*Defined in [types/src/index.ts:718](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L718)*
+*Defined in [types/src/index.ts:726](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L726)*
 
 <hr />
 
@@ -2762,7 +2762,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [types/src/index.ts:657](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L657)*
+*Defined in [types/src/index.ts:665](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L665)*
 
 ___
 
@@ -2770,7 +2770,7 @@ ___
 
 • **typeDocType**: *[TypeDocTypes](#enumeration-typedoctypes)*
 
-*Defined in [types/src/index.ts:658](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/types/src/index.ts#L658)*
+*Defined in [types/src/index.ts:666](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/types/src/index.ts#L666)*
 
 <hr />
 
@@ -2891,7 +2891,7 @@ ___
 
 ▸ **prependSubprovider**(`provider`: `Web3ProviderEngine`, `subprovider`: [Subprovider](#class-subprovider)): *void*
 
-*Defined in [subproviders/src/utils/subprovider_utils.ts:10](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/utils/subprovider_utils.ts#L10)*
+*Defined in [subproviders/src/utils/subprovider_utils.ts:10](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/utils/subprovider_utils.ts#L10)*
 
 Prepends a subprovider to a provider
 
@@ -2925,7 +2925,7 @@ Name | Type | Description |
 
 Ƭ **EIP1193Event**: *"accountsChanged" | "networkChanged" | "close" | "connect" | "notification"*
 
-*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L70)*
+*Defined in [ethereum-types/src/index.ts:70](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L70)*
 
 Interface for providers that conform to EIP 1193
 Source: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1193.md
@@ -2942,7 +2942,7 @@ ___
 
 Ƭ **JSONRPCErrorCallback**: *function*
 
-*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L3)*
+*Defined in [ethereum-types/src/index.ts:3](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L3)*
 
 #### Type declaration:
 
@@ -2971,7 +2971,7 @@ ___
 
 Ƭ **SupportedProvider**: *[Web3JsProvider](_ethereum_types_src_index_.md#web3jsprovider) | [GanacheProvider](#interface-ganacheprovider) | [EIP1193Provider](#interface-eip1193provider) | [ZeroExProvider](#interface-zeroexprovider)*
 
-*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L9)*
+*Defined in [ethereum-types/src/index.ts:9](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L9)*
 
 Do not create your own provider. Use an existing provider from a Web3 or ProviderEngine library
 Read more about Providers in the guides section of the 0x docs.
@@ -2986,7 +2986,7 @@ ___
 
 Ƭ **Web3JsProvider**: *[Web3JsV1Provider](#interface-web3jsv1provider) | [Web3JsV2Provider](#interface-web3jsv2provider) | [Web3JsV3Provider](#interface-web3jsv3provider)*
 
-*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/ethereum-types/src/index.ts#L11)*
+*Defined in [ethereum-types/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/ethereum-types/src/index.ts#L11)*
 
 <hr />
 
@@ -2999,7 +2999,7 @@ ___
 
 ▸ **ledgerEthereumBrowserClientFactoryAsync**(): *`Promise<LedgerEthereumClient>`*
 
-*Defined in [subproviders/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/index.ts#L11)*
+*Defined in [subproviders/src/index.ts:11](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/index.ts#L11)*
 
 A factory method for creating a LedgerEthereumClient usable in a browser context.
 
@@ -3070,7 +3070,7 @@ LedgerEthereumClient A browser client for the LedgerSubprovider
 
 Ƭ **Callback**: *function*
 
-*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L131)*
+*Defined in [subproviders/src/types.ts:131](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L131)*
 
 #### Type declaration:
 
@@ -3084,7 +3084,7 @@ ___
 
 Ƭ **ErrorCallback**: *function*
 
-*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L130)*
+*Defined in [subproviders/src/types.ts:130](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L130)*
 
 #### Type declaration:
 
@@ -3103,7 +3103,7 @@ ___
 
 Ƭ **LedgerEthereumClientFactoryAsync**: *function*
 
-*Defined in [subproviders/src/types.ts:33](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L33)*
+*Defined in [subproviders/src/types.ts:33](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L33)*
 
 #### Type declaration:
 
@@ -3115,7 +3115,7 @@ ___
 
 Ƭ **NextCallback**: *function*
 
-*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L133)*
+*Defined in [subproviders/src/types.ts:133](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L133)*
 
 #### Type declaration:
 
@@ -3133,7 +3133,7 @@ ___
 
 Ƭ **OnNextCompleted**: *function*
 
-*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/0c9daa693/packages/subproviders/src/types.ts#L132)*
+*Defined in [subproviders/src/types.ts:132](https://github.com/0xProject/0x-monorepo/blob/23602ec6b/packages/subproviders/src/types.ts#L132)*
 
 #### Type declaration:
 

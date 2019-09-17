@@ -6,7 +6,8 @@
                 "note": "Add `devUtils` to `ContractWrappers` class.",
                 "pr": 2146
             }
-        ]
+        ],
+        "timestamp": 1568744790
     },
     {
         "version": "12.0.0",

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.2.0 - _September 17, 2019_
+
+    * Added `getNetworkIdByExchangeAddressOrThrow` (#2096)
+
 ## v3.1.0 - _August 22, 2019_
 
     * Added DevUtils (#2060)
