@@ -112,6 +112,22 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             await expect(tx).to.revertWith(RevertReason.EqualLengthsRequired);
         });
+        it('should fail if functionCallTimeLockSeconds.length != destinations.length', async () => {
+            const reg = createFunctionRegistration(2, 1, 1);
+            const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
+                artifacts.TestAssetProxyOwner,
+                env.provider,
+                env.txDefaults,
+                artifacts,
+                reg.functionSelectors,
+                reg.destinations,
+                reg.functionCallTimeLockSeconds,
+                signerAddresses,
+                new BigNumber(REQUIRED_SIGNERS),
+                new BigNumber(DEFAULT_TIME_LOCK),
+            );
+            await expect(tx).to.revertWith(RevertReason.EqualLengthsRequired);
+        });
         it('should allow no function calls to be registered', async () => {
             const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
                 artifacts.TestAssetProxyOwner,
@@ -178,6 +194,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
+                { from: signerAddresses[0] },
             );
             expect(tx).to.revertWith(RevertReason.OnlyCallableByWallet);
         });
@@ -291,6 +308,23 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             expect(result).to.revertWith(RevertReason.CustomTimeLockIncomplete);
         });
+        it('should revert if a registered function is called before the custom timelock and after the default timelock', async () => {
+            const reg = createFunctionRegistration(1, 1, 1);
+            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+                true,
+                reg.functionSelectors[0],
+                reg.destinations[0],
+                new BigNumber(DEFAULT_TIME_LOCK).times(2),
+            );
+            const latestTimestamp = await getLatestBlockTimestampAsync();
+            const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
+            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+                transactionConfirmationTime,
+                reg.functionSelectors[0],
+                reg.destinations[0],
+            );
+            expect(result).to.revertWith(RevertReason.CustomTimeLockIncomplete);
+        });
         it('should be successful if an unregistered function is called after the default timelock', async () => {
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
@@ -366,6 +400,15 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const results = await assetProxyOwnerWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
             const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
                 from: signerAddresses[1],
+            });
+            expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
+        });
+        it('should revert if the transaction is not confirmed by the required amount of signers and called by the submitter', async () => {
+            const data = [hexRandom()];
+            const destinations = [receiver.address];
+            const results = await assetProxyOwnerWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
+            const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
+                from: signerAddresses[0],
             });
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
         });

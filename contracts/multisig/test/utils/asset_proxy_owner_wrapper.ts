@@ -1,6 +1,7 @@
 import { constants, hexRandom, increaseTimeAndMineBlockAsync } from '@0x/contracts-test-utils';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
 
 import { AssetProxyOwnerContract, AssetProxyOwnerSubmissionEventArgs, TestAssetProxyOwnerContract } from '../../src';
 
@@ -33,12 +34,15 @@ export class AssetProxyOwnerWrapper {
         destinations: string[],
         signerAddresses: string[],
         increaseTimeSeconds: number,
-        opts: { values?: BigNumber[]; executeFromAddress?: string } = {},
+        opts: { values?: BigNumber[]; executeFromAddress?: string; requiredSignatures?: number } = {},
     ): Promise<{ executionTxReceipt: TransactionReceiptWithDecodedLogs; txId: BigNumber }> {
         const submitResults = await this.submitTransactionAsync(data, destinations, signerAddresses[0], opts);
-        await this._assetProxyOwner.confirmTransaction.awaitTransactionSuccessAsync(submitResults.txId, {
-            from: signerAddresses[1],
-        });
+        const requiredSignatures = opts.requiredSignatures === undefined ? 2 : opts.requiredSignatures;
+        for (const index of _.range(1, requiredSignatures)) {
+            await this._assetProxyOwner.confirmTransaction.awaitTransactionSuccessAsync(submitResults.txId, {
+                from: signerAddresses[index],
+            });
+        }
         await increaseTimeAndMineBlockAsync(increaseTimeSeconds);
         const executionTxReceipt = await this._assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(
             submitResults.txId,
