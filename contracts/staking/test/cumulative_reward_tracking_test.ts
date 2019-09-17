@@ -185,7 +185,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 ],
             );
         });
-        it('should set CR and Most Recent CR when a reward is earned', async () => {
+        it.only('should set CR and Most Recent CR when a reward is earned', async () => {
             await simulation.runTestAsync(
                 [
                     TestAction.CreatePool, // creates CR in epoch 0
