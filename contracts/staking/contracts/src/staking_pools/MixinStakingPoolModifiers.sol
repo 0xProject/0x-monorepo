@@ -19,30 +19,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../libs/LibStakingRichErrors.sol";
-import "../interfaces/IStructs.sol";
-import "../interfaces/IStakingEvents.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinStakingPoolRewards.sol";
 
 
 contract MixinStakingPoolModifiers is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards
+    MixinStorage
 {
-
-    using LibSafeMath for uint256;
 
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.

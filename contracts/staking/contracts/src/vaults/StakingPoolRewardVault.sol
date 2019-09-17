@@ -79,7 +79,6 @@ contract StakingPoolRewardVault is
         onlyStakingProxy
     {
         // sanity check on eth vault
-        IEthVault _ethVault = ethVault;
         if (address(_ethVault) == address(0)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.EthVaultNotSetError()

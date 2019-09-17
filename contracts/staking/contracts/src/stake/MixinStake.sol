@@ -21,12 +21,17 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
+import "../staking_pools/MixinStakingPool.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
 contract MixinStake is
-    MixinStakingPoolRewards
+    MixinStorage,
+    MixinStakingPoolMakers,
+    MixinStakingPoolRewards,
+    MixinStakingPool
+
 {
     using LibSafeMath for uint256;
 
@@ -162,15 +167,8 @@ contract MixinStake is
     )
         private
     {
-        // revert if pool with given poolId doesn't exist
-        if (rewardVault.operatorOf(poolId) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.PoolExistenceError(
-                    poolId,
-                    false
-                )
-            );
-        }
+        // sanity check the pool we're delegating to exists
+        _assertStakingPoolExists(poolId);
 
         // cache amount delegated to pool by owner
         IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
@@ -197,15 +195,8 @@ contract MixinStake is
     )
         private
     {
-        // revert if pool with given poolId doesn't exist
-        if (rewardVault.operatorOf(poolId) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.PoolExistenceError(
-                    poolId,
-                    false
-                )
-            );
-        }
+        // sanity check the pool we're undelegating from exists
+        _assertStakingPoolExists(poolId);
 
         // cache amount delegated to pool by owner
         IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);

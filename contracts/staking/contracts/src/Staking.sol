@@ -29,8 +29,8 @@ import "./fees/MixinExchangeFees.sol";
 contract Staking is
     IStaking,
     MixinParams,
-    MixinStake,
     MixinStakingPool,
+    MixinStake,
     MixinExchangeFees
 {
     // this contract can receive ETH

@@ -28,6 +28,8 @@ import "./MixinStakingPoolMakers.sol";
 
 
 contract MixinStakingPool is
+    MixinStorage,
+    MixinStakingPoolMakers,
     MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
@@ -101,17 +103,6 @@ contract MixinStakingPool is
         );
     }
 
-    /// @dev Returns the staking pool with `poolId`
-    /// @param poolId Unique id of pool
-    /// @return operator Operator of the pool
-    function getStakingPool(bytes32 poolId)
-        external
-        view
-        returns (IStructs.Pool memory)
-    {
-        return poolById[poolId];
-    }
-
     /// @dev Returns the unique id that will be assigned to the next pool that is created.
     /// @return Pool id.
     function getNextStakingPoolId()
@@ -131,6 +122,22 @@ contract MixinStakingPool is
         returns (bytes32)
     {
         return bytes32(uint256(poolId).safeAdd(POOL_ID_INCREMENT_AMOUNT));
+    }
+
+    function _assertStakingPoolExists(bytes32 poolId)
+        internal
+        view
+        returns (bool)
+    {
+        if (poolById[poolId].operator == NIL_ADDRESS) {
+            // we use the pool's operator as a proxy for its existence
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolExistenceError(
+                    poolId,
+                    false
+                )
+            );
+        }
     }
 
     function _assertNewOperatorShare(

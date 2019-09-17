@@ -19,10 +19,10 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
-import "./MixinEthVault.sol";
 
 
 contract MixinStakingPoolRewards is
@@ -38,16 +38,16 @@ contract MixinStakingPoolRewards is
     {
         address member = msg.sender;
 
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId]);
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
         _syncRewardsForDelegator(
             poolId,
             member,
-            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
             finalDelegatedStakeToPoolByOwner
         );
 
         // update stored balance with synchronized version; this prevents redundant withdrawals.
-        delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
+        _delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -288,5 +288,25 @@ contract MixinStakingPoolRewards is
                 isDependent
             );
         }
+    }
+
+    /// @dev Transfers operator reward to the ETH vault.
+    /// @param poolId Unique Id of pool to transfer reward for,
+    /// @param operator of the pool.
+    /// @param amount of ETH to transfer.
+    function _transferOperatorRewardToEthVault(
+        bytes32 poolId,
+        address operator,
+        uint256 amount
+    )
+        private
+    {
+        // perform transfer and notify
+        ethVault.depositFor.value(amount)(operator);
+        emit OperatorRewardTransferredToEthVault(
+            poolId,
+            operator,
+            amount
+        );
     }
 }
