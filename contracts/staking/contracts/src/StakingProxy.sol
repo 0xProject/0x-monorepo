@@ -17,11 +17,13 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "./libs/LibProxy.sol";
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStorageInit.sol";
+import "./interfaces/IStaking.sol";
 import "./interfaces/IStakingEvents.sol";
 import "./interfaces/IStakingProxy.sol";
 
@@ -93,6 +95,46 @@ contract StakingProxy is
         }
 
         emit ReadOnlyModeSet(readOnlyMode);
+    }
+
+    /// @dev Batch executes a series of calls to the staking contract.
+    /// @param data An array of data that encodes a sequence of functions to
+    ///             call in the staking contracts.
+    function batchExecute(bytes[] calldata data)
+        external
+        returns (bytes[] memory batchReturnData)
+    {
+        // Initialize commonly used variables.
+        bool success;
+        bytes memory returnData;
+        batchReturnData = new bytes[](data.length);
+        address staking = stakingContract;
+        uint256 dataLength = data.length;
+
+        // Ensure that a staking contract has been attached to the proxy.
+        if (staking == address(0)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.ProxyDestinationCannotBeNilError()
+            );
+        }
+
+        // Execute all of the calls encoded in the provided calldata.
+        for (uint256 i = 0; i != dataLength; i++) {
+            // Call the staking contract with the provided calldata.
+            (success, returnData) = staking.delegatecall(data[i]);
+
+            // Revert on failure.
+            if (!success) {
+                assembly {
+                    revert(add(0x20, returnData), mload(returnData))
+                }
+            }
+
+            // Add the returndata to the batch returndata.
+            batchReturnData[i] = returnData;
+        }
+
+        return batchReturnData;
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.

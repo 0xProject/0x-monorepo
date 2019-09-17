@@ -17,9 +17,24 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
+
+import "./IStructs.sol";
 
 
 interface IStaking {
+
+    /// @dev Moves stake between statuses: 'active', 'inactive' or 'delegated'.
+    ///      This change comes into effect next epoch.
+    /// @param from status to move stake out of.
+    /// @param to status to move stake into.
+    /// @param amount of stake to move.
+    function moveStake(
+        IStructs.StakeInfo calldata from,
+        IStructs.StakeInfo calldata to,
+        uint256 amount
+    )
+        external;
 
     /// @dev Pays a protocol fee in ETH.
     /// @param makerAddress The address of the order's maker.
@@ -32,4 +47,10 @@ interface IStaking {
     )
         external
         payable;
+
+    /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.
+    ///      Stake is in the 'Active' status.
+    /// @param amount of ZRX to stake.
+    function stake(uint256 amount)
+        external;
 }
