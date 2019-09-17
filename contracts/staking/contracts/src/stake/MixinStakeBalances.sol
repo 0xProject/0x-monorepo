@@ -21,14 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "./MixinZrxVault.sol";
 import "./MixinStakeStorage.sol";
 
 
 /// @dev This mixin contains logic for querying stake balances.
 /// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
-    MixinZrxVault,
     MixinStakeStorage
 {
     using LibSafeMath for uint256;
@@ -41,7 +39,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return _balanceOfOwnerInZrxVault(owner);
+        return zrxVault.balanceOf(owner);
     }
 
     /// @dev Returns the active stake for a given owner.

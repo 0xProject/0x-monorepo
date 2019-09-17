@@ -39,7 +39,7 @@ contract MixinStake is
         address payable owner = msg.sender;
 
         // deposit equivalent amount of ZRX into vault
-        _depositFromOwnerIntoZrxVault(owner, amount);
+        zrxVault.depositFrom(owner, amount);
 
         // mint stake
         _incrementCurrentAndNextBalance(_activeStakeByOwner[owner], amount);
@@ -77,7 +77,7 @@ contract MixinStake is
         _withdrawableStakeByOwner[owner] = currentWithdrawableStake.safeSub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        _withdrawToOwnerFromZrxVault(owner, amount);
+        zrxVault.withdrawFrom(owner, amount);
 
         // emit stake event
         emit Unstake(

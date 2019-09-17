@@ -34,7 +34,6 @@
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
         "generated-artifacts/MixinVaultCore.json",
-        "generated-artifacts/MixinZrxVault.json",
         "generated-artifacts/ReadOnlyProxy.json",
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingPoolRewardVault.json",
