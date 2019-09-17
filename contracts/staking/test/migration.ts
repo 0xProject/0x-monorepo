@@ -170,6 +170,9 @@ blockchainTests('Migration tests', env => {
                 );
                 for (const args of logsArgs) {
                     expect(args.wethProxyAddress).to.eq(wethProxyAddress);
+                    expect(args.ethVaultAddress).to.eq(ethVaultAddress);
+                    expect(args.rewardVaultAddress).to.eq(rewardVaultAddress);
+                    expect(args.zrxVaultAddress).to.eq(zrxVaultAddress);
                 }
             });
             it('calls init with passed in addresses if they are not null', async () => {
@@ -190,6 +193,9 @@ blockchainTests('Migration tests', env => {
                 );
                 for (const args of logsArgs) {
                     expect(args.wethProxyAddress).to.eq(wethProxyAddress);
+                    expect(args.ethVaultAddress).to.eq(ethVaultAddress);
+                    expect(args.rewardVaultAddress).to.eq(rewardVaultAddress);
+                    expect(args.zrxVaultAddress).to.eq(zrxVaultAddress);
                 }
             });
         });
