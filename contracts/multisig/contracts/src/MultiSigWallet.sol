@@ -9,34 +9,34 @@ contract MultiSigWallet {
     /*
      *  Events
      */
-    event Confirmation(address indexed sender, uint indexed transactionId);
-    event Revocation(address indexed sender, uint indexed transactionId);
-    event Submission(uint indexed transactionId);
-    event Execution(uint indexed transactionId);
-    event ExecutionFailure(uint indexed transactionId);
-    event Deposit(address indexed sender, uint value);
+    event Confirmation(address indexed sender, uint256 indexed transactionId);
+    event Revocation(address indexed sender, uint256 indexed transactionId);
+    event Submission(uint256 indexed transactionId);
+    event Execution(uint256 indexed transactionId);
+    event ExecutionFailure(uint256 indexed transactionId);
+    event Deposit(address indexed sender, uint256 value);
     event OwnerAddition(address indexed owner);
     event OwnerRemoval(address indexed owner);
-    event RequirementChange(uint required);
+    event RequirementChange(uint256 required);
 
     /*
      *  Constants
      */
-    uint constant public MAX_OWNER_COUNT = 50;
+    uint256 constant public MAX_OWNER_COUNT = 50;
 
     /*
      *  Storage
      */
-    mapping (uint => Transaction) public transactions;
-    mapping (uint => mapping (address => bool)) public confirmations;
+    mapping (uint256 => Transaction) public transactions;
+    mapping (uint256 => mapping (address => bool)) public confirmations;
     mapping (address => bool) public isOwner;
     address[] public owners;
-    uint public required;
-    uint public transactionCount;
+    uint256 public required;
+    uint256 public transactionCount;
 
     struct Transaction {
         address destination;
-        uint value;
+        uint256 value;
         bytes data;
         bool executed;
     }
@@ -68,7 +68,7 @@ contract MultiSigWallet {
         _;
     }
 
-    modifier transactionExists(uint transactionId) {
+    modifier transactionExists(uint256 transactionId) {
         require(
             transactions[transactionId].destination != address(0),
             "TX_DOESNT_EXIST"
@@ -76,7 +76,7 @@ contract MultiSigWallet {
         _;
     }
 
-    modifier confirmed(uint transactionId, address owner) {
+    modifier confirmed(uint256 transactionId, address owner) {
         require(
             confirmations[transactionId][owner],
             "TX_NOT_CONFIRMED"
@@ -84,7 +84,7 @@ contract MultiSigWallet {
         _;
     }
 
-    modifier notConfirmed(uint transactionId, address owner) {
+    modifier notConfirmed(uint256 transactionId, address owner) {
         require(
             !confirmations[transactionId][owner],
             "TX_ALREADY_CONFIRMED"
@@ -92,7 +92,7 @@ contract MultiSigWallet {
         _;
     }
 
-    modifier notExecuted(uint transactionId) {
+    modifier notExecuted(uint256 transactionId) {
         require(
             !transactions[transactionId].executed,
             "TX_ALREADY_EXECUTED"
@@ -108,7 +108,7 @@ contract MultiSigWallet {
         _;
     }
 
-    modifier validRequirement(uint ownerCount, uint _required) {
+    modifier validRequirement(uint256 ownerCount, uint256 _required) {
         require(
             ownerCount <= MAX_OWNER_COUNT
             && _required <= ownerCount
@@ -124,8 +124,9 @@ contract MultiSigWallet {
         external
         payable
     {
-        if (msg.value > 0)
+        if (msg.value > 0) {
             emit Deposit(msg.sender, msg.value);
+        }
     }
 
     /*
@@ -136,13 +137,16 @@ contract MultiSigWallet {
     /// @param _required Number of required confirmations.
     constructor(
         address[] memory _owners,
-        uint _required
+        uint256 _required
     )
         public
         validRequirement(_owners.length, _required)
     {
-        for (uint i=0; i<_owners.length; i++) {
-            require(!isOwner[_owners[i]] && _owners[i] != address(0));
+        for (uint256 i = 0; i < _owners.length; i++) {
+            require(
+                !isOwner[_owners[i]] && _owners[i] != address(0),
+                "DUPLICATE_OR_NULL_OWNER"
+            );
             isOwner[_owners[i]] = true;
         }
         owners = _owners;
@@ -171,14 +175,16 @@ contract MultiSigWallet {
         ownerExists(owner)
     {
         isOwner[owner] = false;
-        for (uint i=0; i<owners.length - 1; i++)
+        for (uint256 i = 0; i < owners.length - 1; i++) {
             if (owners[i] == owner) {
                 owners[i] = owners[owners.length - 1];
                 break;
             }
+        }
         owners.length -= 1;
-        if (required > owners.length)
+        if (required > owners.length) {
             changeRequirement(owners.length);
+        }
         emit OwnerRemoval(owner);
     }
 
@@ -191,11 +197,12 @@ contract MultiSigWallet {
         ownerExists(owner)
         ownerDoesNotExist(newOwner)
     {
-        for (uint i=0; i<owners.length; i++)
+        for (uint256 i = 0; i < owners.length; i++) {
             if (owners[i] == owner) {
                 owners[i] = newOwner;
                 break;
             }
+        }
         isOwner[owner] = false;
         isOwner[newOwner] = true;
         emit OwnerRemoval(owner);
@@ -204,7 +211,7 @@ contract MultiSigWallet {
 
     /// @dev Allows to change the number of required confirmations. Transaction has to be sent by wallet.
     /// @param _required Number of required confirmations.
-    function changeRequirement(uint _required)
+    function changeRequirement(uint256 _required)
         public
         onlyWallet
         validRequirement(owners.length, _required)
@@ -218,9 +225,9 @@ contract MultiSigWallet {
     /// @param value Transaction ether value.
     /// @param data Transaction data payload.
     /// @return Returns transaction ID.
-    function submitTransaction(address destination, uint value, bytes memory data)
+    function submitTransaction(address destination, uint256 value, bytes memory data)
         public
-        returns (uint transactionId)
+        returns (uint256 transactionId)
     {
         transactionId = _addTransaction(destination, value, data);
         confirmTransaction(transactionId);
@@ -228,7 +235,7 @@ contract MultiSigWallet {
 
     /// @dev Allows an owner to confirm a transaction.
     /// @param transactionId Transaction ID.
-    function confirmTransaction(uint transactionId)
+    function confirmTransaction(uint256 transactionId)
         public
         ownerExists(msg.sender)
         transactionExists(transactionId)
@@ -241,7 +248,7 @@ contract MultiSigWallet {
 
     /// @dev Allows an owner to revoke a confirmation for a transaction.
     /// @param transactionId Transaction ID.
-    function revokeConfirmation(uint transactionId)
+    function revokeConfirmation(uint256 transactionId)
         public
         ownerExists(msg.sender)
         confirmed(transactionId, msg.sender)
@@ -253,7 +260,7 @@ contract MultiSigWallet {
 
     /// @dev Allows anyone to execute a confirmed transaction.
     /// @param transactionId Transaction ID.
-    function executeTransaction(uint transactionId)
+    function executeTransaction(uint256 transactionId)
         public
         ownerExists(msg.sender)
         confirmed(transactionId, msg.sender)
@@ -262,9 +269,16 @@ contract MultiSigWallet {
         if (isConfirmed(transactionId)) {
             Transaction storage txn = transactions[transactionId];
             txn.executed = true;
-            if (_externalCall(txn.destination, txn.value, txn.data.length, txn.data))
+            if (
+                _externalCall(
+                    txn.destination,
+                    txn.value,
+                    txn.data.length,
+                    txn.data
+                )
+            ) {
                 emit Execution(transactionId);
-            else {
+            } else {
                 emit ExecutionFailure(transactionId);
                 txn.executed = false;
             }
@@ -273,7 +287,15 @@ contract MultiSigWallet {
 
     // call has been separated into its own function in order to take advantage
     // of the Solidity's code generator to produce a loop that copies tx.data into memory.
-    function _externalCall(address destination, uint value, uint dataLength, bytes memory data) internal returns (bool) {
+    function _externalCall(
+        address destination,
+        uint256 value,
+        uint256 dataLength,
+        bytes memory data
+    )
+        internal
+        returns (bool)
+    {
         bool result;
         assembly {
             let x := mload(0x40)   // "Allocate" memory for output (0x40 is where "free memory" pointer is stored by convention)
@@ -296,17 +318,19 @@ contract MultiSigWallet {
     /// @dev Returns the confirmation status of a transaction.
     /// @param transactionId Transaction ID.
     /// @return Confirmation status.
-    function isConfirmed(uint transactionId)
+    function isConfirmed(uint256 transactionId)
         public
         view
         returns (bool)
     {
-        uint count = 0;
-        for (uint i=0; i<owners.length; i++) {
-            if (confirmations[transactionId][owners[i]])
+        uint256 count = 0;
+        for (uint256 i = 0; i < owners.length; i++) {
+            if (confirmations[transactionId][owners[i]]) {
                 count += 1;
-            if (count == required)
+            }
+            if (count == required) {
                 return true;
+            }
         }
     }
 
@@ -318,10 +342,14 @@ contract MultiSigWallet {
     /// @param value Transaction ether value.
     /// @param data Transaction data payload.
     /// @return Returns transaction ID.
-    function _addTransaction(address destination, uint value, bytes memory data)
+    function _addTransaction(
+        address destination,
+        uint256 value,
+        bytes memory data
+    )
         internal
         notNull(destination)
-        returns (uint transactionId)
+        returns (uint256 transactionId)
     {
         transactionId = transactionCount;
         transactions[transactionId] = Transaction({
@@ -340,14 +368,16 @@ contract MultiSigWallet {
     /// @dev Returns number of confirmations of a transaction.
     /// @param transactionId Transaction ID.
     /// @return Number of confirmations.
-    function getConfirmationCount(uint transactionId)
+    function getConfirmationCount(uint256 transactionId)
         public
         view
-        returns (uint count)
+        returns (uint256 count)
     {
-        for (uint i=0; i<owners.length; i++)
-            if (confirmations[transactionId][owners[i]])
+        for (uint256 i = 0; i < owners.length; i++) {
+            if (confirmations[transactionId][owners[i]]) {
                 count += 1;
+            }
+        }
     }
 
     /// @dev Returns total number of transactions after filers are applied.
@@ -357,12 +387,13 @@ contract MultiSigWallet {
     function getTransactionCount(bool pending, bool executed)
         public
         view
-        returns (uint count)
+        returns (uint256 count)
     {
-        for (uint i=0; i<transactionCount; i++)
-            if (   pending && !transactions[i].executed
-                || executed && transactions[i].executed)
+        for (uint256 i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 count += 1;
+            }
+        }
     }
 
     /// @dev Returns list of owners.
@@ -378,22 +409,24 @@ contract MultiSigWallet {
     /// @dev Returns array with owner addresses, which confirmed transaction.
     /// @param transactionId Transaction ID.
     /// @return Returns array of owner addresses.
-    function getConfirmations(uint transactionId)
+    function getConfirmations(uint256 transactionId)
         public
         view
         returns (address[] memory _confirmations)
     {
         address[] memory confirmationsTemp = new address[](owners.length);
-        uint count = 0;
-        uint i;
-        for (i=0; i<owners.length; i++)
+        uint256 count = 0;
+        uint256 i;
+        for (i = 0; i < owners.length; i++) {
             if (confirmations[transactionId][owners[i]]) {
                 confirmationsTemp[count] = owners[i];
                 count += 1;
             }
+        }
         _confirmations = new address[](count);
-        for (i=0; i<count; i++)
+        for (i = 0; i < count; i++) {
             _confirmations[i] = confirmationsTemp[i];
+        }
     }
 
     /// @dev Returns list of transaction IDs in defined range.
@@ -402,23 +435,28 @@ contract MultiSigWallet {
     /// @param pending Include pending transactions.
     /// @param executed Include executed transactions.
     /// @return Returns array of transaction IDs.
-    function getTransactionIds(uint from, uint to, bool pending, bool executed)
+    function getTransactionIds(
+        uint256 from,
+        uint256 to,
+        bool pending,
+        bool executed
+    )
         public
         view
-        returns (uint[] memory _transactionIds)
+        returns (uint256[] memory _transactionIds)
     {
-        uint[] memory transactionIdsTemp = new uint[](transactionCount);
-        uint count = 0;
-        uint i;
-        for (i=0; i<transactionCount; i++)
-            if (   pending && !transactions[i].executed
-                || executed && transactions[i].executed)
-            {
+        uint256[] memory transactionIdsTemp = new uint256[](transactionCount);
+        uint256 count = 0;
+        uint256 i;
+        for (i = 0; i < transactionCount; i++) {
+            if (pending && !transactions[i].executed || executed && transactions[i].executed) {
                 transactionIdsTemp[count] = i;
                 count += 1;
             }
-        _transactionIds = new uint[](to - from);
-        for (i=from; i<to; i++)
+        }
+        _transactionIds = new uint256[](to - from);
+        for (i = from; i < to; i++) {
             _transactionIds[i - from] = transactionIdsTemp[i];
+        }
     }
 }
