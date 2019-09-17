@@ -113,6 +113,14 @@ contract MixinStakingPool is
         return nextPoolId;
     }
 
+    function getStakingPool(bytes32 poolId)
+        public
+        view
+        returns (IStructs.Pool memory)
+    {
+        return poolById[poolId];
+    }
+
     /// @dev Computes the unique id that comes after the input pool id.
     /// @param poolId Unique id of pool.
     /// @return Next pool id after input pool.

@@ -208,16 +208,6 @@ export async function deployAndConfigureContractsAsync(
         rewardVaultContract.address,
         zrxVaultContract.address,
     );
-    // set eth vault in staking contract
-    const setEthVaultCalldata = stakingContract.setEthVault.getABIEncodedTransactionData(ethVaultContract.address);
-    const setEthVaultCalldataTxData = {
-        from: ownerAddress,
-        to: stakingProxyContract.address,
-        data: setEthVaultCalldata,
-    };
-    await env.web3Wrapper.awaitTransactionSuccessAsync(
-        await env.web3Wrapper.sendTransactionAsync(setEthVaultCalldataTxData),
-    );
 
     // configure erc20 proxy to accept calls from zrx vault
     await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
