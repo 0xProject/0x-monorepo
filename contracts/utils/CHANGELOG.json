@@ -57,6 +57,10 @@
             {
                 "note": "Added LibFractions",
                 "pr": 2118
+            },
+            {
+                "note": "Introduce automatic normalization and some zero-value shortcuts in `LibFractions`.",
+                "pr": 2155
             }
         ]
     },
