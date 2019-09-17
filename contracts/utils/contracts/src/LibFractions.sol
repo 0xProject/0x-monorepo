@@ -7,6 +7,11 @@ library LibFractions {
 
     using LibSafeMath for uint256;
 
+    /// @dev Maximum value for addition result components.
+    uint256 constant internal RESCALE_THRESHOLD = 10 ** 27;
+    /// @dev Rescale factor for addition.
+    uint256 constant internal RESCALE_BASE = 10 ** 9;
+
     /// @dev Safely adds two fractions `n1/d1 + n2/d2`
     /// @param n1 numerator of `1`
     /// @param d1 denominator of `1`
@@ -37,6 +42,13 @@ library LibFractions {
             .safeMul(d2)
             .safeAdd(n2.safeMul(d1));
         denominator = d1.safeMul(d2);
+
+        // If either the numerator or the denominator are > RESCALE_THRESHOLD,
+        // re-scale them to prevent overflows in future operations.
+        if (numerator > RESCALE_THRESHOLD || denominator > RESCALE_THRESHOLD) {
+            numerator = numerator.safeDiv(RESCALE_BASE);
+            denominator = denominator.safeDiv(RESCALE_BASE);
+        }
     }
 
     /// @dev Safely scales the difference between two fractions.
@@ -57,7 +69,7 @@ library LibFractions {
         pure
         returns (uint256 result)
     {
-        if (s == 0 || d1 == 0) {
+        if (s == 0) {
             return 0;
         }
         if (n2 == 0) {
