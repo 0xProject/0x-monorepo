@@ -41,6 +41,10 @@
             {
                 "note": "Replace `MixinDeploymentConstants` with `MixinParams`.",
                 "pr": 2131
+            },
+            {
+                "note": "Reference counting for cumulative rewards.",
+                "pr": 2154
             }
         ]
     }

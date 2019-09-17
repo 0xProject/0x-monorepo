@@ -51,6 +51,12 @@ library LibStakingRichErrors {
         PoolIsFull
     }
 
+    enum CumulativeRewardIntervalErrorCode {
+        BeginEpochMustBeLessThanEndEpoch,
+        BeginEpochDoesNotHaveReward,
+        EndEpochDoesNotHaveReward
+    }
+
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
     bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
         0xf7806c4e;
@@ -146,6 +152,10 @@ library LibStakingRichErrors {
     // bytes4(keccak256("InvalidWethAssetDataError()"))
     bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
         hex"24bf322c";
+
+    // bytes4(keccak256("CumulativeRewardIntervalError(uint8,bytes32,uint256,uint256)"))
+    bytes4 internal constant CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR =
+        0x1f806d55;
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -454,5 +464,24 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return INVALID_WETH_ASSET_DATA_ERROR;
+    }
+
+    function CumulativeRewardIntervalError(
+        CumulativeRewardIntervalErrorCode errorCode,
+        bytes32 poolId,
+        uint256 beginEpoch,
+        uint256 endEpoch
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR,
+            errorCode,
+            poolId,
+            beginEpoch,
+            endEpoch
+        );
     }
 }

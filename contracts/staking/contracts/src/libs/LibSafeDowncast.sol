@@ -57,4 +57,21 @@ library LibSafeDowncast {
         }
         return b;
     }
+
+    /// @dev Safely downcasts to a uint32
+    /// Note that this reverts if the input value is too large.
+    function downcastToUint32(uint256 a)
+        internal
+        pure
+        returns (uint32 b)
+    {
+        b = uint32(a);
+        if (uint256(b) != a) {
+            LibRichErrors.rrevert(LibSafeMathRichErrors.Uint256DowncastError(
+                LibSafeMathRichErrors.DowncastErrorCodes.VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT32,
+                a
+            ));
+        }
+        return b;
+    }
 }

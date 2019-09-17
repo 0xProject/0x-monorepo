@@ -93,6 +93,10 @@
             {
                 "note": "Add `InitializationError`, `InvalidParamValue` to `StakingRevertErrors`.",
                 "pr": 2131
+            },
+            {
+                "note": "Add `CumulativeRewardIntervalError`.",
+                "pr": 2154
             }
         ]
     },

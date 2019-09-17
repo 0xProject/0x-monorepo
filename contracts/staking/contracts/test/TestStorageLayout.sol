@@ -97,6 +97,9 @@ contract TestStorageLayout is
             if sub(cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
+            if sub(cumulativeRewardsByPoolReferenceCounter_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
             if sub(cumulativeRewardsByPoolLastStored_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 

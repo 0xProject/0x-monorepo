@@ -11,6 +11,7 @@ export enum BinOpErrorCodes {
 }
 
 export enum DowncastErrorCodes {
+    ValueTooLargeToDowncastToUint32,
     ValueTooLargeToDowncastToUint64,
     ValueTooLargeToDowncastToUint96,
 }

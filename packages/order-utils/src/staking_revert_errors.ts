@@ -30,6 +30,12 @@ export enum InitializationErrorCode {
     MixinParamsAlreadyInitialized,
 }
 
+export enum CumulativeRewardIntervalErrorCode {
+    BeginEpochMustBeLessThanEndEpoch,
+    BeginEpochDoesNotHaveReward,
+    EndEpochDoesNotHaveReward,
+}
+
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -225,6 +231,21 @@ export class ProxyDestinationCannotBeNilError extends RevertError {
     }
 }
 
+export class CumulativeRewardIntervalError extends RevertError {
+    constructor(
+        errorCode?: CumulativeRewardIntervalErrorCode,
+        poolId?: string,
+        beginEpoch?: BigNumber | number | string,
+        endEpoch?: BigNumber | number | string,
+    ) {
+        super(
+            'CumulativeRewardIntervalError',
+            'CumulativeRewardIntervalError(uint8 errorCode, bytes32 poolId, uint256 beginEpoch, uint256 endEpoch)',
+            { errorCode, poolId, beginEpoch, endEpoch },
+        );
+    }
+}
+
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
@@ -249,6 +270,7 @@ const types = [
     RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
     ProxyDestinationCannotBeNilError,
+    CumulativeRewardIntervalError,
 ];
 
 // Register the types we've defined.

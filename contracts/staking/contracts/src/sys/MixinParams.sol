@@ -102,8 +102,11 @@ contract MixinParams is
         _cobbDouglasAlphaDenomintor = cobbDouglasAlphaDenomintor;
     }
 
-    /// @dev Initialzize storage belonging to this mixin.
-    function _initMixinParams() internal {
+    /// @dev Assert param values before initializing them.
+    /// This must be updated for each migration.
+    function _assertMixinParamsBeforeInit()
+        internal
+    {
         // Ensure state is uninitialized.
         if (epochDurationInSeconds != 0 &&
             rewardDelegatedStakeWeight != 0 &&
@@ -118,6 +121,15 @@ contract MixinParams is
                 )
             );
         }
+    }
+
+    /// @dev Initialize storage belonging to this mixin.
+    function _initMixinParams()
+        internal
+    {
+        // assert the current values before overwriting them.
+        _assertMixinParamsBeforeInit();
+
         // Set up defaults.
         epochDurationInSeconds = 2 weeks;
         rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100; // 90%

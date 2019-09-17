@@ -21,6 +21,7 @@ import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
+import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinEthVault from '../generated-artifacts/MixinEthVault.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
@@ -41,6 +42,7 @@ import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
+import * as TestCumulativeRewardTracking from '../generated-artifacts/TestCumulativeRewardTracking.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
 import * as TestLibProxy from '../generated-artifacts/TestLibProxy.json';
@@ -79,6 +81,7 @@ export const artifacts = {
     MixinStakeBalances: MixinStakeBalances as ContractArtifact,
     MixinStakeStorage: MixinStakeStorage as ContractArtifact,
     MixinZrxVault: MixinZrxVault as ContractArtifact,
+    MixinCumulativeRewards: MixinCumulativeRewards as ContractArtifact,
     MixinEthVault: MixinEthVault as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewardVault: MixinStakingPoolRewardVault as ContractArtifact,
@@ -90,6 +93,7 @@ export const artifacts = {
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
+    TestCumulativeRewardTracking: TestCumulativeRewardTracking as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
     TestLibProxy: TestLibProxy as ContractArtifact,
