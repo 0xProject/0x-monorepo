@@ -292,14 +292,14 @@ contract StakingPoolRewardVault is
         private
     {
         // sanity check on eth vault
-        IEthVault _ethVault = _ethVault;
-        if (address(_ethVault) == address(0)) {
+        IEthVault ethVault_ = _ethVault;
+        if (address(ethVault_) == address(0)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.EthVaultNotSetError()
             );
         }
 
         // perform xfer
-        _ethVault.depositFor.value(amount)(from);
+        ethVault_.depositFor.value(amount)(from);
     }
 }
