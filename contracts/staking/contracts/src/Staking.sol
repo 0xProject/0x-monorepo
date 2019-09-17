@@ -33,6 +33,114 @@ contract Staking is
     MixinStake,
     MixinExchangeFees
 {
+    constructor()
+        public
+    {
+        assembly {
+            let storage_offset := 0x0
+
+            /// Ownable
+
+            if iszero(eq(owner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            /// MixinStorage
+
+            if iszero(eq(wethAssetProxy_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(stakingContract_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(readOnlyProxy_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(readOnlyProxyCallee_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_activeStakeByOwner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_inactiveStakeByOwner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_delegatedStakeByOwner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_delegatedStakeToPoolByOwner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_delegatedStakeByPoolId_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_withdrawableStakeByOwner_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(nextPoolId_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(poolJoinedByMakerAddress_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(numMakersByPoolId_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(currentEpoch_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(currentEpochStartTimeInSeconds_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(protocolFeesThisEpochByPool_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(activePoolsThisEpoch_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_cumulativeRewardsByPool_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_cumulativeRewardsByPoolReferenceCounter_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(_cumulativeRewardsByPoolLastStored_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(validExchanges_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(zrxVault_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(ethVault_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(rewardVault_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(epochDurationInSeconds_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(rewardDelegatedStakeWeight_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(minimumPoolStake_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(maximumMakersInPool_slot, storage_offset)) { revert(0x0, 0x0) }
+            storage_offset := add(storage_offset, 0x1)
+
+            if iszero(eq(cobbDouglasAlphaNumerator_slot, storage_offset)) { revert(0x0, 0x0) }
+            if iszero(eq(cobbDouglasAlphaNumerator_offset, 0x0)) { revert(0x0, 0x0) }
+
+            // This number will be tightly packed into the previous values storage slot since
+            // they are both `uint32`. Because of this tight packing, the offset of this value
+            // must be 4, since the previous value is a 4 byte number.
+            if iszero(eq(cobbDouglasAlphaDenominator_slot, storage_offset)) { revert(0x0, 0x0) }
+            if iszero(eq(cobbDouglasAlphaDenominator_offset, 0x4)) { revert(0x0, 0x0) }
+        }
+    }
+
     // this contract can receive ETH
     // solhint-disable no-empty-blocks
     function ()
@@ -51,7 +159,7 @@ contract Staking is
         address _wethProxyAddress,
         address _ethVaultAddress,
         address payable _rewardVaultAddress,
-        address _zrxVaultAddress        
+        address _zrxVaultAddress
     )
         external
         onlyAuthorized
