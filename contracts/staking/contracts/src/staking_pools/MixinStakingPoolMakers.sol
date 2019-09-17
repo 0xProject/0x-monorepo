@@ -19,34 +19,27 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "../libs/LibSafeDowncast.sol";
 import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinStakingPoolRewards.sol";
 import "./MixinStakingPoolModifiers.sol";
 
 
 /// @dev This mixin contains logic for staking pools.
 contract MixinStakingPoolMakers is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
     MixinStakingPoolModifiers
 {
 
     using LibSafeMath for uint256;
+    using LibSafeDowncast for uint256;
 
+    /// @dev Allows caller to join a staking pool if already assigned.
+    /// @param poolId Unique id of pool.
     function joinStakingPoolAsMaker(
         bytes32 poolId
     )

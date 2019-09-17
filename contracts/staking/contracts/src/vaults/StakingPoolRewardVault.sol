@@ -38,21 +38,7 @@ contract StakingPoolRewardVault is
     using LibSafeMath for uint256;
 
     // mapping from poolId to Pool metadata
-    mapping (bytes32 => uint256) internal balanceByPoolId;
-
-    // address of ether vault
-    IEthVault internal _ethVault;
-
-    /// @dev Sets the Eth Vault.
-    /// Note that only the contract owner can call this.
-    /// @param ethVaultAddress Address of the Eth Vault.
-    function setEthVault(address ethVaultAddress)
-        external
-        onlyOwner
-    {
-        _ethVault = IEthVault(ethVaultAddress);
-        emit EthVaultChanged(ethVaultAddress);
-    }
+    mapping (bytes32 => uint256) internal _balanceByPoolId;
 
     /// @dev Deposit an amount of ETH (`msg.value`) for `poolId` into the vault.
     /// Note that this is only callable by the staking contract.
@@ -60,35 +46,29 @@ contract StakingPoolRewardVault is
     function depositFor(bytes32 poolId)
         external
         payable
-        onlyStakingContract
+        onlyStakingProxy
     {
-        balanceByPoolId[poolId] = balanceByPoolId[poolId].safeAdd(msg.value);
+        _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(msg.value);
         emit EthDepositedIntoVault(msg.sender, poolId, msg.value);
     }
 
     /// @dev Withdraw some amount in ETH of a pool member.
     /// Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
+    /// @param member of pool to transfer funds to.
     /// @param amount Amount in ETH to transfer.
+    /// @param ethVaultAddress address of Eth Vault to send rewards to.
     function transferToEthVault(
         bytes32 poolId,
         address member,
-        uint256 amount
+        uint256 amount,
+        address ethVaultAddress
     )
         external
         onlyStakingProxy
     {
-        // sanity check on eth vault
-        IEthVault _ethVault = ethVault;
-        if (address(_ethVault) == address(0)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.EthVaultNotSetError()
-            );
-        }
-
-        // perform transfer
-        balanceByPoolId[poolId] = balanceByPoolId[poolId].safeSub(amount);
-        _ethVault.depositFor.value(amount)(member);
+        _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
+        IEthVault(ethVaultAddress).depositFor.value(amount)(member);
         emit PoolRewardTransferredToEthVault(
             poolId,
             member,
@@ -103,6 +83,6 @@ contract StakingPoolRewardVault is
         view
         returns (uint256)
     {
-        return balanceByPoolId[poolId];
+        return _balanceByPoolId[poolId];
     }
 }

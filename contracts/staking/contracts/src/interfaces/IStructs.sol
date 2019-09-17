@@ -96,7 +96,7 @@ interface IStructs {
         IStructs.Fraction cumulativeReward;
     }
 
-    /// @dev Holds the balances and other data for a staking pool.
+    /// @dev Holds the metadata for a staking pool.
     /// @param initialzed True iff the balance struct is initialized.
     /// @param operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.

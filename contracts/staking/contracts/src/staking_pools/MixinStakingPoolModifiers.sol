@@ -19,39 +19,21 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../libs/LibStakingRichErrors.sol";
-import "../interfaces/IStructs.sol";
-import "../interfaces/IStakingEvents.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinStakingPoolRewards.sol";
 
 
 contract MixinStakingPoolModifiers is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards
+    MixinStorage
 {
-
-    using LibSafeMath for uint256;
 
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
     modifier onlyStakingPoolOperator(bytes32 poolId) {
-        address poolOperator = poolById[poolId].operator;
-        if (msg.sender != poolOperator) {
+        address operator = poolById[poolId].operator;
+        if (msg.sender != operator) {
             LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByPoolOperatorError(
                 msg.sender,
-                poolOperator
+                operator
             ));
         }
 
@@ -62,15 +44,15 @@ contract MixinStakingPoolModifiers is
     /// @param poolId Pool sender must be operator of.
     /// @param makerAddress Address of a maker in the pool.
     modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        address poolOperator;
+        address operator;
         if (
             msg.sender != makerAddress &&
-            msg.sender != (poolOperator = poolById[poolId].operator)
+            msg.sender != (operator = poolById[poolId].operator)
         ) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(
                     msg.sender,
-                    poolOperator,
+                    operator,
                     makerAddress
                 )
             );

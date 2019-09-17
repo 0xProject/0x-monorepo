@@ -38,22 +38,10 @@ interface IStakingPoolRewardVault {
     /// @param member of the pool.
     /// @param poolId The pool the reward was deposited for.
     event PoolRewardTransferredToEthVault(
-        bytes32 poolId,
-        address member,
+        bytes32 indexed poolId,
+        address indexed member,
         uint256 amount
     );
-
-    /// @dev Emitted when the eth vault is changed
-    /// @param newEthVault address of new Eth vault.
-    event EthVaultChanged(
-        address newEthVault
-    );
-
-    /// @dev Sets the Eth Vault.
-    /// Note that only the contract owner can call this.
-    /// @param ethVaultAddress Address of the Eth Vault.
-    function setEthVault(address ethVaultAddress)
-        external;
 
     /// @dev Deposit an amount of ETH (`msg.value`) for `poolId` into the vault.
     /// Note that this is only callable by the staking contract.
@@ -65,11 +53,14 @@ interface IStakingPoolRewardVault {
     /// @dev Withdraw some amount in ETH of a pool member.
     /// Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
+    /// @param member of pool to transfer funds to.
     /// @param amount Amount in ETH to transfer.
+    /// @param ethVaultAddress address of Eth Vault to send rewards to.
     function transferToEthVault(
         bytes32 poolId,
         address member,
-        uint256 amount
+        uint256 amount,
+        address ethVaultAddress
     )
         external;
 

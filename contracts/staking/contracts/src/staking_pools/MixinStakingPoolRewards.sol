@@ -19,10 +19,10 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
-import "./MixinEthVault.sol";
 
 
 contract MixinStakingPoolRewards is
@@ -38,16 +38,16 @@ contract MixinStakingPoolRewards is
     {
         address member = msg.sender;
 
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[member][poolId]);
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
         _syncRewardsForDelegator(
             poolId,
             member,
-            _loadUnsyncedBalance(delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
             finalDelegatedStakeToPoolByOwner
         );
 
         // update stored balance with synchronized version; this prevents redundant withdrawals.
-        delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
+        _delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -104,10 +104,12 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    /// @dev Records a reward for delegators. This adds to the `_cumulativeRewardsByPool`.
+    /// @dev Handles a pool's reward. This will deposit the operator's reward into the Eth Vault and
+    /// the members' reward into the Staking Pool Vault. It also records the cumulative reward, which
+    /// is used to compute each delegator's portion of the members' reward.
     /// @param poolId Unique Id of pool.
-    /// @param reward to record for delegators.
-    /// @param amountOfDelegatedStake the amount of delegated stake that will split this reward.
+    /// @param reward received by the pool.
+    /// @param amountOfDelegatedStake the amount of delegated stake that will split the  reward.
     /// @param epoch at which this was earned.
     function _handleStakingPoolReward(
         bytes32 poolId,
@@ -288,5 +290,25 @@ contract MixinStakingPoolRewards is
                 isDependent
             );
         }
+    }
+
+    /// @dev Transfers operator reward to the ETH vault.
+    /// @param poolId Unique Id of pool to transfer reward for,
+    /// @param operator of the pool.
+    /// @param amount of ETH to transfer.
+    function _transferOperatorRewardToEthVault(
+        bytes32 poolId,
+        address operator,
+        uint256 amount
+    )
+        private
+    {
+        // perform transfer and notify
+        ethVault.depositFor.value(amount)(operator);
+        emit OperatorRewardTransferredToEthVault(
+            poolId,
+            operator,
+            amount
+        );
     }
 }
