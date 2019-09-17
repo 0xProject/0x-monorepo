@@ -46,7 +46,7 @@ blockchainTests.resets('Stake Statuses', env => {
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 4, false),
             await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 5, false),
         ]);
-        unusedPoolId = await stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
+        unusedPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
     });
     describe('Stake', () => {
         it('should successfully stake zero ZRX', async () => {

@@ -104,7 +104,7 @@ export class PoolOperatorActor extends BaseActor {
         await txReceiptPromise;
         // Check operator share
         const pool = await this._stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
-        const decreasedOperatorShare = new BigNumber(pool[1]);
+        const decreasedOperatorShare = new BigNumber(pool[0]);
         expect(decreasedOperatorShare, 'updated operator share').to.be.bignumber.equal(newOperatorShare);
     }
 }
