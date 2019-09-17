@@ -125,7 +125,7 @@ contract MixinParams is
         internal
     {
         // Ensure state is uninitialized.
-        _assertStorageNotInitialized();
+        _assertParamsNotInitialized();
 
         // Set up defaults.
         // These cannot be set to variables, or we go over the stack variable limit.
@@ -141,6 +141,30 @@ contract MixinParams is
             _rewardVaultAddress,
             _zrxVaultAddress
         );
+    }
+
+    /// @dev Asserts that upgradable storage has not yet been initialized.
+    function _assertParamsNotInitialized()
+        internal
+        view
+    {
+        if (epochDurationInSeconds != 0 &&
+            rewardDelegatedStakeWeight != 0 &&
+            minimumPoolStake != 0 &&
+            maximumMakersInPool != 0 &&
+            cobbDouglasAlphaNumerator != 0 &&
+            cobbDouglasAlphaDenominator != 0 &&
+            address(wethAssetProxy) != NIL_ADDRESS &&
+            address(ethVault) != NIL_ADDRESS &&
+            address(rewardVault) != NIL_ADDRESS &&
+            address(zrxVault) != NIL_ADDRESS
+        ) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InitializationError(
+                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
+                )
+            );
+        }
     }
 
     /// @dev Set all configurable parameters at once.
@@ -205,30 +229,6 @@ contract MixinParams is
             _rewardVaultAddress,
             _zrxVaultAddress
         );
-    }
-
-    /// @dev Asserts that upgradable storage has not yet been initialized.
-    function _assertStorageNotInitialized()
-        private
-        view
-    {
-        if (epochDurationInSeconds != 0 &&
-            rewardDelegatedStakeWeight != 0 &&
-            minimumPoolStake != 0 &&
-            maximumMakersInPool != 0 &&
-            cobbDouglasAlphaNumerator != 0 &&
-            cobbDouglasAlphaDenominator != 0 &&
-            address(wethAssetProxy) != NIL_ADDRESS &&
-            address(ethVault) != NIL_ADDRESS &&
-            address(rewardVault) != NIL_ADDRESS &&
-            address(zrxVault) != NIL_ADDRESS
-        ) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
-                )
-            );
-        }
     }
 
     /// @dev Asserts that cobb douglas alpha values are valid.
