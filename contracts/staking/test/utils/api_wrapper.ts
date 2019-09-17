@@ -78,7 +78,7 @@ export class StakingApiWrapper {
                 _params.minimumPoolStake,
                 _params.maximumMakersInPool,
                 _params.cobbDouglasAlphaNumerator,
-                _params.cobbDouglasAlphaDenomintor,
+                _params.cobbDouglasAlphaDenominator,
                 _params.wethProxyAddress,
                 _params.ethVaultAddress,
                 _params.rewardVaultAddress,
@@ -94,7 +94,11 @@ export class StakingApiWrapper {
                     'minimumPoolStake',
                     'maximumMakersInPool',
                     'cobbDouglasAlphaNumerator',
-                    'cobbDouglasAlphaDenomintor',
+                    'cobbDouglasAlphaDenominator',
+                    'wethProxyAddress',
+                    'ethVaultAddress',
+                    'rewardVaultAddress',
+                    'zrxVaultAddress',
                 ],
                 await this.stakingContract.getParams.callAsync(),
             ) as any) as StakingParams;
@@ -211,7 +215,8 @@ export async function deployAndConfigureContractsAsync(
     await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
     // set staking proxy contract in reward vault
     await rewardVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
-
+    // set the eth vault in the reward vault
+    await rewardVaultContract.setEthVault.awaitTransactionSuccessAsync(ethVaultContract.address);
     return new StakingApiWrapper(
         env,
         ownerAddress,

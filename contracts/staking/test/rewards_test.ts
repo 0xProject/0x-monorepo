@@ -45,7 +45,10 @@ blockchainTests.resets('Testing Rewards', env => {
         await stakingApiWrapper.utils.setParamsAsync({
             minimumPoolStake: new BigNumber(0),
             cobbDouglasAlphaNumerator: new BigNumber(1),
-            cobbDouglasAlphaDenomintor: new BigNumber(6),
+            cobbDouglasAlphaDenominator: new BigNumber(6),
+            rewardVaultAddress: stakingApiWrapper.rewardVaultContract.address,
+            ethVaultAddress: stakingApiWrapper.ethVaultContract.address,
+            zrxVaultAddress: stakingApiWrapper.zrxVaultContract.address,
         });
         // setup stakers
         stakers = [new StakerActor(actors[0], stakingApiWrapper), new StakerActor(actors[1], stakingApiWrapper)];

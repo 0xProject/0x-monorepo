@@ -127,7 +127,7 @@ contract TestStorageLayout is
             if sub(cobbDouglasAlphaNumerator_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(cobbDouglasAlphaDenomintor_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(cobbDouglasAlphaDenominator_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
         }
     }

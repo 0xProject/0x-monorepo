@@ -34,7 +34,7 @@ blockchainTests('Configurable Parameters', env => {
                 new BigNumber(_params.minimumPoolStake),
                 new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
-                new BigNumber(_params.cobbDouglasAlphaDenomintor),
+                new BigNumber(_params.cobbDouglasAlphaDenominator),
                 _params.wethProxyAddress,
                 _params.ethVaultAddress,
                 _params.rewardVaultAddress,
@@ -49,7 +49,7 @@ blockchainTests('Configurable Parameters', env => {
             expect(event.minimumPoolStake).to.bignumber.eq(_params.minimumPoolStake);
             expect(event.maximumMakersInPool).to.bignumber.eq(_params.maximumMakersInPool);
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
-            expect(event.cobbDouglasAlphaDenomintor).to.bignumber.eq(_params.cobbDouglasAlphaDenomintor);
+            expect(event.cobbDouglasAlphaDenominator).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             expect(event.wethProxyAddress).to.eq(_params.wethProxyAddress);
             expect(event.ethVaultAddress).to.eq(_params.ethVaultAddress);
             expect(event.rewardVaultAddress).to.eq(_params.rewardVaultAddress);
@@ -61,7 +61,7 @@ blockchainTests('Configurable Parameters', env => {
             expect(actual[2]).to.bignumber.eq(_params.minimumPoolStake);
             expect(actual[3]).to.bignumber.eq(_params.maximumMakersInPool);
             expect(actual[4]).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
-            expect(actual[5]).to.bignumber.eq(_params.cobbDouglasAlphaDenomintor);
+            expect(actual[5]).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             expect(actual[6]).to.eq(_params.wethProxyAddress);
             expect(actual[7]).to.eq(_params.ethVaultAddress);
             expect(actual[8]).to.eq(_params.rewardVaultAddress);
@@ -108,7 +108,7 @@ blockchainTests('Configurable Parameters', env => {
             it('throws with denominator == 0', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 0,
-                    cobbDouglasAlphaDenomintor: 0,
+                    cobbDouglasAlphaDenominator: 0,
                 };
                 const tx = setParamsAndAssertAsync(params);
                 const expectedError = new StakingRevertErrors.InvalidParamValueError(
@@ -120,7 +120,7 @@ blockchainTests('Configurable Parameters', env => {
             it('throws with numerator > denominator', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 2,
-                    cobbDouglasAlphaDenomintor: 1,
+                    cobbDouglasAlphaDenominator: 1,
                 };
                 const tx = setParamsAndAssertAsync(params);
                 const expectedError = new StakingRevertErrors.InvalidParamValueError(
@@ -132,7 +132,7 @@ blockchainTests('Configurable Parameters', env => {
             it('accepts numerator == denominator', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 1,
-                    cobbDouglasAlphaDenomintor: 1,
+                    cobbDouglasAlphaDenominator: 1,
                 };
                 return setParamsAndAssertAsync(params);
             });
@@ -140,7 +140,7 @@ blockchainTests('Configurable Parameters', env => {
             it('accepts numerator < denominator', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 1,
-                    cobbDouglasAlphaDenomintor: 2,
+                    cobbDouglasAlphaDenominator: 2,
                 };
                 return setParamsAndAssertAsync(params);
             });
@@ -148,7 +148,7 @@ blockchainTests('Configurable Parameters', env => {
             it('accepts numerator == 0', async () => {
                 const params = {
                     cobbDouglasAlphaNumerator: 0,
-                    cobbDouglasAlphaDenomintor: 1,
+                    cobbDouglasAlphaDenominator: 1,
                 };
                 return setParamsAndAssertAsync(params);
             });

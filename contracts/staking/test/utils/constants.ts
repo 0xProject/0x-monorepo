@@ -16,7 +16,7 @@ export const constants = {
         minimumPoolStake: testConstants.DUMMY_TOKEN_DECIMALS.times(100),
         maximumMakersInPool: new BigNumber(10),
         cobbDouglasAlphaNumerator: new BigNumber(1),
-        cobbDouglasAlphaDenomintor: new BigNumber(2),
+        cobbDouglasAlphaDenominator: new BigNumber(2),
         wethProxyAddress: randomAddress(),
         ethVaultAddress: randomAddress(),
         rewardVaultAddress: randomAddress(),

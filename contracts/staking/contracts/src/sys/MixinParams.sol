@@ -104,7 +104,7 @@ contract MixinParams is
         _minimumPoolStake = minimumPoolStake;
         _maximumMakersInPool = maximumMakersInPool;
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
-        _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenomintor;
+        _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
         _wethProxyAddress = address(wethAssetProxy);
         _ethVaultAddress = address(ethVault);
         _rewardVaultAddress = address(rewardVault);
@@ -135,7 +135,7 @@ contract MixinParams is
             100 * MIN_TOKEN_VALUE,         // minimumPoolStake
             10,                            // maximumMakersInPool
             1,                             // cobbDouglasAlphaNumerator
-            2,                             // cobbDouglasAlphaDenomintor
+            2,                             // cobbDouglasAlphaDenominator
             _wethProxyAddress,
             _ethVaultAddress,
             _rewardVaultAddress,
@@ -187,7 +187,7 @@ contract MixinParams is
         minimumPoolStake = _minimumPoolStake;
         maximumMakersInPool = _maximumMakersInPool;
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
-        cobbDouglasAlphaDenomintor = _cobbDouglasAlphaDenominator;
+        cobbDouglasAlphaDenominator = _cobbDouglasAlphaDenominator;
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
         ethVault = IEthVault(_ethVaultAddress);
         rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
@@ -216,7 +216,7 @@ contract MixinParams is
             minimumPoolStake != 0 &&
             maximumMakersInPool != 0 &&
             cobbDouglasAlphaNumerator != 0 &&
-            cobbDouglasAlphaDenomintor != 0 &&
+            cobbDouglasAlphaDenominator != 0 &&
             address(wethAssetProxy) != NIL_ADDRESS &&
             address(ethVault) != NIL_ADDRESS &&
             address(rewardVault) != NIL_ADDRESS &&

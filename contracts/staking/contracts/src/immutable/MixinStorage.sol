@@ -129,5 +129,5 @@ contract MixinStorage is
     uint32 public cobbDouglasAlphaNumerator;
 
     // Denominator for cobb douglas alpha factor.
-    uint32 public cobbDouglasAlphaDenomintor;
+    uint32 public cobbDouglasAlphaDenominator;
 }

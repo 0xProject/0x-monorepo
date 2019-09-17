@@ -8,7 +8,7 @@ export interface StakingParams {
     minimumPoolStake: BigNumber;
     maximumMakersInPool: BigNumber;
     cobbDouglasAlphaNumerator: number | BigNumber;
-    cobbDouglasAlphaDenomintor: number | BigNumber;
+    cobbDouglasAlphaDenominator: number | BigNumber;
     wethProxyAddress: string;
     ethVaultAddress: string;
     rewardVaultAddress: string;
