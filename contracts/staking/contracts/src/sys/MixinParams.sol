@@ -111,7 +111,7 @@ contract MixinParams is
         _zrxVaultAddress = address(zrxVault);
     }
 
-    /// @dev Initialzize storage belonging to this mixin.
+    /// @dev Initialize storage belonging to this mixin.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     /// @param _ethVaultAddress Address of the EthVault contract.
     /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.

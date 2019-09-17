@@ -89,9 +89,8 @@ blockchainTests('Migration tests', env => {
             });
 
             it('throws if not called by owner', async () => {
-                const attachedAddress = randomAddress();
                 const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
-                    attachedAddress,
+                    initTargetContract.address,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
