@@ -33,8 +33,7 @@ contract MixinZrxVault is
     function _depositFromOwnerIntoZrxVault(address owner, uint256 amount)
         internal
     {
-        IZrxVault _zrxVault = zrxVault;
-        _zrxVault.depositFrom(owner, amount);
+        zrxVault.depositFrom(owner, amount);
     }
 
     /// @dev Withdraws Zrx Tokens from to `owner` from the vault.
@@ -43,8 +42,7 @@ contract MixinZrxVault is
     function _withdrawToOwnerFromZrxVault(address owner, uint256 amount)
         internal
     {
-        IZrxVault _zrxVault = zrxVault;
-        _zrxVault.withdrawFrom(owner, amount);
+        zrxVault.withdrawFrom(owner, amount);
     }
 
     /// @dev Returns balance of `owner` in the ZRX ault.
@@ -54,7 +52,6 @@ contract MixinZrxVault is
         view
         returns (uint256)
     {
-        IZrxVault _zrxVault = zrxVault;
-        return _zrxVault.balanceOf(owner);
+        return zrxVault.balanceOf(owner);
     }
 }
