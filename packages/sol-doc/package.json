@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-doc",
-    "version": "2.0.18",
+    "version": "2.0.19",
     "description": "Solidity documentation generator",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.js",
@@ -26,10 +26,10 @@
     "author": "F. Eugene Aumson",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/sol-compiler": "^3.1.14",
-        "@0x/types": "^2.4.2",
-        "@0x/utils": "^4.5.1",
-        "ethereum-types": "^2.1.5",
+        "@0x/sol-compiler": "^3.1.15",
+        "@0x/types": "^2.4.3",
+        "@0x/utils": "^4.5.2",
+        "ethereum-types": "^2.1.6",
         "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.11",
         "yargs": "^10.0.3"
