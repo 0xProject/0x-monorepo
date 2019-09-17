@@ -190,7 +190,7 @@ contract MixinStake is
         // increment how much stake has been delegated to pool
         _incrementNextBalance(delegatedStakeByPoolId[poolId], amount);
 
-        // synchronizes reward state in the pool that the staker is undelegating from
+        // synchronizes reward state in the pool that the staker is delegating to
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(delegatedStakeToPoolByOwner[owner][poolId]);
         _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
     }

@@ -263,7 +263,7 @@ contract MixinCumulativeRewards is
 
     /// @dev Computes a member's reward over a given epoch interval.
     /// @param poolId Uniqud Id of pool.
-    /// @param memberStakeOverInterval Stake delegated to pool by meber over the interval.
+    /// @param memberStakeOverInterval Stake delegated to pool by member over the interval.
     /// @param beginEpoch beginning of interval.
     /// @param endEpoch end of interval.
     /// @return rewards accumulated over interval [beginEpoch, endEpoch]
@@ -277,19 +277,55 @@ contract MixinCumulativeRewards is
         view
         returns (uint256)
     {
-        // sanity check
+        // sanity check inputs
         if (memberStakeOverInterval == 0) {
             return 0;
         }
 
+        // sanity check interval
+        if (beginEpoch >= endEpoch) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.CumulativeRewardIntervalError(
+                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.BeginEpochMustBeLessThanEndEpoch,
+                    poolId,
+                    beginEpoch,
+                    endEpoch
+                )
+            );
+        }
+
+        // sanity check begin reward
+        IStructs.Fraction memory beginReward = cumulativeRewardsByPool[poolId][beginEpoch];
+        if (!_isCumulativeRewardSet(beginReward)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.CumulativeRewardIntervalError(
+                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.BeginEpochDoesNotHaveReward,
+                    poolId,
+                    beginEpoch,
+                    endEpoch
+                )
+            );
+        }
+
+        // sanity check end reward
+        IStructs.Fraction memory endReward = cumulativeRewardsByPool[poolId][endEpoch];
+        if (!_isCumulativeRewardSet(endReward)) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.CumulativeRewardIntervalError(
+                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.EndEpochDoesNotHaveReward,
+                    poolId,
+                    beginEpoch,
+                    endEpoch
+                )
+            );
+        }
+
         // compute reward
-        IStructs.Fraction memory beginRatio = cumulativeRewardsByPool[poolId][beginEpoch];
-        IStructs.Fraction memory endRatio = cumulativeRewardsByPool[poolId][endEpoch];
         uint256 reward = LibFractions.scaleFractionalDifference(
-            endRatio.numerator,
-            endRatio.denominator,
-            beginRatio.numerator,
-            beginRatio.denominator,
+            endReward.numerator,
+            endReward.denominator,
+            beginReward.numerator,
+            beginReward.denominator,
             memberStakeOverInterval
         );
         return reward;

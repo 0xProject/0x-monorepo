@@ -620,7 +620,9 @@ blockchainTests.resets('Testing Rewards', env => {
                 membersRewardVaultBalance: rewardsForDelegator[1],
             });
         });
-        it('Should collect fees correctly when there is a payout for `currentEpochBalance` but not `nextEpochBalance`', async () => {
+        it('Should collect fees correctly when re-delegating after un-delegating', async () => {
+            // Note - there are two ranges over which payouts are computed (see _computeRewardBalanceOfDelegator).
+            // This triggers the first range (rewards for `delegatedStake.currentEpoch`), but not the second.
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
@@ -640,7 +642,6 @@ blockchainTests.resets('Testing Rewards', env => {
             );
             // this should go to the delegator
             await payProtocolFeeAndFinalize(rewardForDelegator);
-
             // delegate stake ~ this will result in a payout where rewards are computed on
             // the balance's `currentEpochBalance` field but not the `nextEpochBalance` field.
             await stakers[0].moveStakeAsync(
