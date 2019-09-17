@@ -271,29 +271,12 @@ contract MixinStakingPoolRewards is
             return reward = 0;
         }
 
-        // From here we know:
-        //   1. `currentEpoch > 0`
-        //   2. `stake.currentEpoch < currentEpoch`.
-
-        // Get the last epoch where a reward was credited to this pool.
-        uint256 lastRewardEpoch = lastPoolRewardEpoch[poolId];
-        // Get the last reward epoch for which we collected rewards from.
-        uint256 lastCollectedRewardEpoch =
-            lastCollectedRewardsEpochToPoolByOwner[member][poolId];
-
-        // If either of these are true, the most recent reward has already been
-        // claimed.
-        if (lastCollectedRewardEpoch == lastRewardEpoch
-                || stake.currentEpoch >= lastRewardEpoch) {
-            return reward = 0;
-        }
-
         // If there are unfinalized rewards this epoch, compute the member's
         // share.
         if (unfinalizedMembersReward != 0 && unfinalizedDelegatedStake != 0) {
             // Unfinalized rewards are always earned from stake in
             // the prior epoch so we want the stake at `currentEpoch-1`.
-            uint256 _stake = stake.currentEpoch == currentEpoch - 1 ?
+            uint256 _stake = stake.currentEpoch >= currentEpoch - 1 ?
                 stake.currentEpochBalance :
                 stake.nextEpochBalance;
             if (_stake != 0) {
@@ -303,16 +286,35 @@ contract MixinStakingPoolRewards is
             }
         }
 
-        // Add rewards up to the last reward epoch.
-        if (lastRewardEpoch != 0) {
+        // Get the last epoch where a reward was credited to this pool.
+        uint256 lastRewardEpoch = lastPoolRewardEpoch[poolId];
+
+        // If the stake has been touched since the last reward epoch,
+        // it has already been claimed.
+        if (stake.currentEpoch >= lastRewardEpoch) {
+            return reward;
+        }
+        // From here we know: `stake.currentEpoch < currentEpoch > 0`.
+
+        if (stake.currentEpoch < lastRewardEpoch) {
             reward = reward.safeAdd(
                 _computeMemberRewardOverInterval(
                     poolId,
                     stake,
-                    stake.currentEpoch + 1,
-                    lastRewardEpoch
+                    stake.currentEpoch,
+                    stake.currentEpoch + 1
                 )
             );
+            if (stake.currentEpoch + 1 < lastRewardEpoch) {
+                reward = reward.safeAdd(
+                    _computeMemberRewardOverInterval(
+                        poolId,
+                        stake,
+                        stake.currentEpoch + 1,
+                        lastRewardEpoch
+                    )
+                );
+            }
         }
     }
 
@@ -355,6 +357,10 @@ contract MixinStakingPoolRewards is
                 mostRecentCumulativeRewardInfo,
                 isDependent
             );
+        }
+        uint256 nextEpoch = epoch.safeAdd(1);
+        if (!_isCumulativeRewardSet(cumulativeRewardsByPoolPtr[nextEpoch])) {
+            cumulativeRewardsByPoolPtr[nextEpoch] = mostRecentCumulativeRewards;
         }
     }
 }
