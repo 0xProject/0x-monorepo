@@ -29,7 +29,7 @@ contract TestFinalizer is
 {
     event RecordStakingPoolRewards(
         bytes32 poolId,
-        uint256 membersReward,
+        uint256 totalReward,
         uint256 membersStake
     );
 
@@ -37,6 +37,17 @@ contract TestFinalizer is
         uint256 operatorReward,
         uint256 membersReward
     );
+
+    struct UnfinalizedPoolReward {
+        uint256 totalReward;
+        uint256 membersStake;
+    }
+
+    struct FinalizedPoolRewards {
+        uint256 operatorReward;
+        uint256 membersReward;
+        uint256 membersStake;
+    }
 
     address payable private _operatorRewardsReceiver;
     address payable private _membersRewardsReceiver;
@@ -87,17 +98,13 @@ contract TestFinalizer is
     }
 
     /// @dev Expose `_finalizePool()`
-    function internalFinalizePool(bytes32 poolId)
+    function finalizePool(bytes32 poolId)
         external
-        returns (
-            uint256 operatorReward,
-            uint256 membersReward,
-            uint256 membersStake
-        )
+        returns (FinalizedPoolRewards memory reward)
     {
-        (operatorReward,
-         membersReward,
-         membersStake) = _finalizePool(poolId);
+        (reward.operatorReward,
+         reward.membersReward,
+         reward.membersStake) = _finalizePool(poolId);
     }
 
     /// @dev Get finalization-related state variables.
@@ -153,19 +160,17 @@ contract TestFinalizer is
     }
 
     /// @dev Expose `_getUnfinalizedPoolReward()`
-    function internalGetUnfinalizedPoolRewards(bytes32 poolId)
+    function getUnfinalizedPoolRewards(bytes32 poolId)
         external
         view
-        returns (
-            uint256 totalReward,
-            uint256 membersStake
-        )
+        returns (UnfinalizedPoolReward memory reward)
     {
-        (totalReward, membersStake) = _getUnfinalizedPoolRewards(poolId);
+        (reward.totalReward, reward.membersStake) =
+            _getUnfinalizedPoolRewards(poolId);
     }
 
     /// @dev Expose `_getActivePoolFromEpoch`.
-    function internalGetActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
+    function getActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
         external
         view
         returns (IStructs.ActivePool memory pool)
@@ -182,7 +187,8 @@ contract TestFinalizer is
         internal
         returns (uint256 operatorReward, uint256 membersReward)
     {
-        (operatorReward, membersReward) = _splitReward(poolId, reward);
+        (operatorReward, membersReward) =
+            _splitReward(poolId, reward, membersStake);
         emit RecordStakingPoolRewards(
             poolId,
             reward,
@@ -199,7 +205,7 @@ contract TestFinalizer is
     {
         emit DepositStakingPoolRewards(operatorReward, membersReward);
         address(_operatorRewardsReceiver).transfer(operatorReward);
-        address(_membersRewardsReceiver).transfer(operatorReward);
+        address(_membersRewardsReceiver).transfer(membersReward);
     }
 
     /// @dev Overriden to just increase the epoch counter.
@@ -214,21 +220,18 @@ contract TestFinalizer is
     /// @dev Split a pool's total reward between the operator and members.
     function _splitReward(
         bytes32 poolId,
-        uint256 amount
+        uint256 amount,
+        uint256 membersStake
     )
         private
         view
         returns (uint256 operatorReward, uint256 membersReward)
     {
-        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(
-            currentEpoch - 1,
-            poolId
-        );
         uint32 operatorShare = _operatorSharesByPool[poolId];
         (operatorReward, membersReward) = _splitStakingPoolRewards(
             operatorShare,
             amount,
-            pool.membersStake
+            membersStake
         );
     }
 
