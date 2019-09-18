@@ -113,6 +113,8 @@ contract MixinStakingPool is
         return nextPoolId;
     }
 
+    /// @dev Returns a staking pool
+    /// @param poolId Unique id of pool.
     function getStakingPool(bytes32 poolId)
         public
         view
@@ -132,6 +134,8 @@ contract MixinStakingPool is
         return bytes32(uint256(poolId).safeAdd(POOL_ID_INCREMENT_AMOUNT));
     }
 
+    /// @dev Reverts iff a staking pool does not exist.
+    /// @param poolId Unique id of pool.
     function _assertStakingPoolExists(bytes32 poolId)
         internal
         view
@@ -148,6 +152,10 @@ contract MixinStakingPool is
         }
     }
 
+    /// @dev Reverts iff the new operator share is invalid.
+    /// @param poolId Unique id of pool.
+    /// @param currentOperatorShare Current operator share.
+    /// @param newOperatorShare New operator share.
     function _assertNewOperatorShare(
         bytes32 poolId,
         uint32 currentOperatorShare,

@@ -97,7 +97,7 @@ interface IStructs {
     }
 
     /// @dev Holds the metadata for a staking pool.
-    /// @param initialzed True iff the balance struct is initialized.
+    /// @param initialized True iff the balance struct is initialized.
     /// @param operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
     /// @param numberOfMakers Number of makers in the pool.
