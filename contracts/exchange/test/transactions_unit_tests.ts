@@ -21,7 +21,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
         signerAddress: constants.NULL_ADDRESS,
         data: constants.NULL_BYTES,
         domain: {
-            verifyingContractAddress: constants.NULL_ADDRESS,
+            verifyingContract: constants.NULL_ADDRESS,
             chainId: 0,
         },
     };
@@ -45,7 +45,7 @@ blockchainTests.resets('Transaction Unit Tests', ({ provider, web3Wrapper, txDef
 
         // Set the default domain.
         domain = {
-            verifyingContractAddress: transactionsContract.address,
+            verifyingContract: transactionsContract.address,
             chainId: 1337,
         };
     });

@@ -17,7 +17,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
                 constants.NULL_ADDRESS,
             );
             const domain = {
-                verifyingContractAddress: libEIP712ExchangeDomainContract.address,
+                verifyingContract: libEIP712ExchangeDomainContract.address,
                 chainId,
                 name: constants.EIP712_DOMAIN_NAME,
                 version: constants.EIP712_DOMAIN_VERSION,
@@ -28,17 +28,17 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
         });
         it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to a non-null address', async () => {
             const chainId = 1;
-            const verifyingContractAddress = randomAddress();
+            const verifyingContract = randomAddress();
             const libEIP712ExchangeDomainContract = await TestLibEIP712ExchangeDomainContract.deployFrom0xArtifactAsync(
                 artifacts.TestLibEIP712ExchangeDomain,
                 env.provider,
                 env.txDefaults,
                 {},
                 new BigNumber(chainId),
-                verifyingContractAddress,
+                verifyingContract,
             );
             const domain = {
-                verifyingContractAddress,
+                verifyingContract,
                 chainId,
                 name: constants.EIP712_DOMAIN_NAME,
                 version: constants.EIP712_DOMAIN_VERSION,

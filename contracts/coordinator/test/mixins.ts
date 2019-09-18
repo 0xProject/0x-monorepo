@@ -55,7 +55,7 @@ describe('Mixins tests', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts.slice(0, 3);
         exchangeDomain = {
-            verifyingContractAddress: constants.NULL_ADDRESS,
+            verifyingContract: constants.NULL_ADDRESS,
             chainId,
         };
         defaultOrder = {

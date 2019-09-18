@@ -102,7 +102,7 @@ export class IsolatedExchangeWrapper {
 
     public getOrderHash(order: Order): string {
         const domain = {
-            verifyingContractAddress: this.instance.address,
+            verifyingContract: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
         };
         return orderHashUtils.getOrderHashHex({ ...order, domain });

@@ -53,7 +53,7 @@ export const orderFactory = {
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
             domain: {
-                verifyingContractAddress: exchangeAddress,
+                verifyingContract: exchangeAddress,
                 chainId,
             },
         };
@@ -118,7 +118,7 @@ function generateEmptyOrder(chainId: number): Order {
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
         domain: {
-            verifyingContractAddress: constants.NULL_ADDRESS,
+            verifyingContract: constants.NULL_ADDRESS,
             chainId,
         },
     };

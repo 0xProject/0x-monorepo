@@ -167,7 +167,7 @@ describe('OrderMatcher', () => {
         );
 
         const domain = {
-            verifyingContractAddress: exchange.address,
+            verifyingContract: exchange.address,
             chainId,
         };
 

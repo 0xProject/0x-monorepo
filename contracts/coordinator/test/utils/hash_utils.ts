@@ -6,13 +6,13 @@ import * as _ from 'lodash';
 export const hashUtils = {
     getApprovalHashBuffer(
         transaction: SignedZeroExTransaction,
-        verifyingContractAddress: string,
+        verifyingContract: string,
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
     ): Buffer {
         const typedData = eip712Utils.createCoordinatorApprovalTypedData(
             transaction,
-            verifyingContractAddress,
+            verifyingContract,
             txOrigin,
             approvalExpirationTimeSeconds,
         );
@@ -21,12 +21,12 @@ export const hashUtils = {
     },
     getApprovalHashHex(
         transaction: SignedZeroExTransaction,
-        verifyingContractAddress: string,
+        verifyingContract: string,
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
     ): string {
         const hashHex = `0x${hashUtils
-            .getApprovalHashBuffer(transaction, verifyingContractAddress, txOrigin, approvalExpirationTimeSeconds)
+            .getApprovalHashBuffer(transaction, verifyingContract, txOrigin, approvalExpirationTimeSeconds)
             .toString('hex')}`;
         return hashHex;
     },

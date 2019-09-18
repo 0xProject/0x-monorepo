@@ -42,13 +42,13 @@ describe('Signature utils', () => {
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
             domain: {
-                verifyingContractAddress: fakeExchangeContractAddress,
+                verifyingContract: fakeExchangeContractAddress,
                 chainId: fakeChainId,
             },
         };
         transaction = {
             domain: {
-                verifyingContractAddress: fakeExchangeContractAddress,
+                verifyingContract: fakeExchangeContractAddress,
                 chainId: fakeChainId,
             },
             salt: generatePseudoRandomSalt(),
@@ -188,7 +188,7 @@ describe('Signature utils', () => {
     describe('#ecSignOrderAsync', () => {
         it('should default to eth_sign if eth_signTypedData is unavailable', async () => {
             const expectedSignature =
-                '0x1c5e6c2a66037230b86a410b1d68108683ee8288d3668af91cab72dde1e1541ca86a50b638ccc743f6194a21dd313e71b4b155b2ad882f874d5d790d37d4623ca203';
+                '0x1bea7883d76c4d8d0cd5915ec613f8dedf3b5f03e6a1f74aa171e700b0becdc8b47ade1ede08a5496ff31e34715bc6ac5da5aba709d3d8989a48127c18ef2f56d503';
 
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
@@ -384,7 +384,7 @@ describe('Signature utils', () => {
         });
         it('should return the correct signature for signatureHex concatenated as R + S + V', async () => {
             const expectedSignature =
-                '0x1c686a55fa3f563115c0f2bc2b1c51964d0b6a05dd5ee862b702275600b7f634970f2275dccc1073f87a916dfde88574385b2d7a3eed0c2bdc08c76bad748d7d9002';
+                '0x1b65b7b6205a4511cc81ec8f1b3eb475b398d60985089a3041c74735109f207e99542c7f0f81b0a988317e89b8280ec72829c8532a04c376f1f1236589c911545002';
             const fakeProvider = {
                 async sendAsync(payload: JSONRPCRequestPayload, callback: JSONRPCErrorCallback): Promise<void> {
                     if (payload.method === 'eth_signTypedData') {

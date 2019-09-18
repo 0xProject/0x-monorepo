@@ -47,7 +47,7 @@ describe('Libs tests', () => {
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
                 domain: {
-                    verifyingContractAddress: exchangeAddress,
+                    verifyingContract: exchangeAddress,
                     chainId,
                 },
             };
@@ -66,7 +66,7 @@ describe('Libs tests', () => {
                 data: '0x1234',
                 signature: '0x5678',
                 domain: {
-                    verifyingContractAddress: exchangeAddress,
+                    verifyingContract: exchangeAddress,
                     chainId,
                 },
             };

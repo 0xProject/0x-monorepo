@@ -108,7 +108,7 @@ blockchainTests.resets('Exchange transactions', env => {
         defaultTakerFeeTokenAddress = takerFeeToken.address;
 
         domain = {
-            verifyingContractAddress: exchangeInstance.address,
+            verifyingContract: exchangeInstance.address,
             chainId,
         };
 

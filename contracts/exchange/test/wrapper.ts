@@ -98,7 +98,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
             domain: {
-                verifyingContractAddress: exchange.address,
+                verifyingContract: exchange.address,
                 chainId,
             },
         };

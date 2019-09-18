@@ -121,7 +121,7 @@ blockchainTests(ContractName.Forwarder, env => {
             makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             domain: {
-                verifyingContractAddress: exchangeInstance.address,
+                verifyingContract: exchangeInstance.address,
                 chainId,
             },
         };

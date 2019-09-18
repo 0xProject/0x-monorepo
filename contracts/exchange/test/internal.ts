@@ -57,7 +57,7 @@ blockchainTests('Exchange core internal functions', env => {
             feeRecipientAddress: randomAddress(),
             expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
             domain: {
-                verifyingContractAddress: constants.NULL_ADDRESS,
+                verifyingContract: constants.NULL_ADDRESS,
                 chainId: 1337, // The chain id for the isolated exchange
             },
         };
@@ -67,7 +67,7 @@ blockchainTests('Exchange core internal functions', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContractAddress = testExchange.address;
+            ORDER_DEFAULTS.domain.verifyingContract = testExchange.address;
         });
 
         it('should revert if the maker asset multiplication should overflow', async () => {

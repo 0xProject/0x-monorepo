@@ -22,7 +22,7 @@ blockchainTests('LibZeroExTransaction', env => {
         signerAddress: constants.NULL_ADDRESS,
         data: constants.NULL_BYTES,
         domain: {
-            verifyingContractAddress: constants.NULL_ADDRESS,
+            verifyingContract: constants.NULL_ADDRESS,
             chainId: 0,
         },
     };
@@ -58,7 +58,7 @@ blockchainTests('LibZeroExTransaction', env => {
                 ...EMPTY_TRANSACTION,
                 domain: {
                     ...EMPTY_TRANSACTION.domain,
-                    verifyingContractAddress: libZeroExTransactionContract.address,
+                    verifyingContract: libZeroExTransactionContract.address,
                 },
             });
         });
@@ -72,7 +72,7 @@ blockchainTests('LibZeroExTransaction', env => {
                 data: randomAssetData(),
                 domain: {
                     ...EMPTY_TRANSACTION.domain,
-                    verifyingContractAddress: libZeroExTransactionContract.address,
+                    verifyingContract: libZeroExTransactionContract.address,
                 },
             });
         });
@@ -128,7 +128,7 @@ blockchainTests('LibZeroExTransaction', env => {
                 data: randomAssetData(),
                 // The domain is not used in this test, so it's okay if it is left empty.
                 domain: {
-                    verifyingContractAddress: constants.NULL_ADDRESS,
+                    verifyingContract: constants.NULL_ADDRESS,
                     chainId: 0,
                 },
             });

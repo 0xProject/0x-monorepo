@@ -431,7 +431,7 @@ export class OrderFactoryFromScenario {
             feeRecipientAddress,
             expirationTimeSeconds,
             domain: {
-                verifyingContractAddress: this._exchangeAddress,
+                verifyingContract: this._exchangeAddress,
                 chainId: this._chainId,
             },
         };

@@ -37,7 +37,7 @@ export class TransactionFactory {
             expirationTimeSeconds: new BigNumber(currentBlockTimestamp).plus(tenMinutesInSeconds),
             gasPrice: new BigNumber(constants.DEFAULT_GAS_PRICE),
             domain: {
-                verifyingContractAddress: this._exchangeAddress,
+                verifyingContract: this._exchangeAddress,
                 chainId: this._chainId,
             },
             ...customTransactionParams,

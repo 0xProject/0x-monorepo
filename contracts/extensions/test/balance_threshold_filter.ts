@@ -178,7 +178,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
             senderAddress: erc721BalanceThresholdFilterInstance.address,
             domain: {
-                verifyingContractAddress: exchangeInstance.address,
+                verifyingContract: exchangeInstance.address,
                 chainId,
             },
         };

@@ -8,7 +8,7 @@
     },
     "required": [
         "chainId",
-        "verifyingContractAddress"
+        "verifyingContract"
     ],
     "type": "object"
 }

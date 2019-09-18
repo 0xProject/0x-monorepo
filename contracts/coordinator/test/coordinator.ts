@@ -112,7 +112,7 @@ describe('Coordinator tests', () => {
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
             domain: {
-                verifyingContractAddress: exchange.address,
+                verifyingContract: exchange.address,
                 chainId,
             },
         };
