@@ -113,12 +113,6 @@ blockchainTests.resets('Testing Rewards', env => {
                         ? _expectedEndBalances.poolRewardVaultBalance
                         : ZERO,
             };
-            /*
-            const pool = await stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
-            const operatorBalance = pool[2];
-            const membersBalance = pool[3];
-            const poolBalances = { poolBalance: operatorBalance.plus(membersBalance), operatorBalance, membersBalance };
-            */
             const finalEndBalancesAsArray = await Promise.all([
                 // staker 1
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(

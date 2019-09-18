@@ -146,14 +146,4 @@ interface IStakingEvents {
         uint32 oldOperatorShare,
         uint32 newOperatorShare
     );
-
-    /// @dev Emitted when an operator reward is transferred to the Eth vault.
-    /// @param amount The amount in ETH withdrawn.
-    /// @param operator of the pool.
-    /// @param poolId The pool the reward was deposited for.
-    event OperatorRewardTransferredToEthVault(
-        bytes32 poolId,
-        address operator,
-        uint256 amount
-    );
 }

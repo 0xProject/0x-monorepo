@@ -49,6 +49,10 @@
             {
                 "note": "Refactored Staking Reward Vault. Moved pool management logic into staking contract.",
                 "pr": 2156
+            },
+            {
+                "note": "Removed MixinStakingPoolRewardVault.sol",
+                "pr": 2156
             }
         ]
     }

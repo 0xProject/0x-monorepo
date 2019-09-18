@@ -32,6 +32,8 @@ contract MixinStakingPoolRewards is
 
     /// @dev Syncs rewards for a delegator. This includes transferring rewards from
     /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
+    /// This is used by a delegator when they want to sync their rewards without delegating/undelegating.
+    /// It's effectively the same as delegating zero stake.
     /// @param poolId Unique id of pool.
     function syncDelegatorRewards(bytes32 poolId)
         external
