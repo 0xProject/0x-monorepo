@@ -349,7 +349,7 @@ contract Staking is
                 expected_offset
             ) {
                 // If expected_slot is not equal to actual_slot, revert with a rich error.
-                if iszero(eq(expected_slot, actual_slot)) {
+                if sub(expected_slot, actual_slot) {
                     mstore(0x0, 0x213eb13400000000000000000000000000000000000000000000000000000000) // Rich error selector
                     mstore(0x4, 0x0)                                                                // Unexpected slot error code
                     mstore(0x24, expected_slot)                                                     // Expected slot
@@ -358,7 +358,7 @@ contract Staking is
                 }
 
                 // If expected_offset is not equal to actual_offset, revert with a rich error.
-                if iszero(eq(expected_offset, actual_offset)) {
+                if sub(expected_offset, actual_offset) {
                     mstore(0x0, 0x213eb13400000000000000000000000000000000000000000000000000000000) // Rich error selector
                     mstore(0x4, 0x1)                                                                // Unexpected offset error code
                     mstore(0x24, expected_offset)                                                   // Expected offset
