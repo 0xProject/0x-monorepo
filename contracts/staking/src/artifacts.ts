@@ -55,7 +55,6 @@ import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json'
 import * as TestProtocolFeesERC20Proxy from '../generated-artifacts/TestProtocolFeesERC20Proxy.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
-import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
@@ -109,5 +108,4 @@ export const artifacts = {
     TestProtocolFeesERC20Proxy: TestProtocolFeesERC20Proxy as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingProxy: TestStakingProxy as ContractArtifact,
-    TestStorageLayout: TestStorageLayout as ContractArtifact,
 };
