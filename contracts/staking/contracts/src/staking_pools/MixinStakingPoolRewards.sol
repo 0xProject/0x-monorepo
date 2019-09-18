@@ -39,15 +39,6 @@ contract MixinStakingPoolRewards is
 {
     using LibSafeMath for uint256;
 
-    function computeRewardBalanceOfOperator(bytes32 poolId, address operator)
-        public
-        view
-        returns (uint256 reward)
-    {
-        // TODO.
-        // unfinalizedStake +
-    }
-
     /// @dev Syncs rewards for a delegator. This includes transferring rewards
     ///      from the Reward Vault to the Eth Vault, and adding/removing
     ///      dependencies on cumulative rewards.
@@ -76,6 +67,26 @@ contract MixinStakingPoolRewards is
             finalDelegatedStakeToPoolByOwner;
     }
 
+    /// @dev Computes the reward balance in ETH of the operator of a pool.
+    /// @param poolId Unique id of pool.
+    /// @return totalReward Balance in ETH.
+    function computeRewardBalanceOfOperator(bytes32 poolId)
+        external
+        view
+        returns (uint256 reward)
+    {
+        IStructs.Pool memory pool = _poolById[poolId];
+        // Get any unfinalized rewards.
+        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
+            _getUnfinalizedPoolRewards(poolId);
+        // Get the operators' portion.
+        (reward,) = _splitStakingPoolRewards(
+            pool.operatorShare,
+            unfinalizedTotalRewards,
+            unfinalizedMembersStake
+        );
+    }
+
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
@@ -85,7 +96,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
-        IStructs.Pool memory pool = poolById[poolId];
+        IStructs.Pool memory pool = _poolById[poolId];
         // Get any unfinalized rewards.
         (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
             _getUnfinalizedPoolRewards(poolId);
@@ -167,7 +178,7 @@ contract MixinStakingPoolRewards is
         internal
         returns (uint256 operatorReward, uint256 membersReward)
     {
-        IStructs.Pool memory pool = poolById[poolId];
+        IStructs.Pool memory pool = _poolById[poolId];
 
         // Split the reward between operator and members
         (operatorReward, membersReward) =

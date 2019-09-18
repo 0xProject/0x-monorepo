@@ -73,7 +73,7 @@ export class StakingApiWrapper {
         },
 
         findActivePoolIdsAsync: async (epoch?: number): Promise<string[]> => {
-            const _epoch = epoch !== undefined ? epoch : await this.stakingContract.getCurrentEpoch.callAsync();
+            const _epoch = epoch !== undefined ? epoch : await this.stakingContract.currentEpoch.callAsync();
             const events = filterLogsToArguments<IStakingEventsStakingPoolActivatedEventArgs>(
                 await this.stakingContract.getLogsAsync(
                     StakingEvents.StakingPoolActivated,
@@ -111,12 +111,12 @@ export class StakingApiWrapper {
                 ...params,
             };
             return this.stakingContract.setParams.awaitTransactionSuccessAsync(
-                _params.epochDurationInSeconds,
-                _params.rewardDelegatedStakeWeight,
-                _params.minimumPoolStake,
-                _params.maximumMakersInPool,
-                _params.cobbDouglasAlphaNumerator,
-                _params.cobbDouglasAlphaDenominator,
+                new BigNumber(_params.epochDurationInSeconds),
+                new BigNumber(_params.rewardDelegatedStakeWeight),
+                new BigNumber(_params.minimumPoolStake),
+                new BigNumber(_params.maximumMakersInPool),
+                new BigNumber(_params.cobbDouglasAlphaNumerator),
+                new BigNumber(_params.cobbDouglasAlphaDenominator),
                 _params.wethProxyAddress,
                 _params.ethVaultAddress,
                 _params.rewardVaultAddress,

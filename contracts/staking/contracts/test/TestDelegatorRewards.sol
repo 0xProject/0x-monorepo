@@ -45,7 +45,7 @@ contract TestDelegatorRewards is
         uint256 membersStake
     );
 
-    struct UnfinalizedMembersReward {
+    struct UnfinalizedPoolReward {
         uint256 operatorReward;
         uint256 membersReward;
         uint256 membersStake;
@@ -64,7 +64,7 @@ contract TestDelegatorRewards is
         rewardVault = IStakingPoolRewardVault(address(this));
     }
 
-    mapping (uint256 => mapping (bytes32 => UnfinalizedMembersReward)) private
+    mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
         unfinalizedPoolRewardsByEpoch;
 
     /// @dev Expose _finalizePool
@@ -72,8 +72,8 @@ contract TestDelegatorRewards is
         _finalizePool(poolId);
     }
 
-    /// @dev Set unfinalized members reward for a pool in the current epoch.
-    function setUnfinalizedMembersRewards(
+    /// @dev Set unfinalized rewards for a pool in the current epoch.
+    function setUnfinalizedPoolReward(
         bytes32 poolId,
         uint256 operatorReward,
         uint256 membersReward,
@@ -82,7 +82,7 @@ contract TestDelegatorRewards is
         external
     {
         unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] =
-            UnfinalizedMembersReward({
+            UnfinalizedPoolReward({
                 operatorReward: operatorReward,
                 membersReward: membersReward,
                 membersStake: membersStake
@@ -208,13 +208,16 @@ contract TestDelegatorRewards is
         bytes32 poolId,
         uint256 operatorReward,
         uint256 membersReward,
-        uint256 rewards,
-        uint256 amountOfDelegatedStake
+        uint256 membersStake
     )
-        public
+        external
     {
         _setOperatorShare(poolId, operatorReward, membersReward);
-        _recordStakingPoolRewards(poolId, rewards, amountOfDelegatedStake);
+        _recordStakingPoolRewards(
+            poolId,
+            operatorReward + membersReward,
+            membersStake
+        );
     }
 
     /// @dev Overridden to realize `unfinalizedPoolRewardsByEpoch` in
@@ -227,7 +230,7 @@ contract TestDelegatorRewards is
             uint256 membersStake
         )
     {
-        UnfinalizedMembersReward memory reward =
+        UnfinalizedPoolReward memory reward =
             unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
 
@@ -249,7 +252,7 @@ contract TestDelegatorRewards is
             uint256 membersStake
         )
     {
-        UnfinalizedMembersReward storage reward =
+        UnfinalizedPoolReward storage reward =
             unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         totalReward = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
@@ -266,7 +269,7 @@ contract TestDelegatorRewards is
         uint32 operatorShare = uint32(
             operatorReward * PPM_DENOMINATOR / (operatorReward + membersReward)
         );
-        poolById[poolId].operatorShare = operatorShare;
+        _poolById[poolId].operatorShare = operatorShare;
     }
 
 }
