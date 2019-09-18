@@ -38,7 +38,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/packages/asset-buyer/README.md",
+    "homepage": "https://0x.org/asset-swapper",
     "dependencies": {
         "@0x/assert": "^2.1.6",
         "@0x/connect": "^5.0.19",
