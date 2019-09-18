@@ -18,7 +18,7 @@ import {
 
 import { assertRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
-blockchainTests.resets.only('delegator unit rewards', env => {
+blockchainTests.resets('delegator unit rewards', env => {
     let testContract: TestDelegatorRewardsContract;
 
     before(async () => {
@@ -239,7 +239,7 @@ blockchainTests.resets.only('delegator unit rewards', env => {
             await advanceEpochAsync(); // epoch 3
             const { reward: reward2 } = await rewardPoolMembersAsync({ poolId, stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-            expect(delegatorReward).to.bignumber.eq(BigNumber.sum(reward1, reward2));
+            assertRoughlyEquals(delegatorReward, BigNumber.sum(reward1, reward2));
         });
 
         it('partial rewards from epoch 2 and 3 for delegator partially delegating in epoch 0', async () => {
@@ -314,7 +314,35 @@ blockchainTests.resets.only('delegator unit rewards', env => {
             expect(delegatorReward).to.bignumber.eq(reward);
         });
 
-        it('uses old stake for rewards paid in the same epoch EXTRA stake was first active in', async () => {
+        it('uses old stake for rewards paid in the same epoch extra stake is added', async () => {
+            const poolId = hexRandom();
+            // stake at 0
+            const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
+            await advanceEpochAsync(); // epoch 1 (stake1 now active)
+            await advanceEpochAsync(); // epoch 2
+            const stake2 = getRandomInteger(0, stake1);
+            const totalStake = BigNumber.sum(stake1, stake2);
+            // Make the total stake in rewards > totalStake so delegator never
+            // receives 100% of rewards.
+            const rewardStake = totalStake.times(2);
+            // Pay rewards for epoch 1.
+            const { reward: reward1 } = await rewardPoolMembersAsync({ poolId, stake: rewardStake });
+            // add extra stake
+            const { deposit } = await delegateStakeAsync(poolId, { delegator, stake: stake2 });
+            await advanceEpochAsync(); // epoch 3 (stake2 now active)
+            // Pay rewards for epoch 2.
+            await advanceEpochAsync(); // epoch 4
+            // Pay rewards for epoch 3.
+            const { reward: reward2 } = await rewardPoolMembersAsync({ poolId, stake: rewardStake });
+            const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
+            const expectedDelegatorReward = BigNumber.sum(
+                computeDelegatorRewards(reward1, stake1, rewardStake),
+                computeDelegatorRewards(reward2, totalStake, rewardStake),
+            );
+            assertRoughlyEquals(BigNumber.sum(deposit, delegatorReward), expectedDelegatorReward);
+        });
+
+        it('uses old stake for rewards paid in the epoch right after extra stake is added', async () => {
             const poolId = hexRandom();
             // stake at 0
             const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
@@ -322,10 +350,10 @@ blockchainTests.resets.only('delegator unit rewards', env => {
             // add extra stake
             const { stake: stake2 } = await delegateStakeAsync(poolId, { delegator });
             const totalStake = BigNumber.sum(stake1, stake2);
+            await advanceEpochAsync(); // epoch 2 (stake2 now active)
             // Make the total stake in rewards > totalStake so delegator never
             // receives 100% of rewards.
             const rewardStake = totalStake.times(2);
-            await advanceEpochAsync(); // epoch 2 (stake2 now active)
             // Pay rewards for epoch 1.
             const { reward: reward1 } = await rewardPoolMembersAsync({ poolId, stake: rewardStake });
             await advanceEpochAsync(); // epoch 3
@@ -336,7 +364,7 @@ blockchainTests.resets.only('delegator unit rewards', env => {
                 computeDelegatorRewards(reward1, stake1, rewardStake),
                 computeDelegatorRewards(reward2, totalStake, rewardStake),
             );
-            expect(delegatorReward).to.bignumber.eq(expectedDelegatorReward);
+            assertRoughlyEquals(delegatorReward, expectedDelegatorReward);
         });
 
         it('computes correct rewards for 2 staggered delegators', async () => {
