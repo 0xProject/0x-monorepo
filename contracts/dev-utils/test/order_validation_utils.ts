@@ -551,6 +551,42 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             );
             expect(orderTransferResults).to.equal(OrderTransferResults.TransfersSuccessful);
         });
+        it('should return TransfersSuccessful for a partial fill when taker has ample assets for the fill but not for the whole order', async () => {
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(
+                takerAddress,
+                signedOrder.takerAssetAmount.dividedBy(2),
+                {
+                    from: owner,
+                },
+            );
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+                from: takerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+                from: makerAddress,
+            });
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount.dividedBy(2),
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.TransfersSuccessful);
+        });
     });
     describe('getSimulatedOrdersTransferResults', async () => {
         it('should simulate the transfers of each order independently from one another', async () => {

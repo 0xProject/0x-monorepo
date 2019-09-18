@@ -36,4 +36,16 @@ contract IProtocolFees {
     /// @param updatedProtocolFeeCollector The updated protocolFeeCollector contract address.
     function setProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
         external;
+
+    /// @dev Returns the protocolFeeMultiplier
+    function protocolFeeMultiplier()
+        external
+        view
+        returns (uint256);
+
+    /// @dev Returns the protocolFeeCollector address
+    function protocolFeeCollector()
+        external
+        view
+        returns (address);
 }
