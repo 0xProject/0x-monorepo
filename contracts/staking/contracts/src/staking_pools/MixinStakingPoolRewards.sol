@@ -130,11 +130,7 @@ contract MixinStakingPoolRewards is
                 reward
             );
 
-        _transferOperatorRewardToEthVault(
-            poolId,
-            pool.operator,
-            operatorPortion
-        );
+        ethVault.depositFor.value(operatorPortion)(pool.operator);
 
         // compute the reward portion for the pool members and transfer it to the Reward Vault.
         uint256 membersPortion = reward.safeSub(operatorPortion);
@@ -201,7 +197,12 @@ contract MixinStakingPoolRewards is
         }
 
         // transfer from transient Reward Pool vault to ETH Vault
-        _transferMemberBalanceToEthVault(poolId, member, balance);
+        rewardVault.transferToEthVault(
+            poolId,
+            member,
+            balance,
+            address(ethVault)
+        );
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -290,25 +291,5 @@ contract MixinStakingPoolRewards is
                 isDependent
             );
         }
-    }
-
-    /// @dev Transfers operator reward to the ETH vault.
-    /// @param poolId Unique Id of pool to transfer reward for,
-    /// @param operator of the pool.
-    /// @param amount of ETH to transfer.
-    function _transferOperatorRewardToEthVault(
-        bytes32 poolId,
-        address operator,
-        uint256 amount
-    )
-        private
-    {
-        // perform transfer and notify
-        ethVault.depositFor.value(amount)(operator);
-        emit OperatorRewardTransferredToEthVault(
-            poolId,
-            operator,
-            amount
-        );
     }
 }
