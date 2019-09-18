@@ -156,7 +156,7 @@ contract MixinExchangeFees is
     /// Each pool receives a portion of the fees generated this epoch (see _cobbDouglas) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
-    /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
+    /// into the Reward Vault where they can be withdraw by makers and
     /// the members of their pool. There will be a small amount of ETH leftover in this contract
     /// after paying out the rebates; at present, this rolls over into the next epoch. Eventually,
     /// we plan to deposit this leftover into a DAO managed by the 0x community.
@@ -277,9 +277,6 @@ contract MixinExchangeFees is
                 totalRewardsPaid,
                 initialContractBalance
             ));
-        }
-        if (totalRewardsPaid > 0) {
-            _depositIntoStakingPoolRewardVault(totalRewardsPaid);
         }
 
         finalContractBalance = address(this).balance;

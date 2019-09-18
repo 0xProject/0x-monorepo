@@ -137,12 +137,6 @@ interface IStakingEvents {
         address makerAddress
     );
 
-    /// @dev Emitted by MixinStakingPoolRewardVault when the vault's address is changed.
-    /// @param rewardVaultAddress Address of new reward vault.
-    event StakingPoolRewardVaultChanged(
-        address rewardVaultAddress
-    );
-
     /// @dev Emitted when a staking pool's operator share is decreased.
     /// @param poolId Unique Id of pool.
     /// @param oldOperatorShare Previous share of rewards owned by operator.
