@@ -50,3 +50,4 @@ export {
 export { blockchainTests, BlockchainTestsEnvironment, describe } from './mocha_blockchain';
 export { chaiSetup, expect } from './chai_setup';
 export { getCodesizeFromArtifact } from './codesize';
+export { shortZip } from './lang_utils';
