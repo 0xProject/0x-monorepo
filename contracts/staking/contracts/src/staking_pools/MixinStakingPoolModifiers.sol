@@ -44,10 +44,10 @@ contract MixinStakingPoolModifiers is
     /// @param poolId Pool sender must be operator of.
     /// @param makerAddress Address of a maker in the pool.
     modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        address operator;
+        address operator = poolById[poolId].operator;
         if (
-            msg.sender != makerAddress &&
-            msg.sender != (operator = poolById[poolId].operator)
+            msg.sender != operator &&
+            msg.sender != makerAddress
         ) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(

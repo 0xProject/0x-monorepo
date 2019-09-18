@@ -130,6 +130,7 @@ contract MixinCumulativeRewards is
     /// @dev Returns info on most recent cumulative reward.
     function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
         internal
+        view
         returns (IStructs.CumulativeRewardInfo memory)
     {
         // fetch the last epoch at which we stored a cumulative reward for this pool

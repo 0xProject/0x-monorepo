@@ -144,17 +144,6 @@ contract MixinStakingPoolMakers is
         return poolJoinedByMakerAddress[makerAddress].confirmed;
     }
 
-    /// @dev Returns the current number of makers in a given pool.
-    /// @param poolId Unique id of pool.
-    /// @return Size of pool.
-    function getNumberOfMakersInStakingPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return poolById[poolId].numberOfMakers;
-    }
-
     /// @dev Adds a maker to a staking pool. Note that this is only callable by the pool operator.
     /// Note also that the maker must have previously called joinStakingPoolAsMaker.
     /// @param poolId Unique id of pool.
@@ -165,6 +154,9 @@ contract MixinStakingPoolMakers is
     )
         internal
     {
+        // cache pool for use throughout this function
+        IStructs.Pool memory pool = poolById[poolId];
+
         // Is the maker already in a pool?
         if (isMakerAssignedToStakingPool(makerAddress)) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
@@ -176,7 +168,7 @@ contract MixinStakingPoolMakers is
 
         // Is the maker trying to join this pool; or are they the operator?
         bytes32 makerPendingPoolId = poolJoinedByMakerAddress[makerAddress].poolId;
-        if (makerPendingPoolId != poolId && makerAddress != poolById[poolId].operator) {
+        if (makerPendingPoolId != poolId && makerAddress != pool.operator) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotPendingAdd,
                 makerAddress,
@@ -185,7 +177,7 @@ contract MixinStakingPoolMakers is
         }
 
         // Is the pool already full?
-        if (getNumberOfMakersInStakingPool(poolId) == maximumMakersInPool) {
+        if (pool.numberOfMakers == maximumMakersInPool) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.PoolIsFull,
                 makerAddress,
@@ -199,7 +191,7 @@ contract MixinStakingPoolMakers is
             confirmed: true
         });
         poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
-        poolById[poolId].numberOfMakers = uint256(poolById[poolId].numberOfMakers).safeAdd(1).downcastToUint32();
+        poolById[poolId].numberOfMakers = uint256(pool.numberOfMakers).safeAdd(1).downcastToUint32();
 
         // Maker has been added to the pool
         emit MakerAddedToStakingPool(
