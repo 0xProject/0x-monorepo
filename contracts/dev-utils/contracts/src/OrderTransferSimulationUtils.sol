@@ -24,6 +24,7 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange/contracts/src/libs/LibExchangeRichErrorDecoder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
@@ -66,6 +67,13 @@ contract OrderTransferSimulationUtils is
         public
         returns (OrderTransferResults orderTransferResults)
     {
+        LibFillResults.FillResults memory fillResults = LibFillResults.calculateFillResults(
+            order,
+            takerAssetFillAmount,
+            _EXCHANGE.protocolFeeMultiplier(),
+            tx.gasprice
+        );
+
         // Create input arrays
         bytes[] memory assetData = new bytes[](4);
         address[] memory fromAddresses = new address[](4);
@@ -76,25 +84,25 @@ contract OrderTransferSimulationUtils is
         assetData[0] = order.takerAssetData;
         fromAddresses[0] = takerAddress;
         toAddresses[0] = order.makerAddress;
-        amounts[0] = order.takerAssetAmount;
+        amounts[0] = takerAssetFillAmount;
 
         // Transfer `makerAsset` from maker to taker
         assetData[1] = order.makerAssetData;
         fromAddresses[1] = order.makerAddress;
         toAddresses[1] = takerAddress;
-        amounts[1] = order.makerAssetAmount;
+        amounts[1] = fillResults.makerAssetFilledAmount;
 
         // Transfer `takerFeeAsset` from taker to feeRecipient
         assetData[2] = order.takerFeeAssetData;
         fromAddresses[2] = takerAddress;
         toAddresses[2] = order.feeRecipientAddress;
-        amounts[2] = order.takerFee;
+        amounts[2] = fillResults.takerFeePaid;
 
         // Transfer `makerFeeAsset` from maker to feeRecipient
         assetData[3] = order.makerFeeAssetData;
         fromAddresses[3] = order.makerAddress;
         toAddresses[3] = order.feeRecipientAddress;
-        amounts[3] = order.makerFee;
+        amounts[3] = fillResults.makerFeePaid;
 
         // Encode data for `simulateDispatchTransferFromCalls(assetData, fromAddresses, toAddresses, amounts)`
         bytes memory simulateDispatchTransferFromCallsData = abi.encodeWithSelector(
