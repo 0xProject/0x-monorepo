@@ -27,10 +27,10 @@ library LibEIP712 {
     //     "string name,",
     //     "string version,",
     //     "uint256 chainId,",
-    //     "address verifyingContractAddress",
+    //     "address verifyingContract",
     //     ")"
     // ))
-    bytes32 constant internal _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
+    bytes32 constant internal _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
     
     /// @dev Calculates a EIP712 domain separator.
     /// @param name The EIP712 domain name.
