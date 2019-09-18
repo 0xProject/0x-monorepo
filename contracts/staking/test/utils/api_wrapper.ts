@@ -215,8 +215,6 @@ export async function deployAndConfigureContractsAsync(
     await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
     // set staking proxy contract in reward vault
     await rewardVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
-    // set the eth vault in the reward vault
-    await rewardVaultContract.setEthVault.awaitTransactionSuccessAsync(ethVaultContract.address);
     return new StakingApiWrapper(
         env,
         ownerAddress,

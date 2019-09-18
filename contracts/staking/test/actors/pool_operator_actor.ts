@@ -1,5 +1,5 @@
 import { expect } from '@0x/contracts-test-utils';
-import { BigNumber, RevertError } from '@0x/utils';
+import { RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../utils/constants';
@@ -35,10 +35,8 @@ export class PoolOperatorActor extends BaseActor {
             );
             expect(poolIdOfMaker, 'pool id of maker').to.be.equal(poolId);
             // check the number of makers in the pool
-            const numMakersAfterRemoving = await this._stakingApiWrapper.stakingContract.numMakersByPoolId.callAsync(
-                poolId,
-            );
-            expect(numMakersAfterRemoving, 'number of makers in pool').to.be.bignumber.equal(1);
+            const pool = await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
+            expect(pool.numberOfMakers, 'number of makers in pool').to.be.bignumber.equal(1);
         }
         return poolId;
     }
@@ -103,8 +101,7 @@ export class PoolOperatorActor extends BaseActor {
         }
         await txReceiptPromise;
         // Check operator share
-        const pool = await this._stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
-        const decreasedOperatorShare = new BigNumber(pool[0]);
-        expect(decreasedOperatorShare, 'updated operator share').to.be.bignumber.equal(newOperatorShare);
+        const pool = await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
+        expect(pool.operatorShare, 'updated operator share').to.be.bignumber.equal(newOperatorShare);
     }
 }

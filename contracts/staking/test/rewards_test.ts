@@ -77,7 +77,6 @@ blockchainTests.resets('Testing Rewards', env => {
             stakerRewardVaultBalance_2?: BigNumber;
             stakerEthVaultBalance_2?: BigNumber;
             // operator
-            operatorRewardVaultBalance?: BigNumber;
             operatorEthVaultBalance?: BigNumber;
             // undivided balance in reward pool
             poolRewardVaultBalance?: BigNumber;
@@ -104,10 +103,6 @@ blockchainTests.resets('Testing Rewards', env => {
                         ? _expectedEndBalances.stakerEthVaultBalance_2
                         : ZERO,
                 // operator
-                operatorRewardVaultBalance:
-                    _expectedEndBalances.operatorRewardVaultBalance !== undefined
-                        ? _expectedEndBalances.operatorRewardVaultBalance
-                        : ZERO,
                 operatorEthVaultBalance:
                     _expectedEndBalances.operatorEthVaultBalance !== undefined
                         ? _expectedEndBalances.operatorEthVaultBalance
@@ -117,15 +112,7 @@ blockchainTests.resets('Testing Rewards', env => {
                     _expectedEndBalances.poolRewardVaultBalance !== undefined
                         ? _expectedEndBalances.poolRewardVaultBalance
                         : ZERO,
-                membersRewardVaultBalance:
-                    _expectedEndBalances.membersRewardVaultBalance !== undefined
-                        ? _expectedEndBalances.membersRewardVaultBalance
-                        : ZERO,
             };
-            const pool = await stakingApiWrapper.rewardVaultContract.poolById.callAsync(poolId);
-            const operatorBalance = pool[1];
-            const membersBalance = pool[2];
-            const poolBalances = { poolBalance: operatorBalance.plus(membersBalance), operatorBalance, membersBalance };
             const finalEndBalancesAsArray = await Promise.all([
                 // staker 1
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
@@ -141,6 +128,8 @@ blockchainTests.resets('Testing Rewards', env => {
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
                 // operator
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
+                // undivided balance in reward pool
+                stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(poolId),
             ]);
             expect(finalEndBalancesAsArray[0], 'stakerRewardVaultBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_1,
@@ -154,18 +143,11 @@ blockchainTests.resets('Testing Rewards', env => {
             expect(finalEndBalancesAsArray[3], 'stakerEthVaultBalance_2').to.be.bignumber.equal(
                 expectedEndBalances.stakerEthVaultBalance_2,
             );
-
             expect(finalEndBalancesAsArray[4], 'operatorEthVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.operatorEthVaultBalance,
             );
-            expect(poolBalances.operatorBalance, 'operatorRewardVaultBalance').to.be.bignumber.equal(
-                expectedEndBalances.operatorRewardVaultBalance,
-            );
-            expect(poolBalances.poolBalance, 'poolRewardVaultBalance').to.be.bignumber.equal(
+            expect(finalEndBalancesAsArray[5], 'poolRewardVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.poolRewardVaultBalance,
-            );
-            expect(poolBalances.membersBalance, 'membersRewardVaultBalance').to.be.bignumber.equal(
-                expectedEndBalances.membersRewardVaultBalance,
             );
         };
         const payProtocolFeeAndFinalize = async (_fee?: BigNumber) => {
@@ -207,8 +189,7 @@ blockchainTests.resets('Testing Rewards', env => {
             await payProtocolFeeAndFinalize(reward);
             // sanity check final balances - all zero
             await validateEndBalances({
-                operatorRewardVaultBalance: reward,
-                poolRewardVaultBalance: reward,
+                operatorEthVaultBalance: reward,
             });
         });
         it('Operator should receive entire reward if no delegators in their pool (staker joins this epoch but is active next epoch)', async () => {
@@ -225,8 +206,7 @@ blockchainTests.resets('Testing Rewards', env => {
             await payProtocolFeeAndFinalize(reward);
             // sanity check final balances
             await validateEndBalances({
-                operatorRewardVaultBalance: reward,
-                poolRewardVaultBalance: reward,
+                operatorEthVaultBalance: reward,
             });
         });
         it('Should give pool reward to delegator', async () => {
@@ -533,8 +513,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // sanity check final balances
             await validateEndBalances({
                 stakerEthVaultBalance_1: rewardForDelegator,
-                poolRewardVaultBalance: rewardNotForDelegator,
-                operatorRewardVaultBalance: rewardNotForDelegator,
+                operatorEthVaultBalance: rewardNotForDelegator,
             });
         });
         it('Should stop collecting rewards after undelegating, after several epochs', async () => {
@@ -578,8 +557,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // sanity check final balances
             await validateEndBalances({
                 stakerEthVaultBalance_1: rewardForDelegator,
-                poolRewardVaultBalance: totalRewardsNotForDelegator,
-                operatorRewardVaultBalance: totalRewardsNotForDelegator,
+                operatorEthVaultBalance: totalRewardsNotForDelegator,
             });
         });
         it('Should collect fees correctly when leaving and returning to a pool', async () => {
@@ -619,9 +597,8 @@ blockchainTests.resets('Testing Rewards', env => {
             await validateEndBalances({
                 stakerRewardVaultBalance_1: rewardsForDelegator[1],
                 stakerEthVaultBalance_1: rewardsForDelegator[0],
-                operatorRewardVaultBalance: rewardNotForDelegator,
-                poolRewardVaultBalance: rewardNotForDelegator.plus(rewardsForDelegator[1]),
-                membersRewardVaultBalance: rewardsForDelegator[1],
+                operatorEthVaultBalance: rewardNotForDelegator,
+                poolRewardVaultBalance: rewardsForDelegator[1],
             });
         });
         it('Should collect fees correctly when re-delegating after un-delegating', async () => {
@@ -657,9 +634,33 @@ blockchainTests.resets('Testing Rewards', env => {
             await validateEndBalances({
                 stakerRewardVaultBalance_1: ZERO,
                 stakerEthVaultBalance_1: rewardForDelegator,
-                operatorRewardVaultBalance: ZERO,
+                operatorEthVaultBalance: ZERO,
                 poolRewardVaultBalance: ZERO,
-                membersRewardVaultBalance: ZERO,
+            });
+        });
+        it('Should withdraw delegator rewards to eth vault when calling `syncDelegatorRewards`', async () => {
+            // first staker delegates (epoch 0)
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                stakeAmount,
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize();
+            // this should go to the delegator
+            await payProtocolFeeAndFinalize(rewardForDelegator);
+            await stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(poolId, {
+                from: stakers[0].getOwner(),
+            });
+            // sanity check final balances
+            await validateEndBalances({
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: rewardForDelegator,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
             });
         });
     });

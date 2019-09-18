@@ -233,7 +233,7 @@ library LibStakingRichErrors {
 
     function OnlyCallableByPoolOperatorError(
         address senderAddress,
-        address poolOperatorAddress
+        address operator
     )
         internal
         pure
@@ -242,13 +242,13 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             ONLY_CALLABLE_BY_POOL_OPERATOR_ERROR_SELECTOR,
             senderAddress,
-            poolOperatorAddress
+            operator
         );
     }
 
     function OnlyCallableByPoolOperatorOrMakerError(
         address senderAddress,
-        address poolOperatorAddress,
+        address operator,
         address makerAddress
     )
         internal
@@ -258,7 +258,7 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR,
             senderAddress,
-            poolOperatorAddress,
+            operator,
             makerAddress
         );
     }

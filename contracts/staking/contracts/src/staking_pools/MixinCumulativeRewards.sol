@@ -22,11 +22,9 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../stake/MixinStakeBalances.sol";
-import "./MixinStakingPoolRewardVault.sol";
 
 
 contract MixinCumulativeRewards is
-    MixinStakingPoolRewardVault,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;
@@ -132,6 +130,7 @@ contract MixinCumulativeRewards is
     /// @dev Returns info on most recent cumulative reward.
     function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
         internal
+        view
         returns (IStructs.CumulativeRewardInfo memory)
     {
         // fetch the last epoch at which we stored a cumulative reward for this pool
