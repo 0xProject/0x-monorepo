@@ -123,7 +123,7 @@ export class CumulativeRewardTrackingSimulation {
             let txReceipt: TransactionReceiptWithDecodedLogs;
             switch (action) {
                 case TestAction.Finalize:
-                    txReceipt = await this._stakingApiWrapper.utils.skipToNextEpochAsync();
+                    txReceipt = await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
                     break;
 
                 case TestAction.Delegate:

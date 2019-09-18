@@ -47,7 +47,8 @@ contract Staking is
     MixinStakingPoolRewards,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees
+    MixinExchangeFees,
+    MixinFinalizer
 {
     /// @dev This constructor will ensure that the storage layout of this contract
     ///      is compatible with the original staking storage layout.

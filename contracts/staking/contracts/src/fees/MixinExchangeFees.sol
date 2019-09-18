@@ -197,7 +197,7 @@ contract MixinExchangeFees is
         returns (uint256 membersStake, uint256 weightedStake)
     {
         uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-            poolById[poolId].operator,
+            _poolById[poolId].operator,
             poolId
         ).currentEpochBalance;
         membersStake = totalStake.safeSub(operatorStake);

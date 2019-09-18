@@ -31,7 +31,7 @@ contract MixinStakingPoolModifiers is
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
     modifier onlyStakingPoolOperator(bytes32 poolId) {
-        address operator = poolById[poolId].operator;
+        address operator = _poolById[poolId].operator;
         if (msg.sender != operator) {
             LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByPoolOperatorError(
                 msg.sender,
@@ -46,7 +46,7 @@ contract MixinStakingPoolModifiers is
     /// @param poolId Pool sender must be operator of.
     /// @param makerAddress Address of a maker in the pool.
     modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
-        address operator = poolById[poolId].operator;
+        address operator = _poolById[poolId].operator;
         if (
             msg.sender != operator &&
             msg.sender != makerAddress

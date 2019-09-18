@@ -111,7 +111,7 @@ contract MixinStakingPoolMakers is
             confirmed: false
         });
         poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
-        poolById[poolId].numberOfMakers = uint256(poolById[poolId].numberOfMakers).safeSub(1).downcastToUint32();
+        _poolById[poolId].numberOfMakers = uint256(_poolById[poolId].numberOfMakers).safeSub(1).downcastToUint32();
 
         // Maker has been removed from the pool`
         emit MakerRemovedFromStakingPool(
@@ -157,7 +157,7 @@ contract MixinStakingPoolMakers is
         internal
     {
         // cache pool for use throughout this function
-        IStructs.Pool memory pool = poolById[poolId];
+        IStructs.Pool memory pool = _poolById[poolId];
 
         // Is the maker already in a pool?
         if (isMakerAssignedToStakingPool(makerAddress)) {
@@ -195,7 +195,7 @@ contract MixinStakingPoolMakers is
             confirmed: true
         });
         poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
-        poolById[poolId].numberOfMakers = uint256(pool.numberOfMakers).safeAdd(1).downcastToUint32();
+        _poolById[poolId].numberOfMakers = uint256(pool.numberOfMakers).safeAdd(1).downcastToUint32();
 
         // Maker has been added to the pool
         emit MakerAddedToStakingPool(

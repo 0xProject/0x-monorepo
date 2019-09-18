@@ -82,7 +82,7 @@ contract MixinStorage is
     mapping (address => IStructs.MakerPoolJoinStatus) public poolJoinedByMakerAddress;
 
     // mapping from Pool Id to Pool
-    mapping (bytes32 => IStructs.Pool) public poolById;
+    mapping (bytes32 => IStructs.Pool) internal _poolById;
 
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;

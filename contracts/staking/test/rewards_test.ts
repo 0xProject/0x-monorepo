@@ -133,7 +133,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 ),
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
                 // operator
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
+                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator.getOwner()),
                 // undivided balance in reward pool
                 stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(poolId),
             ]);

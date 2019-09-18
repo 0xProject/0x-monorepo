@@ -1,14 +1,15 @@
+import { Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 import { constants } from './constants';
 
 export interface StakingParams {
-    epochDurationInSeconds: BigNumber;
-    rewardDelegatedStakeWeight: number | BigNumber;
-    minimumPoolStake: BigNumber;
-    maximumMakersInPool: BigNumber;
-    cobbDouglasAlphaNumerator: number | BigNumber;
-    cobbDouglasAlphaDenominator: number | BigNumber;
+    epochDurationInSeconds: Numberish;
+    rewardDelegatedStakeWeight: Numberish;
+    minimumPoolStake: Numberish;
+    maximumMakersInPool: Numberish;
+    cobbDouglasAlphaNumerator: Numberish;
+    cobbDouglasAlphaDenominator: Numberish;
     wethProxyAddress: string;
     ethVaultAddress: string;
     rewardVaultAddress: string;
