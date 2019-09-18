@@ -29,6 +29,10 @@ export enum InvalidParamValueErrorCode {
     InvalidZrxVaultAddress,
     InvalidEpochDuration,
     InvalidMinimumPoolStake,
+    InvalidWethProxyAddress,
+    InvalidEthVaultAddress,
+    InvalidRewardVaultAddress,
+    InvalidZrxVaultAddress,
 }
 
 export enum InitializationErrorCode {

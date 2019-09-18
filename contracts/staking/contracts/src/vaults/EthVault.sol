@@ -26,6 +26,8 @@ import "./MixinVaultCore.sol";
 /// @dev This vault manages ETH.
 contract EthVault is
     IEthVault,
+    IVaultCore,
+    Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
@@ -33,19 +35,21 @@ contract EthVault is
     // mapping from Owner to ETH balance
     mapping (address => uint256) internal _balances;
 
-    /// @dev Deposit an `amount` of ETH from `owner` into the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param owner of ETH Tokens.
-    function depositFor(address owner)
-        external
-        payable
-    {
-        // update balance
-        uint256 amount = msg.value;
-        _balances[owner] = _balances[owner].safeAdd(msg.value);
+    // solhint-disable no-empty-blocks
+    /// @dev Payable fallback for bulk-deposits.
+    function () payable external {}
 
-        // notify
+    /// @dev Record a deposit of an amount of ETH for `owner` into the vault.
+    ///      The staking contract should pay this contract the ETH owed in the
+    ///      same transaction.
+    ///      Note that this is only callable by the staking contract.
+    /// @param owner Owner of the ETH.
+    /// @param amount Amount of deposit.
+    function recordDepositFor(address owner, uint256 amount)
+        external
+        onlyStakingProxy
+    {
+        _balances[owner] = _balances[owner].safeAdd(amount);
         emit EthDepositedIntoVault(msg.sender, owner, amount);
     }
 

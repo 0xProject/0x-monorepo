@@ -48,8 +48,8 @@ interface IStakingEvents {
     /// @param epoch The epoch in which the pool was activated.
     /// @param poolId The ID of the pool.
     event StakingPoolActivated(
-        uint256 epoch,
-        bytes32 poolId
+        uint256 indexed epoch,
+        bytes32 indexed poolId
     );
 
     /// @dev Emitted by MixinFinalizer when an epoch has ended.
@@ -59,7 +59,7 @@ interface IStakingEvents {
     /// @param totalWeightedStake Total weighted stake across all active pools.
     /// @param totalFeesCollected Total fees collected across all active pools.
     event EpochEnded(
-        uint256 epoch,
+        uint256 indexed epoch,
         uint256 numActivePools,
         uint256 rewardsAvailable,
         uint256 totalFeesCollected,
@@ -71,7 +71,7 @@ interface IStakingEvents {
     /// @param rewardsPaid Total amount of rewards paid out.
     /// @param rewardsRemaining Rewards left over.
     event EpochFinalized(
-        uint256 epoch,
+        uint256 indexed epoch,
         uint256 rewardsPaid,
         uint256 rewardsRemaining
     );
@@ -82,8 +82,8 @@ interface IStakingEvents {
     /// @param operatorReward Amount of reward paid to pool operator.
     /// @param membersReward Amount of reward paid to pool members.
     event RewardsPaid(
-        uint256 epoch,
-        bytes32 poolId,
+        uint256 indexed epoch,
+        bytes32 indexed poolId,
         uint256 operatorReward,
         uint256 membersReward
     );

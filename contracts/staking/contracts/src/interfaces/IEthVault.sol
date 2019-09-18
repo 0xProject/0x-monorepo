@@ -42,13 +42,14 @@ interface IEthVault {
         uint256 amount
     );
 
-    /// @dev Deposit an `amount` of ETH from `owner` into the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param owner of ETH Tokens.
-    function depositFor(address owner)
-        external
-        payable;
+    /// @dev Record a deposit of an amount of ETH for `owner` into the vault.
+    ///      The staking contract should pay this contract the ETH owed in the
+    ///      same transaction.
+    ///      Note that this is only callable by the staking contract.
+    /// @param owner Owner of the ETH.
+    /// @param amount Amount of deposit.
+    function recordDepositFor(address owner, uint256 amount)
+        external;
 
     /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
     /// Note that only the Staking contract can call this.

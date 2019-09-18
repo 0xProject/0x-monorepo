@@ -44,10 +44,19 @@ import "./MixinExchangeManager.sol";
 ///      disincentive for market makers to monopolize a single pool that they
 ///      all delegate to.
 contract MixinExchangeFees is
-    MixinDeploymentConstants,
-    MixinExchangeManager,
+    IStakingEvents,
     MixinAbstract,
+    MixinConstants,
+    MixinDeploymentConstants,
+    Ownable,
+    MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinExchangeManager,
+    MixinScheduler,
+    MixinStakeStorage,
+    MixinStakingPoolMakers,
     MixinStakeBalances,
+    MixinCumulativeRewards,
     MixinStakingPoolRewards,
     MixinStakingPool
 {
@@ -99,7 +108,7 @@ contract MixinExchangeFees is
         }
 
         // Look up the pool for this epoch.
-        uint256 currentEpoch = getCurrentEpoch();
+        uint256 currentEpoch = currentEpoch;
         mapping (bytes32 => IStructs.ActivePool) storage activePoolsThisEpoch =
             _getActivePoolsFromEpoch(currentEpoch);
         IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId];
@@ -169,7 +178,7 @@ contract MixinExchangeFees is
         // because we only need to remember state in the current epoch and the
         // epoch prior.
         IStructs.ActivePool memory pool =
-            _getActivePoolFromEpoch(getCurrentEpoch(), poolId);
+            _getActivePoolFromEpoch(currentEpoch, poolId);
         feesCollected = pool.feesCollected;
     }
 
@@ -188,7 +197,7 @@ contract MixinExchangeFees is
         returns (uint256 membersStake, uint256 weightedStake)
     {
         uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-            getPoolOperator(poolId),
+            poolById[poolId].operator,
             poolId
         ).currentEpochBalance;
         membersStake = totalStake.safeSub(operatorStake);

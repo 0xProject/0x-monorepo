@@ -25,14 +25,15 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
-import "../interfaces/IEthVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
 /// @dev This vault manages staking pool rewards.
 contract StakingPoolRewardVault is
     IStakingPoolRewardVault,
+    IVaultCore,
     MixinConstants,
+    Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
@@ -40,38 +41,42 @@ contract StakingPoolRewardVault is
     // mapping from poolId to Pool metadata
     mapping (bytes32 => uint256) internal _balanceByPoolId;
 
-    /// @dev Deposit an amount of ETH (`msg.value`) for `poolId` into the vault.
-    /// Note that this is only callable by the staking contract.
-    /// @param poolId that holds the ETH.
-    function depositFor(bytes32 poolId)
+    // solhint-disable no-empty-blocks
+    /// @dev Payable fallback for bulk-deposits.
+    function () payable external {}
+
+    /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
+    ///      The staking contract should pay this contract the ETH owed in the
+    ///      same transaction.
+    ///      Note that this is only callable by the staking contract.
+    /// @param poolId Pool that holds the ETH.
+    /// @param amount Amount of deposit.
+    function recordDepositFor(bytes32 poolId, uint256 amount)
         external
-        payable
         onlyStakingProxy
     {
-        _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(msg.value);
-        emit EthDepositedIntoVault(msg.sender, poolId, msg.value);
+        _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(amount);
+        emit EthDepositedIntoVault(msg.sender, poolId, amount);
     }
 
-    /// @dev Withdraw some amount in ETH of a pool member.
-    /// Note that this is only callable by the staking contract.
+    /// @dev Withdraw some amount in ETH from a pool.
+    ///      Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
-    /// @param member of pool to transfer funds to.
-    /// @param amount Amount in ETH to transfer.
-    /// @param ethVaultAddress address of Eth Vault to send rewards to.
-    function transferToEthVault(
+    /// @param to Address to send funds to.
+    /// @param amount Amount of ETH to transfer.
+    function transfer(
         bytes32 poolId,
-        address member,
-        uint256 amount,
-        address ethVaultAddress
+        address payable to,
+        uint256 amount
     )
         external
         onlyStakingProxy
     {
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
-        IEthVault(ethVaultAddress).depositFor.value(amount)(member);
-        emit PoolRewardTransferredToEthVault(
+        to.transfer(amount);
+        emit PoolRewardTransferred(
             poolId,
-            member,
+            to,
             amount
         );
     }

@@ -110,14 +110,4 @@ contract TestProtocolFees is
             nextEpochBalance: pool.operatorStake
         });
     }
-
-    /// @dev Overridden to use test pools.
-    function getPoolOperator(bytes32)
-        public
-        view
-        returns (address operatorAddress)
-    {
-        // Just return nil, we won't use it.
-        return address(0);
-    }
 }

@@ -28,8 +28,17 @@ import "./MixinStakingPoolMakers.sol";
 
 
 contract MixinStakingPool is
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    Ownable,
     MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakingPoolMakers,
+    MixinStakeBalances,
+    MixinCumulativeRewards,
     MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
@@ -111,17 +120,6 @@ contract MixinStakingPool is
         returns (IStructs.Pool memory)
     {
         return poolById[poolId];
-    }
-
-    /// @dev Look up the operator of a pool.
-    /// @param poolId The ID of the pool.
-    /// @return operatorAddress The pool operator.
-    function getPoolOperator(bytes32 poolId)
-        public
-        view
-        returns (address operatorAddress)
-    {
-        return rewardVault.operatorOf(poolId);
     }
 
     /// @dev Computes the unique id that comes after the input pool id.

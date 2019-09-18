@@ -129,7 +129,7 @@ contract TestStorageLayout is
             if sub(totalWeightedStakeThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(activePoolsByEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_activePoolsByEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(numActivePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }

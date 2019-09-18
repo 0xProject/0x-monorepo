@@ -9,8 +9,6 @@ library LibFractions {
 
     /// @dev Maximum value for addition result components.
     uint256 constant internal RESCALE_THRESHOLD = 10 ** 27;
-    /// @dev Rescale factor for addition.
-    uint256 constant internal RESCALE_BASE = 10 ** 9;
 
     /// @dev Safely adds two fractions `n1/d1 + n2/d2`
     /// @param n1 numerator of `1`
@@ -46,8 +44,10 @@ library LibFractions {
         // If either the numerator or the denominator are > RESCALE_THRESHOLD,
         // re-scale them to prevent overflows in future operations.
         if (numerator > RESCALE_THRESHOLD || denominator > RESCALE_THRESHOLD) {
-            numerator = numerator.safeDiv(RESCALE_BASE);
-            denominator = denominator.safeDiv(RESCALE_BASE);
+            uint256 rescaleBase = numerator >= denominator ? numerator : denominator;
+            rescaleBase /= RESCALE_THRESHOLD;
+            numerator = numerator.safeDiv(rescaleBase);
+            denominator = denominator.safeDiv(rescaleBase);
         }
     }
 

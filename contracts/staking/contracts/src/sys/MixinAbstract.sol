@@ -29,11 +29,16 @@ contract MixinAbstract {
     /// @dev Computes the reward owed to a pool during finalization.
     ///      Does nothing if the pool is already finalized.
     /// @param poolId The pool's ID.
-    /// @return rewards Amount of rewards for this pool.
+    /// @return operatorReward The reward owed to the pool operator.
+    /// @return membersStake The total stake for all non-operator members in
+    ///         this pool.
     function _getUnfinalizedPoolRewards(bytes32 poolId)
         internal
         view
-        returns (IStructs.PoolRewards memory rewards);
+        returns (
+            uint256 reward,
+            uint256 membersStake
+        );
 
     /// @dev Get an active pool from an epoch by its ID.
     /// @param epoch The epoch the pool was/will be active in.
@@ -61,13 +66,20 @@ contract MixinAbstract {
 
     /// @dev Instantly finalizes a single pool that was active in the previous
     ///      epoch, crediting it rewards and sending those rewards to the reward
-    ///      vault. This can be called by internal functions that need to
-    ///      finalize a pool immediately. Does nothing if the pool is already
+    ///      and eth vault. This can be called by internal functions that need
+    ///      to finalize a pool immediately. Does nothing if the pool is already
+    ///      finalized. Does nothing if the pool was not active or was already
     ///      finalized.
     /// @param poolId The pool ID to finalize.
-    /// @return rewards Rewards.
-    /// @return rewards The rewards credited to the pool.
+    /// @return operatorReward The reward credited to the pool operator.
+    /// @return membersReward The reward credited to the pool members.
+    /// @return membersStake The total stake for all non-operator members in
+    ///         this pool.
     function _finalizePool(bytes32 poolId)
         internal
-        returns (IStructs.PoolRewards memory rewards);
+        returns (
+            uint256 operatorReward,
+            uint256 membersReward,
+            uint256 membersStake
+        );
 }
