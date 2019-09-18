@@ -103,16 +103,6 @@ contract MixinStakingPool is
         );
     }
 
-    /// @dev Returns the unique id that will be assigned to the next pool that is created.
-    /// @return Pool id.
-    function getNextStakingPoolId()
-        public
-        view
-        returns (bytes32)
-    {
-        return nextPoolId;
-    }
-
     /// @dev Returns a staking pool
     /// @param poolId Unique id of pool.
     function getStakingPool(bytes32 poolId)
@@ -162,6 +152,7 @@ contract MixinStakingPool is
         uint32 newOperatorShare
     )
         private
+        pure
     {
         // sanity checks
         if (newOperatorShare > PPM_DENOMINATOR) {
