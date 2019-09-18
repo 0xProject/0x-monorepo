@@ -27,6 +27,11 @@ import "./MixinStakeStorage.sol";
 /// @dev This mixin contains logic for querying stake balances.
 /// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
+    IStakingEvents,
+    MixinConstants,
+    Ownable,
+    MixinStorage,
+    MixinScheduler,
     MixinStakeStorage
 {
     using LibSafeMath for uint256;

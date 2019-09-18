@@ -33,34 +33,35 @@ interface IStakingPoolRewardVault {
         uint256 amount
     );
 
-    /// @dev Emitted when a reward is transferred to the ETH vault.
-    /// @param amount The amount in ETH withdrawn.
-    /// @param member of the pool.
-    /// @param poolId The pool the reward was deposited for.
-    event PoolRewardTransferredToEthVault(
+    /// @dev Emitted when rewards are transferred out fo the vault.
+    /// @param poolId Unique Id of pool.
+    /// @param to Address to send funds to.
+    /// @param amount Amount of ETH to transfer.
+    event PoolRewardTransferred(
         bytes32 indexed poolId,
-        address indexed member,
+        address to,
         uint256 amount
     );
 
-    /// @dev Deposit an amount of ETH (`msg.value`) for `poolId` into the vault.
-    /// Note that this is only callable by the staking contract.
-    /// @param poolId that owns the ETH.
-    function depositFor(bytes32 poolId)
-        external
-        payable;
 
-    /// @dev Withdraw some amount in ETH of a pool member.
-    /// Note that this is only callable by the staking contract.
+    /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
+    ///      The staking contract should pay this contract the ETH owed in the
+    ///      same transaction.
+    ///      Note that this is only callable by the staking contract.
+    /// @param poolId Pool that holds the ETH.
+    /// @param amount Amount of deposit.
+    function recordDepositFor(bytes32 poolId, uint256 amount)
+        external;
+
+    /// @dev Withdraw some amount in ETH from a pool.
+    ///      Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
-    /// @param member of pool to transfer funds to.
-    /// @param amount Amount in ETH to transfer.
-    /// @param ethVaultAddress address of Eth Vault to send rewards to.
-    function transferToEthVault(
+    /// @param to Address to send funds to.
+    /// @param amount Amount of ETH to transfer.
+    function transfer(
         bytes32 poolId,
-        address member,
-        uint256 amount,
-        address ethVaultAddress
+        address payable to,
+        uint256 amount
     )
         external;
 

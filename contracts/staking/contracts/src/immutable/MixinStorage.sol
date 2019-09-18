@@ -74,12 +74,6 @@ contract MixinStorage is
     // mapping from Owner to Amount of Withdrawable Stake
     mapping (address => uint256) internal _withdrawableStakeByOwner;
 
-    // Mapping from Owner to Pool Id to epoch of the last rewards collected.
-    // This is the last reward epoch for a pool that a delegator collected
-    // rewards from. This is different from the epoch when the rewards were
-    // collected This will always be `<= currentEpoch`.
-    mapping (address => mapping (bytes32 => uint256)) internal lastCollectedRewardsEpochToPoolByOwner;
-
     // tracking Pool Id
     bytes32 public nextPoolId = INITIAL_POOL_ID;
 
@@ -141,35 +135,35 @@ contract MixinStorage is
 
     /// @dev The total fees collected in the current epoch, built up iteratively
     ///      in `payProtocolFee()`.
-    uint256 internal totalFeesCollectedThisEpoch;
+    uint256 public totalFeesCollectedThisEpoch;
 
     /// @dev The total weighted stake in the current epoch, built up iteratively
     ///      in `payProtocolFee()`.
-    uint256 internal totalWeightedStakeThisEpoch;
+    uint256 public totalWeightedStakeThisEpoch;
 
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
     mapping(uint256 => mapping(bytes32 => IStructs.ActivePool))
         internal
-        activePoolsByEpoch;
+        _activePoolsByEpoch;
 
     /// @dev Number of pools activated in the current epoch.
-    uint256 internal numActivePoolsThisEpoch;
+    uint256 public numActivePoolsThisEpoch;
 
     /// @dev Rewards (ETH) available to the epoch being finalized (the previous
     ///      epoch). This is simply the balance of the contract at the end of
     ///      the epoch.
-    uint256 internal unfinalizedRewardsAvailable;
+    uint256 public unfinalizedRewardsAvailable;
 
     /// @dev The number of active pools in the last epoch that have yet to be
     ///      finalized through `finalizePools()`.
-    uint256 internal unfinalizedPoolsRemaining;
+    uint256 public unfinalizedPoolsRemaining;
 
     /// @dev The total fees collected for the epoch being finalized.
-    uint256 internal unfinalizedTotalFeesCollected;
+    uint256 public unfinalizedTotalFeesCollected;
 
     /// @dev The total fees collected for the epoch being finalized.
-    uint256 internal unfinalizedTotalWeightedStake;
+    uint256 public unfinalizedTotalWeightedStake;
 
     /// @dev How many rewards were paid at the end of finalization.
     uint256 totalRewardsPaidLastEpoch;

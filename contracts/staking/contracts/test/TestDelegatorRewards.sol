@@ -20,35 +20,52 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
+import "../src/interfaces/IStakingPoolRewardVault.sol";
+import "../src/interfaces/IEthVault.sol";
 import "./TestStaking.sol";
 
 
 contract TestDelegatorRewards is
     TestStaking
 {
-    event Deposit(
+    event RecordDepositToEthVault(
+        address owner,
+        uint256 amount
+    );
+
+    event RecordDepositToRewardVault(
         bytes32 poolId,
-        address member,
-        uint256 balance
+        uint256 membersReward
     );
 
     event FinalizePool(
         bytes32 poolId,
-        uint256 reward,
-        uint256 stake
+        uint256 operatorReward,
+        uint256 membersReward,
+        uint256 membersStake
     );
 
     struct UnfinalizedMembersReward {
-        uint256 reward;
-        uint256 stake;
+        uint256 operatorReward;
+        uint256 membersReward;
+        uint256 membersStake;
     }
 
     constructor() public {
-        init();
+        init(
+            address(1),
+            address(1),
+            address(1),
+            address(1)
+        );
+        // Set this contract up as the eth and reward vault to intercept
+        // deposits.
+        ethVault = IEthVault(address(this));
+        rewardVault = IStakingPoolRewardVault(address(this));
     }
 
     mapping (uint256 => mapping (bytes32 => UnfinalizedMembersReward)) private
-        unfinalizedMembersRewardByPoolByEpoch;
+        unfinalizedPoolRewardsByEpoch;
 
     /// @dev Expose _finalizePool
     function internalFinalizePool(bytes32 poolId) external {
@@ -58,15 +75,17 @@ contract TestDelegatorRewards is
     /// @dev Set unfinalized members reward for a pool in the current epoch.
     function setUnfinalizedMembersRewards(
         bytes32 poolId,
+        uint256 operatorReward,
         uint256 membersReward,
         uint256 membersStake
     )
         external
     {
-        unfinalizedMembersRewardByPoolByEpoch[currentEpoch][poolId] =
+        unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] =
             UnfinalizedMembersReward({
-                reward: membersReward,
-                stake: membersStake
+                operatorReward: operatorReward,
+                membersReward: membersReward,
+                membersStake: membersStake
             });
     }
 
@@ -85,13 +104,20 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, delegator);
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+        IStructs.StoredBalance memory initialStake =
+            _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
-            delegatedStakeToPoolByOwner[delegator][poolId];
+            _delegatedStakeToPoolByOwner[delegator][poolId];
+        _stake.isInitialized = true;
         _stake.currentEpochBalance += uint96(stake);
         _stake.nextEpochBalance += uint96(stake);
-        _stake.currentEpoch = uint64(currentEpoch);
+        _stake.currentEpoch = uint32(currentEpoch);
+        _syncRewardsForDelegator(
+            poolId,
+            delegator,
+            initialStake,
+            _stake
+        );
     }
 
     /// @dev Create and delegate stake that will occur in the next epoch
@@ -104,15 +130,22 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, delegator);
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+        IStructs.StoredBalance memory initialStake =
+            _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
-            delegatedStakeToPoolByOwner[delegator][poolId];
+            _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
+        _stake.isInitialized = true;
         _stake.nextEpochBalance += uint96(stake);
-        _stake.currentEpoch = uint64(currentEpoch);
+        _stake.currentEpoch = uint32(currentEpoch);
+        _syncRewardsForDelegator(
+            poolId,
+            delegator,
+            initialStake,
+            _stake
+        );
     }
 
     /// @dev Clear stake that will occur in the next epoch
@@ -125,67 +158,115 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _transferDelegatorsAccumulatedRewardsToEthVault(poolId, delegator);
-        _syncCumulativeRewardsNeededByDelegator(poolId, currentEpoch);
+        IStructs.StoredBalance memory initialStake =
+            _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
-            delegatedStakeToPoolByOwner[delegator][poolId];
+            _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
+        _stake.isInitialized = true;
         _stake.nextEpochBalance -= uint96(stake);
-        _stake.currentEpoch = uint64(currentEpoch);
-    }
-
-    /// @dev Expose `_recordDepositInRewardVaultFor`.
-    function recordRewardForDelegators(
-        bytes32 poolId,
-        uint256 reward,
-        uint256 amountOfDelegatedStake
-    )
-        external
-    {
-        _recordRewardForDelegators(poolId, reward, amountOfDelegatedStake);
-    }
-
-    /// @dev Overridden to just emit events.
-    function _transferMemberBalanceToEthVault(
-        bytes32 poolId,
-        address member,
-        uint256 balance
-    )
-        internal
-    {
-        emit Deposit(
+        _stake.currentEpoch = uint32(currentEpoch);
+        _syncRewardsForDelegator(
             poolId,
-            member,
-            balance
+            delegator,
+            initialStake,
+            _stake
         );
     }
 
-    /// @dev Overridden to realize unfinalizedMembersRewardByPoolByEpoch in
-    ///      the current epoch and eit a event,
-    function _finalizePool(bytes32 poolId)
-        internal
-        returns (IStructs.PoolRewards memory rewards)
+    /// @dev `IEthVault.recordDepositFor()`,` overridden to just emit events.
+    function recordDepositFor(
+        address owner,
+        uint256 amount
+    )
+        external
     {
-        UnfinalizedMembersReward memory reward =
-            unfinalizedMembersRewardByPoolByEpoch[currentEpoch][poolId];
-        delete unfinalizedMembersRewardByPoolByEpoch[currentEpoch][poolId];
-        rewards.membersReward = reward.reward;
-        rewards.membersStake = reward.stake;
-        _recordRewardForDelegators(poolId, reward.reward, reward.stake);
-        emit FinalizePool(poolId, reward.reward, reward.stake);
+        emit RecordDepositToEthVault(
+            owner,
+            amount
+        );
     }
 
-    /// @dev Overridden to use unfinalizedMembersRewardByPoolByEpoch.
+    /// @dev `IStakingPoolRewardVault.recordDepositFor()`,`
+    ///       overridden to just emit events.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 membersReward
+    )
+        external
+    {
+        emit RecordDepositToRewardVault(
+            poolId,
+            membersReward
+        );
+    }
+
+    /// @dev Expose `_recordStakingPoolRewards`.
+    function recordStakingPoolRewards(
+        bytes32 poolId,
+        uint256 operatorReward,
+        uint256 membersReward,
+        uint256 rewards,
+        uint256 amountOfDelegatedStake
+    )
+        public
+    {
+        _setOperatorShare(poolId, operatorReward, membersReward);
+        _recordStakingPoolRewards(poolId, rewards, amountOfDelegatedStake);
+    }
+
+    /// @dev Overridden to realize `unfinalizedPoolRewardsByEpoch` in
+    ///      the current epoch and emit a event,
+    function _finalizePool(bytes32 poolId)
+        internal
+        returns (
+            uint256 operatorReward,
+            uint256 membersReward,
+            uint256 membersStake
+        )
+    {
+        UnfinalizedMembersReward memory reward =
+            unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+
+        _setOperatorShare(poolId, operatorReward, membersReward);
+
+        uint256 totalRewards = reward.operatorReward + reward.membersReward;
+        membersStake = reward.membersStake;
+        (operatorReward, membersReward) =
+            _recordStakingPoolRewards(poolId, totalRewards, membersStake);
+        emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
+    }
+
+    /// @dev Overridden to use unfinalizedPoolRewardsByEpoch.
     function _getUnfinalizedPoolRewards(bytes32 poolId)
         internal
         view
-        returns (IStructs.PoolRewards memory rewards)
+        returns (
+            uint256 totalReward,
+            uint256 membersStake
+        )
     {
         UnfinalizedMembersReward storage reward =
-            unfinalizedMembersRewardByPoolByEpoch[currentEpoch][poolId];
-        rewards.membersReward = reward.reward;
-        rewards.membersStake = reward.stake;
+            unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        totalReward = reward.operatorReward + reward.membersReward;
+        membersStake = reward.membersStake;
     }
+
+    /// @dev Set the operator share of a pool based on reward ratios.
+    function _setOperatorShare(
+        bytes32 poolId,
+        uint256 operatorReward,
+        uint256 membersReward
+    )
+        private
+    {
+        uint32 operatorShare = uint32(
+            operatorReward * PPM_DENOMINATOR / (operatorReward + membersReward)
+        );
+        poolById[poolId].operatorShare = operatorShare;
+    }
+
 }

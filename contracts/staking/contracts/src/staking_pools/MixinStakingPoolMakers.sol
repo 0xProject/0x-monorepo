@@ -31,6 +31,8 @@ import "./MixinStakingPoolModifiers.sol";
 /// @dev This mixin contains logic for staking pools.
 contract MixinStakingPoolMakers is
     IStakingEvents,
+    MixinConstants,
+    Ownable,
     MixinStorage,
     MixinStakingPoolModifiers
 {

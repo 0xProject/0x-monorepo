@@ -27,30 +27,37 @@ import "./TestStaking.sol";
 contract TestFinalizer is
     TestStaking
 {
-    event RecordRewardForDelegatorsCall(
+    event RecordStakingPoolRewards(
         bytes32 poolId,
         uint256 membersReward,
         uint256 membersStake
     );
 
-    event RecordDepositInRewardVaultForCall(
-        bytes32 poolId,
-        uint256 totalReward,
-        bool operatorOnly
+    event DepositStakingPoolRewards(
+        uint256 operatorReward,
+        uint256 membersReward
     );
 
-    event DepositIntoStakingPoolRewardVaultCall(
-        uint256 amount
-    );
-
-    address payable private _rewardReceiver;
+    address payable private _operatorRewardsReceiver;
+    address payable private _membersRewardsReceiver;
     mapping (bytes32 => uint32) private _operatorSharesByPool;
 
-    /// @param rewardReceiver The address to transfer rewards into when
+    /// @param operatorRewardsReceiver The address to transfer rewards into when
     ///        a pool is finalized.
-    constructor(address payable rewardReceiver) public {
-        _rewardReceiver = rewardReceiver;
-        init();
+    constructor(
+        address payable operatorRewardsReceiver,
+        address payable membersRewardsReceiver
+    )
+        public
+    {
+        init(
+            address(1),
+            address(1),
+            address(1),
+            address(1)
+        );
+        _operatorRewardsReceiver = operatorRewardsReceiver;
+        _membersRewardsReceiver = membersRewardsReceiver;
     }
 
     /// @dev Activate a pool in the current epoch.
@@ -82,9 +89,15 @@ contract TestFinalizer is
     /// @dev Expose `_finalizePool()`
     function internalFinalizePool(bytes32 poolId)
         external
-        returns (IStructs.PoolRewards memory rewards)
+        returns (
+            uint256 operatorReward,
+            uint256 membersReward,
+            uint256 membersStake
+        )
     {
-        rewards = _finalizePool(poolId);
+        (operatorReward,
+         membersReward,
+         membersStake) = _finalizePool(poolId);
     }
 
     /// @dev Get finalization-related state variables.
@@ -143,9 +156,12 @@ contract TestFinalizer is
     function internalGetUnfinalizedPoolRewards(bytes32 poolId)
         external
         view
-        returns (IStructs.PoolRewards memory rewards)
+        returns (
+            uint256 totalReward,
+            uint256 membersStake
+        )
     {
-        rewards = _getUnfinalizedPoolRewards(poolId);
+        (totalReward, membersStake) = _getUnfinalizedPoolRewards(poolId);
     }
 
     /// @dev Expose `_getActivePoolFromEpoch`.
@@ -157,68 +173,33 @@ contract TestFinalizer is
         pool = _getActivePoolFromEpoch(epoch, poolId);
     }
 
-    /// @dev Overridden to just store inputs.
-    function _recordRewardForDelegators(
+    /// @dev Overridden to log and do some basic math.
+    function _recordStakingPoolRewards(
         bytes32 poolId,
-        uint256 membersReward,
+        uint256 reward,
         uint256 membersStake
     )
         internal
+        returns (uint256 operatorReward, uint256 membersReward)
     {
-        emit RecordRewardForDelegatorsCall(
+        (operatorReward, membersReward) = _splitReward(poolId, reward);
+        emit RecordStakingPoolRewards(
             poolId,
-            membersReward,
+            reward,
             membersStake
         );
     }
 
-    /// @dev Overridden to store inputs and do some really basic math.
-    function _depositIntoStakingPoolRewardVault(uint256 amount) internal {
-        emit DepositIntoStakingPoolRewardVaultCall(amount);
-        _rewardReceiver.transfer(amount);
-    }
-
-    /// @dev Overridden to store inputs and do some really basic math.
-    function _recordDepositInRewardVaultFor(
-        bytes32 poolId,
-        uint256 totalReward,
-        bool operatorOnly
+    /// @dev Overridden to log and transfer to receivers.
+    function _depositStakingPoolRewards(
+        uint256 operatorReward,
+        uint256 membersReward
     )
         internal
-        returns (
-            uint256 operatorPortion,
-            uint256 membersPortion
-        )
     {
-        emit RecordDepositInRewardVaultForCall(
-            poolId,
-            totalReward,
-            operatorOnly
-        );
-
-        if (operatorOnly) {
-            operatorPortion = totalReward;
-        } else {
-            (operatorPortion, membersPortion) =
-                _splitRewardAmountBetweenOperatorAndMembers(
-                    poolId,
-                    totalReward
-                );
-        }
-    }
-
-    /// @dev Overridden to do some really basic math.
-    function _splitRewardAmountBetweenOperatorAndMembers(
-        bytes32 poolId,
-        uint256 amount
-    )
-        internal
-        view
-        returns (uint256 operatorPortion, uint256 membersPortion)
-    {
-        uint32 operatorShare = _operatorSharesByPool[poolId];
-        operatorPortion = operatorShare * amount / PPM_DENOMINATOR;
-        membersPortion = amount - operatorPortion;
+        emit DepositStakingPoolRewards(operatorReward, membersReward);
+        address(_operatorRewardsReceiver).transfer(operatorReward);
+        address(_membersRewardsReceiver).transfer(operatorReward);
     }
 
     /// @dev Overriden to just increase the epoch counter.
@@ -229,4 +210,26 @@ contract TestFinalizer is
     // solhint-disable no-empty-blocks
     /// @dev Overridden to do nothing.
     function _unwrapWETH() internal {}
+
+    /// @dev Split a pool's total reward between the operator and members.
+    function _splitReward(
+        bytes32 poolId,
+        uint256 amount
+    )
+        private
+        view
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(
+            currentEpoch - 1,
+            poolId
+        );
+        uint32 operatorShare = _operatorSharesByPool[poolId];
+        (operatorReward, membersReward) = _splitStakingPoolRewards(
+            operatorShare,
+            amount,
+            pool.membersStake
+        );
+    }
+
 }

@@ -23,6 +23,8 @@ import "../immutable/MixinStorage.sol";
 
 
 contract MixinStakingPoolModifiers is
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
 

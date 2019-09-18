@@ -32,16 +32,6 @@ interface IStructs {
         uint256 membersStake;
     }
 
-    /// @dev Rewards credited to a pool during finalization.
-    /// @param operatorReward The amount of reward credited to the pool operator.
-    /// @param membersReward The amount of reward credited to the pool members.
-    /// @param membersStake The amount of members/delegated stake in the pool.
-    struct PoolRewards {
-        uint256 operatorReward;
-        uint256 membersReward;
-        uint256 membersStake;
-    }
-
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.

@@ -29,10 +29,24 @@ import "./fees/MixinExchangeFees.sol";
 
 contract Staking is
     IStaking,
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    MixinDeploymentConstants,
+    Ownable,
+    MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinExchangeManager,
     MixinParams,
+    MixinScheduler,
+    MixinStakeStorage,
+    MixinStakingPoolMakers,
+    MixinStakeBalances,
+    MixinCumulativeRewards,
+    MixinStakingPoolRewards,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees,
+    MixinExchangeFees
 {
     // this contract can receive ETH
     // solhint-disable no-empty-blocks
