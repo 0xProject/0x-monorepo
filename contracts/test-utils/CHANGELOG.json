@@ -84,7 +84,11 @@
             },
             {
                 "note": "Tweaks/Upgrades to `hex_utils`, most notably `hexSlice()`",
-                "pr": "TODO"
+                "pr": 2155
+            },
+            {
+                "note": "Add `shortZip()` to `lang_utils.ts`",
+                "pr": 2155
             }
         ]
     },
