@@ -107,6 +107,13 @@ contract TestFinalizer is
             reward.membersStake) = _finalizePool(poolId);
     }
 
+    /// @dev Drain the balance of this contract.
+    function drainBalance()
+        external
+    {
+        address(0).transfer(address(this).balance);
+    }
+
     /// @dev Get finalization-related state variables.
     function getFinalizationState()
         external

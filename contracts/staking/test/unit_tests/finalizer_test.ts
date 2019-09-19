@@ -157,20 +157,19 @@ blockchainTests.resets('finalizer unit tests', env => {
     ): Promise<void> {
         const currentEpoch = await getCurrentEpochAsync();
         // Compute the expected rewards for each pool.
-        const poolRewards = await calculatePoolRewardsAsync(rewardsAvailable, activePools);
+        const poolsWithStake = activePools.filter(p => !new BigNumber(p.weightedStake).isZero());
+        const poolRewards = await calculatePoolRewardsAsync(rewardsAvailable, poolsWithStake);
         const totalRewards = BigNumber.sum(...poolRewards);
         const rewardsRemaining = new BigNumber(rewardsAvailable).minus(totalRewards);
-        const nonZeroPoolRewards = poolRewards.filter(r => !r.isZero());
-        const poolsWithNonZeroRewards = _.filter(activePools, (p, i) => !poolRewards[i].isZero());
         const [totalOperatorRewards, totalMembersRewards] = getTotalSplitRewards(activePools, poolRewards);
 
         // Assert the `RewardsPaid` logs.
         const rewardsPaidEvents = getRewardsPaidEvents(finalizationLogs);
-        expect(rewardsPaidEvents.length).to.eq(poolsWithNonZeroRewards.length);
+        expect(rewardsPaidEvents.length).to.eq(poolsWithStake.length);
         for (const i of _.times(rewardsPaidEvents.length)) {
             const event = rewardsPaidEvents[i];
-            const pool = poolsWithNonZeroRewards[i];
-            const reward = nonZeroPoolRewards[i];
+            const pool = poolsWithStake[i];
+            const reward = poolRewards[i];
             const [operatorReward, membersReward] = splitRewards(pool, reward);
             expect(event.epoch).to.bignumber.eq(currentEpoch);
             assertRoughlyEquals(event.operatorReward, operatorReward);
@@ -179,10 +178,11 @@ blockchainTests.resets('finalizer unit tests', env => {
 
         // Assert the `RecordStakingPoolRewards` logs.
         const recordStakingPoolRewardsEvents = getRecordStakingPoolRewardsEvents(finalizationLogs);
+        expect(recordStakingPoolRewardsEvents.length).to.eq(poolsWithStake.length);
         for (const i of _.times(recordStakingPoolRewardsEvents.length)) {
             const event = recordStakingPoolRewardsEvents[i];
-            const pool = poolsWithNonZeroRewards[i];
-            const reward = nonZeroPoolRewards[i];
+            const pool = poolsWithStake[i];
+            const reward = poolRewards[i];
             expect(event.poolId).to.eq(pool.poolId);
             assertRoughlyEquals(event.totalReward, reward);
             assertRoughlyEquals(event.membersStake, pool.membersStake);
@@ -191,7 +191,7 @@ blockchainTests.resets('finalizer unit tests', env => {
         // Assert the `DepositStakingPoolRewards` logs.
         // Make sure they all sum up to the totals.
         const depositStakingPoolRewardsEvents = getDepositStakingPoolRewardsEvents(finalizationLogs);
-        {
+        if (depositStakingPoolRewardsEvents.length > 0) {
             const totalDepositedOperatorRewards = BigNumber.sum(
                 ...depositStakingPoolRewardsEvents.map(e => e.operatorReward),
             );
@@ -404,6 +404,17 @@ blockchainTests.resets('finalizer unit tests', env => {
             );
             const allLogs = _.flatten(receipts.map(r => r.logs));
             return assertFinalizationLogsAndBalancesAsync(INITIAL_BALANCE, pools, allLogs);
+        });
+
+        it('can finalize with no rewards', async () => {
+            await testContract.drainBalance.awaitTransactionSuccessAsync();
+            const pools = await Promise.all(_.times(2, async () => addActivePoolAsync()));
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const receipts = await Promise.all(
+                pools.map(pool => testContract.finalizePools.awaitTransactionSuccessAsync([pool.poolId])),
+            );
+            const allLogs = _.flatten(receipts.map(r => r.logs));
+            return assertFinalizationLogsAndBalancesAsync(0, pools, allLogs);
         });
 
         it('ignores a non-active pool', async () => {
