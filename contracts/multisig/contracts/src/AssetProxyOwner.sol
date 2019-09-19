@@ -202,7 +202,7 @@ contract AssetProxyOwner is
         view
     {
         bytes4 functionSelector = data.readBytes4(0);
-        TimeLock storage timeLock = functionCallTimeLocks[functionSelector][destination];
+        TimeLock memory timeLock = functionCallTimeLocks[functionSelector][destination];
         // solhint-disable not-rely-on-time
         if (timeLock.hasCustomTimeLock) {
             require(
