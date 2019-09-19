@@ -68,6 +68,7 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the reward balance in ETH of the operator of a pool.
+    ///      This does not include the balance in the ETH vault.
     /// @param poolId Unique id of pool.
     /// @return totalReward Balance in ETH.
     function computeRewardBalanceOfOperator(bytes32 poolId)
@@ -75,6 +76,9 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
+        // Because operator rewards are immediately sent to the ETH vault
+        // on finalization, the only factor in this function are unfinalized
+        // rewards.
         IStructs.Pool memory pool = _poolById[poolId];
         // Get any unfinalized rewards.
         (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
@@ -88,6 +92,7 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    ///      This does not include the balance in the ETH vault.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
     /// @return totalReward Balance in ETH.
