@@ -53,6 +53,12 @@ contract TestProtocolFees is
         poolJoinedByMakerAddress[makerAddress].confirmed = true;
     }
 
+    function advanceEpoch()
+        external
+    {
+        currentEpoch += 1;
+    }
+
     function getWethAssetData() external pure returns (bytes memory) {
         return WETH_ASSET_DATA;
     }
