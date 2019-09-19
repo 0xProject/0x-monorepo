@@ -163,7 +163,7 @@ blockchainTests('Protocol Fee Unit Tests', env => {
         });
 
         async function getProtocolFeesAsync(poolId: string): Promise<BigNumber> {
-            return testContract.getProtocolFeesThisEpochByPool.callAsync(poolId);
+            return (await testContract.getActiveStakingPoolThisEpoch.callAsync(poolId)).feesCollected;
         }
 
         describe('ETH fees', () => {

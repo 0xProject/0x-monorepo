@@ -14,7 +14,7 @@ import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.skip('Testing Rewards', env => {
+blockchainTests.resets('Testing Rewards', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
@@ -166,7 +166,7 @@ blockchainTests.resets.skip('Testing Rewards', env => {
                     { from: exchangeAddress, value: fee },
                 );
             }
-            await finalizer.finalizeAsync([{ reward: fee, poolId }]);
+            await finalizer.finalizeAsync();
         };
         const ZERO = new BigNumber(0);
         it('Reward balance should be zero if not delegated', async () => {

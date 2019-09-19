@@ -25,6 +25,15 @@ import "../src/Staking.sol";
 contract TestStaking is
     Staking
 {
+    /// @dev Overridden to avoid hard-coded WETH.
+    function getTotalBalance()
+        external
+        view
+        returns (uint256 totalBalance)
+    {
+        totalBalance = address(this).balance;
+    }
+
     // Stub out `_unwrapWETH` to prevent the calls to `finalizeFees` from failing in tests
     // that do not relate to protocol fee payments in WETH.
     function _unwrapWETH()

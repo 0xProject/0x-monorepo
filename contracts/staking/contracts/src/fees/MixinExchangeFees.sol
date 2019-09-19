@@ -161,25 +161,20 @@ contract MixinExchangeFees is
         view
         returns (uint256 totalBalance)
     {
-        totalBalance = address(this).balance +
-            IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        totalBalance = address(this).balance.safeAdd(
+            IEtherToken(WETH_ADDRESS).balanceOf(address(this))
+        );
     }
 
-    /// @dev Returns the amount of fees attributed to the input pool this epoch.
+    /// @dev Get information on an active staking pool in this epoch.
     /// @param poolId Pool Id to query.
-    /// @return feesCollectedByPool Amount of fees collected by the pool this
-    ///         epoch.
-    function getProtocolFeesThisEpochByPool(bytes32 poolId)
+    /// @return pool ActivePool struct.
+    function getActiveStakingPoolThisEpoch(bytes32 poolId)
         external
         view
-        returns (uint256 feesCollected)
+        returns (IStructs.ActivePool memory pool)
     {
-        // Look up the pool for this epoch. The epoch index is `currentEpoch % 2`
-        // because we only need to remember state in the current epoch and the
-        // epoch prior.
-        IStructs.ActivePool memory pool =
-            _getActivePoolFromEpoch(currentEpoch, poolId);
-        feesCollected = pool.feesCollected;
+        pool = _getActivePoolFromEpoch(currentEpoch, poolId);
     }
 
     /// @dev Computes the members and weighted stake for a pool at the current
