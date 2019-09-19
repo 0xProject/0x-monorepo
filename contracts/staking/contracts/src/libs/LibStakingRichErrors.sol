@@ -23,11 +23,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
 library LibStakingRichErrors {
 
-    enum StorageLayoutErrorCodes {
-        UnexpectedSlot,
-        UnexpectedOffset
-    }
-
     enum OperatorShareErrorCodes {
         OperatorShareTooLarge,
         CanOnlyDecreaseOperatorShare
@@ -165,10 +160,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("CumulativeRewardIntervalError(uint8,bytes32,uint256,uint256)"))
     bytes4 internal constant CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR =
         0x1f806d55;
-
-    // bytes4(keccak256("StorageLayoutError(uint8,uint256,uint256)"))
-    bytes4 internal constant STORAGE_LAYOUT_ERROR_SELECTOR =
-        0x213eb134;
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -495,23 +486,6 @@ library LibStakingRichErrors {
             poolId,
             beginEpoch,
             endEpoch
-        );
-    }
-
-    function StorageLayoutError(
-        StorageLayoutErrorCodes errorCode,
-        uint256 expected,
-        uint256 actual
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            STORAGE_LAYOUT_ERROR_SELECTOR,
-            errorCode,
-            expected,
-            actual
         );
     }
 }
