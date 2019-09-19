@@ -59,6 +59,13 @@ export function hexSlice(n: Numberish, start: number, end?: number): string {
 }
 
 /**
+ * Get the keccak hash of some data.
+ */
+export function hexHash(n: Numberish): string {
+    return ethUtil.bufferToHex(ethUtil.sha3(ethUtil.toBuffer(toHex(n))));
+ }
+
+/**
  * Convert a string, a number, or a BigNumber into a hex string.
  * Works with negative numbers, as well.
  */
