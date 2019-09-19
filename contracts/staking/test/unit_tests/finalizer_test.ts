@@ -192,10 +192,12 @@ blockchainTests.resets('finalizer unit tests', env => {
         // Make sure they all sum up to the totals.
         const depositStakingPoolRewardsEvents = getDepositStakingPoolRewardsEvents(finalizationLogs);
         {
-            const totalDepositedOperatorRewards =
-                BigNumber.sum(...depositStakingPoolRewardsEvents.map(e => e.operatorReward));
-            const totalDepositedMembersRewards =
-                BigNumber.sum(...depositStakingPoolRewardsEvents.map(e => e.membersReward));
+            const totalDepositedOperatorRewards = BigNumber.sum(
+                ...depositStakingPoolRewardsEvents.map(e => e.operatorReward),
+            );
+            const totalDepositedMembersRewards = BigNumber.sum(
+                ...depositStakingPoolRewardsEvents.map(e => e.membersReward),
+            );
             assertRoughlyEquals(totalDepositedOperatorRewards, totalOperatorRewards);
             assertRoughlyEquals(totalDepositedMembersRewards, totalMembersRewards);
         }
@@ -211,10 +213,7 @@ blockchainTests.resets('finalizer unit tests', env => {
         await assertReceiverBalancesAsync(totalOperatorRewards, totalMembersRewards);
     }
 
-    async function assertReceiverBalancesAsync(
-        operatorRewards: Numberish,
-        membersRewards: Numberish,
-    ): Promise<void> {
+    async function assertReceiverBalancesAsync(operatorRewards: Numberish, membersRewards: Numberish): Promise<void> {
         const operatorRewardsBalance = await getBalanceOfAsync(operatorRewardsReceiver);
         assertRoughlyEquals(operatorRewardsBalance, operatorRewards);
         const membersRewardsBalance = await getBalanceOfAsync(membersRewardsReceiver);
@@ -272,11 +271,17 @@ blockchainTests.resets('finalizer unit tests', env => {
     }
 
     function getRecordStakingPoolRewardsEvents(logs: LogEntry[]): RecordStakingPoolRewardsEventArgs[] {
-        return filterLogsToArguments<RecordStakingPoolRewardsEventArgs>(logs, TestFinalizerEvents.RecordStakingPoolRewards);
+        return filterLogsToArguments<RecordStakingPoolRewardsEventArgs>(
+            logs,
+            TestFinalizerEvents.RecordStakingPoolRewards,
+        );
     }
 
     function getDepositStakingPoolRewardsEvents(logs: LogEntry[]): DepositStakingPoolRewardsEventArgs[] {
-        return filterLogsToArguments<DepositStakingPoolRewardsEventArgs>(logs, TestFinalizerEvents.DepositStakingPoolRewards);
+        return filterLogsToArguments<DepositStakingPoolRewardsEventArgs>(
+            logs,
+            TestFinalizerEvents.DepositStakingPoolRewards,
+        );
     }
 
     function getRewardsPaidEvents(logs: LogEntry[]): IStakingEventsRewardsPaidEventArgs[] {
@@ -706,7 +711,7 @@ blockchainTests.resets('finalizer unit tests', env => {
             const expectedPoolRewards = await calculatePoolRewardsAsync(INITIAL_BALANCE, pools);
             const [pool, reward] = _.sampleSize(shortZip(pools, expectedPoolRewards), 1)[0];
             return assertUnfinalizedPoolRewardsAsync(pool.poolId, {
-                totalReward: reward as any as BigNumber,
+                totalReward: (reward as any) as BigNumber,
                 membersStake: pool.membersStake,
             });
         });

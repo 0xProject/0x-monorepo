@@ -128,10 +128,8 @@ export class FinalizerActor extends BaseActor {
     private async _getDelegatorBalancesByPoolIdAsync(
         delegatorsByPoolId: DelegatorsByPoolId,
     ): Promise<DelegatorBalancesByPoolId> {
-        const computeRewardBalanceOfDelegator =
-            this._stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator;
-        const computeRewardBalanceOfOperator =
-            this._stakingApiWrapper.stakingContract.computeRewardBalanceOfOperator;
+        const computeRewardBalanceOfDelegator = this._stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator;
+        const computeRewardBalanceOfOperator = this._stakingApiWrapper.stakingContract.computeRewardBalanceOfOperator;
         const delegatorBalancesByPoolId: DelegatorBalancesByPoolId = {};
 
         for (const poolId of Object.keys(delegatorsByPoolId)) {
@@ -154,8 +152,7 @@ export class FinalizerActor extends BaseActor {
     private async _getDelegatorStakesByPoolIdAsync(
         delegatorsByPoolId: DelegatorsByPoolId,
     ): Promise<DelegatorBalancesByPoolId> {
-        const getStakeDelegatedToPoolByOwner =
-            this._stakingApiWrapper.stakingContract.getStakeDelegatedToPoolByOwner;
+        const getStakeDelegatedToPoolByOwner = this._stakingApiWrapper.stakingContract.getStakeDelegatedToPoolByOwner;
         const delegatorBalancesByPoolId: DelegatorBalancesByPoolId = {};
         for (const poolId of Object.keys(delegatorsByPoolId)) {
             const delegators = delegatorsByPoolId[poolId];
@@ -201,14 +198,9 @@ export class FinalizerActor extends BaseActor {
         rewardVaultBalance: BigNumber,
         operatorShare: BigNumber,
     ): Promise<[BigNumber, BigNumber]> {
-        const totalStakeDelegatedToPool = (await
-            this._stakingApiWrapper
-                .stakingContract
-                .getTotalStakeDelegatedToPool
-                .callAsync(
-                    poolId,
-                )
-        ).currentEpochBalance;
+        const totalStakeDelegatedToPool = (await this._stakingApiWrapper.stakingContract.getTotalStakeDelegatedToPool.callAsync(
+            poolId,
+        )).currentEpochBalance;
         const operatorPortion = totalStakeDelegatedToPool.eq(0)
             ? reward
             : reward.times(operatorShare).dividedToIntegerBy(PPM_100_PERCENT);
@@ -243,12 +235,7 @@ export class FinalizerActor extends BaseActor {
         const operatorShareByPoolId: OperatorShareByPoolId = {};
         for (const poolId of poolIds) {
             operatorShareByPoolId[poolId] = new BigNumber(
-                (await this
-                    ._stakingApiWrapper
-                    .stakingContract
-                    .getStakingPool
-                    .callAsync(poolId)
-                ).operatorShare,
+                (await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId)).operatorShare,
             );
         }
         return operatorShareByPoolId;

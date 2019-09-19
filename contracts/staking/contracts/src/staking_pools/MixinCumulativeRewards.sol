@@ -72,14 +72,19 @@ contract MixinCumulativeRewards is
         view
         returns (bool)
     {
-        return (
-            // Is there a value to unset
-            _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]) &&
-            // No references to this CR
-            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0 &&
-            // This is *not* the most recent CR
-            _cumulativeRewardsByPoolLastStored[poolId] > epoch
-        );
+        // Must be a value to unset
+        if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch])) {
+            return false;
+        }
+        // Must be no references to this CR
+        if (_cumulativeRewardsByPoolReferenceCounter[poolId][epoch] != 0) {
+            return false;
+        }
+        // Must not be the most recent CR.
+        if (_cumulativeRewardsByPoolLastStored[poolId] == epoch) {
+            return false;
+        }
+        return true;
     }
 
     /// @dev Tries to set a cumulative reward for `poolId` at `epoch`.
@@ -93,8 +98,11 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        if (_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch])) {
-            // Do nothing; we don't want to override the current value
+        // Do nothing if it's in the past since we don't want to
+        // rewrite history.
+        if (epoch < currentEpoch
+            && _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]))
+        {
             return;
         }
         _forceSetCumulativeReward(poolId, epoch, value);
@@ -113,7 +121,12 @@ contract MixinCumulativeRewards is
         internal
     {
         _cumulativeRewardsByPool[poolId][epoch] = value;
-        _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
+
+        // Never set the most recent reward epoch to one in the future, because
+        // it may get removed if there are no more dependencies on it.
+        if (epoch <= currentEpoch) {
+            _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
+        }
     }
 
     /// @dev Tries to unset the cumulative reward for `poolId` at `epoch`.

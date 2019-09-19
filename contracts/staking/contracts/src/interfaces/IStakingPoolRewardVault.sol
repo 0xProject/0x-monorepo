@@ -43,7 +43,6 @@ interface IStakingPoolRewardVault {
         uint256 amount
     );
 
-
     /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
     ///      The staking contract should pay this contract the ETH owed in the
     ///      same transaction.

@@ -103,8 +103,8 @@ contract TestFinalizer is
         returns (FinalizedPoolRewards memory reward)
     {
         (reward.operatorReward,
-         reward.membersReward,
-         reward.membersStake) = _finalizePool(poolId);
+            reward.membersReward,
+            reward.membersStake) = _finalizePool(poolId);
     }
 
     /// @dev Get finalization-related state variables.

@@ -43,7 +43,7 @@ contract StakingPoolRewardVault is
 
     // solhint-disable no-empty-blocks
     /// @dev Payable fallback for bulk-deposits.
-    function () payable external {}
+    function () external payable {}
 
     /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
     ///      The staking contract should pay this contract the ETH owed in the

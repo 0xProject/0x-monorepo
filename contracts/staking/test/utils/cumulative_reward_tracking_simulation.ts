@@ -63,6 +63,7 @@ export class CumulativeRewardTrackingSimulation {
         for (let i = 0; i < expectedSequence.length; i++) {
             const expectedLog = expectedSequence[i];
             const actualLog = logs[i];
+            expect(expectedLog.event).to.exist('');
             expect(expectedLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(
                 actualLog.event,
             );
