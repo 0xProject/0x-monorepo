@@ -24,7 +24,6 @@ import "./TestStaking.sol";
 contract TestCumulativeRewardTracking is
     TestStaking
 {
-
     event SetCumulativeReward(
         bytes32 poolId,
         uint256 epoch
@@ -39,6 +38,9 @@ contract TestCumulativeRewardTracking is
         bytes32 poolId,
         uint256 epoch
     );
+
+    // solhint-disable-next-line no-empty-blocks
+    function init(address, address, address payable, address) public {}
 
     function _forceSetCumulativeReward(
         bytes32 poolId,
@@ -76,14 +78,4 @@ contract TestCumulativeRewardTracking is
             newMostRecentEpoch
         );
     }
-
-    function _assertParamsNotInitialized()
-        internal
-        view
-    {} // solhint-disable-line no-empty-blocks
-
-    function _assertSchedulerNotInitialized()
-        internal
-        view
-    {} // solhint-disable-line no-empty-blocks
 }

@@ -78,7 +78,7 @@ export class StakingApiWrapper {
                 await this.stakingContract.getLogsAsync(
                     StakingEvents.StakingPoolActivated,
                     { fromBlock: BlockParamLiteral.Earliest, toBlock: BlockParamLiteral.Latest },
-                    { epoch: _epoch },
+                    { epoch: new BigNumber(_epoch) },
                 ),
                 StakingEvents.StakingPoolActivated,
             );
@@ -253,6 +253,8 @@ export async function deployAndConfigureContractsAsync(
     await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
     // set staking proxy contract in reward vault
     await rewardVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
+    // set staking proxy contract in eth vault
+    await ethVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
     return new StakingApiWrapper(
         env,
         ownerAddress,

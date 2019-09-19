@@ -34,371 +34,511 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
     });
 
     describe('Tracking Cumulative Rewards (CR)', () => {
-        it('should set CR when a pool is created at epoch 0', async () => {
+        it('pool created at epoch 0', async () => {
             await simulation.runTestAsync([], [TestAction.CreatePool], [{ event: 'SetCumulativeReward', epoch: 0 }]);
         });
-        it('should set CR and Most Recent CR when a pool is created in epoch >0', async () => {
+        it('pool created in epoch >0', async () => {
             await simulation.runTestAsync(
                 [TestAction.Finalize],
                 [TestAction.CreatePool],
                 [{ event: 'SetCumulativeReward', epoch: 1 }, { event: 'SetMostRecentCumulativeReward', epoch: 1 }],
             );
         });
-        it('should not set CR or Most Recent CR when values already exist for the current epoch', async () => {
+        it('delegating in the same epoch pool is created', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
                 ],
-
                 [
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    // Updates CR for epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
                 ],
-                [],
+                [{ event: 'SetCumulativeReward', epoch: 0 }, { event: 'SetCumulativeReward', epoch: 1 }],
             );
         });
-        it('should not set CR or Most Recent CR when user re-delegates and values already exist for the current epoch', async () => {
+        it('re-delegating in the same epoch', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
                 ],
                 [
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    // Updates CR for epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Updates CR for epoch 0
+                    // Updates CR for epoch 1
+                    TestAction.Delegate,
                 ],
-                [],
+                [
+                    { event: 'SetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 1 },
+                    { event: 'SetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 1 },
+                ],
             );
         });
-        it('should not set CR or Most Recent CR when user undelegagtes and values already exist for the current epoch', async () => {
+        it('delegating then undelegating in the same epoch', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
                 ],
                 [
-                    TestAction.Undelegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
+                    // Unsets the CR for epoch 1
+                    TestAction.Undelegate,
                 ],
-                [],
+                [{ event: 'UnsetCumulativeReward', epoch: 1 }],
             );
         });
-        it('should (i) set CR and Most Recent CR when delegating, and (ii) unset previous Most Recent CR if there are no dependencies', async () => {
+        it('delegating in new epoch', async () => {
             // since there was no delegation in epoch 0 there is no longer a dependency on the CR for epoch 0
             await simulation.runTestAsync(
-                [TestAction.CreatePool, TestAction.Finalize],
-                [TestAction.Delegate],
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                ],
+                [
+                    // Creates a CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Unsets the CR for epoch 0
+                    // Creates a CR for epoch 2
+                    TestAction.Delegate,
+                ],
                 [
                     { event: 'SetCumulativeReward', epoch: 1 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 1 },
                     { event: 'UnsetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 2 },
                 ],
             );
         });
-        it('should (i) set CR and Most Recent CR when delegating, and (ii) NOT unset previous Most Recent CR if there are dependencies', async () => {
+        it('re-delegating in a new epoch', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
-                    TestAction.Finalize, // moves to epoch 1
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                ],
-                [{ event: 'SetCumulativeReward', epoch: 1 }, { event: 'SetMostRecentCumulativeReward', epoch: 1 }],
-            );
-        });
-        it('should not unset the current Most Recent CR, even if there are no dependencies', async () => {
-            // note - we never unset the current Most Recent CR; only ever a previous value - given there are no depencies from delegators.
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                ],
-                [
-                    TestAction.Undelegate, // does nothing. This delegator no longer has dependency, but the most recent CR is 1 so we don't remove.
-                ],
-                [],
-            );
-        });
-        it('should set CR and update Most Recent CR when delegating more stake', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [{ event: 'SetCumulativeReward', epoch: 2 }, { event: 'SetMostRecentCumulativeReward', epoch: 2 }],
-            );
-        });
-        it('should set CR and update Most Recent CR when undelegating', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                ],
-                [
-                    TestAction.Undelegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [{ event: 'SetCumulativeReward', epoch: 2 }, { event: 'SetMostRecentCumulativeReward', epoch: 2 }],
-            );
-        });
-        it('should set CR and update Most Recent CR when undelegating, plus remove the CR that is no longer depends on.', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
+                    // Creates CR in epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Creates CR for epoch 1
                     TestAction.Delegate,
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
+                    // Moves to epoch 1
+                    TestAction.Finalize,
                 ],
                 [
-                    TestAction.Undelegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
                 ],
                 [
+                    { event: 'SetCumulativeReward', epoch: 1 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 1 },
                     { event: 'SetCumulativeReward', epoch: 2 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 2 },
                     { event: 'UnsetCumulativeReward', epoch: 0 },
                 ],
             );
         });
-        it('should set CR and update Most Recent CR when redelegating, plus remove the CR that it no longer depends on.', async () => {
+        it('delegate then undelegate to remove all dependencies', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Creates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
                 ],
                 [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                    // Clears CR from epoch 2
+                    // Does NOT clear CR from epoch 1 because it is the current
+                    // epoch.
+                    TestAction.Undelegate,
+                ],
+                [{ event: 'UnsetCumulativeReward', epoch: 2 }],
+            );
+        });
+        it('delegating in epoch 1 then again in epoch 2', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Creates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
+                    // Move to epoch 2
+                    TestAction.Finalize,
+                ],
+                [
+                    // Updates CR for epoch 2
+                    // Sets MRCR to epoch 2
+                    // Creates CR for epoch 3
+                    // Clears CR for epoch 1
+                    TestAction.Delegate,
                 ],
                 [
                     { event: 'SetCumulativeReward', epoch: 2 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 2 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 3 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
                 ],
             );
         });
-        it('should set CR and Most Recent CR when a reward is earned', async () => {
+        it('delegate in epoch 1 then undelegate in epoch 2', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR, as there is alread a CR set for this epoch.
-                    TestAction.Finalize, // moves to epoch 1
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Creates CR for epoch 1
+                    // Sets MRCR to epoch 0
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                ],
+                [
+                    // Update CR for epoch 2
+                    // Set MRCR to epoch 2
+                    // Clear CR for epoch 1
+                    TestAction.Undelegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 2 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 2 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
+                ],
+            );
+        });
+        it('delegate in epoch 0 and epoch 1, then undelegate half in epoch 2', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Create CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                ],
+                [
+                    // Updates CR for epoch 2
+                    // Sets MRCR to epoch 2
+                    // Creates CR for epoch 3 (because there will still be stake)
+                    // Clears CR for epoch 1
+                    TestAction.Undelegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 2 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 2 },
+                    { event: 'SetCumulativeReward', epoch: 3 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
+                ],
+            );
+        });
+        it('delegate in epoch 1 and 2 then again in 3', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                ],
+                [
+                    // Updates CR for epoch 2
+                    // Sets MRCR to epoch 2
+                    // Creates CR for epoch 3
+                    // Clears CR for epoch 1
+                    TestAction.Delegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 2 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 2 },
+                    { event: 'SetCumulativeReward', epoch: 3 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
+                ],
+            );
+        });
+        it('delegate in epoch 0, earn reward in epoch 1', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Create CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Credits pool with rewards
                     TestAction.PayProtocolFee,
                 ],
                 [
-                    TestAction.Finalize, // adds a CR for epoch 1, plus updates most recent CR
-                ],
-                [{ event: 'SetCumulativeReward', epoch: 1 }, { event: 'SetMostRecentCumulativeReward', epoch: 1 }],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when redelegating, the epoch following a reward was earned', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 2; moves to epoch 3
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 3 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                    { event: 'UnsetCumulativeReward', epoch: 1 },
-                ],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when redelegating, the epoch following a reward was earned', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 2; moves to epoch 3
-                ],
-                [
-                    TestAction.Undelegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 3 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                    { event: 'UnsetCumulativeReward', epoch: 1 },
-                ],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when redelegating, one full epoch after a reward was earned', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 2; moves to epoch 3
-                    TestAction.Finalize, // moves to epoch 4
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 3 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'UnsetCumulativeReward', epoch: 2 },
-                    { event: 'SetCumulativeReward', epoch: 4 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 4 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                    { event: 'UnsetCumulativeReward', epoch: 1 },
-                ],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when redelegating, one full epoch after a reward was earned', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 2; moves to epoch 3
-                ],
-                [
-                    TestAction.Undelegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 3 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                    { event: 'UnsetCumulativeReward', epoch: 1 },
-                ],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when delegating for the first time in an epoch with no CR', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 0; moves to epoch 1
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 1 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 1 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                ],
-            );
-        });
-        it('should set/unset CR and update Most Recent CR when delegating for the first time in an epoch with no CR, after an epoch where a reward was earned', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // creates new CR for epoch 0; moves to epoch 1
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                ],
-                [
-                    { event: 'SetCumulativeReward', epoch: 1 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 1 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
-                ],
-            );
-        });
-        it('should set CR and update Most Recent CR when delegating in two subsequent epochs', async () => {
-            await simulation.runTestAsync(
-                [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1.
-                    TestAction.Finalize, // moves to epoch 1
-                ],
-                [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                    // Moves to epoch 2
+                    // Creates CR for epoch 2
+                    // Sets MRCR to epoch 2
+                    TestAction.Finalize,
                 ],
                 [{ event: 'SetCumulativeReward', epoch: 2 }, { event: 'SetMostRecentCumulativeReward', epoch: 2 }],
             );
         });
-        it('should set/unset CR and update Most Recent CR when delegating in two subsequent epochs, when there is an old CR to clear', async () => {
+        it('delegate in epoch 0, epoch 2, earn reward in epoch 3, then delegate', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                    TestAction.Finalize, //  moves to epoch 2
-                    TestAction.Finalize, // moves to epoch 3
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 3. Sets most recent CR to epoch 3.
-                    TestAction.Finalize, // moves to epoch 4
+                    // Create CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                    // Credits pool with rewards
+                    TestAction.PayProtocolFee,
+                    // Moves to epoch 3
+                    // Creates CR for epoch 3
+                    // Sets MRCR to epoch 3
+                    TestAction.Finalize,
                 ],
                 [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 3. Sets most recent CR to epoch 3.
+                    // Updates CR for epoch 3
+                    // Creates CR for epoch 4
+                    // Clears CR for epoch 1
+                    // Clears CR for epoch 2
+                    TestAction.Delegate,
                 ],
                 [
+                    { event: 'SetCumulativeReward', epoch: 3 },
                     { event: 'SetCumulativeReward', epoch: 4 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 4 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
                     { event: 'UnsetCumulativeReward', epoch: 2 },
                 ],
             );
         });
-        it('should set/unset CR and update Most Recent CR re-delegating after one full epoch', async () => {
+        it('delegate in epoch 0 and 1, earn reward in epoch 3, then undelegate half', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
-                    TestAction.Finalize, //  moves to epoch 2
-                    TestAction.Finalize, // moves to epoch 3
+                    // Create CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                    // Credits pool with rewards
+                    TestAction.PayProtocolFee,
+                    // Moves to epoch 3
+                    // Creates CR for epoch 3
+                    // Sets MRCR to epoch 3
+                    TestAction.Finalize,
                 ],
                 [
-                    TestAction.Delegate, // copies CR from epoch 1 to epoch 3. Sets most recent CR to epoch 3.
+                    // Updates CR for epoch 3
+                    // Creates CR for epoch 4 (because there is still stake remaming)
+                    // Clears CR for epoch 1
+                    // Clears CR for epoch 2
+                    TestAction.Undelegate,
                 ],
                 [
-                    { event: 'SetCumulativeReward', epoch: 2 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 2 },
                     { event: 'SetCumulativeReward', epoch: 3 },
-                    { event: 'SetMostRecentCumulativeReward', epoch: 3 },
+                    { event: 'SetCumulativeReward', epoch: 4 },
                     { event: 'UnsetCumulativeReward', epoch: 1 },
+                    { event: 'UnsetCumulativeReward', epoch: 2 },
                 ],
             );
         });
-        it('should set/unset CR and update Most Recent CR when redelegating after receiving a reward', async () => {
+        it('delegate in epoch 1, 2, earn rewards in epoch 3, skip to epoch 4, then delegate', async () => {
             await simulation.runTestAsync(
                 [
-                    TestAction.CreatePool, // creates CR in epoch 0
-                    TestAction.Delegate, // does nothing wrt CR
-                    TestAction.Finalize, // moves to epoch 1
-                    TestAction.Delegate, // copies CR from epoch 0 to epoch 1. Sets most recent CR to epoch 1.
-                    TestAction.Finalize, // moves to epoch 2
-                    TestAction.PayProtocolFee, // this means a CR will be available upon finalization
-                    TestAction.Finalize, // creates new CR for epoch 2; moves to epoch 3
+                    // Create CR for epoch 0
+                    TestAction.CreatePool,
+                    // Updates CR for epoch 0
+                    // Sets MRCR to epoch 0
+                    // Creates CR for epoch 1
+                    TestAction.Delegate,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Updates CR for epoch 1
+                    // Sets MRCR to epoch 1
+                    // Creates CR for epoch 2
+                    // Clears CR for epoch 0
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                    // Credits pool with rewards
+                    TestAction.PayProtocolFee,
+                    // Moves to epoch 3
+                    // Creates CR for epoch 3
+                    // Sets MRCR to epoch 3
+                    TestAction.Finalize,
+                    // Moves to epoch 4
+                    TestAction.Finalize,
                 ],
                 [
-                    TestAction.Undelegate, // copies CR from epoch 1 to epoch 2. Sets most recent CR to epoch 2.
+                    // Creates CR for epoch 4
+                    // Sets MRCR to epoch 4
+                    // Clears CR for epoch 3
+                    // Creates CR for epoch 5
+                    // Clears CR for epoch 1
+                    TestAction.Delegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 4 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 4 },
+                    { event: 'UnsetCumulativeReward', epoch: 3 },
+                    { event: 'SetCumulativeReward', epoch: 5 },
+                    { event: 'UnsetCumulativeReward', epoch: 1 },
+                    { event: 'UnsetCumulativeReward', epoch: 2 },
+                ],
+            );
+        });
+        it('earn reward in epoch 1 with no stake, then delegate', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Credit pool with rewards
+                    TestAction.PayProtocolFee,
+                    // Moves to epoch 1
+                    // That's it, because there's no active pools.
+                    TestAction.Finalize,
+                ],
+                [
+                    // Updates CR to epoch 1
+                    // Sets MRCR to epoch 1
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 1 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 1 },
+                    { event: 'UnsetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 2 },
+                ],
+            );
+        });
+        it('delegate in epoch 1, 3, then delegate in epoch 4', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Creates CR for epoch 1
+                    // Sets MRCR to epoch 0
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                    // Moves to epoch 3
+                    TestAction.Finalize,
+                    // Creates CR for epoch 3
+                    // Sets MRCR to epoch 3
+                    // Clears CR for epoch 1
+                    // Creates CR for epoch 4
+                    // Clears CR for epoch 2
+                    TestAction.Delegate,
+                    // Moves to epoch 4
+                    TestAction.Finalize,
+                ],
+                [
+                    // Updates CR for epoch 4
+                    // Sets MRCR to epoch 4
+                    // Clears CR for epoch 3
+                    // Creates CR for epoch 5
+                    TestAction.Delegate,
+                ],
+                [
+                    { event: 'SetCumulativeReward', epoch: 4 },
+                    { event: 'SetMostRecentCumulativeReward', epoch: 4 },
+                    { event: 'SetCumulativeReward', epoch: 5 },
+                    { event: 'UnsetCumulativeReward', epoch: 3 },
+                ],
+            );
+        });
+        it('delegate in epoch 1, then epoch 3', async () => {
+            await simulation.runTestAsync(
+                [
+                    // Creates CR for epoch 0
+                    TestAction.CreatePool,
+                    // Moves to epoch 1
+                    TestAction.Finalize,
+                    // Creates CR for epoch 1
+                    // Sets MRCR to epoch 0
+                    // Clears CR for epoch 0
+                    // Creates CR for epoch 2
+                    TestAction.Delegate,
+                    // Moves to epoch 2
+                    TestAction.Finalize,
+                    // Moves to epoch 3
+                    TestAction.Finalize,
+                ],
+                [
+                    // Creates CR for epoch 3
+                    // Sets MRCR to epoch 3
+                    // Clears CR for epoch 1
+                    // Creates CR for epoch 4
+                    // Clears CR for epoch 2
+                    TestAction.Delegate,
                 ],
                 [
                     { event: 'SetCumulativeReward', epoch: 3 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'UnsetCumulativeReward', epoch: 0 },
+                    { event: 'SetCumulativeReward', epoch: 4 },
                     { event: 'UnsetCumulativeReward', epoch: 1 },
+                    { event: 'UnsetCumulativeReward', epoch: 2 },
                 ],
             );
         });

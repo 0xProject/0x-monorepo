@@ -17,7 +17,11 @@ import {
     TestDelegatorRewardsRecordDepositToRewardVaultEventArgs as RewardVaultDepositEventArgs,
 } from '../../src';
 
-import { assertRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
+import {
+    assertIntegerRoughlyEquals as assertRoughlyEquals,
+    getRandomInteger,
+    toBaseUnitAmount,
+} from '../utils/number_utils';
 
 blockchainTests.resets('delegator unit rewards', env => {
     let testContract: TestDelegatorRewardsContract;
@@ -52,6 +56,11 @@ blockchainTests.resets('delegator unit rewards', env => {
             new BigNumber(_opts.membersReward),
             new BigNumber(_opts.membersStake),
         );
+        // Because the operator share is implicitly defined by the member and
+        // operator reward, and is stored as a uint32, there will be precision
+        // loss when the reward is combined then split again in the contracts.
+        // So we perform this transformation on the values and return them.
+        [_opts.operatorReward, _opts.membersReward] = toActualRewards(_opts.operatorReward, _opts.membersReward);
         return _opts;
     }
 
@@ -73,7 +82,28 @@ blockchainTests.resets('delegator unit rewards', env => {
             new BigNumber(_opts.membersReward),
             new BigNumber(_opts.membersStake),
         );
+        // Because the operator share is implicitly defined by the member and
+        // operator reward, and is stored as a uint32, there will be precision
+        // loss when the reward is combined then split again in the contracts.
+        // So we perform this transformation on the values and return them.
+        [_opts.operatorReward, _opts.membersReward] = toActualRewards(_opts.operatorReward, _opts.membersReward);
         return _opts;
+    }
+
+    // Converts pre-split rewards to the amounts the contracts will calculate
+    // after suffering precision loss from the low-precision `operatorShare`.
+    function toActualRewards(operatorReward: Numberish, membersReward: Numberish): [BigNumber, BigNumber] {
+        const totalReward = BigNumber.sum(operatorReward, membersReward);
+        const operatorSharePPM = new BigNumber(operatorReward)
+            .times(constants.PPM_100_PERCENT)
+            .dividedBy(totalReward)
+            .integerValue(BigNumber.ROUND_DOWN);
+        const _operatorReward = totalReward
+            .times(operatorSharePPM)
+            .dividedBy(constants.PPM_100_PERCENT)
+            .integerValue(BigNumber.ROUND_UP);
+        const _membersReward = totalReward.minus(_operatorReward);
+        return [_operatorReward, _membersReward];
     }
 
     type ResultWithDeposits<T extends {}> = T & {
@@ -138,12 +168,12 @@ blockchainTests.resets('delegator unit rewards', env => {
             logs,
             TestDelegatorRewardsEvents.RecordDepositToEthVault,
         );
-        if (ethVaultDepositArgs.length > 0) {
-            expect(ethVaultDepositArgs.length).to.eq(1);
-            if (delegator !== undefined) {
-                expect(ethVaultDepositArgs[0].owner).to.eq(delegator);
+        if (ethVaultDepositArgs.length > 0 && delegator !== undefined) {
+            for (const event of ethVaultDepositArgs) {
+                if (event.owner === delegator) {
+                    ethVaultDeposit = ethVaultDeposit.plus(event.amount);
+                }
             }
-            ethVaultDeposit = ethVaultDepositArgs[0].amount;
         }
         const rewardVaultDepositArgs = filterLogsToArguments<RewardVaultDepositEventArgs>(
             logs,
@@ -284,7 +314,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             // rewards paid for stake in epoch 1.
             const { membersReward: reward } = await rewardPoolMembersAsync({ poolId, membersStake: stake });
             const { ethVaultDeposit: deposit } = await undelegateStakeAsync(poolId, delegator);
-            expect(deposit).to.bignumber.eq(reward);
+            assertRoughlyEquals(deposit, reward);
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
@@ -297,7 +327,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             // rewards paid for stake in epoch 1.
             const { membersReward: reward } = await rewardPoolMembersAsync({ poolId, membersStake: stake });
             const { ethVaultDeposit: deposit } = await undelegateStakeAsync(poolId, delegator);
-            expect(deposit).to.bignumber.eq(reward);
+            assertRoughlyEquals(deposit, reward);
             await delegateStakeAsync(poolId, { delegator, stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
@@ -458,7 +488,7 @@ blockchainTests.resets('delegator unit rewards', env => {
         });
 
         describe('with unfinalized rewards', async () => {
-            it('nothing with only unfinalized rewards from epoch 1 for deleator with nothing delegated', async () => {
+            it('nothing with only unfinalized rewards from epoch 1 for delegator with nothing delegated', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId, { stake: 0 });
                 await advanceEpochAsync(); // epoch 1
@@ -467,7 +497,7 @@ blockchainTests.resets('delegator unit rewards', env => {
                 expect(reward).to.bignumber.eq(0);
             });
 
-            it('nothing with only unfinalized rewards from epoch 1 for deleator delegating in epoch 0', async () => {
+            it('nothing with only unfinalized rewards from epoch 1 for delegator delegating in epoch 0', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 1
@@ -481,10 +511,12 @@ blockchainTests.resets('delegator unit rewards', env => {
                 const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
-                const { membersReward: unfinalizedReward } =
-                    await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
+                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: stake,
+                });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-                expect(reward).to.bignumber.eq(unfinalizedReward);
+                assertRoughlyEquals(reward, unfinalizedReward);
             });
 
             it('returns unfinalized rewards from epoch 3 for delegator delegating in epoch 0', async () => {
@@ -493,10 +525,12 @@ blockchainTests.resets('delegator unit rewards', env => {
                 await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
-                const { membersReward: unfinalizedReward } =
-                    await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
+                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: stake,
+                });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-                expect(reward).to.bignumber.eq(unfinalizedReward);
+                assertRoughlyEquals(reward, unfinalizedReward);
             });
 
             it('returns unfinalized rewards from epoch 3 + rewards from epoch 2 for delegator delegating in epoch 0', async () => {
@@ -506,10 +540,13 @@ blockchainTests.resets('delegator unit rewards', env => {
                 await advanceEpochAsync(); // epoch 2
                 const { membersReward: prevReward } = await rewardPoolMembersAsync({ poolId, membersStake: stake });
                 await advanceEpochAsync(); // epoch 3
-                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
+                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: stake,
+                });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
                 const expectedReward = BigNumber.sum(prevReward, unfinalizedReward);
-                expect(reward).to.bignumber.eq(expectedReward);
+                assertRoughlyEquals(reward, expectedReward);
             });
 
             it('returns unfinalized rewards from epoch 4 + rewards from epoch 2 for delegator delegating in epoch 1', async () => {
@@ -520,11 +557,13 @@ blockchainTests.resets('delegator unit rewards', env => {
                 const { membersReward: prevReward } = await rewardPoolMembersAsync({ poolId, membersStake: stake });
                 await advanceEpochAsync(); // epoch 3
                 await advanceEpochAsync(); // epoch 4
-                const { membersReward: unfinalizedReward } =
-                    await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
+                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: stake,
+                });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
                 const expectedReward = BigNumber.sum(prevReward, unfinalizedReward);
-                expect(reward).to.bignumber.eq(expectedReward);
+                assertRoughlyEquals(reward, expectedReward);
             });
 
             it('returns correct rewards if unfinalized stake is different from previous rewards', async () => {
@@ -538,11 +577,13 @@ blockchainTests.resets('delegator unit rewards', env => {
                 });
                 await advanceEpochAsync(); // epoch 3
                 await advanceEpochAsync(); // epoch 4
-                const { membersReward: unfinalizedReward, membersStake: unfinalizedStake } =
-                    await setUnfinalizedPoolRewardAsync({
-                        poolId,
-                        membersStake: new BigNumber(stake).times(5),
-                    });
+                const {
+                    membersReward: unfinalizedReward,
+                    membersStake: unfinalizedStake,
+                } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: new BigNumber(stake).times(5),
+                });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
                 const expectedReward = BigNumber.sum(
                     computeDelegatorRewards(prevReward, stake, prevStake),

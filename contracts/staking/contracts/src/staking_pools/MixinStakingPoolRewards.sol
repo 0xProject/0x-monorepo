@@ -238,6 +238,34 @@ contract MixinStakingPoolRewards is
         address(uint160(address(rewardVault))).transfer(membersReward);
     }
 
+    /// @dev Split a pool reward between the operator and members based on
+    ///      the `operatorShare` and `membersStake`.
+    /// @param operatorShare The fraction of rewards owed to the operator,
+    ///        in PPM.
+    /// @param totalReward The pool reward.
+    /// @param membersStake The amount of member (non-operator) stake delegated
+    ///        to the pool in the epoch the rewards were earned.
+    function _splitStakingPoolRewards(
+        uint32 operatorShare,
+        uint256 totalReward,
+        uint256 membersStake
+    )
+        internal
+        pure
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        if (membersStake == 0) {
+            operatorReward = totalReward;
+        } else {
+            operatorReward = LibMath.getPartialAmountCeil(
+                uint256(operatorShare),
+                PPM_DENOMINATOR,
+                totalReward
+            );
+            membersReward = totalReward - operatorReward;
+        }
+    }
+
     /// @dev Transfers a delegators accumulated rewards from the transient pool
     ///       Reward Pool vault to the Eth Vault. This is required before the
     ///       member's stake in the pool can be modified.
@@ -276,34 +304,6 @@ contract MixinStakingPoolRewards is
             address(uint160(address(ethVault))),
             balance
         );
-    }
-
-    /// @dev Split a pool reward between the operator and members based on
-    ///      the `operatorShare` and `membersStake`.
-    /// @param operatorShare The fraction of rewards owed to the operator,
-    ///        in PPM.
-    /// @param totalReward The pool reward.
-    /// @param membersStake The amount of member (non-operator) stake delegated
-    ///        to the pool in the epoch the rewards were earned.
-    function _splitStakingPoolRewards(
-        uint32 operatorShare,
-        uint256 totalReward,
-        uint256 membersStake
-    )
-        internal
-        pure
-        returns (uint256 operatorReward, uint256 membersReward)
-    {
-        if (membersStake == 0) {
-            operatorReward = totalReward;
-        } else {
-            operatorReward = LibMath.getPartialAmountCeil(
-                uint256(operatorShare),
-                PPM_DENOMINATOR,
-                totalReward
-            );
-            membersReward = totalReward - operatorReward;
-        }
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
@@ -413,19 +413,6 @@ contract MixinStakingPoolRewards is
         IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo =
             _getMostRecentCumulativeRewardInfo(poolId);
 
-        // Record dependency on the next epoch
-        uint256 nextEpoch = currentEpoch.safeAdd(1);
-        if (_delegatedStakeToPoolByOwner.currentEpoch > 0
-            && _delegatedStakeToPoolByOwner.nextEpochBalance != 0)
-        {
-            _addOrRemoveDependencyOnCumulativeReward(
-                poolId,
-                nextEpoch,
-                mostRecentCumulativeRewardInfo,
-                isDependent
-            );
-        }
-
         // Record dependency on current epoch.
         if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0
             || _delegatedStakeToPoolByOwner.nextEpochBalance != 0)
@@ -433,6 +420,16 @@ contract MixinStakingPoolRewards is
             _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
                 _delegatedStakeToPoolByOwner.currentEpoch,
+                mostRecentCumulativeRewardInfo,
+                isDependent
+            );
+        }
+
+        // Record dependency on the next epoch
+        if (_delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
+            _addOrRemoveDependencyOnCumulativeReward(
+                poolId,
+                uint256(_delegatedStakeToPoolByOwner.currentEpoch).safeAdd(1),
                 mostRecentCumulativeRewardInfo,
                 isDependent
             );

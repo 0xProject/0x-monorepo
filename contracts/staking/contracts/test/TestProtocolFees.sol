@@ -37,13 +37,13 @@ contract TestProtocolFees is
     mapping(address => bytes32) private _makersToTestPoolIds;
 
     constructor(address exchangeAddress, address wethProxyAddress) public {
-        validExchanges[exchangeAddress] = true;
-        _initMixinParams(
+        init(
             wethProxyAddress,
             address(1), // vault addresses must be non-zero
             address(1),
             address(1)
         );
+        validExchanges[exchangeAddress] = true;
     }
 
     function addMakerToPool(bytes32 poolId, address makerAddress)

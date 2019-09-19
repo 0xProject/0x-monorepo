@@ -125,7 +125,7 @@ contract MixinStake is
         {
             return;
         } else if (from.status == IStructs.StakeStatus.DELEGATED
-                   && from.poolId == to.poolId)
+            && from.poolId == to.poolId)
         {
             return;
         }

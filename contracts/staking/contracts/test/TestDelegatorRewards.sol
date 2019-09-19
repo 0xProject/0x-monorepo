@@ -87,6 +87,7 @@ contract TestDelegatorRewards is
                 membersReward: membersReward,
                 membersStake: membersStake
             });
+        _setOperatorShare(poolId, operatorReward, membersReward);
     }
 
     /// @dev Advance the epoch.
@@ -104,6 +105,7 @@ contract TestDelegatorRewards is
     )
         external
     {
+        _initGenesisCumulativeRewards(poolId);
         IStructs.StoredBalance memory initialStake =
             _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
@@ -130,6 +132,7 @@ contract TestDelegatorRewards is
     )
         external
     {
+        _initGenesisCumulativeRewards(poolId);
         IStructs.StoredBalance memory initialStake =
             _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
@@ -158,6 +161,7 @@ contract TestDelegatorRewards is
     )
         external
     {
+        _initGenesisCumulativeRewards(poolId);
         IStructs.StoredBalance memory initialStake =
             _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake =
@@ -234,7 +238,7 @@ contract TestDelegatorRewards is
             unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
 
-        _setOperatorShare(poolId, operatorReward, membersReward);
+        _setOperatorShare(poolId, reward.operatorReward, reward.membersReward);
 
         uint256 totalRewards = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
@@ -258,6 +262,19 @@ contract TestDelegatorRewards is
         membersStake = reward.membersStake;
     }
 
+    /// @dev Create a cumulative rewards entry for a pool if one doesn't
+    ///      already exist to get around having to create pools in advance.
+    function _initGenesisCumulativeRewards(bytes32 poolId)
+        private
+    {
+        uint256 lastRewardEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        IStructs.Fraction memory cumulativeReward  =
+            _cumulativeRewardsByPool[poolId][lastRewardEpoch];
+        if (!_isCumulativeRewardSet(cumulativeReward)) {
+            _initializeCumulativeRewards(poolId);
+        }
+    }
+
     /// @dev Set the operator share of a pool based on reward ratios.
     function _setOperatorShare(
         bytes32 poolId,
@@ -266,9 +283,13 @@ contract TestDelegatorRewards is
     )
         private
     {
-        uint32 operatorShare = uint32(
-            operatorReward * PPM_DENOMINATOR / (operatorReward + membersReward)
-        );
+        uint32 operatorShare = 0;
+        uint256 totalReward = operatorReward + membersReward;
+        if (totalReward != 0) {
+            operatorShare = uint32(
+                operatorReward * PPM_DENOMINATOR / totalReward
+            );
+        }
         _poolById[poolId].operatorShare = operatorShare;
     }
 
