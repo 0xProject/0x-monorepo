@@ -87,6 +87,10 @@
                 "pr": 2155
             },
             {
+                "note": "Add `hexHash()` to `hex_utils`",
+                "pr": 2155
+            },
+            {
                 "note": "Add `shortZip()` to `lang_utils.ts`",
                 "pr": 2155
             }
