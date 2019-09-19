@@ -50,5 +50,4 @@ export * from '../generated-wrappers/test_protocol_fees';
 export * from '../generated-wrappers/test_protocol_fees_erc20_proxy';
 export * from '../generated-wrappers/test_staking';
 export * from '../generated-wrappers/test_staking_proxy';
-export * from '../generated-wrappers/test_storage_layout';
 export * from '../generated-wrappers/zrx_vault';
