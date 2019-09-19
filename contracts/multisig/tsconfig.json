@@ -4,6 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/AssetProxyOwner.json",
+        "generated-artifacts/ContractCallReceiver.json",
         "generated-artifacts/MultiSigWallet.json",
         "generated-artifacts/MultiSigWalletWithTimeLock.json",
         "generated-artifacts/TestAssetProxyOwner.json",
