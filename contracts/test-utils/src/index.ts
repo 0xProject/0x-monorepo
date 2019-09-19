@@ -28,16 +28,7 @@ export { bytes32Values, testCombinatoriallyWithReferenceFunc, uint256Values } fr
 export { TransactionFactory } from './transaction_factory';
 export { MutatorContractFunction, TransactionHelper } from './transaction_helper';
 export { testWithReferenceFuncAsync } from './test_with_reference';
-export {
-    hexConcat,
-    hexHash,
-    hexLeftPad,
-    hexInvert,
-    hexSlice,
-    hexRandom,
-    hexRightPad,
-    toHex,
-} from './hex_utils';
+export { hexConcat, hexHash, hexLeftPad, hexInvert, hexSlice, hexRandom, hexRightPad, toHex } from './hex_utils';
 export {
     BatchMatchOrder,
     ContractName,
