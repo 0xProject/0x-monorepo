@@ -1,5 +1,5 @@
 import * as wrappers from '@0x/abi-gen-wrappers';
-import { ContractAddresses } from '@0x/contract-addresses';
+import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0x/contract-addresses';
 import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
@@ -24,6 +24,9 @@ export async function runMigrationsAsync(
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const web3Wrapper = new Web3Wrapper(provider);
 
+    const contractAddresses = getContractAddressesForNetworkOrThrow(NetworkId.Kovan);
+
+    /*
     // Proxies
     const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
         artifacts.ERC20Proxy,
@@ -53,9 +56,11 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
     );
+    */
 
     // Exchange
-    const zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+    const zrxAssetData = assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken);
+    /*
     const exchange = await wrappers.ExchangeContract.deployFrom0xArtifactAsync(
         artifacts.Exchange,
         provider,
@@ -251,6 +256,7 @@ export async function runMigrationsAsync(
         artifacts,
         exchange.address,
     );
+    */
 
     // Dev Utils
     const devUtils = await wrappers.DevUtilsContract.deployFrom0xArtifactAsync(
@@ -258,29 +264,13 @@ export async function runMigrationsAsync(
         provider,
         txDefaults,
         artifacts,
-        exchange.address,
-        zrxAssetData,
+        contractAddresses.exchange,
     );
 
-    const contractAddresses = {
-        erc20Proxy: erc20Proxy.address,
-        erc721Proxy: erc721Proxy.address,
-        erc1155Proxy: erc1155Proxy.address,
-        zrxToken: zrxToken.address,
-        etherToken: etherToken.address,
-        exchange: exchange.address,
-        assetProxyOwner: assetProxyOwner.address,
-        forwarder: forwarder.address,
-        orderValidator: orderValidator.address,
-        dutchAuction: dutchAuction.address,
-        coordinatorRegistry: coordinatorRegistry.address,
-        coordinator: coordinator.address,
-        multiAssetProxy: multiAssetProxy.address,
-        staticCallProxy: staticCallProxy.address,
+    return {
+        ...contractAddresses,
         devUtils: devUtils.address,
     };
-
-    return contractAddresses;
 }
 
 let _cachedContractAddresses: ContractAddresses;
