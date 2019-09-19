@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 
 import { StakingApiWrapper } from '../utils/api_wrapper';
 import {
+    BalanceByOwner,
     DelegatorBalancesByPoolId,
     DelegatorsByPoolId,
     OperatorBalanceByPoolId,
@@ -14,11 +15,6 @@ import {
 } from '../utils/types';
 
 import { BaseActor } from './base_actor';
-
-interface Reward {
-    reward: BigNumber;
-    poolId: string;
-}
 
 const { PPM_100_PERCENT } = constants;
 
@@ -41,30 +37,31 @@ export class FinalizerActor extends BaseActor {
         this._delegatorsByPoolId = _.cloneDeep(delegatorsByPoolId);
     }
 
-    public async finalizeAsync(rewards: Reward[] = []): Promise<void> {
+    public async finalizeAsync(): Promise<void> {
         // cache initial info and balances
         const operatorShareByPoolId = await this._getOperatorShareByPoolIdAsync(this._poolIds);
         const rewardVaultBalanceByPoolId = await this._getRewardVaultBalanceByPoolIdAsync(this._poolIds);
         const delegatorBalancesByPoolId = await this._getDelegatorBalancesByPoolIdAsync(this._delegatorsByPoolId);
         const delegatorStakesByPoolId = await this._getDelegatorStakesByPoolIdAsync(this._delegatorsByPoolId);
         const operatorBalanceByPoolId = await this._getOperatorBalanceByPoolIdAsync(this._operatorByPoolId);
+        const rewardByPoolId = await this._getRewardByPoolIdAsync(this._poolIds);
         // compute expected changes
         const [
             expectedOperatorBalanceByPoolId,
             expectedRewardVaultBalanceByPoolId,
         ] = await this._computeExpectedRewardVaultBalanceAsyncByPoolIdAsync(
-            rewards,
+            rewardByPoolId,
             operatorBalanceByPoolId,
             rewardVaultBalanceByPoolId,
+            delegatorStakesByPoolId,
             operatorShareByPoolId,
         );
-        const totalRewardsByPoolId = _.zipObject(_.map(rewards, 'poolId'), _.map(rewards, 'reward'));
         const expectedDelegatorBalancesByPoolId = await this._computeExpectedDelegatorBalancesByPoolIdAsync(
             this._delegatorsByPoolId,
             delegatorBalancesByPoolId,
             delegatorStakesByPoolId,
             operatorShareByPoolId,
-            totalRewardsByPoolId,
+            rewardByPoolId,
         );
         // finalize
         await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
@@ -90,33 +87,26 @@ export class FinalizerActor extends BaseActor {
         delegatorBalancesByPoolId: DelegatorBalancesByPoolId,
         delegatorStakesByPoolId: DelegatorBalancesByPoolId,
         operatorShareByPoolId: OperatorShareByPoolId,
-        totalRewardByPoolId: RewardByPoolId,
+        rewardByPoolId: RewardByPoolId,
     ): Promise<DelegatorBalancesByPoolId> {
         const expectedDelegatorBalancesByPoolId = _.cloneDeep(delegatorBalancesByPoolId);
         for (const poolId of Object.keys(delegatorsByPoolId)) {
-            if (totalRewardByPoolId[poolId] === undefined) {
-                continue;
-            }
-
             const operator = this._operatorByPoolId[poolId];
-            const [, membersStakeInPool] = await this._getOperatorAndDelegatorsStakeInPoolAsync(poolId);
-            const operatorShare = operatorShareByPoolId[poolId].dividedBy(PPM_100_PERCENT);
-            const totalReward = totalRewardByPoolId[poolId];
+            const totalStakeInPool = BigNumber.sum(...Object.values(delegatorStakesByPoolId[poolId]));
+            const operatorStakeInPool = delegatorStakesByPoolId[poolId][operator];
+            const membersStakeInPool = totalStakeInPool.minus(operatorStakeInPool);
+            const operatorShare = operatorShareByPoolId[poolId];
+            const totalReward = rewardByPoolId[poolId];
             const operatorReward = membersStakeInPool.eq(0)
                 ? totalReward
-                : totalReward.times(operatorShare).integerValue(BigNumber.ROUND_DOWN);
+                : totalReward.times(operatorShare).dividedToIntegerBy(PPM_100_PERCENT);
             const membersTotalReward = totalReward.minus(operatorReward);
 
             for (const delegator of delegatorsByPoolId[poolId]) {
                 let delegatorReward = new BigNumber(0);
-                if (delegator === operator) {
-                    delegatorReward = operatorReward;
-                } else if (membersStakeInPool.gt(0)) {
+                if (delegator !== operator && membersStakeInPool.gt(0)) {
                     const delegatorStake = delegatorStakesByPoolId[poolId][delegator];
-                    delegatorReward = delegatorStake
-                        .times(membersTotalReward)
-                        .dividedBy(membersStakeInPool)
-                        .integerValue(BigNumber.ROUND_DOWN);
+                    delegatorReward = delegatorStake.times(membersTotalReward).dividedToIntegerBy(membersStakeInPool);
                 }
                 const currentBalance = expectedDelegatorBalancesByPoolId[poolId][delegator] || 0;
                 expectedDelegatorBalancesByPoolId[poolId][delegator] = delegatorReward.plus(currentBalance);
@@ -168,23 +158,25 @@ export class FinalizerActor extends BaseActor {
     }
 
     private async _computeExpectedRewardVaultBalanceAsyncByPoolIdAsync(
-        rewards: Reward[],
+        rewardByPoolId: RewardByPoolId,
         operatorBalanceByPoolId: OperatorBalanceByPoolId,
         rewardVaultBalanceByPoolId: RewardVaultBalanceByPoolId,
+        delegatorStakesByPoolId: DelegatorBalancesByPoolId,
         operatorShareByPoolId: OperatorShareByPoolId,
     ): Promise<[RewardVaultBalanceByPoolId, OperatorBalanceByPoolId]> {
         const expectedOperatorBalanceByPoolId = _.cloneDeep(operatorBalanceByPoolId);
         const expectedRewardVaultBalanceByPoolId = _.cloneDeep(rewardVaultBalanceByPoolId);
-        for (const reward of rewards) {
-            const operatorShare = operatorShareByPoolId[reward.poolId];
+        for (const poolId of Object.keys(rewardByPoolId)) {
+            const operatorShare = operatorShareByPoolId[poolId];
             [
-                expectedOperatorBalanceByPoolId[reward.poolId],
-                expectedRewardVaultBalanceByPoolId[reward.poolId],
+                expectedOperatorBalanceByPoolId[poolId],
+                expectedRewardVaultBalanceByPoolId[poolId],
             ] = await this._computeExpectedRewardVaultBalanceAsync(
-                reward.poolId,
-                reward.reward,
-                expectedOperatorBalanceByPoolId[reward.poolId],
-                expectedRewardVaultBalanceByPoolId[reward.poolId],
+                poolId,
+                rewardByPoolId[poolId],
+                expectedOperatorBalanceByPoolId[poolId],
+                expectedRewardVaultBalanceByPoolId[poolId],
+                delegatorStakesByPoolId[poolId],
                 operatorShare,
             );
         }
@@ -196,12 +188,13 @@ export class FinalizerActor extends BaseActor {
         reward: BigNumber,
         operatorBalance: BigNumber,
         rewardVaultBalance: BigNumber,
+        stakeBalances: BalanceByOwner,
         operatorShare: BigNumber,
     ): Promise<[BigNumber, BigNumber]> {
-        const totalStakeDelegatedToPool = (await this._stakingApiWrapper.stakingContract.getTotalStakeDelegatedToPool.callAsync(
-            poolId,
-        )).currentEpochBalance;
-        const operatorPortion = totalStakeDelegatedToPool.eq(0)
+        const totalStakeDelegatedToPool = BigNumber.sum(...Object.values(stakeBalances));
+        const stakeDelegatedToPoolByOperator = stakeBalances[this._operatorByPoolId[poolId]];
+        const membersStakeDelegatedToPool = totalStakeDelegatedToPool.minus(stakeDelegatedToPoolByOperator);
+        const operatorPortion = membersStakeDelegatedToPool.eq(0)
             ? reward
             : reward.times(operatorShare).dividedToIntegerBy(PPM_100_PERCENT);
         const membersPortion = reward.minus(operatorPortion);
@@ -218,17 +211,6 @@ export class FinalizerActor extends BaseActor {
             );
         }
         return operatorBalanceByPoolId;
-    }
-
-    private async _getOperatorAndDelegatorsStakeInPoolAsync(poolId: string): Promise<[BigNumber, BigNumber]> {
-        const stakingContract = this._stakingApiWrapper.stakingContract;
-        const operator = (await stakingContract.getStakingPool.callAsync(poolId)).operator;
-        const totalStakeInPool = (await stakingContract.getTotalStakeDelegatedToPool.callAsync(poolId))
-            .currentEpochBalance;
-        const operatorStakeInPool = (await stakingContract.getStakeDelegatedToPoolByOwner.callAsync(operator, poolId))
-            .currentEpochBalance;
-        const membersStakeInPool = totalStakeInPool.minus(operatorStakeInPool);
-        return [operatorStakeInPool, membersStakeInPool];
     }
 
     private async _getOperatorShareByPoolIdAsync(poolIds: string[]): Promise<OperatorShareByPoolId> {
@@ -249,5 +231,31 @@ export class FinalizerActor extends BaseActor {
             );
         }
         return rewardVaultBalanceByPoolId;
+    }
+
+    private async _getRewardByPoolIdAsync(poolIds: string[]): Promise<RewardByPoolId> {
+        const activePools = await Promise.all(
+            poolIds.map(async poolId =>
+                this._stakingApiWrapper.stakingContract.getActiveStakingPoolThisEpoch.callAsync(poolId),
+            ),
+        );
+        const totalRewards = await this._stakingApiWrapper.stakingContract.getTotalBalance.callAsync();
+        const totalFeesCollected = BigNumber.sum(...activePools.map(p => p.feesCollected));
+        const totalWeightedStake = BigNumber.sum(...activePools.map(p => p.weightedStake));
+        if (totalRewards.eq(0) || totalFeesCollected.eq(0) || totalWeightedStake.eq(0)) {
+            return _.zipObject(poolIds, _.times(poolIds.length, () => new BigNumber(0)));
+        }
+        const rewards = await Promise.all(
+            activePools.map(async pool =>
+                this._stakingApiWrapper.utils.cobbDouglas(
+                    totalRewards,
+                    pool.feesCollected,
+                    totalFeesCollected,
+                    pool.weightedStake,
+                    totalWeightedStake,
+                ),
+            ),
+        );
+        return _.zipObject(poolIds, rewards);
     }
 }

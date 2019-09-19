@@ -16,6 +16,7 @@ import {
     StakingEvents,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
+    TestCobbDouglasContract,
     ZrxVaultContract,
 } from '../../src';
 
@@ -33,6 +34,7 @@ export class StakingApiWrapper {
     public ethVaultContract: EthVaultContract;
     public rewardVaultContract: StakingPoolRewardVaultContract;
     public zrxTokenContract: DummyERC20TokenContract;
+    public cobbDouglasContract: TestCobbDouglasContract;
     public utils = {
         // Epoch Utils
         fastForwardToNextEpochAsync: async (): Promise<void> => {
@@ -141,6 +143,25 @@ export class StakingApiWrapper {
                 await this.stakingContract.getParams.callAsync(),
             ) as any) as StakingParams;
         },
+
+        cobbDouglas: async (
+            totalRewards: BigNumber,
+            ownerFees: BigNumber,
+            totalFees: BigNumber,
+            ownerStake: BigNumber,
+            totalStake: BigNumber,
+        ): Promise<BigNumber> => {
+            const { cobbDouglasAlphaNumerator, cobbDouglasAlphaDenominator } = await this.utils.getParamsAsync();
+            return this.cobbDouglasContract.cobbDouglas.callAsync(
+                totalRewards,
+                ownerFees,
+                totalFees,
+                ownerStake,
+                totalStake,
+                new BigNumber(cobbDouglasAlphaNumerator),
+                new BigNumber(cobbDouglasAlphaDenominator),
+            );
+        },
     };
 
     private readonly _web3Wrapper: Web3Wrapper;
@@ -154,12 +175,14 @@ export class StakingApiWrapper {
         ethVaultContract: EthVaultContract,
         rewardVaultContract: StakingPoolRewardVaultContract,
         zrxTokenContract: DummyERC20TokenContract,
+        cobbDouglasContract: TestCobbDouglasContract,
     ) {
         this._web3Wrapper = env.web3Wrapper;
         this.zrxVaultContract = zrxVaultContract;
         this.ethVaultContract = ethVaultContract;
         this.rewardVaultContract = rewardVaultContract;
         this.zrxTokenContract = zrxTokenContract;
+        this.cobbDouglasContract = cobbDouglasContract;
 
         this.stakingContractAddress = stakingContract.address;
         this.stakingProxyContract = stakingProxyContract;
@@ -246,6 +269,13 @@ export async function deployAndConfigureContractsAsync(
         rewardVaultContract.address,
         zrxVaultContract.address,
     );
+    // deploy cobb douglas contract
+    const cobbDouglasContract = await TestCobbDouglasContract.deployFrom0xArtifactAsync(
+        artifacts.TestCobbDouglas,
+        env.provider,
+        txDefaults,
+        artifacts,
+    );
 
     // configure erc20 proxy to accept calls from zrx vault
     await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
@@ -264,5 +294,6 @@ export async function deployAndConfigureContractsAsync(
         ethVaultContract,
         rewardVaultContract,
         zrxTokenContract,
+        cobbDouglasContract,
     );
 }
