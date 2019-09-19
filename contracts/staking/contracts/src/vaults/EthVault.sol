@@ -18,8 +18,10 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IEthVault.sol";
+import "../libs/LibStakingRichErrors.sol";
 import "./MixinVaultCore.sol";
 
 
@@ -70,6 +72,22 @@ contract EthVault is
 
         // withdraw ETH to owner
         _withdrawFrom(owner, totalBalance);
+        return totalBalance;
+    }
+
+    /// @dev Withdraw ALL ETH to `staker` from the vault. This can only
+    ///      be called by the staking contract.
+    /// @param staker The address to withdraw for.
+    function withdrawAllFor(address payable staker)
+        external
+        onlyStakingProxy
+        returns (uint256 totalBalance)
+    {
+        // get total balance
+        totalBalance = _balances[staker];
+
+        // withdraw ETH to staker
+        _withdrawFrom(staker, totalBalance);
         return totalBalance;
     }
 

@@ -62,6 +62,13 @@ interface IEthVault {
         external
         returns (uint256);
 
+    /// @dev Withdraw ALL ETH to `staker` from the vault. This can only
+    ///      be called by the staking contract.
+    /// @param staker The address to withdraw for.
+    function withdrawAllFor(address payable staker)
+        external
+        returns (uint256);
+
     /// @dev Returns the balance in ETH of the `owner`
     /// @return Balance in ETH.
     function balanceOf(address owner)

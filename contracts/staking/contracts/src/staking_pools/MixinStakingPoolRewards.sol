@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "../interfaces/IStructs.sol";
 import "./MixinCumulativeRewards.sol";
 
 
@@ -50,6 +51,27 @@ contract MixinStakingPoolRewards is
 
         // update stored balance with synchronized version; this prevents redundant withdrawals.
         _delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
+    }
+
+    /// @dev Syncs the rewards for the sender and then withdraws all of the eth vault to the sender.
+    function withdrawAndSyncRewards(bytes32[] calldata poolIds)
+        external
+        returns (uint256)
+    {
+        uint256 length = poolIds.length;
+        mapping (bytes32 => IStructs.StoredBalance) storage senderDelegatedStake = _delegatedStakeToPoolByOwner[msg.sender];
+
+        for (uint256 i = 0; i != length; i++) {
+            IStructs.StoredBalance memory delegatedStakeAmount = _loadUnsyncedBalance(senderDelegatedStake[poolIds[i]]);
+            _syncRewardsForDelegator(
+                poolIds[i],
+                msg.sender,
+                delegatedStakeAmount,
+                delegatedStakeAmount
+            );
+        }
+
+        return ethVault.withdrawAllFor(msg.sender);
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
