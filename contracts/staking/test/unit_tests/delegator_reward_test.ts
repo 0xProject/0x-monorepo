@@ -7,6 +7,7 @@ import {
     hexRandom,
     hexSlice,
     Numberish,
+    randomAddress,
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { LogEntry } from 'ethereum-types';
@@ -228,10 +229,6 @@ blockchainTests.resets('delegator unit rewards', env => {
             ethVaultDeposit,
             rewardVaultDeposit,
         };
-    }
-
-    function randomAddress(): string {
-        return hexRandom(constants.ADDRESS_LENGTH);
     }
 
     function computeDelegatorRewards(
