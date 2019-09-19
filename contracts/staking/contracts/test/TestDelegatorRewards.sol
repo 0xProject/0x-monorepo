@@ -75,6 +75,7 @@ contract TestDelegatorRewards is
     /// @dev Set unfinalized rewards for a pool in the current epoch.
     function setUnfinalizedPoolReward(
         bytes32 poolId,
+        address payable operatorAddress,
         uint256 operatorReward,
         uint256 membersReward,
         uint256 membersStake
@@ -87,7 +88,32 @@ contract TestDelegatorRewards is
                 membersReward: membersReward,
                 membersStake: membersStake
             });
+        // Lazily initialize this pool.
+        _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
+        _initGenesisCumulativeRewards(poolId);
+    }
+
+    /// @dev Expose/wrap `_recordStakingPoolRewards`.
+    function recordStakingPoolRewards(
+        bytes32 poolId,
+        address payable operatorAddress,
+        uint256 operatorReward,
+        uint256 membersReward,
+        uint256 membersStake
+    )
+        external
+    {
+        // Lazily initialize this pool.
+        _poolById[poolId].operator = operatorAddress;
+        _setOperatorShare(poolId, operatorReward, membersReward);
+        _initGenesisCumulativeRewards(poolId);
+
+        _recordStakingPoolRewards(
+            poolId,
+            operatorReward + membersReward,
+            membersStake
+        );
     }
 
     /// @dev Advance the epoch.
@@ -204,23 +230,6 @@ contract TestDelegatorRewards is
         emit RecordDepositToRewardVault(
             poolId,
             membersReward
-        );
-    }
-
-    /// @dev Expose `_recordStakingPoolRewards`.
-    function recordStakingPoolRewards(
-        bytes32 poolId,
-        uint256 operatorReward,
-        uint256 membersReward,
-        uint256 membersStake
-    )
-        external
-    {
-        _setOperatorShare(poolId, operatorReward, membersReward);
-        _recordStakingPoolRewards(
-            poolId,
-            operatorReward + membersReward,
-            membersStake
         );
     }
 
