@@ -2,20 +2,16 @@
 import { devConstants, web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
+import HDWalletProvider = require('truffle-hdwallet-provider');
 
 import { runMigrationsAsync } from './migration';
 
 (async () => {
-    let providerConfigs;
-    let provider: Web3ProviderEngine;
-    let txDefaults;
-
-    providerConfigs = { shouldUseInProcessGanache: false };
-    provider = web3Factory.getRpcProvider(providerConfigs);
-    txDefaults = {
-        from: devConstants.TESTRPC_FIRST_ADDRESS,
+    const provider = new HDWalletProvider(process.env.MNEMONIC as string, process.env.RPC_URL as string);
+    const txDefaults = {
+        from: provider.getAddresses()[0],
     };
-    await runMigrationsAsync(provider, txDefaults);
+    logUtils.log(JSON.stringify(await runMigrationsAsync(provider, txDefaults), null, '\t'));
     process.exit(0);
 })().catch(err => {
     logUtils.log(err);
