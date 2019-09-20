@@ -31,13 +31,28 @@ contract MixinStakingPoolRewards is
 {
     using LibSafeMath for uint256;
 
+    /// @dev Syncs the rewards for the sender and then withdraws all of the eth vault to the sender.
+    /// @param poolIds The ids of the pools that should be withdrawn from.
+    function withdrawFromPools(bytes32[] calldata poolIds)
+        external
+        returns (uint256)
+    {
+        uint256 length = poolIds.length;
+
+        for (uint256 i = 0; i != length; i++) {
+            syncDelegatorRewards(poolIds[i]);
+        }
+
+        return ethVault.withdrawAllFor(msg.sender);
+    }
+
     /// @dev Syncs rewards for a delegator. This includes transferring rewards from
     /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
     /// This is used by a delegator when they want to sync their rewards without delegating/undelegating.
     /// It's effectively the same as delegating zero stake.
     /// @param poolId Unique id of pool.
     function syncDelegatorRewards(bytes32 poolId)
-        external
+        public
     {
         address member = msg.sender;
 
@@ -51,27 +66,6 @@ contract MixinStakingPoolRewards is
 
         // update stored balance with synchronized version; this prevents redundant withdrawals.
         _delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
-    }
-
-    /// @dev Syncs the rewards for the sender and then withdraws all of the eth vault to the sender.
-    function withdrawAndSyncRewards(bytes32[] calldata poolIds)
-        external
-        returns (uint256)
-    {
-        uint256 length = poolIds.length;
-        mapping (bytes32 => IStructs.StoredBalance) storage senderDelegatedStake = _delegatedStakeToPoolByOwner[msg.sender];
-
-        for (uint256 i = 0; i != length; i++) {
-            IStructs.StoredBalance memory delegatedStakeAmount = _loadUnsyncedBalance(senderDelegatedStake[poolIds[i]]);
-            _syncRewardsForDelegator(
-                poolIds[i],
-                msg.sender,
-                delegatedStakeAmount,
-                delegatedStakeAmount
-            );
-        }
-
-        return ethVault.withdrawAllFor(msg.sender);
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.

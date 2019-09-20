@@ -1,5 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, describe, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -26,8 +26,10 @@ blockchainTests.resets('Testing Rewards', env => {
     let erc20Wrapper: ERC20Wrapper;
     // test parameters
     let stakers: StakerActor[];
-    let poolId: string;
-    let poolOperator: string;
+    let poolId1: string;
+    let poolId2: string;
+    let poolOperator1: string;
+    let poolOperator2: string;
     let finalizer: FinalizerActor;
     // tests
     before(async () => {
@@ -36,7 +38,7 @@ blockchainTests.resets('Testing Rewards', env => {
         owner = accounts[0];
         exchangeAddress = accounts[1];
         takerAddress = accounts[2];
-        actors = accounts.slice(3);
+        actors = accounts.slice(6);
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
@@ -51,22 +53,35 @@ blockchainTests.resets('Testing Rewards', env => {
             zrxVaultAddress: stakingApiWrapper.zrxVaultContract.address,
         });
         // setup stakers
-        stakers = [new StakerActor(actors[0], stakingApiWrapper), new StakerActor(actors[1], stakingApiWrapper)];
+        stakers = [
+            new StakerActor(actors[0], stakingApiWrapper),
+            new StakerActor(actors[1], stakingApiWrapper),
+            new StakerActor(actors[3], stakingApiWrapper),
+            new StakerActor(actors[4], stakingApiWrapper),
+        ];
         // setup pools
-        poolOperator = actors[2];
-        poolId = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator, 0, true); // add operator as maker
+        poolOperator1 = actors[2];
+        poolOperator2 = actors[5];
+        poolId1 = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator1, 0, true); // add operator as maker
+        poolId2 = await stakingApiWrapper.utils.createStakingPoolAsync(poolOperator2, 0, true); // add operator as maker
         // set exchange address
         await stakingApiWrapper.stakingContract.addExchangeAddress.awaitTransactionSuccessAsync(exchangeAddress);
         // associate operators for tracking in Finalizer
         const operatorByPoolId: OperatorByPoolId = {};
-        operatorByPoolId[poolId] = poolOperator;
-        operatorByPoolId[poolId] = poolOperator;
+        operatorByPoolId[poolId1] = poolOperator1;
+        operatorByPoolId[poolId2] = poolOperator2;
         // associate actors with pools for tracking in Finalizer
         const membersByPoolId: MembersByPoolId = {};
-        membersByPoolId[poolId] = [actors[0], actors[1]];
-        membersByPoolId[poolId] = [actors[0], actors[1]];
+        membersByPoolId[poolId1] = [actors[0], actors[1]];
+        membersByPoolId[poolId2] = [actors[3], actors[4]];
         // create Finalizer actor
-        finalizer = new FinalizerActor(actors[3], stakingApiWrapper, [poolId], operatorByPoolId, membersByPoolId);
+        finalizer = new FinalizerActor(
+            actors[3],
+            stakingApiWrapper,
+            [poolId1, poolId2],
+            operatorByPoolId,
+            membersByPoolId,
+        );
     });
     describe('Reward Simulation', () => {
         interface EndBalances {
@@ -82,7 +97,11 @@ blockchainTests.resets('Testing Rewards', env => {
             poolRewardVaultBalance?: BigNumber;
             membersRewardVaultBalance?: BigNumber;
         }
-        const validateEndBalances = async (_expectedEndBalances: EndBalances): Promise<void> => {
+        const validateEndBalances = async (
+            _poolId: string,
+            _poolOperator: string,
+            _expectedEndBalances: EndBalances,
+        ): Promise<void> => {
             const expectedEndBalances = {
                 // staker 1
                 stakerRewardVaultBalance_1:
@@ -122,20 +141,20 @@ blockchainTests.resets('Testing Rewards', env => {
             const finalEndBalancesAsArray = await Promise.all([
                 // staker 1
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
-                    poolId,
+                    _poolId,
                     stakers[0].getOwner(),
                 ),
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[0].getOwner()),
                 // staker 2
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
-                    poolId,
+                    _poolId,
                     stakers[1].getOwner(),
                 ),
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
                 // operator
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
+                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(_poolOperator),
                 // undivided balance in reward pool
-                stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(poolId),
+                stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(_poolId),
             ]);
             expect(finalEndBalancesAsArray[0], 'stakerRewardVaultBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_1,
@@ -156,45 +175,45 @@ blockchainTests.resets('Testing Rewards', env => {
                 expectedEndBalances.poolRewardVaultBalance,
             );
         };
-        const payProtocolFeeAndFinalize = async (_fee?: BigNumber) => {
+        const payProtocolFeeAndFinalize = async (_poolId: string, _poolOperator: string, _fee?: BigNumber) => {
             const fee = _fee !== undefined ? _fee : ZERO;
             if (!fee.eq(ZERO)) {
                 await stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    poolOperator,
+                    _poolOperator,
                     takerAddress,
                     fee,
                     { from: exchangeAddress, value: fee },
                 );
             }
-            await finalizer.finalizeAsync([{ reward: fee, poolId }]);
+            await finalizer.finalizeAsync([{ reward: fee, poolId: _poolId }]);
         };
         const ZERO = new BigNumber(0);
         it('Reward balance should be zero if not delegated', async () => {
             // sanity balances - all zero
-            await validateEndBalances({});
+            await validateEndBalances(poolId1, poolOperator1, {});
         });
         it('Reward balance should be zero if not delegated, when epoch is greater than 0', async () => {
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // sanity balances - all zero
-            await validateEndBalances({});
+            await validateEndBalances(poolId1, poolOperator1, {});
         });
         it('Reward balance should be zero in same epoch as delegation', async () => {
             const amount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 amount,
             );
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // sanit check final balances - all zero
-            await validateEndBalances({});
+            await validateEndBalances(poolId1, poolOperator1, {});
         });
         it('Operator should receive entire reward if no delegators in their pool', async () => {
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // sanity check final balances - all zero
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 operatorEthVaultBalance: reward,
             });
         });
@@ -204,14 +223,14 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 amount,
             );
             // finalize
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 operatorEthVaultBalance: reward,
             });
         });
@@ -221,16 +240,16 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 amount,
             );
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // finalize
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: reward,
                 poolRewardVaultBalance: reward,
                 membersRewardVaultBalance: reward,
@@ -243,23 +262,23 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[0],
             );
             // second staker delegates
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[1],
             );
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // finalize
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: reward.times(stakeAmounts[0]).dividedToIntegerBy(totalStakeAmount),
                 stakerRewardVaultBalance_2: reward.times(stakeAmounts[1]).dividedToIntegerBy(totalStakeAmount),
                 poolRewardVaultBalance: reward,
@@ -274,29 +293,29 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[0],
             );
 
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
 
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[1],
             );
 
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // finalize
 
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: reward.times(stakeAmounts[0]).dividedToIntegerBy(totalStakeAmount),
                 stakerRewardVaultBalance_2: reward.times(stakeAmounts[1]).dividedToIntegerBy(totalStakeAmount),
                 poolRewardVaultBalance: reward,
@@ -310,26 +329,26 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
             const rewardForOnlyFirstDelegator = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(rewardForOnlyFirstDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForOnlyFirstDelegator);
             // finalize
             const rewardForBothDelegators = toBaseUnitAmount(20);
-            await payProtocolFeeAndFinalize(rewardForBothDelegators);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForBothDelegators);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: rewardForOnlyFirstDelegator.plus(
                     rewardForBothDelegators.times(stakeAmounts[0]).dividedToIntegerBy(totalStakeAmount),
                 ),
@@ -360,26 +379,26 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
-            await payProtocolFeeAndFinalize(rewardForOnlyFirstDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForOnlyFirstDelegator);
             // earn a bunch of rewards
             for (const reward of sharedRewards) {
-                await payProtocolFeeAndFinalize(reward);
+                await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             }
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: rewardForOnlyFirstDelegator.plus(
                     totalSharedRewards.times(stakeAmounts[0]).dividedToIntegerBy(totalStakeAmount),
                 ),
@@ -396,22 +415,22 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // earn reward
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // undelegate (moves delegator's from the transient reward vault into the eth vault)
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: ZERO,
                 stakerEthVaultBalance_1: reward,
             });
@@ -422,23 +441,23 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // earn reward
             const reward = toBaseUnitAmount(10);
-            await payProtocolFeeAndFinalize(reward);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             // add more stake
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: ZERO,
                 stakerEthVaultBalance_1: reward,
             });
@@ -463,26 +482,26 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[0],
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // second staker delegates (epoch 1)
             await stakers[0].stakeAsync(stakeAmounts[1]);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmounts[1],
             );
             // only the first staker will get this reward
-            await payProtocolFeeAndFinalize(rewardBeforeAddingMoreStake);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardBeforeAddingMoreStake);
             // earn a bunch of rewards
             for (const reward of rewardsAfterAddingMoreStake) {
-                await payProtocolFeeAndFinalize(reward);
+                await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             }
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
                 poolRewardVaultBalance: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
                 membersRewardVaultBalance: rewardBeforeAddingMoreStake.plus(totalRewardsAfterAddingMoreStake),
@@ -496,28 +515,28 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // earn reward
-            await payProtocolFeeAndFinalize(rewardForDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
 
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
 
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
 
             // this should not go do the delegator
-            await payProtocolFeeAndFinalize(rewardNotForDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardNotForDelegator);
 
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerEthVaultBalance_1: rewardForDelegator,
                 operatorEthVaultBalance: rewardNotForDelegator,
             });
@@ -542,26 +561,26 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // earn reward
-            await payProtocolFeeAndFinalize(rewardForDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // this should not go do the delegator
             for (const reward of rewardsNotForDelegator) {
-                await payProtocolFeeAndFinalize(reward);
+                await payProtocolFeeAndFinalize(poolId1, poolOperator1, reward);
             }
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerEthVaultBalance_1: rewardForDelegator,
                 operatorEthVaultBalance: totalRewardsNotForDelegator,
             });
@@ -574,33 +593,33 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so first staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // earn reward
-            await payProtocolFeeAndFinalize(rewardsForDelegator[0]);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardsForDelegator[0]);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // this should not go do the delegator
-            await payProtocolFeeAndFinalize(rewardNotForDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardNotForDelegator);
             // delegate stake and go to next epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // this reward should go to delegator
-            await payProtocolFeeAndFinalize(rewardsForDelegator[1]);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardsForDelegator[1]);
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: rewardsForDelegator[1],
                 stakerEthVaultBalance_1: rewardsForDelegator[0],
                 operatorEthVaultBalance: rewardNotForDelegator,
@@ -616,28 +635,28 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
             // this should go to the delegator
-            await payProtocolFeeAndFinalize(rewardForDelegator);
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
             // delegate stake ~ this will result in a payout where rewards are computed on
             // the balance's `currentEpochBalance` field but not the `nextEpochBalance` field.
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: ZERO,
                 stakerEthVaultBalance_1: rewardForDelegator,
                 operatorEthVaultBalance: ZERO,
@@ -651,20 +670,166 @@ blockchainTests.resets('Testing Rewards', env => {
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
-                new StakeInfo(StakeStatus.Delegated, poolId),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
                 stakeAmount,
             );
             // skip epoch, so staker can start earning rewards
-            await payProtocolFeeAndFinalize();
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
             // this should go to the delegator
-            await payProtocolFeeAndFinalize(rewardForDelegator);
-            await stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(poolId, {
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
+            await stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(poolId1, {
                 from: stakers[0].getOwner(),
             });
             // sanity check final balances
-            await validateEndBalances({
+            await validateEndBalances(poolId1, poolOperator1, {
                 stakerRewardVaultBalance_1: ZERO,
                 stakerEthVaultBalance_1: rewardForDelegator,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
+            });
+        });
+
+        it('Should withdraw all delegator rewards to eth vault when calling `withdrawFromPools` with one pool', async () => {
+            // first staker delegates (epoch 0)
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
+                stakeAmount,
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
+            // this should go to the delegator
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
+            // ensure that the staker's final balance was increased by the protocol fees collected.
+            const initialStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            const receipt = await stakingApiWrapper.stakingContract.withdrawFromPools.awaitTransactionSuccessAsync(
+                [poolId1],
+                {
+                    from: stakers[0].getOwner(),
+                    gasPrice: constants.DEFAULT_GAS_PRICE,
+                },
+            );
+            const finalStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            expect(
+                finalStakerBalance,
+                'staker balance should have increased by the `rewardForDelegator`',
+            ).to.bignumber.equal(
+                initialStakerBalance.plus(rewardForDelegator).minus(constants.DEFAULT_GAS_PRICE * receipt.gasUsed),
+            );
+            // sanity check final balances
+            await validateEndBalances(poolId1, poolOperator1, {
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: ZERO,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
+            });
+        });
+
+        it('Should withdraw partial delegator rewards to eth vault when calling `withdrawFromPools` with only one of two delegated pools', async () => {
+            // first staker delegates (epoch 0)
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
+                stakeAmount.div(2),
+            );
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId2),
+                stakeAmount.div(2),
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
+            await payProtocolFeeAndFinalize(poolId2, poolOperator2);
+            // this should go to the delegator
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
+            await payProtocolFeeAndFinalize(poolId2, poolOperator2, rewardForDelegator);
+            // ensure that the staker's final balance was increased by the protocol fees collected.
+            const initialStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            const receipt = await stakingApiWrapper.stakingContract.withdrawFromPools.awaitTransactionSuccessAsync(
+                [poolId1],
+                {
+                    from: stakers[0].getOwner(),
+                    gasPrice: constants.DEFAULT_GAS_PRICE,
+                },
+            );
+            const finalStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            expect(
+                finalStakerBalance,
+                'staker balance should have increased by the `rewardForDelegator`',
+            ).to.bignumber.equal(
+                initialStakerBalance.plus(rewardForDelegator).minus(constants.DEFAULT_GAS_PRICE * receipt.gasUsed),
+            );
+            // sanity check final balances
+            await validateEndBalances(poolId1, poolOperator1, {
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: ZERO,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
+            });
+            await validateEndBalances(poolId2, poolOperator2, {
+                stakerRewardVaultBalance_1: rewardForDelegator,
+                stakerEthVaultBalance_1: ZERO,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: rewardForDelegator,
+            });
+        });
+
+        it('Should withdraw all delegator rewards to eth vault when calling `withdrawFromPools` with two pools', async () => {
+            // first staker delegates (epoch 0)
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId1),
+                stakeAmount.div(2),
+            );
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Delegated, poolId2),
+                stakeAmount.div(2),
+            );
+            // skip epoch, so staker can start earning rewards
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1);
+            await payProtocolFeeAndFinalize(poolId2, poolOperator2);
+            // this should go to the delegator
+            await payProtocolFeeAndFinalize(poolId1, poolOperator1, rewardForDelegator);
+            await payProtocolFeeAndFinalize(poolId2, poolOperator2, rewardForDelegator);
+            // ensure that the staker's final balance was increased by the protocol fees collected.
+            const initialStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            const receipt = await stakingApiWrapper.stakingContract.withdrawFromPools.awaitTransactionSuccessAsync(
+                [poolId1, poolId2],
+                {
+                    from: stakers[0].getOwner(),
+                    gasPrice: constants.DEFAULT_GAS_PRICE,
+                },
+            );
+            const finalStakerBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            expect(
+                finalStakerBalance,
+                'staker balance should have increased by the `rewardForDelegator`',
+            ).to.bignumber.equal(
+                initialStakerBalance
+                    .plus(rewardForDelegator)
+                    .plus(rewardForDelegator)
+                    .minus(constants.DEFAULT_GAS_PRICE * receipt.gasUsed),
+            );
+            // sanity check final balances
+            await validateEndBalances(poolId1, poolOperator1, {
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: ZERO,
+                operatorEthVaultBalance: ZERO,
+                poolRewardVaultBalance: ZERO,
+            });
+            await validateEndBalances(poolId2, poolOperator2, {
+                stakerRewardVaultBalance_1: ZERO,
+                stakerEthVaultBalance_1: ZERO,
                 operatorEthVaultBalance: ZERO,
                 poolRewardVaultBalance: ZERO,
             });
