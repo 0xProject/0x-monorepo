@@ -130,7 +130,7 @@ contract MixinParams is
         // Set up defaults.
         // These cannot be set to variables, or we go over the stack variable limit.
         _setParams(
-            2 weeks,                       // epochDurationInSeconds
+            10 days,                       // epochDurationInSeconds
             (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
             100 * MIN_TOKEN_VALUE,         // minimumPoolStake
             10,                            // maximumMakersInPool
