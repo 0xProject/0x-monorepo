@@ -43,19 +43,7 @@ contract Authorizable is
         external
         onlyOwner
     {
-        // Ensure that the target is not the zero address.
-        if (target == address(0)) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.ZeroCantBeAuthorizedError());
-        }
-
-        // Ensure that the target is not already authorized.
-        if (authorized[target]) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetAlreadyAuthorizedError(target));
-        }
-
-        authorized[target] = true;
-        authorities.push(target);
-        emit AuthorizedAddressAdded(target, msg.sender);
+        _addAuthorizedAddress(target);
     }
 
     /// @dev Removes authorizion of an address.
@@ -67,16 +55,12 @@ contract Authorizable is
         if (!authorized[target]) {
             LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
         }
-
-        delete authorized[target];
         for (uint256 i = 0; i < authorities.length; i++) {
             if (authorities[i] == target) {
-                authorities[i] = authorities[authorities.length - 1];
-                authorities.length -= 1;
+                _removeAuthorizedAddressAtIndex(target, i);
                 break;
             }
         }
-        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 
     /// @dev Removes authorizion of an address.
@@ -89,26 +73,7 @@ contract Authorizable is
         external
         onlyOwner
     {
-        if (!authorized[target]) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
-        }
-        if (index >= authorities.length) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.IndexOutOfBoundsError(
-                index,
-                authorities.length
-            ));
-        }
-        if (authorities[index] != target) {
-            LibRichErrors.rrevert(LibAuthorizableRichErrors.AuthorizedAddressMismatchError(
-                authorities[index],
-                target
-            ));
-        }
-
-        delete authorized[target];
-        authorities[index] = authorities[authorities.length - 1];
-        authorities.length -= 1;
-        emit AuthorizedAddressRemoved(target, msg.sender);
+        _removeAuthorizedAddressAtIndex(target, index);
     }
 
     /// @dev Gets all authorized addresses.
@@ -129,5 +94,56 @@ contract Authorizable is
         if (!authorized[msg.sender]) {
             LibRichErrors.rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
         }
+    }
+
+    /// @dev Authorizes an address.
+    /// @param target Address to authorize.
+    function _addAuthorizedAddress(address target)
+        internal
+    {
+        // Ensure that the target is not the zero address.
+        if (target == address(0)) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.ZeroCantBeAuthorizedError());
+        }
+
+        // Ensure that the target is not already authorized.
+        if (authorized[target]) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetAlreadyAuthorizedError(target));
+        }
+
+        authorized[target] = true;
+        authorities.push(target);
+        emit AuthorizedAddressAdded(target, msg.sender);
+    }
+
+    /// @dev Removes authorizion of an address.
+    /// @param target Address to remove authorization from.
+    /// @param index Index of target in authorities array.
+    function _removeAuthorizedAddressAtIndex(
+        address target,
+        uint256 index
+    )
+        internal
+    {
+        if (!authorized[target]) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
+        }
+        if (index >= authorities.length) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.IndexOutOfBoundsError(
+                index,
+                authorities.length
+            ));
+        }
+        if (authorities[index] != target) {
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.AuthorizedAddressMismatchError(
+                authorities[index],
+                target
+            ));
+        }
+
+        delete authorized[target];
+        authorities[index] = authorities[authorities.length - 1];
+        authorities.length -= 1;
+        emit AuthorizedAddressRemoved(target, msg.sender);        
     }
 }
