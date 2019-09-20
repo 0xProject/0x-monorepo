@@ -114,11 +114,15 @@ contract OrderValidationUtils is
             }
         }
 
-        // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
-        fillableTakerAssetAmount = LibSafeMath.min256(
-            takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
-            transferableTakerAssetAmount
-        );
+        if (transferableTakerAssetAmount < orderInfo.orderTakerAssetFilledAmount) {
+            fillableTakerAssetAmount = 0;
+        } else {
+            // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
+            fillableTakerAssetAmount = LibSafeMath.min256(
+                takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
+                transferableTakerAssetAmount
+            );
+        }
 
         return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
@@ -160,7 +164,7 @@ contract OrderValidationUtils is
     /// @dev Gets the amount of an asset transferable by the owner.
     /// @param ownerAddress Address of the owner of the asset.
     /// @param assetData Description of tokens, per the AssetProxy contract specification.
-    /// @return The amount of the asset tranferable by the owner.
+    /// @return The amount of the asset transferable by the owner.
     /// NOTE: If the `assetData` encodes data for multiple assets, the `transferableAssetAmount`
     /// will represent the amount of times the entire `assetData` can be transferred. To calculate
     /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by

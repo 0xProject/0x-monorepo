@@ -412,6 +412,55 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
                 signedOrder.takerAssetAmount.minus(takerAssetFillAmount),
             );
         });
+        it('should return a 0 fillableTakerAssetAmount when the filled amount is less than the transferable amount', async () => {
+            // Arrange.
+
+            // Set balances and allowances to permit signedOrder to be filled
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+                from: makerAddress,
+            });
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount);
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+                from: takerAddress,
+            });
+
+            // fill half of the order
+            const takerAssetFillAmount = signedOrder.takerAssetAmount.dividedToIntegerBy(2);
+            await exchange.fillOrder.awaitTransactionSuccessAsync(
+                signedOrder,
+                takerAssetFillAmount,
+                signedOrder.signature,
+                { from: takerAddress },
+            );
+
+            // set maker's available trading balance to 1/4 of the order's
+            // makerAssetAmount, effectively reducing the fillable amount to
+            // 1/4 of the order
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                signedOrder.makerAssetAmount.dividedToIntegerBy(4),
+            );
+
+            // Act.
+
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
+                signedOrder,
+                signedOrder.signature,
+            );
+
+            // Assert.
+
+            expect(fillableTakerAssetAmount).to.bignumber.equal(0);
+        });
     });
     describe('getOrderRelevantStates', async () => {
         it('should return the correct information for multiple orders', async () => {
