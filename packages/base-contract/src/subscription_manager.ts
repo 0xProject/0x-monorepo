@@ -2,6 +2,7 @@ import { AbiDecoder, intervalUtils, logUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import {
     BlockParamLiteral,
+    BlockRange,
     ContractAbi,
     FilterObject,
     LogEntry,
@@ -12,7 +13,7 @@ import {
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
-import { BlockRange, EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
+import { EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
 import { filterUtils } from './utils/filter_utils';
 
 const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;
@@ -101,17 +102,23 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         const logWithDecodedArgs = abiDecoder.tryToDecodeLogOrNoop(log);
         return logWithDecodedArgs;
     }
-    private _onLogStateChanged<ArgsType extends ContractEventArgs>(isRemoved: boolean, rawLog: RawLogEntry): void {
-        const log: LogEntry = marshaller.unmarshalLog(rawLog);
-        _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
-            if (filterUtils.matchesFilter(log, filter)) {
-                const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
-                const logEvent = {
-                    log: decodedLog,
-                    isRemoved,
-                };
-                this._filterCallbacks[filterToken](null, logEvent);
-            }
+    private _onLogStateChanged<ArgsType extends ContractEventArgs>(
+        isRemoved: boolean,
+        blockHash: string,
+        rawLogs: RawLogEntry[],
+    ): void {
+        const logs: LogEntry[] = rawLogs.map(rawLog => marshaller.unmarshalLog(rawLog));
+        logs.forEach(log => {
+            _.forEach(this._filters, (filter: FilterObject, filterToken: string) => {
+                if (filterUtils.matchesFilter(log, filter)) {
+                    const decodedLog = this._tryToDecodeLogOrNoop(log) as LogWithDecodedArgs<ArgsType>;
+                    const logEvent = {
+                        log: decodedLog,
+                        isRemoved,
+                    };
+                    this._filterCallbacks[filterToken](null, logEvent);
+                }
+            });
         });
     }
     private _startBlockAndLogStream(isVerbose: boolean, blockPollingIntervalMs?: number): void {
@@ -133,11 +140,11 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
             SubscriptionManager._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         let isRemoved = false;
-        this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
+        this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogsAdded(
             this._onLogStateChanged.bind(this, isRemoved),
         );
         isRemoved = true;
-        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogRemoved(
+        this._onLogRemovedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogsRemoved(
             this._onLogStateChanged.bind(this, isRemoved),
         );
     }
@@ -171,8 +178,8 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         if (this._blockAndLogStreamerIfExists === undefined) {
             throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
-        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
-        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogsAdded(this._onLogAddedSubscriptionToken as string);
+        this._blockAndLogStreamerIfExists.unsubscribeFromOnLogsRemoved(this._onLogRemovedSubscriptionToken as string);
         intervalUtils.clearAsyncExcludingInterval(this._blockAndLogStreamIntervalIfExists as NodeJS.Timer);
         delete this._blockAndLogStreamerIfExists;
     }

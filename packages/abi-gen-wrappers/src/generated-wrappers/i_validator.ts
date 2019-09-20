@@ -6,6 +6,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -38,7 +39,7 @@ export class IValidatorContract extends BaseContract {
          * @param hash Message hash that is signed.
          * @param signerAddress Address that should have signed the given hash.
          * @param signature Proof of signing.
-         * @returns Validity of order signature.
+         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidValidatorSignature(address,bytes32,address,bytes)&quot;))
          */
         async callAsync(
             hash: string,
@@ -46,7 +47,7 @@ export class IValidatorContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<string> {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
@@ -85,7 +86,7 @@ export class IValidatorContract extends BaseContract {
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -96,6 +97,7 @@ export class IValidatorContract extends BaseContract {
          * @param hash Message hash that is signed.
          * @param signerAddress Address that should have signed the given hash.
          * @param signature Proof of signing.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
@@ -109,18 +111,28 @@ export class IValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(callData: string): boolean {
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as IValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
             return abiDecodedCallData;
         },
-        getABIDecodedReturnData(returnData: string): boolean {
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as IValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -212,8 +224,8 @@ export class IValidatorContract extends BaseContract {
                 name: 'isValidSignature',
                 outputs: [
                     {
-                        name: 'isValid',
-                        type: 'bool',
+                        name: '',
+                        type: 'bytes4',
                     },
                 ],
                 payable: false,

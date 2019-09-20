@@ -97,12 +97,6 @@ contract AbiGenDummy
         return ecrecover(prefixedHash, v, r, s);
     }
 
-    event  Withdrawal(address indexed _owner, uint _value);
-
-    function withdraw(uint wad) public {
-        emit Withdrawal(msg.sender, wad);
-    }
-
     // test: generated code should normalize address inputs to lowercase
     // add extra inputs to make sure it works with address in any position
     function withAddressInput(address x, uint256 a, uint256 b, address y, uint256 c)
@@ -112,8 +106,6 @@ contract AbiGenDummy
     {
         return x;
     }
-
-    event AnEvent(uint8 param);
 
     function acceptsBytes(bytes memory a) public pure {}
 
@@ -179,6 +171,22 @@ contract AbiGenDummy
 
     function overloadedMethod(int a) public pure {}
     function overloadedMethod(string memory a) public pure {}
+
+
+    event Withdrawal(address indexed _owner, uint _value);
+
+    function withdraw(uint wad) public {
+        emit Withdrawal(msg.sender, wad);
+    }
+
+    event SimpleEvent(bytes someBytes, string someString);
+
+    function emitSimpleEvent() public {
+        emit SimpleEvent(
+            hex'12345678',
+            "lorem"
+        );
+    }
 
     // begin tests for `decodeTransactionData`, `decodeReturnData`
     /// @dev complex input is dynamic and more difficult to decode than simple input.

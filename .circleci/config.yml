@@ -26,23 +26,17 @@ jobs:
             #       command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
             - run:
                   name: install-yarn
-                  command: npm install --global yarn@1.9.4
+                  command: npm install --global yarn@1.17.0
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
-            - run: yarn build:ci:no_website
+            - run: yarn build:ci
             - run: yarn build:ts
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo
-            - save_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/python-contract-wrappers/generated
-            - store_artifacts:
-                  path: ~/repo/packages/python-contract-wrappers/generated
             - store_artifacts:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
@@ -71,16 +65,6 @@ jobs:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo
-    build-website:
-        resource_class: medium+
-        docker:
-            - image: nikolaik/python-nodejs:python3.7-nodejs8
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
         resource_class: medium+
         docker:
@@ -316,7 +300,8 @@ jobs:
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       cd python-packages
@@ -358,9 +343,7 @@ jobs:
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
             - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
+                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
             - store_artifacts:
                   path: ~/repo/python-packages/contract_addresses/build
             - store_artifacts:
@@ -410,7 +393,8 @@ jobs:
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       python -m ensurepip
@@ -419,6 +403,7 @@ jobs:
                       ./install
                       ./lint
     static-tests:
+        resource_class: large
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
@@ -429,6 +414,7 @@ jobs:
             - run: yarn lerna run lint
             - run: yarn prettier:ci
             - run: yarn deps_versions:ci
+            - run: yarn diff_md_docs:ci
             - run: cd packages/0x.js && yarn build:umd:prod
             - run: yarn bundlewatch
     static-tests-3.0:
@@ -569,10 +555,6 @@ workflows:
     main:
         jobs:
             - build-3.0
-            # Disabled for 3.0
-            # - build-website:
-            #       requires:
-            #           - build
             - test-exchange-ganache-3.0:
                   requires:
                       - build-3.0
@@ -581,10 +563,6 @@ workflows:
                       - build-3.0
             # Disabled until geth docker image is fixed.
             # - test-contracts-geth:
-            #       requires:
-            #           - build-3.0
-            # Disabled for 3.0
-            # - test-pipeline:
             #       requires:
             #           - build-3.0
             - test-rest-3.0:
@@ -612,7 +590,8 @@ workflows:
             #       requires:
             #           - build-3.0
             #           - test-rest-3.0
-            # Disabled for 3.0
             # - static-tests-python:
             #       requires:
             #           - test-python
+            # skip python tox run for now, as we don't yet have multiple test environments to support.
+            # - test-rest-python

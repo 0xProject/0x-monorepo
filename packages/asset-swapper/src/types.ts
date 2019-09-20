@@ -29,17 +29,6 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
 }
 
 /**
- * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
- * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
- * getAvailableTakerAssetDatasAsync: Given a maker asset data string, return all availabled paired taker asset data strings.
- */
-export interface OrderProvider {
-    getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
-    getAvailableMakerAssetDatasAsync: (takerAssetData: string) => Promise<string[]>;
-    getAvailableTakerAssetDatasAsync: (makerAssetData: string) => Promise<string[]>;
-}
-
-/**
  * Represents the metadata to call a smart contract with calldata.
  * calldataHexString: The hexstring of the calldata.
  * methodAbi: The ABI of the smart contract method to call.
@@ -98,8 +87,8 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
  * Represents the varying smart contracts that can consume a valid swap quote
  */
 export enum ConsumerType {
-    Forwarder,
-    Exchange,
+    Forwarder = 'FORWARDER',
+    Exchange = 'EXCHANGE',
 }
 
 /**
@@ -269,21 +258,13 @@ export interface SwapQuoteInfo {
 }
 
 /**
- * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  * shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  */
 export interface SwapQuoteRequestOpts {
-    shouldForceOrderRefresh: boolean;
     shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
 }
-
-/*
- * Options for checking liquidity
- * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
- */
-export type LiquidityRequestOpts = Pick<SwapQuoteRequestOpts, 'shouldForceOrderRefresh'>;
 
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).

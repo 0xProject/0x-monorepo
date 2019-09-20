@@ -17,12 +17,7 @@
             {
                 "note": "Add `total_accounts` option to `Web3Config`.",
                 "pr": 2109
-            }
-        ]
-    },
-    {
-        "version": "2.3.1",
-        "changes": [
+            },
             {
                 "note": "Add `chaiSetup` function with `RevertError` testing support",
                 "pr": 1761
@@ -30,6 +25,33 @@
             {
                 "note": "Refactor out `Error` coercion code into the `utils` package",
                 "pr": 1819
+            }
+        ]
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "2.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.3.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "2.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

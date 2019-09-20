@@ -6,6 +6,7 @@ import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
+    BlockRange,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -72,13 +73,7 @@ export class DutchAuctionContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -162,15 +157,30 @@ export class DutchAuctionContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).getAuctionDetails.callAsync(order, txData);
+            const txHash = await (this as any).getAuctionDetails.sendTransactionAsync(order, txData);
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -256,6 +266,7 @@ export class DutchAuctionContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param order The sell order
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
@@ -278,15 +289,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): {
-            beginTimeSeconds: BigNumber;
-            endTimeSeconds: BigNumber;
-            beginAmount: BigNumber;
-            endAmount: BigNumber;
-            currentAmount: BigNumber;
-            currentTimeSeconds: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         } {
             const self = (this as any) as DutchAuctionContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -294,15 +316,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<{
-                beginTimeSeconds: BigNumber;
-                endTimeSeconds: BigNumber;
-                beginAmount: BigNumber;
-                endAmount: BigNumber;
-                currentAmount: BigNumber;
-                currentTimeSeconds: BigNumber;
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
             }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {
@@ -327,27 +360,6 @@ export class DutchAuctionContract extends BaseContract {
                 currentTimeSeconds: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).getAuctionDetails.callAsync(order, txData);
-            const txHash = await (this as any).getAuctionDetails.sendTransactionAsync(order, txData);
-            return txHash;
         },
     };
     /**
@@ -413,6 +425,8 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments(
                 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
@@ -430,13 +444,7 @@ export class DutchAuctionContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -554,6 +562,8 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments(
                 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
@@ -570,15 +580,52 @@ export class DutchAuctionContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-            try {
-                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            } catch (err) {
-                // Try to decode ganache transaction revert Errors.
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
+        },
+        async validateAndSendTransactionAsync(
+            buyOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            sellOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            buySignature: string,
+            sellSignature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
+            const txHash = await (this as any).matchOrders.sendTransactionAsync(
+                buyOrder,
+                sellOrder,
+                buySignature,
+                sellSignature,
+                txData,
+            );
+            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -706,6 +753,7 @@ export class DutchAuctionContract extends BaseContract {
          *     the end of the auction).
          * @param buySignature Proof that order was created by the buyer.
          * @param sellSignature Proof that order was created by the seller.
+         * @returns The ABI encoded transaction data as a string
          */
         getABIEncodedTransactionData(
             buyOrder: {
@@ -748,22 +796,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
         getABIDecodedTransactionData(
             callData: string,
         ): {
-            left: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            right: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            leftMakerAssetSpreadAmount: BigNumber;
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
         } {
             const self = (this as any) as DutchAuctionContract;
             const abiEncoder = self._lookupAbiEncoder(
@@ -771,22 +823,26 @@ export class DutchAuctionContract extends BaseContract {
             );
             // tslint:disable boolean-naming
             const abiDecodedCallData = abiEncoder.strictDecode<{
-                left: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                right: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                leftMakerAssetSpreadAmount: BigNumber;
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
             }>(callData);
             return abiDecodedCallData;
         },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
         getABIDecodedReturnData(
             returnData: string,
         ): {
@@ -825,49 +881,6 @@ export class DutchAuctionContract extends BaseContract {
                 leftMakerAssetSpreadAmount: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
-        },
-        async validateAndSendTransactionAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
-            const txHash = await (this as any).matchOrders.sendTransactionAsync(
-                buyOrder,
-                sellOrder,
-                buySignature,
-                sellSignature,
-                txData,
-            );
-            return txHash;
         },
     };
     public static async deployFrom0xArtifactAsync(

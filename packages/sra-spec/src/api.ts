@@ -63,7 +63,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'makerAssetProxyId',
                             in: 'query',
-                            description: `The maker [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).`,
+                            description: `The maker asset proxy id (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).`,
                             example: '0xf47261b0',
                             schema: {
                                 $ref: '#/components/schemas/hexSchema',
@@ -72,7 +72,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'takerAssetProxyId',
                             in: 'query',
-                            description: `The taker asset [asset proxy id](https://0xproject.com/docs/0x.js#types-AssetProxyId) (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).`,
+                            description: `The taker asset asset proxy id (example: "0xf47261b0" for ERC20, "0x02571792" for ERC721).`,
                             example: '0x02571792',
                             schema: {
                                 $ref: '#/components/schemas/hexSchema',

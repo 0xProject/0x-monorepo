@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v12.1.0 - _September 17, 2019_
+
+    * Add `devUtils` to `ContractWrappers` class. (#2146)
+
+## v12.0.0 - _September 3, 2019_
+
+    * Import wrappers from @0x/abi-gen-wrappers instead of directly implementing within this package. (#2086)
+    * Change CoordinatorWrapper constructor to take a provider instead of a Web3Wrapper instance (#2023)
+
+## v11.1.0 - _August 22, 2019_
+
+    * Add `contractAddresses` to `ContractWrappers` class. Add `validateAndSendTransactionAsync` to all methods. Add interfaces ForwarderError, ContractError, TraderInfo, OrderAndTraderInfo. (#2068)
+
 ## v11.0.0 - _August 8, 2019_
 
     * Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/2040 (#2037)

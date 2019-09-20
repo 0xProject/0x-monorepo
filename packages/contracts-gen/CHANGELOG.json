@@ -1,7 +1,11 @@
 [
     {
-        "version": "1.1.1",
+        "version": "1.1.0",
         "changes": [
+            {
+                "note": "Generate boilerplate for all contracts if none are specified or if all contracts identifier is used",
+                "pr": 2055
+            },
             {
                 "note": "Fixed sorting in artifact generation",
                 "pr": 1910
@@ -9,11 +13,20 @@
         ]
     },
     {
-        "version": "1.1.0",
+        "timestamp": 1568744790,
+        "version": "1.0.15",
         "changes": [
             {
-                "note": "Generate boilerplate for all contracts if none are specified or if all contracts identifier is used",
-                "pr": 2055
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "1.0.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

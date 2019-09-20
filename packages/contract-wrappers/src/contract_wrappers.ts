@@ -1,6 +1,17 @@
+import {
+    DevUtilsContract,
+    DutchAuctionContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ForwarderContract,
+    OrderValidatorContract,
+    WETH9Contract,
+} from '@0x/abi-gen-wrappers';
 import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
+    DevUtils,
     DutchAuction,
     ERC20Proxy,
     ERC20Token,
@@ -17,13 +28,6 @@ import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { CoordinatorWrapper } from './coordinator_wrapper';
-import { DutchAuctionContract } from './generated-wrappers/dutch_auction';
-import { ERC20ProxyContract } from './generated-wrappers/erc20_proxy';
-import { ERC721ProxyContract } from './generated-wrappers/erc721_proxy';
-import { ExchangeContract } from './generated-wrappers/exchange';
-import { ForwarderContract } from './generated-wrappers/forwarder';
-import { OrderValidatorContract } from './generated-wrappers/order_validator';
-import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
@@ -69,6 +73,10 @@ export class ContractWrappers {
      */
     public dutchAuction: DutchAuctionContract;
     /**
+     * An instance of the DevUtilsContract class containing methods for interacting with the DevUtils smart contract.
+     */
+    public devUtils: DevUtilsContract;
+    /**
      * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorWrapper;
@@ -89,6 +97,7 @@ export class ContractWrappers {
         this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         const artifactsArray = [
             Coordinator,
+            DevUtils,
             DutchAuction,
             ERC20Proxy,
             ERC20Token,
@@ -113,8 +122,9 @@ export class ContractWrappers {
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
         this.dutchAuction = new DutchAuctionContract(contractAddresses.dutchAuction, this.getProvider());
+        this.devUtils = new DevUtilsContract(contractAddresses.devUtils, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
-            this._web3Wrapper,
+            this.getProvider(),
             config.networkId,
             contractAddresses.coordinator,
             contractAddresses.exchange,

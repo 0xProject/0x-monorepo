@@ -1,4 +1,4 @@
-import { BlockParam, ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
+import { ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
 
 export type LogEvent = LogEntryEvent;
 export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
@@ -30,9 +30,4 @@ export enum SubscriptionErrors {
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
-}
-
-export interface BlockRange {
-    fromBlock: BlockParam;
-    toBlock: BlockParam;
 }

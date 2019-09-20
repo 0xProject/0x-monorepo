@@ -29,6 +29,24 @@
         ]
     },
     {
+        "timestamp": 1568744790,
+        "version": "4.5.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "4.5.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.5.0",
         "changes": [
             {

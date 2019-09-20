@@ -209,6 +209,15 @@ export class Web3Wrapper {
         return networkId;
     }
     /**
+     * Fetches the chainId of the backing Ethereum node
+     * @returns The chain id
+     */
+    public async getChainIdAsync(): Promise<number> {
+        const chainIdStr = await this.sendRawPayloadAsync<string>({ method: 'eth_chainId' });
+        const chainId = _.parseInt(chainIdStr);
+        return chainId;
+    }
+    /**
      * Retrieves the transaction receipt for a given transaction hash if found
      * @param txHash Transaction hash
      * @returns The transaction receipt, including it's status (0: failed, 1: succeeded). Returns undefined if transaction not found.
