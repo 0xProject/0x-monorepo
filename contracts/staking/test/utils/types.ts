@@ -86,6 +86,9 @@ export interface StakeBalances {
     activeStakeBalance: StakeBalance;
     inactiveStakeBalance: StakeBalance;
     delegatedStakeBalance: StakeBalance;
+    globalActiveStakeBalance: StakeBalance;
+    globalInactiveStakeBalance: StakeBalance;
+    globalDelegatedStakeBalance: StakeBalance;
     delegatedStakeByPool: StakeBalanceByPool;
     totalDelegatedStakeByPool: StakeBalanceByPool;
 }
