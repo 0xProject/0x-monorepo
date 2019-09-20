@@ -195,8 +195,8 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                numMakersByPoolId_slot,
-                numMakersByPoolId_offset,
+                poolById_slot,
+                poolById_offset,
                 slot,
                 offset
             )
