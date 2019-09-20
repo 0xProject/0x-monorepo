@@ -18,31 +18,29 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/fees/MixinExchangeFees.sol";
+import "../src/libs/LibCobbDouglas.sol";
 
 
-contract TestCobbDouglas is
-    MixinExchangeFees
-{
+contract TestCobbDouglas {
 
     function cobbDouglas(
         uint256 totalRewards,
-        uint256 ownerFees,
+        uint256 fees,
         uint256 totalFees,
-        uint256 ownerStake,
+        uint256 stake,
         uint256 totalStake,
-        uint256 alphaNumerator,
-        uint256 alphaDenominator
+        uint32 alphaNumerator,
+        uint32 alphaDenominator
     )
         external
         pure
-        returns (uint256 ownerRewards)
+        returns (uint256 rewards)
     {
-        ownerRewards = _cobbDouglas(
+        rewards = LibCobbDouglas.cobbDouglas(
             totalRewards,
-            ownerFees,
+            fees,
             totalFees,
-            ownerStake,
+            stake,
             totalStake,
             alphaNumerator,
             alphaDenominator

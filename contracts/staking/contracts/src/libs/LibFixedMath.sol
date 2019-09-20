@@ -39,46 +39,46 @@ library LibFixedMath {
     int256 private constant EXP_MIN_VAL = -int256(0x0000000000000000000000000000001ff0000000000000000000000000000000);
 
     /// @dev Get one as a fixed-point number.
-    function _one() internal pure returns (int256 f) {
+    function one() internal pure returns (int256 f) {
         f = FIXED_1;
     }
 
     /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
-    function _add(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __add(a, b);
+    function add(int256 a, int256 b) internal pure returns (int256 c) {
+        c = _add(a, b);
     }
 
     /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
-    function _sub(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __add(a, -b);
+    function sub(int256 a, int256 b) internal pure returns (int256 c) {
+        c = _add(a, -b);
     }
 
     /// @dev Returns the multiplication of two fixed point numbers, reverting on overflow.
-    function _mul(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __mul(a, b) / FIXED_1;
+    function mul(int256 a, int256 b) internal pure returns (int256 c) {
+        c = _mul(a, b) / FIXED_1;
     }
 
     /// @dev Returns the division of two fixed point numbers.
-    function _div(int256 a, int256 b) internal pure returns (int256 c) {
-        c = __div(__mul(a, FIXED_1), b);
+    function div(int256 a, int256 b) internal pure returns (int256 c) {
+        c = _div(_mul(a, FIXED_1), b);
     }
 
     /// @dev Performs (a * n) / d, without scaling for precision.
-    function _mulDiv(int256 a, int256 n, int256 d) internal pure returns (int256 c) {
-        c = __div(__mul(a, n), d);
+    function mulDiv(int256 a, int256 n, int256 d) internal pure returns (int256 c) {
+        c = _div(_mul(a, n), d);
     }
 
     /// @dev Returns the unsigned integer result of multiplying a fixed-point
     ///      number with an integer, reverting if the multiplication overflows.
     ///      Negative results are clamped to zero.
-    function _uintMul(int256 f, uint256 u) internal pure returns (uint256) {
+    function uintMul(int256 f, uint256 u) internal pure returns (uint256) {
         if (int256(u) < int256(0)) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 u
             ));
         }
-        int256 c = __mul(f, int256(u));
+        int256 c = _mul(f, int256(u));
         if (c <= 0) {
             return 0;
         }
@@ -86,7 +86,7 @@ library LibFixedMath {
     }
 
     /// @dev Returns the absolute value of a fixed point number.
-    function _abs(int256 f) internal pure returns (int256 c) {
+    function abs(int256 f) internal pure returns (int256 c) {
         if (f >= 0) {
             c = f;
         } else {
@@ -95,35 +95,35 @@ library LibFixedMath {
     }
 
     /// @dev Returns 1 / `x`, where `x` is a fixed-point number.
-    function _invert(int256 f) internal pure returns (int256 c) {
-        c = __div(FIXED_1_SQUARED, f);
+    function invert(int256 f) internal pure returns (int256 c) {
+        c = _div(FIXED_1_SQUARED, f);
     }
 
     /// @dev Convert signed `n` / 1 to a fixed-point number.
-    function _toFixed(int256 n) internal pure returns (int256 f) {
-        f = __mul(n, FIXED_1);
+    function toFixed(int256 n) internal pure returns (int256 f) {
+        f = _mul(n, FIXED_1);
     }
 
     /// @dev Convert signed `n` / `d` to a fixed-point number.
-    function _toFixed(int256 n, int256 d) internal pure returns (int256 f) {
-        f = __div(__mul(n, FIXED_1), d);
+    function toFixed(int256 n, int256 d) internal pure returns (int256 f) {
+        f = _div(_mul(n, FIXED_1), d);
     }
 
     /// @dev Convert unsigned `n` / 1 to a fixed-point number.
     ///      Reverts if `n` is too large to fit in a fixed-point number.
-    function _toFixed(uint256 n) internal pure returns (int256 f) {
+    function toFixed(uint256 n) internal pure returns (int256 f) {
         if (int256(n) < int256(0)) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
                 n
             ));
         }
-        f = __mul(int256(n), FIXED_1);
+        f = _mul(int256(n), FIXED_1);
     }
 
     /// @dev Convert unsigned `n` / `d` to a fixed-point number.
     ///      Reverts if `n` / `d` is too large to fit in a fixed-point number.
-    function _toFixed(uint256 n, uint256 d) internal pure returns (int256 f) {
+    function toFixed(uint256 n, uint256 d) internal pure returns (int256 f) {
         if (int256(n) < int256(0)) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.UnsignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
@@ -136,16 +136,16 @@ library LibFixedMath {
                 d
             ));
         }
-        f = __div(__mul(int256(n), FIXED_1), int256(d));
+        f = _div(_mul(int256(n), FIXED_1), int256(d));
     }
 
     /// @dev Convert a fixed-point number to an integer.
-    function _toInteger(int256 f) internal pure returns (int256 n) {
+    function toInteger(int256 f) internal pure returns (int256 n) {
         return f / FIXED_1;
     }
 
     /// @dev Get the natural logarithm of a fixed-point number 0 < `x` <= LN_MAX_VAL
-    function _ln(int256 x) internal pure returns (int256 r) {
+    function ln(int256 x) internal pure returns (int256 r) {
         if (x > LN_MAX_VAL) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
                 LibFixedMathRichErrors.ValueErrorCodes.TOO_LARGE,
@@ -233,7 +233,7 @@ library LibFixedMath {
     }
 
     /// @dev Compute the natural exponent for a fixed-point number EXP_MIN_VAL <= `x` <= 1
-    function _exp(int256 x) internal pure returns (int256 r) {
+    function exp(int256 x) internal pure returns (int256 r) {
         if (x < EXP_MIN_VAL) {
             // Saturate to zero below EXP_MIN_VAL.
             return 0;
@@ -330,7 +330,7 @@ library LibFixedMath {
     }
 
     /// @dev Returns the multiplication two numbers, reverting on overflow.
-    function __mul(int256 a, int256 b) private pure returns (int256 c) {
+    function _mul(int256 a, int256 b) private pure returns (int256 c) {
         if (a == 0) {
             return 0;
         }
@@ -345,7 +345,7 @@ library LibFixedMath {
     }
 
     /// @dev Returns the division of two numbers, reverting on division by zero.
-    function __div(int256 a, int256 b) private pure returns (int256 c) {
+    function _div(int256 a, int256 b) private pure returns (int256 c) {
         if (b == 0) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
@@ -357,7 +357,7 @@ library LibFixedMath {
     }
 
     /// @dev Adds two numbers, reverting on overflow.
-    function __add(int256 a, int256 b) private pure returns (int256 c) {
+    function _add(int256 a, int256 b) private pure returns (int256 c) {
         c = a + b;
         if (c > 0 && a < 0 && b < 0) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
