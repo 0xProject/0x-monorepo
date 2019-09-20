@@ -19,7 +19,7 @@ export class IndexOutOfBoundsError extends RevertError {
 
 export class SenderNotAuthorizedError extends RevertError {
     constructor(sender?: string) {
-        super('SenderNotAuthorizedError', 'SenderNotAuthorizedError()', { sender });
+        super('SenderNotAuthorizedError', 'SenderNotAuthorizedError(address sender)', { sender });
     }
 }
 
