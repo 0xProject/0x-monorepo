@@ -23,6 +23,11 @@ export enum InvalidParamValueErrorCode {
     InvalidCobbDouglasAlpha,
     InvalidRewardDelegatedStakeWeight,
     InvalidMaximumMakersInPool,
+    InvalidWethProxyAddress,
+    InvalidEthVaultAddress,
+    InvalidRewardVaultAddress,
+    InvalidZrxVaultAddress,
+    InvalidEpochDuration,
 }
 
 export enum InitializationErrorCode {
