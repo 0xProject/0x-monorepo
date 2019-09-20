@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IEthVault.sol";
@@ -33,7 +33,7 @@ import "../libs/LibStakingRichErrors.sol";
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
     MixinConstants,
-    Ownable
+    Authorizable
 {
     // WETH Asset Proxy
     IAssetProxy public wethAssetProxy;
@@ -134,4 +134,12 @@ contract MixinStorage is
 
     // Denominator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaDenominator;
+
+    /// @dev Adds owner as an authorized address.
+    constructor()
+        public
+        Ownable()
+    {
+        _addAuthorizedAddress(owner);
+    }
 }

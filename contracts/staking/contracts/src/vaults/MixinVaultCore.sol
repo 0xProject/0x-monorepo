@@ -84,7 +84,7 @@ contract MixinVaultCore is
     /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external
-        onlyOwner
+        onlyAuthorized
     {
         stakingProxyAddress = _stakingProxyAddress;
         emit StakingProxySet(_stakingProxyAddress);
