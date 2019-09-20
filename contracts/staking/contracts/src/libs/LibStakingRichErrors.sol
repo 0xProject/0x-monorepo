@@ -50,7 +50,8 @@ library LibStakingRichErrors {
         InvalidWethProxyAddress,
         InvalidEthVaultAddress,
         InvalidRewardVaultAddress,
-        InvalidZrxVaultAddress
+        InvalidZrxVaultAddress,
+        InvalidEpochDuration
     }
 
     enum MakerPoolAssignmentErrorCodes {

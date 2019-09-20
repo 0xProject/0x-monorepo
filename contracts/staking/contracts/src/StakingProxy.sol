@@ -198,5 +198,81 @@ contract StakingProxy is
                 revert(add(initReturnData, 0x20), mload(initReturnData))
             }
         }
+
+        // Assert initialized storage values are valid
+        _assertValidStorageParams();
+    }
+
+    /// @dev Asserts that an epoch is between 5 and 30 days long.
+    //       Asserts that cobb douglas alpha value is between 0 and 1.
+    //       Asserts that a stake weight is <= 100%.
+    //       Asserts that pools allow >= 1 maker.
+    //       Asserts that all addresses are initialized.
+    function _assertValidStorageParams()
+        private
+        view
+    {
+        // Epoch length must be between 5 and 30 days long
+        uint256 _epochDurationInSeconds = epochDurationInSeconds;
+        if (_epochDurationInSeconds < 5 days || _epochDurationInSeconds > 30 days) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEpochDuration
+            ));
+        }
+
+        // Alpha must be 0 < x < 1
+        uint32 _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
+        if (cobbDouglasAlphaNumerator > _cobbDouglasAlphaDenominator || _cobbDouglasAlphaDenominator == 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
+            ));
+        }
+
+        // Weight of delegated stake must be <= 100%
+        if (rewardDelegatedStakeWeight > PPM_DENOMINATOR) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
+            ));
+        }
+
+        // Pools must allow at least one maker
+        if (maximumMakersInPool == 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
+            ));
+        }
+
+        // ERC20Proxy and Vault contract addresses must always be initialized
+        if (address(wethAssetProxy) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidWethProxyAddress
+            ));
+        }
+
+        if (address(ethVault) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress
+            ));
+        }
+
+        if (address(rewardVault) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress
+            ));
+        }
+
+        if (address(zrxVault) == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidParamValueError(
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidZrxVaultAddress
+            ));
+        }
     }
 }
