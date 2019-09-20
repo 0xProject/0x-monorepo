@@ -23,66 +23,66 @@ import "../src/libs/LibFixedMath.sol";
 contract TestLibFixedMath {
 
     function one() external pure returns (int256) {
-        return LibFixedMath._one();
+        return LibFixedMath.one();
     }
-    
+
     function mulDiv(int256 a, int256 n, int256 d) external pure returns (int256) {
-        return LibFixedMath._mulDiv(a, n, d);
+        return LibFixedMath.mulDiv(a, n, d);
     }
 
     function mul(int256 a, int256 b) external pure returns (int256) {
-        return LibFixedMath._mul(a, b);
+        return LibFixedMath.mul(a, b);
     }
 
     function div(int256 a, int256 b) external pure returns (int256) {
-        return LibFixedMath._div(a, b);
+        return LibFixedMath.div(a, b);
     }
 
     function add(int256 a, int256 b) external pure returns (int256) {
-        return LibFixedMath._add(a, b);
+        return LibFixedMath.add(a, b);
     }
 
     function sub(int256 a, int256 b) external pure returns (int256) {
-        return LibFixedMath._sub(a, b);
+        return LibFixedMath.sub(a, b);
     }
 
     function uintMul(int256 f, uint256 u) external pure returns (uint256) {
-        return LibFixedMath._uintMul(f, u);
+        return LibFixedMath.uintMul(f, u);
     }
 
     function abs(int256 a) external pure returns (int256) {
-        return LibFixedMath._abs(a);
+        return LibFixedMath.abs(a);
     }
 
     function invert(int256 a) external pure returns (int256) {
-        return LibFixedMath._invert(a);
+        return LibFixedMath.invert(a);
     }
 
     function toFixedSigned(int256 n, int256 d) external pure returns (int256) {
-        return LibFixedMath._toFixed(n, d);
+        return LibFixedMath.toFixed(n, d);
     }
 
     function toFixedSigned(int256 n) external pure returns (int256) {
-        return LibFixedMath._toFixed(n);
+        return LibFixedMath.toFixed(n);
     }
 
     function toFixedUnsigned(uint256 n, uint256 d) external pure returns (int256) {
-        return LibFixedMath._toFixed(n, d);
+        return LibFixedMath.toFixed(n, d);
     }
 
     function toFixedUnsigned(uint256 n) external pure returns (int256) {
-        return LibFixedMath._toFixed(n);
+        return LibFixedMath.toFixed(n);
     }
 
     function toInteger(int256 f) external pure returns (int256) {
-        return LibFixedMath._toInteger(f);
+        return LibFixedMath.toInteger(f);
     }
 
     function ln(int256 x) external pure returns (int256 r) {
-        return LibFixedMath._ln(x);
+        return LibFixedMath.ln(x);
     }
 
     function exp(int256 x) external pure returns (int256 r) {
-        return LibFixedMath._exp(x);
+        return LibFixedMath.exp(x);
     }
 }

@@ -23,7 +23,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibFixedMath.sol";
+import "../libs/LibCobbDouglas.sol";
 import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStructs.sol";
 import "../staking_pools/MixinStakingPool.sol";
@@ -153,7 +153,7 @@ contract MixinExchangeFees is
     }
 
     /// @dev Pays rewards to market making pools that were active this epoch.
-    /// Each pool receives a portion of the fees generated this epoch (see _cobbDouglas) that is
+    /// Each pool receives a portion of the fees generated this epoch (see LibCobbDouglas) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
     /// into the Reward Vault where they can be withdraw by makers and
@@ -245,7 +245,7 @@ contract MixinExchangeFees is
         // step 3/4 - record reward for each pool
         for (uint256 i = 0; i != totalActivePools; i++) {
             // compute reward using cobb-douglas formula
-            uint256 reward = _cobbDouglas(
+            uint256 reward = LibCobbDouglas.cobbDouglas(
                 initialContractBalance,
                 activePools[i].feesCollected,
                 totalFeesCollected,
@@ -289,70 +289,5 @@ contract MixinExchangeFees is
             initialContractBalance,
             finalContractBalance
         );
-    }
-
-    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
-    /// Note that in this function there is no limitation on alpha; we tend to get better rounding
-    /// on the simplified versions below.
-    /// @param totalRewards collected over an epoch.
-    /// @param ownerFees Fees attributed to the owner of the staking pool.
-    /// @param totalFees collected across all active staking pools in the epoch.
-    /// @param ownerStake Stake attributed to the owner of the staking pool.
-    /// @param totalStake collected across all active staking pools in the epoch.
-    /// @param alphaNumerator Numerator of `alpha` in the cobb-dougles function.
-    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
-    /// @return ownerRewards Rewards for the owner.
-    function _cobbDouglas(
-        uint256 totalRewards,
-        uint256 ownerFees,
-        uint256 totalFees,
-        uint256 ownerStake,
-        uint256 totalStake,
-        uint256 alphaNumerator,
-        uint256 alphaDenominator
-    )
-        internal
-        pure
-        returns (uint256 ownerRewards)
-    {
-        int256 feeRatio = LibFixedMath._toFixed(ownerFees, totalFees);
-        int256 stakeRatio = LibFixedMath._toFixed(ownerStake, totalStake);
-        if (feeRatio == 0 || stakeRatio == 0) {
-            return ownerRewards = 0;
-        }
-
-        // The cobb-doublas function has the form:
-        // `totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)`
-        // This is equivalent to:
-        // `totalRewards * stakeRatio * e^(alpha * (ln(feeRatio / stakeRatio)))`
-        // However, because `ln(x)` has the domain of `0 < x < 1`
-        // and `exp(x)` has the domain of `x < 0`,
-        // and fixed-point math easily overflows with multiplication,
-        // we will choose the following if `stakeRatio > feeRatio`:
-        // `totalRewards * stakeRatio / e^(alpha * (ln(stakeRatio / feeRatio)))`
-
-        // Compute
-        // `e^(alpha * (ln(feeRatio/stakeRatio)))` if feeRatio <= stakeRatio
-        // or
-        // `e^(ln(stakeRatio/feeRatio))` if feeRatio > stakeRatio
-        int256 n = feeRatio <= stakeRatio ?
-            LibFixedMath._div(feeRatio, stakeRatio) :
-            LibFixedMath._div(stakeRatio, feeRatio);
-        n = LibFixedMath._exp(
-            LibFixedMath._mulDiv(
-                LibFixedMath._ln(n),
-                int256(alphaNumerator),
-                int256(alphaDenominator)
-            )
-        );
-        // Compute
-        // `totalRewards * n` if feeRatio <= stakeRatio
-        // or
-        // `totalRewards / n` if stakeRatio > feeRatio
-        n = feeRatio <= stakeRatio ?
-            LibFixedMath._mul(stakeRatio, n) :
-            LibFixedMath._div(stakeRatio, n);
-        // Multiply the above with totalRewards.
-        ownerRewards = LibFixedMath._uintMul(n, totalRewards);
     }
 }
