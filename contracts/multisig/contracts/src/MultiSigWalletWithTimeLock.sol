@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.9;
 
 import "./MultiSigWallet.sol";
 
@@ -63,7 +63,7 @@ contract MultiSigWalletWithTimeLock is
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
     constructor (
-        address[] _owners,
+        address[] memory _owners,
         uint256 _required,
         uint256 _secondsTimeLocked
     )

@@ -1,11 +1,11 @@
 import { constants as exchangeConstants, exchangeDataEncoder, ExchangeFunctionName } from '@0x/contracts-exchange';
 import {
-    addressUtils,
     chaiSetup,
     constants,
     expectContractCallFailedAsync,
     getLatestBlockTimestampAsync,
     provider,
+    randomAddress,
     TransactionFactory,
     txDefaults,
     web3Wrapper,
@@ -33,7 +33,7 @@ describe('Mixins tests', () => {
     let approvalFactory1: ApprovalFactory;
     let approvalFactory2: ApprovalFactory;
     let defaultOrder: SignedOrder;
-    const exchangeAddress = addressUtils.generatePseudoRandomAddress();
+    const exchangeAddress = randomAddress();
     let exchangeDomain: EIP712DomainWithDefaultSchema;
 
     before(async () => {

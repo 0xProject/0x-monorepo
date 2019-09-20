@@ -17,6 +17,7 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
@@ -34,100 +35,99 @@ contract MixinStorage is
     MixinConstants,
     Ownable
 {
-
     // WETH Asset Proxy
-    IAssetProxy internal wethAssetProxy;
+    IAssetProxy public wethAssetProxy;
 
     // address of staking contract
-    address internal stakingContract;
+    address public stakingContract;
 
     // address of read-only proxy
-    address internal readOnlyProxy;
+    address public readOnlyProxy;
 
     // address for read-only proxy to call
-    address internal readOnlyProxyCallee;
+    address public readOnlyProxyCallee;
 
     // mapping from Owner to Amount of Active Stake
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal activeStakeByOwner;
+    mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
 
     // mapping from Owner to Amount of Inactive Stake
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal inactiveStakeByOwner;
+    mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
 
     // mapping from Owner to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal delegatedStakeByOwner;
+    mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
-    mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal delegatedStakeToPoolByOwner;
+    mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
-    mapping (bytes32 => IStructs.StoredBalance) internal delegatedStakeByPoolId;
+    mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
     // mapping from Owner to Amount of Withdrawable Stake
-    mapping (address => uint256) internal withdrawableStakeByOwner;
+    mapping (address => uint256) internal _withdrawableStakeByOwner;
 
     // tracking Pool Id
-    bytes32 internal nextPoolId = INITIAL_POOL_ID;
+    bytes32 public nextPoolId = INITIAL_POOL_ID;
 
     // mapping from Maker Address to a struct representing the pool the maker has joined and
     // whether the operator of that pool has subsequently added the maker.
-    mapping (address => IStructs.MakerPoolJoinStatus) internal poolJoinedByMakerAddress;
+    mapping (address => IStructs.MakerPoolJoinStatus) public poolJoinedByMakerAddress;
 
-    // mapping from Pool Id to number of makers assigned to that pool
-    mapping (bytes32 => uint256) internal numMakersByPoolId;
+    // mapping from Pool Id to Pool
+    mapping (bytes32 => IStructs.Pool) public poolById;
 
     // current epoch
-    uint256 internal currentEpoch = INITIAL_EPOCH;
+    uint256 public currentEpoch = INITIAL_EPOCH;
 
     // current epoch start time
-    uint256 internal currentEpochStartTimeInSeconds;
+    uint256 public currentEpochStartTimeInSeconds;
 
     // fees collected this epoch
-    mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
+    mapping (bytes32 => uint256) public protocolFeesThisEpochByPool;
 
     // pools that were active in the current epoch
-    bytes32[] internal activePoolsThisEpoch;
+    bytes32[] public activePoolsThisEpoch;
 
     // mapping from Pool Id to Epoch to Reward Ratio
-    mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal cumulativeRewardsByPool;
+    mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal _cumulativeRewardsByPool;
 
     // mapping from Pool Id to Epoch to Cumulative Rewards Reference Counter
-    mapping (bytes32 => mapping (uint256 => uint256)) internal cumulativeRewardsByPoolReferenceCounter;
+    mapping (bytes32 => mapping (uint256 => uint256)) internal _cumulativeRewardsByPoolReferenceCounter;
 
     // mapping from Pool Id to Epoch
-    mapping (bytes32 => uint256) internal cumulativeRewardsByPoolLastStored;
+    mapping (bytes32 => uint256) internal _cumulativeRewardsByPoolLastStored;
 
     // registered 0x Exchange contracts
-    mapping (address => bool) internal validExchanges;
+    mapping (address => bool) public validExchanges;
 
     // ZRX vault (stores staked ZRX)
-    IZrxVault internal zrxVault;
+    IZrxVault public zrxVault;
 
     // ETH Vault (stores eth balances of stakers and pool operators)
-    IEthVault internal ethVault;
+    IEthVault public ethVault;
 
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
-    IStakingPoolRewardVault internal rewardVault;
+    IStakingPoolRewardVault public rewardVault;
 
     // Minimum seconds between epochs.
-    uint256 internal epochDurationInSeconds;
+    uint256 public epochDurationInSeconds;
 
     // How much delegated stake is weighted vs operator stake, in ppm.
-    uint32 internal rewardDelegatedStakeWeight;
+    uint32 public rewardDelegatedStakeWeight;
 
     // Minimum amount of stake required in a pool to collect rewards.
-    uint256 internal minimumPoolStake;
+    uint256 public minimumPoolStake;
 
     // Maximum number of maker addresses allowed to be registered to a pool.
-    uint256 internal maximumMakersInPool;
+    uint256 public maximumMakersInPool;
 
     // Numerator for cobb douglas alpha factor.
-    uint32 internal cobbDouglasAlphaNumerator;
+    uint32 public cobbDouglasAlphaNumerator;
 
     // Denominator for cobb douglas alpha factor.
-    uint32 internal cobbDouglasAlphaDenomintor;
+    uint32 public cobbDouglasAlphaDenominator;
 }

@@ -41,7 +41,7 @@ if (allArtifactPaths.length < pkgNames.length) {
     throw new Error(
         `Expected ${pkgNames.length} artifacts, found ${
             allArtifactPaths.length
-        }. Please ensure artifacts are present in ${contractsPath}/**/generated_artifacts`,
+        }. Please ensure artifacts are present in ${contractsPath}/**/generated-artifacts`,
     );
 }
 

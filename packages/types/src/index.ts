@@ -343,6 +343,12 @@ export enum RevertReason {
     TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
     // Staking
     InsufficientFunds = 'INSUFFICIENT_FUNDS',
+    // AssetProxyOwner
+    TxAlreadyExecuted = 'TX_ALREADY_EXECUTED',
+    DefaultTimeLockIncomplete = 'DEFAULT_TIME_LOCK_INCOMPLETE',
+    CustomTimeLockIncomplete = 'CUSTOM_TIME_LOCK_INCOMPLETE',
+    EqualLengthsRequired = 'EQUAL_LENGTHS_REQUIRED',
+    OnlyCallableByWallet = 'ONLY_CALLABLE_BY_WALLET',
 }
 
 export enum StatusCodes {

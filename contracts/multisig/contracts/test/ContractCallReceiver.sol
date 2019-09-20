@@ -18,19 +18,34 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
-interface IStorageInit {
 
-    /// @dev Initialize storage owned by this contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function init(
-        address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
-        address _zrxVaultAddress
-    )
-        external;
+contract ContractCallReceiver {
+
+    using LibBytes for bytes;
+
+    event ContractCall(
+        bytes4 functionSelector,
+        bytes data,
+        uint256 value
+    );
+
+    bytes4 constant internal ALWAYS_REVERT_SELECTOR = 0xF1F2F3F4;
+
+    function ()
+        external
+        payable
+    {
+        bytes4 selector = msg.data.readBytes4(0);
+        if (selector == ALWAYS_REVERT_SELECTOR) {
+            revert();
+        }
+
+        emit ContractCall(
+            selector,
+            msg.data,
+            msg.value
+        );
+    }
 }

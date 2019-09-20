@@ -16,93 +16,205 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "./MultiSigWalletWithTimeLock.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
 contract AssetProxyOwner is
     MultiSigWalletWithTimeLock
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
-    event AssetProxyRegistration(address assetProxyContract, bool isRegistered);
-
-    // Mapping of AssetProxy contract address =>
-    // if this contract is allowed to call the AssetProxy's `removeAuthorizedAddressAtIndex` method without a time lock.
-    mapping (address => bool) public isAssetProxyRegistered;
-
-    bytes4 constant internal REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR = bytes4(keccak256("removeAuthorizedAddressAtIndex(address,uint256)"));
-
-    /// @dev Function will revert if the transaction does not call `removeAuthorizedAddressAtIndex`
-    ///      on an approved AssetProxy contract.
-    modifier validRemoveAuthorizedAddressAtIndexTx(uint256 transactionId) {
-        Transaction storage txn = transactions[transactionId];
-        require(
-            isAssetProxyRegistered[txn.destination],
-            "UNREGISTERED_ASSET_PROXY"
-        );
-        require(
-            txn.data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR,
-            "INVALID_FUNCTION_SELECTOR"
-        );
-        _;
+    struct TimeLock {
+        bool hasCustomTimeLock;
+        uint128 secondsTimeLocked;
     }
 
-    /// @dev Contract constructor sets initial owners, required number of confirmations,
-    ///      time lock, and list of AssetProxy addresses.
+    event FunctionCallTimeLockRegistration(
+        bytes4 functionSelector,
+        address destination,
+        bool hasCustomTimeLock,
+        uint128 newSecondsTimeLocked
+    );
+
+    // Function selector => destination => seconds timelocked
+    mapping (bytes4 => mapping (address => TimeLock)) public functionCallTimeLocks;
+
+    /// @dev Contract constructor sets initial owners, required number of confirmations, and default time lock
+    ///      It will also register unique timelocks for each passed in function selector / destination combo. 
+    /// @param _functionSelectors Array of function selectors for registered functions.
+    /// @param _destinations Array of destinations for registered function calls.
+    /// @param _functionCallTimeLockSeconds Array of seconds that each registered function call will be timelocked.
     /// @param _owners List of initial owners.
-    /// @param _assetProxyContracts Array of AssetProxy contract addresses.
     /// @param _required Number of required confirmations.
-    /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+    /// @param _defaultSecondsTimeLocked Default duration in seconds needed after a transaction is confirmed to become executable.
     constructor (
+        bytes4[] memory _functionSelectors,
+        address[] memory _destinations,
+        uint128[] memory _functionCallTimeLockSeconds,
         address[] memory _owners,
-        address[] memory _assetProxyContracts,
         uint256 _required,
-        uint256 _secondsTimeLocked
+        uint256 _defaultSecondsTimeLocked
     )
         public
-        MultiSigWalletWithTimeLock(_owners, _required, _secondsTimeLocked)
+        MultiSigWalletWithTimeLock(
+            _owners,
+            _required,
+            _defaultSecondsTimeLocked
+        )
     {
-        for (uint256 i = 0; i < _assetProxyContracts.length; i++) {
-            address assetProxy = _assetProxyContracts[i];
-            require(
-                assetProxy != address(0),
-                "INVALID_ASSET_PROXY"
+        uint256 length = _functionSelectors.length;
+        require(
+            length == _destinations.length && length == _functionCallTimeLockSeconds.length,
+            "EQUAL_LENGTHS_REQUIRED"
+        );
+
+        // Register function timelocks
+        for (uint256 i = 0; i != length; i++) {
+            _registerFunctionCall(
+                true,  // all functions registered in constructor are assumed to have a custom timelock
+                _functionSelectors[i],
+                _destinations[i],
+                _functionCallTimeLockSeconds[i]
             );
-            isAssetProxyRegistered[assetProxy] = true;
         }
     }
 
-    /// @dev Registers or deregisters an AssetProxy to be able to execute
-    ///      `removeAuthorizedAddressAtIndex` without a timelock.
-    /// @param assetProxyContract Address of AssetProxy contract.
-    /// @param isRegistered Status of approval for AssetProxy contract.
-    function registerAssetProxy(address assetProxyContract, bool isRegistered)
-        public
+    /// @dev Registers a custom timelock to a specific function selector / destination combo
+    /// @param hasCustomTimeLock True if timelock is custom.
+    /// @param functionSelector 4 byte selector of registered function.
+    /// @param destination Address of destination where function will be called.
+    /// @param newSecondsTimeLocked Duration in seconds needed after a transaction is confirmed to become executable.
+    function registerFunctionCall(
+        bool hasCustomTimeLock,
+        bytes4 functionSelector,
+        address destination,
+        uint128 newSecondsTimeLocked
+    )
+        external
         onlyWallet
-        notNull(assetProxyContract)
     {
-        isAssetProxyRegistered[assetProxyContract] = isRegistered;
-        emit AssetProxyRegistration(assetProxyContract, isRegistered);
+        _registerFunctionCall(
+            hasCustomTimeLock,
+            functionSelector,
+            destination,
+            newSecondsTimeLocked
+        );
     }
 
-    /// @dev Allows execution of `removeAuthorizedAddressAtIndex` without time lock.
+    /// @dev Allows anyone to execute a confirmed transaction.
+    ///      Transactions *must* encode the values with the signature "bytes[] data, address[] destinations, uint256[] values"
+    ///      The `destination` and `value` fields of the transaction in storage are ignored.
+    ///      All function calls must be successful or the entire call will revert.
     /// @param transactionId Transaction ID.
-    function executeRemoveAuthorizedAddressAtIndex(uint256 transactionId)
+    function executeTransaction(uint256 transactionId)
         public
         notExecuted(transactionId)
         fullyConfirmed(transactionId)
-        validRemoveAuthorizedAddressAtIndexTx(transactionId)
     {
-        Transaction storage txn = transactions[transactionId];
-        txn.executed = true;
-        if (_externalCall(txn.destination, txn.value, txn.data.length, txn.data)) {
-            emit Execution(transactionId);
-        } else {
-            emit ExecutionFailure(transactionId);
-            txn.executed = false;
+        Transaction storage transaction = transactions[transactionId];
+        transaction.executed = true;
+
+        // Decode batch transaction data from transaction.data
+        // `destination` and `value` fields of transaction are ignored
+        // Note that `destination` must be non-0, or the transaction cannot be submitted
+        // solhint-disable
+        (
+            bytes[] memory data,
+            address[] memory destinations,
+            uint256[] memory values
+        ) = abi.decode(
+            transaction.data,
+            (bytes[], address[], uint256[])
+        );
+        // solhint-enable
+
+        // Ensure lengths of array properties are equal
+        uint256 length = data.length;
+        require(
+            length == destinations.length && length == values.length,
+            "EQUAL_LENGTHS_REQUIRED"
+        );
+
+        uint256 transactionConfirmationTime = confirmationTimes[transactionId];
+        for (uint i = 0; i != length; i++) {
+            // Ensure that each function call is past its timelock
+            _assertValidFunctionCall(
+                transactionConfirmationTime,
+                data[i],
+                destinations[i]
+            );
+            // Call each function
+            // solhint-disable-next-line avoid-call-value
+            (bool didSucceed,) = destinations[i].call.value(values[i])(data[i]);
+            // Ensure that function call was successful
+            require(
+                didSucceed,
+                "FAILED_EXECUTION"
+            );
         }
+        emit Execution(transactionId);
+    }
+
+    /// @dev Registers a custom timelock to a specific function selector / destination combo
+    /// @param hasCustomTimeLock True if timelock is custom.
+    /// @param functionSelector 4 byte selector of registered function.
+    /// @param destination Address of destination where function will be called.
+    /// @param newSecondsTimeLocked Duration in seconds needed after a transaction is confirmed to become executable.
+    function _registerFunctionCall(
+        bool hasCustomTimeLock,
+        bytes4 functionSelector,
+        address destination,
+        uint128 newSecondsTimeLocked    
+    )
+        internal
+    {
+        // Clear the previous secondsTimeLocked if custom timelock not used
+        uint128 _secondsTimeLocked = hasCustomTimeLock ? newSecondsTimeLocked : 0;
+        TimeLock memory timeLock = TimeLock({
+            hasCustomTimeLock: hasCustomTimeLock,
+            secondsTimeLocked: _secondsTimeLocked
+        });
+        functionCallTimeLocks[functionSelector][destination] = timeLock;
+        emit FunctionCallTimeLockRegistration(
+            functionSelector,
+            destination,
+            hasCustomTimeLock,
+            _secondsTimeLocked
+        );
+    }
+
+    /// @dev Ensures that the function call has past its timelock.
+    /// @param transactionConfirmationTime Timestamp at which transaction was fully confirmed.
+    /// @param data Function calldata.
+    /// @param destination Address to call function on.
+    function _assertValidFunctionCall(
+        uint256 transactionConfirmationTime,
+        bytes memory data,
+        address destination
+    )
+        internal
+        view
+    {
+        bytes4 functionSelector = data.readBytes4(0);
+        TimeLock memory timeLock = functionCallTimeLocks[functionSelector][destination];
+        // solhint-disable not-rely-on-time
+        if (timeLock.hasCustomTimeLock) {
+            require(
+                block.timestamp >= transactionConfirmationTime.safeAdd(timeLock.secondsTimeLocked),
+                "CUSTOM_TIME_LOCK_INCOMPLETE"
+            );
+        } else {
+            require(
+                block.timestamp >= transactionConfirmationTime.safeAdd(secondsTimeLocked),
+                "DEFAULT_TIME_LOCK_INCOMPLETE"
+            );
+        }
+        // solhint-enable not-rely-on-time
     }
 }

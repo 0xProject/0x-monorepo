@@ -21,21 +21,13 @@ pragma solidity ^0.5.9;
 import "../libs/LibSafeDowncast.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "../immutable/MixinConstants.sol";
-import "../immutable/MixinStorage.sol";
 import "../sys/MixinScheduler.sol";
-import "./MixinZrxVault.sol";
 
 
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
     MixinScheduler
 {
-
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
@@ -93,9 +85,9 @@ contract MixinStakeStorage is
         // load from storage
         balance = balancePtr;
         // sync
-        uint256 currentEpoch = getCurrentEpoch();
-        if (currentEpoch > balance.currentEpoch) {
-            balance.currentEpoch = currentEpoch.downcastToUint32();
+        uint256 currentEpoch_ = currentEpoch;
+        if (currentEpoch_ > balance.currentEpoch) {
+            balance.currentEpoch = currentEpoch_.downcastToUint32();
             balance.currentEpochBalance = balance.nextEpochBalance;
         }
         return balance;

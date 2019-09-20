@@ -13,7 +13,7 @@ export class PoolOperatorActor extends BaseActor {
         revertError?: RevertError,
     ): Promise<string> {
         // query next pool id
-        const nextPoolId = await this._stakingApiWrapper.stakingContract.getNextStakingPoolId.callAsync();
+        const nextPoolId = await this._stakingApiWrapper.stakingContract.nextPoolId.callAsync();
         // create pool
         const poolIdPromise = this._stakingApiWrapper.utils.createStakingPoolAsync(
             this._owner,
@@ -35,10 +35,8 @@ export class PoolOperatorActor extends BaseActor {
             );
             expect(poolIdOfMaker, 'pool id of maker').to.be.equal(poolId);
             // check the number of makers in the pool
-            const numMakersAfterRemoving = await this._stakingApiWrapper.stakingContract.getNumberOfMakersInStakingPool.callAsync(
-                poolId,
-            );
-            expect(numMakersAfterRemoving, 'number of makers in pool').to.be.bignumber.equal(1);
+            const pool = await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
+            expect(pool.numberOfMakers, 'number of makers in pool').to.be.bignumber.equal(1);
         }
         return poolId;
     }
@@ -103,9 +101,7 @@ export class PoolOperatorActor extends BaseActor {
         }
         await txReceiptPromise;
         // Check operator share
-        const decreasedOperatorShare = await this._stakingApiWrapper.rewardVaultContract.getOperatorShare.callAsync(
-            poolId,
-        );
-        expect(decreasedOperatorShare, 'updated operator share').to.be.bignumber.equal(newOperatorShare);
+        const pool = await this._stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
+        expect(pool.operatorShare, 'updated operator share').to.be.bignumber.equal(newOperatorShare);
     }
 }

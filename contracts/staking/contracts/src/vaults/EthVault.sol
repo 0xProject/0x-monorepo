@@ -25,21 +25,13 @@ import "./MixinVaultCore.sol";
 
 /// @dev This vault manages ETH.
 contract EthVault is
-    Authorizable,
     IEthVault,
-    IVaultCore,
     MixinVaultCore
 {
-
     using LibSafeMath for uint256;
 
     // mapping from Owner to ETH balance
-    mapping (address => uint256) internal balances;
-
-    /// @dev Constructor.
-    constructor()
-        public
-    {} // solhint-disable-line no-empty-blocks
+    mapping (address => uint256) internal _balances;
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
     /// Note that only the Staking contract can call this.
@@ -51,7 +43,7 @@ contract EthVault is
     {
         // update balance
         uint256 amount = msg.value;
-        balances[owner] = balances[owner].safeAdd(msg.value);
+        _balances[owner] = _balances[owner].safeAdd(msg.value);
 
         // notify
         emit EthDepositedIntoVault(msg.sender, owner, amount);
@@ -74,7 +66,7 @@ contract EthVault is
     {
         // get total balance
         address payable owner = msg.sender;
-        totalBalance = balances[owner];
+        totalBalance = _balances[owner];
 
         // withdraw ETH to owner
         _withdrawFrom(owner, totalBalance);
@@ -88,7 +80,7 @@ contract EthVault is
         view
         returns (uint256)
     {
-        return balances[owner];
+        return _balances[owner];
     }
 
     /// @dev Withdraw an `amount` of ETH to `owner` from the vault.
@@ -100,7 +92,7 @@ contract EthVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = balances[owner].safeSub(amount);
+        _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
         emit EthWithdrawnFromVault(msg.sender, owner, amount);

@@ -25,7 +25,6 @@ import "./libs/LibProxy.sol";
 contract ReadOnlyProxy is
     MixinStorage
 {
-
     using LibProxy for address;
 
     // solhint-disable payable-fallback

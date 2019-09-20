@@ -21,9 +21,7 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 
 
@@ -35,33 +33,9 @@ import "../interfaces/IStakingEvents.sol";
 /// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
-
     using LibSafeMath for uint256;
-
-    /// @dev Returns the current epoch.
-    /// @return Epoch.
-    function getCurrentEpoch()
-        public
-        view
-        returns (uint256)
-    {
-        return currentEpoch;
-    }
-
-    /// @dev Returns the start time in seconds of the current epoch.
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    /// @return Time in seconds.
-    function getCurrentEpochStartTimeInSeconds()
-        public
-        view
-        returns (uint256)
-    {
-        return currentEpochStartTimeInSeconds;
-    }
 
     /// @dev Returns the earliest end time in seconds of this epoch.
     ///      The next epoch can begin once this time is reached.
@@ -72,21 +46,7 @@ contract MixinScheduler is
         view
         returns (uint256)
     {
-        return getCurrentEpochStartTimeInSeconds().safeAdd(epochDurationInSeconds);
-    }
-
-    /// @dev Assert scheduler state before initializing it.
-    /// This must be updated for each migration.
-    function _assertMixinSchedulerBeforeInit()
-        internal
-    {
-        if (currentEpochStartTimeInSeconds != 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
-                )
-            );
-        }
+        return currentEpochStartTimeInSeconds.safeAdd(epochDurationInSeconds);
     }
 
     /// @dev Initializes state owned by this mixin.
@@ -95,7 +55,7 @@ contract MixinScheduler is
         internal
     {
         // assert the current values before overwriting them.
-        _assertMixinSchedulerBeforeInit();
+        _assertSchedulerNotInitialized();
 
         // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
@@ -134,5 +94,20 @@ contract MixinScheduler is
             currentEpochStartTimeInSeconds,
             earliestEndTimeInSeconds
         );
+    }
+
+    /// @dev Assert scheduler state before initializing it.
+    /// This must be updated for each migration.
+    function _assertSchedulerNotInitialized()
+        internal
+        view
+    {
+        if (currentEpochStartTimeInSeconds != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InitializationError(
+                    LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
+                )
+            );
+        }
     }
 }

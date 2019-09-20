@@ -1,4 +1,4 @@
-import { addressUtils, chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, randomAddress, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
 import { BigNumber, providerUtils } from '@0x/utils';
@@ -13,7 +13,7 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 describe('Libs tests', () => {
     let coordinatorContract: CoordinatorContract;
     let chainId: number;
-    const exchangeAddress = addressUtils.generatePseudoRandomAddress();
+    const exchangeAddress = randomAddress();
 
     before(async () => {
         await blockchainLifecycle.startAsync();

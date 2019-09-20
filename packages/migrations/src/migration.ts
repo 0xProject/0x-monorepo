@@ -287,7 +287,6 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
-        zrxAssetData,
     );
 
     const contractAddresses = {

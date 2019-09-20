@@ -24,15 +24,9 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibFixedMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
 import "../immutable/MixinDeploymentConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
-import "../stake/MixinStakeBalances.sol";
-import "../sys/MixinScheduler.sol";
 import "../staking_pools/MixinStakingPool.sol";
-import "../staking_pools/MixinStakingPoolRewardVault.sol";
 import "./MixinExchangeManager.sol";
 
 
@@ -46,21 +40,10 @@ import "./MixinExchangeManager.sol";
 /// stake provided by directly by the maker; this is a disincentive for market makers to
 /// monopolize a single pool that they all delegate to.
 contract MixinExchangeFees is
-    IStakingEvents,
-    MixinConstants,
     MixinDeploymentConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
     MixinExchangeManager,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinStakingPoolRewards,
     MixinStakingPool
 {
-
     using LibSafeMath for uint256;
 
     /// @dev Pays a protocol fee in ETH or WETH.
@@ -149,22 +132,12 @@ contract MixinExchangeFees is
     /// @dev Returns the total amount of fees collected thus far, in the current epoch.
     /// @return Amount of fees.
     function getTotalProtocolFeesThisEpoch()
-        public
+        external
         view
         returns (uint256)
     {
-        return address(this).balance;
-    }
-
-    /// @dev Returns the amount of fees attributed to the input pool.
-    /// @param poolId Pool Id to query.
-    /// @return Amount of fees.
-    function getProtocolFeesThisEpochByPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return protocolFeesThisEpochByPool[poolId];
+        uint256 wethBalance = IEtherToken(WETH_ADDRESS).balanceOf(address(this));
+        return address(this).balance.safeAdd(wethBalance);
     }
 
     /// @dev Withdraws the entire WETH balance of the contract.
@@ -183,7 +156,7 @@ contract MixinExchangeFees is
     /// Each pool receives a portion of the fees generated this epoch (see _cobbDouglas) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
-    /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
+    /// into the Reward Vault where they can be withdraw by makers and
     /// the members of their pool. There will be a small amount of ETH leftover in this contract
     /// after paying out the rebates; at present, this rolls over into the next epoch. Eventually,
     /// we plan to deposit this leftover into a DAO managed by the 0x community.
@@ -237,7 +210,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
-            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(rewardVault.operatorOf(poolId), poolId).currentEpochBalance;
+            uint256 stakeHeldByPoolOperator = getStakeDelegatedToPoolByOwner(poolById[poolId].operator, poolId).currentEpochBalance;
             uint256 weightedStake = stakeHeldByPoolOperator.safeAdd(
                 totalStakeDelegatedToPool
                     .safeSub(stakeHeldByPoolOperator)
@@ -279,26 +252,16 @@ contract MixinExchangeFees is
                 totalWeightedStake != 0 ? activePools[i].weightedStake : 1, // only rewards are accounted for if no one has staked
                 totalWeightedStake != 0 ? totalWeightedStake : 1, // this is to avoid divide-by-zero in cobb douglas
                 cobbDouglasAlphaNumerator,
-                cobbDouglasAlphaDenomintor
+                cobbDouglasAlphaDenominator
             );
 
-            // record reward in vault
-            (, uint256 membersPortion) = rewardVault.recordDepositFor(
+            // pay reward to pool
+            _handleStakingPoolReward(
                 activePools[i].poolId,
                 reward,
-                activePools[i].delegatedStake == 0 // true -> reward is for operator only
+                activePools[i].delegatedStake,
+                currentEpoch
             );
-            totalRewardsPaid = totalRewardsPaid.safeAdd(reward);
-
-            // sync cumulative rewards, if necessary.
-            if (membersPortion > 0) {
-                _recordRewardForDelegators(
-                    activePools[i].poolId,
-                    membersPortion,
-                    activePools[i].delegatedStake,
-                    currentEpoch
-                );
-            }
 
             // clear state for gas refunds
             protocolFeesThisEpochByPool[activePools[i].poolId] = 0;
@@ -314,9 +277,6 @@ contract MixinExchangeFees is
                 totalRewardsPaid,
                 initialContractBalance
             ));
-        }
-        if (totalRewardsPaid > 0) {
-            _depositIntoStakingPoolRewardVault(totalRewardsPaid);
         }
 
         finalContractBalance = address(this).balance;

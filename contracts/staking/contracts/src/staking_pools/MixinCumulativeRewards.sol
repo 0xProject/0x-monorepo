@@ -21,21 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
 import "../stake/MixinStakeBalances.sol";
-import "./MixinStakingPoolRewardVault.sol";
 
 
 contract MixinCumulativeRewards is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinZrxVault,
-    MixinStakingPoolRewardVault,
-    MixinScheduler,
-    MixinStakeStorage,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;
@@ -45,7 +34,6 @@ contract MixinCumulativeRewards is
     function _initializeCumulativeRewards(bytes32 poolId)
         internal
     {
-        uint256 currentEpoch = getCurrentEpoch();
         // sets the default cumulative reward
         _forceSetCumulativeReward(
             poolId,
@@ -78,9 +66,9 @@ contract MixinCumulativeRewards is
         returns (bool)
     {
         return (
-            _isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch]) &&   // is there a value to unset
-            cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0 &&      // no references to this CR
-            cumulativeRewardsByPoolLastStored[poolId] > epoch                   // this is *not* the most recent CR
+            _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]) &&   // is there a value to unset
+            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0 &&      // no references to this CR
+            _cumulativeRewardsByPoolLastStored[poolId] > epoch                   // this is *not* the most recent CR
         );
     }
 
@@ -95,7 +83,7 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        if (_isCumulativeRewardSet(cumulativeRewardsByPool[poolId][epoch])) {
+        if (_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch])) {
             // do nothing; we don't want to override the current value
             return;
         }
@@ -114,7 +102,7 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        cumulativeRewardsByPool[poolId][epoch] = value;
+        _cumulativeRewardsByPool[poolId][epoch] = value;
         _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
     }
 
@@ -136,20 +124,21 @@ contract MixinCumulativeRewards is
     function _forceUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
-        cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
+        _cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
     }
 
     /// @dev Returns info on most recent cumulative reward.
     function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
         internal
+        view
         returns (IStructs.CumulativeRewardInfo memory)
     {
         // fetch the last epoch at which we stored a cumulative reward for this pool
-        uint256 cumulativeRewardsLastStored = cumulativeRewardsByPoolLastStored[poolId];
+        uint256 cumulativeRewardsLastStored = _cumulativeRewardsByPoolLastStored[poolId];
 
         // query and return cumulative reward info for this pool
         return IStructs.CumulativeRewardInfo({
-            cumulativeReward: cumulativeRewardsByPool[poolId][cumulativeRewardsLastStored],
+            cumulativeReward: _cumulativeRewardsByPool[poolId][cumulativeRewardsLastStored],
             cumulativeRewardEpoch: cumulativeRewardsLastStored
         });
     }
@@ -163,7 +152,7 @@ contract MixinCumulativeRewards is
         internal
     {
         // check if we should do any work
-        uint256 currentMostRecentEpoch = cumulativeRewardsByPoolLastStored[poolId];
+        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
         if (epoch == currentMostRecentEpoch) {
             return;
         }
@@ -189,7 +178,7 @@ contract MixinCumulativeRewards is
     {
         // sanity check that we're not trying to go back in time
         assert(newMostRecentEpoch >= currentMostRecentEpoch);
-        cumulativeRewardsByPoolLastStored[poolId] = newMostRecentEpoch;
+        _cumulativeRewardsByPoolLastStored[poolId] = newMostRecentEpoch;
 
         // unset the previous most recent reward, if it is no longer needed
         _tryUnsetCumulativeReward(poolId, currentMostRecentEpoch);
@@ -234,7 +223,7 @@ contract MixinCumulativeRewards is
         internal
     {
         // add dependency by increasing the reference counter
-        cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
+        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
 
         // set CR to most recent reward (if it is not already set)
         _trySetCumulativeReward(
@@ -254,8 +243,8 @@ contract MixinCumulativeRewards is
         internal
     {
         // remove dependency by decreasing reference counter
-        uint256 newReferenceCounter = cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
-        cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
+        uint256 newReferenceCounter = _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
+        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
 
         // clear cumulative reward from state, if it is no longer needed
         _tryUnsetCumulativeReward(poolId, epoch);
@@ -295,7 +284,7 @@ contract MixinCumulativeRewards is
         }
 
         // sanity check begin reward
-        IStructs.Fraction memory beginReward = cumulativeRewardsByPool[poolId][beginEpoch];
+        IStructs.Fraction memory beginReward = _cumulativeRewardsByPool[poolId][beginEpoch];
         if (!_isCumulativeRewardSet(beginReward)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.CumulativeRewardIntervalError(
@@ -308,7 +297,7 @@ contract MixinCumulativeRewards is
         }
 
         // sanity check end reward
-        IStructs.Fraction memory endReward = cumulativeRewardsByPool[poolId][endEpoch];
+        IStructs.Fraction memory endReward = _cumulativeRewardsByPool[poolId][endEpoch];
         if (!_isCumulativeRewardSet(endReward)) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.CumulativeRewardIntervalError(

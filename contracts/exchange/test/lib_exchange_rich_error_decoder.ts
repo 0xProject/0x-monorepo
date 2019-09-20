@@ -1,11 +1,11 @@
 import {
-    addressUtils,
     blockchainTests,
     constants,
     expect,
     hexRandom,
     OrderStatus,
     orderUtils,
+    randomAddress,
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber, RevertError } from '@0x/utils';
@@ -59,8 +59,8 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     (() => {
         const errorCode = ExchangeRevertErrors.SignatureErrorCode.Illegal;
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const signer = addressUtils.generatePseudoRandomAddress();
-        const validator = addressUtils.generatePseudoRandomAddress();
+        const signer = randomAddress();
+        const validator = randomAddress();
         const data = hexRandom(ERROR_DATA_LENGTH);
         const signature = hexRandom(SIGNATURE_LENGTH);
         const errorData = hexRandom(ERROR_DATA_LENGTH);
@@ -78,7 +78,7 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
 
     (() => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const address = addressUtils.generatePseudoRandomAddress();
+        const address = randomAddress();
         createDecodeTest(ExchangeRevertErrors.ExchangeInvalidContextError, [
             ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
             orderHash,
@@ -103,14 +103,14 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     })();
 
     (() => {
-        const maker = addressUtils.generatePseudoRandomAddress();
-        const sender = addressUtils.generatePseudoRandomAddress();
+        const maker = randomAddress();
+        const sender = randomAddress();
         const currentEpoch = generatePseudoRandomSalt();
         createDecodeTest(ExchangeRevertErrors.OrderEpochError, [maker, sender, currentEpoch]);
     })();
 
     (() => {
-        const assetProxyAddress = addressUtils.generatePseudoRandomAddress();
+        const assetProxyAddress = randomAddress();
         createDecodeTest(ExchangeRevertErrors.AssetProxyExistsError, [
             hexRandom(ASSET_PROXY_ID_LENGTH),
             assetProxyAddress,

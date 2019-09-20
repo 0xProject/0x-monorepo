@@ -1,4 +1,4 @@
-import { BlockchainTestsEnvironment, expect, txDefaults } from '@0x/contracts-test-utils';
+import { BlockchainTestsEnvironment, constants, expect, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { DecodedLogArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -108,6 +108,10 @@ export class CumulativeRewardTrackingSimulation {
         await this._executeActionsAsync(initActions);
         await this._stakingApiWrapper.stakingProxyContract.attachStakingContract.awaitTransactionSuccessAsync(
             this.getTestCumulativeRewardTrackingContract().address,
+            constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
+            constants.NULL_ADDRESS,
         );
         const testLogs = await this._executeActionsAsync(testActions);
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);
