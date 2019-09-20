@@ -53,6 +53,10 @@
             {
                 "note": "Removed MixinStakingPoolRewardVault.sol",
                 "pr": 2156
+            },
+            {
+                "note": "Refactored out `_cobbDouglas()` into its own library",
+                "pr": 2179
             }
         ]
     }

@@ -14,6 +14,7 @@
         "generated-artifacts/IStructs.json",
         "generated-artifacts/IVaultCore.json",
         "generated-artifacts/IZrxVault.json",
+        "generated-artifacts/LibCobbDouglas.json",
         "generated-artifacts/LibFixedMath.json",
         "generated-artifacts/LibFixedMathRichErrors.json",
         "generated-artifacts/LibProxy.json",
