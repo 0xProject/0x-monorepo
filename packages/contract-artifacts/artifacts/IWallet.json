@@ -10,7 +10,7 @@
                     { "internalType": "bytes", "name": "signature", "type": "bytes" }
                 ],
                 "name": "isValidSignature",
-                "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+                "outputs": [{ "internalType": "bytes4", "name": "magicValue", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
@@ -19,13 +19,37 @@
         "devdoc": {
             "methods": {
                 "isValidSignature(bytes32,bytes)": {
-                    "details": "Verifies that a signature is valid.",
+                    "details": "Validates a hash with the `Wallet` signature type.",
                     "params": { "hash": "Message hash that is signed.", "signature": "Proof of signing." },
-                    "return": "Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(\"isValidWalletSignature(bytes32,address,bytes)\"))"
+                    "return": "magicValue `bytes4(0xb0671381)` if the signature check succeeds."
                 }
             }
         },
-        "evm": { "bytecode": { "object": "0x" } }
+        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.11+commit.c082d0b4.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople"
+        }
     },
     "networks": {}
 }

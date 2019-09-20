@@ -1,7 +1,6 @@
 export {
     AssetProxyOwnerEventArgs,
     AssetProxyOwnerEvents,
-    AssetProxyOwnerAssetProxyRegistrationEventArgs,
     AssetProxyOwnerConfirmationTimeSetEventArgs,
     AssetProxyOwnerTimeLockChangeEventArgs,
     AssetProxyOwnerConfirmationEventArgs,

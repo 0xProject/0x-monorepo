@@ -5,38 +5,11 @@
         "abi": [
             {
                 "constant": false,
-                "inputs": [{ "name": "target", "type": "address" }],
-                "name": "addAuthorizedAddress",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{ "name": "target", "type": "address" }],
-                "name": "removeAuthorizedAddress",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{ "name": "target", "type": "address" }, { "name": "index", "type": "uint256" }],
-                "name": "removeAuthorizedAddressAtIndex",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "constant": false,
                 "inputs": [
-                    { "name": "assetData", "type": "bytes" },
-                    { "name": "from", "type": "address" },
-                    { "name": "to", "type": "address" },
-                    { "name": "amount", "type": "uint256" }
+                    { "internalType": "bytes", "name": "assetData", "type": "bytes" },
+                    { "internalType": "address", "name": "from", "type": "address" },
+                    { "internalType": "address", "name": "to", "type": "address" },
+                    { "internalType": "uint256", "name": "amount", "type": "uint256" }
                 ],
                 "name": "transferFrom",
                 "outputs": [],
@@ -48,54 +21,17 @@
                 "constant": true,
                 "inputs": [],
                 "name": "getProxyId",
-                "outputs": [{ "name": "", "type": "bytes4" }],
+                "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "pure",
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "getAuthorizedAddresses",
-                "outputs": [{ "name": "", "type": "address[]" }],
-                "payable": false,
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "constant": false,
-                "inputs": [{ "name": "newOwner", "type": "address" }],
-                "name": "transferOwnership",
-                "outputs": [],
-                "payable": false,
-                "stateMutability": "nonpayable",
                 "type": "function"
             }
         ],
         "devdoc": {
             "methods": {
-                "addAuthorizedAddress(address)": {
-                    "details": "Authorizes an address.",
-                    "params": { "target": "Address to authorize." }
-                },
-                "getAuthorizedAddresses()": {
-                    "details": "Gets all authorized addresses.",
-                    "return": "Array of authorized addresses."
-                },
                 "getProxyId()": {
                     "details": "Gets the proxy id associated with the proxy address.",
                     "return": "Proxy id."
-                },
-                "removeAuthorizedAddress(address)": {
-                    "details": "Removes authorizion of an address.",
-                    "params": { "target": "Address to remove authorization from." }
-                },
-                "removeAuthorizedAddressAtIndex(address,uint256)": {
-                    "details": "Removes authorizion of an address.",
-                    "params": {
-                        "index": "Index of target in authorities array.",
-                        "target": "Address to remove authorization from."
-                    }
                 },
                 "transferFrom(bytes,address,address,uint256)": {
                     "details": "Transfers assets. Either succeeds or throws.",
@@ -108,7 +44,31 @@
                 }
             }
         },
-        "evm": { "bytecode": { "object": "0x" } }
+        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.11+commit.c082d0b4.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "devdoc",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople"
+        }
     },
     "networks": {}
 }

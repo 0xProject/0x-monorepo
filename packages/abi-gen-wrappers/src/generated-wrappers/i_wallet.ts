@@ -29,7 +29,7 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class IWalletContract extends BaseContract {
     /**
-     * Verifies that a signature is valid.
+     * Validates a hash with the `Wallet` signature type.
      */
     public isValidSignature = {
         /**
@@ -38,7 +38,7 @@ export class IWalletContract extends BaseContract {
          * since they don't modify state.
          * @param hash Message hash that is signed.
          * @param signature Proof of signing.
-         * @returns Magic bytes4 value if the signature is valid.         Magic value is bytes4(keccak256(&quot;isValidWalletSignature(bytes32,address,bytes)&quot;))
+         * @returns magicValue &#x60;bytes4(0xb0671381)&#x60; if the signature check succeeds.
          */
         async callAsync(
             hash: string,
@@ -210,7 +210,7 @@ export class IWalletContract extends BaseContract {
                 name: 'isValidSignature',
                 outputs: [
                     {
-                        name: '',
+                        name: 'magicValue',
                         type: 'bytes4',
                     },
                 ],
