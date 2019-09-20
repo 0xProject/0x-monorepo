@@ -62,7 +62,6 @@
     "dependencies": {
         "@0x/abi-gen-wrappers": "^5.3.2",
         "@0x/assert": "^2.1.6",
-        "@0x/base-contract": "^5.4.0",
         "@0x/contract-addresses": "^3.2.0",
         "@0x/contract-artifacts": "^2.2.2",
         "@0x/json-schemas": "^4.0.2",

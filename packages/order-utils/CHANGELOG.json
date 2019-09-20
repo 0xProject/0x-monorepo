@@ -97,6 +97,10 @@
             {
                 "note": "Add `CumulativeRewardIntervalError`.",
                 "pr": 2154
+            },
+            {
+                "note": "Remove `validateOrderFillableOrThrowAsync`, `simpleValidateOrderFillableOrThrowAsync`, `validateMakerTransferThrowIfInvalidAsync`",
+                "pr": 2181
             }
         ]
     },
