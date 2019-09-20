@@ -42,6 +42,7 @@ import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
+import * as TestAssertStorageParams from '../generated-artifacts/TestAssertStorageParams.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
 import * as TestCumulativeRewardTracking from '../generated-artifacts/TestCumulativeRewardTracking.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
@@ -95,6 +96,7 @@ export const artifacts = {
     MixinVaultCore: MixinVaultCore as ContractArtifact,
     StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
+    TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
     TestCumulativeRewardTracking: TestCumulativeRewardTracking as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,

@@ -40,6 +40,7 @@ export * from '../generated-wrappers/read_only_proxy';
 export * from '../generated-wrappers/staking';
 export * from '../generated-wrappers/staking_pool_reward_vault';
 export * from '../generated-wrappers/staking_proxy';
+export * from '../generated-wrappers/test_assert_storage_params';
 export * from '../generated-wrappers/test_cobb_douglas';
 export * from '../generated-wrappers/test_cumulative_reward_tracking';
 export * from '../generated-wrappers/test_init_target';

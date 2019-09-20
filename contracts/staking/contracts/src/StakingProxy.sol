@@ -164,52 +164,13 @@ contract StakingProxy is
         return batchReturnData;
     }
 
-    /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
-    /// @param _stakingContract Address of staking contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _attachStakingContract(
-        address _stakingContract,
-        address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
-        address _zrxVaultAddress
-    )
-        private
-    {
-        // Attach the staking contract
-        stakingContract = readOnlyProxyCallee = _stakingContract;
-        emit StakingContractAttachedToProxy(_stakingContract);
-
-        // Call `init()` on the staking contract to initialize storage.
-        (bool didInitSucceed, bytes memory initReturnData) = stakingContract.delegatecall(
-            abi.encodeWithSelector(
-                IStorageInit(0).init.selector,
-                _wethProxyAddress,
-                _ethVaultAddress,
-                _rewardVaultAddress,
-                _zrxVaultAddress
-            )
-        );
-        if (!didInitSucceed) {
-            assembly {
-                revert(add(initReturnData, 0x20), mload(initReturnData))
-            }
-        }
-
-        // Assert initialized storage values are valid
-        _assertValidStorageParams();
-    }
-
     /// @dev Asserts that an epoch is between 5 and 30 days long.
-    //       Asserts that cobb douglas alpha value is between 0 and 1.
+    //       Asserts that 0 < cobb douglas alpha value <= 1.
     //       Asserts that a stake weight is <= 100%.
     //       Asserts that pools allow >= 1 maker.
     //       Asserts that all addresses are initialized.
     function _assertValidStorageParams()
-        private
+        internal
         view
     {
         // Epoch length must be between 5 and 30 days long
@@ -221,7 +182,7 @@ contract StakingProxy is
             ));
         }
 
-        // Alpha must be 0 < x < 1
+        // Alpha must be 0 < x <= 1
         uint32 _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
         if (cobbDouglasAlphaNumerator > _cobbDouglasAlphaDenominator || _cobbDouglasAlphaDenominator == 0) {
             LibRichErrors.rrevert(
@@ -274,5 +235,44 @@ contract StakingProxy is
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidZrxVaultAddress
             ));
         }
+    }
+
+    /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
+    /// @param _stakingContract Address of staking contract.
+    /// @param _wethProxyAddress The address that can transfer WETH for fees.
+    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _zrxVaultAddress Address of the ZrxVault contract.
+    function _attachStakingContract(
+        address _stakingContract,
+        address _wethProxyAddress,
+        address _ethVaultAddress,
+        address _rewardVaultAddress,
+        address _zrxVaultAddress
+    )
+        internal
+    {
+        // Attach the staking contract
+        stakingContract = readOnlyProxyCallee = _stakingContract;
+        emit StakingContractAttachedToProxy(_stakingContract);
+
+        // Call `init()` on the staking contract to initialize storage.
+        (bool didInitSucceed, bytes memory initReturnData) = stakingContract.delegatecall(
+            abi.encodeWithSelector(
+                IStorageInit(0).init.selector,
+                _wethProxyAddress,
+                _ethVaultAddress,
+                _rewardVaultAddress,
+                _zrxVaultAddress
+            )
+        );
+        if (!didInitSucceed) {
+            assembly {
+                revert(add(initReturnData, 0x20), mload(initReturnData))
+            }
+        }
+
+        // Assert initialized storage values are valid
+        _assertValidStorageParams();
     }
 }
