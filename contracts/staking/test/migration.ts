@@ -1,6 +1,6 @@
 import { blockchainTests, constants, expect, filterLogsToArguments, randomAddress } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
-import { BigNumber, OwnableRevertErrors, StringRevertError } from '@0x/utils';
+import { AuthorizableRevertErrors, BigNumber, StringRevertError } from '@0x/utils';
 
 import {
     artifacts,
@@ -16,13 +16,13 @@ import {
 import { constants as stakingConstants } from './utils/constants';
 
 blockchainTests('Migration tests', env => {
-    let ownerAddress: string;
-    let notOwnerAddress: string;
+    let authorizedAddress: string;
+    let notAuthorizedAddress: string;
 
     let stakingContract: StakingContract;
 
     before(async () => {
-        [ownerAddress, notOwnerAddress] = await env.getAccountAddressesAsync();
+        [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
         stakingContract = await StakingContract.deployFrom0xArtifactAsync(
             artifacts.Staking,
             env.provider,
@@ -48,7 +48,7 @@ blockchainTests('Migration tests', env => {
         }
 
         before(async () => {
-            [ownerAddress, notOwnerAddress] = await env.getAccountAddressesAsync();
+            [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
             initTargetContract = await TestInitTargetContract.deployFrom0xArtifactAsync(
                 artifacts.TestInitTarget,
                 env.provider,
@@ -64,7 +64,7 @@ blockchainTests('Migration tests', env => {
             await env.web3Wrapper.awaitTransactionMinedAsync(
                 await env.web3Wrapper.sendTransactionAsync({
                     ...env.txDefaults,
-                    from: ownerAddress,
+                    from: authorizedAddress,
                     to: revertAddress,
                     data: constants.NULL_BYTES,
                     value: new BigNumber(1),
@@ -76,7 +76,7 @@ blockchainTests('Migration tests', env => {
             const [senderAddress, thisAddress] = await initTargetContract.getInitState.callAsync({
                 to: proxyContract.address,
             });
-            expect(senderAddress).to.eq(ownerAddress);
+            expect(senderAddress).to.eq(authorizedAddress);
             expect(thisAddress).to.eq(proxyContract.address);
             const attachedAddress = await proxyContract.stakingContract.callAsync();
             expect(attachedAddress).to.eq(initTargetContract.address);
@@ -144,7 +144,7 @@ blockchainTests('Migration tests', env => {
                 proxyContract = await deployStakingProxyAsync();
             });
 
-            it('throws if not called by owner', async () => {
+            it('throws if not called by an authorized address', async () => {
                 const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
                     constants.NULL_ADDRESS,
@@ -152,10 +152,10 @@ blockchainTests('Migration tests', env => {
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                     {
-                        from: notOwnerAddress,
+                        from: notAuthorizedAddress,
                     },
                 );
-                const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
+                const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -283,17 +283,17 @@ blockchainTests('Migration tests', env => {
     });
 
     blockchainTests.resets('Staking.init()', async () => {
-        it('throws if not called by owner', async () => {
+        it('throws if not called by an authorized address', async () => {
             const tx = stakingContract.init.awaitTransactionSuccessAsync(
                 randomAddress(),
                 randomAddress(),
                 randomAddress(),
                 randomAddress(),
                 {
-                    from: notOwnerAddress,
+                    from: notAuthorizedAddress,
                 },
             );
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 

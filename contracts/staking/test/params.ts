@@ -1,6 +1,6 @@
 import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
-import { BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 
 import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
 
@@ -9,11 +9,11 @@ import { StakingParams } from './utils/types';
 
 blockchainTests('Configurable Parameters', env => {
     let testContract: MixinParamsContract;
-    let ownerAddress: string;
-    let notOwnerAddress: string;
+    let authorizedAddress: string;
+    let notAuthorizedAddress: string;
 
     before(async () => {
-        [ownerAddress, notOwnerAddress] = await env.getAccountAddressesAsync();
+        [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
         testContract = await MixinParamsContract.deployFrom0xArtifactAsync(
             artifacts.MixinParams,
             env.provider,
@@ -68,9 +68,9 @@ blockchainTests('Configurable Parameters', env => {
             expect(actual[9]).to.eq(_params.zrxVaultAddress);
         }
 
-        it('throws if not called by owner', async () => {
-            const tx = setParamsAndAssertAsync({}, notOwnerAddress);
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
+        it('throws if not called by an authorized address', async () => {
+            const tx = setParamsAndAssertAsync({}, notAuthorizedAddress);
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
