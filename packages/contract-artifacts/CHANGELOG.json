@@ -1,5 +1,33 @@
 [
     {
+        "timestamp": 1568744790,
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Update `IWallet` and `IValidator` to reflect Mainnet",
+                "pr": 2078
+            }
+        ],
+        "timestamp": 1566446343
+    },
+    {
         "version": "2.1.0",
         "changes": [
             {

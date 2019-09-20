@@ -1,5 +1,34 @@
 [
     {
+        "version": "4.2.1",
+        "changes": [
+            {
+                "note": "Redirect to `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Provide a default set of templates for code generation, used when --template and --partials are left unspecified",
+                "pr": 2082
+            }
+        ],
+        "timestamp": 1567521715
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

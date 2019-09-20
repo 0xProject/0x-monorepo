@@ -1,6 +1,6 @@
 [
     {
-        "version": "5.4.0",
+        "version": "5.5.0",
         "changes": [
             {
                 "note": "Automatically decode and throw rich reverts in `_throwIfRevertWithReasonCallResult`",
@@ -19,6 +19,35 @@
                 "pr": 1885
             }
         ]
+    },
+    {
+        "version": "5.4.0",
+        "changes": [
+            {
+                "note": "Add `evmExecAsync` to use local EVM instead of eth_call for pure functions",
+                "pr": 2108
+            }
+        ],
+        "timestamp": 1568744790
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "5.3.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "5.3.2",
+        "changes": [
+            {
+                "note": "Updated to ethereumjs-blockstream@^7.0.0",
+                "pr": 2089
+            }
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

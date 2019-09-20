@@ -1,10 +1,37 @@
 [
     {
-        "version": "1.1.13",
+        "version": "1.1.16",
         "changes": [
             {
                 "note": "Add `mintKnownFungibleTokensAsync()`, `isNonFungibleItemAsync()`, `isFungibleItemAsync()`, `getOwnerOfAsync()`, `getBalanceAsync()` to `Erc1155Wrapper`.",
                 "pr": 1819
+            }
+        ]
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "1.1.15",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "1.1.14",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "1.1.13",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

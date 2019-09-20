@@ -1,0 +1,246 @@
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:whitespace no-unbound-method no-trailing-whitespace
+// tslint:disable:no-unused-variable
+import { BaseContract{{#if events}},
+    EventCallback,
+    IndexedFilterValues,
+    SubscriptionManager{{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    BlockRange,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,{{#if events}}
+    LogWithDecodedArgs,{{/if}}
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
+import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
+import { SimpleContractArtifact } from '@0x/types';
+import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
+import * as ethers from 'ethers';
+// tslint:enable:no-unused-variable
+
+{{#if events}}
+export type {{contractName}}EventArgs =
+{{#each events}}
+    | {{@root.contractName}}{{name}}EventArgs{{#if @last}};{{/if}}
+{{/each}}
+
+export enum {{contractName}}Events {
+    {{#each events}}
+    {{name}} = '{{name}}',
+    {{/each}}
+}
+
+{{#each events}}
+{{> event}}
+
+{{/each}}
+{{/if}}
+
+/* istanbul ignore next */
+// tslint:disable:no-parameter-reassignment
+// tslint:disable-next-line:class-name
+export class {{contractName}}Contract extends BaseContract {
+{{#each methods}}
+    {{#if this.devdoc.details}}
+    /**
+     * {{formatDocstringForMethodTs this.devdoc.details}}
+     */
+    {{/if}}
+    public {{languageSpecificName}} = {
+        {{^this.constant}}
+        {{> method_tx contractName=../contractName}}
+        {{/this.constant}}
+        {{#ifEquals this.stateMutability "pure"}}
+        {{> method_call_pure contractName=../contractName}}
+        {{else}}
+        {{> method_call contractName=../contractName}}
+        {{/ifEquals}}
+        {{> method_abi_helper contractName=../contractName}}
+    };
+{{/each}}
+{{#if events}}private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
+{{/if}}public static async deployFrom0xArtifactAsync(
+        artifact: ContractArtifact | SimpleContractArtifact,
+        supportedProvider: SupportedProvider,
+        txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
+        if (artifact.compilerOutput === undefined) {
+            throw new Error('Compiler output not found in the artifact file');
+        }
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        const bytecode = artifact.compilerOutput.evm.bytecode.object;
+        const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        if (Object.keys(logDecodeDependencies) !== undefined) {
+            for (const key of Object.keys(logDecodeDependencies)) {
+                logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+            }
+        }
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, {{> params inputs=ctor.inputs}});
+    }
+    public static async deployAsync(
+        bytecode: string,
+        abi: ContractAbi,
+        supportedProvider: SupportedProvider,
+        txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
+        {{> typed_params inputs=ctor.inputs}}
+    ): Promise<{{contractName}}Contract> {
+        assert.isHexString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        const constructorAbi = BaseContract._lookupConstructorAbi(abi);
+        [{{> params inputs=ctor.inputs}}] = BaseContract._formatABIDataItemList(
+            constructorAbi.inputs,
+            [{{> params inputs=ctor.inputs}}],
+            BaseContract._bigNumberToString,
+        );
+        const iface = new ethers.utils.Interface(abi);
+        const deployInfo = iface.deployFunction;
+        const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
+        const web3Wrapper = new Web3Wrapper(provider);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {data: txData},
+            txDefaults,
+            web3Wrapper.estimateGasAsync.bind(web3Wrapper),
+        );
+        const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        logUtils.log(`transactionHash: ${txHash}`);
+        const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
+        logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new {{contractName}}Contract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
+        return contractInstance;
+    }
+
+
+    /**
+     * @returns      The contract ABI
+     */
+    public static ABI(): ContractAbi {
+        const abi = [
+            {{#each ABI}}
+            { {{#if (isDefined this.constant)}}
+                constant: {{constant}},{{/if}}{{#if (isDefined this.anonymous)}}
+                anonymous: {{anonymous}},{{/if}}
+                inputs: [
+                    {{#each inputs}}
+                    {{> abi_type this}}
+                    {{/each}}
+                ],{{#this.name}}
+                name: '{{{this}}}',{{/this.name}}
+                outputs: [
+                    {{#each outputs}}
+                    {{> abi_type this}}
+                    {{/each}}
+                ],{{#if (isDefined this.payable)}}
+                payable: {{payable}},{{/if}}{{#this.stateMutability}}
+                stateMutability: '{{this}}',{{/this.stateMutability}}
+                type: '{{type}}',
+            },
+            {{/each}}
+        ] as ContractAbi;
+        return abi;
+    }{{#if events}}
+    /**
+     * Subscribe to an event type emitted by the {{contractName}} contract.
+     * @param eventName The {{contractName}} contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @return Subscription token used later to unsubscribe
+     */
+    public subscribe<ArgsType extends {{contractName}}EventArgs>(
+        eventName: {{contractName}}Events,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
+        blockPollingIntervalMs?: number,
+    ): string {
+        assert.doesBelongToStringEnum('eventName', eventName, {{contractName}}Events);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
+            this.address,
+            eventName,
+            indexFilterValues,
+            {{contractName}}Contract.ABI(),
+            callback,
+            isVerbose,
+            blockPollingIntervalMs,
+        );
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param subscriptionToken Subscription token returned by `subscribe()`
+     */
+    public unsubscribe(subscriptionToken: string): void {
+        this._subscriptionManager.unsubscribe(subscriptionToken);
+    }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public unsubscribeAll(): void {
+        this._subscriptionManager.unsubscribeAll();
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param eventName The {{contractName}} contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
+     */
+    public async getLogsAsync<ArgsType extends {{contractName}}EventArgs>(
+        eventName: {{contractName}}Events,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        assert.doesBelongToStringEnum('eventName', eventName, {{contractName}}Events);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
+            this.address,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            {{contractName}}Contract.ABI(),
+        );
+        return logs;
+    }{{/if}}
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
+        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);{{#if events}}
+        this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
+            {{contractName}}Contract.ABI(),
+            this._web3Wrapper,
+        );{{/if}}
+    }
+} 
+
+// tslint:disable:max-file-line-count
+// tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
+// tslint:enable:trailing-comma whitespace no-trailing-whitespace

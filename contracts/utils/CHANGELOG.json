@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.2.2",
+        "version": "3.2.5",
         "changes": [
             {
                 "note": "Change ReentrancyGuard implementation to cheaper one",
@@ -57,6 +57,33 @@
             {
                 "note": "Added LibFractions",
                 "pr": 2118
+            }
+        ]
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "3.2.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "3.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "3.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

@@ -7,7 +7,6 @@
 # Website
 packages/asset-buyer/  @BMillman19 @fragosti @steveklebanoff
 packages/instant/  @BMillman19 @fragosti @steveklebanoff
-packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
 
 # Dev tools & setup
 .circleci/ @LogvinovLeon

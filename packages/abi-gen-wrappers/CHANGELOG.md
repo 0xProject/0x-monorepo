@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.3.2 - _September 17, 2019_
+
+    * Redirect `callAsync` to use local EVM instead of eth_call for pure functions (#2108)
+
+## v5.3.1 - _September 3, 2019_
+
+    * Dependencies updated
+
+## v5.3.0 - _August 22, 2019_
+
+    * Added DevUtils (#2060)
+
 ## v5.2.0 - _August 8, 2019_
 
     * Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2018)

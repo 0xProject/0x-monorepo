@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.2 - _September 17, 2019_
+
+    * Removed dependency on @0x/order-utils (#2096)
+
+## v4.3.1 - _September 3, 2019_
+
+    * Dependencies updated
+
+## v4.3.0 - _August 22, 2019_
+
+    * Added DevUtils to migration script (#2060)
+
 ## v4.2.0 - _August 8, 2019_
 
     * Added StaticCallAssetProxy and ERC1155AssetProxy (#2021)

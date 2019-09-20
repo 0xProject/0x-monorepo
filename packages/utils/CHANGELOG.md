@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.2 - _September 17, 2019_
+
+    * Dependencies updated
+
+## v4.5.1 - _September 3, 2019_
+
+    * Dependencies updated
+
 ## v4.5.0 - _August 8, 2019_
 
     * Updated to include `strictDecode` for decoding method arguments (#2018)

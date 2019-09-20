@@ -23,6 +23,10 @@ import {
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
+import Account from 'ethereumjs-account';
+import * as util from 'ethereumjs-util';
+import { default as VM } from 'ethereumjs-vm';
+import PStateManager from 'ethereumjs-vm/dist/state/promisified';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
@@ -34,6 +38,8 @@ export * from './types';
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }
+
+const ARBITRARY_PRIVATE_KEY = 'e331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dcffdd2270c0fd109';
 
 // tslint:disable: max-classes-per-file
 /**
@@ -74,6 +80,8 @@ export class BaseContract {
     public address: string;
     public contractName: string;
     public constructorArgs: any[] = [];
+    private _evmIfExists?: VM;
+    private _evmAccountIfExists?: Buffer;
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
@@ -174,6 +182,38 @@ export class BaseContract {
             }
         }
         return rawEncoded;
+    }
+    public async evmExecAsync(input: Buffer): Promise<string> {
+        const addressBuf = Buffer.from(this.address.substr(2), 'hex');
+        // should only run once, the first time it is called
+        if (this._evmIfExists === undefined) {
+            const vm = new VM({});
+            const psm = new PStateManager(vm.stateManager);
+
+            // create an account with 1 ETH
+            const accountPk = Buffer.from(ARBITRARY_PRIVATE_KEY, 'hex');
+            const accountAddress = util.privateToAddress(accountPk);
+            const account = new Account({ balance: 1e18 });
+            await psm.putAccount(accountAddress, account);
+
+            // 'deploy' the contract
+            const contractCode = await this._web3Wrapper.getContractCodeAsync(this.address);
+            const deployedBytecode = Buffer.from(contractCode.substr(2), 'hex');
+            await psm.putContractCode(addressBuf, deployedBytecode);
+
+            // save for later
+            this._evmIfExists = vm;
+            this._evmAccountIfExists = accountAddress;
+        }
+        const result = await this._evmIfExists.runCall({
+            to: addressBuf,
+            caller: this._evmAccountIfExists,
+            origin: this._evmAccountIfExists,
+            data: input,
+        });
+
+        const hexReturnValue = `0x${result.execResult.returnValue.toString('hex')}`;
+        return hexReturnValue;
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];

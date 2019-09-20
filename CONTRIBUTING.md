@@ -29,9 +29,9 @@ ALL PRs should be opened against `development`.
 
 Branch names should be prefixed with `fix`, `feature` or `refactor`.
 
--   e.g `fix/broken-wiki-link`
+-   e.g `fix/missing-import`
 -   If the PR only edits a single package, add it's name too
-    -   e.g `fix/website/broken-wiki-link`
+    -   e.g `fix/subproviders/missing-import`
 
 ### CHANGELOGs
 
@@ -55,7 +55,7 @@ If an entry without a `timestamp` already exists, this means other changes have 
 
 ### Development Tooling
 
-We strongly recommend you use the [VSCode](https://code.visualstudio.com/) text editor since most of our code is written in Typescript and it offers amazing support for the language.
+We strongly recommend you use the [VSCode](https://code.visualstudio.com/) text editor since most of our code is written in TypeScript and it offers amazing support for the language.
 
 #### Linter
 
@@ -89,7 +89,7 @@ A few of our coding conventions are not yet enforced by the linter/auto-formatte
 1.  Do not import from a project's `index.ts` (e.g import { Token } from '../src';). Always import from the source file itself.
 1.  Generic error variables should be named `err` instead of `e` or `error`.
 1.  If you _must_ cast a variable to any - try to type it back as fast as possible. (e.g., `const cw = ((zeroEx as any)._contractWrappers as ContractWrappers);`). This ensures subsequent code is type-safe.
-1.  Our enum conventions coincide with the recommended Typescript conventions, using capitalized keys, and all-caps snake-case values. Eg `GetStats = 'GET_STATS'`
+1.  Our enum conventions coincide with the recommended TypeScript conventions, using capitalized keys, and all-caps snake-case values. Eg `GetStats = 'GET_STATS'`
 1.  All public, exported methods/functions/classes must have associated Javadoc-style comments.
 
 ### Fix `submit-coverage` CI failure

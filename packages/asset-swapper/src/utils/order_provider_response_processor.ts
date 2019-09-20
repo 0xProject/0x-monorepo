@@ -1,4 +1,4 @@
-import { OrderAndTraderInfo, OrderStatus, OrderValidatorContract } from '@0x/contract-wrappers';
+import { OrderStatus, OrderValidatorContract } from '@0x/contract-wrappers';
 import { orderCalculationUtils, sortingUtils } from '@0x/order-utils';
 import { RemainingFillableCalculator } from '@0x/order-utils/lib/src/remaining_fillable_calculator';
 import { SignedOrder } from '@0x/types';
@@ -7,7 +7,6 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    OrderProviderRequest,
     OrderProviderResponse,
     OrdersAndFillableAmounts,
     SignedOrderWithRemainingFillableMakerAssetAmount,
@@ -15,8 +14,7 @@ import {
 } from '../types';
 
 export const orderProviderResponseProcessor = {
-    throwIfInvalidResponse(response: OrderProviderResponse, request: OrderProviderRequest): void {
-        const { makerAssetData, takerAssetData } = request;
+    throwIfInvalidResponse(response: OrderProviderResponse, makerAssetData: string, takerAssetData: string): void {
         _.forEach(response.orders, order => {
             if (order.makerAssetData !== makerAssetData || order.takerAssetData !== takerAssetData) {
                 throw new Error(SwapQuoterError.InvalidOrderProviderResponse);
@@ -27,7 +25,7 @@ export const orderProviderResponseProcessor = {
      * Take the responses for the target orders to buy and fee orders and process them.
      * Processing includes:
      * - Drop orders that are expired or not open orders (null taker address)
-     * - If shouldValidateOnChain, attempt to grab fillable amounts from on-chain otherwise assume completely fillable
+     * - If an orderValidator is provided, attempt to grab fillable amounts from on-chain otherwise assume completely fillable
      * - Sort by rate
      */
     async processAsync(
@@ -51,8 +49,8 @@ export const orderProviderResponseProcessor = {
                     filteredOrders,
                     takerAddresses,
                 );
-                const ordersAndTradersInfo: OrderAndTraderInfo[] = ordersInfo.map((orderInfo, index) => {
-                    const singleOrderAndTraderInfo: OrderAndTraderInfo = {
+                const ordersAndTradersInfo: any[] = ordersInfo.map((orderInfo, index) => {
+                    const singleOrderAndTraderInfo = {
                         orderInfo,
                         traderInfo: tradersInfo[index],
                     };
@@ -105,7 +103,7 @@ function filterOutExpiredAndNonOpenOrders(
  */
 function getValidOrdersWithRemainingFillableMakerAssetAmountsFromOnChain(
     inputOrders: SignedOrder[],
-    ordersAndTradersInfo: OrderAndTraderInfo[],
+    ordersAndTradersInfo: any[],
     isMakerAssetZrxToken: boolean,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     // iterate through the input orders and find the ones that are still fillable

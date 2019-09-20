@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.4.2",
+        "version": "2.4.4",
         "changes": [
             {
                 "note": "Add `OrderStatus` type",
@@ -10,10 +10,27 @@
                 "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
                 "pr": 2031
             },
-            ,
             {
                 "note": "Add status types for Staking contracts",
                 "pr": 1910
+            }
+        ]
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "2.4.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.4.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

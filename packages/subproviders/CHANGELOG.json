@@ -1,12 +1,31 @@
 [
     {
+        "timestamp": 1568744790,
+        "version": "5.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "5.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "5.0.2",
         "changes": [
             {
                 "note": "Updated `MetamaskSubprovider` to use `personal_sign` instead of `eth_sign` to support proxied hardware wallets.",
                 "pr": 2054
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

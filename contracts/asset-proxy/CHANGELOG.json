@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.2.0",
+        "version": "3.0.0",
         "changes": [
             {
                 "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
@@ -17,6 +17,33 @@
             {
                 "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
                 "pr": 1910
+            }
+        ]
+    },
+    {
+        "timestamp": 1568744790,
+        "version": "2.2.8",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "2.2.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1566446343,
+        "version": "2.2.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
             }
         ]
     },

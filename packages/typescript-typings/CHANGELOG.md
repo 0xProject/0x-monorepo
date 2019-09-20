@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _September 17, 2019_
+
+    * Add declaration for `ethereumjs-vm` (#2108)
+
+## v4.2.5 - _September 3, 2019_
+
+    * Dependencies updated
+
 ## v4.2.4 - _July 24, 2019_
 
     * Dependencies updated

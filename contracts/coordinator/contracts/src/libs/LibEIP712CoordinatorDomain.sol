@@ -44,7 +44,7 @@ contract LibEIP712CoordinatorDomain is
         public
     {
         address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
-        EIP712_COORDINATOR_DOMAIN_HASH = _hashEIP712Domain(
+        EIP712_COORDINATOR_DOMAIN_HASH = LibEIP712.hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
@@ -61,6 +61,6 @@ contract LibEIP712CoordinatorDomain is
         view
         returns (bytes32 result)
     {
-        return _hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
+        return LibEIP712.hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
     }
 }

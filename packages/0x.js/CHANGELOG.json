@@ -1,7 +1,29 @@
 [
     {
+        "timestamp": 1568744790,
+        "version": "7.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1567521715,
+        "version": "7.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "7.0.0",
         "changes": [
+            {
+                "note": "Add optional `exchangeAddress` parameter to `signatureUtils.isValidSignatureAsync` to fix `Validator` type signatures.",
+                "pr": 2017
+            },
             {
                 "note": "Removed @0x/order-watcher"
             },
@@ -9,7 +31,8 @@
                 "note": "Update to latest @0x/contract-wrappers v11",
                 "pr": 2068
             }
-        ]
+        ],
+        "timestamp": 1566446343
     },
     {
         "timestamp": 1565296576,

@@ -19,11 +19,11 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/ICoordinatorSignatureValidator.sol";
 
 
 contract MixinSignatureValidator is
-    ISignatureValidator
+    ICoordinatorSignatureValidator
 {
     using LibBytes for bytes;
 
