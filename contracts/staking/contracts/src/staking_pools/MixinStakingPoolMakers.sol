@@ -177,7 +177,9 @@ contract MixinStakingPoolMakers is
         }
 
         // Is the pool already full?
-        if (pool.numberOfMakers == maximumMakersInPool) {
+        // NOTE: If maximumMakersInPool is decreased below the number of makers currently in a pool,
+        // the pool will no longer be able to add more makers.
+        if (pool.numberOfMakers >= maximumMakersInPool) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.PoolIsFull,
                 makerAddress,
