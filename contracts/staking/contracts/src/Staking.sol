@@ -62,7 +62,7 @@ contract Staking is
         address _zrxVaultAddress
     )
         external
-        onlyOwner
+        onlyAuthorized
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // to prevent accidentally clearing prior state.

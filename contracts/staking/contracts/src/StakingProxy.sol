@@ -90,7 +90,7 @@ contract StakingProxy is
         address _zrxVaultAddress
     )
         external
-        onlyOwner
+        onlyAuthorized
     {
         _attachStakingContract(
             _stakingContract,
@@ -105,7 +105,7 @@ contract StakingProxy is
     /// Note that this is callable only by this contract's owner.
     function detachStakingContract()
         external
-        onlyOwner
+        onlyAuthorized
     {
         stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
@@ -114,7 +114,7 @@ contract StakingProxy is
     /// @dev Set read-only mode (state cannot be changed).
     function setReadOnlyMode(bool readOnlyMode)
         external
-        onlyOwner
+        onlyAuthorized
     {
         if (readOnlyMode) {
             stakingContract = readOnlyProxy;

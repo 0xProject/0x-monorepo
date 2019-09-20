@@ -56,7 +56,7 @@ contract MixinParams is
         address _zrxVaultAddress
     )
         external
-        onlyOwner
+        onlyAuthorized
     {
         _setParams(
             _epochDurationInSeconds,
