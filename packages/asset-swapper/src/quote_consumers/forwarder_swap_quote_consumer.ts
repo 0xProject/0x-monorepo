@@ -185,7 +185,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const quoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, feePercentage);
 
-        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
+        const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee; // tslint:disable-line:no-unused-variable
 
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
@@ -201,8 +201,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
-                    feeOrders,
-                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {
@@ -216,8 +214,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.validateAndSendTransactionAsync(
                     orders,
                     orders.map(o => o.signature),
-                    feeOrders,
-                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {
