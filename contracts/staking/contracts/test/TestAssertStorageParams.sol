@@ -25,16 +25,16 @@ contract TestAssertStorageParams is
     StakingProxy
 {
     struct StorageParams {
-       uint256 epochDurationInSeconds;
-       uint32 rewardDelegatedStakeWeight;
-       uint256 minimumPoolStake;
-       uint256 maximumMakersInPool;
-       uint32 cobbDouglasAlphaNumerator;
-       uint32 cobbDouglasAlphaDenominator;
-       address wethProxyAddress;
-       address ethVaultAddress;
-       address rewardVaultAddress;
-       address zrxVaultAddress;
+        uint256 epochDurationInSeconds;
+        uint32 rewardDelegatedStakeWeight;
+        uint256 minimumPoolStake;
+        uint256 maximumMakersInPool;
+        uint32 cobbDouglasAlphaNumerator;
+        uint32 cobbDouglasAlphaDenominator;
+        address wethProxyAddress;
+        address ethVaultAddress;
+        address rewardVaultAddress;
+        address zrxVaultAddress;
     }
 
     constructor()

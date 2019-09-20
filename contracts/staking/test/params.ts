@@ -1,5 +1,4 @@
-import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
+import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 
 import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
