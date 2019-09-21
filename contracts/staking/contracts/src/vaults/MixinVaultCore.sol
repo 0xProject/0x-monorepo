@@ -74,7 +74,7 @@ contract MixinVaultCore is
     /// @dev Sets the vault owner and adds owner as an authorized address.
     constructor()
         public
-        Ownable()
+        Authorizable()
     {
         _addAuthorizedAddress(owner);
     }

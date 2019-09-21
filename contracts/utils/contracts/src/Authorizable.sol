@@ -24,6 +24,7 @@ import "./LibRichErrors.sol";
 import "./Ownable.sol";
 
 
+// solhint-disable no-empty-blocks
 contract Authorizable is
     Ownable,
     IAuthorizable
@@ -36,6 +37,12 @@ contract Authorizable is
 
     mapping (address => bool) public authorized;
     address[] public authorities;
+
+    /// @dev Initializes the `owner` address.
+    constructor()
+        public
+        Ownable()
+    {}
 
     /// @dev Authorizes an address.
     /// @param target Address to authorize.
