@@ -1,6 +1,7 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, describe, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts } from '../src';
@@ -72,10 +73,10 @@ blockchainTests.resets('Testing Rewards', env => {
         interface EndBalances {
             // staker 1
             stakerRewardVaultBalance_1?: BigNumber;
-            stakerEthVaultBalance_1?: BigNumber;
+            stakerEthBalance_1?: BigNumber;
             // staker 2
             stakerRewardVaultBalance_2?: BigNumber;
-            stakerEthVaultBalance_2?: BigNumber;
+            stakerEthBalance_2?: BigNumber;
             // operator
             operatorEthVaultBalance?: BigNumber;
             // undivided balance in reward pool
@@ -88,30 +89,30 @@ blockchainTests.resets('Testing Rewards', env => {
                 stakerRewardVaultBalance_1:
                     _expectedEndBalances.stakerRewardVaultBalance_1 !== undefined
                         ? _expectedEndBalances.stakerRewardVaultBalance_1
-                        : ZERO,
-                stakerEthVaultBalance_1:
-                    _expectedEndBalances.stakerEthVaultBalance_1 !== undefined
-                        ? _expectedEndBalances.stakerEthVaultBalance_1
-                        : ZERO,
+                        : constants.ZERO_AMOUNT,
+                stakerEthBalance_1:
+                    _expectedEndBalances.stakerEthBalance_1 !== undefined
+                        ? _expectedEndBalances.stakerEthBalance_1
+                        : await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner()),
                 // staker 2
                 stakerRewardVaultBalance_2:
                     _expectedEndBalances.stakerRewardVaultBalance_2 !== undefined
                         ? _expectedEndBalances.stakerRewardVaultBalance_2
-                        : ZERO,
-                stakerEthVaultBalance_2:
-                    _expectedEndBalances.stakerEthVaultBalance_2 !== undefined
-                        ? _expectedEndBalances.stakerEthVaultBalance_2
-                        : ZERO,
+                        : constants.ZERO_AMOUNT,
+                stakerEthBalance_2:
+                    _expectedEndBalances.stakerEthBalance_2 !== undefined
+                        ? _expectedEndBalances.stakerEthBalance_2
+                        : await env.web3Wrapper.getBalanceInWeiAsync(stakers[1].getOwner()),
                 // operator
                 operatorEthVaultBalance:
                     _expectedEndBalances.operatorEthVaultBalance !== undefined
                         ? _expectedEndBalances.operatorEthVaultBalance
-                        : ZERO,
+                        : constants.ZERO_AMOUNT,
                 // undivided balance in reward pool
                 poolRewardVaultBalance:
                     _expectedEndBalances.poolRewardVaultBalance !== undefined
                         ? _expectedEndBalances.poolRewardVaultBalance
-                        : ZERO,
+                        : constants.ZERO_AMOUNT,
             };
             const finalEndBalancesAsArray = await Promise.all([
                 // staker 1
@@ -119,13 +120,13 @@ blockchainTests.resets('Testing Rewards', env => {
                     poolId,
                     stakers[0].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[0].getOwner()),
+                env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner()),
                 // staker 2
                 stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator.callAsync(
                     poolId,
                     stakers[1].getOwner(),
                 ),
-                stakingApiWrapper.ethVaultContract.balanceOf.callAsync(stakers[1].getOwner()),
+                env.web3Wrapper.getBalanceInWeiAsync(stakers[1].getOwner()),
                 // operator
                 stakingApiWrapper.ethVaultContract.balanceOf.callAsync(poolOperator),
                 // undivided balance in reward pool
@@ -134,14 +135,14 @@ blockchainTests.resets('Testing Rewards', env => {
             expect(finalEndBalancesAsArray[0], 'stakerRewardVaultBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_1,
             );
-            expect(finalEndBalancesAsArray[1], 'stakerEthVaultBalance_1').to.be.bignumber.equal(
-                expectedEndBalances.stakerEthVaultBalance_1,
+            expect(finalEndBalancesAsArray[1], 'stakerEthBalance_1').to.be.bignumber.equal(
+                expectedEndBalances.stakerEthBalance_1,
             );
             expect(finalEndBalancesAsArray[2], 'stakerRewardVaultBalance_2').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardVaultBalance_2,
             );
-            expect(finalEndBalancesAsArray[3], 'stakerEthVaultBalance_2').to.be.bignumber.equal(
-                expectedEndBalances.stakerEthVaultBalance_2,
+            expect(finalEndBalancesAsArray[3], 'stakerEthBalance_2').to.be.bignumber.equal(
+                expectedEndBalances.stakerEthBalance_2,
             );
             expect(finalEndBalancesAsArray[4], 'operatorEthVaultBalance').to.be.bignumber.equal(
                 expectedEndBalances.operatorEthVaultBalance,
@@ -151,8 +152,8 @@ blockchainTests.resets('Testing Rewards', env => {
             );
         };
         const payProtocolFeeAndFinalize = async (_fee?: BigNumber) => {
-            const fee = _fee !== undefined ? _fee : ZERO;
-            if (!fee.eq(ZERO)) {
+            const fee = _fee !== undefined ? _fee : constants.ZERO_AMOUNT;
+            if (!fee.eq(constants.ZERO_AMOUNT)) {
                 await stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
                     poolOperator,
                     takerAddress,
@@ -162,7 +163,6 @@ blockchainTests.resets('Testing Rewards', env => {
             }
             await finalizer.finalizeAsync([{ reward: fee, poolId }]);
         };
-        const ZERO = new BigNumber(0);
         it('Reward balance should be zero if not delegated', async () => {
             // sanity balances - all zero
             await validateEndBalances({});
@@ -384,57 +384,81 @@ blockchainTests.resets('Testing Rewards', env => {
                 membersRewardVaultBalance: rewardForOnlyFirstDelegator.plus(totalSharedRewards),
             });
         });
-        it('Should send existing rewards from reward vault to eth vault correctly when undelegating stake', async () => {
+        it('Should send existing rewards from reward vault to delegator correctly when undelegating stake', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // earn reward
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
             // undelegate (moves delegator's from the transient reward vault into the eth vault)
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // sanity check final balances
             await validateEndBalances({
-                stakerRewardVaultBalance_1: ZERO,
-                stakerEthVaultBalance_1: reward,
+                stakerRewardVaultBalance_1: constants.ZERO_AMOUNT,
+                stakerEthBalance_1: initialStakerEthBalance.plus(reward).minus(gasFeePaid),
             });
         });
-        it('Should send existing rewards from reward vault to eth vault correctly when delegating more stake', async () => {
+        it('Should send existing rewards from reward vault to delegator correctly when delegating more stake', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // earn reward
-            const reward = toBaseUnitAmount(10);
+            const reward = toBaseUnitAmount(1);
             await payProtocolFeeAndFinalize(reward);
             // add more stake
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // sanity check final balances
             await validateEndBalances({
-                stakerRewardVaultBalance_1: ZERO,
-                stakerEthVaultBalance_1: reward,
+                stakerRewardVaultBalance_1: constants.ZERO_AMOUNT,
+                stakerEthBalance_1: initialStakerEthBalance.plus(reward).minus(gasFeePaid),
             });
         });
         it('Should continue earning rewards after adding more stake and progressing several epochs', async () => {
@@ -483,27 +507,37 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should stop collecting rewards after undelegating', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const rewardNotForDelegator = toBaseUnitAmount(7);
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // earn reward
             await payProtocolFeeAndFinalize(rewardForDelegator);
 
             // undelegate stake and finalize epoch
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
 
             await payProtocolFeeAndFinalize();
 
@@ -512,11 +546,16 @@ blockchainTests.resets('Testing Rewards', env => {
 
             // sanity check final balances
             await validateEndBalances({
-                stakerEthVaultBalance_1: rewardForDelegator,
+                stakerEthBalance_1: initialStakerEthBalance.plus(rewardForDelegator).minus(gasFeePaid),
                 operatorEthVaultBalance: rewardNotForDelegator,
             });
         });
         it('Should stop collecting rewards after undelegating, after several epochs', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const rewardsNotForDelegator = [
@@ -533,22 +572,28 @@ blockchainTests.resets('Testing Rewards', env => {
                 }),
             );
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // earn reward
             await payProtocolFeeAndFinalize(rewardForDelegator);
             // undelegate stake and finalize epoch
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             await payProtocolFeeAndFinalize();
             // this should not go do the delegator
             for (const reward of rewardsNotForDelegator) {
@@ -556,111 +601,148 @@ blockchainTests.resets('Testing Rewards', env => {
             }
             // sanity check final balances
             await validateEndBalances({
-                stakerEthVaultBalance_1: rewardForDelegator,
+                stakerEthBalance_1: initialStakerEthBalance.plus(rewardForDelegator).minus(gasFeePaid),
                 operatorEthVaultBalance: totalRewardsNotForDelegator,
             });
         });
         it('Should collect fees correctly when leaving and returning to a pool', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const rewardsForDelegator = [toBaseUnitAmount(10), toBaseUnitAmount(15)];
             const rewardNotForDelegator = toBaseUnitAmount(7);
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // earn reward
             await payProtocolFeeAndFinalize(rewardsForDelegator[0]);
             // undelegate stake and finalize epoch
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             await payProtocolFeeAndFinalize();
             // this should not go do the delegator
             await payProtocolFeeAndFinalize(rewardNotForDelegator);
             // delegate stake and go to next epoch
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             await payProtocolFeeAndFinalize();
             // this reward should go to delegator
             await payProtocolFeeAndFinalize(rewardsForDelegator[1]);
             // sanity check final balances
             await validateEndBalances({
                 stakerRewardVaultBalance_1: rewardsForDelegator[1],
-                stakerEthVaultBalance_1: rewardsForDelegator[0],
+                stakerEthBalance_1: initialStakerEthBalance.plus(rewardsForDelegator[0]).minus(gasFeePaid),
                 operatorEthVaultBalance: rewardNotForDelegator,
                 poolRewardVaultBalance: rewardsForDelegator[1],
             });
         });
         it('Should collect fees correctly when re-delegating after un-delegating', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // Note - there are two ranges over which payouts are computed (see _computeRewardBalanceOfDelegator).
             // This triggers the first range (rewards for `delegatedStake.currentEpoch`), but not the second.
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // undelegate stake and finalize epoch
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // this should go to the delegator
             await payProtocolFeeAndFinalize(rewardForDelegator);
             // delegate stake ~ this will result in a payout where rewards are computed on
             // the balance's `currentEpochBalance` field but not the `nextEpochBalance` field.
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // sanity check final balances
             await validateEndBalances({
-                stakerRewardVaultBalance_1: ZERO,
-                stakerEthVaultBalance_1: rewardForDelegator,
-                operatorEthVaultBalance: ZERO,
-                poolRewardVaultBalance: ZERO,
+                stakerRewardVaultBalance_1: constants.ZERO_AMOUNT,
+                stakerEthBalance_1: initialStakerEthBalance.plus(rewardForDelegator).minus(gasFeePaid),
+                operatorEthVaultBalance: constants.ZERO_AMOUNT,
+                poolRewardVaultBalance: constants.ZERO_AMOUNT,
             });
         });
         it('Should withdraw delegator rewards to eth vault when calling `syncDelegatorRewards`', async () => {
+            // Get initial staker balance
+            const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
+            let gasFeePaid = constants.ZERO_AMOUNT;
+            let txReceipt: TransactionReceiptWithDecodedLogs;
+
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
-            await stakers[0].stakeAsync(stakeAmount);
-            await stakers[0].moveStakeAsync(
+            txReceipt = await stakers[0].stakeAsync(stakeAmount);
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
+            txReceipt = await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Active),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // this should go to the delegator
             await payProtocolFeeAndFinalize(rewardForDelegator);
-            await stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(poolId, {
+            txReceipt = await stakingApiWrapper.stakingContract.withdrawFromPool.awaitTransactionSuccessAsync(poolId, {
                 from: stakers[0].getOwner(),
             });
+            gasFeePaid = gasFeePaid.plus(txReceipt.gasUsed * constants.DEFAULT_GAS_PRICE);
+
             // sanity check final balances
             await validateEndBalances({
-                stakerRewardVaultBalance_1: ZERO,
-                stakerEthVaultBalance_1: rewardForDelegator,
-                operatorEthVaultBalance: ZERO,
-                poolRewardVaultBalance: ZERO,
+                stakerRewardVaultBalance_1: constants.ZERO_AMOUNT,
+                stakerEthBalance_1: initialStakerEthBalance.plus(rewardForDelegator).minus(gasFeePaid),
+                operatorEthVaultBalance: constants.ZERO_AMOUNT,
+                poolRewardVaultBalance: constants.ZERO_AMOUNT,
             });
         });
     });

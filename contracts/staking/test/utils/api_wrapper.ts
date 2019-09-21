@@ -135,7 +135,7 @@ export class StakingApiWrapper {
                 from: ownerAddress,
                 to: stakingProxyContract.address,
                 gas: 3e6,
-                gasPrice: 0,
+                gasPrice: constants.DEFAULT_GAS_PRICE,
             },
             logDecoderDependencies,
         );

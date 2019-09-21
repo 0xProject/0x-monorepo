@@ -1,5 +1,6 @@
 import { expect } from '@0x/contracts-test-utils';
 import { BigNumber, RevertError } from '@0x/utils';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { StakingApiWrapper } from '../utils/api_wrapper';
@@ -35,7 +36,7 @@ export class StakerActor extends BaseActor {
         to: StakeInfo,
         amount: BigNumber,
         revertError?: RevertError,
-    ): Promise<void> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         const initBalances = await this._getBalancesAsync();
         // move stake
@@ -48,9 +49,8 @@ export class StakerActor extends BaseActor {
         );
         if (revertError !== undefined) {
             await expect(txReceiptPromise, 'expected revert error').to.revertWith(revertError);
-            return;
         }
-        await txReceiptPromise;
+        const txReceipt = await txReceiptPromise;
         // Calculate the expected stake amount.
         const expectedBalances = await this._calculateExpectedBalancesAfterMoveAsync(
             from,
@@ -64,9 +64,10 @@ export class StakerActor extends BaseActor {
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(
             initZrxBalanceOfVault.plus(amount),
         );
+        return txReceipt;
     }
 
-    public async stakeAsync(amount: BigNumber, revertError?: RevertError): Promise<void> {
+    public async stakeAsync(amount: BigNumber, revertError?: RevertError): Promise<TransactionReceiptWithDecodedLogs> {
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         const initBalances = await this._getBalancesAsync();
         // deposit stake
@@ -75,9 +76,8 @@ export class StakerActor extends BaseActor {
         });
         if (revertError !== undefined) {
             await expect(txReceiptPromise, 'expected revert error').to.revertWith(revertError);
-            return;
         }
-        await txReceiptPromise;
+        const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
         const expectedBalances = await this._calculateExpectedBalancesAfterStakeAsync(amount, initBalances);
@@ -87,9 +87,13 @@ export class StakerActor extends BaseActor {
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(
             initZrxBalanceOfVault.plus(amount),
         );
+        return txReceipt;
     }
 
-    public async unstakeAsync(amount: BigNumber, revertError?: RevertError): Promise<void> {
+    public async unstakeAsync(
+        amount: BigNumber,
+        revertError?: RevertError,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         const initBalances = await this._getBalancesAsync();
         // deposit stake
@@ -98,9 +102,8 @@ export class StakerActor extends BaseActor {
         });
         if (revertError !== undefined) {
             await expect(txReceiptPromise, 'expected revert error').to.revertWith(revertError);
-            return;
         }
-        await txReceiptPromise;
+        const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
         const expectedBalances = initBalances;
@@ -115,6 +118,7 @@ export class StakerActor extends BaseActor {
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(
             initZrxBalanceOfVault.minus(amount),
         );
+        return txReceipt;
     }
 
     public async moveStakeAsync(
@@ -122,7 +126,7 @@ export class StakerActor extends BaseActor {
         to: StakeInfo,
         amount: BigNumber,
         revertError?: RevertError,
-    ): Promise<void> {
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         // Cache Initial Balances.
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         // Calculate the expected outcome after the move.
@@ -136,28 +140,29 @@ export class StakerActor extends BaseActor {
         );
         if (revertError !== undefined) {
             await expect(txReceiptPromise).to.revertWith(revertError);
-            return;
         }
-        await txReceiptPromise;
+        const txReceipt = await txReceiptPromise;
         // check balances
         await this._assertBalancesAsync(expectedBalances);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(initZrxBalanceOfVault);
+        return txReceipt;
     }
 
-    public async goToNextEpochAsync(): Promise<void> {
+    public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         // cache balances
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         const initBalances = await this._getBalancesAsync();
         // go to next epoch
-        await this._stakingApiWrapper.utils.skipToNextEpochAsync();
+        const txReceipt = await this._stakingApiWrapper.utils.skipToNextEpochAsync();
         // check balances
         const expectedBalances = this._getNextEpochBalances(initBalances);
         await this._assertBalancesAsync(expectedBalances);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
         expect(finalZrxBalanceOfVault, 'final balance of zrx vault').to.be.bignumber.equal(initZrxBalanceOfVault);
+        return txReceipt;
     }
     private _getNextEpochBalances(balances: StakeBalances): StakeBalances {
         const nextBalances = _.cloneDeep(balances);
