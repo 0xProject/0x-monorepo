@@ -709,7 +709,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 poolRewardVaultBalance: constants.ZERO_AMOUNT,
             });
         });
-        it('Should withdraw delegator rewards to eth vault when calling `syncDelegatorRewards`', async () => {
+        it('Should withdraw delegator rewards to delegator when calling `withdrawFromPool`', async () => {
             // Get initial staker balance
             const initialStakerEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(stakers[0].getOwner());
             let gasFeePaid = constants.ZERO_AMOUNT;
