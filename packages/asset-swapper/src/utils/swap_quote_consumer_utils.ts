@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     ExtensionContractType,
-    SmartSwapQuoteGetOutputOpts,
+    GetExtensionContractTypeOpts,
     SwapQuote,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
@@ -83,7 +83,7 @@ export const swapQuoteConsumerUtils = {
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
         provider: Provider,
-        opts: Partial<SmartSwapQuoteGetOutputOpts>,
+        opts: Partial<GetExtensionContractTypeOpts>,
     ): Promise<ExtensionContractType> {
         const wethAssetData = assetDataUtils.encodeERC20AssetData(contractWrappers.contractAddresses.etherToken);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
