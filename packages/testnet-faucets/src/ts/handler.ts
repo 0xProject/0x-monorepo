@@ -174,13 +174,18 @@ export class Handler {
             makerAssetData,
             takerAssetData,
             salt: generatePseudoRandomSalt(),
-            exchangeAddress: networkConfig.contractWrappers.exchange.address,
+            makerFeeAssetData: makerAssetData,
+            takerFeeAssetData: takerAssetData,
             feeRecipientAddress: NULL_ADDRESS,
             senderAddress: NULL_ADDRESS,
             expirationTimeSeconds: new BigNumber(Date.now() + FIVE_DAYS_IN_MS)
                 // tslint:disable-next-line:custom-no-magic-numbers
                 .div(1000)
                 .integerValue(BigNumber.ROUND_FLOOR),
+            domain: {
+                verifyingContractAddress: networkConfig.contractWrappers.exchange.address,
+                chainId: networkConfig.networkId,
+            },
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignHashAsync(
