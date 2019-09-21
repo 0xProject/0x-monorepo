@@ -1,10 +1,9 @@
 import { BlockchainTestsEnvironment, constants, expect, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import { DecodedLogArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { DecodedLogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TestCumulativeRewardTrackingContract } from '../../generated-wrappers/test_cumulative_reward_tracking';
-import { artifacts } from '../../src';
+import { artifacts, TestCumulativeRewardTrackingContract, IStakingEvents } from '../../src';
 
 import { StakingApiWrapper } from './api_wrapper';
 import { toBaseUnitAmount } from './number_utils';
@@ -118,20 +117,21 @@ export class CumulativeRewardTrackingSimulation {
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);
     }
 
-    private async _executeActionsAsync(actions: TestAction[]): Promise<DecodedLogArgs[]> {
-        let logs: DecodedLogArgs[] = [];
+    private async _executeActionsAsync(actions: TestAction[]): Promise<Array<DecodedLogEntry<any>>> {
+        const combinedLogs = [] as Array<DecodedLogEntry<any>>;
         for (const action of actions) {
-            let txReceipt: TransactionReceiptWithDecodedLogs;
+            let receipt: TransactionReceiptWithDecodedLogs;
+            let logs = [] as DecodedLogEntry<any>;
             switch (action) {
                 case TestAction.Finalize:
-                    txReceipt = await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
+                    logs = await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
                     break;
 
                 case TestAction.Delegate:
                     await this._stakingApiWrapper.stakingContract.stake.sendTransactionAsync(this._amountToStake, {
                         from: this._staker,
                     });
-                    txReceipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
                         new StakeInfo(StakeStatus.Active),
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
                         this._amountToStake,
@@ -140,7 +140,7 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.Undelegate:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
                         new StakeInfo(StakeStatus.Active),
                         this._amountToStake,
@@ -149,7 +149,7 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.PayProtocolFee:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
                         this._poolOperator,
                         this._takerAddress,
                         this._protocolFeeAmount,
@@ -158,12 +158,12 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.CreatePool:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
                         0,
                         true,
                         { from: this._poolOperator },
                     );
-                    const createStakingPoolLog = txReceipt.logs[0];
+                    const createStakingPoolLog = logs[0];
                     // tslint:disable-next-line no-unnecessary-type-assertion
                     this._poolId = (createStakingPoolLog as DecodedLogArgs).args.poolId;
                     break;
@@ -171,8 +171,8 @@ export class CumulativeRewardTrackingSimulation {
                 default:
                     throw new Error('Unrecognized test action');
             }
-            logs = logs.concat(txReceipt.logs);
+            combinedLogs.splice(combinedLogs.length - 1, 0, logs);
         }
-        return logs;
+        return combinedLogs;
     }
 }

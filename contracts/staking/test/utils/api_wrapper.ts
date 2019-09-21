@@ -1,9 +1,9 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { BlockchainTestsEnvironment, constants, filterLogsToArguments, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BlockParamLiteral, ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { BlockParamLiteral, ContractArtifact, DecodedLogArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
@@ -17,6 +17,7 @@ import {
     StakingPoolRewardVaultContract,
     StakingProxyContract,
     TestCobbDouglasContract,
+    TestStakingContract,
     ZrxVaultContract,
 } from '../../src';
 
@@ -48,14 +49,20 @@ export class StakingApiWrapper {
             await this._web3Wrapper.mineBlockAsync();
         },
 
-        skipToNextEpochAndFinalizeAsync: async (): Promise<TransactionReceiptWithDecodedLogs> => {
+        skipToNextEpochAndFinalizeAsync: async (): Promise<DecodedLogArgs[]> => {
             await this.utils.fastForwardToNextEpochAsync();
             const endOfEpochInfo = await this.utils.endEpochAsync();
-            const receipt = await this.stakingContract.finalizePools.awaitTransactionSuccessAsync(
-                endOfEpochInfo.activePoolIds,
-            );
-            logUtils.log(`Finalization cost ${receipt.gasUsed} gas`);
-            return receipt;
+            let totalGasUsed = 0;
+            const allLogs = [] as LogEntry[];
+            for (const poolId of endOfEpochInfo.activePoolIds) {
+                const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(
+                    poolId,
+                );
+                totalGasUsed += receipt.gasUsed;
+                allLogs.splice(allLogs.length, 0, receipt.logs);
+            }
+            logUtils.log(`Finalization cost ${totalGasUsed} gas`);
+            return allLogs;
         },
 
         endEpochAsync: async (): Promise<EndOfEpochInfo> => {
@@ -144,7 +151,7 @@ export class StakingApiWrapper {
             ) as any) as StakingParams;
         },
 
-        cobbDouglas: async (
+        cobbDouglasAsync: async (
             totalRewards: BigNumber,
             ownerFees: BigNumber,
             totalFees: BigNumber,
@@ -219,13 +226,23 @@ export async function deployAndConfigureContractsAsync(
     const [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, constants.DUMMY_TOKEN_DECIMALS);
     await erc20Wrapper.setBalancesAndAllowancesAsync();
 
+    // deploy WETH
+    const wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
+        erc20Artifacts.WETH9,
+        env.provider,
+        txDefaults,
+        artifacts,
+    );
+
     // deploy staking contract
-    const stakingContract = await StakingContract.deployFrom0xArtifactAsync(
-        customStakingArtifact !== undefined ? customStakingArtifact : artifacts.Staking,
+    const stakingContract = await TestStakingContract.deployFrom0xArtifactAsync(
+        customStakingArtifact !== undefined ? customStakingArtifact : artifacts.TestStaking,
         env.provider,
         env.txDefaults,
         artifacts,
+        wethContract.address,
     );
+
     // deploy read-only proxy
     const readOnlyProxyContract = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
         artifacts.ReadOnlyProxy,

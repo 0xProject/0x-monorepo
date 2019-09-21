@@ -23,40 +23,40 @@ pragma experimental ABIEncoderV2;
 /// @dev This vault manages staking pool rewards.
 interface IStakingPoolRewardVault {
 
-    /// @dev Emitted when Eth is deposited into the vault.
+    /// @dev Emitted when WETH is deposited into the vault.
     /// @param sender Address of sender (`msg.sender`).
-    /// @param poolId that owns of Eth.
-    /// @param amount of Eth deposited.
+    /// @param poolId that owns of WETH.
+    /// @param amount of WETH deposited.
     event EthDepositedIntoVault(
         address indexed sender,
         bytes32 indexed poolId,
         uint256 amount
     );
 
-    /// @dev Emitted when rewards are transferred out fo the vault.
+    /// @dev Emitted when rewards are transferred out of the vault.
     /// @param poolId Unique Id of pool.
     /// @param to Address to send funds to.
-    /// @param amount Amount of ETH to transfer.
+    /// @param amount Amount of WETH to transfer.
     event PoolRewardTransferred(
         bytes32 indexed poolId,
-        address to,
+        address indexed to,
         uint256 amount
     );
 
-    /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
-    ///      The staking contract should pay this contract the ETH owed in the
-    ///      same transaction.
+    /// @dev Deposit an amount of WETH for `poolId` into the vault.
+    ///      The staking contract should have granted the vault an allowance
+    ///      because it will pull the WETH via `transferFrom()`.
     ///      Note that this is only callable by the staking contract.
-    /// @param poolId Pool that holds the ETH.
+    /// @param poolId Pool that holds the WETH.
     /// @param amount Amount of deposit.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
+    function depositFor(bytes32 poolId, uint256 amount)
         external;
 
-    /// @dev Withdraw some amount in ETH from a pool.
+    /// @dev Withdraw some amount in WETH from a pool.
     ///      Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
     /// @param to Address to send funds to.
-    /// @param amount Amount of ETH to transfer.
+    /// @param amount Amount of WETH to transfer.
     function transfer(
         bytes32 poolId,
         address payable to,
@@ -64,8 +64,8 @@ interface IStakingPoolRewardVault {
     )
         external;
 
-    /// @dev Returns the balance in ETH of `poolId`
-    /// @return Balance in ETH.
+    /// @dev Returns the balance in WETH of `poolId`
+    /// @return Balance in WETH.
     function balanceOf(bytes32 poolId)
         external
         view

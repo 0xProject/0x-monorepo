@@ -25,6 +25,12 @@ import "../src/Staking.sol";
 contract TestStaking is
     Staking
 {
+    address internal _wethAddress;
+
+    constructor(address wethAddress) public {
+        _wethAddress = wethAddress;
+    }
+
     /// @dev Overridden to avoid hard-coded WETH.
     function getTotalBalance()
         external
@@ -34,9 +40,8 @@ contract TestStaking is
         totalBalance = address(this).balance;
     }
 
-    // Stub out `_unwrapWETH` to prevent the calls to `finalizeFees` from failing in tests
-    // that do not relate to protocol fee payments in WETH.
-    function _unwrapWETH()
-        internal
-    {} // solhint-disable-line no-empty-blocks
+    /// @dev Overridden to use _wethAddress;
+    function _getWETHAddress() internal view returns (address) {
+        return _wethAddress;
+    }
 }

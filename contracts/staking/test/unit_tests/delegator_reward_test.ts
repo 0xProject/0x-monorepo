@@ -57,7 +57,7 @@ blockchainTests.resets('delegator unit rewards', env => {
         };
         // Generate a deterministic operator address based on the poolId.
         _opts.operator = poolIdToOperator(_opts.poolId);
-        await testContract.recordStakingPoolRewards.awaitTransactionSuccessAsync(
+        await testContract.depositStakingPoolRewards.awaitTransactionSuccessAsync(
             _opts.poolId,
             _opts.operator,
             new BigNumber(_opts.operatorReward),

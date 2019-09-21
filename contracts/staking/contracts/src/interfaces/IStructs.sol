@@ -32,6 +32,23 @@ interface IStructs {
         uint256 membersStake;
     }
 
+    /// @dev Holds state for unfinalized epoch rewards.
+    /// @param rewardsAvailable Rewards (ETH) available to the epoch
+    ///        being finalized (the previous epoch). This is simply the balance
+    ///        of the contract at the end of the epoch.
+    /// @param poolsRemaining The number of active pools in the last
+    ///        epoch that have yet to be finalized through `finalizePools()`.
+    /// @param totalFeesCollected The total fees collected for the epoch being finalized.
+    /// @param totalWeightedStake The total fees collected for the epoch being finalized.
+    /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
+    struct UnfinalizedState {
+        uint256 rewardsAvailable;
+        uint256 poolsRemaining;
+        uint256 totalFeesCollected;
+        uint256 totalWeightedStake;
+        uint256 totalRewardsFinalized;
+    }
+
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
@@ -85,14 +102,6 @@ interface IStructs {
     struct MakerPoolJoinStatus {
         bytes32 poolId;
         bool confirmed;
-    }
-
-    /// @dev Encapsulates the epoch and value of a cumulative reward.
-    /// @param cumulativeRewardEpoch Epoch of the reward.
-    /// @param cumulativeReward Value of the reward.
-    struct CumulativeRewardInfo {
-        uint256 cumulativeRewardEpoch;
-        IStructs.Fraction cumulativeReward;
     }
 
     /// @dev Holds the metadata for a staking pool.

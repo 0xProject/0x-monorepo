@@ -118,8 +118,10 @@ export class FinalizerActor extends BaseActor {
     private async _getDelegatorBalancesByPoolIdAsync(
         delegatorsByPoolId: DelegatorsByPoolId,
     ): Promise<DelegatorBalancesByPoolId> {
-        const computeRewardBalanceOfDelegator = this._stakingApiWrapper.stakingContract.computeRewardBalanceOfDelegator;
-        const computeRewardBalanceOfOperator = this._stakingApiWrapper.stakingContract.computeRewardBalanceOfOperator;
+        const {
+            computeRewardBalanceOfDelegator,
+            computeRewardBalanceOfOperator,
+        } = this._stakingApiWrapper.stakingContract;
         const delegatorBalancesByPoolId: DelegatorBalancesByPoolId = {};
 
         for (const poolId of Object.keys(delegatorsByPoolId)) {
@@ -142,7 +144,7 @@ export class FinalizerActor extends BaseActor {
     private async _getDelegatorStakesByPoolIdAsync(
         delegatorsByPoolId: DelegatorsByPoolId,
     ): Promise<DelegatorBalancesByPoolId> {
-        const getStakeDelegatedToPoolByOwner = this._stakingApiWrapper.stakingContract.getStakeDelegatedToPoolByOwner;
+        const { getStakeDelegatedToPoolByOwner } = this._stakingApiWrapper.stakingContract;
         const delegatorBalancesByPoolId: DelegatorBalancesByPoolId = {};
         for (const poolId of Object.keys(delegatorsByPoolId)) {
             const delegators = delegatorsByPoolId[poolId];
@@ -247,7 +249,7 @@ export class FinalizerActor extends BaseActor {
         }
         const rewards = await Promise.all(
             activePools.map(async pool =>
-                this._stakingApiWrapper.utils.cobbDouglas(
+                this._stakingApiWrapper.utils.cobbDouglasAsync(
                     totalRewards,
                     pool.feesCollected,
                     totalFeesCollected,

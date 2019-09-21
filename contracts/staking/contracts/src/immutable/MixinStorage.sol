@@ -143,30 +143,13 @@ contract MixinStorage is
 
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool))
-        internal
-        _activePoolsByEpoch;
+    mapping (uint256 => mapping (bytes32 => IStructs.ActivePool)) internal _activePoolsByEpoch;
 
     /// @dev Number of pools activated in the current epoch.
     uint256 public numActivePoolsThisEpoch;
 
-    /// @dev Rewards (ETH) available to the epoch being finalized (the previous
-    ///      epoch). This is simply the balance of the contract at the end of
-    ///      the epoch.
-    uint256 public unfinalizedRewardsAvailable;
-
-    /// @dev The number of active pools in the last epoch that have yet to be
-    ///      finalized through `finalizePools()`.
-    uint256 public unfinalizedPoolsRemaining;
-
-    /// @dev The total fees collected for the epoch being finalized.
-    uint256 public unfinalizedTotalFeesCollected;
-
-    /// @dev The total fees collected for the epoch being finalized.
-    uint256 public unfinalizedTotalWeightedStake;
-
-    /// @dev How many rewards were paid at the end of finalization.
-    uint256 totalRewardsPaidLastEpoch;
+    /// @dev State for unfinalized rewards.
+    IStructs.UnfinalizedState public unfinalizedState;
 
     /// @dev Adds owner as an authorized address.
     constructor()

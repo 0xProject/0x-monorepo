@@ -18,9 +18,11 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../immutable/MixinStorage.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
@@ -31,6 +33,7 @@ import "../libs/LibStakingRichErrors.sol";
 contract MixinParams is
     IStakingEvents,
     MixinConstants,
+    MixinDeploymentConstants,
     Ownable,
     MixinStorage
 {
@@ -194,6 +197,11 @@ contract MixinParams is
     )
         private
     {
+        _transferWETHAllownces(
+            [address(ethVault), address(rewardVault)],
+            [_ethVaultAddress, _rewardVaultAddress]
+        );
+
         epochDurationInSeconds = _epochDurationInSeconds;
         rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
         minimumPoolStake = _minimumPoolStake;
@@ -217,5 +225,25 @@ contract MixinParams is
             _rewardVaultAddress,
             _zrxVaultAddress
         );
+    }
+
+    /// @dev Rescind the WETH allowance for `oldSpenders` and grant `newSpenders`
+    ///      an unlimited allowance.
+    /// @param oldSpenders Addresses to remove allowance from.
+    /// @param newSpenders Addresses to grant allowance to.
+    function _transferWETHAllownces(
+        address[2] memory oldSpenders,
+        address[2] memory newSpenders
+    )
+        private
+    {
+        IEtherToken weth = IEtherToken(_getWETHAddress());
+        // Grant new allowances.
+        for (uint256 i = 0; i < oldSpenders.length; i++) {
+            // Rescind old allowance.
+            weth.approve(oldSpenders[i], 0);
+            // Grant new allowance.
+            weth.approve(newSpenders[i], uint256(-1));
+        }
     }
 }

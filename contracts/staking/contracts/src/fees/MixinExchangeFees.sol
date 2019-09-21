@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
@@ -27,22 +28,11 @@ import "../libs/LibCobbDouglas.sol";
 import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
-import "../sys/MixinAbstract.sol";
+import "../sys/MixinFinalizer.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 
 
-/// @dev This mixin contains the logic for 0x protocol fees.
-///      Protocol fees are sent by 0x exchanges every time there is a trade.
-///      If the maker has associated their address with a pool (see
-///      MixinStakingPool.sol), then the fee will be attributed to their pool.
-///      At the end of an epoch the maker and their pool will receive a rebate
-///      that is proportional to (i) the fee volume attributed to their pool
-///      over the epoch, and (ii) the amount of stake provided by the maker and
-///      their delegators. Note that delegated stake (see MixinStake) is
-///      weighted less than stake provided by directly by the maker; this is a
-///      disincentive for market makers to monopolize a single pool that they
-///      all delegate to.
 contract MixinExchangeFees is
     IStakingEvents,
     MixinAbstract,
@@ -58,6 +48,7 @@ contract MixinExchangeFees is
     MixinStakeBalances,
     MixinCumulativeRewards,
     MixinStakingPoolRewards,
+    MixinFinalizer,
     MixinStakingPool
 {
     using LibSafeMath for uint256;
@@ -70,9 +61,7 @@ contract MixinExchangeFees is
     /// @param protocolFeePaid The protocol fee that should be paid.
     function payProtocolFee(
         address makerAddress,
-        // solhint-disable-next-line
         address payerAddress,
-        // solhint-disable-next-line
         uint256 protocolFeePaid
     )
         external
@@ -108,9 +97,9 @@ contract MixinExchangeFees is
         }
 
         // Look up the pool for this epoch.
-        uint256 currentEpoch = currentEpoch;
+        uint256 currentEpoch_ = currentEpoch;
         mapping (bytes32 => IStructs.ActivePool) storage activePoolsThisEpoch =
-            _getActivePoolsFromEpoch(currentEpoch);
+            _getActivePoolsFromEpoch(currentEpoch_);
         IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId];
 
         // If the pool was previously inactive in this epoch, initialize it.
@@ -128,30 +117,17 @@ contract MixinExchangeFees is
 
             // Emit an event so keepers know what pools to pass into
             // `finalize()`.
-            emit StakingPoolActivated(currentEpoch, poolId);
+            emit StakingPoolActivated(currentEpoch_, poolId);
         }
 
         // Credit the fees to the pool.
         pool.feesCollected = pool.feesCollected.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
-        totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(
-            protocolFeePaid
-        );
+        totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(protocolFeePaid);
 
         // Store the pool.
         activePoolsThisEpoch[poolId] = pool;
-    }
-
-    /// @dev Returns the total amount of fees collected thus far, in the current
-    ///      epoch.
-    /// @return _totalFeesCollectedThisEpoch Total fees collected this epoch.
-    function getTotalProtocolFeesThisEpoch()
-        external
-        view
-        returns (uint256 _totalFeesCollectedThisEpoch)
-    {
-        _totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch;
     }
 
     /// @dev Returns the total balance of this contract, including WETH.
@@ -162,8 +138,9 @@ contract MixinExchangeFees is
         returns (uint256 totalBalance)
     {
         totalBalance = address(this).balance.safeAdd(
-            IEtherToken(WETH_ADDRESS).balanceOf(address(this))
+            IEtherToken(_getWETHAddress()).balanceOf(address(this))
         );
+        return totalBalance;
     }
 
     /// @dev Get information on an active staking pool in this epoch.
@@ -175,6 +152,7 @@ contract MixinExchangeFees is
         returns (IStructs.ActivePool memory pool)
     {
         pool = _getActivePoolFromEpoch(currentEpoch, poolId);
+        return pool;
     }
 
     /// @dev Computes the members and weighted stake for a pool at the current
@@ -184,8 +162,8 @@ contract MixinExchangeFees is
     /// @return membersStake Non-operator stake in the pool.
     /// @return weightedStake Weighted stake of the pool.
     function _computeMembersAndWeightedStake(
-            bytes32 poolId,
-            uint256 totalStake
+        bytes32 poolId,
+        uint256 totalStake
     )
         private
         view
@@ -197,10 +175,13 @@ contract MixinExchangeFees is
         ).currentEpochBalance;
         membersStake = totalStake.safeSub(operatorStake);
         weightedStake = operatorStake.safeAdd(
-            membersStake
-                .safeMul(rewardDelegatedStakeWeight)
-                .safeDiv(PPM_DENOMINATOR)
+            LibMath.getPartialAmountFloor(
+                rewardDelegatedStakeWeight,
+                PPM_DENOMINATOR,
+                membersStake
+            )
         );
+        return (membersStake, weightedStake);
     }
 
     /// @dev Checks that the protocol fee passed into `payProtocolFee()` is
@@ -211,21 +192,24 @@ contract MixinExchangeFees is
         private
         view
     {
-        if (protocolFeePaid == 0 ||
-                (msg.value != protocolFeePaid && msg.value != 0)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                    protocolFeePaid == 0 ?
-                        LibStakingRichErrors
-                            .ProtocolFeePaymentErrorCodes
-                            .ZeroProtocolFeePaid :
-                        LibStakingRichErrors
-                            .ProtocolFeePaymentErrorCodes
-                            .MismatchedFeeAndPayment,
-                    protocolFeePaid,
-                    msg.value
-                )
-            );
+        if (protocolFeePaid != 0) {
+            return;
         }
+        if (msg.value == protocolFeePaid || msg.value == 0) {
+            return;
+        }
+        LibRichErrors.rrevert(
+            LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                protocolFeePaid == 0 ?
+                    LibStakingRichErrors
+                        .ProtocolFeePaymentErrorCodes
+                        .ZeroProtocolFeePaid :
+                    LibStakingRichErrors
+                        .ProtocolFeePaymentErrorCodes
+                        .MismatchedFeeAndPayment,
+                protocolFeePaid,
+                msg.value
+            )
+        );
     }
 }

@@ -36,7 +36,7 @@ blockchainTests.resets('Stake Statuses', env => {
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
-        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
+        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
 
         // setup new staker
         staker = new StakerActor(actors[0], stakingApiWrapper);

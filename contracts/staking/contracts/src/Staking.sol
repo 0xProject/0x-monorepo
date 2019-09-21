@@ -38,17 +38,17 @@ contract Staking is
     MixinStorage,
     MixinStakingPoolModifiers,
     MixinExchangeManager,
-    MixinParams,
     MixinScheduler,
+    MixinParams,
     MixinStakeStorage,
     MixinStakingPoolMakers,
     MixinStakeBalances,
     MixinCumulativeRewards,
     MixinStakingPoolRewards,
+    MixinFinalizer,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees,
-    MixinFinalizer
+    MixinExchangeFees
 {
     /// @dev This constructor will ensure that the storage layout of this contract
     ///      is compatible with the original staking storage layout.
