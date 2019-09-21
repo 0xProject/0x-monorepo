@@ -138,7 +138,7 @@ contract MixinStorage is
     /// @dev Adds owner as an authorized address.
     constructor()
         public
-        Ownable()
+        Authorizable()
     {
         _addAuthorizedAddress(owner);
     }
