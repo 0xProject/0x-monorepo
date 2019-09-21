@@ -58,4 +58,15 @@ contract MixinDeploymentConstants {
             LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
         }
     }
+
+    /// @dev An overridable way to access the deployed WETH address.
+    ///      Must be view to allow overrides to access state.
+    /// @return wethAddress The address of the configured WETH contract.
+    function _getWETHAddress()
+        internal
+        view
+        returns (address wethAddress)
+    {
+        return WETH_ADDRESS;
+    }
 }

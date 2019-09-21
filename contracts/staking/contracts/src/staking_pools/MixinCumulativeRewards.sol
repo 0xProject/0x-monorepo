@@ -80,7 +80,7 @@ contract MixinCumulativeRewards is
         if (_cumulativeRewardsByPoolReferenceCounter[poolId][epoch] != 0) {
             return false;
         }
-        // Must not be the most recent CR.
+        // Must not be the most recently *stored* CR.
         if (_cumulativeRewardsByPoolLastStored[poolId] == epoch) {
             return false;
         }
@@ -150,25 +150,6 @@ contract MixinCumulativeRewards is
         delete _cumulativeRewardsByPool[poolId][epoch];
     }
 
-    /// @dev Returns info on most recent cumulative reward.
-    function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
-        internal
-        view
-        returns (IStructs.CumulativeRewardInfo memory)
-    {
-        // Fetch the last epoch at which we stored a cumulative reward for
-        // this pool
-        uint256 cumulativeRewardsLastStored =
-            _cumulativeRewardsByPoolLastStored[poolId];
-
-        // Query and return cumulative reward info for this pool
-        return IStructs.CumulativeRewardInfo({
-            cumulativeReward:
-                _cumulativeRewardsByPool[poolId][cumulativeRewardsLastStored],
-            cumulativeRewardEpoch: cumulativeRewardsLastStored
-        });
-    }
-
     /// @dev Tries to set the epoch of the most recent cumulative reward.
     ///      The value will only be set if the input epoch is greater than the
     ///     current most recent value.
@@ -219,14 +200,13 @@ contract MixinCumulativeRewards is
     /// @dev Adds a dependency on a cumulative reward for a given epoch.
     /// @param poolId Unique Id of pool.
     /// @param epoch Epoch to remove dependency from.
-    /// @param mostRecentCumulativeRewardInfo Info for the most recent
-    ///        cumulative reward (value and epoch)
+    /// @param mostRecentCumulativeReward The most recent cumulative reward.
     /// @param isDependent True iff there is a dependency on the cumulative
     ///        reward for `poolId` at `epoch`
     function _addOrRemoveDependencyOnCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
-        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo,
+        IStructs.Fraction memory mostRecentCumulativeReward,
         bool isDependent
     )
         internal
@@ -235,7 +215,7 @@ contract MixinCumulativeRewards is
             _addDependencyOnCumulativeReward(
                 poolId,
                 epoch,
-                mostRecentCumulativeRewardInfo
+                mostRecentCumulativeReward
             );
         } else {
             _removeDependencyOnCumulativeReward(
@@ -313,7 +293,7 @@ contract MixinCumulativeRewards is
         }
 
         // Compute reward
-        reward = LibFractions.scaleFractionalDifference(
+        reward = LibFractions.scaleDifference(
             endReward.numerator,
             endReward.denominator,
             beginReward.numerator,
@@ -322,15 +302,26 @@ contract MixinCumulativeRewards is
         );
     }
 
+    /// @dev Fetch the most recent cumulative reward entry for a pool.
+    /// @param poolId Unique ID of pool.
+    /// @return cumulativeReward The most recent cumulative reward `poolId`.
+    function _getMostRecentCumulativeReward(bytes32 poolId)
+        internal
+        view
+        returns (IStructs.Fraction memory cumulativeReward)
+    {
+        uint256 lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        return _cumulativeRewardsByPool[poolId][lastStoredEpoch];
+    }
+
     /// @dev Adds a dependency on a cumulative reward for a given epoch.
     /// @param poolId Unique Id of pool.
     /// @param epoch Epoch to remove dependency from.
-    /// @param mostRecentCumulativeRewardInfo Info on the most recent cumulative
-    ///        reward.
+    /// @param mostRecentCumulativeReward The most recent cumulative reward.
     function _addDependencyOnCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
-        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo
+        IStructs.Fraction memory mostRecentCumulativeReward
     )
         private
     {
@@ -342,7 +333,7 @@ contract MixinCumulativeRewards is
         _trySetCumulativeReward(
             poolId,
             epoch,
-            mostRecentCumulativeRewardInfo.cumulativeReward
+            mostRecentCumulativeReward
         );
     }
 
@@ -356,10 +347,8 @@ contract MixinCumulativeRewards is
         private
     {
         // Remove dependency by decreasing reference counter
-        uint256 newReferenceCounter =
-            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
         _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] =
-            newReferenceCounter;
+            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
 
         // Clear cumulative reward from state, if it is no longer needed
         _tryUnsetCumulativeReward(poolId, epoch);

@@ -135,19 +135,7 @@ contract TestStorageLayout is
             if sub(numActivePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(unfinalizedRewardsAvailable_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(unfinalizedPoolsRemaining_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(unfinalizedTotalFeesCollected_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(unfinalizedTotalWeightedStake_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(totalRewardsPaidLastEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(unfinalizedState_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
         }
     }

@@ -23,7 +23,7 @@ blockchainTests('Epochs', env => {
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
-        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
+        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
     });
     describe('Epochs & TimeLocks', () => {
         it('basic epochs & timeLock periods', async () => {

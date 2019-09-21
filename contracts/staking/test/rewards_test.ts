@@ -1,5 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { blockchainTests, describe, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, describe, expect, shortZip } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -42,7 +42,7 @@ blockchainTests.resets('Testing Rewards', env => {
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
-        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
+        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
         // set up staking parameters
         await stakingApiWrapper.utils.setParamsAsync({
             minimumPoolStake: new BigNumber(1),
@@ -600,16 +600,16 @@ blockchainTests.resets('Testing Rewards', env => {
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
             // undelegate some stake
-            const unstakeAmount = toBaseUnitAmount(2.5);
+            const undelegateAmount = toBaseUnitAmount(2.5);
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
-                unstakeAmount,
+                undelegateAmount,
             );
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // Unstake nothing to move the rewards into the EthVault.
+            // Undelegate 0 stake to move the rewards into the EthVault.
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
@@ -624,7 +624,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
-            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as Array<[StakerActor, BigNumber]>;
+            const stakersAndStake = shortZip(stakers, stakeAmounts);
             for (const [staker, stakeAmount] of stakersAndStake) {
                 await staker.stakeWithPoolAsync(poolId, stakeAmount);
             }
@@ -655,7 +655,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
-            const stakersAndStake = _.zip(stakers.slice(0, 2), stakeAmounts) as Array<[StakerActor, BigNumber]>;
+            const stakersAndStake = shortZip(stakers, stakeAmounts);
             for (const [staker, stakeAmount] of stakersAndStake) {
                 await staker.stakeWithPoolAsync(poolId, stakeAmount);
             }

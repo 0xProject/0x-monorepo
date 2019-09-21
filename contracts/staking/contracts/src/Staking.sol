@@ -37,17 +37,17 @@ contract Staking is
     MixinStorage,
     MixinStakingPoolModifiers,
     MixinExchangeManager,
-    MixinParams,
     MixinScheduler,
+    MixinParams,
     MixinStakeStorage,
     MixinStakingPoolMakers,
     MixinStakeBalances,
     MixinCumulativeRewards,
     MixinStakingPoolRewards,
+    MixinFinalizer,
     MixinStakingPool,
     MixinStake,
-    MixinExchangeFees,
-    MixinFinalizer
+    MixinExchangeFees
 {
     // this contract can receive ETH
     // solhint-disable no-empty-blocks

@@ -18,52 +18,52 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IEthVault.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "./MixinVaultCore.sol";
 
 
-/// @dev This vault manages ETH.
+/// @dev This vault manages WETH.
 contract EthVault is
     IEthVault,
     IVaultCore,
+    MixinDeploymentConstants,
     Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
 
-    // mapping from Owner to ETH balance
+    // mapping from Owner to WETH balance
     mapping (address => uint256) internal _balances;
 
-    // solhint-disable no-empty-blocks
-    /// @dev Payable fallback for bulk-deposits.
-    function () external payable {}
-
-    /// @dev Record a deposit of an amount of ETH for `owner` into the vault.
-    ///      The staking contract should pay this contract the ETH owed in the
-    ///      same transaction.
+    /// @dev Deposit an `amount` of WETH for `owner` into the vault.
+    ///      The staking contract should have granted the vault an allowance
+    ///      because it will pull the WETH via `transferFrom()`.
     ///      Note that this is only callable by the staking contract.
-    /// @param owner Owner of the ETH.
+    /// @param owner Owner of the WETH.
     /// @param amount Amount of deposit.
-    function recordDepositFor(address owner, uint256 amount)
+    function depositFor(address owner, uint256 amount)
         external
         onlyStakingProxy
     {
+        // Transfer WETH from the staking contract into this contract.
+        IEtherToken(_getWETHAddress()).transferFrom(msg.sender, address(this), amount);
+        // Credit the owner.
         _balances[owner] = _balances[owner].safeAdd(amount);
         emit EthDepositedIntoVault(msg.sender, owner, amount);
     }
 
-    /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
-    /// @param amount of ETH to withdraw.
+    /// @dev Withdraw an `amount` of WETH to `msg.sender` from the vault.
+    /// @param amount of WETH to withdraw.
     function withdraw(uint256 amount)
         external
     {
         _withdrawFrom(msg.sender, amount);
     }
 
-    /// @dev Withdraw ALL ETH to `msg.sender` from the vault.
+    /// @dev Withdraw ALL WETH to `msg.sender` from the vault.
     function withdrawAll()
         external
         returns (uint256 totalBalance)
@@ -72,13 +72,13 @@ contract EthVault is
         address payable owner = msg.sender;
         totalBalance = _balances[owner];
 
-        // withdraw ETH to owner
+        // withdraw WETH to owner
         _withdrawFrom(owner, totalBalance);
         return totalBalance;
     }
 
-    /// @dev Returns the balance in ETH of the `owner`
-    /// @return Balance in ETH.
+    /// @dev Returns the balance in WETH of the `owner`
+    /// @return Balance in WETH.
     function balanceOf(address owner)
         external
         view
@@ -87,21 +87,19 @@ contract EthVault is
         return _balances[owner];
     }
 
-    /// @dev Withdraw an `amount` of ETH to `owner` from the vault.
-    /// @param owner of ETH.
-    /// @param amount of ETH to withdraw.
+    /// @dev Withdraw an `amount` of WETH to `owner` from the vault.
+    /// @param owner of WETH.
+    /// @param amount of WETH to withdraw.
     function _withdrawFrom(address payable owner, uint256 amount)
         internal
     {
-        // update balance
-        // note that this call will revert if trying to withdraw more
-        // than the current balance
+        //Uupdate balance.
         _balances[owner] = _balances[owner].safeSub(amount);
+
+        // withdraw WETH to owner
+        IEtherToken(_getWETHAddress()).transfer(msg.sender, amount);
 
         // notify
         emit EthWithdrawnFromVault(msg.sender, owner, amount);
-
-        // withdraw ETH to owner
-        owner.transfer(amount);
     }
 }

@@ -94,8 +94,8 @@ contract TestDelegatorRewards is
         _initGenesisCumulativeRewards(poolId);
     }
 
-    /// @dev Expose/wrap `_recordStakingPoolRewards`.
-    function recordStakingPoolRewards(
+    /// @dev Expose/wrap `_depositStakingPoolRewards`.
+    function depositStakingPoolRewards(
         bytes32 poolId,
         address payable operatorAddress,
         uint256 operatorReward,
@@ -109,7 +109,7 @@ contract TestDelegatorRewards is
         _setOperatorShare(poolId, operatorReward, membersReward);
         _initGenesisCumulativeRewards(poolId);
 
-        _recordStakingPoolRewards(
+        _depositStakingPoolRewards(
             poolId,
             operatorReward + membersReward,
             membersStake
@@ -206,8 +206,8 @@ contract TestDelegatorRewards is
         );
     }
 
-    /// @dev `IEthVault.recordDepositFor()`,` overridden to just emit events.
-    function recordDepositFor(
+    /// @dev `IEthVault.depositFor()`,` overridden to just emit events.
+    function depositFor(
         address owner,
         uint256 amount
     )
@@ -219,9 +219,9 @@ contract TestDelegatorRewards is
         );
     }
 
-    /// @dev `IStakingPoolRewardVault.recordDepositFor()`,`
+    /// @dev `IStakingPoolRewardVault.depositFor()`,`
     ///       overridden to just emit events.
-    function recordDepositFor(
+    function depositFor(
         bytes32 poolId,
         uint256 membersReward
     )
@@ -252,7 +252,7 @@ contract TestDelegatorRewards is
         uint256 totalRewards = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
         (operatorReward, membersReward) =
-            _recordStakingPoolRewards(poolId, totalRewards, membersStake);
+            _depositStakingPoolRewards(poolId, totalRewards, membersStake);
         emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
     }
 

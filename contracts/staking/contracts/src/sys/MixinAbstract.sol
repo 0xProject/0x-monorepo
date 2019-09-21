@@ -29,54 +29,29 @@ contract MixinAbstract {
     /// @dev Computes the reward owed to a pool during finalization.
     ///      Does nothing if the pool is already finalized.
     /// @param poolId The pool's ID.
-    /// @return operatorReward The reward owed to the pool operator.
+    /// @return totalReward The total reward owed to a pool.
     /// @return membersStake The total stake for all non-operator members in
     ///         this pool.
     function _getUnfinalizedPoolRewards(bytes32 poolId)
         internal
         view
         returns (
-            uint256 reward,
+            uint256 totalReward,
             uint256 membersStake
         );
-
-    /// @dev Get an active pool from an epoch by its ID.
-    /// @param epoch The epoch the pool was/will be active in.
-    /// @param poolId The ID of the pool.
-    /// @return pool The pool with ID `poolId` that was active in `epoch`.
-    function _getActivePoolFromEpoch(
-        uint256 epoch,
-        bytes32 poolId
-    )
-        internal
-        view
-        returns (IStructs.ActivePool memory pool);
-
-    /// @dev Get a mapping of active pools from an epoch.
-    ///      This uses the formula `epoch % 2` as the epoch index in order
-    ///      to reuse state, because we only need to remember, at most, two
-    ///      epochs at once.
-    /// @return activePools The pools that were active in `epoch`.
-    function _getActivePoolsFromEpoch(
-        uint256 epoch
-    )
-        internal
-        view
-        returns (mapping (bytes32 => IStructs.ActivePool) storage activePools);
 
     /// @dev Instantly finalizes a single pool that was active in the previous
     ///      epoch, crediting it rewards and sending those rewards to the reward
     ///      and eth vault. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
-    ///      finalized. Does nothing if the pool was not active or was already
-    ///      finalized.
+    ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.
     /// @return operatorReward The reward credited to the pool operator.
     /// @return membersReward The reward credited to the pool members.
     /// @return membersStake The total stake for all non-operator members in
     ///         this pool.
-    function _finalizePool(bytes32 poolId)
-        internal
+    function finalizePool(bytes32 poolId)
+        public
         returns (
             uint256 operatorReward,
             uint256 membersReward,

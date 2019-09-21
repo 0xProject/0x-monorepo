@@ -19,20 +19,21 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
-import "../immutable/MixinConstants.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 
 
 /// @dev This vault manages staking pool rewards.
 contract StakingPoolRewardVault is
     IStakingPoolRewardVault,
     IVaultCore,
-    MixinConstants,
+    MixinDeploymentConstants,
     Ownable,
     MixinVaultCore
 {
@@ -41,29 +42,28 @@ contract StakingPoolRewardVault is
     // mapping from poolId to Pool metadata
     mapping (bytes32 => uint256) internal _balanceByPoolId;
 
-    // solhint-disable no-empty-blocks
-    /// @dev Payable fallback for bulk-deposits.
-    function () external payable {}
-
-    /// @dev Record a deposit of an amount of ETH for `poolId` into the vault.
-    ///      The staking contract should pay this contract the ETH owed in the
-    ///      same transaction.
+    /// @dev Deposit an amount of WETH for `poolId` into the vault.
+    ///      The staking contract should have granted the vault an allowance
+    ///      because it will pull the WETH via `transferFrom()`.
     ///      Note that this is only callable by the staking contract.
-    /// @param poolId Pool that holds the ETH.
+    /// @param poolId Pool that holds the WETH.
     /// @param amount Amount of deposit.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
+    function depositFor(bytes32 poolId, uint256 amount)
         external
         onlyStakingProxy
     {
+        // Transfer WETH from the staking contract into this contract.
+        IEtherToken(_getWETHAddress()).transferFrom(msg.sender, address(this), amount);
+        // Credit the pool.
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(amount);
         emit EthDepositedIntoVault(msg.sender, poolId, amount);
     }
 
-    /// @dev Withdraw some amount in ETH from a pool.
+    /// @dev Withdraw some amount in WETH from a pool.
     ///      Note that this is only callable by the staking contract.
     /// @param poolId Unique Id of pool.
     /// @param to Address to send funds to.
-    /// @param amount Amount of ETH to transfer.
+    /// @param amount Amount of WETH to transfer.
     function transfer(
         bytes32 poolId,
         address payable to,
@@ -73,7 +73,7 @@ contract StakingPoolRewardVault is
         onlyStakingProxy
     {
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
-        to.transfer(amount);
+        IEtherToken(_getWETHAddress()).transfer(to, amount);
         emit PoolRewardTransferred(
             poolId,
             to,
@@ -81,8 +81,8 @@ contract StakingPoolRewardVault is
         );
     }
 
-    /// @dev Returns the balance in ETH of `poolId`
-    /// @return Balance in ETH.
+    /// @dev Returns the balance in WETH of `poolId`
+    /// @return Balance in WETH.
     function balanceOf(bytes32 poolId)
         external
         view
