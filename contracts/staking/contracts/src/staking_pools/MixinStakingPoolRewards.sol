@@ -82,11 +82,9 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
-        // transfer any rewards from the transient pool vault to the eth vault;
-        // this must be done before we can modify the owner's portion of the delegator pool.
-        _withdrawMemberRewardsFromPool(
+        // compute balance owed to delegator
+        uint256 balance = _computeRewardBalanceOfDelegator(
             poolId,
-            member,
             initialDelegatedStakeToPoolByOwner,
             currentEpoch
         );
@@ -103,6 +101,17 @@ contract MixinStakingPoolRewards is
             poolId,
             initialDelegatedStakeToPoolByOwner,
             false
+        );
+
+        if (balance == 0) {
+            return;
+        }
+
+        // Transfer rewards to delegator
+        rewardVault.transferToMember(
+            poolId,
+            member,
+            balance
         );
     }
 
@@ -172,34 +181,6 @@ contract MixinStakingPoolRewards is
                 numerator: numeratorNormalized,
                 denominator: denominatorNormalized
             })
-        );
-    }
-
-    /// @dev Transfers a delegators accumulated rewards from the transient pool Reward Pool vault
-    ///      to the Eth Vault. This is required before the member's stake in the pool can be
-    ///      modified.
-    /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
-    function _withdrawMemberRewardsFromPool(
-        bytes32 poolId,
-        address payable member,
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
-        uint256 currentEpoch
-    )
-        private
-    {
-        // compute balance owed to delegator
-        uint256 balance = _computeRewardBalanceOfDelegator(
-            poolId,
-            unsyncedDelegatedStakeToPoolByOwner,
-            currentEpoch
-        );
-
-        // Transfer rewards to delegator
-        rewardVault.transferToMember(
-            poolId,
-            member,
-            balance
         );
     }
 
