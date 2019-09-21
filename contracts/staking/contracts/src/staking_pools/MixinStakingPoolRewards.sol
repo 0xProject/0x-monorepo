@@ -108,7 +108,7 @@ contract MixinStakingPoolRewards is
         }
 
         // Transfer rewards to delegator
-        rewardVault.transferToMember(
+        memberRewardVault.transferToMember(
             poolId,
             member,
             balance
@@ -149,7 +149,7 @@ contract MixinStakingPoolRewards is
             return;
         }
 
-        rewardVault.depositFor.value(membersPortion)(poolId);
+        memberRewardVault.depositFor.value(membersPortion)(poolId);
 
         // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
         mapping (uint256 => IStructs.Fraction) storage _cumulativeRewardsByPoolPtr = _cumulativeRewardsByPool[poolId];

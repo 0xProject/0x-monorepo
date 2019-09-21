@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 
 
 /// @dev This vault manages staking pool rewards.
-interface IStakingPoolRewardVault {
+interface IMemberRewardVault {
 
     /// @dev Emitted when Eth is deposited into the vault.
     /// @param sender Address of sender (`msg.sender`).
     /// @param poolId that owns of Eth.
     /// @param amount of Eth deposited.
-    event EthDepositedIntoVault(
+    event PoolDeposit(
         address indexed sender,
         bytes32 indexed poolId,
         uint256 amount

@@ -49,7 +49,7 @@ interface IStakingProxy /* is IStaking */
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _ethVaultAddress Address of the EthVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.

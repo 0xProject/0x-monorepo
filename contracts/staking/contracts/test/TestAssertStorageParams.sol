@@ -60,7 +60,7 @@ contract TestAssertStorageParams is
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
         wethAssetProxy = IAssetProxy(params.wethProxyAddress);
         ethVault = IEthVault(params.ethVaultAddress);
-        rewardVault = IStakingPoolRewardVault(params.rewardVaultAddress);
+        memberRewardVault = IMemberRewardVault(params.rewardVaultAddress);
         zrxVault = IZrxVault(params.zrxVaultAddress);
         _assertValidStorageParams();
     }

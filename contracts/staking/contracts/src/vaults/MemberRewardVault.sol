@@ -24,13 +24,13 @@ import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IMemberRewardVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
 /// @dev This vault manages staking pool rewards.
-contract StakingPoolRewardVault is
-    IStakingPoolRewardVault,
+contract MemberRewardVault is
+    IMemberRewardVault,
     MixinConstants,
     MixinVaultCore
 {
@@ -48,7 +48,7 @@ contract StakingPoolRewardVault is
         onlyStakingProxy
     {
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(msg.value);
-        emit EthDepositedIntoVault(msg.sender, poolId, msg.value);
+        emit PoolDeposit(msg.sender, poolId, msg.value);
     }
 
     /// @dev Withdraw some amount in ETH of a pool member.

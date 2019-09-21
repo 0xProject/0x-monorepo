@@ -49,7 +49,7 @@ contract TestStakingProxy is
     {
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
         ethVault = IEthVault(_ethVaultAddress);
-        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
+        memberRewardVault = IMemberRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
     }
 

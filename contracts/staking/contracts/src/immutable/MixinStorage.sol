@@ -25,7 +25,7 @@ import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IEthVault.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IMemberRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibStakingRichErrors.sol";
 
@@ -115,7 +115,7 @@ contract MixinStorage is
     IEthVault public ethVault;
 
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
-    IStakingPoolRewardVault public rewardVault;
+    IMemberRewardVault public memberRewardVault;
 
     // Minimum seconds between epochs.
     uint256 public epochDurationInSeconds;

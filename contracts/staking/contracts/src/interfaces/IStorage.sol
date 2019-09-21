@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IEthVault.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
+import "../interfaces/IMemberRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
@@ -98,10 +98,10 @@ interface IStorage {
         view
         returns (IEthVault);
 
-    function rewardVault()
+    function memberRewardVault()
         external
         view
-        returns (IStakingPoolRewardVault);
+        returns (IMemberRewardVault);
 
     function epochDurationInSeconds()
         external

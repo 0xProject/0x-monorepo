@@ -36,7 +36,7 @@ contract StakingProxy is
     /// @param _readOnlyProxy The address of the read only proxy.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     constructor(
         address _stakingContract,
@@ -78,7 +78,7 @@ contract StakingProxy is
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _ethVaultAddress Address of the EthVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
@@ -96,7 +96,7 @@ contract StakingProxy is
             _stakingContract,
             _wethProxyAddress == NIL_ADDRESS ? address(wethAssetProxy) : _wethProxyAddress,
             _ethVaultAddress == NIL_ADDRESS ? address(ethVault) : _ethVaultAddress,
-            _rewardVaultAddress == NIL_ADDRESS ? address(rewardVault) : _rewardVaultAddress,
+            _rewardVaultAddress == NIL_ADDRESS ? address(memberRewardVault) : _rewardVaultAddress,
             _zrxVaultAddress == NIL_ADDRESS ? address(zrxVault) : _zrxVaultAddress
         );
     }
@@ -222,7 +222,7 @@ contract StakingProxy is
             ));
         }
 
-        if (address(rewardVault) == NIL_ADDRESS) {
+        if (address(memberRewardVault) == NIL_ADDRESS) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress
@@ -241,7 +241,7 @@ contract StakingProxy is
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
+    /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _attachStakingContract(
         address _stakingContract,
