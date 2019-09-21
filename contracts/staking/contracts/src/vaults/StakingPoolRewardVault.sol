@@ -68,6 +68,11 @@ contract StakingPoolRewardVault is
             return;
         }
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
+        emit PoolWithdrawal(
+            poolId,
+            member,
+            amount            
+        );
         member.transfer(amount);
     }
 

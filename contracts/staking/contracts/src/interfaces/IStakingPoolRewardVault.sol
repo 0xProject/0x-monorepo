@@ -37,7 +37,7 @@ interface IStakingPoolRewardVault {
     /// @param amount The amount in ETH withdrawn.
     /// @param member of the pool.
     /// @param poolId The pool the reward was deposited for.
-    event PoolRewardTransferredToEthVault(
+    event PoolWithdrawal(
         bytes32 indexed poolId,
         address indexed member,
         uint256 amount
