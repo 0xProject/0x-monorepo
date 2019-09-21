@@ -1,3 +1,4 @@
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -6,6 +7,7 @@ import { constants } from '../constants';
 import {
     CalldataInfo,
     ExtensionContractType,
+    GetExtensionContractTypeOpts,
     SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
@@ -15,6 +17,7 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
+import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
@@ -25,6 +28,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
+    private readonly _contractWrappers: ContractWrappers;
 
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -36,6 +40,9 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
+        this._contractWrappers = new ContractWrappers(this.provider, {
+            networkId,
+        });
     }
 
     /**
@@ -78,6 +85,18 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(opts);
         return consumer.executeSwapQuoteOrThrowAsync(quote, opts);
+    }
+
+    public async getOptimalExtensionContractTypeAsync(
+        quote: SwapQuote,
+        opts: Partial<GetExtensionContractTypeOpts> = {},
+    ): Promise<ExtensionContractType> {
+        return swapQuoteConsumerUtils.getExtensionContractTypeForSwapQuoteAsync(
+            quote,
+            this._contractWrappers,
+            this.provider,
+            opts,
+        );
     }
 
     private async _getConsumerForSwapQuoteAsync(

@@ -116,18 +116,18 @@ describe('SwapQuoteConsumer', () => {
     //      * Testing that SwapQuoteConsumer logic correctly performs a execution (doesn't throw or revert)
     //      * Does not test the validity of the state change performed by the forwarder smart contract
     //      */
-    //     it('should perform an asset swap with Forwarder contract when provided corresponding useConsumerType option', async () => {
+    //     it('should perform an asset swap with Forwarder contract when provided corresponding useExtensionContract option', async () => {
     //         let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
     //         let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
     //         expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
     //         expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-    //         await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, { takerAddress, useConsumerType: ConsumerType.Forwarder });
+    //         await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, { takerAddress, useExtensionContract: ConsumerType.Forwarder });
     //         makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
     //         takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
     //         expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
     //         expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
     //     });
-    //     it('should perform an asset swap with Exchange contract when provided corresponding useConsumerType option', async () => {
+    //     it('should perform an asset swap with Exchange contract when provided corresponding useExtensionContract option', async () => {
     //         let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
     //         let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
     //         expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
@@ -143,13 +143,13 @@ describe('SwapQuoteConsumer', () => {
     describe('getSmartContractParamsOrThrow', () => {
         describe('valid swap quote', async () => {
             // TODO(david) Check for valid MethodAbi
-            it('should provide correct and optimized smart contract params for Forwarder contract when provided corresponding useConsumerType option', async () => {
+            it('should provide correct and optimized smart contract params for Forwarder contract when provided corresponding useExtensionContract option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
                     useExtensionContract: ExtensionContractType.Forwarder,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
-            it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
+            it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useExtensionContract option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
                     useExtensionContract: ExtensionContractType.None,
                 });
@@ -160,13 +160,13 @@ describe('SwapQuoteConsumer', () => {
 
     describe('getCalldataOrThrow', () => {
         describe('valid swap quote', async () => {
-            it('should provide correct and optimized calldata options for Forwarder contract when provided corresponding useConsumerType option', async () => {
+            it('should provide correct and optimized calldata options for Forwarder contract when provided corresponding useExtensionContract option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
                     useExtensionContract: ExtensionContractType.Forwarder,
                 });
                 expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
             });
-            it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useConsumerType option', async () => {
+            it('should provide correct and optimized smart contract params for Exchange contract when provided corresponding useExtensionContract option', async () => {
                 const { toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(marketSellSwapQuote, {
                     useExtensionContract: ExtensionContractType.None,
                 });

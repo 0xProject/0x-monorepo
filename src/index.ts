@@ -37,6 +37,7 @@ export {
     SwapQuoteGetOutputOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteInfo,
+    GetExtensionContractTypeOpts,
     SwapQuoteExecutionOptsBase,
     SwapQuoteGetOutputOptsBase,
     ForwarderSwapQuoteExecutionOpts,
