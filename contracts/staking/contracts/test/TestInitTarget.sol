@@ -51,7 +51,7 @@ contract TestInitTarget is
         external
     {
         if (SHOULD_REVERT_ADDRESS.balance != 0) {
-            revert("FORCED_REVERT");
+            revert("FORCED_INIT_REVERT");
         }
         _initCounter += 1;
         _initSender = msg.sender;

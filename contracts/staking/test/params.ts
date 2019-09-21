@@ -1,6 +1,5 @@
-import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
-import { StakingRevertErrors } from '@0x/order-utils';
-import { BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
+import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 
 import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
 
@@ -9,11 +8,11 @@ import { StakingParams } from './utils/types';
 
 blockchainTests('Configurable Parameters', env => {
     let testContract: MixinParamsContract;
-    let ownerAddress: string;
-    let notOwnerAddress: string;
+    let authorizedAddress: string;
+    let notAuthorizedAddress: string;
 
     before(async () => {
-        [ownerAddress, notOwnerAddress] = await env.getAccountAddressesAsync();
+        [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
         testContract = await MixinParamsContract.deployFrom0xArtifactAsync(
             artifacts.MixinParams,
             env.provider,
@@ -68,90 +67,14 @@ blockchainTests('Configurable Parameters', env => {
             expect(actual[9]).to.eq(_params.zrxVaultAddress);
         }
 
-        it('throws if not called by owner', async () => {
-            const tx = setParamsAndAssertAsync({}, notOwnerAddress);
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwnerAddress, ownerAddress);
+        it('throws if not called by an authorized address', async () => {
+            const tx = setParamsAndAssertAsync({}, notAuthorizedAddress);
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('works if called by owner', async () => {
             return setParamsAndAssertAsync({});
-        });
-
-        describe('rewardDelegatedStakeWeight', () => {
-            it('throws when > PPM_100_PERCENT', async () => {
-                const params = {
-                    rewardDelegatedStakeWeight: constants.PPM_100_PERCENT + 1,
-                };
-                const tx = setParamsAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('maximumMakersInPool', () => {
-            it('throws when == 0', async () => {
-                const params = {
-                    maximumMakersInPool: constants.ZERO_AMOUNT,
-                };
-                const tx = setParamsAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('cobb-douglas alpha', () => {
-            it('throws with denominator == 0', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 0,
-                    cobbDouglasAlphaDenominator: 0,
-                };
-                const tx = setParamsAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('throws with numerator > denominator', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 2,
-                    cobbDouglasAlphaDenominator: 1,
-                };
-                const tx = setParamsAndAssertAsync(params);
-                const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                    StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
-            it('accepts numerator == denominator', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 1,
-                    cobbDouglasAlphaDenominator: 1,
-                };
-                return setParamsAndAssertAsync(params);
-            });
-
-            it('accepts numerator < denominator', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 1,
-                    cobbDouglasAlphaDenominator: 2,
-                };
-                return setParamsAndAssertAsync(params);
-            });
-
-            it('accepts numerator == 0', async () => {
-                const params = {
-                    cobbDouglasAlphaNumerator: 0,
-                    cobbDouglasAlphaDenominator: 1,
-                };
-                return setParamsAndAssertAsync(params);
-            });
         });
     });
 });

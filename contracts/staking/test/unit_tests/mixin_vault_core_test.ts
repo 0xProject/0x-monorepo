@@ -1,6 +1,6 @@
 import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
-import { OwnableRevertErrors } from '@0x/utils';
+import { AuthorizableRevertErrors } from '@0x/utils';
 
 import { constants } from '../utils/constants';
 
@@ -50,13 +50,13 @@ blockchainTests.resets('MixinVaultCore', env => {
             await testContract.assertStakingProxy.callAsync({ from: newAddress });
             return testAssertStakingProxyAsync(owner);
         });
-        it('Non-owner address cannot set staking proxy', async () => {
-            const notOwner = nonOwnerAddresses[0];
+        it('Non-authorized address cannot set staking proxy', async () => {
+            const notAuthorized = nonOwnerAddresses[0];
             const newAddress = nonOwnerAddresses[1];
             const tx = testContract.setStakingProxy.awaitTransactionSuccessAsync(newAddress, {
-                from: notOwner,
+                from: notAuthorized,
             });
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner);
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorized);
             expect(tx).to.revertWith(expectedError);
             expect(await testContract.stakingProxyAddress.callAsync()).to.equal(constants.NIL_ADDRESS);
             return testAssertStakingProxyAsync(newAddress);
@@ -87,12 +87,12 @@ blockchainTests.resets('MixinVaultCore', env => {
             expect(eventArgs[0].sender).to.equal(owner);
             return testCatastrophicFailureModeAsync(true);
         });
-        it('Non-owner cannot turn on catastrophic failure mode', async () => {
+        it('Non-authorized address cannot turn on catastrophic failure mode', async () => {
             await testCatastrophicFailureModeAsync(false);
             const tx = testContract.enterCatastrophicFailure.awaitTransactionSuccessAsync({
                 from: nonOwnerAddresses[0],
             });
-            expect(tx).to.revertWith(new OwnableRevertErrors.OnlyOwnerError());
+            expect(tx).to.revertWith(new AuthorizableRevertErrors.SenderNotAuthorizedError(nonOwnerAddresses[0]));
             return testCatastrophicFailureModeAsync(false);
         });
     });
