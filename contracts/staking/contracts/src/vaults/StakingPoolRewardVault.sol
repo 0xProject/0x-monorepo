@@ -25,7 +25,6 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
-import "../interfaces/IEthVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
@@ -57,23 +56,19 @@ contract StakingPoolRewardVault is
     /// @param poolId Unique Id of pool.
     /// @param member of pool to transfer funds to.
     /// @param amount Amount in ETH to transfer.
-    /// @param ethVaultAddress address of Eth Vault to send rewards to.
-    function transferToEthVault(
+    function transferToMember(
         bytes32 poolId,
-        address member,
-        uint256 amount,
-        address ethVaultAddress
+        address payable member,
+        uint256 amount
     )
         external
         onlyStakingProxy
     {
+        if (amount == 0) {
+            return;
+        }
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
-        IEthVault(ethVaultAddress).depositFor.value(amount)(member);
-        emit PoolRewardTransferredToEthVault(
-            poolId,
-            member,
-            amount
-        );
+        member.transfer(amount);
     }
 
     /// @dev Returns the balance in ETH of `poolId`

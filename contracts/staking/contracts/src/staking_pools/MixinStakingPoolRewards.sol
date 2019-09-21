@@ -30,18 +30,18 @@ contract MixinStakingPoolRewards is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Syncs rewards for a delegator. This includes transferring rewards from
-    /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
-    /// This is used by a delegator when they want to sync their rewards without delegating/undelegating.
+    /// @dev Syncs rewards for a delegator. This includes withdrawing ETH to the delegator's address,
+    ///      and adding/removing dependencies on cumulative rewards.
+    /// This is used by a delegator when they want to withdraw and sync their rewards without delegating/undelegating.
     /// It's effectively the same as delegating zero stake.
     /// @param poolId Unique id of pool.
-    function syncDelegatorRewards(bytes32 poolId)
+    function withdrawFromPool(bytes32 poolId)
         external
     {
-        address member = msg.sender;
+        address payable member = msg.sender;
 
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
-        _syncRewardsForDelegator(
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadSyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
+        _withdrawAndSyncRewardsForDelegator(
             poolId,
             member,
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
@@ -74,9 +74,9 @@ contract MixinStakingPoolRewards is
     /// @param member of the pool.
     /// @param initialDelegatedStakeToPoolByOwner The member's delegated balance at the beginning of this transaction.
     /// @param finalDelegatedStakeToPoolByOwner The member's delegated balance at the end of this transaction.
-    function _syncRewardsForDelegator(
+    function _withdrawAndSyncRewardsForDelegator(
         bytes32 poolId,
-        address member,
+        address payable member,
         IStructs.StoredBalance memory initialDelegatedStakeToPoolByOwner,
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner
     )
@@ -84,7 +84,7 @@ contract MixinStakingPoolRewards is
     {
         // transfer any rewards from the transient pool vault to the eth vault;
         // this must be done before we can modify the owner's portion of the delegator pool.
-        _transferDelegatorRewardsToEthVault(
+        _withdrawMemberRewardsFromPool(
             poolId,
             member,
             initialDelegatedStakeToPoolByOwner,
@@ -180,9 +180,9 @@ contract MixinStakingPoolRewards is
     ///      modified.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
-    function _transferDelegatorRewardsToEthVault(
+    function _withdrawMemberRewardsFromPool(
         bytes32 poolId,
-        address member,
+        address payable member,
         IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
         uint256 currentEpoch
     )
@@ -194,16 +194,12 @@ contract MixinStakingPoolRewards is
             unsyncedDelegatedStakeToPoolByOwner,
             currentEpoch
         );
-        if (balance == 0) {
-            return;
-        }
 
-        // transfer from transient Reward Pool vault to ETH Vault
-        rewardVault.transferToEthVault(
+        // Transfer rewards to delegator
+        rewardVault.transferToMember(
             poolId,
             member,
-            balance,
-            address(ethVault)
+            balance
         );
     }
 

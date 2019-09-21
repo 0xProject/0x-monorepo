@@ -52,23 +52,23 @@ contract MixinStorage is
     mapping (uint8 => IStructs.StoredBalance) public globalStakeByStatus;
 
     // mapping from Owner to Amount of Active Stake
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
 
     // mapping from Owner to Amount of Inactive Stake
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
 
     // mapping from Owner to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
     // mapping from Owner to Amount of Withdrawable Stake

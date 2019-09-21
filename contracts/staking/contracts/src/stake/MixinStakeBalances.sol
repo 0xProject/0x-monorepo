@@ -38,7 +38,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
             globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)]
         );
         return IStructs.StakeBalance({
@@ -54,7 +54,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
             globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)]
         );
         return IStructs.StakeBalance({
@@ -70,7 +70,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
             globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
         );
         return IStructs.StakeBalance({
@@ -98,7 +98,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_activeStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_activeStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -113,7 +113,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_inactiveStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_inactiveStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -128,7 +128,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByOwner[owner]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -155,7 +155,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -170,7 +170,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadAndSyncBalance(_delegatedStakeByPoolId[poolId]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByPoolId[poolId]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance

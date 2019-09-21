@@ -193,8 +193,8 @@ contract MixinStake is
         _incrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
         // synchronizes reward state in the pool that the staker is delegating to
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
-        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        _withdrawAndSyncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -221,8 +221,8 @@ contract MixinStake is
         _decrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
         // synchronizes reward state in the pool that the staker is undelegating from
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
-        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        _withdrawAndSyncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
     }
 
     /// @dev Returns a storage pointer to a user's stake in a given status.
