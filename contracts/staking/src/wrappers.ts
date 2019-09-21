@@ -33,7 +33,6 @@ export * from '../generated-wrappers/mixin_stake_storage';
 export * from '../generated-wrappers/mixin_staking_pool';
 export * from '../generated-wrappers/mixin_staking_pool_makers';
 export * from '../generated-wrappers/mixin_staking_pool_modifiers';
-export * from '../generated-wrappers/mixin_staking_pool_reward_vault';
 export * from '../generated-wrappers/mixin_staking_pool_rewards';
 export * from '../generated-wrappers/mixin_storage';
 export * from '../generated-wrappers/mixin_vault_core';

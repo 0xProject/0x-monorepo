@@ -171,29 +171,4 @@ contract MixinStakingPool is
             ));
         }
     }
-
-    function _assertNewOperatorShare(
-        bytes32 poolId,
-        uint32 currentOperatorShare,
-        uint32 newOperatorShare
-    )
-        private
-    {
-        // sanity checks
-        if (newOperatorShare > PPM_DENOMINATOR) {
-            // operator share must be a valid fraction
-            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
-                LibStakingRichErrors.OperatorShareErrorCodes.OperatorShareTooLarge,
-                poolId,
-                newOperatorShare
-            ));
-        } else if (newOperatorShare >= currentOperatorShare) {
-            // new share must be less than the current share
-            LibRichErrors.rrevert(LibStakingRichErrors.OperatorShareError(
-                LibStakingRichErrors.OperatorShareErrorCodes.CanOnlyDecreaseOperatorShare,
-                poolId,
-                newOperatorShare
-            ));
-        }
-    }
 }

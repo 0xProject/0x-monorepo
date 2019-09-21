@@ -310,24 +310,4 @@ contract MixinStakingPoolRewards is
             );
         }
     }
-
-    /// @dev Transfers operator reward to the ETH vault.
-    /// @param poolId Unique Id of pool to transfer reward for,
-    /// @param operator of the pool.
-    /// @param amount of ETH to transfer.
-    function _transferOperatorRewardToEthVault(
-        bytes32 poolId,
-        address operator,
-        uint256 amount
-    )
-        private
-    {
-        // perform transfer and notify
-        ethVault.depositFor.value(amount)(operator);
-        emit OperatorRewardTransferredToEthVault(
-            poolId,
-            operator,
-            amount
-        );
-    }
 }

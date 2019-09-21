@@ -131,6 +131,14 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
+                globalStakeByStatus_slot,
+                globalStakeByStatus_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
                 _activeStakeByOwner_slot,
                 _activeStakeByOwner_offset,
                 slot,
