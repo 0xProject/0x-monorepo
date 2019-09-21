@@ -96,6 +96,24 @@ contract Staking is
             )
             slot := add(slot, 0x1)
 
+            /// Authorizable
+
+            assertSlotAndOffset(
+                authorized_slot,
+                authorized_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                authorities_slot,
+                authorities_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
             /// MixinStorage
 
             assertSlotAndOffset(
@@ -125,6 +143,14 @@ contract Staking is
             assertSlotAndOffset(
                 readOnlyProxyCallee_slot,
                 readOnlyProxyCallee_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                globalStakeByStatus_slot,
+                globalStakeByStatus_offset,
                 slot,
                 offset
             )
@@ -283,8 +309,8 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                rewardVault_slot,
-                rewardVault_offset,
+                memberRewardVault_slot,
+                memberRewardVault_offset,
                 slot,
                 offset
             )
