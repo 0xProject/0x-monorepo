@@ -16,6 +16,8 @@
         "declarationMap": true,
         "sourceMap": true
     },
+    // These are not working right now
+    "exclude": ["./contracts/extensions/**/*", "./contracts/coordinator/**/*"],
     // The root of the project is just a list of references and does not contain
     // any top-level TypeScript code.
     "include": [],
@@ -26,7 +28,7 @@
         { "path": "./contracts/exchange" },
         { "path": "./contracts/exchange-forwarder" },
         { "path": "./contracts/exchange-libs" },
-        { "path": "./contracts/extensions" },
+        // { "path": "./contracts/extensions" },
         { "path": "./contracts/multisig" },
         { "path": "./contracts/test-utils" },
         { "path": "./contracts/utils" },
