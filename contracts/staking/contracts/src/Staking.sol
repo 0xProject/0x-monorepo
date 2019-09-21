@@ -96,6 +96,24 @@ contract Staking is
             )
             slot := add(slot, 0x1)
 
+            /// Authorizable
+
+            assertSlotAndOffset(
+                authorized_slot,
+                authorized_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                authorities_slot,
+                authorities_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
             /// MixinStorage
 
             assertSlotAndOffset(
