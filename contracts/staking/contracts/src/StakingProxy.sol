@@ -210,7 +210,7 @@ contract StakingProxy is
         }
 
         // Minimum stake must be > 1
-        if (minimumStake < 2) {
+        if (minimumPoolStake < 2) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMinimumPoolStake

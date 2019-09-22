@@ -1,4 +1,4 @@
-import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments, randomAddress } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -88,6 +88,43 @@ blockchainTests('Configurable Parameters unit tests', env => {
 
         it('works if called by owner', async () => {
             return setParamsAndAssertAsync({});
+        });
+
+        describe('WETH allowance', () => {
+            it('rescinds allowance for old vaults and grants unlimited allowance to new ones', async () => {
+                const [oldEthVaultAddress, oldRewardVaultAddress, newEthVaultAddress, newRewardVaultAddress] = _.times(
+                    4,
+                    () => randomAddress(),
+                );
+                await testContract.setVaultAddresses.awaitTransactionSuccessAsync(
+                    oldEthVaultAddress,
+                    oldRewardVaultAddress,
+                );
+                const { logs } = await setParamsAndAssertAsync({
+                    ethVaultAddress: newEthVaultAddress,
+                    rewardVaultAddress: newRewardVaultAddress,
+                });
+                const approveEvents = filterLogsToArguments<TestMixinParamsWETHApproveEventArgs>(
+                    logs,
+                    TestMixinParamsEvents.WETHApprove,
+                );
+                expect(approveEvents[0]).to.deep.eq({
+                    spender: oldEthVaultAddress,
+                    amount: constants.ZERO_AMOUNT,
+                });
+                expect(approveEvents[1]).to.deep.eq({
+                    spender: newEthVaultAddress,
+                    amount: constants.MAX_UINT256,
+                });
+                expect(approveEvents[2]).to.deep.eq({
+                    spender: oldRewardVaultAddress,
+                    amount: constants.ZERO_AMOUNT,
+                });
+                expect(approveEvents[3]).to.deep.eq({
+                    spender: newRewardVaultAddress,
+                    amount: constants.MAX_UINT256,
+                });
+            });
         });
     });
 });

@@ -28,7 +28,6 @@ import "./MixinVaultCore.sol";
 contract EthVault is
     IEthVault,
     IVaultCore,
-    Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;

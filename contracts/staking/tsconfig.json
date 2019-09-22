@@ -52,10 +52,11 @@
         "generated-artifacts/TestLibProxy.json",
         "generated-artifacts/TestLibProxyReceiver.json",
         "generated-artifacts/TestLibSafeDowncast.json",
+        "generated-artifacts/TestMixinParams.json",
         "generated-artifacts/TestMixinVaultCore.json",
         "generated-artifacts/TestProtocolFees.json",
-        "generated-artifacts/TestProtocolFeesERC20Proxy.json",
         "generated-artifacts/TestStaking.json",
+        "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
         "generated-artifacts/TestStorageLayout.json",
         "generated-artifacts/ZrxVault.json"
