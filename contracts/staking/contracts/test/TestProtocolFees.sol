@@ -68,18 +68,14 @@ contract TestProtocolFees is
         currentEpoch += 1;
     }
 
-    function getWethAssetData() external pure returns (bytes memory) {
-        return WETH_ASSET_DATA;
-    }
-
     /// @dev Create a test pool.
     function createTestPool(
         bytes32 poolId,
         uint256 operatorStake,
         uint256 membersStake,
-        address[] memory makerAddresses
+        address[] calldata makerAddresses
     )
-        public
+        external
     {
         TestPool storage pool = _testPools[poolId];
         pool.operatorStake = operatorStake;
@@ -100,6 +96,10 @@ contract TestProtocolFees is
         external
     {
         emit ERC20ProxyTransferFrom(assetData, from, to, amount);
+    }
+
+    function getWethAssetData() external pure returns (bytes memory) {
+        return WETH_ASSET_DATA;
     }
 
     /// @dev Overridden to use test pools.

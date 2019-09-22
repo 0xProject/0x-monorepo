@@ -223,7 +223,7 @@ blockchainTests.resets('delegator unit rewards', env => {
     }
 
     async function finalizePoolAsync(poolId: string): Promise<ResultWithDeposits<{}>> {
-        const receipt = await testContract.internalFinalizePool.awaitTransactionSuccessAsync(poolId);
+        const receipt = await testContract.originalFinalizePool.awaitTransactionSuccessAsync(poolId);
         const [ethVaultDeposit, rewardVaultDeposit] = getDepositsFromLogs(receipt.logs, poolId);
         return {
             ethVaultDeposit,
@@ -379,7 +379,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             assertRoughlyEquals(delegatorReward, expectedDelegatorRewards);
         });
 
-        it('has correct reward immediately after unstaking', async () => {
+        it('has correct reward immediately after undelegating', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)
@@ -392,7 +392,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('has correct reward immediately after unstaking and restaking', async () => {
+        it('has correct reward immediately after undelegating and redelegating', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)
@@ -406,7 +406,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('has correct reward immediately after unstaking, restaking, and rewarding fees', async () => {
+        it('has correct reward immediately after undelegating, redelegating, and rewarding fees', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)

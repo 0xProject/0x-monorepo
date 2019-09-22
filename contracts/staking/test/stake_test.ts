@@ -4,8 +4,6 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts } from '../src';
-
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';

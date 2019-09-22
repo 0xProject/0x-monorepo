@@ -247,50 +247,17 @@ contract MixinCumulativeRewards is
         }
 
         // Sanity check interval
-        if (beginEpoch > endEpoch) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors
-                        .CumulativeRewardIntervalErrorCode
-                        .BeginEpochMustBeLessThanEndEpoch,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        require(beginEpoch <= endEpoch, "CR_INTERVAL_INVALID");
 
         // Sanity check begin reward
         IStructs.Fraction memory beginReward =
             _cumulativeRewardsByPool[poolId][beginEpoch];
-        if (!_isCumulativeRewardSet(beginReward)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors
-                        .CumulativeRewardIntervalErrorCode
-                        .BeginEpochDoesNotHaveReward,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        require(_isCumulativeRewardSet(beginReward), "CR_INTERVAL_INVALID_BEGIN");
 
         // Sanity check end reward
         IStructs.Fraction memory endReward =
             _cumulativeRewardsByPool[poolId][endEpoch];
-        if (!_isCumulativeRewardSet(endReward)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors
-                        .CumulativeRewardIntervalErrorCode
-                        .EndEpochDoesNotHaveReward,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        require(_isCumulativeRewardSet(endReward), "CR_INTERVAL_INVALID_END");
 
         // Compute reward
         reward = LibFractions.scaleDifference(

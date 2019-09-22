@@ -21,21 +21,16 @@ pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
 import "../src/libs/LibCobbDouglas.sol";
-import "./TestStaking.sol";
+import "./TestStakingNoWETH.sol";
 
 
 contract TestFinalizer is
-    TestStaking
+    TestStakingNoWETH
 {
-    event RecordStakingPoolRewards(
-        bytes32 poolId,
-        uint256 totalReward,
-        uint256 membersStake
-    );
-
     event DepositStakingPoolRewards(
-        uint256 operatorReward,
-        uint256 membersReward
+        bytes32 poolId,
+        uint256 reward,
+        uint256 membersStake
     );
 
     struct UnfinalizedPoolReward {
@@ -160,7 +155,7 @@ contract TestFinalizer is
             _computeSplitStakingPoolRewards(operatorShare, reward, membersStake);
         address(_operatorRewardsReceiver).transfer(operatorReward);
         address(_membersRewardsReceiver).transfer(membersReward);
-        emit DepositStakingPoolRewards(operatorReward, membersReward);
+        emit DepositStakingPoolRewards(poolId, reward, membersStake);
     }
 
     /// @dev Overriden to just increase the epoch counter.

@@ -40,12 +40,6 @@ export enum InitializationErrorCode {
     MixinParamsAlreadyInitialized,
 }
 
-export enum CumulativeRewardIntervalErrorCode {
-    BeginEpochMustBeLessThanEndEpoch,
-    BeginEpochDoesNotHaveReward,
-    EndEpochDoesNotHaveReward,
-}
-
 export class MiscalculatedRewardsError extends RevertError {
     constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
         super(
@@ -244,21 +238,6 @@ export class ProxyDestinationCannotBeNilError extends RevertError {
     }
 }
 
-export class CumulativeRewardIntervalError extends RevertError {
-    constructor(
-        errorCode?: CumulativeRewardIntervalErrorCode,
-        poolId?: string,
-        beginEpoch?: BigNumber | number | string,
-        endEpoch?: BigNumber | number | string,
-    ) {
-        super(
-            'CumulativeRewardIntervalError',
-            'CumulativeRewardIntervalError(uint8 errorCode, bytes32 poolId, uint256 beginEpoch, uint256 endEpoch)',
-            { errorCode, poolId, beginEpoch, endEpoch },
-        );
-    }
-}
-
 export class PreviousEpochNotFinalizedError extends RevertError {
     constructor(closingEpoch?: BigNumber | number | string, unfinalizedPoolsRemaining?: BigNumber | number | string) {
         super(
@@ -272,7 +251,6 @@ export class PreviousEpochNotFinalizedError extends RevertError {
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
-    CumulativeRewardIntervalError,
     EthVaultNotSetError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,

@@ -356,7 +356,7 @@ contract MixinStakingPoolRewards is
         // If the stake has been touched since the last reward epoch,
         // it has already been claimed.
         if (unsyncedStake.currentEpoch >= lastRewardEpoch) {
-            return 0;
+            return reward;
         }
         // From here we know: `unsyncedStake.currentEpoch < currentEpoch > 0`.
 

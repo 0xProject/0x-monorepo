@@ -3,8 +3,6 @@ import { blockchainTests, describe, expect, shortZip } from '@0x/contracts-test-
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts } from '../src';
-
 import { FinalizerActor } from './actors/finalizer_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { StakerActor } from './actors/staker_actor';
@@ -45,7 +43,7 @@ blockchainTests.resets('Testing Rewards', env => {
         stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
         // set up staking parameters
         await stakingApiWrapper.utils.setParamsAsync({
-            minimumPoolStake: new BigNumber(1),
+            minimumPoolStake: new BigNumber(2),
             cobbDouglasAlphaNumerator: new BigNumber(1),
             cobbDouglasAlphaDenominator: new BigNumber(6),
             rewardVaultAddress: stakingApiWrapper.rewardVaultContract.address,
@@ -60,7 +58,7 @@ blockchainTests.resets('Testing Rewards', env => {
         poolId = await poolOperator.createStakingPoolAsync(0, true);
         // Stake something in the pool or else it won't get any rewards.
         poolOperatorStaker = new StakerActor(poolOperator.getOwner(), stakingApiWrapper);
-        await poolOperatorStaker.stakeWithPoolAsync(poolId, new BigNumber(1));
+        await poolOperatorStaker.stakeWithPoolAsync(poolId, new BigNumber(2));
         // set exchange address
         await stakingApiWrapper.stakingContract.addExchangeAddress.awaitTransactionSuccessAsync(exchangeAddress);
         // associate operators for tracking in Finalizer
@@ -609,18 +607,14 @@ blockchainTests.resets('Testing Rewards', env => {
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // Undelegate 0 stake to move the rewards into the EthVault.
-            await staker.moveStakeAsync(
-                new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
-                toBaseUnitAmount(0),
-            );
+            // Sync rewards to move the rewards into the EthVault.
+            await staker.syncDelegatorRewardsAsync(poolId);
             await validateEndBalances({
                 stakerRewardVaultBalance_1: toBaseUnitAmount(0),
                 stakerEthVaultBalance_1: reward,
             });
         });
-        it(`should split payout between two delegators when undelegating`, async () => {
+        it(`should split payout between two delegators when syncing rewards`, async () => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
@@ -633,13 +627,9 @@ blockchainTests.resets('Testing Rewards', env => {
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // Undelegate 0 stake to move rewards from RewardVault into the EthVault.
+            // Sync rewards to move rewards from RewardVault into the EthVault.
             for (const [staker] of _.reverse(stakersAndStake)) {
-                await staker.moveStakeAsync(
-                    new StakeInfo(StakeStatus.Delegated, poolId),
-                    new StakeInfo(StakeStatus.Active),
-                    toBaseUnitAmount(0),
-                );
+                await staker.syncDelegatorRewardsAsync(poolId);
             }
             const expectedStakerRewards = stakeAmounts.map(n => reward.times(n).dividedToIntegerBy(totalStakeAmount));
             await validateEndBalances({
@@ -651,7 +641,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 membersRewardVaultBalance: new BigNumber(1), // Rounding error
             });
         });
-        it(`delegator should not be credited payout twice by undelegating twice`, async () => {
+        it(`delegator should not be credited payout twice by syncing rewards twice`, async () => {
             const stakeAmounts = [toBaseUnitAmount(5), toBaseUnitAmount(10)];
             const totalStakeAmount = BigNumber.sum(...stakeAmounts);
             // stake and delegate both
@@ -673,17 +663,10 @@ blockchainTests.resets('Testing Rewards', env => {
                 poolRewardVaultBalance: reward,
                 membersRewardVaultBalance: reward,
             });
-            const undelegateZeroAsync = async (staker: StakerActor) => {
-                return staker.moveStakeAsync(
-                    new StakeInfo(StakeStatus.Delegated, poolId),
-                    new StakeInfo(StakeStatus.Active),
-                    toBaseUnitAmount(0),
-                );
-            };
-            // First staker will undelegate 0 to get rewards transferred to EthVault.
+            // First staker will sync rewards to get rewards transferred to EthVault.
             const sneakyStaker = stakers[0];
             const sneakyStakerExpectedEthVaultBalance = expectedStakerRewards[0];
-            await undelegateZeroAsync(sneakyStaker);
+            await sneakyStaker.syncDelegatorRewardsAsync(poolId);
             // Should have been credited the correct amount of rewards.
             let sneakyStakerEthVaultBalance = await stakingApiWrapper.ethVaultContract.balanceOf.callAsync(
                 sneakyStaker.getOwner(),
@@ -692,7 +675,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 sneakyStakerExpectedEthVaultBalance,
             );
             // Now he'll try to do it again to see if he gets credited twice.
-            await undelegateZeroAsync(sneakyStaker);
+            await sneakyStaker.syncDelegatorRewardsAsync(poolId);
             /// The total amount credited should remain the same.
             sneakyStakerEthVaultBalance = await stakingApiWrapper.ethVaultContract.balanceOf.callAsync(
                 sneakyStaker.getOwner(),
