@@ -422,11 +422,15 @@ export class SwapQuoter {
         const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset
         const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);
-        const doesOrdersRequireFeeOrders = (!isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts));
+        const doesOrdersRequireFeeOrders =
+            !isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts);
         const isRequestingFeeOrders = !shouldDisableRequestingFeeOrders && doesOrdersRequireFeeOrders;
         let feeOrdersAndFillableAmounts = constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS;
         if (isRequestingFeeOrders) {
-            feeOrdersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData);
+            feeOrdersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
+                zrxTokenAssetData,
+                takerAssetData,
+            );
         }
 
         if (ordersAndFillableAmounts.orders.length === 0) {
