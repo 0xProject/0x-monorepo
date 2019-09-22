@@ -9,9 +9,9 @@ import * as _ from 'lodash';
 import {
     artifacts,
     EthVaultContract,
+    MemberRewardVaultContract,
     ReadOnlyProxyContract,
     StakingContract,
-    StakingPoolRewardVaultContract,
     StakingProxyContract,
     ZrxVaultContract,
 } from '../../src';
@@ -25,7 +25,7 @@ export class StakingApiWrapper {
     public stakingProxyContract: StakingProxyContract; // The StakingProxy.sol contract as a StakingProxyContract
     public zrxVaultContract: ZrxVaultContract;
     public ethVaultContract: EthVaultContract;
-    public rewardVaultContract: StakingPoolRewardVaultContract;
+    public rewardVaultContract: MemberRewardVaultContract;
     public zrxTokenContract: DummyERC20TokenContract;
     public utils = {
         // Epoch Utils
@@ -114,7 +114,7 @@ export class StakingApiWrapper {
         stakingContract: StakingContract,
         zrxVaultContract: ZrxVaultContract,
         ethVaultContract: EthVaultContract,
-        rewardVaultContract: StakingPoolRewardVaultContract,
+        rewardVaultContract: MemberRewardVaultContract,
         zrxTokenContract: DummyERC20TokenContract,
     ) {
         this._web3Wrapper = env.web3Wrapper;
@@ -180,8 +180,8 @@ export async function deployAndConfigureContractsAsync(
         artifacts,
     );
     // deploy reward vault
-    const rewardVaultContract = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
-        artifacts.StakingPoolRewardVault,
+    const rewardVaultContract = await MemberRewardVaultContract.deployFrom0xArtifactAsync(
+        artifacts.MemberRewardVault,
         env.provider,
         env.txDefaults,
         artifacts,

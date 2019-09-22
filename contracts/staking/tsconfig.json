@@ -5,9 +5,9 @@
     "files": [
         "generated-artifacts/EthVault.json",
         "generated-artifacts/IEthVault.json",
+        "generated-artifacts/IMemberRewardVault.json",
         "generated-artifacts/IStaking.json",
         "generated-artifacts/IStakingEvents.json",
-        "generated-artifacts/IStakingPoolRewardVault.json",
         "generated-artifacts/IStakingProxy.json",
         "generated-artifacts/IStorage.json",
         "generated-artifacts/IStorageInit.json",
@@ -20,6 +20,7 @@
         "generated-artifacts/LibProxy.json",
         "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibStakingRichErrors.json",
+        "generated-artifacts/MemberRewardVault.json",
         "generated-artifacts/MixinConstants.json",
         "generated-artifacts/MixinCumulativeRewards.json",
         "generated-artifacts/MixinDeploymentConstants.json",
@@ -38,7 +39,6 @@
         "generated-artifacts/MixinVaultCore.json",
         "generated-artifacts/ReadOnlyProxy.json",
         "generated-artifacts/Staking.json",
-        "generated-artifacts/StakingPoolRewardVault.json",
         "generated-artifacts/StakingProxy.json",
         "generated-artifacts/TestAssertStorageParams.json",
         "generated-artifacts/TestCobbDouglas.json",
@@ -53,7 +53,6 @@
         "generated-artifacts/TestProtocolFeesERC20Proxy.json",
         "generated-artifacts/TestStaking.json",
         "generated-artifacts/TestStakingProxy.json",
-        "generated-artifacts/TestStorageLayout.json",
         "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

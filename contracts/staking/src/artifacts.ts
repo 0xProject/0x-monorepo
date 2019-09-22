@@ -7,9 +7,9 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as EthVault from '../generated-artifacts/EthVault.json';
 import * as IEthVault from '../generated-artifacts/IEthVault.json';
+import * as IMemberRewardVault from '../generated-artifacts/IMemberRewardVault.json';
 import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
-import * as IStakingPoolRewardVault from '../generated-artifacts/IStakingPoolRewardVault.json';
 import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
 import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
@@ -22,6 +22,7 @@ import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRich
 import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
+import * as MemberRewardVault from '../generated-artifacts/MemberRewardVault.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
@@ -40,7 +41,6 @@ import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
 import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
-import * as StakingPoolRewardVault from '../generated-artifacts/StakingPoolRewardVault.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestAssertStorageParams from '../generated-artifacts/TestAssertStorageParams.json';
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
@@ -55,7 +55,6 @@ import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json'
 import * as TestProtocolFeesERC20Proxy from '../generated-artifacts/TestProtocolFeesERC20Proxy.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
-import * as TestStorageLayout from '../generated-artifacts/TestStorageLayout.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
@@ -67,9 +66,9 @@ export const artifacts = {
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
     IEthVault: IEthVault as ContractArtifact,
+    IMemberRewardVault: IMemberRewardVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
     IStakingEvents: IStakingEvents as ContractArtifact,
-    IStakingPoolRewardVault: IStakingPoolRewardVault as ContractArtifact,
     IStakingProxy: IStakingProxy as ContractArtifact,
     IStorage: IStorage as ContractArtifact,
     IStorageInit: IStorageInit as ContractArtifact,
@@ -93,8 +92,8 @@ export const artifacts = {
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     EthVault: EthVault as ContractArtifact,
+    MemberRewardVault: MemberRewardVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
-    StakingPoolRewardVault: StakingPoolRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
@@ -109,5 +108,4 @@ export const artifacts = {
     TestProtocolFeesERC20Proxy: TestProtocolFeesERC20Proxy as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingProxy: TestStakingProxy as ContractArtifact,
-    TestStorageLayout: TestStorageLayout as ContractArtifact,
 };
