@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
@@ -50,23 +51,41 @@ contract MixinDeploymentConstants {
     // bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c778417e063141139fce010982780140aa0cd5ab";
 
     /// @dev Ensures that the WETH_ASSET_DATA is correct.
-    constructor() public {
+    constructor()
+        public
+    {
         // Ensure that the WETH_ASSET_DATA is correct.
         if (!WETH_ASSET_DATA.equals(
-            abi.encodeWithSelector(IAssetData(address(0)).ERC20Token.selector, WETH_ADDRESS)
+            abi.encodeWithSelector(
+                IAssetData(address(0)).ERC20Token.selector,
+                WETH_ADDRESS
+            )
         )) {
             LibRichErrors.rrevert(LibStakingRichErrors.InvalidWethAssetDataError());
         }
     }
 
-    /// @dev An overridable way to access the deployed WETH address.
+    /// @dev An overridable way to access the deployed WETH contract.
     ///      Must be view to allow overrides to access state.
-    /// @return wethAddress The address of the configured WETH contract.
-    function _getWETHAddress()
+    /// @return wethContract The WETH contract instance.
+    function _getWethContract()
         internal
         view
-        returns (address wethAddress)
+        returns (IEtherToken wethContract)
     {
-        return WETH_ADDRESS;
+        wethContract = IEtherToken(WETH_ADDRESS);
+        return wethContract;
+    }
+
+    /// @dev An overridable way to access the deployed WETH assetData.
+    ///      Must be view to allow overrides to access state.
+    /// @return wethAssetData The assetData of the configured WETH contract.
+    function _getWethAssetData()
+        internal
+        view
+        returns (bytes memory wethAssetData)
+    {
+        wethAssetData = WETH_ASSET_DATA;
+        return wethAssetData;
     }
 }

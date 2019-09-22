@@ -33,23 +33,17 @@ contract TestStakingProxy is
             _stakingContract,
             NIL_ADDRESS,
             NIL_ADDRESS,
-            NIL_ADDRESS,
-            NIL_ADDRESS,
             NIL_ADDRESS
         )
     {}
 
     function setAddressParams(
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address payable _rewardVaultAddress,
         address _zrxVaultAddress        
     )
         external
     {
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        ethVault = IEthVault(_ethVaultAddress);
-        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
     }
 

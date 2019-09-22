@@ -25,7 +25,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibCobbDouglas.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
 import "../sys/MixinFinalizer.sol";
@@ -37,7 +36,6 @@ contract MixinExchangeFees is
     IStakingEvents,
     MixinAbstract,
     MixinConstants,
-    MixinDeploymentConstants,
     Ownable,
     MixinStorage,
     MixinStakingPoolModifiers,
@@ -74,7 +72,7 @@ contract MixinExchangeFees is
         // WETH.
         if (msg.value == 0) {
             wethAssetProxy.transferFrom(
-                WETH_ASSET_DATA,
+                _getWethAssetData(),
                 payerAddress,
                 address(this),
                 protocolFeePaid
@@ -125,6 +123,19 @@ contract MixinExchangeFees is
 
         // Store the pool.
         activePoolsThisEpoch[poolId] = pool;
+    }
+
+    /// @dev Returns the total balance of this contract, including WETH.
+    /// @return totalBalance Total balance.
+    function getTotalBalance()
+        external
+        view
+        returns (uint256 totalBalance)
+    {
+        totalBalance = address(this).balance.safeAdd(
+            _getWethContract().balanceOf(address(this))
+        );
+        return totalBalance;
     }
 
     /// @dev Get information on an active staking pool in this epoch.

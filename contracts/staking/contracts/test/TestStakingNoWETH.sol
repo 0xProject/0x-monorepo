@@ -28,13 +28,6 @@ import "../src/Staking.sol";
 contract TestStakingNoWETH is
     Staking
 {
-    function _transferWETHAllownces(
-        address[2] memory oldSpenders,
-        address[2] memory newSpenders
-    )
-        internal
-    {}
-
     function _wrapBalanceToWETHAndGetBalance()
         internal
         returns (uint256 balance)

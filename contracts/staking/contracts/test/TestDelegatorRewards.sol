@@ -20,8 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
-import "../src/interfaces/IStakingPoolRewardVault.sol";
-import "../src/interfaces/IEthVault.sol";
 import "./TestStakingNoWETH.sol";
 
 
@@ -54,14 +52,8 @@ contract TestDelegatorRewards is
     constructor() public {
         init(
             address(1),
-            address(1),
-            address(1),
             address(1)
         );
-        // Set this contract up as the eth and reward vault to intercept
-        // deposits.
-        ethVault = IEthVault(address(this));
-        rewardVault = IStakingPoolRewardVault(address(this));
     }
 
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
@@ -137,7 +129,7 @@ contract TestDelegatorRewards is
         _stake.currentEpochBalance += uint96(stake);
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
@@ -164,7 +156,7 @@ contract TestDelegatorRewards is
         _stake.isInitialized = true;
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
@@ -191,38 +183,11 @@ contract TestDelegatorRewards is
         _stake.isInitialized = true;
         _stake.nextEpochBalance -= uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
             _stake
-        );
-    }
-
-    /// @dev `IEthVault.depositFor()`,` overridden to just emit events.
-    function depositFor(
-        address owner,
-        uint256 amount
-    )
-        external
-    {
-        emit RecordDepositToEthVault(
-            owner,
-            amount
-        );
-    }
-
-    /// @dev `IStakingPoolRewardVault.depositFor()`,`
-    ///       overridden to just emit events.
-    function depositFor(
-        bytes32 poolId,
-        uint256 membersReward
-    )
-        external
-    {
-        emit RecordDepositToRewardVault(
-            poolId,
-            membersReward
         );
     }
 

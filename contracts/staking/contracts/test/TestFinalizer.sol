@@ -58,8 +58,6 @@ contract TestFinalizer is
     {
         init(
             address(1),
-            address(1),
-            address(1),
             address(1)
         );
         _operatorRewardsReceiver = operatorRewardsReceiver;

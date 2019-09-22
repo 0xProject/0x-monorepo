@@ -42,7 +42,7 @@ contract TestCumulativeRewardTracking is
 
     constructor(address wethAddress) public TestStaking(wethAddress) {}
 
-    function init(address, address, address payable, address) public {}
+    function init(address, address) public {}
 
     function _forceSetCumulativeReward(
         bytes32 poolId,

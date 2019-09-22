@@ -26,7 +26,6 @@ import "../libs/LibCobbDouglas.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
@@ -43,7 +42,6 @@ contract MixinFinalizer is
     IStakingEvents,
     MixinAbstract,
     MixinConstants,
-    MixinDeploymentConstants,
     Ownable,
     MixinStorage,
     MixinScheduler,
@@ -245,12 +243,12 @@ contract MixinFinalizer is
         internal
         returns (uint256 balance)
     {
-        IEtherToken weth = IEtherToken(_getWETHAddress());
+        IEtherToken wethContract = _getWethContract();
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            weth.deposit.value((address(this).balance))();
+            wethContract.deposit.value(ethBalance)();
         }
-        balance = weth.balanceOf(address(this));
+        balance = wethContract.balanceOf(address(this));
         return balance;
     }
 

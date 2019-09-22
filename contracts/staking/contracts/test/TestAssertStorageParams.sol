@@ -33,16 +33,12 @@ contract TestAssertStorageParams is
         uint32 cobbDouglasAlphaNumerator;
         uint32 cobbDouglasAlphaDenominator;
         address wethProxyAddress;
-        address ethVaultAddress;
-        address rewardVaultAddress;
         address zrxVaultAddress;
     }
 
     constructor()
         public
         StakingProxy(
-            NIL_ADDRESS,
-            NIL_ADDRESS,
             NIL_ADDRESS,
             NIL_ADDRESS,
             NIL_ADDRESS,
@@ -60,13 +56,11 @@ contract TestAssertStorageParams is
         cobbDouglasAlphaNumerator = params.cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
         wethAssetProxy = IAssetProxy(params.wethProxyAddress);
-        ethVault = IEthVault(params.ethVaultAddress);
-        rewardVault = IStakingPoolRewardVault(params.rewardVaultAddress);
         zrxVault = IZrxVault(params.zrxVaultAddress);
         _assertValidStorageParams();
     }
 
-    function _attachStakingContract(address, address, address, address, address)
+    function _attachStakingContract(address, address, address)
         internal
     {}
 }

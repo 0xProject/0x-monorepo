@@ -37,15 +37,11 @@ contract StakingProxy is
     /// @param _stakingContract Staking contract to delegate calls to.
     /// @param _readOnlyProxy The address of the read only proxy.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     constructor(
         address _stakingContract,
         address _readOnlyProxy,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
         address _zrxVaultAddress
     )
         public
@@ -55,8 +51,6 @@ contract StakingProxy is
         _attachStakingContract(
             _stakingContract,
             _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
             _zrxVaultAddress
         );
     }
@@ -78,17 +72,11 @@ contract StakingProxy is
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     function attachStakingContract(
         address _stakingContract,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
         address _zrxVaultAddress
     )
         external
@@ -97,8 +85,6 @@ contract StakingProxy is
         _attachStakingContract(
             _stakingContract,
             _wethProxyAddress == NIL_ADDRESS ? address(wethAssetProxy) : _wethProxyAddress,
-            _ethVaultAddress == NIL_ADDRESS ? address(ethVault) : _ethVaultAddress,
-            _rewardVaultAddress == NIL_ADDRESS ? address(rewardVault) : _rewardVaultAddress,
             _zrxVaultAddress == NIL_ADDRESS ? address(zrxVault) : _zrxVaultAddress
         );
     }
@@ -225,20 +211,6 @@ contract StakingProxy is
             ));
         }
 
-        if (address(ethVault) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress
-            ));
-        }
-
-        if (address(rewardVault) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress
-            ));
-        }
-
         if (address(zrxVault) == NIL_ADDRESS) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
@@ -250,14 +222,10 @@ contract StakingProxy is
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _attachStakingContract(
         address _stakingContract,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
         address _zrxVaultAddress
     )
         internal
@@ -271,8 +239,6 @@ contract StakingProxy is
             abi.encodeWithSelector(
                 IStorageInit(0).init.selector,
                 _wethProxyAddress,
-                _ethVaultAddress,
-                _rewardVaultAddress,
                 _zrxVaultAddress
             )
         );
