@@ -18,8 +18,6 @@ export const constants = {
         cobbDouglasAlphaNumerator: new BigNumber(1),
         cobbDouglasAlphaDenominator: new BigNumber(2),
         wethProxyAddress: randomAddress(),
-        ethVaultAddress: randomAddress(),
-        rewardVaultAddress: randomAddress(),
         zrxVaultAddress: randomAddress(),
     },
     PPM,

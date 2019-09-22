@@ -111,8 +111,6 @@ export class CumulativeRewardTrackingSimulation {
             this.getTestCumulativeRewardTrackingContract().address,
             constants.NULL_ADDRESS,
             constants.NULL_ADDRESS,
-            constants.NULL_ADDRESS,
-            constants.NULL_ADDRESS,
         );
         const testLogs = await this._executeActionsAsync(testActions);
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);

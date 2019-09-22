@@ -12,8 +12,6 @@ export interface StakingParams {
     cobbDouglasAlphaNumerator: Numberish;
     cobbDouglasAlphaDenominator: Numberish;
     wethProxyAddress: string;
-    ethVaultAddress: string;
-    rewardVaultAddress: string;
     zrxVaultAddress: string;
 }
 

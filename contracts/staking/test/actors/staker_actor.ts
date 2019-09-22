@@ -155,8 +155,8 @@ export class StakerActor extends BaseActor {
         );
     }
 
-    public async syncDelegatorRewardsAsync(poolId: string, revertError?: RevertError): Promise<void> {
-        const txReceiptPromise = this._stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(
+    public async withdrawDelegatorRewardsAsync(poolId: string, revertError?: RevertError): Promise<void> {
+        const txReceiptPromise = this._stakingApiWrapper.stakingContract.withdrawDelegatorRewards.awaitTransactionSuccessAsync(
             poolId,
             { from: this._owner },
         );
