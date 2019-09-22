@@ -422,7 +422,8 @@ export class SwapQuoter {
         const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset
         const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);
-        const isRequestingFeeOrders = !shouldDisableRequestingFeeOrders || (!isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts));
+        const doesOrdersRequireFeeOrders = (!isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts));
+        const isRequestingFeeOrders = !shouldDisableRequestingFeeOrders && doesOrdersRequireFeeOrders;
         let feeOrdersAndFillableAmounts = constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS;
         if (isRequestingFeeOrders) {
             feeOrdersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData);
@@ -432,6 +433,14 @@ export class SwapQuoter {
             throw new Error(
                 `${
                     SwapQuoterError.AssetUnavailable
+                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
+            );
+        }
+
+        if (isRequestingFeeOrders && feeOrdersAndFillableAmounts.orders.length === 0) {
+            throw new Error(
+                `${
+                    SwapQuoterError.FeeAssetUnavailable
                 }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }

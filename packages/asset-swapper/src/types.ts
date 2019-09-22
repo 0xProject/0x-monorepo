@@ -299,6 +299,7 @@ export enum SwapQuoterError {
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
+    FeeAssetUnavailable = 'FEE_ASSET_UNAVAILABLE',
 }
 
 /**
