@@ -248,7 +248,7 @@ contract MixinFinalizer is
         IEtherToken weth = IEtherToken(_getWETHAddress());
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            weth.deposit.value((address(this).balance));
+            weth.deposit.value((address(this).balance))();
         }
         balance = weth.balanceOf(address(this));
         return balance;

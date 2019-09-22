@@ -192,24 +192,23 @@ contract MixinExchangeFees is
         private
         view
     {
-        if (protocolFeePaid != 0) {
-            return;
+        if (protocolFeePaid == 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid,
+                    protocolFeePaid,
+                    msg.value
+                )
+            );
         }
-        if (msg.value == protocolFeePaid || msg.value == 0) {
-            return;
+        if (msg.value != protocolFeePaid && msg.value != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
+                    protocolFeePaid,
+                    msg.value
+                )
+            );
         }
-        LibRichErrors.rrevert(
-            LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                protocolFeePaid == 0 ?
-                    LibStakingRichErrors
-                        .ProtocolFeePaymentErrorCodes
-                        .ZeroProtocolFeePaid :
-                    LibStakingRichErrors
-                        .ProtocolFeePaymentErrorCodes
-                        .MismatchedFeeAndPayment,
-                protocolFeePaid,
-                msg.value
-            )
-        );
     }
 }

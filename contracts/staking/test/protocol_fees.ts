@@ -17,8 +17,8 @@ import {
     IStakingEventsEvents,
     IStakingEventsStakingPoolActivatedEventArgs,
     TestProtocolFeesContract,
-    TestProtocolFeesERC20ProxyContract,
-    TestProtocolFeesERC20ProxyTransferFromCalledEventArgs,
+    TestProtocolFeesERC20ProxyTransferFromEventArgs,
+    TestProtocolFeesEvents,
 } from '../src';
 
 import { getRandomInteger } from './utils/number_utils';
@@ -34,14 +34,6 @@ blockchainTests('Protocol Fee Unit Tests', env => {
     before(async () => {
         [ownerAddress, exchangeAddress, notExchangeAddress] = await env.web3Wrapper.getAvailableAddressesAsync();
 
-        // Deploy the erc20Proxy for testing.
-        const proxy = await TestProtocolFeesERC20ProxyContract.deployFrom0xArtifactAsync(
-            artifacts.TestProtocolFeesERC20Proxy,
-            env.provider,
-            env.txDefaults,
-            {},
-        );
-
         // Deploy the protocol fees contract.
         testContract = await TestProtocolFeesContract.deployFrom0xArtifactAsync(
             artifacts.TestProtocolFees,
@@ -52,7 +44,6 @@ blockchainTests('Protocol Fee Unit Tests', env => {
             },
             artifacts,
             exchangeAddress,
-            proxy.address,
         );
 
         wethAssetData = await testContract.getWethAssetData.callAsync();
@@ -168,9 +159,9 @@ blockchainTests('Protocol Fee Unit Tests', env => {
 
         describe('ETH fees', () => {
             function assertNoWETHTransferLogs(logs: LogEntry[]): void {
-                const logsArgs = filterLogsToArguments<TestProtocolFeesERC20ProxyTransferFromCalledEventArgs>(
+                const logsArgs = filterLogsToArguments<TestProtocolFeesERC20ProxyTransferFromEventArgs>(
                     logs,
-                    'TransferFromCalled',
+                    TestProtocolFeesEvents.ERC20ProxyTransferFrom,
                 );
                 expect(logsArgs).to.deep.eq([]);
             }
@@ -233,9 +224,9 @@ blockchainTests('Protocol Fee Unit Tests', env => {
 
         describe('WETH fees', () => {
             function assertWETHTransferLogs(logs: LogEntry[], fromAddress: string, amount: BigNumber): void {
-                const logsArgs = filterLogsToArguments<TestProtocolFeesERC20ProxyTransferFromCalledEventArgs>(
+                const logsArgs = filterLogsToArguments<TestProtocolFeesERC20ProxyTransferFromEventArgs>(
                     logs,
-                    'TransferFromCalled',
+                    TestProtocolFeesEvents.ERC20ProxyTransferFrom,
                 );
                 expect(logsArgs.length).to.eq(1);
                 for (const args of logsArgs) {

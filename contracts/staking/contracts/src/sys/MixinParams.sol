@@ -235,7 +235,7 @@ contract MixinParams is
         address[2] memory oldSpenders,
         address[2] memory newSpenders
     )
-        private
+        internal
     {
         IEtherToken weth = IEtherToken(_getWETHAddress());
         // Grant new allowances.

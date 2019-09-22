@@ -1,5 +1,6 @@
 import { Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { constants } from './constants';
 
@@ -133,3 +134,5 @@ export interface OperatorByPoolId {
 export interface DelegatorsByPoolId {
     [key: string]: string[];
 }
+
+export type DecodedLogs = Array<LogWithDecodedArgs<DecodedLogArgs>>;
