@@ -208,7 +208,7 @@ export class FinalizerActor extends BaseActor {
     ): Promise<OperatorBalanceByPoolId> {
         const operatorBalanceByPoolId: OperatorBalanceByPoolId = {};
         for (const poolId of Object.keys(operatorByPoolId)) {
-            operatorBalanceByPoolId[poolId] = await this._stakingApiWrapper.ethVaultContract.balanceOf.callAsync(
+            operatorBalanceByPoolId[poolId] = await this._stakingApiWrapper.wethContract.balanceOf.callAsync(
                 operatorByPoolId[poolId],
             );
         }
@@ -228,9 +228,9 @@ export class FinalizerActor extends BaseActor {
     private async _getRewardVaultBalanceByPoolIdAsync(poolIds: string[]): Promise<RewardVaultBalanceByPoolId> {
         const rewardVaultBalanceByPoolId: RewardVaultBalanceByPoolId = {};
         for (const poolId of poolIds) {
-            rewardVaultBalanceByPoolId[poolId] = await this._stakingApiWrapper.rewardVaultContract.balanceOf.callAsync(
-                poolId,
-            );
+            rewardVaultBalanceByPoolId[
+                poolId
+            ] = await this._stakingApiWrapper.stakingContract.balanceByPoolId.callAsync(poolId);
         }
         return rewardVaultBalanceByPoolId;
     }

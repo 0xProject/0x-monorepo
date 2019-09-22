@@ -26,7 +26,7 @@ import {
     toBaseUnitAmount,
 } from '../utils/number_utils';
 
-blockchainTests.resets('delegator unit rewards', env => {
+blockchainTests.resets.skip('delegator unit rewards', env => {
     let testContract: TestDelegatorRewardsContract;
 
     before(async () => {
@@ -57,7 +57,7 @@ blockchainTests.resets('delegator unit rewards', env => {
         };
         // Generate a deterministic operator address based on the poolId.
         _opts.operator = poolIdToOperator(_opts.poolId);
-        await testContract.depositStakingPoolRewards.awaitTransactionSuccessAsync(
+        await testContract.syncPoolRewards.awaitTransactionSuccessAsync(
             _opts.poolId,
             _opts.operator,
             new BigNumber(_opts.operatorReward),

@@ -8,11 +8,9 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    EthVaultContract,
     IStakingEventsEpochEndedEventArgs,
     IStakingEventsStakingPoolActivatedEventArgs,
     ReadOnlyProxyContract,
-    StakingPoolRewardVaultContract,
     StakingProxyContract,
     TestCobbDouglasContract,
     TestStakingContract,
@@ -31,8 +29,6 @@ export class StakingApiWrapper {
     // The StakingProxy.sol contract as a StakingProxyContract
     public stakingProxyContract: StakingProxyContract;
     public zrxVaultContract: ZrxVaultContract;
-    public ethVaultContract: EthVaultContract;
-    public rewardVaultContract: StakingPoolRewardVaultContract;
     public zrxTokenContract: DummyERC20TokenContract;
     public wethContract: WETH9Contract;
     public cobbDouglasContract: TestCobbDouglasContract;
@@ -122,8 +118,6 @@ export class StakingApiWrapper {
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
                 _params.wethProxyAddress,
-                _params.ethVaultAddress,
-                _params.rewardVaultAddress,
                 _params.zrxVaultAddress,
             );
         },
@@ -144,8 +138,6 @@ export class StakingApiWrapper {
                     'cobbDouglasAlphaNumerator',
                     'cobbDouglasAlphaDenominator',
                     'wethProxyAddress',
-                    'ethVaultAddress',
-                    'rewardVaultAddress',
                     'zrxVaultAddress',
                 ],
                 await this.stakingContract.getParams.callAsync(),
@@ -180,16 +172,12 @@ export class StakingApiWrapper {
         stakingProxyContract: StakingProxyContract,
         stakingContract: TestStakingContract,
         zrxVaultContract: ZrxVaultContract,
-        ethVaultContract: EthVaultContract,
-        rewardVaultContract: StakingPoolRewardVaultContract,
         zrxTokenContract: DummyERC20TokenContract,
         wethContract: WETH9Contract,
         cobbDouglasContract: TestCobbDouglasContract,
     ) {
         this._web3Wrapper = env.web3Wrapper;
         this.zrxVaultContract = zrxVaultContract;
-        this.ethVaultContract = ethVaultContract;
-        this.rewardVaultContract = rewardVaultContract;
         this.zrxTokenContract = zrxTokenContract;
         this.wethContract = wethContract;
         this.cobbDouglasContract = cobbDouglasContract;
@@ -253,22 +241,6 @@ export async function deployAndConfigureContractsAsync(
         env.txDefaults,
         artifacts,
     );
-    // deploy eth vault
-    const ethVaultContract = await EthVaultContract.deployFrom0xArtifactAsync(
-        artifacts.EthVault,
-        env.provider,
-        env.txDefaults,
-        artifacts,
-        wethContract.address,
-    );
-    // deploy reward vault
-    const rewardVaultContract = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
-        artifacts.StakingPoolRewardVault,
-        env.provider,
-        env.txDefaults,
-        artifacts,
-        wethContract.address,
-    );
     // deploy zrx vault
     const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
         artifacts.ZrxVault,
@@ -287,8 +259,6 @@ export async function deployAndConfigureContractsAsync(
         stakingContract.address,
         readOnlyProxyContract.address,
         erc20ProxyContract.address,
-        ethVaultContract.address,
-        rewardVaultContract.address,
         zrxVaultContract.address,
     );
     // deploy cobb douglas contract
@@ -303,18 +273,12 @@ export async function deployAndConfigureContractsAsync(
     await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
     // set staking proxy contract in zrx vault
     await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
-    // set staking proxy contract in reward vault
-    await rewardVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
-    // set staking proxy contract in eth vault
-    await ethVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
     return new StakingApiWrapper(
         env,
         ownerAddress,
         stakingProxyContract,
         stakingContract,
         zrxVaultContract,
-        ethVaultContract,
-        rewardVaultContract,
         zrxTokenContract,
         wethContract,
         cobbDouglasContract,

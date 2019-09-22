@@ -101,8 +101,6 @@ blockchainTests('Migration tests', env => {
 
             it('should set the correct initial params', async () => {
                 const wethProxyAddress = randomAddress();
-                const ethVaultAddress = randomAddress();
-                const rewardVaultAddress = randomAddress();
                 const zrxVaultAddress = randomAddress();
 
                 const stakingProxyContractAddress = (await StakingProxyContract.deployFrom0xArtifactAsync(
@@ -113,8 +111,6 @@ blockchainTests('Migration tests', env => {
                     stakingContract.address,
                     stakingContract.address,
                     wethProxyAddress,
-                    ethVaultAddress,
-                    rewardVaultAddress,
                     zrxVaultAddress,
                 )).address;
 
@@ -131,9 +127,7 @@ blockchainTests('Migration tests', env => {
                 expect(params[4]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator);
                 expect(params[5]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator);
                 expect(params[6]).to.eq(wethProxyAddress);
-                expect(params[7]).to.eq(ethVaultAddress);
-                expect(params[8]).to.eq(rewardVaultAddress);
-                expect(params[9]).to.eq(zrxVaultAddress);
+                expect(params[7]).to.eq(zrxVaultAddress);
             });
         });
 
@@ -149,8 +143,6 @@ blockchainTests('Migration tests', env => {
                     initTargetContract.address,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                     {
                         from: notAuthorizedAddress,
                     },
@@ -164,8 +156,6 @@ blockchainTests('Migration tests', env => {
                     initTargetContract.address,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                 );
                 await assertInitStateAsync(proxyContract);
             });
@@ -173,8 +163,6 @@ blockchainTests('Migration tests', env => {
             it('emits a `StakingContractAttachedToProxy` event', async () => {
                 const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                 );
@@ -195,27 +183,16 @@ blockchainTests('Migration tests', env => {
                     initTargetContract.address,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                 );
                 return expect(tx).to.revertWith(INIT_REVERT_ERROR);
             });
 
             it('calls init with initialized addresses if passed in args are null', async () => {
                 const wethProxyAddress = randomAddress();
-                const ethVaultAddress = randomAddress();
-                const rewardVaultAddress = randomAddress();
                 const zrxVaultAddress = randomAddress();
-                await proxyContract.setAddressParams.awaitTransactionSuccessAsync(
-                    wethProxyAddress,
-                    ethVaultAddress,
-                    rewardVaultAddress,
-                    zrxVaultAddress,
-                );
+                await proxyContract.setAddressParams.awaitTransactionSuccessAsync(wethProxyAddress, zrxVaultAddress);
                 const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                 );
@@ -225,21 +202,15 @@ blockchainTests('Migration tests', env => {
                 );
                 for (const args of logsArgs) {
                     expect(args.wethProxyAddress).to.eq(wethProxyAddress);
-                    expect(args.ethVaultAddress).to.eq(ethVaultAddress);
-                    expect(args.rewardVaultAddress).to.eq(rewardVaultAddress);
                     expect(args.zrxVaultAddress).to.eq(zrxVaultAddress);
                 }
             });
             it('calls init with passed in addresses if they are not null', async () => {
                 const wethProxyAddress = randomAddress();
-                const ethVaultAddress = randomAddress();
-                const rewardVaultAddress = randomAddress();
                 const zrxVaultAddress = randomAddress();
                 const receipt = await proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     initTargetContract.address,
                     wethProxyAddress,
-                    ethVaultAddress,
-                    rewardVaultAddress,
                     zrxVaultAddress,
                 );
                 const logsArgs = filterLogsToArguments<TestInitTargetInitAddressesEventArgs>(
@@ -248,8 +219,6 @@ blockchainTests('Migration tests', env => {
                 );
                 for (const args of logsArgs) {
                     expect(args.wethProxyAddress).to.eq(wethProxyAddress);
-                    expect(args.ethVaultAddress).to.eq(ethVaultAddress);
-                    expect(args.rewardVaultAddress).to.eq(rewardVaultAddress);
                     expect(args.zrxVaultAddress).to.eq(zrxVaultAddress);
                 }
             });
@@ -257,8 +226,6 @@ blockchainTests('Migration tests', env => {
             it('reverts if assertValidStorageParams() fails', async () => {
                 const tx = proxyContract.attachStakingContract.awaitTransactionSuccessAsync(
                     revertAddress,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
                 );
@@ -273,8 +240,6 @@ blockchainTests('Migration tests', env => {
                     initTargetContract.address,
                     constants.NULL_ADDRESS,
                     constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
-                    constants.NULL_ADDRESS,
                 );
                 const initCounter = await initTargetContract.getInitCounter.callAsync({ to: proxyContract.address });
                 expect(initCounter).to.bignumber.eq(2);
@@ -284,32 +249,16 @@ blockchainTests('Migration tests', env => {
 
     blockchainTests.resets('Staking.init()', async () => {
         it('throws if not called by an authorized address', async () => {
-            const tx = stakingContract.init.awaitTransactionSuccessAsync(
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-                {
-                    from: notAuthorizedAddress,
-                },
-            );
+            const tx = stakingContract.init.awaitTransactionSuccessAsync(randomAddress(), randomAddress(), {
+                from: notAuthorizedAddress,
+            });
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('throws if already intitialized', async () => {
-            await stakingContract.init.awaitTransactionSuccessAsync(
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-            );
-            const tx = stakingContract.init.awaitTransactionSuccessAsync(
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-                randomAddress(),
-            );
+            await stakingContract.init.awaitTransactionSuccessAsync(randomAddress(), randomAddress());
+            const tx = stakingContract.init.awaitTransactionSuccessAsync(randomAddress(), randomAddress());
             const expectedError = new StakingRevertErrors.InitializationError();
             return expect(tx).to.revertWith(expectedError);
         });
@@ -438,26 +387,6 @@ blockchainTests('Migration tests', env => {
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
                 StakingRevertErrors.InvalidParamValueErrorCode.InvalidWethProxyAddress,
-            );
-            expect(tx).to.revertWith(expectedError);
-        });
-        it('reverts if ethVault is 0', async () => {
-            const tx = proxyContract.setAndAssertParams.awaitTransactionSuccessAsync({
-                ...stakingConstants.DEFAULT_PARAMS,
-                ethVaultAddress: constants.NULL_ADDRESS,
-            });
-            const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress,
-            );
-            expect(tx).to.revertWith(expectedError);
-        });
-        it('reverts if rewardVault is 0', async () => {
-            const tx = proxyContract.setAndAssertParams.awaitTransactionSuccessAsync({
-                ...stakingConstants.DEFAULT_PARAMS,
-                rewardVaultAddress: constants.NULL_ADDRESS,
-            });
-            const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress,
             );
             expect(tx).to.revertWith(expectedError);
         });
