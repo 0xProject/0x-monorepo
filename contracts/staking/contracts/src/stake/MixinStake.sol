@@ -216,7 +216,7 @@ contract MixinStake is
         // Synchronizes reward state in the pool that the staker is delegating
         // to.
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+            _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
         _withdrawAndSyncDelegatorRewards(
             poolId,
             owner,
@@ -255,7 +255,7 @@ contract MixinStake is
         // synchronizes reward state in the pool that the staker is undelegating
         // from
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+            _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
         _withdrawAndSyncDelegatorRewards(
             poolId,
             owner,

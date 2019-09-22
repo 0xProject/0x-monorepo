@@ -52,7 +52,7 @@ contract MixinStakingPoolRewards is
         address member = msg.sender;
 
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
+            _loadSyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
 
         _withdrawAndSyncDelegatorRewards(
             poolId,
@@ -86,7 +86,7 @@ contract MixinStakingPoolRewards is
             _getUnfinalizedPoolRewards(poolId);
 
         // Get the operators' portion.
-        (reward,) = _computeSplitStakingPoolRewards(
+        (reward,) = _computePoolRewardsSplit(
             pool.operatorShare,
             unfinalizedTotalRewards,
             unfinalizedMembersStake
@@ -110,12 +110,12 @@ contract MixinStakingPoolRewards is
             _getUnfinalizedPoolRewards(poolId);
 
         // Get the members' portion.
-        (, uint256 unfinalizedMembersReward) = _computeSplitStakingPoolRewards(
+        (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(
             pool.operatorShare,
             unfinalizedTotalRewards,
             unfinalizedMembersStake
         );
-        return _computeRewardBalanceOfDelegator(
+        return _computeDelegatorReward(
             poolId,
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
             currentEpoch,
@@ -179,7 +179,7 @@ contract MixinStakingPoolRewards is
     ///        will split the  reward.
     /// @return operatorReward Portion of `reward` given to the pool operator.
     /// @return membersReward Portion of `reward` given to the pool members.
-    function _depositStakingPoolRewards(
+    function _syncPoolRewards(
         bytes32 poolId,
         uint256 reward,
         uint256 membersStake
@@ -190,7 +190,7 @@ contract MixinStakingPoolRewards is
         IStructs.Pool memory pool = _poolById[poolId];
 
         // Split the reward between operator and members
-        (operatorReward, membersReward) = _computeSplitStakingPoolRewards(
+        (operatorReward, membersReward) = _computePoolRewardsSplit(
             pool.operatorShare,
             reward,
             membersStake
@@ -241,7 +241,7 @@ contract MixinStakingPoolRewards is
     ///        to the pool in the epoch the rewards were earned.
     /// @return operatorReward Portion of `totalReward` given to the pool operator.
     /// @return membersReward Portion of `totalReward` given to the pool members.
-    function _computeSplitStakingPoolRewards(
+    function _computePoolRewardsSplit(
         uint32 operatorShare,
         uint256 totalReward,
         uint256 membersStake
@@ -280,7 +280,7 @@ contract MixinStakingPoolRewards is
         finalizePool(poolId);
 
         // Compute balance owed to delegator
-        uint256 balance = _computeRewardBalanceOfDelegator(
+        uint256 balance = _computeDelegatorReward(
             poolId,
             unsyncedStake,
             currentEpoch,
@@ -308,7 +308,7 @@ contract MixinStakingPoolRewards is
     ///        (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return totalReward Balance in ETH.
-    function _computeRewardBalanceOfDelegator(
+    function _computeDelegatorReward(
         bytes32 poolId,
         IStructs.StoredBalance memory unsyncedStake,
         uint256 currentEpoch,

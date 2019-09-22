@@ -77,7 +77,7 @@ contract MixinFinalizer is
         }
 
         // Set up unfinalized state.
-        state.rewardsAvailable = _wrapBalanceToWETHAndGetBalance();
+        state.rewardsAvailable = _wrapEthAndGetWethBalance();
         state.poolsRemaining = poolsRemaining = numActivePoolsThisEpoch;
         state.totalFeesCollected = totalFeesCollectedThisEpoch;
         state.totalWeightedStake = totalWeightedStakeThisEpoch;
@@ -239,17 +239,17 @@ contract MixinFinalizer is
     /// @dev Converts the entire ETH balance of the contract into WETH and
     ///      returns the total WETH balance of this contract.
     /// @return The WETH balance of this contract.
-    function _wrapBalanceToWETHAndGetBalance()
+    function _wrapEthAndGetWethBalance()
         internal
-        returns (uint256 balance)
+        returns (uint256 wethBalance)
     {
         IEtherToken wethContract = _getWethContract();
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
             wethContract.deposit.value(ethBalance)();
         }
-        balance = wethContract.balanceOf(address(this));
-        return balance;
+        wethBalance = wethContract.balanceOf(address(this));
+        return wethBalance;
     }
 
     /// @dev Computes the reward owed to a pool during finalization.
@@ -317,7 +317,7 @@ contract MixinFinalizer is
         // Pay the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
         // were earned in the previous epoch.
-        (operatorReward, membersReward) = _depositStakingPoolRewards(
+        (operatorReward, membersReward) = _syncPoolRewards(
             poolId,
             rewards,
             pool.membersStake
