@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../src/Staking.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 
+
 contract TestStaking is
     Staking
 {

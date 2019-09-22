@@ -89,6 +89,7 @@ contract MixinExchangeFees is
 
         uint256 poolStake =
             getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+
         // Ignore pools with dust stake.
         if (poolStake < minimumPoolStake) {
             return;
@@ -98,6 +99,7 @@ contract MixinExchangeFees is
         uint256 currentEpoch_ = currentEpoch;
         mapping (bytes32 => IStructs.ActivePool) storage activePoolsThisEpoch =
             _getActivePoolsFromEpoch(currentEpoch_);
+
         IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId];
 
         // If the pool was previously inactive in this epoch, initialize it.
