@@ -69,7 +69,7 @@ contract Staking is
         address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
-        external
+        public
         onlyAuthorized
     {
         // DANGER! When performing upgrades, take care to modify this logic

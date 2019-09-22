@@ -1,7 +1,7 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { BlockchainTestsEnvironment, constants, filterLogsToArguments, txDefaults } from '@0x/contracts-test-utils';
-import { BigNumber, logUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { BlockParamLiteral, ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -52,14 +52,11 @@ export class StakingApiWrapper {
         skipToNextEpochAndFinalizeAsync: async (): Promise<DecodedLogs> => {
             await this.utils.fastForwardToNextEpochAsync();
             const endOfEpochInfo = await this.utils.endEpochAsync();
-            let totalGasUsed = 0;
             const allLogs = [] as DecodedLogs;
             for (const poolId of endOfEpochInfo.activePoolIds) {
                 const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(poolId);
-                totalGasUsed += receipt.gasUsed;
                 allLogs.splice(allLogs.length, 0, ...(receipt.logs as DecodedLogs));
             }
-            logUtils.log(`Finalization cost ${totalGasUsed} gas`);
             return allLogs;
         },
 

@@ -25,7 +25,6 @@ import "../src/interfaces/IStructs.sol";
 
 
 contract TestStorageLayout is
-    MixinConstants,
     Ownable,
     MixinStorage
 {

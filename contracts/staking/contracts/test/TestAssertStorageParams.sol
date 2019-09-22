@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 import "../src/StakingProxy.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestAssertStorageParams is
     StakingProxy
 {

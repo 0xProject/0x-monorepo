@@ -24,15 +24,14 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
-import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
+import "./MixinVaultCore.sol";
 
 
 /// @dev This vault manages staking pool rewards.
 contract StakingPoolRewardVault is
     IStakingPoolRewardVault,
     IVaultCore,
-    Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
