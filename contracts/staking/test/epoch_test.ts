@@ -2,8 +2,6 @@ import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
-import { artifacts } from '../src';
-
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { constants as stakingConstants } from './utils/constants';
 

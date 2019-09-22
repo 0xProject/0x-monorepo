@@ -30,7 +30,10 @@ blockchainTests('Configurable Parameters unit tests', env => {
     });
 
     blockchainTests.resets('setParams()', () => {
-        async function setParamsAndAssertAsync(params: Partial<StakingParams>, from?: string): Promise<TransactionReceiptWithDecodedLogs> {
+        async function setParamsAndAssertAsync(
+            params: Partial<StakingParams>,
+            from?: string,
+        ): Promise<TransactionReceiptWithDecodedLogs> {
             const _params = {
                 ...stakingConstants.DEFAULT_PARAMS,
                 ...params,

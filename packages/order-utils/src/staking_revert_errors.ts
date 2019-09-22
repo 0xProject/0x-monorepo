@@ -291,7 +291,6 @@ export class PreviousEpochNotFinalizedError extends RevertError {
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
-    CumulativeRewardIntervalError,
     EthVaultNotSetError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,

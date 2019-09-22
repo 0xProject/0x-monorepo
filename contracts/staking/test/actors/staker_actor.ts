@@ -155,6 +155,18 @@ export class StakerActor extends BaseActor {
         );
     }
 
+    public async syncDelegatorRewardsAsync(poolId: string, revertError?: RevertError): Promise<void> {
+        const txReceiptPromise = this._stakingApiWrapper.stakingContract.syncDelegatorRewards.awaitTransactionSuccessAsync(
+            poolId,
+            { from: this._owner },
+        );
+        if (revertError !== undefined) {
+            await expect(txReceiptPromise, 'expected revert error').to.revertWith(revertError);
+            return;
+        }
+        await txReceiptPromise;
+    }
+
     public async goToNextEpochAsync(): Promise<void> {
         // cache balances
         const initZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();

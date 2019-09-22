@@ -55,9 +55,7 @@ export class StakingApiWrapper {
             let totalGasUsed = 0;
             const allLogs = [] as DecodedLogs;
             for (const poolId of endOfEpochInfo.activePoolIds) {
-                const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(
-                    poolId,
-                );
+                const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(poolId);
                 totalGasUsed += receipt.gasUsed;
                 allLogs.splice(allLogs.length, 0, ...(receipt.logs as DecodedLogs));
             }

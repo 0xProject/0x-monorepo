@@ -22,11 +22,11 @@ pragma experimental ABIEncoderV2;
 import "../src/interfaces/IStructs.sol";
 import "../src/interfaces/IStakingPoolRewardVault.sol";
 import "../src/interfaces/IEthVault.sol";
-import "./TestStaking.sol";
+import "./TestStakingNoWETH.sol";
 
 
 contract TestDelegatorRewards is
-    TestStaking
+    TestStakingNoWETH
 {
     event RecordDepositToEthVault(
         address owner,
@@ -67,9 +67,9 @@ contract TestDelegatorRewards is
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
         unfinalizedPoolRewardsByEpoch;
 
-    /// @dev Expose _finalizePool
-    function internalFinalizePool(bytes32 poolId) external {
-        _finalizePool(poolId);
+    /// @dev Expose the original finalizePool
+    function originalFinalizePool(bytes32 poolId) external {
+        MixinFinalizer.finalizePool(poolId);
     }
 
     /// @dev Set unfinalized rewards for a pool in the current epoch.
@@ -233,10 +233,11 @@ contract TestDelegatorRewards is
         );
     }
 
+    // solhint-disable no-simple-event-func-name
     /// @dev Overridden to realize `unfinalizedPoolRewardsByEpoch` in
     ///      the current epoch and emit a event,
-    function _finalizePool(bytes32 poolId)
-        internal
+    function finalizePool(bytes32 poolId)
+        public
         returns (
             uint256 operatorReward,
             uint256 membersReward,

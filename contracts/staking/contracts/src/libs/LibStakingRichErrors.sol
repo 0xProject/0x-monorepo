@@ -62,12 +62,6 @@ library LibStakingRichErrors {
         PoolIsFull
     }
 
-    enum CumulativeRewardIntervalErrorCode {
-        BeginEpochMustBeLessThanEndEpoch,
-        BeginEpochDoesNotHaveReward,
-        EndEpochDoesNotHaveReward
-    }
-
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
     bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
         0xf7806c4e;

@@ -21,13 +21,8 @@ import {
     TestFinalizerContract,
     TestFinalizerDepositStakingPoolRewardsEventArgs as DepositStakingPoolRewardsEventArgs,
     TestFinalizerEvents,
-    TestFinalizerRecordStakingPoolRewardsEventArgs as RecordStakingPoolRewardsEventArgs,
 } from '../../src';
-import {
-    assertRoughlyEquals as _assertIntegerRoughlyEquals,
-    getRandomInteger,
-    toBaseUnitAmount,
-} from '../utils/number_utils';
+import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
 blockchainTests.resets('finalizer unit tests', env => {
     const { ZERO_AMOUNT } = constants;
@@ -90,7 +85,7 @@ blockchainTests.resets('finalizer unit tests', env => {
         return _opts;
     }
 
-    interface FinalizationState {
+    interface UnfinalizedState {
         rewardsAvailable: Numberish;
         poolsRemaining: number;
         totalFeesCollected: Numberish;
@@ -98,7 +93,7 @@ blockchainTests.resets('finalizer unit tests', env => {
         totalRewardsFinalized: Numberish;
     }
 
-    async function getUnfinalizedStateAsync(): Promise<FinalizationState> {
+    async function getUnfinalizedStateAsync(): Promise<UnfinalizedState> {
         const r = await testContract.unfinalizedState.callAsync();
         return {
             rewardsAvailable: r[0],
@@ -113,12 +108,12 @@ blockchainTests.resets('finalizer unit tests', env => {
         const logs = [] as LogEntry[];
         for (const poolId of poolIds) {
             const receipt = await testContract.finalizePool.awaitTransactionSuccessAsync(poolId);
-            logs.splice(logs.length - 1, 0, ...receipt.logs);
+            logs.splice(logs.length, 0, ...receipt.logs);
         }
         return logs;
     }
 
-    async function assertFinalizationStateAsync(expected: Partial<FinalizationState>): Promise<void> {
+    async function assertUnfinalizedStateAsync(expected: Partial<UnfinalizedState>): Promise<void> {
         const actual = await getUnfinalizedStateAsync();
         assertEqualNumberFields(actual, expected);
     }
@@ -133,10 +128,6 @@ blockchainTests.resets('finalizer unit tests', env => {
         const events = getEpochFinalizedEvents(logs);
         expect(events.length).to.eq(1);
         assertEqualNumberFields(events[0], args);
-    }
-
-    function assertRoughlyEquals(actual: Numberish, expected: Numberish): void {
-        _assertIntegerRoughlyEquals(actual, expected, 5);
     }
 
     function assertEqualNumberFields<T>(actual: T, expected: Partial<T>): void {
@@ -171,42 +162,33 @@ blockchainTests.resets('finalizer unit tests', env => {
             const reward = poolRewards[i];
             const [operatorReward, membersReward] = splitRewards(pool, reward);
             expect(event.epoch).to.bignumber.eq(currentEpoch);
-            assertRoughlyEquals(event.operatorReward, operatorReward);
-            assertRoughlyEquals(event.membersReward, membersReward);
-        }
-
-        // Assert the `RecordStakingPoolRewards` logs.
-        const recordStakingPoolRewardsEvents = getRecordStakingPoolRewardsEvents(finalizationLogs);
-        expect(recordStakingPoolRewardsEvents.length).to.eq(poolsWithStake.length);
-        for (const i of _.times(recordStakingPoolRewardsEvents.length)) {
-            const event = recordStakingPoolRewardsEvents[i];
-            const pool = poolsWithStake[i];
-            const reward = poolRewards[i];
-            expect(event.poolId).to.eq(pool.poolId);
-            assertRoughlyEquals(event.totalReward, reward);
-            assertRoughlyEquals(event.membersStake, pool.membersStake);
+            assertIntegerRoughlyEquals(event.operatorReward, operatorReward);
+            assertIntegerRoughlyEquals(event.membersReward, membersReward);
         }
 
         // Assert the `DepositStakingPoolRewards` logs.
-        // Make sure they all sum up to the totals.
         const depositStakingPoolRewardsEvents = getDepositStakingPoolRewardsEvents(finalizationLogs);
+        expect(depositStakingPoolRewardsEvents.length).to.eq(poolsWithStake.length);
+        for (const i of _.times(depositStakingPoolRewardsEvents.length)) {
+            const event = depositStakingPoolRewardsEvents[i];
+            const pool = poolsWithStake[i];
+            const reward = poolRewards[i];
+            expect(event.poolId).to.eq(pool.poolId);
+            assertIntegerRoughlyEquals(event.reward, reward);
+            assertIntegerRoughlyEquals(event.membersStake, pool.membersStake);
+        }
+        // Make sure they all sum up to the totals.
         if (depositStakingPoolRewardsEvents.length > 0) {
-            const totalDepositedOperatorRewards = BigNumber.sum(
-                ...depositStakingPoolRewardsEvents.map(e => e.operatorReward),
-            );
-            const totalDepositedMembersRewards = BigNumber.sum(
-                ...depositStakingPoolRewardsEvents.map(e => e.membersReward),
-            );
-            assertRoughlyEquals(totalDepositedOperatorRewards, totalOperatorRewards);
-            assertRoughlyEquals(totalDepositedMembersRewards, totalMembersRewards);
+            const totalDepositRewards = BigNumber.sum(...depositStakingPoolRewardsEvents.map(e => e.reward));
+            assertIntegerRoughlyEquals(totalDepositRewards, totalRewards);
         }
 
         // Assert the `EpochFinalized` logs.
         const epochFinalizedEvents = getEpochFinalizedEvents(finalizationLogs);
         expect(epochFinalizedEvents.length).to.eq(1);
         expect(epochFinalizedEvents[0].epoch).to.bignumber.eq(currentEpoch - 1);
-        assertRoughlyEquals(epochFinalizedEvents[0].rewardsPaid, totalRewards);
-        assertRoughlyEquals(epochFinalizedEvents[0].rewardsRemaining, rewardsRemaining);
+        assertIntegerRoughlyEquals(epochFinalizedEvents[0].rewardsPaid, totalRewards);
+        assertIntegerRoughlyEquals(epochFinalizedEvents[0].rewardsRemaining, rewardsRemaining);
 
         // Assert the receiver balances.
         await assertReceiverBalancesAsync(totalOperatorRewards, totalMembersRewards);
@@ -214,9 +196,9 @@ blockchainTests.resets('finalizer unit tests', env => {
 
     async function assertReceiverBalancesAsync(operatorRewards: Numberish, membersRewards: Numberish): Promise<void> {
         const operatorRewardsBalance = await getBalanceOfAsync(operatorRewardsReceiver);
-        assertRoughlyEquals(operatorRewardsBalance, operatorRewards);
+        assertIntegerRoughlyEquals(operatorRewardsBalance, operatorRewards);
         const membersRewardsBalance = await getBalanceOfAsync(membersRewardsReceiver);
-        assertRoughlyEquals(membersRewardsBalance, membersRewards);
+        assertIntegerRoughlyEquals(membersRewardsBalance, membersRewards);
     }
 
     async function calculatePoolRewardsAsync(
@@ -267,13 +249,6 @@ blockchainTests.resets('finalizer unit tests', env => {
 
     function getEpochFinalizedEvents(logs: LogEntry[]): IStakingEventsEpochFinalizedEventArgs[] {
         return filterLogsToArguments<IStakingEventsEpochFinalizedEventArgs>(logs, IStakingEventsEvents.EpochFinalized);
-    }
-
-    function getRecordStakingPoolRewardsEvents(logs: LogEntry[]): RecordStakingPoolRewardsEventArgs[] {
-        return filterLogsToArguments<RecordStakingPoolRewardsEventArgs>(
-            logs,
-            TestFinalizerEvents.RecordStakingPoolRewards,
-        );
     }
 
     function getDepositStakingPoolRewardsEvents(logs: LogEntry[]): DepositStakingPoolRewardsEventArgs[] {
@@ -338,18 +313,19 @@ blockchainTests.resets('finalizer unit tests', env => {
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             const epoch = await testContract.currentEpoch.callAsync();
             expect(epoch).to.bignumber.eq(INITIAL_EPOCH + 1);
-            return assertFinalizationStateAsync({
-                poolsRemaining: 0,
-                totalFeesCollected: 0,
-                totalWeightedStake: 0,
-            });
+            const numActivePools = await testContract.numActivePoolsThisEpoch.callAsync();
+            const totalFees = await testContract.totalFeesCollectedThisEpoch.callAsync();
+            const totalStake = await testContract.totalWeightedStakeThisEpoch.callAsync();
+            expect(numActivePools).to.bignumber.eq(0);
+            expect(totalFees).to.bignumber.eq(0);
+            expect(totalStake).to.bignumber.eq(0);
         });
 
-        it('prepares finalization state', async () => {
+        it('prepares unfinalized state', async () => {
             // Add a pool so there is state to clear.
             const pool = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
-            return assertFinalizationStateAsync({
+            return assertUnfinalizedStateAsync({
                 poolsRemaining: 1,
                 rewardsAvailable: INITIAL_BALANCE,
                 totalFeesCollected: pool.feesCollected,
@@ -489,7 +465,7 @@ blockchainTests.resets('finalizer unit tests', env => {
             const finalizeLogs = await finalizePoolsAsync(poolIds);
             const { rewardsRemaining: rolledOverRewards } = getEpochFinalizedEvents(finalizeLogs)[0];
             await Promise.all(poolIds.map(async id => addActivePoolAsync({ poolId: id })));
-            const {logs: endEpochLogs } = await testContract.endEpoch.awaitTransactionSuccessAsync();
+            const { logs: endEpochLogs } = await testContract.endEpoch.awaitTransactionSuccessAsync();
             const { rewardsAvailable } = getEpochEndedEvents(endEpochLogs)[0];
             expect(rewardsAvailable).to.bignumber.eq(rolledOverRewards);
         });

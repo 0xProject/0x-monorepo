@@ -175,7 +175,7 @@ export class CumulativeRewardTrackingSimulation {
             if (receipt !== undefined) {
                 logs = receipt.logs as DecodedLogs;
             }
-            combinedLogs.splice(combinedLogs.length - 1, 0, ...logs);
+            combinedLogs.splice(combinedLogs.length, 0, ...logs);
         }
         return combinedLogs;
     }

@@ -66,19 +66,19 @@ contract MixinFinalizer is
         returns (uint256 poolsRemaining)
     {
         uint256 closingEpoch = currentEpoch;
+        IStructs.UnfinalizedState memory state = unfinalizedState;
 
         // Make sure the previous epoch has been fully finalized.
-        if (poolsRemaining != 0) {
+        if (state.poolsRemaining != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                    closingEpoch.safeSub(1),
-                    poolsRemaining
+                    closingEpoch - 1,
+                    state.poolsRemaining
                 )
             );
         }
 
         // Set up unfinalized state.
-        IStructs.UnfinalizedState memory state;
         state.rewardsAvailable = _wrapBalanceToWETHAndGetBalance();
         state.poolsRemaining = poolsRemaining = numActivePoolsThisEpoch;
         state.totalFeesCollected = totalFeesCollectedThisEpoch;
