@@ -83,4 +83,5 @@ export const constants = {
     NUM_TEST_ACCOUNTS: 20,
     PPM_DENOMINATOR: 1e6,
     PPM_100_PERCENT: 1e6,
+    MAX_CODE_SIZE: 24576,
 };
