@@ -140,7 +140,7 @@ contract TestFinalizer is
     }
 
     /// @dev Overridden to log and transfer to receivers.
-    function _depositStakingPoolRewards(
+    function _syncPoolRewards(
         bytes32 poolId,
         uint256 reward,
         uint256 membersStake
@@ -150,7 +150,7 @@ contract TestFinalizer is
     {
         uint32 operatorShare = _operatorSharesByPool[poolId];
         (operatorReward, membersReward) =
-            _computeSplitStakingPoolRewards(operatorShare, reward, membersStake);
+            _computePoolRewardsSplit(operatorShare, reward, membersStake);
         address(_operatorRewardsReceiver).transfer(operatorReward);
         address(_membersRewardsReceiver).transfer(membersReward);
         emit DepositStakingPoolRewards(poolId, reward, membersStake);

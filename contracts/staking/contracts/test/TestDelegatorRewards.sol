@@ -86,8 +86,8 @@ contract TestDelegatorRewards is
         _initGenesisCumulativeRewards(poolId);
     }
 
-    /// @dev Expose/wrap `_depositStakingPoolRewards`.
-    function depositStakingPoolRewards(
+    /// @dev Expose/wrap `_syncPoolRewards`.
+    function syncPoolRewards(
         bytes32 poolId,
         address payable operatorAddress,
         uint256 operatorReward,
@@ -101,7 +101,7 @@ contract TestDelegatorRewards is
         _setOperatorShare(poolId, operatorReward, membersReward);
         _initGenesisCumulativeRewards(poolId);
 
-        _depositStakingPoolRewards(
+        _syncPoolRewards(
             poolId,
             operatorReward + membersReward,
             membersStake
@@ -218,7 +218,7 @@ contract TestDelegatorRewards is
         uint256 totalRewards = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
         (operatorReward, membersReward) =
-            _depositStakingPoolRewards(poolId, totalRewards, membersStake);
+            _syncPoolRewards(poolId, totalRewards, membersStake);
         emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
     }
 

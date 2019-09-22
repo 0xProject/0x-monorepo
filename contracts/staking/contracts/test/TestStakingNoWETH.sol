@@ -28,7 +28,7 @@ import "../src/Staking.sol";
 contract TestStakingNoWETH is
     Staking
 {
-    function _wrapBalanceToWETHAndGetBalance()
+    function _wrapEthAndGetWethBalance()
         internal
         returns (uint256 balance)
     {
