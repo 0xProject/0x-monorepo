@@ -37,15 +37,11 @@ contract TestInitTarget is
 
     event InitAddresses(
         address wethProxyAddress,
-        address ethVaultAddress,
-        address rewardVaultAddress,
         address zrxVaultAddress          
     );
 
     function init(
         address wethProxyAddress,
-        address ethVaultAddress,
-        address rewardVaultAddress,
         address zrxVaultAddress           
     )
         external
@@ -58,8 +54,6 @@ contract TestInitTarget is
         _initThisAddress = address(this);
         emit InitAddresses(
             wethProxyAddress,
-            ethVaultAddress,
-            rewardVaultAddress,
             zrxVaultAddress
         );
     }
