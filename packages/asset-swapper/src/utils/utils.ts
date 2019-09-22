@@ -29,10 +29,13 @@ export const utils = {
     },
     isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts: OrdersAndFillableAmounts): boolean {
         const { orders, remainingFillableMakerAssetAmounts } = ordersAndFillableAmounts;
-        return _.some(orders, (order: SignedOrder, index: number): boolean => {
-            const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
-            // If takerFee is a non zero value and order is still fillable, fee orders are required
-            return !order.takerFee.isZero() && !remainingFillableMakerAssetAmount.isZero();
-        });
+        return _.some(
+            orders,
+            (order: SignedOrder, index: number): boolean => {
+                const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
+                // If takerFee is a non zero value and order is still fillable, fee orders are required
+                return !order.takerFee.isZero() && !remainingFillableMakerAssetAmount.isZero();
+            },
+        );
     },
 };

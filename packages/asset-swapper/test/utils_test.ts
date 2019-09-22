@@ -66,7 +66,7 @@ describe('utils', () => {
             const isFeeOrdersRequired = utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts);
             expect(isFeeOrdersRequired).to.equal(false);
         });
-        it('should return false if ordersAndFillableAmounts is completely unfilled and doesn\'t have fees', () => {
+        it("should return false if ordersAndFillableAmounts is completely unfilled and doesn't have fees", () => {
             const ordersAndFillableAmounts = {
                 orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
                 remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(10)],
