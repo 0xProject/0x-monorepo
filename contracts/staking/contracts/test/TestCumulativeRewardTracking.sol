@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 import "./TestStaking.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestCumulativeRewardTracking is
     TestStaking
 {
@@ -39,7 +40,8 @@ contract TestCumulativeRewardTracking is
         uint256 epoch
     );
 
-    // solhint-disable-next-line no-empty-blocks
+    constructor(address wethAddress) public TestStaking(wethAddress) {}
+
     function init(address, address, address payable, address) public {}
 
     function _forceSetCumulativeReward(

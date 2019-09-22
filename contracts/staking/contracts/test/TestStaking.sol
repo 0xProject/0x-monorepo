@@ -25,23 +25,17 @@ import "../src/Staking.sol";
 contract TestStaking is
     Staking
 {
-    address internal _wethAddress;
+    address public testWethAddress;
 
     constructor(address wethAddress) public {
-        _wethAddress = wethAddress;
+        testWethAddress = wethAddress;
     }
 
-    /// @dev Overridden to avoid hard-coded WETH.
-    function getTotalBalance()
-        external
-        view
-        returns (uint256 totalBalance)
-    {
-        totalBalance = address(this).balance;
-    }
-
-    /// @dev Overridden to use _wethAddress;
+    /// @dev Overridden to use testWethAddress;
     function _getWETHAddress() internal view returns (address) {
-        return _wethAddress;
+        // `testWethAddress` will not be set on the proxy this contract is
+        // attached to, so we need to access the storage of the deployed
+        // instance of this contract.
+        return TestStaking(address(uint160(stakingContract))).testWethAddress();
     }
 }

@@ -21,11 +21,11 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../src/interfaces/IStructs.sol";
-import "../src/Staking.sol";
+import "./TestStakingNoWETH.sol";
 
 
 contract TestProtocolFees is
-    Staking
+    TestStakingNoWETH
 {
     struct TestPool {
         uint256 operatorStake;
@@ -33,13 +33,22 @@ contract TestProtocolFees is
         mapping(address => bool) isMaker;
     }
 
+    event ERC20ProxyTransferFrom(
+        bytes assetData,
+        address from,
+        address to,
+        uint256 amount
+    );
+
     mapping(bytes32 => TestPool) private _testPools;
     mapping(address => bytes32) private _makersToTestPoolIds;
 
-    constructor(address exchangeAddress, address wethProxyAddress) public {
+    constructor(address exchangeAddress) public {
         init(
-            wethProxyAddress,
-            address(1), // vault addresses must be non-zero
+            // Use this contract as the ERC20Proxy.
+            address(this),
+            // vault addresses must be non-zero
+            address(1),
             address(1),
             address(1)
         );
@@ -79,6 +88,18 @@ contract TestProtocolFees is
             pool.isMaker[makerAddresses[i]] = true;
             _makersToTestPoolIds[makerAddresses[i]] = poolId;
         }
+    }
+
+    /// @dev The ERC20Proxy `transferFrom()` function.
+    function transferFrom(
+        bytes calldata assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        external
+    {
+        emit ERC20ProxyTransferFrom(assetData, from, to, amount);
     }
 
     /// @dev Overridden to use test pools.

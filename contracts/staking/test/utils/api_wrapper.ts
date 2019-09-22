@@ -3,7 +3,7 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } f
 import { BlockchainTestsEnvironment, constants, filterLogsToArguments, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { BlockParamLiteral, ContractArtifact, DecodedLogArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { BlockParamLiteral, ContractArtifact, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
@@ -12,29 +12,29 @@ import {
     IStakingEventsEpochEndedEventArgs,
     IStakingEventsStakingPoolActivatedEventArgs,
     ReadOnlyProxyContract,
-    StakingContract,
-    StakingEvents,
     StakingPoolRewardVaultContract,
     StakingProxyContract,
     TestCobbDouglasContract,
     TestStakingContract,
+    TestStakingEvents,
     ZrxVaultContract,
 } from '../../src';
 
 import { constants as stakingConstants } from './constants';
-import { EndOfEpochInfo, StakingParams } from './types';
+import { DecodedLogs, EndOfEpochInfo, StakingParams } from './types';
 
 export class StakingApiWrapper {
     // The address of the real Staking.sol contract
     public stakingContractAddress: string;
     // The StakingProxy.sol contract wrapped as a StakingContract to borrow API
-    public stakingContract: StakingContract;
+    public stakingContract: TestStakingContract;
     // The StakingProxy.sol contract as a StakingProxyContract
     public stakingProxyContract: StakingProxyContract;
     public zrxVaultContract: ZrxVaultContract;
     public ethVaultContract: EthVaultContract;
     public rewardVaultContract: StakingPoolRewardVaultContract;
     public zrxTokenContract: DummyERC20TokenContract;
+    public wethContract: WETH9Contract;
     public cobbDouglasContract: TestCobbDouglasContract;
     public utils = {
         // Epoch Utils
@@ -49,17 +49,17 @@ export class StakingApiWrapper {
             await this._web3Wrapper.mineBlockAsync();
         },
 
-        skipToNextEpochAndFinalizeAsync: async (): Promise<DecodedLogArgs[]> => {
+        skipToNextEpochAndFinalizeAsync: async (): Promise<DecodedLogs> => {
             await this.utils.fastForwardToNextEpochAsync();
             const endOfEpochInfo = await this.utils.endEpochAsync();
             let totalGasUsed = 0;
-            const allLogs = [] as LogEntry[];
+            const allLogs = [] as DecodedLogs;
             for (const poolId of endOfEpochInfo.activePoolIds) {
                 const receipt = await this.stakingContract.finalizePool.awaitTransactionSuccessAsync(
                     poolId,
                 );
                 totalGasUsed += receipt.gasUsed;
-                allLogs.splice(allLogs.length, 0, receipt.logs);
+                allLogs.splice(allLogs.length, 0, ...(receipt.logs as DecodedLogs));
             }
             logUtils.log(`Finalization cost ${totalGasUsed} gas`);
             return allLogs;
@@ -70,7 +70,7 @@ export class StakingApiWrapper {
             const receipt = await this.stakingContract.endEpoch.awaitTransactionSuccessAsync();
             const [epochEndedEvent] = filterLogsToArguments<IStakingEventsEpochEndedEventArgs>(
                 receipt.logs,
-                StakingEvents.EpochEnded,
+                TestStakingEvents.EpochEnded,
             );
             return {
                 closingEpoch: epochEndedEvent.epoch,
@@ -85,11 +85,11 @@ export class StakingApiWrapper {
             const _epoch = epoch !== undefined ? epoch : await this.stakingContract.currentEpoch.callAsync();
             const events = filterLogsToArguments<IStakingEventsStakingPoolActivatedEventArgs>(
                 await this.stakingContract.getLogsAsync(
-                    StakingEvents.StakingPoolActivated,
+                    TestStakingEvents.StakingPoolActivated,
                     { fromBlock: BlockParamLiteral.Earliest, toBlock: BlockParamLiteral.Latest },
                     { epoch: new BigNumber(_epoch) },
                 ),
-                StakingEvents.StakingPoolActivated,
+                TestStakingEvents.StakingPoolActivated,
             );
             return events.map(e => e.poolId);
         },
@@ -177,11 +177,12 @@ export class StakingApiWrapper {
         env: BlockchainTestsEnvironment,
         ownerAddress: string,
         stakingProxyContract: StakingProxyContract,
-        stakingContract: StakingContract,
+        stakingContract: TestStakingContract,
         zrxVaultContract: ZrxVaultContract,
         ethVaultContract: EthVaultContract,
         rewardVaultContract: StakingPoolRewardVaultContract,
         zrxTokenContract: DummyERC20TokenContract,
+        wethContract: WETH9Contract,
         cobbDouglasContract: TestCobbDouglasContract,
     ) {
         this._web3Wrapper = env.web3Wrapper;
@@ -189,13 +190,14 @@ export class StakingApiWrapper {
         this.ethVaultContract = ethVaultContract;
         this.rewardVaultContract = rewardVaultContract;
         this.zrxTokenContract = zrxTokenContract;
+        this.wethContract = wethContract;
         this.cobbDouglasContract = cobbDouglasContract;
 
         this.stakingContractAddress = stakingContract.address;
         this.stakingProxyContract = stakingProxyContract;
         // disguise the staking proxy as a StakingContract
         const logDecoderDependencies = _.mapValues({ ...artifacts, ...erc20Artifacts }, v => v.compilerOutput.abi);
-        this.stakingContract = new StakingContract(
+        this.stakingContract = new TestStakingContract(
             stakingProxyContract.address,
             env.provider,
             {
@@ -256,6 +258,7 @@ export async function deployAndConfigureContractsAsync(
         env.provider,
         env.txDefaults,
         artifacts,
+        wethContract.address,
     );
     // deploy reward vault
     const rewardVaultContract = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
@@ -263,6 +266,7 @@ export async function deployAndConfigureContractsAsync(
         env.provider,
         env.txDefaults,
         artifacts,
+        wethContract.address,
     );
     // deploy zrx vault
     const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
@@ -311,6 +315,7 @@ export async function deployAndConfigureContractsAsync(
         ethVaultContract,
         rewardVaultContract,
         zrxTokenContract,
+        wethContract,
         cobbDouglasContract,
     );
 }

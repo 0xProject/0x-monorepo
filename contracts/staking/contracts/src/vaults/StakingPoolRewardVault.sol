@@ -26,21 +26,26 @@ import "../libs/LibStakingRichErrors.sol";
 import "../libs/LibSafeDowncast.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 
 
 /// @dev This vault manages staking pool rewards.
 contract StakingPoolRewardVault is
     IStakingPoolRewardVault,
     IVaultCore,
-    MixinDeploymentConstants,
     Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
 
+    // Address of the WETH contract.
+    IEtherToken public weth;
     // mapping from poolId to Pool metadata
     mapping (bytes32 => uint256) internal _balanceByPoolId;
+
+    /// @param wethAddress Address of the WETH contract.
+    constructor(address wethAddress) public {
+        weth = IEtherToken(wethAddress);
+    }
 
     /// @dev Deposit an amount of WETH for `poolId` into the vault.
     ///      The staking contract should have granted the vault an allowance
@@ -53,7 +58,7 @@ contract StakingPoolRewardVault is
         onlyStakingProxy
     {
         // Transfer WETH from the staking contract into this contract.
-        IEtherToken(_getWETHAddress()).transferFrom(msg.sender, address(this), amount);
+        weth.transferFrom(msg.sender, address(this), amount);
         // Credit the pool.
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeAdd(amount);
         emit EthDepositedIntoVault(msg.sender, poolId, amount);
@@ -73,7 +78,7 @@ contract StakingPoolRewardVault is
         onlyStakingProxy
     {
         _balanceByPoolId[poolId] = _balanceByPoolId[poolId].safeSub(amount);
-        IEtherToken(_getWETHAddress()).transfer(to, amount);
+        weth.transfer(to, amount);
         emit PoolRewardTransferred(
             poolId,
             to,

@@ -3,11 +3,11 @@ import { BigNumber } from '@0x/utils';
 import { DecodedLogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, TestCumulativeRewardTrackingContract, IStakingEvents } from '../../src';
+import { artifacts, TestCumulativeRewardTrackingContract, TestCumulativeRewardTrackingEvents } from '../../src';
 
 import { StakingApiWrapper } from './api_wrapper';
 import { toBaseUnitAmount } from './number_utils';
-import { StakeInfo, StakeStatus } from './types';
+import { DecodedLogs, StakeInfo, StakeStatus } from './types';
 
 export enum TestAction {
     Finalize,
@@ -33,22 +33,22 @@ export class CumulativeRewardTrackingSimulation {
     private _testCumulativeRewardTrackingContract?: TestCumulativeRewardTrackingContract;
     private _poolId: string;
 
-    private static _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): TestLog[] {
+    private static _extractTestLogs(txReceiptLogs: DecodedLogs): TestLog[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-            if (log.event === 'SetMostRecentCumulativeReward') {
+            if (log.event === TestCumulativeRewardTrackingEvents.SetMostRecentCumulativeReward) {
                 logs.push({
-                    event: 'SetMostRecentCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
-            } else if (log.event === 'SetCumulativeReward') {
+            } else if (log.event === TestCumulativeRewardTrackingEvents.SetCumulativeReward) {
                 logs.push({
-                    event: 'SetCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
-            } else if (log.event === 'UnsetCumulativeReward') {
+            } else if (log.event === TestCumulativeRewardTrackingEvents.UnsetCumulativeReward) {
                 logs.push({
-                    event: 'UnsetCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
             }
@@ -56,7 +56,7 @@ export class CumulativeRewardTrackingSimulation {
         return logs;
     }
 
-    private static _assertTestLogs(expectedSequence: TestLog[], txReceiptLogs: DecodedLogArgs[]): void {
+    private static _assertTestLogs(expectedSequence: TestLog[], txReceiptLogs: DecodedLogs): void {
         const logs = CumulativeRewardTrackingSimulation._extractTestLogs(txReceiptLogs);
         expect(logs.length).to.be.equal(expectedSequence.length);
         for (let i = 0; i < expectedSequence.length; i++) {
@@ -90,6 +90,7 @@ export class CumulativeRewardTrackingSimulation {
             env.provider,
             txDefaults,
             artifacts,
+            this._stakingApiWrapper.wethContract.address,
         );
     }
 
@@ -117,11 +118,11 @@ export class CumulativeRewardTrackingSimulation {
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);
     }
 
-    private async _executeActionsAsync(actions: TestAction[]): Promise<Array<DecodedLogEntry<any>>> {
-        const combinedLogs = [] as Array<DecodedLogEntry<any>>;
+    private async _executeActionsAsync(actions: TestAction[]): Promise<DecodedLogs> {
+        const combinedLogs = [] as DecodedLogs;
         for (const action of actions) {
-            let receipt: TransactionReceiptWithDecodedLogs;
-            let logs = [] as DecodedLogEntry<any>;
+            let receipt: TransactionReceiptWithDecodedLogs | undefined;
+            let logs = [] as DecodedLogs;
             switch (action) {
                 case TestAction.Finalize:
                     logs = await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
@@ -163,15 +164,18 @@ export class CumulativeRewardTrackingSimulation {
                         true,
                         { from: this._poolOperator },
                     );
-                    const createStakingPoolLog = logs[0];
+                    const createStakingPoolLog = receipt.logs[0];
                     // tslint:disable-next-line no-unnecessary-type-assertion
-                    this._poolId = (createStakingPoolLog as DecodedLogArgs).args.poolId;
+                    this._poolId = (createStakingPoolLog as DecodedLogEntry<any>).args.poolId;
                     break;
 
                 default:
                     throw new Error('Unrecognized test action');
             }
-            combinedLogs.splice(combinedLogs.length - 1, 0, logs);
+            if (receipt !== undefined) {
+                logs = receipt.logs as DecodedLogs;
+            }
+            combinedLogs.splice(combinedLogs.length - 1, 0, ...logs);
         }
         return combinedLogs;
     }

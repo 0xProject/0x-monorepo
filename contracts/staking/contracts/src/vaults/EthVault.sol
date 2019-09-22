@@ -21,7 +21,6 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IEthVault.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 import "./MixinVaultCore.sol";
 
 
@@ -29,14 +28,20 @@ import "./MixinVaultCore.sol";
 contract EthVault is
     IEthVault,
     IVaultCore,
-    MixinDeploymentConstants,
     Ownable,
     MixinVaultCore
 {
     using LibSafeMath for uint256;
 
+    // Address of the WETH contract.
+    IEtherToken public weth;
     // mapping from Owner to WETH balance
     mapping (address => uint256) internal _balances;
+
+    /// @param wethAddress Address of the WETH contract.
+    constructor(address wethAddress) public {
+        weth = IEtherToken(wethAddress);
+    }
 
     /// @dev Deposit an `amount` of WETH for `owner` into the vault.
     ///      The staking contract should have granted the vault an allowance
@@ -49,7 +54,7 @@ contract EthVault is
         onlyStakingProxy
     {
         // Transfer WETH from the staking contract into this contract.
-        IEtherToken(_getWETHAddress()).transferFrom(msg.sender, address(this), amount);
+        weth.transferFrom(msg.sender, address(this), amount);
         // Credit the owner.
         _balances[owner] = _balances[owner].safeAdd(amount);
         emit EthDepositedIntoVault(msg.sender, owner, amount);
@@ -97,7 +102,7 @@ contract EthVault is
         _balances[owner] = _balances[owner].safeSub(amount);
 
         // withdraw WETH to owner
-        IEtherToken(_getWETHAddress()).transfer(msg.sender, amount);
+        weth.transfer(msg.sender, amount);
 
         // notify
         emit EthWithdrawnFromVault(msg.sender, owner, amount);
