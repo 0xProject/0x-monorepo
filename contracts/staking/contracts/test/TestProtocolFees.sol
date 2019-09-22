@@ -48,8 +48,6 @@ contract TestProtocolFees is
             // Use this contract as the ERC20Proxy.
             address(this),
             // vault addresses must be non-zero
-            address(1),
-            address(1),
             address(1)
         );
         validExchanges[exchangeAddress] = true;
@@ -98,8 +96,8 @@ contract TestProtocolFees is
         emit ERC20ProxyTransferFrom(assetData, from, to, amount);
     }
 
-    function getWethAssetData() external pure returns (bytes memory) {
-        return WETH_ASSET_DATA;
+    function getWethAssetData() external view returns (bytes memory) {
+        return _getWethAssetData();
     }
 
     /// @dev Overridden to use test pools.

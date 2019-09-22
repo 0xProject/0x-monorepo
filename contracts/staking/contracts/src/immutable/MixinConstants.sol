@@ -18,8 +18,11 @@
 
 pragma solidity ^0.5.9;
 
+import "./MixinDeploymentConstants.sol";
 
-contract MixinConstants
+
+contract MixinConstants is
+    MixinDeploymentConstants
 {
     // 100% in parts-per-million.
     uint32 constant internal PPM_DENOMINATOR = 10**6;

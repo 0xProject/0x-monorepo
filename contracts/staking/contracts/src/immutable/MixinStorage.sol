@@ -24,8 +24,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
-import "../interfaces/IEthVault.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibStakingRichErrors.sol";
 
@@ -84,6 +82,9 @@ contract MixinStorage is
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
 
+    // mapping from PoolId to balance of members
+    mapping (bytes32 => uint256) public balanceByPoolId;
+
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;
 
@@ -104,12 +105,6 @@ contract MixinStorage is
 
     // ZRX vault (stores staked ZRX)
     IZrxVault public zrxVault;
-
-    // ETH Vault (stores eth balances of stakers and pool operators)
-    IEthVault public ethVault;
-
-    // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
-    IStakingPoolRewardVault public rewardVault;
 
     /* Tweakable parameters */
 
