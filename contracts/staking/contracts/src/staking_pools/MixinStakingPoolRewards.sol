@@ -141,7 +141,7 @@ contract MixinStakingPoolRewards is
                 reward
             );
 
-        ethVault.depositFor.value(operatorPortion)(pool.operator);
+        operatorRewardVault.depositFor.value(operatorPortion)(pool.operator);
 
         // compute the reward portion for the pool members and transfer it to the Reward Vault.
         uint256 membersPortion = reward.safeSub(operatorPortion);

@@ -47,7 +47,7 @@ interface IStakingProxy /* is IStaking */
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.

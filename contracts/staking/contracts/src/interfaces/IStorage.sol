@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../interfaces/IZrxVault.sol";
-import "../interfaces/IEthVault.sol";
+import "../interfaces/IOperatorRewardVault.sol";
 import "../interfaces/IMemberRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
@@ -93,10 +93,10 @@ interface IStorage {
         view
         returns (IZrxVault);
 
-    function ethVault()
+    function operatorRewardVault()
         external
         view
-        returns (IEthVault);
+        returns (IOperatorRewardVault);
 
     function memberRewardVault()
         external

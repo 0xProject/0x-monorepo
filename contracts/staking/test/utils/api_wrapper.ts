@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    EthVaultContract,
+    OperatorRewardVaultContract,
     MemberRewardVaultContract,
     ReadOnlyProxyContract,
     StakingContract,
@@ -24,7 +24,7 @@ export class StakingApiWrapper {
     public stakingContract: StakingContract; // The StakingProxy.sol contract wrapped as a StakingContract to borrow API
     public stakingProxyContract: StakingProxyContract; // The StakingProxy.sol contract as a StakingProxyContract
     public zrxVaultContract: ZrxVaultContract;
-    public ethVaultContract: EthVaultContract;
+    public ethVaultContract: OperatorRewardVaultContract;
     public rewardVaultContract: MemberRewardVaultContract;
     public zrxTokenContract: DummyERC20TokenContract;
     public utils = {
@@ -113,7 +113,7 @@ export class StakingApiWrapper {
         stakingProxyContract: StakingProxyContract,
         stakingContract: StakingContract,
         zrxVaultContract: ZrxVaultContract,
-        ethVaultContract: EthVaultContract,
+        ethVaultContract: OperatorRewardVaultContract,
         rewardVaultContract: MemberRewardVaultContract,
         zrxTokenContract: DummyERC20TokenContract,
     ) {
@@ -173,8 +173,8 @@ export async function deployAndConfigureContractsAsync(
         artifacts,
     );
     // deploy eth vault
-    const ethVaultContract = await EthVaultContract.deployFrom0xArtifactAsync(
-        artifacts.EthVault,
+    const ethVaultContract = await OperatorRewardVaultContract.deployFrom0xArtifactAsync(
+        artifacts.OperatorRewardVault,
         env.provider,
         env.txDefaults,
         artifacts,

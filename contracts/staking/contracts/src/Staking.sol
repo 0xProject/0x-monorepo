@@ -52,7 +52,7 @@ contract Staking is
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function init(
@@ -301,8 +301,8 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                ethVault_slot,
-                ethVault_offset,
+                operatorRewardVault_slot,
+                operatorRewardVault_offset,
                 slot,
                 offset
             )

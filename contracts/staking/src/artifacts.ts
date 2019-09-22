@@ -5,9 +5,8 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as EthVault from '../generated-artifacts/EthVault.json';
-import * as IEthVault from '../generated-artifacts/IEthVault.json';
 import * as IMemberRewardVault from '../generated-artifacts/IMemberRewardVault.json';
+import * as IOperatorRewardVault from '../generated-artifacts/IOperatorRewardVault.json';
 import * as IStaking from '../generated-artifacts/IStaking.json';
 import * as IStakingEvents from '../generated-artifacts/IStakingEvents.json';
 import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
@@ -39,6 +38,7 @@ import * as MixinStakingPoolModifiers from '../generated-artifacts/MixinStakingP
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
 import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
+import * as OperatorRewardVault from '../generated-artifacts/OperatorRewardVault.json';
 import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
@@ -65,8 +65,8 @@ export const artifacts = {
     MixinConstants: MixinConstants as ContractArtifact,
     MixinDeploymentConstants: MixinDeploymentConstants as ContractArtifact,
     MixinStorage: MixinStorage as ContractArtifact,
-    IEthVault: IEthVault as ContractArtifact,
     IMemberRewardVault: IMemberRewardVault as ContractArtifact,
+    IOperatorRewardVault: IOperatorRewardVault as ContractArtifact,
     IStaking: IStaking as ContractArtifact,
     IStakingEvents: IStakingEvents as ContractArtifact,
     IStakingProxy: IStakingProxy as ContractArtifact,
@@ -91,9 +91,9 @@ export const artifacts = {
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
-    EthVault: EthVault as ContractArtifact,
     MemberRewardVault: MemberRewardVault as ContractArtifact,
     MixinVaultCore: MixinVaultCore as ContractArtifact,
+    OperatorRewardVault: OperatorRewardVault as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,

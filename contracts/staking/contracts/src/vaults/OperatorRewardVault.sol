@@ -19,14 +19,12 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../interfaces/IEthVault.sol";
-import "./MixinVaultCore.sol";
+import "../interfaces/IOperatorRewardVault.sol";
 
 
-/// @dev This vault manages ETH.
-contract EthVault is
-    IEthVault,
-    MixinVaultCore
+/// @dev This vault manages ETH for pool operators.
+contract OperatorRewardVault is
+    IOperatorRewardVault
 {
     using LibSafeMath for uint256;
 
@@ -34,8 +32,6 @@ contract EthVault is
     mapping (address => uint256) internal _balances;
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
     /// @param owner of ETH Tokens.
     function depositFor(address owner)
         external
@@ -46,12 +42,10 @@ contract EthVault is
         _balances[owner] = _balances[owner].safeAdd(msg.value);
 
         // notify
-        emit EthDepositedIntoVault(msg.sender, owner, amount);
+        emit OperatorDeposit(msg.sender, owner, amount);
     }
 
     /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
     /// @param amount of ETH to withdraw.
     function withdraw(uint256 amount)
         external
@@ -95,7 +89,7 @@ contract EthVault is
         _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
-        emit EthWithdrawnFromVault(msg.sender, owner, amount);
+        emit OperatorWithdrawal(msg.sender, owner, amount);
 
         // withdraw ETH to owner
         owner.transfer(amount);

@@ -23,7 +23,7 @@ interface IStorageInit {
 
     /// @dev Initialize storage owned by this contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function init(

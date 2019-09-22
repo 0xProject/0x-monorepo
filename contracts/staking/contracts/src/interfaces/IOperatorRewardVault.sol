@@ -20,13 +20,13 @@ pragma solidity ^0.5.9;
 
 
 /// @dev This vault manages Ether.
-interface IEthVault {
+interface IOperatorRewardVault {
 
     /// @dev Emitted when Ether are deposited into the vault.
     /// @param sender Address of sender (`msg.sender`).
     /// @param owner of Ether.
     /// @param amount of Ether deposited.
-    event EthDepositedIntoVault(
+    event OperatorDeposit(
         address indexed sender,
         address indexed owner,
         uint256 amount
@@ -36,23 +36,19 @@ interface IEthVault {
     /// @param sender Address of sender (`msg.sender`).
     /// @param owner of Ether.
     /// @param amount of Ether withdrawn.
-    event EthWithdrawnFromVault(
+    event OperatorWithdrawal(
         address indexed sender,
         address indexed owner,
         uint256 amount
     );
 
     /// @dev Deposit an `amount` of ETH from `owner` into the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
     /// @param owner of ETH Tokens.
     function depositFor(address owner)
         external
         payable;
 
     /// @dev Withdraw an `amount` of ETH to `msg.sender` from the vault.
-    /// Note that only the Staking contract can call this.
-    /// Note that this can only be called when *not* in Catostrophic Failure mode.
     /// @param amount of ETH to withdraw.
     function withdraw(uint256 amount)
         external;

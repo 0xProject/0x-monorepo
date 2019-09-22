@@ -48,7 +48,7 @@ library LibStakingRichErrors {
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool,
         InvalidWethProxyAddress,
-        InvalidEthVaultAddress,
+        InvalidOperatorRewardVaultAddress,
         InvalidRewardVaultAddress,
         InvalidZrxVaultAddress,
         InvalidEpochDuration
@@ -131,7 +131,7 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
         0x9ae94f01;
 
-    // bytes4(keccak256("EthVaultNotSetError()"))
+    // bytes4(keccak256("OperatorRewardVaultNotSetError()"))
     bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
         0xa067f596;
 
@@ -396,7 +396,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function EthVaultNotSetError()
+    function OperatorRewardVaultNotSetError()
         internal
         pure
         returns (bytes memory)

@@ -48,7 +48,7 @@ contract TestStakingProxy is
         external
     {
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        ethVault = IEthVault(_ethVaultAddress);
+        operatorRewardVault = IOperatorRewardVault(_ethVaultAddress);
         memberRewardVault = IMemberRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
     }

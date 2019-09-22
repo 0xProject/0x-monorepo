@@ -61,7 +61,7 @@ interface IStakingEvents {
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @param wethProxyAddress The address that can transfer WETH for fees.
-    /// @param ethVaultAddress Address of the EthVault contract.
+    /// @param ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param zrxVaultAddress Address of the ZrxVault contract.
     event ParamsSet(

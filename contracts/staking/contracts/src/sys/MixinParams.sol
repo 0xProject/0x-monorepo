@@ -22,7 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
-import "../interfaces/IEthVault.sol";
+import "../interfaces/IOperatorRewardVault.sol";
 import "../interfaces/IMemberRewardVault.sol";
 import "../interfaces/IZrxVault.sol";
 import "../libs/LibStakingRichErrors.sol";
@@ -40,7 +40,7 @@ contract MixinParams is
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function setParams(
@@ -80,7 +80,7 @@ contract MixinParams is
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @return _wethProxyAddress The address that can transfer WETH for fees.
-    /// @return _ethVaultAddress Address of the EthVault contract.
+    /// @return _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @return _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @return _zrxVaultAddress Address of the ZrxVault contract.
     function getParams()
@@ -106,14 +106,14 @@ contract MixinParams is
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
         _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
         _wethProxyAddress = address(wethAssetProxy);
-        _ethVaultAddress = address(ethVault);
+        _ethVaultAddress = address(operatorRewardVault);
         _rewardVaultAddress = address(memberRewardVault);
         _zrxVaultAddress = address(zrxVault);
     }
 
     /// @dev Initialize storage belonging to this mixin.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _initMixinParams(
@@ -155,7 +155,7 @@ contract MixinParams is
             cobbDouglasAlphaNumerator != 0 &&
             cobbDouglasAlphaDenominator != 0 &&
             address(wethAssetProxy) != NIL_ADDRESS &&
-            address(ethVault) != NIL_ADDRESS &&
+            address(operatorRewardVault) != NIL_ADDRESS &&
             address(memberRewardVault) != NIL_ADDRESS &&
             address(zrxVault) != NIL_ADDRESS
         ) {
@@ -175,7 +175,7 @@ contract MixinParams is
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _setParams(
@@ -199,7 +199,7 @@ contract MixinParams is
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = _cobbDouglasAlphaDenominator;
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        ethVault = IEthVault(_ethVaultAddress);
+        operatorRewardVault = IOperatorRewardVault(_ethVaultAddress);
         memberRewardVault = IMemberRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
 

@@ -24,7 +24,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
-import "../interfaces/IEthVault.sol";
+import "../interfaces/IOperatorRewardVault.sol";
 import "../interfaces/IMemberRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibStakingRichErrors.sol";
@@ -112,7 +112,7 @@ contract MixinStorage is
     IZrxVault public zrxVault;
 
     // ETH Vault (stores eth balances of stakers and pool operators)
-    IEthVault public ethVault;
+    IOperatorRewardVault public operatorRewardVault;
 
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IMemberRewardVault public memberRewardVault;

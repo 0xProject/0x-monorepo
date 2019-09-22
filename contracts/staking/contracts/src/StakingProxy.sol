@@ -35,7 +35,7 @@ contract StakingProxy is
     /// @param _stakingContract Staking contract to delegate calls to.
     /// @param _readOnlyProxy The address of the read only proxy.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     constructor(
@@ -76,7 +76,7 @@ contract StakingProxy is
     /// @param _stakingContract Address of staking contract. 
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
@@ -95,7 +95,7 @@ contract StakingProxy is
         _attachStakingContract(
             _stakingContract,
             _wethProxyAddress == NIL_ADDRESS ? address(wethAssetProxy) : _wethProxyAddress,
-            _ethVaultAddress == NIL_ADDRESS ? address(ethVault) : _ethVaultAddress,
+            _ethVaultAddress == NIL_ADDRESS ? address(operatorRewardVault) : _ethVaultAddress,
             _rewardVaultAddress == NIL_ADDRESS ? address(memberRewardVault) : _rewardVaultAddress,
             _zrxVaultAddress == NIL_ADDRESS ? address(zrxVault) : _zrxVaultAddress
         );
@@ -215,10 +215,10 @@ contract StakingProxy is
             ));
         }
 
-        if (address(ethVault) == NIL_ADDRESS) {
+        if (address(operatorRewardVault) == NIL_ADDRESS) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress
+                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidOperatorRewardVaultAddress
             ));
         }
 
@@ -240,7 +240,7 @@ contract StakingProxy is
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
+    /// @param _ethVaultAddress Address of the OperatorRewardVault contract.
     /// @param _rewardVaultAddress Address of the MemberRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _attachStakingContract(
