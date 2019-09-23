@@ -82,8 +82,7 @@ contract TestDelegatorRewards is
     )
         external
     {
-        unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] =
-            UnfinalizedPoolReward({
+        unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] = UnfinalizedPoolReward({
                 operatorReward: operatorReward,
                 membersReward: membersReward,
                 membersStake: membersStake
@@ -132,10 +131,8 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
-        IStructs.StoredBalance storage _stake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         _stake.isInitialized = true;
         _stake.currentEpochBalance += uint96(stake);
         _stake.nextEpochBalance += uint96(stake);
@@ -159,10 +156,8 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
-        IStructs.StoredBalance storage _stake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
@@ -188,10 +183,8 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
-        IStructs.StoredBalance storage _stake =
-            _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
+        IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
@@ -244,8 +237,7 @@ contract TestDelegatorRewards is
             uint256 membersStake
         )
     {
-        UnfinalizedPoolReward memory reward =
-            unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        UnfinalizedPoolReward memory reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
 
         _setOperatorShare(poolId, reward.operatorReward, reward.membersReward);
@@ -266,8 +258,7 @@ contract TestDelegatorRewards is
             uint256 membersStake
         )
     {
-        UnfinalizedPoolReward storage reward =
-            unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        UnfinalizedPoolReward storage reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         totalReward = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
     }

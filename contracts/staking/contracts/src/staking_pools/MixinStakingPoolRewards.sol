@@ -81,8 +81,7 @@ contract MixinStakingPoolRewards is
         // rewards.
         IStructs.Pool memory pool = _poolById[poolId];
         // Get any unfinalized rewards.
-        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
-            _getUnfinalizedPoolRewards(poolId);
+        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) = _getUnfinalizedPoolRewards(poolId);
         // Get the operators' portion.
         (reward,) = _computeSplitStakingPoolRewards(
             pool.operatorShare,
@@ -203,21 +202,18 @@ contract MixinStakingPoolRewards is
 
         // Fetch the last epoch at which we stored an entry for this pool;
         // this is the most up-to-date cumulative rewards for this pool.
-        IStructs.Fraction memory mostRecentCumulativeReward =
-            _getMostRecentCumulativeReward(poolId);
+        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
 
         // Compute new cumulative reward
         IStructs.Fraction memory cumulativeReward;
-        (cumulativeReward.numerator, cumulativeReward.denominator) =
-            LibFractions.add(
+        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
                 mostRecentCumulativeReward.numerator,
                 mostRecentCumulativeReward.denominator,
                 membersReward,
                 membersStake
             );
         // Normalize to prevent overflows.
-        (cumulativeReward.numerator, cumulativeReward.denominator) =
-            LibFractions.normalize(
+        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
                 cumulativeReward.numerator,
                 cumulativeReward.denominator
             );
@@ -404,8 +400,7 @@ contract MixinStakingPoolRewards is
 
         // Get the most recent cumulative reward, which will serve as a
         // reference point when updating dependencies
-        IStructs.Fraction memory mostRecentCumulativeReward =
-            _getMostRecentCumulativeReward(poolId);
+        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
 
         // Record dependency on current epoch.
         if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0

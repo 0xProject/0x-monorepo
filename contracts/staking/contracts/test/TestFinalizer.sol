@@ -77,8 +77,9 @@ contract TestFinalizer is
         external
     {
         require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
-        mapping (bytes32 => IStructs.ActivePool) storage activePools =
-            _getActivePoolsFromEpoch(currentEpoch);
+        mapping (bytes32 => IStructs.ActivePool) storage activePools = _getActivePoolsFromEpoch(
+            currentEpoch
+        );
         IStructs.ActivePool memory pool = activePools[poolId];
         require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
         _operatorSharesByPool[poolId] = operatorShare;
@@ -128,8 +129,9 @@ contract TestFinalizer is
         view
         returns (UnfinalizedPoolReward memory reward)
     {
-        (reward.totalReward, reward.membersStake) =
-            _getUnfinalizedPoolRewards(poolId);
+        (reward.totalReward, reward.membersStake) = _getUnfinalizedPoolRewards(
+            poolId
+        );
     }
 
     /// @dev Expose `_getActivePoolFromEpoch`.
@@ -151,8 +153,11 @@ contract TestFinalizer is
         returns (uint256 operatorReward, uint256 membersReward)
     {
         uint32 operatorShare = _operatorSharesByPool[poolId];
-        (operatorReward, membersReward) =
-            _computeSplitStakingPoolRewards(operatorShare, reward, membersStake);
+        (operatorReward, membersReward) = _computeSplitStakingPoolRewards(
+            operatorShare,
+            reward,
+            membersStake
+        );
         address(_operatorRewardsReceiver).transfer(operatorReward);
         address(_membersRewardsReceiver).transfer(membersReward);
         emit DepositStakingPoolRewards(poolId, reward, membersStake);

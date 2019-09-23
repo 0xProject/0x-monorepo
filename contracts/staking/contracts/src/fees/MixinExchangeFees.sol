@@ -89,8 +89,7 @@ contract MixinExchangeFees is
             return;
         }
 
-        uint256 poolStake =
-            getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+        uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
         // Ignore pools with dust stake.
         if (poolStake < minimumPoolStake) {
             return;
@@ -105,12 +104,10 @@ contract MixinExchangeFees is
         // If the pool was previously inactive in this epoch, initialize it.
         if (pool.feesCollected == 0) {
             // Compute member and total weighted stake.
-            (pool.membersStake, pool.weightedStake) =
-                _computeMembersAndWeightedStake(poolId, poolStake);
+            (pool.membersStake, pool.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
 
             // Increase the total weighted stake.
-            totalWeightedStakeThisEpoch =
-                totalWeightedStakeThisEpoch.safeAdd(pool.weightedStake);
+            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(pool.weightedStake);
 
             // Increase the number of active pools.
             numActivePoolsThisEpoch += 1;

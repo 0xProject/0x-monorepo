@@ -162,8 +162,7 @@ contract MixinCumulativeRewards is
         internal
     {
         // Check if we should do any work
-        uint256 currentMostRecentEpoch =
-            _cumulativeRewardsByPoolLastStored[poolId];
+        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
         if (epoch == currentMostRecentEpoch) {
             return;
         }

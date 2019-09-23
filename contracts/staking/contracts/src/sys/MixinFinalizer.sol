@@ -286,8 +286,7 @@ contract MixinFinalizer is
         // Clip the reward to always be under
         // `rewardsAvailable - totalRewardsPaid`,
         // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining =
-            state.rewardsAvailable.safeSub(state.totalRewardsFinalized);
+        uint256 rewardsRemaining = state.rewardsAvailable.safeSub(state.totalRewardsFinalized);
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }
