@@ -108,16 +108,6 @@ interface IStakingEvents {
         address zrxVaultAddress
     );
 
-     /// @dev Emitted by MixinScheduler when the timeLock period is changed.
-     /// @param timeLockPeriod The timeLock period we changed to.
-     /// @param startEpoch The epoch this period started.
-     /// @param endEpoch The epoch this period ends.
-    event TimeLockPeriodChanged(
-        uint256 timeLockPeriod,
-        uint256 startEpoch,
-        uint256 endEpoch
-    );
-
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operator The operator (creator) of pool.
@@ -132,7 +122,7 @@ interface IStakingEvents {
     /// @param poolId Unique id of pool.
     /// @param makerAddress Adress of maker joining the pool.
     event PendingAddMakerToPool(
-        bytes32 poolId,
+        bytes32 indexed poolId,
         address makerAddress
     );
 
@@ -140,7 +130,7 @@ interface IStakingEvents {
     /// @param poolId Unique id of pool.
     /// @param makerAddress Adress of maker added to pool.
     event MakerAddedToStakingPool(
-        bytes32 poolId,
+        bytes32 indexed poolId,
         address makerAddress
     );
 
@@ -148,7 +138,7 @@ interface IStakingEvents {
     /// @param poolId Unique id of pool.
     /// @param makerAddress Adress of maker added to pool.
     event MakerRemovedFromStakingPool(
-        bytes32 poolId,
+        bytes32 indexed poolId,
         address makerAddress
     );
 
