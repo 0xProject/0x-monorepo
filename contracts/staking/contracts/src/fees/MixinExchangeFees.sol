@@ -127,19 +127,6 @@ contract MixinExchangeFees is
         activePoolsThisEpoch[poolId] = pool;
     }
 
-    /// @dev Returns the total balance of this contract, including WETH.
-    /// @return totalBalance Total balance.
-    function getTotalBalance()
-        external
-        view
-        returns (uint256 totalBalance)
-    {
-        totalBalance = address(this).balance.safeAdd(
-            IEtherToken(_getWETHAddress()).balanceOf(address(this))
-        );
-        return totalBalance;
-    }
-
     /// @dev Get information on an active staking pool in this epoch.
     /// @param poolId Pool Id to query.
     /// @return pool ActivePool struct.

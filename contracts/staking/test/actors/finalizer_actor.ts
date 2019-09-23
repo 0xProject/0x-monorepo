@@ -241,7 +241,9 @@ export class FinalizerActor extends BaseActor {
                 this._stakingApiWrapper.stakingContract.getActiveStakingPoolThisEpoch.callAsync(poolId),
             ),
         );
-        const totalRewards = await this._stakingApiWrapper.stakingContract.getTotalBalance.callAsync();
+        const totalRewards = await this._stakingApiWrapper.utils.getEthAndWethBalanceOfAsync(
+            this._stakingApiWrapper.stakingContract.address,
+        );
         const totalFeesCollected = BigNumber.sum(...activePools.map(p => p.feesCollected));
         const totalWeightedStake = BigNumber.sum(...activePools.map(p => p.weightedStake));
         if (totalRewards.eq(0) || totalFeesCollected.eq(0) || totalWeightedStake.eq(0)) {

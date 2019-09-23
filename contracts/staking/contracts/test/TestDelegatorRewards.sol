@@ -83,10 +83,10 @@ contract TestDelegatorRewards is
         external
     {
         unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] = UnfinalizedPoolReward({
-                operatorReward: operatorReward,
-                membersReward: membersReward,
-                membersStake: membersStake
-            });
+            operatorReward: operatorReward,
+            membersReward: membersReward,
+            membersStake: membersStake
+        });
         // Lazily initialize this pool.
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
