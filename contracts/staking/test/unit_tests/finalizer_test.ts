@@ -556,6 +556,15 @@ blockchainTests.resets('finalizer unit tests', env => {
             });
         });
 
+        it('computes a reward with 0% < operatorShare < 100%', async () => {
+            const pool = await addActivePoolAsync({ operatorShare: Math.random() });
+            await testContract.endEpoch.awaitTransactionSuccessAsync();
+            return assertUnfinalizedPoolRewardsAsync(pool.poolId, {
+                totalReward: INITIAL_BALANCE,
+                membersStake: pool.membersStake,
+            });
+        });
+
         it('computes a reward with 100% operatorShare', async () => {
             const pool = await addActivePoolAsync({ operatorShare: 1 });
             await testContract.endEpoch.awaitTransactionSuccessAsync();

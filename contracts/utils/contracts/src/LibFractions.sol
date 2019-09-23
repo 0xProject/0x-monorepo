@@ -64,7 +64,7 @@ library LibFractions {
         // re-scale them by `maxValue` to prevent overflows in future operations.
         if (numerator > maxValue || denominator > maxValue) {
             uint256 rescaleBase = numerator >= denominator ? numerator : denominator;
-            rescaleBase /= maxValue;
+            rescaleBase = rescaleBase.safeDiv(maxValue);
             scaledNumerator = numerator.safeDiv(rescaleBase);
             scaledDenominator = denominator.safeDiv(rescaleBase);
         } else {

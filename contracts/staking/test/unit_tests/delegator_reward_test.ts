@@ -185,11 +185,9 @@ blockchainTests.resets('delegator unit rewards', env => {
             logs,
             TestDelegatorRewardsEvents.RecordDepositToEthVault,
         );
-        if (ethVaultDepositArgs.length > 0 && delegator !== undefined) {
-            for (const event of ethVaultDepositArgs) {
-                if (event.owner === delegator) {
-                    ethVaultDeposit = ethVaultDeposit.plus(event.amount);
-                }
+        for (const event of ethVaultDepositArgs) {
+            if (event.owner === delegator) {
+                ethVaultDeposit = ethVaultDeposit.plus(event.amount);
             }
         }
         const rewardVaultDepositArgs = filterLogsToArguments<RewardVaultDepositEventArgs>(
@@ -420,7 +418,7 @@ blockchainTests.resets('delegator unit rewards', env => {
             // rewards paid for stake in epoch 3.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-            expect(delegatorReward).to.bignumber.eq(reward);
+            assertRoughlyEquals(delegatorReward, reward);
         });
 
         it('ignores rewards paid in the same epoch the stake was first active in', async () => {
