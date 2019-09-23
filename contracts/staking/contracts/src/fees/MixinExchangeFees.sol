@@ -129,7 +129,7 @@ contract MixinExchangeFees is
     /// @dev Returns the total balance of this contract, including WETH,
     ///      minus any WETH that has been reserved for rewards.
     /// @return totalBalance Total balance.
-    function getAvailableBalance()
+    function getAvailableRewardsBalance()
         external
         view
         returns (uint256 totalBalance)

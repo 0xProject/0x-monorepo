@@ -83,7 +83,7 @@ contract MixinStorage is
     mapping (bytes32 => IStructs.Pool) internal _poolById;
 
     // mapping from PoolId to balance of members
-    mapping (bytes32 => uint256) public balanceByPoolId;
+    mapping (bytes32 => uint256) public rewardsByPoolId;
 
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;
@@ -147,7 +147,7 @@ contract MixinStorage is
     IStructs.UnfinalizedState public unfinalizedState;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
-    uint256 _reservedWethBalance;
+    uint256 _wethReservedForPoolRewards;
 
     /// @dev Adds owner as an authorized address.
     constructor()

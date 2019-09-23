@@ -230,7 +230,7 @@ export class FinalizerActor extends BaseActor {
         for (const poolId of poolIds) {
             rewardVaultBalanceByPoolId[
                 poolId
-            ] = await this._stakingApiWrapper.stakingContract.balanceByPoolId.callAsync(poolId);
+            ] = await this._stakingApiWrapper.stakingContract.rewardsByPoolId.callAsync(poolId);
         }
         return rewardVaultBalanceByPoolId;
     }
@@ -241,7 +241,7 @@ export class FinalizerActor extends BaseActor {
                 this._stakingApiWrapper.stakingContract.getActiveStakingPoolThisEpoch.callAsync(poolId),
             ),
         );
-        const totalRewards = await this._stakingApiWrapper.stakingContract.getAvailableBalance.callAsync();
+        const totalRewards = await this._stakingApiWrapper.stakingContract.getAvailableRewardsBalance.callAsync();
         const totalFeesCollected = BigNumber.sum(...activePools.map(p => p.feesCollected));
         const totalWeightedStake = BigNumber.sum(...activePools.map(p => p.weightedStake));
         if (totalRewards.eq(0) || totalFeesCollected.eq(0) || totalWeightedStake.eq(0)) {

@@ -257,7 +257,7 @@ contract MixinFinalizer is
         returns (uint256 wethBalance)
     {
         wethBalance = _getWethContract().balanceOf(address(this))
-            .safeSub(_reservedWethBalance);
+            .safeSub(_wethReservedForPoolRewards);
 
         return wethBalance;
     }

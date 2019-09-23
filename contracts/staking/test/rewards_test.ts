@@ -131,7 +131,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 // operator
                 stakingApiWrapper.wethContract.balanceOf.callAsync(poolOperator.getOwner()),
                 // undivided balance in reward pool
-                stakingApiWrapper.stakingContract.balanceByPoolId.callAsync(poolId),
+                stakingApiWrapper.stakingContract.rewardsByPoolId.callAsync(poolId),
             ]);
             expect(finalEndBalancesAsArray[0], 'stakerRewardBalance_1').to.be.bignumber.equal(
                 expectedEndBalances.stakerRewardBalance_1,
