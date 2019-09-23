@@ -200,7 +200,7 @@ contract MixinFinalizer is
             return (0, 0);
         }
         IStructs.ActivePool memory pool = _getActivePoolFromEpoch(epoch - 1, poolId);
-        reward = _getUnfinalizedPoolRewards(pool, unfinalizedState);
+        reward = _getUnfinalizedPoolRewardsFromState(pool, unfinalizedState);
         membersStake = pool.membersStake;
     }
 
@@ -256,7 +256,7 @@ contract MixinFinalizer is
     /// @param pool The active pool.
     /// @param state The current state of finalization.
     /// @return rewards Unfinalized rewards for this pool.
-    function _getUnfinalizedPoolRewards(
+    function _getUnfinalizedPoolRewardsFromState(
         IStructs.ActivePool memory pool,
         IStructs.UnfinalizedState memory state
     )
@@ -313,7 +313,7 @@ contract MixinFinalizer is
         delete _getActivePoolsFromEpoch(epoch.safeSub(1))[poolId];
 
         // Compute the rewards.
-        uint256 rewards = _getUnfinalizedPoolRewards(pool, state);
+        uint256 rewards = _getUnfinalizedPoolRewardsFromState(pool, state);
 
         // Pay the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
