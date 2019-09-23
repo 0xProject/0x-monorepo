@@ -29,6 +29,88 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class DevUtilsContract extends BaseContract {
     /**
+     * Decompose an ABI-encoded OrderStatusError.
+     */
+    public decodeOrderStatusError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns orderHash The order hash.orderStatus The order status.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, number]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeOrderStatusError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderStatusError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, number]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeOrderStatusError(bytes)', [encoded]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderStatusError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, number] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderStatusError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, number]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
      * Decode ERC-721 asset data from the format described in the AssetProxy contract specification.
      */
     public decodeERC721AssetData = {
@@ -215,13 +297,23 @@ export class DevUtilsContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public ERC1155_PROXY_ID = {
+    /**
+     * Decompose an ABI-encoded IncompleteFillError.
+     */
+    public decodeIncompleteFillError = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns orderHash Hash of the order being filled.
          */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[number, BigNumber, BigNumber]> {
+            assert.isString('encoded', encoded);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -231,29 +323,21 @@ export class DevUtilsContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('ERC1155_PROXY_ID()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedData = self._strictEncodeArguments('decodeIncompleteFillError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
             let rawCallResult;
             try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('ERC1155_PROXY_ID()');
+
+            const abiEncoder = self._lookupAbiEncoder('decodeIncompleteFillError(bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<[number, BigNumber, BigNumber]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -261,11 +345,15 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(): string {
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
             const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('ERC1155_PROXY_ID()', []);
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeIncompleteFillError(bytes)', [
+                encoded,
+            ]);
             return abiEncodedTransactionData;
         },
         /**
@@ -273,11 +361,11 @@ export class DevUtilsContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(callData: string): void {
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC1155_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder('decodeIncompleteFillError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
         /**
@@ -285,11 +373,11 @@ export class DevUtilsContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(returnData: string): string {
+        getABIDecodedReturnData(returnData: string): [number, BigNumber, BigNumber] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC1155_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder('decodeIncompleteFillError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, BigNumber, BigNumber]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -304,7 +392,7 @@ export class DevUtilsContract extends BaseContract {
          * @param ownerAddress Address of the owner of the asset.
          * @param assetData Description of tokens, per the AssetProxy contract
          *     specification.
-         * @returns The amount of the asset tranferable by the owner. NOTE: If the &#x60;assetData&#x60; encodes data for multiple assets, the &#x60;transferableAssetAmount&#x60; will represent the amount of times the entire &#x60;assetData&#x60; can be transferred. To calculate the total individual transferable amounts, this scaled &#x60;transferableAmount&#x60; must be multiplied by  the individual asset amounts located within the &#x60;assetData&#x60;.
+         * @returns The amount of the asset tranferable by the owner. NOTE: If the &#x60;assetData&#x60; encodes data for multiple assets, the &#x60;transferableAssetAmount&#x60; will represent the amount of times the entire &#x60;assetData&#x60; can be transferred. To calculate the total individual transferable amounts, this scaled &#x60;transferableAmount&#x60; must be multiplied by the individual asset amounts located within the &#x60;assetData&#x60;.
          */
         async callAsync(
             ownerAddress: string,
@@ -393,6 +481,426 @@ export class DevUtilsContract extends BaseContract {
             const abiEncoder = self._lookupAbiEncoder('getTransferableAssetAmount(address,bytes)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded AssetProxyTransferError.
+     */
+    public decodeAssetProxyTransferError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns orderHash Hash of the order being dispatched.assetData Asset data of the order being dispatched.errorData ABI-encoded revert data from the asset proxy.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeAssetProxyTransferError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyTransferError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyTransferError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyTransferError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyTransferError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded NegativeSpreadError.
+     */
+    public decodeNegativeSpreadError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns leftOrderHash Hash of the left order being matched.rightOrderHash Hash of the right order being matched.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeNegativeSpreadError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeNegativeSpreadError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeNegativeSpreadError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeNegativeSpreadError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeNegativeSpreadError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded AssetProxyDispatchError.
+     */
+    public decodeAssetProxyDispatchError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode The error code.orderHash Hash of the order being dispatched.assetData Asset data of the order being dispatched.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[number, string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeAssetProxyDispatchError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyDispatchError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyDispatchError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyDispatchError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [number, string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyDispatchError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded SignatureWalletError.
+     */
+    public decodeSignatureWalletError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode The error code.signerAddress The expected signer of the hash.signature The full signature bytes.errorData The revert data thrown by the validator contract.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string, string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeSignatureWalletError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureWalletError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeSignatureWalletError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureWalletError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string, string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureWalletError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(
+                returnData,
+            );
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded FillError.
+     */
+    public decodeFillError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode The error code.orderHash The order hash.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[number, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeFillError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeFillError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeFillError(bytes)', [encoded]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeFillError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [number, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeFillError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -588,6 +1096,88 @@ export class DevUtilsContract extends BaseContract {
         },
     };
     /**
+     * Decompose an ABI-encoded OrderEpochError.
+     */
+    public decodeOrderEpochError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns makerAddress The order maker.orderSenderAddress The order sender.currentEpoch The current epoch for the maker.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string, BigNumber]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeOrderEpochError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderEpochError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeOrderEpochError(bytes)', [encoded]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderEpochError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string, BigNumber] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderEpochError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
      * Decodes the call data for an Exchange contract method call.
      */
     public decodeZeroExTransactionData = {
@@ -619,6 +1209,8 @@ export class DevUtilsContract extends BaseContract {
                     salt: BigNumber;
                     makerAssetData: string;
                     takerAssetData: string;
+                    makerFeeAssetData: string;
+                    takerFeeAssetData: string;
                 }>,
                 BigNumber[],
                 string[]
@@ -664,6 +1256,8 @@ export class DevUtilsContract extends BaseContract {
                         salt: BigNumber;
                         makerAssetData: string;
                         takerAssetData: string;
+                        makerFeeAssetData: string;
+                        takerFeeAssetData: string;
                     }>,
                     BigNumber[],
                     string[]
@@ -722,6 +1316,8 @@ export class DevUtilsContract extends BaseContract {
                 salt: BigNumber;
                 makerAssetData: string;
                 takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
             }>,
             BigNumber[],
             string[]
@@ -745,11 +1341,184 @@ export class DevUtilsContract extends BaseContract {
                         salt: BigNumber;
                         makerAssetData: string;
                         takerAssetData: string;
+                        makerFeeAssetData: string;
+                        takerFeeAssetData: string;
                     }>,
                     BigNumber[],
                     string[]
                 ]
             >(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded AssetProxyExistsError.
+     */
+    public decodeAssetProxyExistsError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns assetProxyId Id of asset proxy.assetProxyAddress The address of the asset proxy.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeAssetProxyExistsError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyExistsError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeAssetProxyExistsError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyExistsError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyExistsError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded SignatureValidatorNotApprovedError.
+     */
+    public decodeSignatureValidatorNotApprovedError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns signerAddress The expected signer of the hash.validatorAddress The expected validator.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeSignatureValidatorNotApprovedError(bytes)', [
+                encoded,
+            ]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureValidatorNotApprovedError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'decodeSignatureValidatorNotApprovedError(bytes)',
+                [encoded],
+            );
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureValidatorNotApprovedError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureValidatorNotApprovedError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -857,284 +1626,6 @@ export class DevUtilsContract extends BaseContract {
         },
     };
     /**
-     * Fetches all order-relevant information needed to validate if the supplied orders are fillable.
-     */
-    public getOrderRelevantStates = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param orders Array of order structures.
-         * @param signatures Array of signatures provided by makers that prove the
-         *     authenticity of the orders. `0x01` can always be provided if a signature
-         *     does not need to be validated.
-         * @returns The ordersInfo (array of the hash, status, and &#x60;takerAssetAmount&#x60; already filled for each order), fillableTakerAssetAmounts (array of amounts for each order&#x27;s &#x60;takerAssetAmount&#x60; that is fillable given all on-chain state), and isValidSignature (array containing the validity of each provided signature). NOTE: If the &#x60;takerAssetData&#x60; encodes data for multiple assets, each element of &#x60;fillableTakerAssetAmounts&#x60; will represent a &quot;scaled&quot; amount, meaning it must be multiplied by all the individual asset amounts within the &#x60;takerAssetData&#x60; to get the final amount of each asset that can be filled.
-         */
-        async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            signatures: string[],
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<
-            [
-                Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-                BigNumber[],
-                boolean[]
-            ]
-        > {
-            assert.isArray('orders', orders);
-            assert.isArray('signatures', signatures);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments(
-                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[])',
-                [orders, signatures],
-            );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[])',
-            );
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<
-                [
-                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-                    BigNumber[],
-                    boolean[]
-                ]
-            >(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param orders Array of order structures.
-         * @param signatures Array of signatures provided by makers that prove the
-         *     authenticity of the orders. `0x01` can always be provided if a signature
-         *     does not need to be validated.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            signatures: string[],
-        ): string {
-            assert.isArray('orders', orders);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[])',
-                [orders, signatures],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(
-            callData: string,
-        ): [
-            Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            string[]
-        ] {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[])',
-            );
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<
-                [
-                    Array<{
-                        makerAddress: string;
-                        takerAddress: string;
-                        feeRecipientAddress: string;
-                        senderAddress: string;
-                        makerAssetAmount: BigNumber;
-                        takerAssetAmount: BigNumber;
-                        makerFee: BigNumber;
-                        takerFee: BigNumber;
-                        expirationTimeSeconds: BigNumber;
-                        salt: BigNumber;
-                        makerAssetData: string;
-                        takerAssetData: string;
-                    }>,
-                    string[]
-                ]
-            >(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(
-            returnData: string,
-        ): [
-            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-            BigNumber[],
-            boolean[]
-        ] {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[])',
-            );
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
-                [
-                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
-                    BigNumber[],
-                    boolean[]
-                ]
-            >(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    public ERC20_PROXY_ID = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('ERC20_PROXY_ID()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('ERC20_PROXY_ID()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('ERC20_PROXY_ID()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC20_PROXY_ID()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC20_PROXY_ID()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
      * Decode ERC-20 asset data from the format described in the AssetProxy contract specification.
      */
     public decodeERC20AssetData = {
@@ -1217,41 +1708,22 @@ export class DevUtilsContract extends BaseContract {
         },
     };
     /**
-     * Fetches all order-relevant information needed to validate if the supplied order is fillable.
+     * Decompose an ABI-encoded SignatureError.
      */
-    public getOrderRelevantState = {
+    public decodeSignatureError = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
-         * @param order The order structure.
-         * @param signature Signature provided by maker that proves the order's
-         *     authenticity. `0x01` can always be provided if the signature does not
-         *     need to be validated.
-         * @returns The orderInfo (hash, status, and &#x60;takerAssetAmount&#x60; already filled for the given order), fillableTakerAssetAmount (amount of the order&#x27;s &#x60;takerAssetAmount&#x60; that is fillable given all on-chain state), and isValidSignature (validity of the provided signature). NOTE: If the &#x60;takerAssetData&#x60; encodes data for multiple assets, &#x60;fillableTakerAssetAmount&#x60; will represent a &quot;scaled&quot; amount, meaning it must be multiplied by all the individual asset amounts within the &#x60;takerAssetData&#x60; to get the final amount of each asset that can be filled.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode The error code.signerAddress The expected signer of the hash.signature The full signature.
          */
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            signature: string,
+            encoded: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<
-            [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
-        > {
-            assert.isString('signature', signature);
+        ): Promise<[number, string, string, string]> {
+            assert.isString('encoded', encoded);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1261,36 +1733,21 @@ export class DevUtilsContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments(
-                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
-                [order, signature],
-            );
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedData = self._strictEncodeArguments('decodeSignatureError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
             let rawCallResult;
             try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
-            );
+
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureError(bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<
-                [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
-            >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<[number, string, string, string]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -1298,35 +1755,13 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
-         * @param order The order structure.
-         * @param signature Signature provided by maker that proves the order's
-         *     authenticity. `0x01` can always be provided if the signature does not
-         *     need to be validated.
+         * @param encoded ABI-encoded revert error.
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            signature: string,
-        ): string {
-            assert.isString('signature', signature);
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
             const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
-                [order, signature],
-            );
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeSignatureError(bytes)', [encoded]);
             return abiEncodedTransactionData;
         },
         /**
@@ -1334,49 +1769,11 @@ export class DevUtilsContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(
-            callData: string,
-        ): [
-            {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            string
-        ] {
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<
-                [
-                    {
-                        makerAddress: string;
-                        takerAddress: string;
-                        feeRecipientAddress: string;
-                        senderAddress: string;
-                        makerAssetAmount: BigNumber;
-                        takerAssetAmount: BigNumber;
-                        makerFee: BigNumber;
-                        takerFee: BigNumber;
-                        expirationTimeSeconds: BigNumber;
-                        salt: BigNumber;
-                        makerAssetData: string;
-                        takerAssetData: string;
-                    },
-                    string
-                ]
-            >(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
         /**
@@ -1384,17 +1781,13 @@ export class DevUtilsContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(
-            returnData: string,
-        ): [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean] {
+        getABIDecodedReturnData(returnData: string): [number, string, string, string] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
-                [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
-            >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string, string, string]>(
+                returnData,
+            );
             return abiDecodedReturnData;
         },
     };
@@ -1576,13 +1969,253 @@ export class DevUtilsContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public ERC721_PROXY_ID = {
+    /**
+     * Simulates all of the transfers for each given order and returns the indices of each first failed transfer.
+     */
+    public getSimulatedOrdersTransferResults = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of orders to individually simulate transfers for.
+         * @param takerAddresses Array of addresses of takers that will fill each
+         *     order.
+         * @param takerAssetFillAmounts Array of amounts of takerAsset that will be
+         *     filled for each order.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+                [orders, takerAddresses, takerAssetFillAmounts],
+            );
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.getSimulatedOrdersTransferResults.estimateGasAsync.bind(
+                    self,
+                    orders,
+                    takerAddresses,
+                    takerAssetFillAmounts,
+                ),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of orders to individually simulate transfers for.
+         * @param takerAddresses Array of addresses of takers that will fill each
+         *     order.
+         * @param takerAssetFillAmounts Array of amounts of takerAsset that will be
+         *     filled for each order.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            const self = (this as any) as DevUtilsContract;
+            const txHashPromise = self.getSimulatedOrdersTransferResults.sendTransactionAsync(
+                orders,
+                takerAddresses,
+                takerAssetFillAmounts,
+                txData,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param orders Array of orders to individually simulate transfers for.
+         * @param takerAddresses Array of addresses of takers that will fill each
+         *     order.
+         * @param takerAssetFillAmounts Array of amounts of takerAsset that will be
+         *     filled for each order.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+                [orders, takerAddresses, takerAssetFillAmounts],
+            );
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).getSimulatedOrdersTransferResults.callAsync(
+                orders,
+                takerAddresses,
+                takerAssetFillAmounts,
+                txData,
+            );
+            const txHash = await (this as any).getSimulatedOrdersTransferResults.sendTransactionAsync(
+                orders,
+                takerAddresses,
+                takerAssetFillAmounts,
+                txData,
+            );
+            return txHash;
+        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
+         * @param orders Array of orders to individually simulate transfers for.
+         * @param takerAddresses Array of addresses of takers that will fill each
+         *     order.
+         * @param takerAssetFillAmounts Array of amounts of takerAsset that will be
+         *     filled for each order.
+         * @returns The indices of the first failed transfer (or 4 if all transfers are successful) for each order.
          */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<number[]> {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1592,7 +2225,10 @@ export class DevUtilsContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('ERC721_PROXY_ID()', []);
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+                [orders, takerAddresses, takerAssetFillAmounts],
+            );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1612,9 +2248,11 @@ export class DevUtilsContract extends BaseContract {
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('ERC721_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+            );
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<number[]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -1622,11 +2260,41 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of orders to individually simulate transfers for.
+         * @param takerAddresses Array of addresses of takers that will fill each
+         *     order.
+         * @param takerAssetFillAmounts Array of amounts of takerAsset that will be
+         *     filled for each order.
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(): string {
+        getABIEncodedTransactionData(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            takerAddresses: string[],
+            takerAssetFillAmounts: BigNumber[],
+        ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('ERC721_PROXY_ID()', []);
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+                [orders, takerAddresses, takerAssetFillAmounts],
+            );
             return abiEncodedTransactionData;
         },
         /**
@@ -1634,11 +2302,47 @@ export class DevUtilsContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(callData: string): void {
+        getABIDecodedTransactionData(
+            callData: string,
+        ): Array<{
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+            makerFeeAssetData: string;
+            takerFeeAssetData: string;
+        }> {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC721_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+            );
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                Array<{
+                    makerAddress: string;
+                    takerAddress: string;
+                    feeRecipientAddress: string;
+                    senderAddress: string;
+                    makerAssetAmount: BigNumber;
+                    takerAssetAmount: BigNumber;
+                    makerFee: BigNumber;
+                    takerFee: BigNumber;
+                    expirationTimeSeconds: BigNumber;
+                    salt: BigNumber;
+                    makerAssetData: string;
+                    takerAssetData: string;
+                    makerFeeAssetData: string;
+                    takerFeeAssetData: string;
+                }>
+            >(callData);
             return abiDecodedCallData;
         },
         /**
@@ -1646,11 +2350,13 @@ export class DevUtilsContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(returnData: string): string {
+        getABIDecodedReturnData(returnData: string): number[] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('ERC721_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+            );
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number[]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -1749,13 +2455,23 @@ export class DevUtilsContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public MULTI_ASSET_PROXY_ID = {
+    /**
+     * Decompose an ABI-encoded SignatureValidatorError.
+     */
+    public decodeEIP1271SignatureError = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns signerAddress The expected signer of the hash.signature The full signature bytes.errorData The revert data thrown by the validator contract.
          */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string, string, string]> {
+            assert.isString('encoded', encoded);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1765,29 +2481,21 @@ export class DevUtilsContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('MULTI_ASSET_PROXY_ID()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
+            const encodedData = self._strictEncodeArguments('decodeEIP1271SignatureError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
             let rawCallResult;
             try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('MULTI_ASSET_PROXY_ID()');
+
+            const abiEncoder = self._lookupAbiEncoder('decodeEIP1271SignatureError(bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -1795,11 +2503,15 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(): string {
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
             const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('MULTI_ASSET_PROXY_ID()', []);
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeEIP1271SignatureError(bytes)', [
+                encoded,
+            ]);
             return abiEncodedTransactionData;
         },
         /**
@@ -1807,11 +2519,11 @@ export class DevUtilsContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(callData: string): void {
+        getABIDecodedTransactionData(callData: string): [string] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('MULTI_ASSET_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder('decodeEIP1271SignatureError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
             return abiDecodedCallData;
         },
         /**
@@ -1819,11 +2531,13 @@ export class DevUtilsContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(returnData: string): string {
+        getABIDecodedReturnData(returnData: string): [string, string, string, string] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('MULTI_ASSET_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder('decodeEIP1271SignatureError(bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, string, string]>(
+                returnData,
+            );
             return abiDecodedReturnData;
         },
     };
@@ -1940,107 +2654,6 @@ export class DevUtilsContract extends BaseContract {
         },
     };
     /**
-     * Calls `asset.ownerOf(tokenId)`, but returns a null owner instead of reverting on an unowned asset.
-     */
-    public getERC721TokenOwner = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param tokenAddress Address of ERC721 asset.
-         * @param tokenId The identifier for the specific NFT.
-         * @returns Owner of tokenId or null address if unowned.
-         */
-        async callAsync(
-            tokenAddress: string,
-            tokenId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isString('tokenAddress', tokenAddress);
-            assert.isBigNumber('tokenId', tokenId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [
-                tokenAddress.toLowerCase(),
-                tokenId,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param tokenAddress Address of ERC721 asset.
-         * @param tokenId The identifier for the specific NFT.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(tokenAddress: string, tokenId: BigNumber): string {
-            assert.isString('tokenAddress', tokenAddress);
-            assert.isBigNumber('tokenId', tokenId);
-            const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [
-                tokenAddress.toLowerCase(),
-                tokenId,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
      * Decode multi-asset data from the format described in the AssetProxy contract specification.
      */
     public decodeMultiAssetData = {
@@ -2121,6 +2734,172 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, BigNumber[], string[]]>(
                 returnData,
             );
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded TransactionExecutionError.
+     */
+    public decodeTransactionExecutionError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns transactionHash Hash of the transaction.errorData Error thrown by exeucteTransaction().
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeTransactionExecutionError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionExecutionError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeTransactionExecutionError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionExecutionError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionExecutionError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded TransactionError.
+     */
+    public decodeTransactionError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode The error code.transactionHash Hash of the transaction.
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[number, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeTransactionError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[number, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeTransactionError(bytes)', [encoded]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [number, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -2331,6 +3110,385 @@ export class DevUtilsContract extends BaseContract {
         },
     };
     /**
+     * Simulates all of the transfers within an order and returns the index of the first failed transfer.
+     */
+    public getSimulatedOrderTransferResults = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order The order to simulate transfers for.
+         * @param takerAddress The address of the taker that will fill the order.
+         * @param takerAssetFillAmount The amount of takerAsset that the taker wished
+         *     to fill.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            assert.isString('takerAddress', takerAddress);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+                [order, takerAddress.toLowerCase(), takerAssetFillAmount],
+            );
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.getSimulatedOrderTransferResults.estimateGasAsync.bind(
+                    self,
+                    order,
+                    takerAddress.toLowerCase(),
+                    takerAssetFillAmount,
+                ),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order The order to simulate transfers for.
+         * @param takerAddress The address of the taker that will fill the order.
+         * @param takerAssetFillAmount The amount of takerAsset that the taker wished
+         *     to fill.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('takerAddress', takerAddress);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            const self = (this as any) as DevUtilsContract;
+            const txHashPromise = self.getSimulatedOrderTransferResults.sendTransactionAsync(
+                order,
+                takerAddress.toLowerCase(),
+                takerAssetFillAmount,
+                txData,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param order The order to simulate transfers for.
+         * @param takerAddress The address of the taker that will fill the order.
+         * @param takerAssetFillAmount The amount of takerAsset that the taker wished
+         *     to fill.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('takerAddress', takerAddress);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+                [order, takerAddress.toLowerCase(), takerAssetFillAmount],
+            );
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).getSimulatedOrderTransferResults.callAsync(
+                order,
+                takerAddress,
+                takerAssetFillAmount,
+                txData,
+            );
+            const txHash = await (this as any).getSimulatedOrderTransferResults.sendTransactionAsync(
+                order,
+                takerAddress,
+                takerAssetFillAmount,
+                txData,
+            );
+            return txHash;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order The order to simulate transfers for.
+         * @param takerAddress The address of the taker that will fill the order.
+         * @param takerAssetFillAmount The amount of takerAsset that the taker wished
+         *     to fill.
+         * @returns The index of the first failed transfer (or 4 if all transfers are successful).
+         */
+        async callAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<number> {
+            assert.isString('takerAddress', takerAddress);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+                [order, takerAddress.toLowerCase(), takerAssetFillAmount],
+            );
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+            );
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order The order to simulate transfers for.
+         * @param takerAddress The address of the taker that will fill the order.
+         * @param takerAssetFillAmount The amount of takerAsset that the taker wished
+         *     to fill.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            takerAddress: string,
+            takerAssetFillAmount: BigNumber,
+        ): string {
+            assert.isString('takerAddress', takerAddress);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+                [order, takerAddress.toLowerCase(), takerAssetFillAmount],
+            );
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(
+            callData: string,
+        ): {
+            makerAddress: string;
+            takerAddress: string;
+            feeRecipientAddress: string;
+            senderAddress: string;
+            makerAssetAmount: BigNumber;
+            takerAssetAmount: BigNumber;
+            makerFee: BigNumber;
+            takerFee: BigNumber;
+            expirationTimeSeconds: BigNumber;
+            salt: BigNumber;
+            makerAssetData: string;
+            takerAssetData: string;
+            makerFeeAssetData: string;
+            takerFeeAssetData: string;
+        } {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): number {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
      * Encode data for multiple assets, per the AssetProxy contract specification.
      */
     public encodeMultiAssetData = {
@@ -2425,13 +3583,49 @@ export class DevUtilsContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public STATIC_CALL_PROXY_ID = {
+    /**
+     * Fetches all order-relevant information needed to validate if the supplied orders are fillable.
+     */
+    public getOrderRelevantStates = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
+         * @param orders Array of order structures.
+         * @param signatures Array of signatures provided by makers that prove the
+         *     authenticity of the orders. `0x01` can always be provided if a signature
+         *     does not need to be validated.
+         * @returns The ordersInfo (array of the hash, status, and &#x60;takerAssetAmount&#x60; already filled for each order), fillableTakerAssetAmounts (array of amounts for each order&#x27;s &#x60;takerAssetAmount&#x60; that is fillable given all on-chain state), and isValidSignature (array containing the validity of each provided signature). NOTE: If the &#x60;takerAssetData&#x60; encodes data for multiple assets, each element of &#x60;fillableTakerAssetAmounts&#x60; will represent a &quot;scaled&quot; amount, meaning it must be multiplied by all the individual asset amounts within the &#x60;takerAssetData&#x60; to get the final amount of each asset that can be filled.
          */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            signatures: string[],
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<
+            [
+                Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                BigNumber[],
+                boolean[]
+            ]
+        > {
+            assert.isArray('orders', orders);
+            assert.isArray('signatures', signatures);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2441,7 +3635,10 @@ export class DevUtilsContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DevUtilsContract;
-            const encodedData = self._strictEncodeArguments('STATIC_CALL_PROXY_ID()', []);
+            const encodedData = self._strictEncodeArguments(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+                [orders, signatures],
+            );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2461,9 +3658,17 @@ export class DevUtilsContract extends BaseContract {
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('STATIC_CALL_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    BigNumber[],
+                    boolean[]
+                ]
+            >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -2471,11 +3676,38 @@ export class DevUtilsContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order structures.
+         * @param signatures Array of signatures provided by makers that prove the
+         *     authenticity of the orders. `0x01` can always be provided if a signature
+         *     does not need to be validated.
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(): string {
+        getABIEncodedTransactionData(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            signatures: string[],
+        ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('signatures', signatures);
             const self = (this as any) as DevUtilsContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('STATIC_CALL_PROXY_ID()', []);
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+                [orders, signatures],
+            );
             return abiEncodedTransactionData;
         },
         /**
@@ -2483,11 +3715,53 @@ export class DevUtilsContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(callData: string): void {
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            }>,
+            string[]
+        ] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('STATIC_CALL_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    Array<{
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                        makerFeeAssetData: string;
+                        takerFeeAssetData: string;
+                    }>,
+                    string[]
+                ]
+            >(callData);
             return abiDecodedCallData;
         },
         /**
@@ -2495,11 +3769,25 @@ export class DevUtilsContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(returnData: string): string {
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+            BigNumber[],
+            boolean[]
+        ] {
             const self = (this as any) as DevUtilsContract;
-            const abiEncoder = self._lookupAbiEncoder('STATIC_CALL_PROXY_ID()');
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+            );
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    BigNumber[],
+                    boolean[]
+                ]
+            >(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -2606,13 +3894,286 @@ export class DevUtilsContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    /**
+     * Fetches all order-relevant information needed to validate if the supplied order is fillable.
+     */
+    public getOrderRelevantState = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order The order structure.
+         * @param signature Signature provided by maker that proves the order's
+         *     authenticity. `0x01` can always be provided if the signature does not
+         *     need to be validated.
+         * @returns The orderInfo (hash, status, and &#x60;takerAssetAmount&#x60; already filled for the given order), fillableTakerAssetAmount (amount of the order&#x27;s &#x60;takerAssetAmount&#x60; that is fillable given all on-chain state), and isValidSignature (validity of the provided signature). NOTE: If the &#x60;takerAssetData&#x60; encodes data for multiple assets, &#x60;fillableTakerAssetAmount&#x60; will represent a &quot;scaled&quot; amount, meaning it must be multiplied by all the individual asset amounts within the &#x60;takerAssetData&#x60; to get the final amount of each asset that can be filled.
+         */
+        async callAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            signature: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<
+            [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
+        > {
+            assert.isString('signature', signature);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+                [order, signature],
+            );
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+            );
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<
+                [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
+            >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order The order structure.
+         * @param signature Signature provided by maker that proves the order's
+         *     authenticity. `0x01` can always be provided if the signature does not
+         *     need to be validated.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            signature: string,
+        ): string {
+            assert.isString('signature', signature);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+                [order, signature],
+            );
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+                makerFeeAssetData: string;
+                takerFeeAssetData: string;
+            },
+            string
+        ] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        makerAddress: string;
+                        takerAddress: string;
+                        feeRecipientAddress: string;
+                        senderAddress: string;
+                        makerAssetAmount: BigNumber;
+                        takerAssetAmount: BigNumber;
+                        makerFee: BigNumber;
+                        takerFee: BigNumber;
+                        expirationTimeSeconds: BigNumber;
+                        salt: BigNumber;
+                        makerAssetData: string;
+                        takerAssetData: string;
+                        makerFeeAssetData: string;
+                        takerFeeAssetData: string;
+                    },
+                    string
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }, BigNumber, boolean]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Decompose an ABI-encoded OrderStatusError.
+     */
+    public decodeExchangeInvalidContextError = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param encoded ABI-encoded revert error.
+         * @returns errorCode Error code that corresponds to invalid maker, taker, or sender.orderHash The order hash.contextAddress The maker, taker, or sender address
+         */
+        async callAsync(
+            encoded: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<[number, string, string]> {
+            assert.isString('encoded', encoded);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as DevUtilsContract;
+            const encodedData = self._strictEncodeArguments('decodeExchangeInvalidContextError(bytes)', [encoded]);
+            const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+
+            let rawCallResult;
+            try {
+                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
+            const abiEncoder = self._lookupAbiEncoder('decodeExchangeInvalidContextError(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[number, string, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param encoded ABI-encoded revert error.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(encoded: string): string {
+            assert.isString('encoded', encoded);
+            const self = (this as any) as DevUtilsContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeExchangeInvalidContextError(bytes)', [
+                encoded,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeExchangeInvalidContextError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): [number, string, string] {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeExchangeInvalidContextError(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
-        _zrxAssetData: string,
     ): Promise<DevUtilsContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -2638,7 +4199,6 @@ export class DevUtilsContract extends BaseContract {
             txDefaults,
             logDecodeDependenciesAbiOnly,
             _exchange,
-            _zrxAssetData,
         );
     }
     public static async deployAsync(
@@ -2648,7 +4208,6 @@ export class DevUtilsContract extends BaseContract {
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
-        _zrxAssetData: string,
     ): Promise<DevUtilsContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -2658,14 +4217,14 @@ export class DevUtilsContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_exchange, _zrxAssetData] = BaseContract._formatABIDataItemList(
+        [_exchange] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_exchange, _zrxAssetData],
+            [_exchange],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_exchange, _zrxAssetData]);
+        const txData = deployInfo.encode(bytecode, [_exchange]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             { data: txData },
@@ -2682,7 +4241,7 @@ export class DevUtilsContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [_exchange, _zrxAssetData];
+        contractInstance.constructorArgs = [_exchange];
         return contractInstance;
     }
 
@@ -2691,6 +4250,29 @@ export class DevUtilsContract extends BaseContract {
      */
     public static ABI(): ContractAbi {
         const abi = [
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeOrderStatusError',
+                outputs: [
+                    {
+                        name: 'orderHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'orderStatus',
+                        type: 'uint8',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
             {
                 constant: true,
                 inputs: [
@@ -2747,16 +4329,29 @@ export class DevUtilsContract extends BaseContract {
             },
             {
                 constant: true,
-                inputs: [],
-                name: 'ERC1155_PROXY_ID',
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeIncompleteFillError',
                 outputs: [
                     {
-                        name: '',
-                        type: 'bytes4',
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'expectedAssetFillAmount',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'actualAssetFillAmount',
+                        type: 'uint256',
                     },
                 ],
                 payable: false,
-                stateMutability: 'view',
+                stateMutability: 'pure',
                 type: 'function',
             },
             {
@@ -2780,6 +4375,137 @@ export class DevUtilsContract extends BaseContract {
                 ],
                 payable: false,
                 stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeAssetProxyTransferError',
+                outputs: [
+                    {
+                        name: 'orderHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'assetData',
+                        type: 'bytes',
+                    },
+                    {
+                        name: 'errorData',
+                        type: 'bytes',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeNegativeSpreadError',
+                outputs: [
+                    {
+                        name: 'leftOrderHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'rightOrderHash',
+                        type: 'bytes32',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeAssetProxyDispatchError',
+                outputs: [
+                    {
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'orderHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'assetData',
+                        type: 'bytes',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeSignatureWalletError',
+                outputs: [
+                    {
+                        name: 'hash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'signerAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'signature',
+                        type: 'bytes',
+                    },
+                    {
+                        name: 'errorData',
+                        type: 'bytes',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeFillError',
+                outputs: [
+                    {
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'orderHash',
+                        type: 'bytes32',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
                 type: 'function',
             },
             {
@@ -2818,6 +4544,33 @@ export class DevUtilsContract extends BaseContract {
                     {
                         name: 'assetData',
                         type: 'bytes',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeOrderEpochError',
+                outputs: [
+                    {
+                        name: 'makerAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'orderSenderAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'currentEpoch',
+                        type: 'uint256',
                     },
                 ],
                 payable: false,
@@ -2890,6 +4643,14 @@ export class DevUtilsContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
                         ],
                     },
                     {
@@ -2899,6 +4660,52 @@ export class DevUtilsContract extends BaseContract {
                     {
                         name: 'signatures',
                         type: 'bytes[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeAssetProxyExistsError',
+                outputs: [
+                    {
+                        name: 'assetProxyId',
+                        type: 'bytes4',
+                    },
+                    {
+                        name: 'assetProxyAddress',
+                        type: 'address',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeSignatureValidatorNotApprovedError',
+                outputs: [
+                    {
+                        name: 'signerAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'validatorAddress',
+                        type: 'address',
                     },
                 ],
                 payable: false,
@@ -2932,115 +4739,6 @@ export class DevUtilsContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'orders',
-                        type: 'tuple[]',
-                        components: [
-                            {
-                                name: 'makerAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'takerAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'feeRecipientAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'senderAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'makerAssetAmount',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'takerAssetAmount',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerFee',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'takerFee',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'expirationTimeSeconds',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'salt',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerAssetData',
-                                type: 'bytes',
-                            },
-                            {
-                                name: 'takerAssetData',
-                                type: 'bytes',
-                            },
-                        ],
-                    },
-                    {
-                        name: 'signatures',
-                        type: 'bytes[]',
-                    },
-                ],
-                name: 'getOrderRelevantStates',
-                outputs: [
-                    {
-                        name: 'ordersInfo',
-                        type: 'tuple[]',
-                        components: [
-                            {
-                                name: 'orderStatus',
-                                type: 'uint8',
-                            },
-                            {
-                                name: 'orderHash',
-                                type: 'bytes32',
-                            },
-                            {
-                                name: 'orderTakerAssetFilledAmount',
-                                type: 'uint256',
-                            },
-                        ],
-                    },
-                    {
-                        name: 'fillableTakerAssetAmounts',
-                        type: 'uint256[]',
-                    },
-                    {
-                        name: 'isValidSignature',
-                        type: 'bool[]',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [],
-                name: 'ERC20_PROXY_ID',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'bytes4',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
                         name: 'assetData',
                         type: 'bytes',
                     },
@@ -3064,95 +4762,31 @@ export class DevUtilsContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'order',
-                        type: 'tuple',
-                        components: [
-                            {
-                                name: 'makerAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'takerAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'feeRecipientAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'senderAddress',
-                                type: 'address',
-                            },
-                            {
-                                name: 'makerAssetAmount',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'takerAssetAmount',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerFee',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'takerFee',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'expirationTimeSeconds',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'salt',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'makerAssetData',
-                                type: 'bytes',
-                            },
-                            {
-                                name: 'takerAssetData',
-                                type: 'bytes',
-                            },
-                        ],
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeSignatureError',
+                outputs: [
+                    {
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'hash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'signerAddress',
+                        type: 'address',
                     },
                     {
                         name: 'signature',
                         type: 'bytes',
                     },
                 ],
-                name: 'getOrderRelevantState',
-                outputs: [
-                    {
-                        name: 'orderInfo',
-                        type: 'tuple',
-                        components: [
-                            {
-                                name: 'orderStatus',
-                                type: 'uint8',
-                            },
-                            {
-                                name: 'orderHash',
-                                type: 'bytes32',
-                            },
-                            {
-                                name: 'orderTakerAssetFilledAmount',
-                                type: 'uint256',
-                            },
-                        ],
-                    },
-                    {
-                        name: 'fillableTakerAssetAmount',
-                        type: 'uint256',
-                    },
-                    {
-                        name: 'isValidSignature',
-                        type: 'bool',
-                    },
-                ],
                 payable: false,
-                stateMutability: 'view',
+                stateMutability: 'pure',
                 type: 'function',
             },
             {
@@ -3210,17 +4844,88 @@ export class DevUtilsContract extends BaseContract {
                 type: 'function',
             },
             {
-                constant: true,
-                inputs: [],
-                name: 'ERC721_PROXY_ID',
+                constant: false,
+                inputs: [
+                    {
+                        name: 'orders',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'takerAddresses',
+                        type: 'address[]',
+                    },
+                    {
+                        name: 'takerAssetFillAmounts',
+                        type: 'uint256[]',
+                    },
+                ],
+                name: 'getSimulatedOrdersTransferResults',
                 outputs: [
                     {
-                        name: '',
-                        type: 'bytes4',
+                        name: 'orderTransferResults',
+                        type: 'uint8[]',
                     },
                 ],
                 payable: false,
-                stateMutability: 'view',
+                stateMutability: 'nonpayable',
                 type: 'function',
             },
             {
@@ -3248,16 +4953,33 @@ export class DevUtilsContract extends BaseContract {
             },
             {
                 constant: true,
-                inputs: [],
-                name: 'MULTI_ASSET_PROXY_ID',
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeEIP1271SignatureError',
                 outputs: [
                     {
-                        name: '',
-                        type: 'bytes4',
+                        name: 'verifyingContractAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'data',
+                        type: 'bytes',
+                    },
+                    {
+                        name: 'signature',
+                        type: 'bytes',
+                    },
+                    {
+                        name: 'errorData',
+                        type: 'bytes',
                     },
                 ],
                 payable: false,
-                stateMutability: 'view',
+                stateMutability: 'pure',
                 type: 'function',
             },
             {
@@ -3295,29 +5017,6 @@ export class DevUtilsContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
-                        name: 'tokenAddress',
-                        type: 'address',
-                    },
-                    {
-                        name: 'tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'getERC721TokenOwner',
-                outputs: [
-                    {
-                        name: 'ownerAddress',
-                        type: 'address',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
                         name: 'assetData',
                         type: 'bytes',
                     },
@@ -3335,6 +5034,52 @@ export class DevUtilsContract extends BaseContract {
                     {
                         name: 'nestedAssetData',
                         type: 'bytes[]',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeTransactionExecutionError',
+                outputs: [
+                    {
+                        name: 'transactionHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'errorData',
+                        type: 'bytes',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeTransactionError',
+                outputs: [
+                    {
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'transactionHash',
+                        type: 'bytes32',
                     },
                 ],
                 payable: false,
@@ -3388,6 +5133,91 @@ export class DevUtilsContract extends BaseContract {
                 type: 'function',
             },
             {
+                constant: false,
+                inputs: [
+                    {
+                        name: 'order',
+                        type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'takerAddress',
+                        type: 'address',
+                    },
+                    {
+                        name: 'takerAssetFillAmount',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'getSimulatedOrderTransferResults',
+                outputs: [
+                    {
+                        name: 'orderTransferResults',
+                        type: 'uint8',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
                 constant: true,
                 inputs: [
                     {
@@ -3412,12 +5242,101 @@ export class DevUtilsContract extends BaseContract {
             },
             {
                 constant: true,
-                inputs: [],
-                name: 'STATIC_CALL_PROXY_ID',
+                inputs: [
+                    {
+                        name: 'orders',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'signatures',
+                        type: 'bytes[]',
+                    },
+                ],
+                name: 'getOrderRelevantStates',
                 outputs: [
                     {
-                        name: '',
-                        type: 'bytes4',
+                        name: 'ordersInfo',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'fillableTakerAssetAmounts',
+                        type: 'uint256[]',
+                    },
+                    {
+                        name: 'isValidSignature',
+                        type: 'bool[]',
                     },
                 ],
                 payable: false,
@@ -3452,14 +5371,140 @@ export class DevUtilsContract extends BaseContract {
                 type: 'function',
             },
             {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'order',
+                        type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'makerFeeAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerFeeAssetData',
+                                type: 'bytes',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'signature',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'getOrderRelevantState',
+                outputs: [
+                    {
+                        name: 'orderInfo',
+                        type: 'tuple',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
+                    },
+                    {
+                        name: 'fillableTakerAssetAmount',
+                        type: 'uint256',
+                    },
+                    {
+                        name: 'isValidSignature',
+                        type: 'bool',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'encoded',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'decodeExchangeInvalidContextError',
+                outputs: [
+                    {
+                        name: 'errorCode',
+                        type: 'uint8',
+                    },
+                    {
+                        name: 'orderHash',
+                        type: 'bytes32',
+                    },
+                    {
+                        name: 'contextAddress',
+                        type: 'address',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
                 inputs: [
                     {
                         name: '_exchange',
                         type: 'address',
-                    },
-                    {
-                        name: '_zrxAssetData',
-                        type: 'bytes',
                     },
                 ],
                 outputs: [],

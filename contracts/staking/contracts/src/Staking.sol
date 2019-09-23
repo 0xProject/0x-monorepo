@@ -106,6 +106,24 @@ contract Staking is
             )
             slot := add(slot, 0x1)
 
+            /// Authorizable
+
+            assertSlotAndOffset(
+                authorized_slot,
+                authorized_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                authorities_slot,
+                authorities_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
             /// MixinStorage
 
             assertSlotAndOffset(
@@ -135,6 +153,14 @@ contract Staking is
             assertSlotAndOffset(
                 readOnlyProxyCallee_slot,
                 readOnlyProxyCallee_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                globalStakeByStatus_slot,
+                globalStakeByStatus_offset,
                 slot,
                 offset
             )
@@ -205,8 +231,16 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                numMakersByPoolId_slot,
-                numMakersByPoolId_offset,
+                _poolById_slot,
+                _poolById_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                balanceByPoolId_slot,
+                balanceByPoolId_offset,
                 slot,
                 offset
             )
@@ -223,22 +257,6 @@ contract Staking is
             assertSlotAndOffset(
                 currentEpochStartTimeInSeconds_slot,
                 currentEpochStartTimeInSeconds_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                protocolFeesThisEpochByPool_slot,
-                protocolFeesThisEpochByPool_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                activePoolsThisEpoch_slot,
-                activePoolsThisEpoch_offset,
                 slot,
                 offset
             )
@@ -279,22 +297,6 @@ contract Staking is
             assertSlotAndOffset(
                 zrxVault_slot,
                 zrxVault_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                ethVault_slot,
-                ethVault_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                rewardVault_slot,
-                rewardVault_offset,
                 slot,
                 offset
             )
@@ -346,6 +348,47 @@ contract Staking is
             assertSlotAndOffset(
                 cobbDouglasAlphaDenominator_slot,
                 cobbDouglasAlphaDenominator_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+            offset := 0x0
+
+            assertSlotAndOffset(
+                totalFeesCollectedThisEpoch_slot,
+                totalFeesCollectedThisEpoch_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                totalWeightedStakeThisEpoch_slot,
+                totalWeightedStakeThisEpoch_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                _activePoolsByEpoch_slot,
+                _activePoolsByEpoch_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                numActivePoolsThisEpoch_slot,
+                numActivePoolsThisEpoch_offset,
+                slot,
+                offset
+            )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                unfinalizedState_slot,
+                unfinalizedState_offset,
                 slot,
                 offset
             )
