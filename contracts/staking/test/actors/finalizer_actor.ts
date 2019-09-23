@@ -49,7 +49,7 @@ export class FinalizerActor extends BaseActor {
         const [
             expectedOperatorBalanceByPoolId,
             expectedRewardVaultBalanceByPoolId,
-        ] = await this._computeExpectedRewardVaultBalanceAsyncByPoolIdAsync(
+        ] = this._computeExpectedRewardVaultBalanceAsyncByPoolId(
             rewardByPoolId,
             operatorBalanceByPoolId,
             rewardVaultBalanceByPoolId,
@@ -159,13 +159,13 @@ export class FinalizerActor extends BaseActor {
         return delegatorBalancesByPoolId;
     }
 
-    private async _computeExpectedRewardVaultBalanceAsyncByPoolIdAsync(
+    private _computeExpectedRewardVaultBalanceAsyncByPoolId(
         rewardByPoolId: RewardByPoolId,
         operatorBalanceByPoolId: OperatorBalanceByPoolId,
         rewardVaultBalanceByPoolId: RewardVaultBalanceByPoolId,
         delegatorStakesByPoolId: DelegatorBalancesByPoolId,
         operatorShareByPoolId: OperatorShareByPoolId,
-    ): Promise<[RewardVaultBalanceByPoolId, OperatorBalanceByPoolId]> {
+    ): [RewardVaultBalanceByPoolId, OperatorBalanceByPoolId] {
         const expectedOperatorBalanceByPoolId = _.cloneDeep(operatorBalanceByPoolId);
         const expectedRewardVaultBalanceByPoolId = _.cloneDeep(rewardVaultBalanceByPoolId);
         for (const poolId of Object.keys(rewardByPoolId)) {
@@ -173,7 +173,7 @@ export class FinalizerActor extends BaseActor {
             [
                 expectedOperatorBalanceByPoolId[poolId],
                 expectedRewardVaultBalanceByPoolId[poolId],
-            ] = await this._computeExpectedRewardVaultBalanceAsync(
+            ] = this._computeExpectedRewardVaultBalance(
                 poolId,
                 rewardByPoolId[poolId],
                 expectedOperatorBalanceByPoolId[poolId],
@@ -185,14 +185,14 @@ export class FinalizerActor extends BaseActor {
         return [expectedOperatorBalanceByPoolId, expectedRewardVaultBalanceByPoolId];
     }
 
-    private async _computeExpectedRewardVaultBalanceAsync(
+    private _computeExpectedRewardVaultBalance(
         poolId: string,
         reward: BigNumber,
         operatorBalance: BigNumber,
         rewardVaultBalance: BigNumber,
         stakeBalances: BalanceByOwner,
         operatorShare: BigNumber,
-    ): Promise<[BigNumber, BigNumber]> {
+    ): [BigNumber, BigNumber] {
         const totalStakeDelegatedToPool = BigNumber.sum(...Object.values(stakeBalances));
         const stakeDelegatedToPoolByOperator = stakeBalances[this._operatorByPoolId[poolId]];
         const membersStakeDelegatedToPool = totalStakeDelegatedToPool.minus(stakeDelegatedToPoolByOperator);
