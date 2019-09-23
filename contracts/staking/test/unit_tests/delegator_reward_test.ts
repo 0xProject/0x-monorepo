@@ -16,8 +16,7 @@ import {
     artifacts,
     TestDelegatorRewardsContract,
     TestDelegatorRewardsEvents,
-    TestDelegatorRewardsRecordDepositToEthVaultEventArgs as EthVaultDepositEventArgs,
-    TestDelegatorRewardsRecordDepositToRewardVaultEventArgs as RewardVaultDepositEventArgs,
+    TestDelegatorRewardsTransferEventArgs,
 } from '../../src';
 
 import {
@@ -26,7 +25,7 @@ import {
     toBaseUnitAmount,
 } from '../utils/number_utils';
 
-blockchainTests.resets.skip('delegator unit rewards', env => {
+blockchainTests.resets('delegator unit rewards', env => {
     let testContract: TestDelegatorRewardsContract;
 
     before(async () => {
@@ -123,9 +122,8 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
         return [_operatorReward, _membersReward];
     }
 
-    type ResultWithDeposits<T extends {}> = T & {
-        ethVaultDeposit: BigNumber;
-        rewardVaultDeposit: BigNumber;
+    type ResultWithTransfers<T extends {}> = T & {
+        delegatorTransfers: BigNumber;
     };
 
     interface DelegateStakeOpts {
@@ -136,7 +134,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
     async function delegateStakeNowAsync(
         poolId: string,
         opts?: Partial<DelegateStakeOpts>,
-    ): Promise<ResultWithDeposits<DelegateStakeOpts>> {
+    ): Promise<ResultWithTransfers<DelegateStakeOpts>> {
         return delegateStakeAsync(poolId, opts, true);
     }
 
@@ -144,7 +142,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
         poolId: string,
         opts?: Partial<DelegateStakeOpts>,
         now?: boolean,
-    ): Promise<ResultWithDeposits<DelegateStakeOpts>> {
+    ): Promise<ResultWithTransfers<DelegateStakeOpts>> {
         const _opts = {
             delegator: randomAddress(),
             stake: getRandomInteger(1, toBaseUnitAmount(10)),
@@ -152,11 +150,10 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
         };
         const fn = now ? testContract.delegateStakeNow : testContract.delegateStake;
         const receipt = await fn.awaitTransactionSuccessAsync(_opts.delegator, poolId, new BigNumber(_opts.stake));
-        const [ethVaultDeposit, rewardVaultDeposit] = getDepositsFromLogs(receipt.logs, poolId, _opts.delegator);
+        const delegatorTransfers = getTransfersFromLogs(receipt.logs, _opts.delegator);
         return {
             ..._opts,
-            ethVaultDeposit,
-            rewardVaultDeposit,
+            delegatorTransfers,
         };
     }
 
@@ -164,44 +161,33 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
         poolId: string,
         delegator: string,
         stake?: Numberish,
-    ): Promise<ResultWithDeposits<{ stake: BigNumber }>> {
+    ): Promise<ResultWithTransfers<{ stake: BigNumber }>> {
         const _stake = new BigNumber(
             stake ||
                 (await testContract.getStakeDelegatedToPoolByOwner.callAsync(delegator, poolId)).currentEpochBalance,
         );
         const receipt = await testContract.undelegateStake.awaitTransactionSuccessAsync(delegator, poolId, _stake);
-        const [ethVaultDeposit, rewardVaultDeposit] = getDepositsFromLogs(receipt.logs, poolId, delegator);
+        const delegatorTransfers = getTransfersFromLogs(receipt.logs, delegator);
         return {
             stake: _stake,
-            ethVaultDeposit,
-            rewardVaultDeposit,
+            delegatorTransfers,
         };
     }
 
-    function getDepositsFromLogs(logs: LogEntry[], poolId: string, delegator?: string): [BigNumber, BigNumber] {
-        let ethVaultDeposit = constants.ZERO_AMOUNT;
-        let rewardVaultDeposit = constants.ZERO_AMOUNT;
-        const ethVaultDepositArgs = filterLogsToArguments<EthVaultDepositEventArgs>(
+    function getTransfersFromLogs(logs: LogEntry[], delegator?: string): BigNumber {
+        let delegatorTransfers = constants.ZERO_AMOUNT;
+        const transferArgs = filterLogsToArguments<TestDelegatorRewardsTransferEventArgs>(
             logs,
-            TestDelegatorRewardsEvents.RecordDepositToEthVault,
+            TestDelegatorRewardsEvents.Transfer,
         );
-        if (ethVaultDepositArgs.length > 0 && delegator !== undefined) {
-            for (const event of ethVaultDepositArgs) {
-                if (event.owner === delegator) {
-                    ethVaultDeposit = ethVaultDeposit.plus(event.amount);
+        if (transferArgs.length > 0 && delegator !== undefined) {
+            for (const event of transferArgs) {
+                if (event._to === delegator) {
+                    delegatorTransfers = delegatorTransfers.plus(event._value);
                 }
             }
         }
-        const rewardVaultDepositArgs = filterLogsToArguments<RewardVaultDepositEventArgs>(
-            logs,
-            TestDelegatorRewardsEvents.RecordDepositToRewardVault,
-        );
-        if (rewardVaultDepositArgs.length > 0) {
-            expect(rewardVaultDepositArgs.length).to.eq(1);
-            expect(rewardVaultDepositArgs[0].poolId).to.eq(poolId);
-            rewardVaultDeposit = rewardVaultDepositArgs[0].amount;
-        }
-        return [ethVaultDeposit, rewardVaultDeposit];
+        return delegatorTransfers;
     }
 
     async function advanceEpochAsync(): Promise<number> {
@@ -218,16 +204,15 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
         return testContract.computeRewardBalanceOfOperator.callAsync(poolId);
     }
 
-    async function touchStakeAsync(poolId: string, delegator: string): Promise<ResultWithDeposits<{}>> {
+    async function touchStakeAsync(poolId: string, delegator: string): Promise<ResultWithTransfers<{}>> {
         return undelegateStakeAsync(poolId, delegator, 0);
     }
 
-    async function finalizePoolAsync(poolId: string): Promise<ResultWithDeposits<{}>> {
+    async function finalizePoolAsync(poolId: string): Promise<ResultWithTransfers<{}>> {
         const receipt = await testContract.originalFinalizePool.awaitTransactionSuccessAsync(poolId);
-        const [ethVaultDeposit, rewardVaultDeposit] = getDepositsFromLogs(receipt.logs, poolId);
+        const delegatorTransfers = getTransfersFromLogs(receipt.logs, poolId);
         return {
-            ethVaultDeposit,
-            rewardVaultDeposit,
+            delegatorTransfers,
         };
     }
 
@@ -386,8 +371,8 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             await advanceEpochAsync(); // epoch 2
             // rewards paid for stake in epoch 1.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
-            const { ethVaultDeposit: deposit } = await undelegateStakeAsync(poolId, delegator);
-            assertRoughlyEquals(deposit, reward);
+            const { delegatorTransfers: withdrawal } = await undelegateStakeAsync(poolId, delegator);
+            assertRoughlyEquals(withdrawal, reward);
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
@@ -399,8 +384,8 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             await advanceEpochAsync(); // epoch 2
             // rewards paid for stake in epoch 1.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
-            const { ethVaultDeposit: deposit } = await undelegateStakeAsync(poolId, delegator);
-            assertRoughlyEquals(deposit, reward);
+            const { delegatorTransfers: withdrawal } = await undelegateStakeAsync(poolId, delegator);
+            assertRoughlyEquals(withdrawal, reward);
             await delegateStakeAsync(poolId, { delegator, stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
@@ -450,7 +435,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             // Pay rewards for epoch 1.
             const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // add extra stake
-            const { ethVaultDeposit: deposit } = await delegateStakeAsync(poolId, { delegator, stake: stake2 });
+            const { delegatorTransfers: withdrawal } = await delegateStakeAsync(poolId, { delegator, stake: stake2 });
             await advanceEpochAsync(); // epoch 3 (stake2 now active)
             // Pay rewards for epoch 2.
             await advanceEpochAsync(); // epoch 4
@@ -461,7 +446,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
                 computeDelegatorRewards(reward1, stake1, rewardStake),
                 computeDelegatorRewards(reward2, totalStake, rewardStake),
             );
-            assertRoughlyEquals(BigNumber.sum(deposit, delegatorReward), expectedDelegatorReward);
+            assertRoughlyEquals(BigNumber.sum(withdrawal, delegatorReward), expectedDelegatorReward);
         });
 
         it('uses old stake for rewards paid in the epoch right after extra stake is added', async () => {
@@ -668,16 +653,16 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
     });
 
     describe('reward transfers', async () => {
-        it('transfers all rewards to eth vault when touching stake', async () => {
+        it('transfers all rewards to delegator when touching stake', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
             await advanceEpochAsync(); // epoch 1 (stake now active)
             await advanceEpochAsync(); // epoch 2
             // rewards paid for stake in epoch 1
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
-            const { ethVaultDeposit: deposit } = await touchStakeAsync(poolId, delegator);
+            const { delegatorTransfers: withdrawal } = await touchStakeAsync(poolId, delegator);
             const finalRewardBalance = await getDelegatorRewardBalanceAsync(poolId, delegator);
-            expect(deposit).to.bignumber.eq(reward);
+            expect(withdrawal).to.bignumber.eq(reward);
             expect(finalRewardBalance).to.bignumber.eq(0);
         });
 
@@ -699,7 +684,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             // touch the stake one last time
             stakeResults.push(await touchStakeAsync(poolId, delegator));
             // Should only see deposits for epoch 2.
-            const allDeposits = stakeResults.map(r => r.ethVaultDeposit);
+            const allDeposits = stakeResults.map(r => r.delegatorTransfers);
             const expectedReward = computeDelegatorRewards(reward, stake, rewardStake);
             assertRoughlyEquals(BigNumber.sum(...allDeposits), expectedReward);
         });
@@ -727,7 +712,7 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // touch the stake to claim rewards
             stakeResults.push(await touchStakeAsync(poolId, delegator));
-            const allDeposits = stakeResults.map(r => r.ethVaultDeposit);
+            const allDeposits = stakeResults.map(r => r.delegatorTransfers);
             const expectedReward = BigNumber.sum(
                 computeDelegatorRewards(reward1, stake, rewardStake),
                 computeDelegatorRewards(reward2, new BigNumber(stake).minus(unstake), rewardStake),
@@ -745,11 +730,11 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             // rewards paid for stake in epoch 1
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
             // delegator A will finalize and collect rewards by touching stake.
-            const { ethVaultDeposit: depositA } = await touchStakeAsync(poolId, delegatorA);
-            assertRoughlyEquals(depositA, computeDelegatorRewards(reward, stakeA, totalStake));
+            const { delegatorTransfers: withdrawalA } = await touchStakeAsync(poolId, delegatorA);
+            assertRoughlyEquals(withdrawalA, computeDelegatorRewards(reward, stakeA, totalStake));
             // delegator B will collect rewards by touching stake
-            const { ethVaultDeposit: depositB } = await touchStakeAsync(poolId, delegatorB);
-            assertRoughlyEquals(depositB, computeDelegatorRewards(reward, stakeB, totalStake));
+            const { delegatorTransfers: withdrawalB } = await touchStakeAsync(poolId, delegatorB);
+            assertRoughlyEquals(withdrawalB, computeDelegatorRewards(reward, stakeB, totalStake));
         });
 
         it('delegator B collects correct rewards after delegator A finalizes', async () => {
@@ -769,11 +754,11 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             });
             const totalRewards = BigNumber.sum(prevReward, unfinalizedReward);
             // delegator A will finalize and collect rewards by touching stake.
-            const { ethVaultDeposit: depositA } = await touchStakeAsync(poolId, delegatorA);
-            assertRoughlyEquals(depositA, computeDelegatorRewards(totalRewards, stakeA, totalStake));
+            const { delegatorTransfers: withdrawalA } = await touchStakeAsync(poolId, delegatorA);
+            assertRoughlyEquals(withdrawalA, computeDelegatorRewards(totalRewards, stakeA, totalStake));
             // delegator B will collect rewards by touching stake
-            const { ethVaultDeposit: depositB } = await touchStakeAsync(poolId, delegatorB);
-            assertRoughlyEquals(depositB, computeDelegatorRewards(totalRewards, stakeB, totalStake));
+            const { delegatorTransfers: withdrawalB } = await touchStakeAsync(poolId, delegatorB);
+            assertRoughlyEquals(withdrawalB, computeDelegatorRewards(totalRewards, stakeB, totalStake));
         });
 
         it('delegator A and B collect correct rewards after external finalization', async () => {
@@ -795,11 +780,11 @@ blockchainTests.resets.skip('delegator unit rewards', env => {
             // finalize
             await finalizePoolAsync(poolId);
             // delegator A will collect rewards by touching stake.
-            const { ethVaultDeposit: depositA } = await touchStakeAsync(poolId, delegatorA);
-            assertRoughlyEquals(depositA, computeDelegatorRewards(totalRewards, stakeA, totalStake));
+            const { delegatorTransfers: withdrawalA } = await touchStakeAsync(poolId, delegatorA);
+            assertRoughlyEquals(withdrawalA, computeDelegatorRewards(totalRewards, stakeA, totalStake));
             // delegator B will collect rewards by touching stake
-            const { ethVaultDeposit: depositB } = await touchStakeAsync(poolId, delegatorB);
-            assertRoughlyEquals(depositB, computeDelegatorRewards(totalRewards, stakeB, totalStake));
+            const { delegatorTransfers: withdrawalB } = await touchStakeAsync(poolId, delegatorB);
+            assertRoughlyEquals(withdrawalB, computeDelegatorRewards(totalRewards, stakeB, totalStake));
         });
     });
 });

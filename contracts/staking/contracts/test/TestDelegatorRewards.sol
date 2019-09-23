@@ -26,16 +26,6 @@ import "./TestStakingNoWETH.sol";
 contract TestDelegatorRewards is
     TestStakingNoWETH
 {
-    event RecordDepositToEthVault(
-        address owner,
-        uint256 amount
-    );
-
-    event RecordDepositToRewardVault(
-        bytes32 poolId,
-        uint256 membersReward
-    );
-
     event FinalizePool(
         bytes32 poolId,
         uint256 operatorReward,
@@ -49,7 +39,9 @@ contract TestDelegatorRewards is
         uint256 membersStake;
     }
 
-    constructor() public {
+    constructor()
+        public
+    {
         init(
             address(1),
             address(1)
@@ -100,7 +92,7 @@ contract TestDelegatorRewards is
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
         _initGenesisCumulativeRewards(poolId);
-
+        
         _syncPoolRewards(
             poolId,
             operatorReward + membersReward,
