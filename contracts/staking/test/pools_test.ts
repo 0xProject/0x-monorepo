@@ -277,7 +277,7 @@ blockchainTests('Staking Pool Management', env => {
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             await maker.joinStakingPoolAsMakerAsync(poolId);
-            const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorError(
+            const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(
                 notOperatorAddress,
                 operatorAddress,
             );
@@ -306,7 +306,6 @@ blockchainTests('Staking Pool Management', env => {
             const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(
                 neitherOperatorNorMakerAddress,
                 operatorAddress,
-                makerAddress,
             );
             const tx = stakingApiWrapper.stakingContract.removeMakerFromStakingPool.awaitTransactionSuccessAsync(
                 poolId,

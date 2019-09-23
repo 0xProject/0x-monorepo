@@ -38,11 +38,9 @@ contract MixinExchangeFees is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinStakingPoolModifiers,
     MixinExchangeManager,
     MixinScheduler,
     MixinStakeStorage,
-    MixinStakingPoolMakers,
     MixinStakeBalances,
     MixinCumulativeRewards,
     MixinStakingPoolRewards,
@@ -170,7 +168,7 @@ contract MixinExchangeFees is
         returns (uint256 membersStake, uint256 weightedStake)
     {
         uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-            _poolById[poolId].operator,
+            _getStakingPoolOperator(poolId),
             poolId
         ).currentEpochBalance;
         membersStake = totalStake.safeSub(operatorStake);
