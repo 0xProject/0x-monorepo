@@ -195,39 +195,41 @@ contract MixinStakingPoolRewards is
             reward,
             membersStake
         );
-        // Transfer the operator's weth reward to the operator
-        _getWethContract().transfer(pool.operator, operatorReward);
 
-        if (membersReward == 0) {
-            return (0, 0);
+        if (operatorReward > 0) {
+            // Transfer the operator's weth reward to the operator
+            _getWethContract().transfer(pool.operator, operatorReward);
         }
-        // Increment the balance of the pool
-        balanceByPoolId[poolId] = balanceByPoolId[poolId].safeAdd(membersReward);
 
-        // Fetch the last epoch at which we stored an entry for this pool;
-        // this is the most up-to-date cumulative rewards for this pool.
-        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
+        if (membersReward > 0) {
+            // Increment the balance of the pool
+            balanceByPoolId[poolId] = balanceByPoolId[poolId].safeAdd(membersReward);
 
-        // Compute new cumulative reward
-        IStructs.Fraction memory cumulativeReward;
-        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
+            // Fetch the last epoch at which we stored an entry for this pool;
+            // this is the most up-to-date cumulative rewards for this pool.
+            IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
+
+            // Compute new cumulative reward
+            IStructs.Fraction memory cumulativeReward;
+            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
                 mostRecentCumulativeReward.numerator,
                 mostRecentCumulativeReward.denominator,
                 membersReward,
                 membersStake
             );
-        // Normalize to prevent overflows.
-        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
+            // Normalize to prevent overflows.
+            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
                 cumulativeReward.numerator,
                 cumulativeReward.denominator
             );
 
-        // Store cumulative rewards for this epoch.
-        _forceSetCumulativeReward(
-            poolId,
-            currentEpoch,
-            cumulativeReward
-        );
+            // Store cumulative rewards for this epoch.
+            _forceSetCumulativeReward(
+                poolId,
+                currentEpoch,
+                cumulativeReward
+            );
+        }
 
         return (operatorReward, membersReward);
     }
