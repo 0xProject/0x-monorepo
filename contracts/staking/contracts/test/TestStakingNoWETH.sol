@@ -42,9 +42,14 @@ contract TestStakingNoWETH is
         return true;
     }
 
-    function _wrapEthAndGetWethBalance()
+    function _wrapEth()
         internal
-        returns (uint256 balance)
+    {}
+
+    function _getAvailableWethBalance()
+        internal
+        view
+        returns (uint256)
     {
         return address(this).balance;
     }

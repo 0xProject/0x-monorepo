@@ -126,9 +126,10 @@ contract MixinExchangeFees is
         activePoolsThisEpoch[poolId] = pool;
     }
 
-    /// @dev Returns the total balance of this contract, including WETH.
+    /// @dev Returns the total balance of this contract, including WETH,
+    ///      minus any WETH that has been reserved for rewards.
     /// @return totalBalance Total balance.
-    function getTotalBalance()
+    function getAvailableBalance()
         external
         view
         returns (uint256 totalBalance)
