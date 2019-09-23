@@ -99,6 +99,10 @@
                 "pr": 2154
             },
             {
+                "note": "Remove `validateOrderFillableOrThrowAsync`, `simpleValidateOrderFillableOrThrowAsync`, `validateMakerTransferThrowIfInvalidAsync`",
+                "pr": 2181
+            },
+            {
                 "note": "Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`.",
                 "pr": 2155
             },

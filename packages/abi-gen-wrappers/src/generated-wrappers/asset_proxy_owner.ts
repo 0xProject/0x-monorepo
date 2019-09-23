@@ -32,7 +32,7 @@ import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
 export type AssetProxyOwnerEventArgs =
-    | AssetProxyOwnerAssetProxyRegistrationEventArgs
+    | AssetProxyOwnerFunctionCallTimeLockRegistrationEventArgs
     | AssetProxyOwnerConfirmationTimeSetEventArgs
     | AssetProxyOwnerTimeLockChangeEventArgs
     | AssetProxyOwnerConfirmationEventArgs
@@ -46,7 +46,7 @@ export type AssetProxyOwnerEventArgs =
     | AssetProxyOwnerRequirementChangeEventArgs;
 
 export enum AssetProxyOwnerEvents {
-    AssetProxyRegistration = 'AssetProxyRegistration',
+    FunctionCallTimeLockRegistration = 'FunctionCallTimeLockRegistration',
     ConfirmationTimeSet = 'ConfirmationTimeSet',
     TimeLockChange = 'TimeLockChange',
     Confirmation = 'Confirmation',
@@ -60,9 +60,11 @@ export enum AssetProxyOwnerEvents {
     RequirementChange = 'RequirementChange',
 }
 
-export interface AssetProxyOwnerAssetProxyRegistrationEventArgs extends DecodedLogArgs {
-    assetProxyContract: string;
-    isRegistered: boolean;
+export interface AssetProxyOwnerFunctionCallTimeLockRegistrationEventArgs extends DecodedLogArgs {
+    functionSelector: string;
+    destination: string;
+    hasCustomTimeLock: boolean;
+    newSecondsTimeLocked: BigNumber;
 }
 
 export interface AssetProxyOwnerConfirmationTimeSetEventArgs extends DecodedLogArgs {
@@ -731,199 +733,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    /**
-     * Allows execution of `removeAuthorizedAddressAtIndex` without time lock.
-     */
-    public executeRemoveAuthorizedAddressAtIndex = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param transactionId Transaction ID.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(self, transactionId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param transactionId Transaction ID.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
-                transactionId,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param transactionId Transaction ID.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            transactionId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).executeRemoveAuthorizedAddressAtIndex.callAsync(transactionId, txData);
-            const txHash = await (this as any).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
-                transactionId,
-                txData,
-            );
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param transactionId Transaction ID.
-         */
-        async callAsync(
-            transactionId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isBigNumber('transactionId', transactionId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId Transaction ID.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'executeRemoveAuthorizedAddressAtIndex(uint256)',
-                [transactionId],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [BigNumber] {
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
     public secondsTimeLocked = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1101,226 +910,6 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     /**
-     * Registers or deregisters an AssetProxy to be able to execute
-     * `removeAuthorizedAddressAtIndex` without a timelock.
-     */
-    public registerAssetProxy = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param assetProxyContract Address of AssetProxy contract.
-         * @param isRegistered Status of approval for AssetProxy contract.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract.toLowerCase(), isRegistered),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param assetProxyContract Address of AssetProxy contract.
-         * @param isRegistered Status of approval for AssetProxy contract.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param assetProxyContract Address of AssetProxy contract.
-         * @param isRegistered Status of approval for AssetProxy contract.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).registerAssetProxy.callAsync(assetProxyContract, isRegistered, txData);
-            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(
-                assetProxyContract,
-                isRegistered,
-                txData,
-            );
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param assetProxyContract Address of AssetProxy contract.
-         * @param isRegistered Status of approval for AssetProxy contract.
-         */
-        async callAsync(
-            assetProxyContract: string,
-            isRegistered: boolean,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-            let rawCallResult;
-            try {
-                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            } catch (err) {
-                BaseContract._throwIfThrownErrorIsRevertError(err);
-                throw err;
-            }
-            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param assetProxyContract Address of AssetProxy contract.
-         * @param isRegistered Status of approval for AssetProxy contract.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(assetProxyContract: string, isRegistered: boolean): string {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, boolean] {
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, boolean]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
      * Allows to add a new owner. Transaction has to be sent by wallet.
      */
     public addOwner = {
@@ -1486,6 +1075,287 @@ export class AssetProxyOwnerContract extends BaseContract {
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    /**
+     * Registers a custom timelock to a specific function selector / destination combo
+     */
+    public registerFunctionCall = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param hasCustomTimeLock True if timelock is custom.
+         * @param functionSelector 4 byte selector of registered function.
+         * @param destination Address of destination where function will be called.
+         * @param newSecondsTimeLocked Duration in seconds needed after a transaction
+         *     is confirmed to become executable.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
+            assert.isString('functionSelector', functionSelector);
+            assert.isString('destination', destination);
+            assert.isBigNumber('newSecondsTimeLocked', newSecondsTimeLocked);
+            const self = (this as any) as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('registerFunctionCall(bool,bytes4,address,uint128)', [
+                hasCustomTimeLock,
+                functionSelector,
+                destination.toLowerCase(),
+                newSecondsTimeLocked,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.registerFunctionCall.estimateGasAsync.bind(
+                    self,
+                    hasCustomTimeLock,
+                    functionSelector,
+                    destination.toLowerCase(),
+                    newSecondsTimeLocked,
+                ),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param hasCustomTimeLock True if timelock is custom.
+         * @param functionSelector 4 byte selector of registered function.
+         * @param destination Address of destination where function will be called.
+         * @param newSecondsTimeLocked Duration in seconds needed after a transaction
+         *     is confirmed to become executable.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
+            assert.isString('functionSelector', functionSelector);
+            assert.isString('destination', destination);
+            assert.isBigNumber('newSecondsTimeLocked', newSecondsTimeLocked);
+            const self = (this as any) as AssetProxyOwnerContract;
+            const txHashPromise = self.registerFunctionCall.sendTransactionAsync(
+                hasCustomTimeLock,
+                functionSelector,
+                destination.toLowerCase(),
+                newSecondsTimeLocked,
+                txData,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param hasCustomTimeLock True if timelock is custom.
+         * @param functionSelector 4 byte selector of registered function.
+         * @param destination Address of destination where function will be called.
+         * @param newSecondsTimeLocked Duration in seconds needed after a transaction
+         *     is confirmed to become executable.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
+            assert.isString('functionSelector', functionSelector);
+            assert.isString('destination', destination);
+            assert.isBigNumber('newSecondsTimeLocked', newSecondsTimeLocked);
+            const self = (this as any) as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('registerFunctionCall(bool,bytes4,address,uint128)', [
+                hasCustomTimeLock,
+                functionSelector,
+                destination.toLowerCase(),
+                newSecondsTimeLocked,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        async validateAndSendTransactionAsync(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).registerFunctionCall.callAsync(
+                hasCustomTimeLock,
+                functionSelector,
+                destination,
+                newSecondsTimeLocked,
+                txData,
+            );
+            const txHash = await (this as any).registerFunctionCall.sendTransactionAsync(
+                hasCustomTimeLock,
+                functionSelector,
+                destination,
+                newSecondsTimeLocked,
+                txData,
+            );
+            return txHash;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param hasCustomTimeLock True if timelock is custom.
+         * @param functionSelector 4 byte selector of registered function.
+         * @param destination Address of destination where function will be called.
+         * @param newSecondsTimeLocked Duration in seconds needed after a transaction
+         *     is confirmed to become executable.
+         */
+        async callAsync(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
+            assert.isString('functionSelector', functionSelector);
+            assert.isString('destination', destination);
+            assert.isBigNumber('newSecondsTimeLocked', newSecondsTimeLocked);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('registerFunctionCall(bool,bytes4,address,uint128)', [
+                hasCustomTimeLock,
+                functionSelector,
+                destination.toLowerCase(),
+                newSecondsTimeLocked,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('registerFunctionCall(bool,bytes4,address,uint128)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param hasCustomTimeLock True if timelock is custom.
+         * @param functionSelector 4 byte selector of registered function.
+         * @param destination Address of destination where function will be called.
+         * @param newSecondsTimeLocked Duration in seconds needed after a transaction
+         *     is confirmed to become executable.
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(
+            hasCustomTimeLock: boolean,
+            functionSelector: string,
+            destination: string,
+            newSecondsTimeLocked: BigNumber,
+        ): string {
+            assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
+            assert.isString('functionSelector', functionSelector);
+            assert.isString('destination', destination);
+            assert.isBigNumber('newSecondsTimeLocked', newSecondsTimeLocked);
+            const self = (this as any) as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'registerFunctionCall(bool,bytes4,address,uint128)',
+                [hasCustomTimeLock, functionSelector, destination.toLowerCase(), newSecondsTimeLocked],
+            );
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Decode the ABI-encoded transaction data into its input arguments
+         * @param callData The ABI-encoded transaction data
+         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         */
+        getABIDecodedTransactionData(callData: string): [boolean, string, string, BigNumber] {
+            const self = (this as any) as AssetProxyOwnerContract;
+            const abiEncoder = self._lookupAbiEncoder('registerFunctionCall(bool,bytes4,address,uint128)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[boolean, string, string, BigNumber]>(callData);
+            return abiDecodedCallData;
+        },
+        /**
+         * Decode the ABI-encoded return data from a transaction
+         * @param returnData the data returned after transaction execution
+         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         */
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AssetProxyOwnerContract;
+            const abiEncoder = self._lookupAbiEncoder('registerFunctionCall(bool,bytes4,address,uint128)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
@@ -1769,7 +1639,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public isAssetProxyRegistered = {
+    public functionCallTimeLocks = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -1777,10 +1647,12 @@ export class AssetProxyOwnerContract extends BaseContract {
          */
         async callAsync(
             index_0: string,
+            index_1: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<[boolean, BigNumber]> {
             assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1790,7 +1662,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0.toLowerCase()]);
+            const encodedData = self._strictEncodeArguments('functionCallTimeLocks(bytes4,address)', [
+                index_0,
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1810,9 +1685,9 @@ export class AssetProxyOwnerContract extends BaseContract {
                 throw err;
             }
             BaseContract._throwIfCallResultIsRevertError(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
+            const abiEncoder = self._lookupAbiEncoder('functionCallTimeLocks(bytes4,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<[boolean, BigNumber]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -1822,11 +1697,13 @@ export class AssetProxyOwnerContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [
-                index_0.toLowerCase(),
+            const abiEncodedTransactionData = self._strictEncodeArguments('functionCallTimeLocks(bytes4,address)', [
+                index_0,
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -1835,11 +1712,11 @@ export class AssetProxyOwnerContract extends BaseContract {
          * @param callData The ABI-encoded transaction data
          * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
          */
-        getABIDecodedTransactionData(callData: string): string {
+        getABIDecodedTransactionData(callData: string): [string, string] {
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
+            const abiEncoder = self._lookupAbiEncoder('functionCallTimeLocks(bytes4,address)');
             // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            const abiDecodedCallData = abiEncoder.strictDecode<[string, string]>(callData);
             return abiDecodedCallData;
         },
         /**
@@ -1847,11 +1724,11 @@ export class AssetProxyOwnerContract extends BaseContract {
          * @param returnData the data returned after transaction execution
          * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
          */
-        getABIDecodedReturnData(returnData: string): boolean {
+        getABIDecodedReturnData(returnData: string): [boolean, BigNumber] {
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
+            const abiEncoder = self._lookupAbiEncoder('functionCallTimeLocks(bytes4,address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[boolean, BigNumber]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -3443,6 +3320,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     /**
      * Allows anyone to execute a confirmed transaction.
+     * Transactions *must* encode the values with the signature "bytes[] data, address[] destinations, uint256[] values"
+     * The `destination` and `value` fields of the transaction in storage are ignored.
+     * All function calls must be successful or the entire call will revert.
      */
     public executeTransaction = {
         /**
@@ -3627,10 +3507,12 @@ export class AssetProxyOwnerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
+        _functionSelectors: string[],
+        _destinations: string[],
+        _functionCallTimeLockSeconds: BigNumber[],
         _owners: string[],
-        _assetProxyContracts: string[],
         _required: BigNumber,
-        _secondsTimeLocked: BigNumber,
+        _defaultSecondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -3655,10 +3537,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             provider,
             txDefaults,
             logDecodeDependenciesAbiOnly,
+            _functionSelectors,
+            _destinations,
+            _functionCallTimeLockSeconds,
             _owners,
-            _assetProxyContracts,
             _required,
-            _secondsTimeLocked,
+            _defaultSecondsTimeLocked,
         );
     }
     public static async deployAsync(
@@ -3667,10 +3551,12 @@ export class AssetProxyOwnerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
+        _functionSelectors: string[],
+        _destinations: string[],
+        _functionCallTimeLockSeconds: BigNumber[],
         _owners: string[],
-        _assetProxyContracts: string[],
         _required: BigNumber,
-        _secondsTimeLocked: BigNumber,
+        _defaultSecondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -3680,14 +3566,35 @@ export class AssetProxyOwnerContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_owners, _assetProxyContracts, _required, _secondsTimeLocked] = BaseContract._formatABIDataItemList(
+        [
+            _functionSelectors,
+            _destinations,
+            _functionCallTimeLockSeconds,
+            _owners,
+            _required,
+            _defaultSecondsTimeLocked,
+        ] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_owners, _assetProxyContracts, _required, _secondsTimeLocked],
+            [
+                _functionSelectors,
+                _destinations,
+                _functionCallTimeLockSeconds,
+                _owners,
+                _required,
+                _defaultSecondsTimeLocked,
+            ],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_owners, _assetProxyContracts, _required, _secondsTimeLocked]);
+        const txData = deployInfo.encode(bytecode, [
+            _functionSelectors,
+            _destinations,
+            _functionCallTimeLockSeconds,
+            _owners,
+            _required,
+            _defaultSecondsTimeLocked,
+        ]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             { data: txData },
@@ -3704,7 +3611,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             txDefaults,
             logDecodeDependencies,
         );
-        contractInstance.constructorArgs = [_owners, _assetProxyContracts, _required, _secondsTimeLocked];
+        contractInstance.constructorArgs = [
+            _functionSelectors,
+            _destinations,
+            _functionCallTimeLockSeconds,
+            _owners,
+            _required,
+            _defaultSecondsTimeLocked,
+        ];
         return contractInstance;
     }
 
@@ -3803,20 +3717,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                 type: 'function',
             },
             {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'transactionId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'executeRemoveAuthorizedAddressAtIndex',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
                 constant: true,
                 inputs: [],
                 name: 'secondsTimeLocked',
@@ -3857,15 +3757,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                 constant: false,
                 inputs: [
                     {
-                        name: 'assetProxyContract',
+                        name: 'owner',
                         type: 'address',
                     },
-                    {
-                        name: 'isRegistered',
-                        type: 'bool',
-                    },
                 ],
-                name: 'registerAssetProxy',
+                name: 'addOwner',
                 outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
@@ -3875,11 +3771,23 @@ export class AssetProxyOwnerContract extends BaseContract {
                 constant: false,
                 inputs: [
                     {
-                        name: 'owner',
+                        name: 'hasCustomTimeLock',
+                        type: 'bool',
+                    },
+                    {
+                        name: 'functionSelector',
+                        type: 'bytes4',
+                    },
+                    {
+                        name: 'destination',
                         type: 'address',
                     },
+                    {
+                        name: 'newSecondsTimeLocked',
+                        type: 'uint128',
+                    },
                 ],
-                name: 'addOwner',
+                name: 'registerFunctionCall',
                 outputs: [],
                 payable: false,
                 stateMutability: 'nonpayable',
@@ -3923,14 +3831,22 @@ export class AssetProxyOwnerContract extends BaseContract {
                 inputs: [
                     {
                         name: 'index_0',
+                        type: 'bytes4',
+                    },
+                    {
+                        name: 'index_1',
                         type: 'address',
                     },
                 ],
-                name: 'isAssetProxyRegistered',
+                name: 'functionCallTimeLocks',
                 outputs: [
                     {
-                        name: '',
+                        name: 'hasCustomTimeLock',
                         type: 'bool',
+                    },
+                    {
+                        name: 'secondsTimeLocked',
+                        type: 'uint128',
                     },
                 ],
                 payable: false,
@@ -4202,11 +4118,19 @@ export class AssetProxyOwnerContract extends BaseContract {
             {
                 inputs: [
                     {
-                        name: '_owners',
+                        name: '_functionSelectors',
+                        type: 'bytes4[]',
+                    },
+                    {
+                        name: '_destinations',
                         type: 'address[]',
                     },
                     {
-                        name: '_assetProxyContracts',
+                        name: '_functionCallTimeLockSeconds',
+                        type: 'uint128[]',
+                    },
+                    {
+                        name: '_owners',
                         type: 'address[]',
                     },
                     {
@@ -4214,7 +4138,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                         type: 'uint256',
                     },
                     {
-                        name: '_secondsTimeLocked',
+                        name: '_defaultSecondsTimeLocked',
                         type: 'uint256',
                     },
                 ],
@@ -4234,17 +4158,27 @@ export class AssetProxyOwnerContract extends BaseContract {
                 anonymous: false,
                 inputs: [
                     {
-                        name: 'assetProxyContract',
+                        name: 'functionSelector',
+                        type: 'bytes4',
+                        indexed: false,
+                    },
+                    {
+                        name: 'destination',
                         type: 'address',
                         indexed: false,
                     },
                     {
-                        name: 'isRegistered',
+                        name: 'hasCustomTimeLock',
                         type: 'bool',
                         indexed: false,
                     },
+                    {
+                        name: 'newSecondsTimeLocked',
+                        type: 'uint128',
+                        indexed: false,
+                    },
                 ],
-                name: 'AssetProxyRegistration',
+                name: 'FunctionCallTimeLockRegistration',
                 outputs: [],
                 type: 'event',
             },

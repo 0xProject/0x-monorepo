@@ -121,38 +121,6 @@ export class CoordinatorWrapper {
     }
 
     /**
-     * No-throw version of fillOrderAsync. This version will not throw if the fill fails. This allows the caller to save gas at the expense of not knowing the reason the fill failed.
-     * @param   signedOrder          An object that conforms to the SignedOrder interface.
-     * @param   takerAssetFillAmount The amount of the order (in taker asset baseUnits) that you wish to fill.
-     * @param   takerAddress         The user Ethereum address who would like to fill this order.
-     *                               Must be available via the supplied Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
-     * @return  Transaction hash.
-     */
-    @decorators.asyncZeroExErrorHandler
-    public async fillOrderNoThrowAsync(
-        signedOrder: SignedOrder,
-        takerAssetFillAmount: BigNumber,
-        takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
-    ): Promise<string> {
-        assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
-        assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isETHAddressHex('takerAddress', takerAddress);
-        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-
-        const data = this._getAbiEncodedTransactionData(
-            'fillOrderNoThrow',
-            signedOrder,
-            takerAssetFillAmount,
-            signedOrder.signature,
-        );
-        const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
-        return txHash;
-    }
-
-    /**
      * Attempts to fill a specific amount of an order. If the entire amount specified cannot be filled,
      * the fill order is abandoned.
      * @param   signedOrder          An object that conforms to the SignedOrder interface.
@@ -289,82 +257,6 @@ export class CoordinatorWrapper {
             'batchFillOrKillOrders',
             signedOrders,
             takerAssetFillAmounts,
-            signatures,
-        );
-        const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
-        return txHash;
-    }
-
-    /**
-     * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
-     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
-     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
-     * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
-     * signatures and then fills the order through the Exchange contract.
-     * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
-     * @param   signedOrders         An array of signed orders to fill.
-     * @param   makerAssetFillAmount Maker asset fill amount.
-     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                               Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
-     * @return  Transaction hash.
-     */
-    @decorators.asyncZeroExErrorHandler
-    public async marketBuyOrdersAsync(
-        signedOrders: SignedOrder[],
-        makerAssetFillAmount: BigNumber,
-        takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
-    ): Promise<string> {
-        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
-        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        assert.isETHAddressHex('takerAddress', takerAddress);
-        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-
-        const signatures = signedOrders.map(o => o.signature);
-        const data = this._getAbiEncodedTransactionData(
-            'marketBuyOrders',
-            signedOrders,
-            makerAssetFillAmount,
-            signatures,
-        );
-        const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
-        return txHash;
-    }
-
-    /**
-     * Synchronously executes multiple calls to fillOrder until total amount of makerAsset is bought by taker.
-     * Under-the-hood, this method uses the `feeRecipientAddress`s of the orders to looks up the coordinator server endpoints
-     * registered in the coordinator registry contract. It requests a signature from each coordinator server before
-     * submitting the orders and signatures as a 0x transaction to the coordinator extension contract, which validates the
-     * signatures and then fills the order through the Exchange contract.
-     * If any `feeRecipientAddress` in the batch is not registered to a coordinator server, the whole batch fails.
-     * @param   signedOrders         An array of signed orders to fill.
-     * @param   takerAssetFillAmount Taker asset fill amount.
-     * @param   takerAddress         The user Ethereum address who would like to fill these orders. Must be available via the supplied
-     *                               Provider provided at instantiation.
-     * @param   orderTransactionOpts Optional arguments this method accepts.
-     * @return  Transaction hash.
-     */
-    @decorators.asyncZeroExErrorHandler
-    public async marketSellOrdersAsync(
-        signedOrders: SignedOrder[],
-        takerAssetFillAmount: BigNumber,
-        takerAddress: string,
-        orderTransactionOpts: OrderTransactionOpts = { shouldValidate: true },
-    ): Promise<string> {
-        assert.doesConformToSchema('signedOrders', signedOrders, schemas.signedOrdersSchema);
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isETHAddressHex('takerAddress', takerAddress);
-        assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
-        await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
-
-        const signatures = signedOrders.map(o => o.signature);
-        const data = this._getAbiEncodedTransactionData(
-            'marketSellOrders',
-            signedOrders,
-            takerAssetFillAmount,
             signatures,
         );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
@@ -797,6 +689,9 @@ export class CoordinatorWrapper {
                 verifyingContractAddress: this.exchangeAddress,
                 chainId: await this._web3Wrapper.getChainIdAsync(),
             },
+            // HACK (xianny): arbitrary numbers for now
+            expirationTimeSeconds: new BigNumber(5),
+            gasPrice: new BigNumber(1),
         };
         const signedTransaction = await signatureUtils.ecSignTransactionAsync(
             this._web3Wrapper.getProvider(),

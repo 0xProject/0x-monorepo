@@ -51,6 +51,7 @@ export async function runMigrationsAsync(
 ): Promise<ContractAddresses> {
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const web3Wrapper = new Web3Wrapper(provider);
+    const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
 
     // Proxies
     const erc20Proxy = await wrappers.ERC20ProxyContract.deployFrom0xArtifactAsync(
@@ -89,7 +90,7 @@ export async function runMigrationsAsync(
         provider,
         txDefaults,
         artifacts,
-        zrxAssetData,
+        chainId,
     );
 
     // Dummy ERC20 tokens
@@ -201,7 +202,6 @@ export async function runMigrationsAsync(
         txDefaults,
         artifacts,
         exchange.address,
-        encodeERC20AssetData(zrxToken.address),
         encodeERC20AssetData(etherToken.address),
     );
 
@@ -224,37 +224,41 @@ export async function runMigrationsAsync(
         exchange.address,
     );
 
-    // Multisigs
-    const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
-    const owners = _.uniq([accounts[0], accounts[1], txDefaults.from]);
-    const confirmationsRequired = new BigNumber(2);
-    const secondsRequired = new BigNumber(0);
+    // TODO (xianny): figure out how to deploy AssetProxyOwnerContract properly
+    // // Multisigs
+    // const accounts: string[] = await web3Wrapper.getAvailableAddressesAsync();
+    // const owners = _.uniq([accounts[0], accounts[1], txDefaults.from]);
+    // const confirmationsRequired = new BigNumber(2);
+    // const secondsRequired = new BigNumber(0);
 
-    // AssetProxyOwner
-    const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-        artifacts.AssetProxyOwner,
-        provider,
-        txDefaults,
-        artifacts,
-        owners,
-        [erc20Proxy.address, erc721Proxy.address, multiAssetProxy.address],
-        confirmationsRequired,
-        secondsRequired,
-    );
+    // // AssetProxyOwner
 
-    // Transfer Ownership to the Asset Proxy Owner
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc20Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await erc1155Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
-    );
-    await web3Wrapper.awaitTransactionSuccessAsync(
-        await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
-    );
+    // const assetProxyOwner = await wrappers.AssetProxyOwnerContract.deployFrom0xArtifactAsync(
+    //     artifacts.AssetProxyOwner,
+    //     provider,
+    //     txDefaults,
+    //     artifacts,
+    //     [],
+    //     [erc20Proxy.address, erc721Proxy.address, multiAssetProxy.address],
+    //     [],
+    //     owners,
+    //     confirmationsRequired,
+    //     secondsRequired,
+    // );
+
+    // // Transfer Ownership to the Asset Proxy Owner
+    // await web3Wrapper.awaitTransactionSuccessAsync(
+    //     await erc20Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    // );
+    // await web3Wrapper.awaitTransactionSuccessAsync(
+    //     await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    // );
+    // await web3Wrapper.awaitTransactionSuccessAsync(
+    //     await erc1155Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    // );
+    // await web3Wrapper.awaitTransactionSuccessAsync(
+    //     await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    // );
 
     // Fund the Forwarder with ZRX
     const zrxDecimals = await zrxToken.decimals.callAsync();
@@ -296,7 +300,8 @@ export async function runMigrationsAsync(
         zrxToken: zrxToken.address,
         etherToken: etherToken.address,
         exchange: exchange.address,
-        assetProxyOwner: assetProxyOwner.address,
+        // TODO (xianny): figure out how to deploy AssetProxyOwnerContract
+        assetProxyOwner: '0x0000000000000000000000000000000000000000',
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
         dutchAuction: dutchAuction.address,

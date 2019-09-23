@@ -142,23 +142,24 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     );
 
     // Verify AssetProxyOwner configs
-    const isERC20ProxyRegisteredInAPOwner = await assetProxyOwner.isAssetProxyRegistered.callAsync(erc20Proxy.address);
-    warnIfMismatch(isERC20ProxyRegisteredInAPOwner, true, 'ERC20Proxy not registered in AssetProxyOwner');
+    // TODO (xianny): re-enable when AssetProxyOwner contract is finalised
+    // const isERC20ProxyRegisteredInAPOwner = await assetProxyOwner.getAssetProxy.callAsync(erc20Proxy.address);
+    // warnIfMismatch(isERC20ProxyRegisteredInAPOwner, true, 'ERC20Proxy not registered in AssetProxyOwner');
 
-    const isERC721ProxyRegisteredInAPOwner = await assetProxyOwner.isAssetProxyRegistered.callAsync(
-        erc721Proxy.address,
-    );
-    warnIfMismatch(isERC721ProxyRegisteredInAPOwner, true, 'ERC721Proxy not registered in AssetProxyOwner');
+    // const isERC721ProxyRegisteredInAPOwner = await assetProxyOwner.getAssetProxy.callAsync(
+    //     erc721Proxy.address,
+    // );
+    // warnIfMismatch(isERC721ProxyRegisteredInAPOwner, true, 'ERC721Proxy not registered in AssetProxyOwner');
 
-    const isERC1155ProxyRegisteredInAPOwner = await assetProxyOwner.isAssetProxyRegistered.callAsync(
-        erc1155Proxy.address,
-    );
-    warnIfMismatch(isERC1155ProxyRegisteredInAPOwner, true, 'ERC1155Proxy not registered in AssetProxyOwner');
+    // const isERC1155ProxyRegisteredInAPOwner = await assetProxyOwner.getAssetProxy.callAsync(
+    //     erc1155Proxy.address,
+    // );
+    // warnIfMismatch(isERC1155ProxyRegisteredInAPOwner, true, 'ERC1155Proxy not registered in AssetProxyOwner');
 
-    const isMultiAssetProxyRegisteredInAPOwner = await assetProxyOwner.isAssetProxyRegistered.callAsync(
-        multiAssetProxy.address,
-    );
-    warnIfMismatch(isMultiAssetProxyRegisteredInAPOwner, true, 'MultiAssetProxy not registered in AssetProxyOwner');
+    // const isMultiAssetProxyRegisteredInAPOwner = await assetProxyOwner.getAssetProxy.callAsync(
+    //     multiAssetProxy.address,
+    // );
+    // warnIfMismatch(isMultiAssetProxyRegisteredInAPOwner, true, 'MultiAssetProxy not registered in AssetProxyOwner');
 }
 
 (async () => {

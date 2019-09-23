@@ -45,7 +45,6 @@
         "@0x/contract-addresses": "^3.2.0",
         "@0x/contract-wrappers": "^12.1.0",
         "@0x/dev-utils": "^2.3.3",
-        "@0x/fill-scenarios": "^3.0.19",
         "@0x/json-schemas": "^4.0.2",
         "@0x/migrations": "^4.3.2",
         "@0x/order-utils": "^8.4.0",
@@ -59,6 +58,7 @@
         "lodash": "^4.17.11"
     },
     "devDependencies": {
+        "@0x/contracts-test-utils": "^3.1.16",
         "@0x/mesh-rpc-client": "^4.0.1-beta",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.0.1",

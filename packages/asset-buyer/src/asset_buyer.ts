@@ -246,7 +246,7 @@ export class AssetBuyer {
         if (gasPrice !== undefined) {
             assert.isBigNumber('gasPrice', gasPrice);
         }
-        const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
+        const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote; // tslint:disable-line:no-unused-variable
         // if no takerAddress is provided, try to get one from the provider
         let finalTakerAddress;
         if (takerAddress !== undefined) {
@@ -271,8 +271,6 @@ export class AssetBuyer {
                 orders,
                 assetBuyAmount,
                 orders.map(o => o.signature),
-                feeOrders,
-                feeOrders.map(o => o.signature),
                 formattedFeePercentage,
                 feeRecipient,
                 {

@@ -41,30 +41,6 @@ jobs:
                   path: ~/repo/packages/abi-gen/test-cli/output
             - store_artifacts:
                   path: ~/repo/packages/abi-gen-wrappers/generated_docs
-    build-3.0:
-        resource_class: medium+
-        docker:
-            - image: nikolaik/python-nodejs:python3.7-nodejs8
-        environment:
-            CONTRACTS_COMMIT_HASH: '9ed05f5'
-        working_directory: ~/repo
-        steps:
-            - checkout
-            - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-            - run:
-                  name: install-yarn
-                  command: npm install --global yarn@1.9.4
-            - run:
-                  name: yarn
-                  command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
-            - setup_remote_docker
-            - run: yarn build:contracts
-            - run: yarn contracts:compile:truffle
-            - run: PKG='@0x/monorepo-scripts' yarn build
-            - save_cache:
-                  key: repo-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo
     test-contracts-ganache:
         resource_class: medium+
         docker:
@@ -554,31 +530,31 @@ workflows:
     version: 2
     main:
         jobs:
-            - build-3.0
+            - build
             - test-exchange-ganache-3.0:
                   requires:
-                      - build-3.0
+                      - build
             - test-contracts-rest-ganache-3.0:
                   requires:
-                      - build-3.0
+                      - build
             # Disabled until geth docker image is fixed.
             # - test-contracts-geth:
             #       requires:
-            #           - build-3.0
+            #           - build
             - test-rest-3.0:
                   requires:
-                      - build-3.0
+                      - build
             - static-tests-3.0:
                   requires:
-                      - build-3.0
+                      - build
             # Disabled for 3.0
             # - test-publish:
             #       requires:
-            #           - build-3.0
+            #           - build
             # Disabled for 3.0
             # - test-doc-generation:
             #       requires:
-            #           - build-3.0
+            #           - build
             - submit-coverage-3.0:
                   requires:
                       - test-contracts-rest-ganache-3.0
@@ -588,7 +564,7 @@ workflows:
             # Disabled for 3.0
             # - test-python:
             #       requires:
-            #           - build-3.0
+            #           - build
             #           - test-rest-3.0
             # - static-tests-python:
             #       requires:

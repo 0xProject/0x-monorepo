@@ -100,6 +100,7 @@ describe('AssetBuyer', () => {
             });
         });
 
+        // TODO (xianny): needs to be updated to new SignedOrder interface
         describe('assetData is supported', () => {
             // orders
             const sellTwoTokensFor1Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({

@@ -1,5 +1,18 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Use V3 contracts",
+                "pr": 2181
+            },
+            {
+                "note": "Add `deployedBytecode` field",
+                "pr": 2181
+            }
+        ]
+    },
+    {
         "timestamp": 1568744790,
         "version": "2.2.2",
         "changes": [
