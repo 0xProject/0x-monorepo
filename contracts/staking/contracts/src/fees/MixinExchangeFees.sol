@@ -134,7 +134,7 @@ contract MixinExchangeFees is
         returns (uint256 totalBalance)
     {
         totalBalance = address(this).balance.safeAdd(
-            _getWethContract().balanceOf(address(this))
+            _getAvailableWethBalance()
         );
         return totalBalance;
     }

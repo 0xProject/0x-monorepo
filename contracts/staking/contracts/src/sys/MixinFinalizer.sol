@@ -76,8 +76,11 @@ contract MixinFinalizer is
             );
         }
 
+        // Convert all ETH to WETH
+        _wrapEth();
+
         // Set up unfinalized state.
-        state.rewardsAvailable = _wrapEthAndGetWethBalance();
+        state.rewardsAvailable = _getAvailableWethBalance();
         state.poolsRemaining = poolsRemaining = numActivePoolsThisEpoch;
         state.totalFeesCollected = totalFeesCollectedThisEpoch;
         state.totalWeightedStake = totalWeightedStakeThisEpoch;
@@ -236,19 +239,24 @@ contract MixinFinalizer is
         return activePools;
     }
 
-    /// @dev Converts the entire ETH balance of the contract into WETH and
-    ///      returns the total WETH balance of this contract.
-    /// @return The WETH balance of this contract.
-    function _wrapEthAndGetWethBalance()
+    /// @dev Converts the entire ETH balance of this contract into WETH.
+    function _wrapEth()
         internal
-        returns (uint256 wethBalance)
     {
-        IEtherToken wethContract = _getWethContract();
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            wethContract.deposit.value(ethBalance)();
+            _getWethContract().deposit.value(ethBalance)();
         }
-        wethBalance = wethContract.balanceOf(address(this))
+    }
+
+    /// @dev Returns the WETH balance of this contract, minus
+    ///      any WETH that has already been reserved for rewards.
+    function _getAvailableWethBalance()
+        internal
+        view
+        returns (uint256 wethBalance)
+    {
+        wethBalance = _getWethContract().balanceOf(address(this))
             .safeSub(_reservedWethBalance);
 
         return wethBalance;
