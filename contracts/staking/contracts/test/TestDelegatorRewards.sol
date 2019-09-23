@@ -39,13 +39,8 @@ contract TestDelegatorRewards is
         uint256 membersStake;
     }
 
-    constructor()
-        public
-    {
-        init(
-            address(1),
-            address(1)
-        );
+    constructor() public {
+        init();
     }
 
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private

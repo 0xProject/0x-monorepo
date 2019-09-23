@@ -44,12 +44,7 @@ contract TestProtocolFees is
     mapping(address => bytes32) private _makersToTestPoolIds;
 
     constructor(address exchangeAddress) public {
-        init(
-            // Use this contract as the ERC20Proxy.
-            address(this),
-            // vault addresses must be non-zero
-            address(1)
-        );
+        init();
         validExchanges[exchangeAddress] = true;
     }
 
@@ -134,5 +129,14 @@ contract TestProtocolFees is
             currentEpochBalance: pool.operatorStake,
             nextEpochBalance: pool.operatorStake
         });
+    }
+
+    function _getWethAssetProxy()
+        internal
+        view
+        returns (IAssetProxy wethAssetProxy)
+    {
+        wethAssetProxy = IAssetProxy(address(this));
+        return wethAssetProxy;
     }
 }

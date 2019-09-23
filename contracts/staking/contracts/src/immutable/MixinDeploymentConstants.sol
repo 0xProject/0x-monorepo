@@ -18,11 +18,13 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "../interfaces/IZrxVault.sol";
 
 
 // solhint-disable separate-by-one-line-in-contract
@@ -49,6 +51,10 @@ contract MixinDeploymentConstants {
 
     // Ropsten & Rinkeby Weth Asset Data
     // bytes constant internal WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c778417e063141139fce010982780140aa0cd5ab";
+
+    // @TODO SET THESE VALUES FOR DEPLOYMENT
+    address constant public WETH_ASSET_PROXY_ADDRESS = address(1);
+    address constant public ZRX_VAULT_ADDRESS = address(1);
 
     /// @dev Ensures that the WETH_ASSET_DATA is correct.
     constructor()
@@ -87,5 +93,23 @@ contract MixinDeploymentConstants {
     {
         wethAssetData = WETH_ASSET_DATA;
         return wethAssetData;
+    }
+
+    function _getWethAssetProxy()
+        internal
+        view
+        returns (IAssetProxy wethAssetProxy)
+    {
+        wethAssetProxy = IAssetProxy(WETH_ASSET_PROXY_ADDRESS);
+        return wethAssetProxy;
+    }
+
+    function _getZrxVault()
+        internal
+        view
+        returns (IZrxVault zrxVault)
+    {
+        zrxVault = IZrxVault(ZRX_VAULT_ADDRESS);
+        return zrxVault;
     }
 }

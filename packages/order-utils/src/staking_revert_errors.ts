@@ -24,8 +24,6 @@ export enum InvalidParamValueErrorCode {
     InvalidRewardDelegatedStakeWeight,
     InvalidMaximumMakersInPool,
     InvalidMinimumPoolStake,
-    InvalidWethProxyAddress,
-    InvalidZrxVaultAddress,
     InvalidEpochDuration,
 }
 

@@ -92,7 +92,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return zrxVault.balanceOf(owner);
+        return _getZrxVault().balanceOf(owner);
     }
 
     /// @dev Returns the active stake for a given owner.

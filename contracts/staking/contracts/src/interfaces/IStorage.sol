@@ -26,11 +26,6 @@ import "../interfaces/IStructs.sol";
 
 interface IStorage {
 
-    function wethAssetProxy()
-        external
-        view
-        returns (IAssetProxy);
-
     function stakingContract()
         external
         view
@@ -80,11 +75,6 @@ interface IStorage {
         external
         view
         returns (bool);
-
-    function zrxVault()
-        external
-        view
-        returns (IZrxVault);
 
     function epochDurationInSeconds()
         external

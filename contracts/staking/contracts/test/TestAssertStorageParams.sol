@@ -32,15 +32,11 @@ contract TestAssertStorageParams is
         uint256 maximumMakersInPool;
         uint32 cobbDouglasAlphaNumerator;
         uint32 cobbDouglasAlphaDenominator;
-        address wethProxyAddress;
-        address zrxVaultAddress;
     }
 
     constructor()
         public
         StakingProxy(
-            NIL_ADDRESS,
-            NIL_ADDRESS,
             NIL_ADDRESS,
             NIL_ADDRESS
         )
@@ -55,12 +51,10 @@ contract TestAssertStorageParams is
         maximumMakersInPool = params.maximumMakersInPool;
         cobbDouglasAlphaNumerator = params.cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
-        wethAssetProxy = IAssetProxy(params.wethProxyAddress);
-        zrxVault = IZrxVault(params.zrxVaultAddress);
         _assertValidStorageParams();
     }
 
-    function _attachStakingContract(address, address, address)
+    function _attachStakingContract(address)
         internal
     {}
 }
