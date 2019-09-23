@@ -1,14 +1,13 @@
 import { BlockchainTestsEnvironment, constants, expect, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import { DecodedLogArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
+import { DecodedLogEntry, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TestCumulativeRewardTrackingContract } from '../../generated-wrappers/test_cumulative_reward_tracking';
-import { artifacts } from '../../src';
+import { artifacts, TestCumulativeRewardTrackingContract, TestCumulativeRewardTrackingEvents } from '../../src';
 
 import { StakingApiWrapper } from './api_wrapper';
 import { toBaseUnitAmount } from './number_utils';
-import { StakeInfo, StakeStatus } from './types';
+import { DecodedLogs, StakeInfo, StakeStatus } from './types';
 
 export enum TestAction {
     Finalize,
@@ -34,22 +33,22 @@ export class CumulativeRewardTrackingSimulation {
     private _testCumulativeRewardTrackingContract?: TestCumulativeRewardTrackingContract;
     private _poolId: string;
 
-    private static _extractTestLogs(txReceiptLogs: DecodedLogArgs[]): TestLog[] {
+    private static _extractTestLogs(txReceiptLogs: DecodedLogs): TestLog[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-            if (log.event === 'SetMostRecentCumulativeReward') {
+            if (log.event === TestCumulativeRewardTrackingEvents.SetMostRecentCumulativeReward) {
                 logs.push({
-                    event: 'SetMostRecentCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
-            } else if (log.event === 'SetCumulativeReward') {
+            } else if (log.event === TestCumulativeRewardTrackingEvents.SetCumulativeReward) {
                 logs.push({
-                    event: 'SetCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
-            } else if (log.event === 'UnsetCumulativeReward') {
+            } else if (log.event === TestCumulativeRewardTrackingEvents.UnsetCumulativeReward) {
                 logs.push({
-                    event: 'UnsetCumulativeReward',
+                    event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
             }
@@ -57,12 +56,13 @@ export class CumulativeRewardTrackingSimulation {
         return logs;
     }
 
-    private static _assertTestLogs(expectedSequence: TestLog[], txReceiptLogs: DecodedLogArgs[]): void {
+    private static _assertTestLogs(expectedSequence: TestLog[], txReceiptLogs: DecodedLogs): void {
         const logs = CumulativeRewardTrackingSimulation._extractTestLogs(txReceiptLogs);
         expect(logs.length).to.be.equal(expectedSequence.length);
         for (let i = 0; i < expectedSequence.length; i++) {
             const expectedLog = expectedSequence[i];
             const actualLog = logs[i];
+            expect(expectedLog.event).to.exist('');
             expect(expectedLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(
                 actualLog.event,
             );
@@ -90,6 +90,7 @@ export class CumulativeRewardTrackingSimulation {
             env.provider,
             txDefaults,
             artifacts,
+            this._stakingApiWrapper.wethContract.address,
         );
     }
 
@@ -117,20 +118,21 @@ export class CumulativeRewardTrackingSimulation {
         CumulativeRewardTrackingSimulation._assertTestLogs(expectedTestLogs, testLogs);
     }
 
-    private async _executeActionsAsync(actions: TestAction[]): Promise<DecodedLogArgs[]> {
-        let logs: DecodedLogArgs[] = [];
+    private async _executeActionsAsync(actions: TestAction[]): Promise<DecodedLogs> {
+        const combinedLogs = [] as DecodedLogs;
         for (const action of actions) {
-            let txReceipt: TransactionReceiptWithDecodedLogs;
+            let receipt: TransactionReceiptWithDecodedLogs | undefined;
+            let logs = [] as DecodedLogs;
             switch (action) {
                 case TestAction.Finalize:
-                    txReceipt = await this._stakingApiWrapper.utils.skipToNextEpochAsync();
+                    logs = await this._stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
                     break;
 
                 case TestAction.Delegate:
                     await this._stakingApiWrapper.stakingContract.stake.sendTransactionAsync(this._amountToStake, {
                         from: this._staker,
                     });
-                    txReceipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
                         new StakeInfo(StakeStatus.Active),
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
                         this._amountToStake,
@@ -139,7 +141,7 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.Undelegate:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
                         new StakeInfo(StakeStatus.Active),
                         this._amountToStake,
@@ -148,7 +150,7 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.PayProtocolFee:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
                         this._poolOperator,
                         this._takerAddress,
                         this._protocolFeeAmount,
@@ -157,21 +159,24 @@ export class CumulativeRewardTrackingSimulation {
                     break;
 
                 case TestAction.CreatePool:
-                    txReceipt = await this._stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
+                    receipt = await this._stakingApiWrapper.stakingContract.createStakingPool.awaitTransactionSuccessAsync(
                         0,
                         true,
                         { from: this._poolOperator },
                     );
-                    const createStakingPoolLog = txReceipt.logs[0];
+                    const createStakingPoolLog = receipt.logs[0];
                     // tslint:disable-next-line no-unnecessary-type-assertion
-                    this._poolId = (createStakingPoolLog as DecodedLogArgs).args.poolId;
+                    this._poolId = (createStakingPoolLog as DecodedLogEntry<any>).args.poolId;
                     break;
 
                 default:
                     throw new Error('Unrecognized test action');
             }
-            logs = logs.concat(txReceipt.logs);
+            if (receipt !== undefined) {
+                logs = receipt.logs as DecodedLogs;
+            }
+            combinedLogs.splice(combinedLogs.length, 0, ...logs);
         }
-        return logs;
+        return combinedLogs;
     }
 }

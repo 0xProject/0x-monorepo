@@ -33,6 +33,8 @@ import "../interfaces/IStakingEvents.sol";
 /// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
     using LibSafeMath for uint256;
@@ -84,16 +86,6 @@ contract MixinScheduler is
         uint256 nextEpoch = currentEpoch.safeAdd(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint256 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds.safeAdd(
-            epochDurationInSeconds
-        );
-
-        // notify of epoch change
-        emit EpochChanged(
-            currentEpoch,
-            currentEpochStartTimeInSeconds,
-            earliestEndTimeInSeconds
-        );
     }
 
     /// @dev Assert scheduler state before initializing it.

@@ -25,6 +25,12 @@ import "../stake/MixinStakeBalances.sol";
 
 
 contract MixinCumulativeRewards is
+    IStakingEvents,
+    MixinConstants,
+    Ownable,
+    MixinStorage,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;
@@ -34,7 +40,7 @@ contract MixinCumulativeRewards is
     function _initializeCumulativeRewards(bytes32 poolId)
         internal
     {
-        // sets the default cumulative reward
+        // Sets the default cumulative reward
         _forceSetCumulativeReward(
             poolId,
             currentEpoch,
@@ -51,31 +57,40 @@ contract MixinCumulativeRewards is
         pure
         returns (bool)
     {
-        // we use the denominator as a proxy for whether the cumulative
+        // We use the denominator as a proxy for whether the cumulative
         // reward is set, as setting the cumulative reward always sets this
         // field to at least 1.
         return cumulativeReward.denominator != 0;
     }
 
-    /// Returns true iff the cumulative reward for `poolId` at `epoch` can be unset.
+    /// @dev Returns true iff the cumulative reward for `poolId` at `epoch` can
+    ///      be unset.
     /// @param poolId Unique id of pool.
-    /// @param epoch of the cumulative reward.
+    /// @param epoch Epoch of the cumulative reward.
     function _canUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
         view
         returns (bool)
     {
-        return (
-            _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]) &&   // is there a value to unset
-            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] == 0 &&      // no references to this CR
-            _cumulativeRewardsByPoolLastStored[poolId] > epoch                   // this is *not* the most recent CR
-        );
+        // Must be a value to unset
+        if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch])) {
+            return false;
+        }
+        // Must be no references to this CR
+        if (_cumulativeRewardsByPoolReferenceCounter[poolId][epoch] != 0) {
+            return false;
+        }
+        // Must not be the most recently *stored* CR.
+        if (_cumulativeRewardsByPoolLastStored[poolId] == epoch) {
+            return false;
+        }
+        return true;
     }
 
     /// @dev Tries to set a cumulative reward for `poolId` at `epoch`.
     /// @param poolId Unique Id of pool.
-    /// @param epoch of cumulative reward.
-    /// @param value of cumulative reward.
+    /// @param epoch Epoch of cumulative reward.
+    /// @param value Value of cumulative reward.
     function _trySetCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
@@ -83,8 +98,11 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        if (_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch])) {
-            // do nothing; we don't want to override the current value
+        // Do nothing if it's in the past since we don't want to
+        // rewrite history.
+        if (epoch < currentEpoch
+            && _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]))
+        {
             return;
         }
         _forceSetCumulativeReward(poolId, epoch, value);
@@ -93,8 +111,8 @@ contract MixinCumulativeRewards is
     /// @dev Sets a cumulative reward for `poolId` at `epoch`.
     /// This can be used to overwrite an existing value.
     /// @param poolId Unique Id of pool.
-    /// @param epoch of cumulative reward.
-    /// @param value of cumulative reward.
+    /// @param epoch Epoch of cumulative reward.
+    /// @param value Value of cumulative reward.
     function _forceSetCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
@@ -103,12 +121,17 @@ contract MixinCumulativeRewards is
         internal
     {
         _cumulativeRewardsByPool[poolId][epoch] = value;
-        _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
+
+        // Never set the most recent reward epoch to one in the future, because
+        // it may get removed if there are no more dependencies on it.
+        if (epoch <= currentEpoch) {
+            _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
+        }
     }
 
     /// @dev Tries to unset the cumulative reward for `poolId` at `epoch`.
     /// @param poolId Unique id of pool.
-    /// @param epoch of cumulative reward to unset.
+    /// @param epoch Epoch of cumulative reward to unset.
     function _tryUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
@@ -120,44 +143,31 @@ contract MixinCumulativeRewards is
 
     /// @dev Unsets the cumulative reward for `poolId` at `epoch`.
     /// @param poolId Unique id of pool.
-    /// @param epoch of cumulative reward to unset.
+    /// @param epoch Epoch of cumulative reward to unset.
     function _forceUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
         internal
     {
-        _cumulativeRewardsByPool[poolId][epoch] = IStructs.Fraction({numerator: 0, denominator: 0});
-    }
-
-    /// @dev Returns info on most recent cumulative reward.
-    function _getMostRecentCumulativeRewardInfo(bytes32 poolId)
-        internal
-        view
-        returns (IStructs.CumulativeRewardInfo memory)
-    {
-        // fetch the last epoch at which we stored a cumulative reward for this pool
-        uint256 cumulativeRewardsLastStored = _cumulativeRewardsByPoolLastStored[poolId];
-
-        // query and return cumulative reward info for this pool
-        return IStructs.CumulativeRewardInfo({
-            cumulativeReward: _cumulativeRewardsByPool[poolId][cumulativeRewardsLastStored],
-            cumulativeRewardEpoch: cumulativeRewardsLastStored
-        });
+        delete _cumulativeRewardsByPool[poolId][epoch];
     }
 
     /// @dev Tries to set the epoch of the most recent cumulative reward.
-    /// The value will only be set if the input epoch is greater than the current
-    /// most recent value.
+    ///      The value will only be set if the input epoch is greater than the
+    ///     current most recent value.
     /// @param poolId Unique Id of pool.
-    /// @param epoch of the most recent cumulative reward.
-    function _trySetMostRecentCumulativeRewardEpoch(bytes32 poolId, uint256 epoch)
+    /// @param epoch Epoch of the most recent cumulative reward.
+    function _trySetMostRecentCumulativeRewardEpoch(
+        bytes32 poolId,
+        uint256 epoch
+    )
         internal
     {
-        // check if we should do any work
+        // Check if we should do any work
         uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
         if (epoch == currentMostRecentEpoch) {
             return;
         }
 
-        // update state to reflect the most recent cumulative reward
+        // Update state to reflect the most recent cumulative reward
         _forceSetMostRecentCumulativeRewardEpoch(
             poolId,
             currentMostRecentEpoch,
@@ -167,8 +177,10 @@ contract MixinCumulativeRewards is
 
     /// @dev Forcefully sets the epoch of the most recent cumulative reward.
     /// @param poolId Unique Id of pool.
-    /// @param currentMostRecentEpoch of the most recent cumulative reward.
-    /// @param newMostRecentEpoch of the new most recent cumulative reward.
+    /// @param currentMostRecentEpoch Epoch of the most recent cumulative
+    ///        reward.
+    /// @param newMostRecentEpoch Epoch of the new most recent cumulative
+    ///        reward.
     function _forceSetMostRecentCumulativeRewardEpoch(
         bytes32 poolId,
         uint256 currentMostRecentEpoch,
@@ -176,23 +188,24 @@ contract MixinCumulativeRewards is
     )
         internal
     {
-        // sanity check that we're not trying to go back in time
+        // Sanity check that we're not trying to go back in time
         assert(newMostRecentEpoch >= currentMostRecentEpoch);
         _cumulativeRewardsByPoolLastStored[poolId] = newMostRecentEpoch;
 
-        // unset the previous most recent reward, if it is no longer needed
+        // Unset the previous most recent reward, if it is no longer needed
         _tryUnsetCumulativeReward(poolId, currentMostRecentEpoch);
     }
 
     /// @dev Adds a dependency on a cumulative reward for a given epoch.
     /// @param poolId Unique Id of pool.
-    /// @param epoch to remove dependency from.
-    /// @param mostRecentCumulativeRewardInfo Info for the most recent cumulative reward (value and epoch)
-    /// @param isDependent True iff there is a dependency on the cumulative reward for `poolId` at `epoch`
+    /// @param epoch Epoch to remove dependency from.
+    /// @param mostRecentCumulativeReward The most recent cumulative reward.
+    /// @param isDependent True iff there is a dependency on the cumulative
+    ///        reward for `poolId` at `epoch`
     function _addOrRemoveDependencyOnCumulativeReward(
         bytes32 poolId,
         uint256 epoch,
-        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo,
+        IStructs.Fraction memory mostRecentCumulativeReward,
         bool isDependent
     )
         internal
@@ -201,7 +214,7 @@ contract MixinCumulativeRewards is
             _addDependencyOnCumulativeReward(
                 poolId,
                 epoch,
-                mostRecentCumulativeRewardInfo
+                mostRecentCumulativeReward
             );
         } else {
             _removeDependencyOnCumulativeReward(
@@ -211,51 +224,13 @@ contract MixinCumulativeRewards is
         }
     }
 
-    /// @dev Adds a dependency on a cumulative reward for a given epoch.
-    /// @param poolId Unique Id of pool.
-    /// @param epoch to remove dependency from.
-    /// @param mostRecentCumulativeRewardInfo Info on the most recent cumulative reward.
-    function _addDependencyOnCumulativeReward(
-        bytes32 poolId,
-        uint256 epoch,
-        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo
-    )
-        internal
-    {
-        // add dependency by increasing the reference counter
-        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
-
-        // set CR to most recent reward (if it is not already set)
-        _trySetCumulativeReward(
-            poolId,
-            epoch,
-            mostRecentCumulativeRewardInfo.cumulativeReward
-        );
-    }
-
-    /// @dev Removes a dependency on a cumulative reward for a given epoch.
-    /// @param poolId Unique Id of pool.
-    /// @param epoch to remove dependency from.
-    function _removeDependencyOnCumulativeReward(
-        bytes32 poolId,
-        uint256 epoch
-    )
-        internal
-    {
-        // remove dependency by decreasing reference counter
-        uint256 newReferenceCounter = _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
-        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] = newReferenceCounter;
-
-        // clear cumulative reward from state, if it is no longer needed
-        _tryUnsetCumulativeReward(poolId, epoch);
-    }
-
     /// @dev Computes a member's reward over a given epoch interval.
     /// @param poolId Uniqud Id of pool.
-    /// @param memberStakeOverInterval Stake delegated to pool by member over the interval.
-    /// @param beginEpoch beginning of interval.
-    /// @param endEpoch end of interval.
-    /// @return rewards accumulated over interval [beginEpoch, endEpoch]
+    /// @param memberStakeOverInterval Stake delegated to pool by member over
+    ///        the interval.
+    /// @param beginEpoch Beginning of interval.
+    /// @param endEpoch End of interval.
+    /// @return rewards Reward accumulated over interval [beginEpoch, endEpoch]
     function _computeMemberRewardOverInterval(
         bytes32 poolId,
         uint256 memberStakeOverInterval,
@@ -264,59 +239,84 @@ contract MixinCumulativeRewards is
     )
         internal
         view
-        returns (uint256)
+        returns (uint256 reward)
     {
-        // sanity check inputs
         if (memberStakeOverInterval == 0) {
             return 0;
         }
 
-        // sanity check interval
-        if (beginEpoch >= endEpoch) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.BeginEpochMustBeLessThanEndEpoch,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        // Sanity check interval
+        require(beginEpoch <= endEpoch, "CR_INTERVAL_INVALID");
 
-        // sanity check begin reward
-        IStructs.Fraction memory beginReward = _cumulativeRewardsByPool[poolId][beginEpoch];
-        if (!_isCumulativeRewardSet(beginReward)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.BeginEpochDoesNotHaveReward,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        // Sanity check begin reward
+        IStructs.Fraction memory beginReward =
+            _cumulativeRewardsByPool[poolId][beginEpoch];
+        require(_isCumulativeRewardSet(beginReward), "CR_INTERVAL_INVALID_BEGIN");
 
-        // sanity check end reward
-        IStructs.Fraction memory endReward = _cumulativeRewardsByPool[poolId][endEpoch];
-        if (!_isCumulativeRewardSet(endReward)) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.CumulativeRewardIntervalError(
-                    LibStakingRichErrors.CumulativeRewardIntervalErrorCode.EndEpochDoesNotHaveReward,
-                    poolId,
-                    beginEpoch,
-                    endEpoch
-                )
-            );
-        }
+        // Sanity check end reward
+        IStructs.Fraction memory endReward =
+            _cumulativeRewardsByPool[poolId][endEpoch];
+        require(_isCumulativeRewardSet(endReward), "CR_INTERVAL_INVALID_END");
 
-        // compute reward
-        uint256 reward = LibFractions.scaleFractionalDifference(
+        // Compute reward
+        reward = LibFractions.scaleDifference(
             endReward.numerator,
             endReward.denominator,
             beginReward.numerator,
             beginReward.denominator,
             memberStakeOverInterval
         );
-        return reward;
+    }
+
+    /// @dev Fetch the most recent cumulative reward entry for a pool.
+    /// @param poolId Unique ID of pool.
+    /// @return cumulativeReward The most recent cumulative reward `poolId`.
+    function _getMostRecentCumulativeReward(bytes32 poolId)
+        internal
+        view
+        returns (IStructs.Fraction memory cumulativeReward)
+    {
+        uint256 lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        return _cumulativeRewardsByPool[poolId][lastStoredEpoch];
+    }
+
+    /// @dev Adds a dependency on a cumulative reward for a given epoch.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch Epoch to remove dependency from.
+    /// @param mostRecentCumulativeReward The most recent cumulative reward.
+    function _addDependencyOnCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch,
+        IStructs.Fraction memory mostRecentCumulativeReward
+    )
+        private
+    {
+        // Add dependency by increasing the reference counter
+        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] =
+            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeAdd(1);
+
+        // Set CR to most recent reward (if it is not already set)
+        _trySetCumulativeReward(
+            poolId,
+            epoch,
+            mostRecentCumulativeReward
+        );
+    }
+
+    /// @dev Removes a dependency on a cumulative reward for a given epoch.
+    /// @param poolId Unique Id of pool.
+    /// @param epoch Epoch to remove dependency from.
+    function _removeDependencyOnCumulativeReward(
+        bytes32 poolId,
+        uint256 epoch
+    )
+        private
+    {
+        // Remove dependency by decreasing reference counter
+        _cumulativeRewardsByPoolReferenceCounter[poolId][epoch] =
+            _cumulativeRewardsByPoolReferenceCounter[poolId][epoch].safeSub(1);
+
+        // Clear cumulative reward from state, if it is no longer needed
+        _tryUnsetCumulativeReward(poolId, epoch);
     }
 }

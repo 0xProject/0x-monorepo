@@ -57,6 +57,10 @@
             {
                 "note": "Refactored out `_cobbDouglas()` into its own library",
                 "pr": 2179
+            },
+            {
+                "note": "Introduce multi-block finalization.",
+                "pr": 2155
             }
         ]
     }

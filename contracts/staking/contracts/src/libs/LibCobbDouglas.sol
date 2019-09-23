@@ -41,7 +41,7 @@ library LibCobbDouglas {
     /// @param alphaNumerator Numerator of `alpha` in the cobb-douglas function.
     /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas
     ///        function.
-    /// @return ownerRewards Rewards owned to the staking pool.
+    /// @return rewards Rewards owed to the staking pool.
     function cobbDouglas(
         uint256 totalRewards,
         uint256 fees,
@@ -53,12 +53,12 @@ library LibCobbDouglas {
     )
         internal
         pure
-        returns (uint256 ownerRewards)
+        returns (uint256 rewards)
     {
         int256 feeRatio = LibFixedMath.toFixed(fees, totalFees);
         int256 stakeRatio = LibFixedMath.toFixed(stake, totalStake);
         if (feeRatio == 0 || stakeRatio == 0) {
-            return ownerRewards = 0;
+            return rewards = 0;
         }
         // The cobb-doublas function has the form:
         // `totalRewards * feeRatio ^ alpha * stakeRatio ^ (1-alpha)`
@@ -71,9 +71,9 @@ library LibCobbDouglas {
         // `totalRewards * stakeRatio / e^(alpha * (ln(stakeRatio / feeRatio)))`
 
         // Compute
-        // `e^(alpha * (ln(feeRatio/stakeRatio)))` if feeRatio <= stakeRatio
+        // `e^(alpha * ln(feeRatio/stakeRatio))` if feeRatio <= stakeRatio
         // or
-        // `e^(ln(stakeRatio/feeRatio))` if feeRatio > stakeRatio
+        // `e^(alpa * ln(stakeRatio/feeRatio))` if feeRatio > stakeRatio
         int256 n = feeRatio <= stakeRatio ?
             LibFixedMath.div(feeRatio, stakeRatio) :
             LibFixedMath.div(stakeRatio, feeRatio);
@@ -93,6 +93,6 @@ library LibCobbDouglas {
             LibFixedMath.mul(stakeRatio, n) :
             LibFixedMath.div(stakeRatio, n);
         // Multiply the above with totalRewards.
-        ownerRewards = LibFixedMath.uintMul(n, totalRewards);
+        rewards = LibFixedMath.uintMul(n, totalRewards);
     }
 }

@@ -1,14 +1,16 @@
+import { Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
+import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { constants } from './constants';
 
 export interface StakingParams {
-    epochDurationInSeconds: BigNumber;
-    rewardDelegatedStakeWeight: number | BigNumber;
-    minimumPoolStake: BigNumber;
-    maximumMakersInPool: BigNumber;
-    cobbDouglasAlphaNumerator: number | BigNumber;
-    cobbDouglasAlphaDenominator: number | BigNumber;
+    epochDurationInSeconds: Numberish;
+    rewardDelegatedStakeWeight: Numberish;
+    minimumPoolStake: Numberish;
+    maximumMakersInPool: Numberish;
+    cobbDouglasAlphaNumerator: Numberish;
+    cobbDouglasAlphaDenominator: Numberish;
     wethProxyAddress: string;
     ethVaultAddress: string;
     rewardVaultAddress: string;
@@ -51,6 +53,14 @@ export interface SimulationParams {
     exchangeAddress: string;
     delegateInNextEpoch: boolean;
     withdrawByUndelegating: boolean;
+}
+
+export interface EndOfEpochInfo {
+    closingEpoch: BigNumber;
+    activePoolIds: string[];
+    rewardsAvailable: BigNumber;
+    totalFeesCollected: BigNumber;
+    totalWeightedStake: BigNumber;
 }
 
 export interface StakeBalance {
@@ -113,7 +123,7 @@ export interface RewardByPoolId {
     [key: string]: BigNumber;
 }
 
-export interface MemberBalancesByPoolId {
+export interface DelegatorBalancesByPoolId {
     [key: string]: BalanceByOwner;
 }
 
@@ -121,6 +131,8 @@ export interface OperatorByPoolId {
     [key: string]: string;
 }
 
-export interface MembersByPoolId {
+export interface DelegatorsByPoolId {
     [key: string]: string[];
 }
+
+export type DecodedLogs = Array<LogWithDecodedArgs<DecodedLogArgs>>;

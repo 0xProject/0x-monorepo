@@ -23,57 +23,112 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
+import "../sys/MixinAbstract.sol";
 
 
 contract MixinStakingPoolRewards is
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    Ownable,
+    MixinStorage,
+    MixinScheduler,
+    MixinStakeStorage,
+    MixinStakeBalances,
     MixinCumulativeRewards
 {
     using LibSafeMath for uint256;
 
-    /// @dev Syncs rewards for a delegator. This includes transferring rewards from
-    /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
-    /// This is used by a delegator when they want to sync their rewards without delegating/undelegating.
-    /// It's effectively the same as delegating zero stake.
+    /// @dev Syncs rewards for a delegator. This includes transferring rewards
+    ///      from the Reward Vault to the Eth Vault, and adding/removing
+    ///      dependencies on cumulative rewards.
+    ///      This is used by a delegator when they want to sync their rewards
+    ///      without delegating/undelegating. It's effectively the same as
+    ///      delegating zero stake.
     /// @param poolId Unique id of pool.
     function syncDelegatorRewards(bytes32 poolId)
         external
     {
         address member = msg.sender;
 
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
+            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[member][poolId]);
         _syncRewardsForDelegator(
             poolId,
             member,
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),  // initial balance
+            // Initial balance
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
             finalDelegatedStakeToPoolByOwner
         );
 
-        // update stored balance with synchronized version; this prevents redundant withdrawals.
-        _delegatedStakeToPoolByOwner[member][poolId] = finalDelegatedStakeToPoolByOwner;
+        // Update stored balance with synchronized version; this prevents
+        // redundant withdrawals.
+        _delegatedStakeToPoolByOwner[member][poolId] =
+            finalDelegatedStakeToPoolByOwner;
+    }
+
+    /// @dev Computes the reward balance in ETH of the operator of a pool.
+    ///      This does not include the balance in the ETH vault.
+    /// @param poolId Unique id of pool.
+    /// @return totalReward Balance in ETH.
+    function computeRewardBalanceOfOperator(bytes32 poolId)
+        external
+        view
+        returns (uint256 reward)
+    {
+        // Because operator rewards are immediately sent to the ETH vault
+        // on finalization, the only factor in this function are unfinalized
+        // rewards.
+        IStructs.Pool memory pool = _poolById[poolId];
+        // Get any unfinalized rewards.
+        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) = _getUnfinalizedPoolRewards(poolId);
+        // Get the operators' portion.
+        (reward,) = _computeSplitStakingPoolRewards(
+            pool.operatorShare,
+            unfinalizedTotalRewards,
+            unfinalizedMembersStake
+        );
+        return reward;
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    ///      This does not include the balance in the ETH vault.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
     /// @return totalReward Balance in ETH.
     function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
-        public
+        external
         view
-        returns (uint256 totalReward)
+        returns (uint256 reward)
     {
+        IStructs.Pool memory pool = _poolById[poolId];
+        // Get any unfinalized rewards.
+        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
+            _getUnfinalizedPoolRewards(poolId);
+        // Get the members' portion.
+        (, uint256 unfinalizedMembersReward) = _computeSplitStakingPoolRewards(
+            pool.operatorShare,
+            unfinalizedTotalRewards,
+            unfinalizedMembersStake
+        );
         return _computeRewardBalanceOfDelegator(
             poolId,
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
-            currentEpoch
+            currentEpoch,
+            unfinalizedMembersReward,
+            unfinalizedMembersStake
         );
     }
 
-    /// @dev Syncs rewards for a delegator. This includes transferring rewards from
-    /// the Reward Vault to the Eth Vault, and adding/removing dependencies on cumulative rewards.
+    /// @dev Syncs rewards for a delegator. This includes transferring rewards
+    ///      from the Reward Vault to the Eth Vault, and adding/removing
+    ///      dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
-    /// @param initialDelegatedStakeToPoolByOwner The member's delegated balance at the beginning of this transaction.
-    /// @param finalDelegatedStakeToPoolByOwner The member's delegated balance at the end of this transaction.
+    /// @param initialDelegatedStakeToPoolByOwner The member's delegated
+    ///        balance at the beginning of this transaction.
+    /// @param finalDelegatedStakeToPoolByOwner The member's delegated balance
+    ///        at the end of this transaction.
     function _syncRewardsForDelegator(
         bytes32 poolId,
         address member,
@@ -82,8 +137,9 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
-        // transfer any rewards from the transient pool vault to the eth vault;
-        // this must be done before we can modify the owner's portion of the delegator pool.
+        // Transfer any rewards from the transient pool vault to the eth vault;
+        // this must be done before we can modify the owner's portion of the
+        // delegator pool.
         _transferDelegatorRewardsToEthVault(
             poolId,
             member,
@@ -91,14 +147,16 @@ contract MixinStakingPoolRewards is
             currentEpoch
         );
 
-        // add dependencies on cumulative rewards for this epoch and the previous epoch, if necessary.
+        // Add dependencies on cumulative rewards for this epoch and the next
+        // epoch, if necessary.
         _setCumulativeRewardDependenciesForDelegator(
             poolId,
             finalDelegatedStakeToPoolByOwner,
             true
         );
 
-        // remove dependencies on previous cumulative rewards, if they are no longer needed.
+        // Remove dependencies on previous cumulative rewards, if they are no
+        // longer needed.
         _setCumulativeRewardDependenciesForDelegator(
             poolId,
             initialDelegatedStakeToPoolByOwner,
@@ -106,158 +164,226 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    /// @dev Handles a pool's reward. This will deposit the operator's reward into the Eth Vault and
-    /// the members' reward into the Staking Pool Vault. It also records the cumulative reward, which
-    /// is used to compute each delegator's portion of the members' reward.
+    /// @dev Handles a pool's reward at the current epoch.
+    ///      This will split the reward between the operator and members,
+    ///      depositing them into their respective vaults, and update the
+    ///      accounting needed to allow members to withdraw their individual
+    ///      rewards.
     /// @param poolId Unique Id of pool.
     /// @param reward received by the pool.
-    /// @param amountOfDelegatedStake the amount of delegated stake that will split the  reward.
-    /// @param epoch at which this was earned.
-    function _handleStakingPoolReward(
+    /// @param membersStake the amount of non-operator delegated stake that
+    ///        will split the  reward.
+    /// @return operatorReward Portion of `reward` given to the pool operator.
+    /// @return membersReward Portion of `reward` given to the pool members.
+    function _depositStakingPoolRewards(
         bytes32 poolId,
         uint256 reward,
-        uint256 amountOfDelegatedStake,
-        uint256 epoch
+        uint256 membersStake
     )
         internal
+        returns (uint256 operatorReward, uint256 membersReward)
     {
-        IStructs.Pool memory pool = poolById[poolId];
+        IStructs.Pool memory pool = _poolById[poolId];
 
-        // compute the operator's portion of the reward and transfer it to the ETH vault (we round in favor of the operator).
-        uint256 operatorPortion = amountOfDelegatedStake == 0
-            ? reward
-            : LibMath.getPartialAmountCeil(
-                uint256(pool.operatorShare),
-                PPM_DENOMINATOR,
-                reward
+        // Split the reward between operator and members
+        (operatorReward, membersReward) = _computeSplitStakingPoolRewards(
+            pool.operatorShare,
+            reward,
+            membersStake
+        );
+        // Deposit the operator's reward in the eth vault.
+        ethVault.depositFor(pool.operator, operatorReward);
+
+        if (membersReward == 0) {
+            return (0, 0);
+        }
+        // Deposit the members' reward in the reward vault.
+        rewardVault.depositFor(poolId, membersReward);
+
+        // Fetch the last epoch at which we stored an entry for this pool;
+        // this is the most up-to-date cumulative rewards for this pool.
+        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
+
+        // Compute new cumulative reward
+        IStructs.Fraction memory cumulativeReward;
+        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
+                mostRecentCumulativeReward.numerator,
+                mostRecentCumulativeReward.denominator,
+                membersReward,
+                membersStake
+            );
+        // Normalize to prevent overflows.
+        (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
+                cumulativeReward.numerator,
+                cumulativeReward.denominator
             );
 
-        ethVault.depositFor.value(operatorPortion)(pool.operator);
-
-        // compute the reward portion for the pool members and transfer it to the Reward Vault.
-        uint256 membersPortion = reward.safeSub(operatorPortion);
-        if (membersPortion == 0) {
-            return;
-        }
-
-        rewardVault.depositFor.value(membersPortion)(poolId);
-
-        // cache a storage pointer to the cumulative rewards for `poolId` indexed by epoch.
-        mapping (uint256 => IStructs.Fraction) storage _cumulativeRewardsByPoolPtr = _cumulativeRewardsByPool[poolId];
-
-        // fetch the last epoch at which we stored an entry for this pool;
-        // this is the most up-to-date cumulative rewards for this pool.
-        uint256 cumulativeRewardsLastStored = _cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.Fraction memory mostRecentCumulativeRewards = _cumulativeRewardsByPoolPtr[cumulativeRewardsLastStored];
-
-        // compute new cumulative reward
-        (uint256 numerator, uint256 denominator) = LibFractions.addFractions(
-            mostRecentCumulativeRewards.numerator,
-            mostRecentCumulativeRewards.denominator,
-            membersPortion,
-            amountOfDelegatedStake
-        );
-
-        // normalize fraction components by dividing by the min token value (10^18)
-        (uint256 numeratorNormalized, uint256 denominatorNormalized) = (
-            numerator.safeDiv(MIN_TOKEN_VALUE),
-            denominator.safeDiv(MIN_TOKEN_VALUE)
-        );
-
-        // store cumulative rewards and set most recent
+        // Store cumulative rewards for this epoch.
         _forceSetCumulativeReward(
             poolId,
-            epoch,
-            IStructs.Fraction({
-                numerator: numeratorNormalized,
-                denominator: denominatorNormalized
-            })
+            currentEpoch,
+            cumulativeReward
         );
+
+        return (operatorReward, membersReward);
     }
 
-    /// @dev Transfers a delegators accumulated rewards from the transient pool Reward Pool vault
-    ///      to the Eth Vault. This is required before the member's stake in the pool can be
-    ///      modified.
+    /// @dev Compute the split of a pool reward between the operator and members
+    ///      based on the `operatorShare` and `membersStake`.
+    /// @param operatorShare The fraction of rewards owed to the operator,
+    ///        in PPM.
+    /// @param totalReward The pool reward.
+    /// @param membersStake The amount of member (non-operator) stake delegated
+    ///        to the pool in the epoch the rewards were earned.
+    /// @return operatorReward Portion of `totalReward` given to the pool operator.
+    /// @return membersReward Portion of `totalReward` given to the pool members.
+    function _computeSplitStakingPoolRewards(
+        uint32 operatorShare,
+        uint256 totalReward,
+        uint256 membersStake
+    )
+        internal
+        pure
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        if (membersStake == 0) {
+            operatorReward = totalReward;
+        } else {
+            operatorReward = LibMath.getPartialAmountCeil(
+                uint256(operatorShare),
+                PPM_DENOMINATOR,
+                totalReward
+            );
+            membersReward = totalReward - operatorReward;
+        }
+        return (operatorReward, membersReward);
+    }
+
+    /// @dev Transfers a delegators accumulated rewards from the transient pool
+    ///       Reward Pool vault to the Eth Vault. This is required before the
+    ///       member's stake in the pool can be modified.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
+    /// @param unsyncedStake Unsynced stake of the delegator to the pool.
     function _transferDelegatorRewardsToEthVault(
         bytes32 poolId,
         address member,
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
+        IStructs.StoredBalance memory unsyncedStake,
         uint256 currentEpoch
     )
         private
     {
-        // compute balance owed to delegator
+        // Ensure the pool is finalized.
+        finalizePool(poolId);
+
+        // Compute balance owed to delegator
         uint256 balance = _computeRewardBalanceOfDelegator(
             poolId,
-            unsyncedDelegatedStakeToPoolByOwner,
-            currentEpoch
+            unsyncedStake,
+            currentEpoch,
+            // No unfinalized values because we ensured the pool is already
+            // finalized.
+            0,
+            0
         );
         if (balance == 0) {
             return;
         }
 
-        // transfer from transient Reward Pool vault to ETH Vault
-        rewardVault.transferToEthVault(
-            poolId,
-            member,
-            balance,
-            address(ethVault)
-        );
+        // Transfer from RewardVault to this contract.
+        rewardVault.transfer(poolId, address(uint160(address(this))), balance);
+        // Transfer to EthVault.
+        ethVault.depositFor(member, balance);
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
-    /// @param unsyncedDelegatedStakeToPoolByOwner Unsynced delegated stake to pool by owner
+    /// @param unsyncedStake Unsynced delegated stake to pool by owner
     /// @param currentEpoch The epoch in which this call is executing
+    /// @param unfinalizedMembersReward Unfinalized total members reward
+    ///        (if any).
+    /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return totalReward Balance in ETH.
     function _computeRewardBalanceOfDelegator(
         bytes32 poolId,
-        IStructs.StoredBalance memory unsyncedDelegatedStakeToPoolByOwner,
-        uint256 currentEpoch
+        IStructs.StoredBalance memory unsyncedStake,
+        uint256 currentEpoch,
+        uint256 unfinalizedMembersReward,
+        uint256 unfinalizedMembersStake
     )
         private
         view
-        returns (uint256 totalReward)
+        returns (uint256 reward)
     {
-        // reward balance is always zero in these two scenarios:
-        //   1. The owner's delegated stake is current as of this epoch: their rewards have been moved to the ETH vault.
-        //   2. The current epoch is zero: delegation begins at epoch 1
-        if (unsyncedDelegatedStakeToPoolByOwner.currentEpoch == currentEpoch || currentEpoch == 0) return 0;
+        // There can be no rewards in epoch 0 because there is no delegated
+        // stake.
+        if (currentEpoch == 0) {
+            return 0;
+        }
 
-        // compute reward accumulated during `delegatedStake.currentEpoch`;
-        uint256 rewardsAccumulatedDuringLastStoredEpoch = (unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance != 0)
-            ? _computeMemberRewardOverInterval(
+        // There can be no rewards if the last epoch when stake was synced is
+        // equal to the current epoch, because all prior rewards, including
+        // rewards finalized this epoch have been claimed.
+        if (unsyncedStake.currentEpoch == currentEpoch) {
+            return 0;
+        }
+
+        // If there are unfinalized rewards this epoch, compute the member's
+        // share.
+        if (unfinalizedMembersReward != 0 && unfinalizedMembersStake != 0) {
+            // Unfinalized rewards are always earned from stake in
+            // the prior epoch so we want the stake at `currentEpoch-1`.
+            uint256 _stake = unsyncedStake.currentEpoch >= currentEpoch.safeSub(1) ?
+                unsyncedStake.currentEpochBalance :
+                unsyncedStake.nextEpochBalance;
+            if (_stake != 0) {
+                reward = LibMath.getPartialAmountFloor(
+                    unfinalizedMembersReward,
+                    unfinalizedMembersStake,
+                    _stake
+                );
+            }
+        }
+
+        // Get the last epoch where a reward was credited to this pool, which
+        // also happens to be when we last created a cumulative reward entry.
+        uint256 lastRewardEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+
+        // If the stake has been touched since the last reward epoch,
+        // it has already been claimed.
+        if (unsyncedStake.currentEpoch >= lastRewardEpoch) {
+            return reward;
+        }
+        // From here we know: `unsyncedStake.currentEpoch < currentEpoch > 0`.
+
+        uint256 nextStakeEpoch = uint256(unsyncedStake.currentEpoch).safeAdd(1);
+        reward = reward.safeAdd(
+            _computeMemberRewardOverInterval(
                 poolId,
-                unsyncedDelegatedStakeToPoolByOwner.currentEpochBalance,
-                uint256(unsyncedDelegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
-                unsyncedDelegatedStakeToPoolByOwner.currentEpoch
+                unsyncedStake.currentEpochBalance,
+                unsyncedStake.currentEpoch,
+                nextStakeEpoch
             )
-            : 0;
-
-        // compute the reward accumulated by the `next` balance;
-        // this starts at `delegatedStake.currentEpoch + 1` and goes up until the last epoch, during which
-        // rewards were accumulated. This is at most the most recently finalized epoch (current epoch - 1).
-        uint256 rewardsAccumulatedAfterLastStoredEpoch = (_cumulativeRewardsByPoolLastStored[poolId] > unsyncedDelegatedStakeToPoolByOwner.currentEpoch)
-            ? _computeMemberRewardOverInterval(
-                poolId,
-                unsyncedDelegatedStakeToPoolByOwner.nextEpochBalance,
-                unsyncedDelegatedStakeToPoolByOwner.currentEpoch,
-                _cumulativeRewardsByPoolLastStored[poolId]
-            )
-            : 0;
-
-        // compute the total reward
-        totalReward = rewardsAccumulatedDuringLastStoredEpoch.safeAdd(rewardsAccumulatedAfterLastStoredEpoch);
-        return totalReward;
+        );
+        if (nextStakeEpoch < lastRewardEpoch) {
+            reward = reward.safeAdd(
+                _computeMemberRewardOverInterval(
+                    poolId,
+                    unsyncedStake.nextEpochBalance,
+                    nextStakeEpoch,
+                    lastRewardEpoch
+                )
+            );
+        }
+        return reward;
     }
 
     /// @dev Adds or removes cumulative reward dependencies for a delegator.
-    /// A delegator always depends on the cumulative reward for the current epoch.
-    /// They will also depend on the previous epoch's reward, if they are already staked with the input pool.
+    ///      A delegator always depends on the cumulative reward for the current
+    ///      and next epoch, if they would still have stake in the next epoch.
     /// @param poolId Unique id of pool.
-    /// @param _delegatedStakeToPoolByOwner Amount of stake the member has delegated to the pool.
+    /// @param _delegatedStakeToPoolByOwner Amount of stake the member has
+    ///        delegated to the pool.
     /// @param isDependent is true iff adding a dependency. False, otherwise.
     function _setCumulativeRewardDependenciesForDelegator(
         bytes32 poolId,
@@ -266,30 +392,34 @@ contract MixinStakingPoolRewards is
     )
         private
     {
-        // if this delegator is not yet initialized then there's no dependency to unset.
+        // If this delegator is not yet initialized then there's no dependency
+        // to unset.
         if (!isDependent && !_delegatedStakeToPoolByOwner.isInitialized) {
             return;
         }
 
-        // get the most recent cumulative reward, which will serve as a reference point when updating dependencies
-        IStructs.CumulativeRewardInfo memory mostRecentCumulativeRewardInfo = _getMostRecentCumulativeRewardInfo(poolId);
+        // Get the most recent cumulative reward, which will serve as a
+        // reference point when updating dependencies
+        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
 
-        // record dependency on `lastEpoch`
-        if (_delegatedStakeToPoolByOwner.currentEpoch > 0 && _delegatedStakeToPoolByOwner.currentEpochBalance != 0) {
+        // Record dependency on current epoch.
+        if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0
+            || _delegatedStakeToPoolByOwner.nextEpochBalance != 0)
+        {
             _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                uint256(_delegatedStakeToPoolByOwner.currentEpoch).safeSub(1),
-                mostRecentCumulativeRewardInfo,
+                _delegatedStakeToPoolByOwner.currentEpoch,
+                mostRecentCumulativeReward,
                 isDependent
             );
         }
 
-        // record dependency on current epoch.
-        if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0 || _delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
+        // Record dependency on the next epoch
+        if (_delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
             _addOrRemoveDependencyOnCumulativeReward(
                 poolId,
-                _delegatedStakeToPoolByOwner.currentEpoch,
-                mostRecentCumulativeRewardInfo,
+                uint256(_delegatedStakeToPoolByOwner.currentEpoch).safeAdd(1),
+                mostRecentCumulativeReward,
                 isDependent
             );
         }

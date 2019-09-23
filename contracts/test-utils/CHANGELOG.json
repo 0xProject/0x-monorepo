@@ -81,6 +81,18 @@
             {
                 "note": "Add `Numberish` type.",
                 "pr": 2131
+            },
+            {
+                "note": "Tweaks/Upgrades to `hex_utils`, most notably `hexSlice()`",
+                "pr": 2155
+            },
+            {
+                "note": "Add `hexHash()` to `hex_utils`",
+                "pr": 2155
+            },
+            {
+                "note": "Add `shortZip()` to `lang_utils.ts`",
+                "pr": 2155
             }
         ]
     },

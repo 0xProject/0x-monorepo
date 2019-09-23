@@ -2,8 +2,6 @@ import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
-import { artifacts } from '../src';
-
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { constants as stakingConstants } from './utils/constants';
 
@@ -23,7 +21,7 @@ blockchainTests('Epochs', env => {
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
-        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
+        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
     });
     describe('Epochs & TimeLocks', () => {
         it('basic epochs & timeLock periods', async () => {
@@ -38,7 +36,7 @@ blockchainTests('Epochs', env => {
                 expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH);
             }
             ///// 3/3 Increment Epoch (TimeLock Should Not Increment) /////
-            await stakingApiWrapper.utils.skipToNextEpochAsync();
+            await stakingApiWrapper.utils.skipToNextEpochAndFinalizeAsync();
             {
                 // epoch
                 const currentEpoch = await stakingApiWrapper.stakingContract.currentEpoch.callAsync();

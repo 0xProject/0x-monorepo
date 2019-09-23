@@ -17,28 +17,28 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/ERC20Proxy.sol";
+import "../src/Staking.sol";
 
 
-contract TestProtocolFeesERC20Proxy is
-    ERC20Proxy
+// solhint-disable no-empty-blocks
+/// @dev A version of the staking contract with WETH-related functions
+///      overridden to do nothing.
+contract TestStakingNoWETH is
+    Staking
 {
-    event TransferFromCalled(
-        bytes assetData,
-        address from,
-        address to,
-        uint256 amount
-    );
-
-    function transferFrom(
-        bytes calldata assetData,
-        address from,
-        address to,
-        uint256 amount
+    function _transferWETHAllownces(
+        address[2] memory oldSpenders,
+        address[2] memory newSpenders
     )
-        external
+        internal
+    {}
+
+    function _wrapBalanceToWETHAndGetBalance()
+        internal
+        returns (uint256 balance)
     {
-        emit TransferFromCalled(assetData, from, to, amount);
+        return address(this).balance;
     }
 }

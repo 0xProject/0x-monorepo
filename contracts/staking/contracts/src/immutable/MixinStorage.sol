@@ -55,19 +55,19 @@ contract MixinStorage is
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
 
-    // mapping from Owner to Amount of Inactive Stake
+    // Mapping from Owner to Amount of Inactive Stake
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
 
-    // mapping from Owner to Amount Delegated
+    // Mapping from Owner to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
 
-    // mapping from Owner to Pool Id to Amount Delegated
+    // Mapping from Owner to Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
-    // mapping from Pool Id to Amount Delegated
+    // Mapping from Pool Id to Amount Delegated
     // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
@@ -82,19 +82,13 @@ contract MixinStorage is
     mapping (address => IStructs.MakerPoolJoinStatus) public poolJoinedByMakerAddress;
 
     // mapping from Pool Id to Pool
-    mapping (bytes32 => IStructs.Pool) public poolById;
+    mapping (bytes32 => IStructs.Pool) internal _poolById;
 
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;
 
     // current epoch start time
     uint256 public currentEpochStartTimeInSeconds;
-
-    // fees collected this epoch
-    mapping (bytes32 => uint256) public protocolFeesThisEpochByPool;
-
-    // pools that were active in the current epoch
-    bytes32[] public activePoolsThisEpoch;
 
     // mapping from Pool Id to Epoch to Reward Ratio
     mapping (bytes32 => mapping (uint256 => IStructs.Fraction)) internal _cumulativeRewardsByPool;
@@ -117,6 +111,8 @@ contract MixinStorage is
     // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
     IStakingPoolRewardVault public rewardVault;
 
+    /* Tweakable parameters */
+
     // Minimum seconds between epochs.
     uint256 public epochDurationInSeconds;
 
@@ -134,6 +130,26 @@ contract MixinStorage is
 
     // Denominator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaDenominator;
+
+    /* Finalization states */
+
+    /// @dev The total fees collected in the current epoch, built up iteratively
+    ///      in `payProtocolFee()`.
+    uint256 public totalFeesCollectedThisEpoch;
+
+    /// @dev The total weighted stake in the current epoch, built up iteratively
+    ///      in `payProtocolFee()`.
+    uint256 public totalWeightedStakeThisEpoch;
+
+    /// @dev State information for each active pool in an epoch.
+    ///      In practice, we only store state for `currentEpoch % 2`.
+    mapping (uint256 => mapping (bytes32 => IStructs.ActivePool)) internal _activePoolsByEpoch;
+
+    /// @dev Number of pools activated in the current epoch.
+    uint256 public numActivePoolsThisEpoch;
+
+    /// @dev State for unfinalized rewards.
+    IStructs.UnfinalizedState public unfinalizedState;
 
     /// @dev Adds owner as an authorized address.
     constructor()

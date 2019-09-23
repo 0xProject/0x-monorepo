@@ -42,6 +42,7 @@ library LibStakingRichErrors {
         InvalidCobbDouglasAlpha,
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool,
+        InvalidMinimumPoolStake,
         InvalidWethProxyAddress,
         InvalidEthVaultAddress,
         InvalidRewardVaultAddress,
@@ -54,12 +55,6 @@ library LibStakingRichErrors {
         MakerAddressNotRegistered,
         MakerAddressNotPendingAdd,
         PoolIsFull
-    }
-
-    enum CumulativeRewardIntervalErrorCode {
-        BeginEpochMustBeLessThanEndEpoch,
-        BeginEpochDoesNotHaveReward,
-        EndEpochDoesNotHaveReward
     }
 
     // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
@@ -158,9 +153,9 @@ library LibStakingRichErrors {
     bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
         hex"24bf322c";
 
-    // bytes4(keccak256("CumulativeRewardIntervalError(uint8,bytes32,uint256,uint256)"))
-    bytes4 internal constant CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR =
-        0x1f806d55;
+    // bytes4(keccak256("PreviousEpochNotFinalizedError(uint256,uint256)"))
+    bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
+        0x614b800a;
 
     // solhint-disable func-name-mixedcase
     function MiscalculatedRewardsError(
@@ -473,22 +468,18 @@ library LibStakingRichErrors {
         return INVALID_WETH_ASSET_DATA_ERROR;
     }
 
-    function CumulativeRewardIntervalError(
-        CumulativeRewardIntervalErrorCode errorCode,
-        bytes32 poolId,
-        uint256 beginEpoch,
-        uint256 endEpoch
+    function PreviousEpochNotFinalizedError(
+        uint256 unfinalizedEpoch,
+        uint256 unfinalizedPoolsRemaining
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            CUMULATIVE_REWARD_INTERVAL_ERROR_SELECTOR,
-            errorCode,
-            poolId,
-            beginEpoch,
-            endEpoch
+            PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR,
+            unfinalizedEpoch,
+            unfinalizedPoolsRemaining
         );
     }
 }

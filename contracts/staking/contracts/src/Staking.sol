@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
 import "./sys/MixinParams.sol";
+import "./sys/MixinFinalizer.sol";
 import "./stake/MixinStake.sol";
 import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
@@ -28,7 +29,22 @@ import "./fees/MixinExchangeFees.sol";
 
 contract Staking is
     IStaking,
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    MixinDeploymentConstants,
+    Ownable,
+    MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinExchangeManager,
+    MixinScheduler,
     MixinParams,
+    MixinStakeStorage,
+    MixinStakingPoolMakers,
+    MixinStakeBalances,
+    MixinCumulativeRewards,
+    MixinStakingPoolRewards,
+    MixinFinalizer,
     MixinStakingPool,
     MixinStake,
     MixinExchangeFees
@@ -51,9 +67,9 @@ contract Staking is
         address _wethProxyAddress,
         address _ethVaultAddress,
         address payable _rewardVaultAddress,
-        address _zrxVaultAddress        
+        address _zrxVaultAddress
     )
-        external
+        public
         onlyAuthorized
     {
         // DANGER! When performing upgrades, take care to modify this logic

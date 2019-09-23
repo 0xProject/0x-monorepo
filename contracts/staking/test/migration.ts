@@ -24,7 +24,7 @@ blockchainTests('Migration tests', env => {
     before(async () => {
         [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
         stakingContract = await StakingContract.deployFrom0xArtifactAsync(
-            artifacts.Staking,
+            artifacts.TestStakingNoWETH,
             env.provider,
             env.txDefaults,
             artifacts,

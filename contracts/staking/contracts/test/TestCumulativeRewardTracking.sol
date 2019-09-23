@@ -21,10 +21,10 @@ pragma experimental ABIEncoderV2;
 import "./TestStaking.sol";
 
 
+// solhint-disable no-empty-blocks
 contract TestCumulativeRewardTracking is
     TestStaking
 {
-
     event SetCumulativeReward(
         bytes32 poolId,
         uint256 epoch
@@ -39,6 +39,10 @@ contract TestCumulativeRewardTracking is
         bytes32 poolId,
         uint256 epoch
     );
+
+    constructor(address wethAddress) public TestStaking(wethAddress) {}
+
+    function init(address, address, address payable, address) public {}
 
     function _forceSetCumulativeReward(
         bytes32 poolId,
@@ -76,14 +80,4 @@ contract TestCumulativeRewardTracking is
             newMostRecentEpoch
         );
     }
-
-    function _assertParamsNotInitialized()
-        internal
-        view
-    {} // solhint-disable-line no-empty-blocks
-
-    function _assertSchedulerNotInitialized()
-        internal
-        view
-    {} // solhint-disable-line no-empty-blocks
 }

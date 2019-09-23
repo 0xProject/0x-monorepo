@@ -91,6 +91,20 @@ export function assertRoughlyEquals(actual: Numberish, expected: Numberish, prec
 }
 
 /**
+ * Asserts that two numbers are equal with up to `maxError` difference between them.
+ */
+export function assertIntegerRoughlyEquals(actual: Numberish, expected: Numberish, maxError: number = 1): void {
+    const diff = new BigNumber(actual)
+        .minus(expected)
+        .abs()
+        .toNumber();
+    if (diff <= maxError) {
+        return;
+    }
+    expect(actual).to.bignumber.eq(expected);
+}
+
+/**
  * Converts `amount` into a base unit amount with 18 digits.
  */
 export function toBaseUnitAmount(amount: Numberish): BigNumber {
