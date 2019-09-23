@@ -31,21 +31,9 @@ contract TestStakingProxy is
         public
         StakingProxy(
             _stakingContract,
-            NIL_ADDRESS,
-            NIL_ADDRESS,
             NIL_ADDRESS
         )
     {}
-
-    function setAddressParams(
-        address _wethProxyAddress,
-        address _zrxVaultAddress        
-    )
-        external
-    {
-        wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        zrxVault = IZrxVault(_zrxVaultAddress);
-    }
 
     function _assertValidStorageParams()
         internal

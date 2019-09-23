@@ -56,21 +56,13 @@ contract Staking is
     /// @dev Initialize storage owned by this contract.
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function init(
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function init()
         public
         onlyAuthorized
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // to prevent accidentally clearing prior state.
         _initMixinScheduler();
-        _initMixinParams(
-            _wethProxyAddress,
-            _zrxVaultAddress
-        );
+        _initMixinParams();
     }
 }

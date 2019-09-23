@@ -56,10 +56,7 @@ contract TestFinalizer is
     )
         public
     {
-        init(
-            address(1),
-            address(1)
-        );
+        init();
         _operatorRewardsReceiver = operatorRewardsReceiver;
         _membersRewardsReceiver = membersRewardsReceiver;
     }

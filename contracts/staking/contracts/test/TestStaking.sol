@@ -27,9 +27,19 @@ contract TestStaking is
     Staking
 {
     address public testWethAddress;
+    address public testWethAssetProxyAddress;
+    address public testZrxVaultAddress;
 
-    constructor(address wethAddress) public {
+    constructor(
+        address wethAddress,
+        address wethAssetProxyAddress,
+        address zrxVaultAddress
+    )
+        public
+    {
         testWethAddress = wethAddress;
+        testWethAssetProxyAddress = wethAssetProxyAddress;
+        testZrxVaultAddress = zrxVaultAddress;
     }
 
     /// @dev Overridden to use testWethAddress;
@@ -55,5 +65,25 @@ contract TestStaking is
             IAssetData(address(0)).ERC20Token.selector,
             wethAddress
         ); 
+    }
+
+    function _getWethAssetProxy()
+        internal
+        view
+        returns (IAssetProxy wethAssetProxy)
+    {
+        address wethAssetProxyAddress = TestStaking(address(uint160(stakingContract))).testWethAssetProxyAddress();
+        wethAssetProxy = IAssetProxy(wethAssetProxyAddress);
+        return wethAssetProxy;
+    }
+
+    function _getZrxVault()
+        internal
+        view
+        returns (IZrxVault zrxVault)
+    {
+        address zrxVaultAddress = TestStaking(address(uint160(stakingContract))).testZrxVaultAddress();
+        zrxVault = IZrxVault(zrxVaultAddress);
+        return zrxVault;
     }
 }

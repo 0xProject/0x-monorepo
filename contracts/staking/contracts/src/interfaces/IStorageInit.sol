@@ -22,11 +22,6 @@ pragma solidity ^0.5.9;
 interface IStorageInit {
 
     /// @dev Initialize storage owned by this contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function init(
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function init()
         external;
 }

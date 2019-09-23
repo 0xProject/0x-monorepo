@@ -35,15 +35,7 @@ contract TestInitTarget is
     // `address(this)` of the last `init()` call.
     address private _initThisAddress = address(0);
 
-    event InitAddresses(
-        address wethProxyAddress,
-        address zrxVaultAddress          
-    );
-
-    function init(
-        address wethProxyAddress,
-        address zrxVaultAddress           
-    )
+    function init()
         external
     {
         if (SHOULD_REVERT_ADDRESS.balance != 0) {
@@ -52,10 +44,6 @@ contract TestInitTarget is
         _initCounter += 1;
         _initSender = msg.sender;
         _initThisAddress = address(this);
-        emit InitAddresses(
-            wethProxyAddress,
-            zrxVaultAddress
-        );
     }
 
     function getInitState()

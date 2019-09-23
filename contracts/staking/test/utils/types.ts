@@ -11,8 +11,6 @@ export interface StakingParams {
     maximumMakersInPool: Numberish;
     cobbDouglasAlphaNumerator: Numberish;
     cobbDouglasAlphaDenominator: Numberish;
-    wethProxyAddress: string;
-    zrxVaultAddress: string;
 }
 
 export interface StakerBalances {

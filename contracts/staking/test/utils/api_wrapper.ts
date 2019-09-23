@@ -117,8 +117,6 @@ export class StakingApiWrapper {
                 new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
-                _params.wethProxyAddress,
-                _params.zrxVaultAddress,
             );
         },
 
@@ -219,22 +217,6 @@ export async function deployAndConfigureContractsAsync(
         artifacts,
     );
 
-    // deploy staking contract
-    const stakingContract = await TestStakingContract.deployFrom0xArtifactAsync(
-        customStakingArtifact !== undefined ? customStakingArtifact : artifacts.TestStaking,
-        env.provider,
-        env.txDefaults,
-        artifacts,
-        wethContract.address,
-    );
-
-    // deploy read-only proxy
-    const readOnlyProxyContract = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
-        artifacts.ReadOnlyProxy,
-        env.provider,
-        env.txDefaults,
-        artifacts,
-    );
     // deploy zrx vault
     const zrxVaultContract = await ZrxVaultContract.deployFrom0xArtifactAsync(
         artifacts.ZrxVault,
@@ -244,6 +226,26 @@ export async function deployAndConfigureContractsAsync(
         erc20ProxyContract.address,
         zrxTokenContract.address,
     );
+
+    // deploy staking contract
+    const stakingContract = await TestStakingContract.deployFrom0xArtifactAsync(
+        customStakingArtifact !== undefined ? customStakingArtifact : artifacts.TestStaking,
+        env.provider,
+        env.txDefaults,
+        artifacts,
+        wethContract.address,
+        erc20ProxyContract.address,
+        zrxVaultContract.address,
+    );
+
+    // deploy read-only proxy
+    const readOnlyProxyContract = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
+        artifacts.ReadOnlyProxy,
+        env.provider,
+        env.txDefaults,
+        artifacts,
+    );
+
     // deploy staking proxy
     const stakingProxyContract = await StakingProxyContract.deployFrom0xArtifactAsync(
         artifacts.StakingProxy,
@@ -252,8 +254,6 @@ export async function deployAndConfigureContractsAsync(
         artifacts,
         stakingContract.address,
         readOnlyProxyContract.address,
-        erc20ProxyContract.address,
-        zrxVaultContract.address,
     );
     // deploy cobb douglas contract
     const cobbDouglasContract = await TestCobbDouglasContract.deployFrom0xArtifactAsync(

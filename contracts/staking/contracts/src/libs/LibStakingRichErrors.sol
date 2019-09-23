@@ -43,8 +43,6 @@ library LibStakingRichErrors {
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool,
         InvalidMinimumPoolStake,
-        InvalidWethProxyAddress,
-        InvalidZrxVaultAddress,
         InvalidEpochDuration
     }
 

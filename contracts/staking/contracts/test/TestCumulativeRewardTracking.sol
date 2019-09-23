@@ -40,9 +40,19 @@ contract TestCumulativeRewardTracking is
         uint256 epoch
     );
 
-    constructor(address wethAddress) public TestStaking(wethAddress) {}
+    constructor(
+        address wethAddress,
+        address zrxVaultAddress
+    )
+        public
+        TestStaking(
+            wethAddress,
+            address(0),
+            zrxVaultAddress
+        )
+    {}
 
-    function init(address, address) public {}
+    function init() public {}
 
     function _forceSetCumulativeReward(
         bytes32 poolId,

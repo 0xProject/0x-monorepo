@@ -95,17 +95,13 @@ interface IStakingEvents {
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-    /// @param wethProxyAddress The address that can transfer WETH for fees.
-    /// @param zrxVaultAddress Address of the ZrxVault contract.
     event ParamsSet(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,
         uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
-        uint256 cobbDouglasAlphaDenominator,
-        address wethProxyAddress,
-        address zrxVaultAddress
+        uint256 cobbDouglasAlphaDenominator
     );
 
      /// @dev Emitted by MixinScheduler when the timeLock period is changed.

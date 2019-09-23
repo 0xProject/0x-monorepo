@@ -69,7 +69,7 @@ contract MixinExchangeFees is
         // Transfer the protocol fee to this address if it should be paid in
         // WETH.
         if (msg.value == 0) {
-            wethAssetProxy.transferFrom(
+            _getWethAssetProxy().transferFrom(
                 _getWethAssetData(),
                 payerAddress,
                 address(this),
