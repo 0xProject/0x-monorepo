@@ -46,11 +46,6 @@ export class CumulativeRewardTrackingSimulation {
                     event: log.event,
                     epoch: log.args.epoch.toNumber(),
                 });
-            } else if (log.event === TestCumulativeRewardTrackingEvents.UnsetCumulativeReward) {
-                logs.push({
-                    event: log.event,
-                    epoch: log.args.epoch.toNumber(),
-                });
             }
         }
         return logs;

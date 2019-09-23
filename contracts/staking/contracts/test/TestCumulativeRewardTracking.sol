@@ -30,11 +30,6 @@ contract TestCumulativeRewardTracking is
         uint256 epoch
     );
 
-    event UnsetCumulativeReward(
-        bytes32 poolId,
-        uint256 epoch
-    );
-
     event SetMostRecentCumulativeReward(
         bytes32 poolId,
         uint256 epoch
@@ -57,13 +52,6 @@ contract TestCumulativeRewardTracking is
             epoch,
             value
         );
-    }
-
-    function _forceUnsetCumulativeReward(bytes32 poolId, uint256 epoch)
-        internal
-    {
-        emit UnsetCumulativeReward(poolId, epoch);
-        MixinCumulativeRewards._forceUnsetCumulativeReward(poolId, epoch);
     }
 
     function _forceSetMostRecentCumulativeRewardEpoch(
