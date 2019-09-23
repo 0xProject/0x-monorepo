@@ -18,11 +18,11 @@
 
 pragma solidity ^0.5.9;
 
-import "../interfaces/IZrxVault.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "../interfaces/IZrxVault.sol";
 import "./MixinVaultCore.sol";
 
 
@@ -34,6 +34,7 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
+    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {

@@ -24,6 +24,8 @@ import "../src/StakingProxy.sol";
 contract TestStakingProxy is
     StakingProxy
 {
+    address public constant SHOULD_REVERT_STAKING_ADDRESS = 0x5ed6A38c6bEcEd15b0AB58566b6fD7A00463d2F7;
+
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
@@ -49,5 +51,15 @@ contract TestStakingProxy is
         ethVault = IEthVault(_ethVaultAddress);
         rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
+    }
+
+    function _assertValidStorageParams()
+        internal
+        view
+    {
+        require(
+            stakingContract != SHOULD_REVERT_STAKING_ADDRESS,
+            "FORCED_STORAGE_PARAMS_REVERT"
+        );
     }
 }

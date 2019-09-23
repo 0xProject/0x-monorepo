@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IVaultCore.sol";
@@ -36,7 +36,7 @@ import "../interfaces/IVaultCore.sol";
 /// a vault cannot be reset to normal mode; this prevents corruption of related
 /// status in the staking contract.
 contract MixinVaultCore is
-    Ownable,
+    Authorizable,
     IVaultCore
 {
     // Address of staking contract
@@ -71,12 +71,20 @@ contract MixinVaultCore is
         _;
     }
 
+    /// @dev Sets the vault owner and adds owner as an authorized address.
+    constructor()
+        public
+        Authorizable()
+    {
+        _addAuthorizedAddress(owner);
+    }
+
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract owner can call this function.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external
-        onlyOwner
+        onlyAuthorized
     {
         stakingProxyAddress = _stakingProxyAddress;
         emit StakingProxySet(_stakingProxyAddress);
@@ -87,7 +95,7 @@ contract MixinVaultCore is
     /// Note that only the contract owner can call this function.
     function enterCatastrophicFailure()
         external
-        onlyOwner
+        onlyAuthorized
     {
         isInCatastrophicFailure = true;
         emit InCatastrophicFailureMode(msg.sender);

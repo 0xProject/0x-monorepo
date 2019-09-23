@@ -28,8 +28,17 @@ import "./MixinStakingPoolMakers.sol";
 
 
 contract MixinStakingPool is
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    Ownable,
     MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakingPoolMakers,
+    MixinStakeBalances,
+    MixinCumulativeRewards,
     MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
@@ -64,7 +73,7 @@ contract MixinStakingPool is
             operatorShare: operatorShare,
             numberOfMakers: 0
         });
-        poolById[poolId] = pool;
+        _poolById[poolId] = pool;
 
         // initialize cumulative rewards for this pool;
         // this is used to track rewards earned by delegators.
@@ -87,7 +96,7 @@ contract MixinStakingPool is
         external
     {
         // load pool and assert that we can decrease
-        uint32 currentOperatorShare = poolById[poolId].operatorShare;
+        uint32 currentOperatorShare = _poolById[poolId].operatorShare;
         _assertNewOperatorShare(
             poolId,
             currentOperatorShare,
@@ -95,7 +104,7 @@ contract MixinStakingPool is
         );
 
         // decrease operator share
-        poolById[poolId].operatorShare = newOperatorShare;
+        _poolById[poolId].operatorShare = newOperatorShare;
         emit OperatorShareDecreased(
             poolId,
             currentOperatorShare,
@@ -110,7 +119,7 @@ contract MixinStakingPool is
         view
         returns (IStructs.Pool memory)
     {
-        return poolById[poolId];
+        return _poolById[poolId];
     }
 
     /// @dev Computes the unique id that comes after the input pool id.
@@ -131,7 +140,7 @@ contract MixinStakingPool is
         view
         returns (bool)
     {
-        if (poolById[poolId].operator == NIL_ADDRESS) {
+        if (_poolById[poolId].operator == NIL_ADDRESS) {
             // we use the pool's operator as a proxy for its existence
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PoolExistenceError(

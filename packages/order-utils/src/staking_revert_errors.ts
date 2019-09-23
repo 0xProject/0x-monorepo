@@ -23,17 +23,17 @@ export enum InvalidParamValueErrorCode {
     InvalidCobbDouglasAlpha,
     InvalidRewardDelegatedStakeWeight,
     InvalidMaximumMakersInPool,
+    InvalidMinimumPoolStake,
+    InvalidWethProxyAddress,
+    InvalidEthVaultAddress,
+    InvalidRewardVaultAddress,
+    InvalidZrxVaultAddress,
+    InvalidEpochDuration,
 }
 
 export enum InitializationErrorCode {
     MixinSchedulerAlreadyInitialized,
     MixinParamsAlreadyInitialized,
-}
-
-export enum CumulativeRewardIntervalErrorCode {
-    BeginEpochMustBeLessThanEndEpoch,
-    BeginEpochDoesNotHaveReward,
-    EndEpochDoesNotHaveReward,
 }
 
 export class MiscalculatedRewardsError extends RevertError {
@@ -234,17 +234,12 @@ export class ProxyDestinationCannotBeNilError extends RevertError {
     }
 }
 
-export class CumulativeRewardIntervalError extends RevertError {
-    constructor(
-        errorCode?: CumulativeRewardIntervalErrorCode,
-        poolId?: string,
-        beginEpoch?: BigNumber | number | string,
-        endEpoch?: BigNumber | number | string,
-    ) {
+export class PreviousEpochNotFinalizedError extends RevertError {
+    constructor(closingEpoch?: BigNumber | number | string, unfinalizedPoolsRemaining?: BigNumber | number | string) {
         super(
-            'CumulativeRewardIntervalError',
-            'CumulativeRewardIntervalError(uint8 errorCode, bytes32 poolId, uint256 beginEpoch, uint256 endEpoch)',
-            { errorCode, poolId, beginEpoch, endEpoch },
+            'PreviousEpochNotFinalizedError',
+            'PreviousEpochNotFinalizedError(uint256 closingEpoch, uint256 unfinalizedPoolsRemaining)',
+            { closingEpoch, unfinalizedPoolsRemaining },
         );
     }
 }
@@ -270,10 +265,10 @@ const types = [
     OnlyCallableIfNotInCatastrophicFailureError,
     OperatorShareError,
     PoolExistenceError,
+    PreviousEpochNotFinalizedError,
+    ProxyDestinationCannotBeNilError,
     RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
-    ProxyDestinationCannotBeNilError,
-    CumulativeRewardIntervalError,
 ];
 
 // Register the types we've defined.

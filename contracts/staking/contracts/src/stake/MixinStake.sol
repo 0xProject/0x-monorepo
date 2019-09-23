@@ -27,16 +27,24 @@ import "../libs/LibStakingRichErrors.sol";
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
 contract MixinStake is
+    IStakingEvents,
+    MixinAbstract,
+    MixinConstants,
+    Ownable,
     MixinStorage,
+    MixinStakingPoolModifiers,
+    MixinScheduler,
+    MixinStakeStorage,
     MixinStakingPoolMakers,
+    MixinStakeBalances,
+    MixinCumulativeRewards,
     MixinStakingPoolRewards,
     MixinStakingPool
-
 {
     using LibSafeMath for uint256;
 
-    /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault. Unstake to retrieve the ZRX.
-    ///      Stake is in the 'Active' status.
+    /// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault.
+    ///      Unstake to retrieve the ZRX. Stake is in the 'Active' status.
     /// @param amount of ZRX to stake.
     function stake(uint256 amount)
         external
@@ -49,6 +57,9 @@ contract MixinStake is
         // mint stake
         _incrementCurrentAndNextBalance(_activeStakeByOwner[owner], amount);
 
+        // update global total of active stake
+        _incrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
+
         // notify
         emit Stake(
             owner,
@@ -56,8 +67,9 @@ contract MixinStake is
         );
     }
 
-    /// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to the owner.
-    ///      Stake must be in the 'inactive' status for at least one full epoch to unstake.
+    /// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to
+    ///      the owner. Stake must be in the 'inactive' status for at least
+    ///      one full epoch to unstake.
     /// @param amount of ZRX to unstake.
     function unstake(uint256 amount)
         external
@@ -78,8 +90,12 @@ contract MixinStake is
         // burn inactive stake
         _decrementCurrentAndNextBalance(_inactiveStakeByOwner[owner], amount);
 
+        // update global total of inactive stake
+        _decrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
+
         // update withdrawable field
-        _withdrawableStakeByOwner[owner] = currentWithdrawableStake.safeSub(amount);
+        _withdrawableStakeByOwner[owner] =
+            currentWithdrawableStake.safeSub(amount);
 
         // withdraw equivalent amount of ZRX from vault
         zrxVault.withdrawFrom(owner, amount);
@@ -104,16 +120,20 @@ contract MixinStake is
         external
     {
         // sanity check - do nothing if moving stake between the same status
-        if (from.status != IStructs.StakeStatus.DELEGATED && from.status == to.status) {
+        if (from.status != IStructs.StakeStatus.DELEGATED
+            && from.status == to.status)
+        {
             return;
-        } else if (from.status == IStructs.StakeStatus.DELEGATED && from.poolId == to.poolId) {
+        } else if (from.status == IStructs.StakeStatus.DELEGATED
+            && from.poolId == to.poolId)
+        {
             return;
         }
 
         address payable owner = msg.sender;
 
-        // handle delegation; this must be done before moving stake as the current
-        // (out-of-sync) status is used during delegation.
+        // handle delegation; this must be done before moving stake as the
+        // current (out-of-sync) status is used during delegation.
         if (from.status == IStructs.StakeStatus.DELEGATED) {
             _undelegateStake(
                 from.poolId,
@@ -130,8 +150,10 @@ contract MixinStake is
             );
         }
 
-        // cache the current withdrawal amount, which may change if we're moving out of the inactive status.
-        uint256 withdrawableStake = (from.status == IStructs.StakeStatus.INACTIVE)
+        // cache the current withdrawal amount, which may change if we're
+        // moving out of the inactive status.
+        uint256 withdrawableStake =
+            (from.status == IStructs.StakeStatus.INACTIVE)
             ? getWithdrawableStake(owner)
             : 0;
 
@@ -140,9 +162,17 @@ contract MixinStake is
         IStructs.StoredBalance storage toPtr = _getBalancePtrFromStatus(owner, to.status);
         _moveStake(fromPtr, toPtr, amount);
 
+        // update global total of stake in the statuses being moved between
+        _moveStake(
+            globalStakeByStatus[uint8(from.status)],
+            globalStakeByStatus[uint8(to.status)],
+            amount
+        );
+
         // update withdrawable field, if necessary
         if (from.status == IStructs.StakeStatus.INACTIVE) {
-            _withdrawableStakeByOwner[owner] = _computeWithdrawableStake(owner, withdrawableStake);
+            _withdrawableStakeByOwner[owner] =
+                _computeWithdrawableStake(owner, withdrawableStake);
         }
 
         // notify
@@ -158,8 +188,8 @@ contract MixinStake is
 
     /// @dev Delegates a owners stake to a staking pool.
     /// @param poolId Id of pool to delegate to.
-    /// @param owner who wants to delegate.
-    /// @param amount of stake to delegate.
+    /// @param owner Owner who wants to delegate.
+    /// @param amount Amount of stake to delegate.
     function _delegateStake(
         bytes32 poolId,
         address payable owner,
@@ -167,27 +197,38 @@ contract MixinStake is
     )
         private
     {
-        // sanity check the pool we're delegating to exists
+        // Sanity check the pool we're delegating to exists.
         _assertStakingPoolExists(poolId);
 
-        // cache amount delegated to pool by owner
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        // Cache amount delegated to pool by owner.
+        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
 
-        // increment how much stake the owner has delegated to the input pool
-        _incrementNextBalance(_delegatedStakeToPoolByOwner[owner][poolId], amount);
+        // Increment how much stake the owner has delegated to the input pool.
+        _incrementNextBalance(
+            _delegatedStakeToPoolByOwner[owner][poolId],
+            amount
+        );
 
-        // increment how much stake has been delegated to pool
+        // Increment how much stake has been delegated to pool.
         _incrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // synchronizes reward state in the pool that the staker is delegating to
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
-        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
+        // Synchronizes reward state in the pool that the staker is delegating
+        // to.
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
+            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        _syncRewardsForDelegator(
+            poolId,
+            owner,
+            initDelegatedStakeToPoolByOwner,
+            finalDelegatedStakeToPoolByOwner
+        );
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
     /// @param poolId Id of pool to un-delegate from.
-    /// @param owner who wants to un-delegate.
-    /// @param amount of stake to un-delegate.
+    /// @param owner Owner who wants to un-delegate.
+    /// @param amount Amount of stake to un-delegate.
     function _undelegateStake(
         bytes32 poolId,
         address payable owner,
@@ -199,24 +240,38 @@ contract MixinStake is
         _assertStakingPoolExists(poolId);
 
         // cache amount delegated to pool by owner
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner = _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
 
         // decrement how much stake the owner has delegated to the input pool
-        _decrementNextBalance(_delegatedStakeToPoolByOwner[owner][poolId], amount);
+        _decrementNextBalance(
+            _delegatedStakeToPoolByOwner[owner][poolId],
+            amount
+        );
 
         // decrement how much stake has been delegated to pool
         _decrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // synchronizes reward state in the pool that the staker is undelegating from
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner = _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
-        _syncRewardsForDelegator(poolId, owner, initDelegatedStakeToPoolByOwner, finalDelegatedStakeToPoolByOwner);
+        // synchronizes reward state in the pool that the staker is undelegating
+        // from
+        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
+            _loadAndSyncBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        _syncRewardsForDelegator(
+            poolId,
+            owner,
+            initDelegatedStakeToPoolByOwner,
+            finalDelegatedStakeToPoolByOwner
+        );
     }
 
     /// @dev Returns a storage pointer to a user's stake in a given status.
-    /// @param owner of stake to query.
-    /// @param status of user's stake to lookup.
-    /// @return a storage pointer to the corresponding stake stake
-    function _getBalancePtrFromStatus(address owner, IStructs.StakeStatus status)
+    /// @param owner Owner of stake to query.
+    /// @param status Status of user's stake to lookup.
+    /// @return storage A storage pointer to the corresponding stake stake
+    function _getBalancePtrFromStatus(
+        address owner,
+        IStructs.StakeStatus status
+    )
         private
         view
         returns (IStructs.StoredBalance storage)

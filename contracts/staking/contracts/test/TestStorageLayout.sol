@@ -25,11 +25,9 @@ import "../src/interfaces/IStructs.sol";
 
 
 contract TestStorageLayout is
-    MixinConstants,
     Ownable,
     MixinStorage
 {
-
     function assertExpectedStorageLayout()
         public
         pure
@@ -79,19 +77,13 @@ contract TestStorageLayout is
             if sub(poolJoinedByMakerAddress_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
-            if sub(poolById_slot, slot) { revertIncorrectStorageSlot() }
+            if sub(_poolById_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(currentEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(currentEpochStartTimeInSeconds_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(protocolFeesThisEpochByPool_slot, slot) { revertIncorrectStorageSlot() }
-            slot := add(slot, 1)
-
-            if sub(activePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
 
             if sub(_cumulativeRewardsByPool_slot, slot) { revertIncorrectStorageSlot() }
@@ -128,6 +120,21 @@ contract TestStorageLayout is
             slot := add(slot, 1)
 
             if sub(cobbDouglasAlphaDenominator_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(totalFeesCollectedThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(totalWeightedStakeThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(_activePoolsByEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(numActivePoolsThisEpoch_slot, slot) { revertIncorrectStorageSlot() }
+            slot := add(slot, 1)
+
+            if sub(unfinalizedState_slot, slot) { revertIncorrectStorageSlot() }
             slot := add(slot, 1)
         }
     }

@@ -18,9 +18,11 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../immutable/MixinStorage.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IEthVault.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
@@ -30,6 +32,9 @@ import "../libs/LibStakingRichErrors.sol";
 
 contract MixinParams is
     IStakingEvents,
+    MixinConstants,
+    MixinDeploymentConstants,
+    Ownable,
     MixinStorage
 {
     /// @dev Set all configurable parameters at once.
@@ -56,7 +61,7 @@ contract MixinParams is
         address _zrxVaultAddress
     )
         external
-        onlyOwner
+        onlyAuthorized
     {
         _setParams(
             _epochDurationInSeconds,
@@ -130,7 +135,7 @@ contract MixinParams is
         // Set up defaults.
         // These cannot be set to variables, or we go over the stack variable limit.
         _setParams(
-            2 weeks,                       // epochDurationInSeconds
+            10 days,                       // epochDurationInSeconds
             (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
             100 * MIN_TOKEN_VALUE,         // minimumPoolStake
             10,                            // maximumMakersInPool
@@ -167,6 +172,26 @@ contract MixinParams is
         }
     }
 
+    /// @dev Rescind the WETH allowance for `oldSpenders` and grant `newSpenders`
+    ///      an unlimited allowance.
+    /// @param oldSpenders Addresses to remove allowance from.
+    /// @param newSpenders Addresses to grant allowance to.
+    function _transferWETHAllownces(
+        address[2] memory oldSpenders,
+        address[2] memory newSpenders
+    )
+        internal
+    {
+        IEtherToken weth = IEtherToken(_getWETHAddress());
+        // Grant new allowances.
+        for (uint256 i = 0; i < oldSpenders.length; i++) {
+            // Rescind old allowance.
+            weth.approve(oldSpenders[i], 0);
+            // Grant new allowance.
+            weth.approve(newSpenders[i], uint256(-1));
+        }
+    }
+
     /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
     /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
@@ -192,19 +217,10 @@ contract MixinParams is
     )
         private
     {
-        _assertValidRewardDelegatedStakeWeight(_rewardDelegatedStakeWeight);
-        _assertValidMaximumMakersInPool(_maximumMakersInPool);
-        _assertValidCobbDouglasAlpha(
-            _cobbDouglasAlphaNumerator,
-            _cobbDouglasAlphaDenominator
+        _transferWETHAllownces(
+            [address(ethVault), address(rewardVault)],
+            [_ethVaultAddress, _rewardVaultAddress]
         );
-        _assertValidAddresses(
-            _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
-            _zrxVaultAddress
-        );
-        // TODO: set boundaries on some of these params
 
         epochDurationInSeconds = _epochDurationInSeconds;
         rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
@@ -229,99 +245,5 @@ contract MixinParams is
             _rewardVaultAddress,
             _zrxVaultAddress
         );
-    }
-
-    /// @dev Asserts that cobb douglas alpha values are valid.
-    /// @param numerator Numerator for cobb douglas alpha factor.
-    /// @param denominator Denominator for cobb douglas alpha factor.
-    function _assertValidCobbDouglasAlpha(
-        uint32 numerator,
-        uint32 denominator
-    )
-        private
-        pure
-    {
-        // Alpha must be 0 < x < 1
-        if (numerator > denominator || denominator == 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
-            ));
-        }
-    }
-
-    /// @dev Asserts that a stake weight is valid.
-    /// @param weight How much delegated stake is weighted vs operator stake, in ppm.
-    function _assertValidRewardDelegatedStakeWeight(
-        uint32 weight
-    )
-        private
-        pure
-    {
-        if (weight > PPM_DENOMINATOR) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
-            ));
-        }
-    }
-
-    /// @dev Asserts that a maximum makers value is valid.
-    /// @param amount Maximum number of maker addresses allowed to be registered to a pool.
-    function _assertValidMaximumMakersInPool(
-        uint256 amount
-    )
-        private
-        pure
-    {
-        if (amount == 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
-            ));
-        }
-    }
-
-    /// @dev Asserts that passed in addresses are non-zero.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _assertValidAddresses(
-        address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
-        address _zrxVaultAddress
-    )
-        private
-        pure
-    {
-        if (_wethProxyAddress == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidWethProxyAddress
-            ));
-        }
-
-        if (_ethVaultAddress == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEthVaultAddress
-            ));
-        }
-
-        if (_rewardVaultAddress == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardVaultAddress
-            ));
-        }
-
-        if (_zrxVaultAddress == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidZrxVaultAddress
-            ));
-        }
     }
 }

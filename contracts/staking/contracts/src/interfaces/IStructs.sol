@@ -23,14 +23,30 @@ interface IStructs {
 
     /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
-    /// @param poolId Unique Id of staking pool.
-    /// @param feesCollected Fees collected in ETH by this pool in the current epoch.
-    /// @param weightedStake Amount of weighted stake currently held by the pool.
+    /// @param feesCollected Fees collected in ETH by this pool.
+    /// @param weightedStake Amount of weighted stake in the pool.
+    /// @param membersStake Amount of non-operator stake in the pool.
     struct ActivePool {
-        bytes32 poolId;
         uint256 feesCollected;
         uint256 weightedStake;
-        uint256 delegatedStake;
+        uint256 membersStake;
+    }
+
+    /// @dev Holds state for unfinalized epoch rewards.
+    /// @param rewardsAvailable Rewards (ETH) available to the epoch
+    ///        being finalized (the previous epoch). This is simply the balance
+    ///        of the contract at the end of the epoch.
+    /// @param poolsRemaining The number of active pools in the last
+    ///        epoch that have yet to be finalized through `finalizePools()`.
+    /// @param totalFeesCollected The total fees collected for the epoch being finalized.
+    /// @param totalWeightedStake The total fees collected for the epoch being finalized.
+    /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
+    struct UnfinalizedState {
+        uint256 rewardsAvailable;
+        uint256 poolsRemaining;
+        uint256 totalFeesCollected;
+        uint256 totalWeightedStake;
+        uint256 totalRewardsFinalized;
     }
 
     /// @dev Encapsulates a balance for the current and next epochs.
@@ -40,7 +56,7 @@ interface IStructs {
     /// @param isInitialized
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
-    /// @param nextEpochBalance balance in the next epoch.
+    /// @param nextEpochBalance balance in `currentEpoch+1`.
     struct StoredBalance {
         bool isInitialized;
         uint32 currentEpoch;
@@ -86,14 +102,6 @@ interface IStructs {
     struct MakerPoolJoinStatus {
         bytes32 poolId;
         bool confirmed;
-    }
-
-    /// @dev Encapsulates the epoch and value of a cumulative reward.
-    /// @param cumulativeRewardEpoch Epoch of the reward.
-    /// @param cumulativeReward Value of the reward.
-    struct CumulativeRewardInfo {
-        uint256 cumulativeRewardEpoch;
-        IStructs.Fraction cumulativeReward;
     }
 
     /// @dev Holds the metadata for a staking pool.

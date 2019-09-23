@@ -15,30 +15,30 @@
   limitations under the License.
 
 */
-
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-asset-proxy/contracts/src/ERC20Proxy.sol";
+import "../src/vaults/MixinVaultCore.sol";
 
 
-contract TestProtocolFeesERC20Proxy is
-    ERC20Proxy
+// solhint-disable no-empty-blocks
+contract TestMixinVaultCore is
+    MixinVaultCore
 {
-    event TransferFromCalled(
-        bytes assetData,
-        address from,
-        address to,
-        uint256 amount
-    );
-
-    function transferFrom(
-        bytes calldata assetData,
-        address from,
-        address to,
-        uint256 amount
-    )
+    function assertStakingProxy()
         external
-    {
-        emit TransferFromCalled(assetData, from, to, amount);
-    }
+        view
+        onlyStakingProxy
+    {}
+
+    function assertInCatastrophicFailure()
+        external
+        view
+        onlyInCatastrophicFailure
+    {}
+
+    function assertNotInCatastrophicFailure()
+        external
+        view
+        onlyNotInCatastrophicFailure
+    {}
 }

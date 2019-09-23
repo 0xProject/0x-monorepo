@@ -15,35 +15,30 @@
   limitations under the License.
 
 */
+
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/libs/LibCobbDouglas.sol";
+import "../src/Staking.sol";
 
 
-contract TestCobbDouglas {
-
-    function cobbDouglas(
-        uint256 totalRewards,
-        uint256 fees,
-        uint256 totalFees,
-        uint256 stake,
-        uint256 totalStake,
-        uint32 alphaNumerator,
-        uint32 alphaDenominator
+// solhint-disable no-empty-blocks
+/// @dev A version of the staking contract with WETH-related functions
+///      overridden to do nothing.
+contract TestStakingNoWETH is
+    Staking
+{
+    function _transferWETHAllownces(
+        address[2] memory oldSpenders,
+        address[2] memory newSpenders
     )
-        external
-        pure
-        returns (uint256 rewards)
+        internal
+    {}
+
+    function _wrapBalanceToWETHAndGetBalance()
+        internal
+        returns (uint256 balance)
     {
-        rewards = LibCobbDouglas.cobbDouglas(
-            totalRewards,
-            fees,
-            totalFees,
-            stake,
-            totalStake,
-            alphaNumerator,
-            alphaDenominator
-        );
+        return address(this).balance;
     }
 }

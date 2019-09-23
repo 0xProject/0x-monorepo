@@ -30,6 +30,8 @@ import "../immutable/MixinStorage.sol";
 /// then it should be removed.
 contract MixinExchangeManager is
     IStakingEvents,
+    MixinConstants,
+    Ownable,
     MixinStorage
 {
     /// @dev Asserts that the call is coming from a valid exchange.
@@ -46,7 +48,7 @@ contract MixinExchangeManager is
     /// @param addr Address of exchange contract to add
     function addExchangeAddress(address addr)
         external
-        onlyOwner
+        onlyAuthorized
     {
         if (validExchanges[addr]) {
             LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressAlreadyRegisteredError(
@@ -61,7 +63,7 @@ contract MixinExchangeManager is
     /// @param addr Address of exchange contract to remove
     function removeExchangeAddress(address addr)
         external
-        onlyOwner
+        onlyAuthorized
     {
         if (!validExchanges[addr]) {
             LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressNotRegisteredError(

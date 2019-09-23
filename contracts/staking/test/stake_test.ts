@@ -4,8 +4,6 @@ import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts } from '../src';
-
 import { StakerActor } from './actors/staker_actor';
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';
@@ -36,7 +34,7 @@ blockchainTests.resets('Stake Statuses', env => {
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
-        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper, artifacts.TestStaking);
+        stakingApiWrapper = await deployAndConfigureContractsAsync(env, owner, erc20Wrapper);
 
         // setup new staker
         staker = new StakerActor(actors[0], stakingApiWrapper);

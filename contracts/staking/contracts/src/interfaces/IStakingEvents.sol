@@ -43,14 +43,49 @@ interface IStakingEvents {
         address exchangeAddress
     );
 
-    /// @dev Emitted by MixinScheduler when the epoch is changed.
-    /// @param epoch The epoch we changed to.
-    /// @param startTimeInSeconds The start time of the epoch.
-    /// @param earliestEndTimeInSeconds The earliest this epoch can end.
-    event EpochChanged(
-        uint256 epoch,
-        uint256 startTimeInSeconds,
-        uint256 earliestEndTimeInSeconds
+    /// @dev Emitted by MixinExchangeFees when a pool pays protocol fees
+    ///      for the first time in an epoch.
+    /// @param epoch The epoch in which the pool was activated.
+    /// @param poolId The ID of the pool.
+    event StakingPoolActivated(
+        uint256 indexed epoch,
+        bytes32 indexed poolId
+    );
+
+    /// @dev Emitted by MixinFinalizer when an epoch has ended.
+    /// @param epoch The closing epoch.
+    /// @param numActivePools Number of active pools in the closing epoch.
+    /// @param rewardsAvailable Rewards available to all active pools.
+    /// @param totalWeightedStake Total weighted stake across all active pools.
+    /// @param totalFeesCollected Total fees collected across all active pools.
+    event EpochEnded(
+        uint256 indexed epoch,
+        uint256 numActivePools,
+        uint256 rewardsAvailable,
+        uint256 totalFeesCollected,
+        uint256 totalWeightedStake
+    );
+
+    /// @dev Emitted by MixinFinalizer when an epoch is fully finalized.
+    /// @param epoch The epoch being finalized.
+    /// @param rewardsPaid Total amount of rewards paid out.
+    /// @param rewardsRemaining Rewards left over.
+    event EpochFinalized(
+        uint256 indexed epoch,
+        uint256 rewardsPaid,
+        uint256 rewardsRemaining
+    );
+
+    /// @dev Emitted by MixinFinalizer when rewards are paid out to a pool.
+    /// @param epoch The epoch when the rewards were earned.
+    /// @param poolId The pool's ID.
+    /// @param operatorReward Amount of reward paid to pool operator.
+    /// @param membersReward Amount of reward paid to pool members.
+    event RewardsPaid(
+        uint256 indexed epoch,
+        bytes32 indexed poolId,
+        uint256 operatorReward,
+        uint256 membersReward
     );
 
     /// @dev Emitted whenever staking parameters are changed via the `setParams()` function.
@@ -85,22 +120,6 @@ interface IStakingEvents {
         uint256 timeLockPeriod,
         uint256 startEpoch,
         uint256 endEpoch
-    );
-
-    /// @dev Emitted by MixinExchangeFees when rewards are paid out.
-    /// @param totalActivePools Total active pools this epoch.
-    /// @param totalFeesCollected Total fees collected this epoch, across all active pools.
-    /// @param totalWeightedStake Total weighted stake attributed to each pool. Delegated stake is weighted less.
-    /// @param totalRewardsPaid Total rewards paid out across all active pools.
-    /// @param initialContractBalance Balance of this contract before paying rewards.
-    /// @param finalContractBalance Balance of this contract after paying rewards.
-    event RewardsPaid(
-        uint256 totalActivePools,
-        uint256 totalFeesCollected,
-        uint256 totalWeightedStake,
-        uint256 totalRewardsPaid,
-        uint256 initialContractBalance,
-        uint256 finalContractBalance
     );
 
     /// @dev Emitted by MixinStakingPool when a new pool is created.
