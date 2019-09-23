@@ -248,7 +248,9 @@ contract MixinFinalizer is
         if (ethBalance != 0) {
             wethContract.deposit.value(ethBalance)();
         }
-        wethBalance = wethContract.balanceOf(address(this));
+        wethBalance = wethContract.balanceOf(address(this))
+            .safeSub(_reservedWethBalance);
+
         return wethBalance;
     }
 

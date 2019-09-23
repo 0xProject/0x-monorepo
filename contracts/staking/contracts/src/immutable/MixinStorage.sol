@@ -146,6 +146,9 @@ contract MixinStorage is
     /// @dev State for unfinalized rewards.
     IStructs.UnfinalizedState public unfinalizedState;
 
+    /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
+    uint256 _reservedWethBalance;
+
     /// @dev Adds owner as an authorized address.
     constructor()
         public

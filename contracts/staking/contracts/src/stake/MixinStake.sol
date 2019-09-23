@@ -217,6 +217,7 @@ contract MixinStake is
         // to.
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+
         _withdrawAndSyncDelegatorRewards(
             poolId,
             owner,
@@ -256,6 +257,7 @@ contract MixinStake is
         // from
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+
         _withdrawAndSyncDelegatorRewards(
             poolId,
             owner,

@@ -204,6 +204,7 @@ contract MixinStakingPoolRewards is
         if (membersReward > 0) {
             // Increment the balance of the pool
             balanceByPoolId[poolId] = balanceByPoolId[poolId].safeAdd(membersReward);
+            _reservedWethBalance = _reservedWethBalance.safeAdd(membersReward);
 
             // Fetch the last epoch at which we stored an entry for this pool;
             // this is the most up-to-date cumulative rewards for this pool.
@@ -297,6 +298,7 @@ contract MixinStakingPoolRewards is
 
         // Decrement the balance of the pool
         balanceByPoolId[poolId] = balanceByPoolId[poolId].safeSub(balance);
+        _reservedWethBalance = _reservedWethBalance.safeSub(balance);
 
         // Withdraw the member's WETH balance
         _getWethContract().transfer(member, balance);

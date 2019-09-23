@@ -12,7 +12,7 @@ import { DelegatorsByPoolId, OperatorByPoolId, StakeInfo, StakeStatus } from './
 
 // tslint:disable:no-unnecessary-type-assertion
 // tslint:disable:max-file-line-count
-blockchainTests.resets.skip('Testing Rewards', env => {
+blockchainTests.resets('Testing Rewards', env => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
