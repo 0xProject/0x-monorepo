@@ -31,7 +31,7 @@ interface IZrxVault {
     /// @dev Emitted when Zrx Tokens are deposited into the vault.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens deposited.
-    event ZrxDepositedIntoVault(
+    event Deposit(
         address indexed owner,
         uint256 amount
     );
@@ -39,7 +39,7 @@ interface IZrxVault {
     /// @dev Emitted when Zrx Tokens are withdrawn from the vault.
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens withdrawn.
-    event ZrxWithdrawnFromVault(
+    event Withdraw(
         address indexed owner,
         uint256 amount
     );

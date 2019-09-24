@@ -383,6 +383,14 @@ contract Staking is
                 slot,
                 offset
             )
+            slot := add(slot, 0x1)
+
+            assertSlotAndOffset(
+                _wethReservedForPoolRewards_slot,
+                _wethReservedForPoolRewards_offset,
+                slot,
+                offset
+            )
 
             // This assembly function will assert that the actual values for `_slot` and `_offset` are
             // correct and will revert with a rich error if they are different than the expected values.
