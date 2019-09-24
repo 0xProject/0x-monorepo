@@ -119,14 +119,6 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
         0x9ae94f01;
 
-    // bytes4(keccak256("EthVaultNotSetError()"))
-    bytes4 internal constant ETH_VAULT_NOT_SET_ERROR_SELECTOR =
-        0xa067f596;
-
-    // bytes4(keccak256("RewardVaultNotSetError()"))
-    bytes4 internal constant REWARD_VAULT_NOT_SET_ERROR_SELECTOR =
-        0xe6976d70;
-
     // bytes4(keccak256("InvalidStakeStatusError(uint256)"))
     bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
         0xb7161acd;
@@ -377,26 +369,6 @@ library LibStakingRichErrors {
             POOL_EXISTENCE_ERROR_SELECTOR,
             poolId,
             alreadyExists
-        );
-    }
-
-    function EthVaultNotSetError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            ETH_VAULT_NOT_SET_ERROR_SELECTOR
-        );
-    }
-
-    function RewardVaultNotSetError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            REWARD_VAULT_NOT_SET_ERROR_SELECTOR
         );
     }
 
