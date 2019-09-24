@@ -24,8 +24,7 @@ blockchainTests('Staking Pool Management', env => {
     before(async () => {
         // create accounts
         accounts = await env.getAccountAddressesAsync();
-        owner = accounts[0];
-        users = accounts.slice(2);
+        [owner, ...users] = accounts;
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
@@ -139,7 +138,7 @@ blockchainTests('Staking Pool Management', env => {
             await maker.addMakerToStakingPoolAsync(
                 poolId,
                 makerAddress,
-                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, operatorAddress),
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, poolId),
             );
         });
         it('should fail to add a maker to a pool if not called by operator/registered maker', async () => {
@@ -159,7 +158,7 @@ blockchainTests('Staking Pool Management', env => {
             await maker2.addMakerToStakingPoolAsync(
                 poolId,
                 maker1Address,
-                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, operatorAddress),
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, poolId),
             );
         });
         it('Maker should successfully remove themselves from a pool', async () => {
@@ -248,7 +247,7 @@ blockchainTests('Staking Pool Management', env => {
             await maker2.removeMakerFromStakingPoolAsync(
                 poolId,
                 maker1Address,
-                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, operatorAddress),
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, poolId),
             );
         });
         it('Should fail if maker already assigned to another pool tries to join', async () => {
@@ -363,30 +362,6 @@ blockchainTests('Staking Pool Management', env => {
             // remove non-existent maker from pool
             await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress, revertError);
         });
-        it('Should fail to add a maker when called by someone other than the pool operator', async () => {
-            // test parameters
-            const operatorAddress = users[0];
-            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
-            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
-            const makerAddress = users[1];
-            const maker = new MakerActor(makerAddress, stakingApiWrapper);
-            const notOperatorAddress = users[2];
-            // create pool
-            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
-            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-            // add maker to pool
-            await maker.joinStakingPoolAsMakerAsync(poolId);
-            const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(
-                notOperatorAddress,
-                operatorAddress,
-            );
-            const tx = stakingApiWrapper.stakingContract.addMakerToStakingPool.awaitTransactionSuccessAsync(
-                poolId,
-                makerAddress,
-                { from: notOperatorAddress },
-            );
-            await expect(tx).to.revertWith(revertError);
-        });
         it('Should fail to remove a maker when called by someone other than the pool operator or maker', async () => {
             // test parameters
             const operatorAddress = users[0];
@@ -404,7 +379,7 @@ blockchainTests('Staking Pool Management', env => {
             // try to remove the maker address from an address other than the operator
             const revertError = new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(
                 neitherOperatorNorMakerAddress,
-                operatorAddress,
+                poolId,
             );
             const tx = stakingApiWrapper.stakingContract.removeMakerFromStakingPool.awaitTransactionSuccessAsync(
                 poolId,
@@ -530,7 +505,7 @@ blockchainTests('Staking Pool Management', env => {
             await maker.decreaseStakingPoolOperatorShareAsync(
                 poolId,
                 operatorShare - 1,
-                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, operatorAddress),
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, poolId),
             );
         });
     });

@@ -1,8 +1,4 @@
-import { chaiSetup, constants, getCodesizeFromArtifact } from '@0x/contracts-test-utils';
-import * as chai from 'chai';
-
-chaiSetup.configure();
-const expect = chai.expect;
+import { constants, expect, getCodesizeFromArtifact } from '@0x/contracts-test-utils';
 
 import { artifacts } from '../src';
 

@@ -130,7 +130,7 @@ contract MixinStakingPool is
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
-                getStakingPoolIdOfMaker(makerAddress)
+                poolJoinStatus.poolId
             ));
         }
 
@@ -239,7 +239,7 @@ contract MixinStakingPool is
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
-                getStakingPoolIdOfMaker(makerAddress)
+                poolJoinStatus.poolId
             ));
         }
 
@@ -352,7 +352,7 @@ contract MixinStakingPool is
             LibRichErrors.rrevert(
                 LibStakingRichErrors.OnlyCallableByPoolOperatorOrMakerError(
                     msg.sender,
-                    operator
+                    poolId
                 )
             );
         }

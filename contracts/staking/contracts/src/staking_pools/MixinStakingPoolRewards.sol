@@ -199,7 +199,7 @@ contract MixinStakingPoolRewards is
         }
 
         if (membersReward > 0) {
-            // Increment the balance of the pool
+            // Increase the balance of the pool
             _increasePoolRewards(poolId, membersReward);
 
             // Fetch the last epoch at which we stored an entry for this pool;
@@ -292,7 +292,7 @@ contract MixinStakingPoolRewards is
             return;
         }
 
-        // Decrement the balance of the pool
+        // Decrease the balance of the pool
         _decreasePoolRewards(poolId, balance);
 
         // Withdraw the member's WETH balance

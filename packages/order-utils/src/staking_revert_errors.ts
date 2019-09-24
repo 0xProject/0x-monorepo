@@ -78,11 +78,11 @@ export class InsufficientBalanceError extends RevertError {
 }
 
 export class OnlyCallableByPoolOperatorOrMakerError extends RevertError {
-    constructor(senderAddress?: string, poolOperatorAddress?: string) {
+    constructor(senderAddress?: string, poolId?: string) {
         super(
             'OnlyCallableByPoolOperatorOrMakerError',
-            'OnlyCallableByPoolOperatorOrMakerError(address senderAddress, address poolOperatorAddress)',
-            { senderAddress, poolOperatorAddress },
+            'OnlyCallableByPoolOperatorOrMakerError(address senderAddress, bytes32 poolId)',
+            { senderAddress, poolId },
         );
     }
 }

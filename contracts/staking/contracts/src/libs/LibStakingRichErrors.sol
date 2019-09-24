@@ -75,9 +75,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INSUFFICIENT_BALANCE_ERROR_SELECTOR =
         0x84c8b7c9;
 
-    // bytes4(keccak256("OnlyCallableByPoolOperatorOrMakerError(address,address)"))
+    // bytes4(keccak256("OnlyCallableByPoolOperatorOrMakerError(address,bytes32)"))
     bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR =
-        0x471c3580;
+        0x7677eb13;
 
     // bytes4(keccak256("MakerPoolAssignmentError(uint8,address,bytes32)"))
     bytes4 internal constant MAKER_POOL_ASSIGNMENT_ERROR_SELECTOR =
@@ -215,7 +215,7 @@ library LibStakingRichErrors {
 
     function OnlyCallableByPoolOperatorOrMakerError(
         address senderAddress,
-        address operator
+        bytes32 poolId
     )
         internal
         pure
@@ -224,7 +224,7 @@ library LibStakingRichErrors {
         return abi.encodeWithSelector(
             ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR,
             senderAddress,
-            operator
+            poolId
         );
     }
 
