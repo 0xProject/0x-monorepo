@@ -83,7 +83,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
             domain: {
-                verifyingContractAddress: contractAddresses.exchange,
+                verifyingContract: contractAddresses.exchange,
                 chainId: networkId,
             },
         };
