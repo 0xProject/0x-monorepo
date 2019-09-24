@@ -43,6 +43,35 @@ blockchainTests('Staking Pool Management', env => {
             const nextPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
             expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
         });
+        it('Should successfully create several staking pools, as long as the operator is only a maker in one', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            // create pool
+            const poolId1 = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId1).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            const poolId2 = await poolOperator.createStakingPoolAsync(operatorShare, false);
+            expect(poolId2).to.be.equal(stakingConstants.SECOND_POOL_ID);
+        });
+        it('Should fail to create several staking pools with the operator as a maker in each', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            // create pool
+            const poolId1 = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId1).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            await poolOperator.createStakingPoolAsync(
+                operatorShare,
+                true,
+                new StakingRevertErrors.MakerPoolAssignmentError(
+                    StakingRevertErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
+                    poolOperator.getOwner(),
+                    poolId1,
+                ),
+            );
+        });
         it('Should fail to create a pool with operator share > 100', async () => {
             // test parameters
             const operatorAddress = users[0];
@@ -56,6 +85,48 @@ blockchainTests('Staking Pool Management', env => {
             );
             // create pool
             await poolOperator.createStakingPoolAsync(operatorShare, false, revertError);
+        });
+        it('should fail to add a maker to a pool if maker has not called `joinStakingPoolAsMaker` yet', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const makerAddress = users[1];
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            await poolOperator.addMakerToStakingPoolAsync(
+                poolId,
+                makerAddress,
+                new StakingRevertErrors.MakerPoolAssignmentError(
+                    StakingRevertErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotPendingAdd,
+                    makerAddress,
+                    constants.NULL_BYTES32,
+                ),
+            );
+        });
+        it('should fail to add a maker to a pool if maker has called `joinStakingPoolAsMaker` on a different pool', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const otherPoolOperator = new PoolOperatorActor(users[1], stakingApiWrapper);
+            const makerAddress = users[2];
+            const maker = new MakerActor(makerAddress, stakingApiWrapper);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            const otherPoolId = await otherPoolOperator.createStakingPoolAsync(operatorShare, true);
+            // create pool
+            await maker.joinStakingPoolAsMakerAsync(poolId);
+            await otherPoolOperator.addMakerToStakingPoolAsync(
+                otherPoolId,
+                makerAddress,
+                new StakingRevertErrors.MakerPoolAssignmentError(
+                    StakingRevertErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotPendingAdd,
+                    makerAddress,
+                    poolId,
+                ),
+            );
         });
         it('Should successfully create a pool and add owner as a maker', async () => {
             // test parameters
