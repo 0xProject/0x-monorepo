@@ -116,7 +116,6 @@ contract MixinStakingPoolRewards is
         return _computeDelegatorReward(
             poolId,
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
-            currentEpoch,
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -144,8 +143,7 @@ contract MixinStakingPoolRewards is
         _finalizePoolAndWithdrawDelegatorRewards(
             poolId,
             member,
-            initialDelegatedStakeToPoolByOwner,
-            currentEpoch
+            initialDelegatedStakeToPoolByOwner
         );
 
         // Add dependencies on cumulative rewards for this epoch and the next
@@ -261,8 +259,7 @@ contract MixinStakingPoolRewards is
     function _finalizePoolAndWithdrawDelegatorRewards(
         bytes32 poolId,
         address member,
-        IStructs.StoredBalance memory unsyncedStake,
-        uint256 currentEpoch
+        IStructs.StoredBalance memory unsyncedStake
     )
         private
     {
@@ -273,7 +270,6 @@ contract MixinStakingPoolRewards is
         uint256 balance = _computeDelegatorReward(
             poolId,
             unsyncedStake,
-            currentEpoch,
             // No unfinalized values because we ensured the pool is already
             // finalized.
             0,
@@ -293,14 +289,12 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param unsyncedStake Unsynced delegated stake to pool by owner
-    /// @param currentEpoch The epoch in which this call is executing
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
         IStructs.StoredBalance memory unsyncedStake,
-        uint256 currentEpoch,
         uint256 unfinalizedMembersReward,
         uint256 unfinalizedMembersStake
     )
@@ -310,14 +304,15 @@ contract MixinStakingPoolRewards is
     {
         // There can be no rewards in epoch 0 because there is no delegated
         // stake.
-        if (currentEpoch == 0) {
+        uint256 _currentEpoch = currentEpoch;
+        if (_currentEpoch == 0) {
             return 0;
         }
 
         // There can be no rewards if the last epoch when stake was synced is
         // equal to the current epoch, because all prior rewards, including
         // rewards finalized this epoch have been claimed.
-        if (unsyncedStake.currentEpoch == currentEpoch) {
+        if (unsyncedStake.currentEpoch == _currentEpoch) {
             return 0;
         }
 
@@ -326,7 +321,7 @@ contract MixinStakingPoolRewards is
         // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
         reward = _computeUnfinalizedDelegatorReward(
             unsyncedStake,
-            currentEpoch,
+            _currentEpoch,
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -348,7 +343,7 @@ contract MixinStakingPoolRewards is
                 poolId,
                 unsyncedStake.nextEpochBalance,
                 unsyncedStakeNextEpoch,
-                currentEpoch
+                _currentEpoch
             )
         );
 
