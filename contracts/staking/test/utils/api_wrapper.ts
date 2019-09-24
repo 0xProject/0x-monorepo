@@ -122,10 +122,13 @@ export class StakingApiWrapper {
             );
         },
 
-        getEthAndWethBalanceOfAsync: async (address: string): Promise<BigNumber> => {
-            const ethBalance = await this._web3Wrapper.getBalanceInWeiAsync(address);
-            const wethBalance = await this.wethContract.balanceOf.callAsync(address);
-            return BigNumber.sum(ethBalance, wethBalance);
+        getAvailableRewardsBalanceAsync: async (): Promise<BigNumber> => {
+            const [ethBalance, wethBalance, reservedRewards] = await Promise.all([
+                this._web3Wrapper.getBalanceInWeiAsync(this.stakingProxyContract.address),
+                this.wethContract.balanceOf.callAsync(this.stakingProxyContract.address),
+                this.stakingContract.wethReservedForPoolRewards.callAsync(),
+            ]);
+            return BigNumber.sum(ethBalance, wethBalance).minus(reservedRewards);
         },
 
         getParamsAsync: async (): Promise<StakingParams> => {
