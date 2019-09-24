@@ -125,7 +125,7 @@ contract MixinStakingPool is
     {
         // Is the maker already in a pool?
         address makerAddress = msg.sender;
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = _poolJoinedByMakerAddress[makerAddress];
         if (poolJoinStatus.confirmed) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
@@ -135,7 +135,7 @@ contract MixinStakingPool is
         }
 
         poolJoinStatus.poolId = poolId;
-        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+        _poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
 
         // Maker has joined to the pool, awaiting operator confirmation
         emit PendingAddMakerToPool(
@@ -180,11 +180,7 @@ contract MixinStakingPool is
         }
 
         // remove the pool and confirmation from the maker status
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
-            poolId: NIL_POOL_ID,
-            confirmed: false
-        });
-        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+        delete _poolJoinedByMakerAddress[makerAddress];
         _poolById[poolId].numberOfMakers = uint256(_poolById[poolId].numberOfMakers).safeSub(1).downcastToUint32();
 
         // Maker has been removed from the pool`
@@ -202,7 +198,7 @@ contract MixinStakingPool is
         view
         returns (bytes32)
     {
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = _poolJoinedByMakerAddress[makerAddress];
         if (poolJoinStatus.confirmed) {
             return poolJoinStatus.poolId;
         } else {
@@ -232,7 +228,7 @@ contract MixinStakingPool is
     {
         // cache pool and join status for use throughout this function
         IStructs.Pool memory pool = _poolById[poolId];
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = _poolJoinedByMakerAddress[makerAddress];
     
         // Is the maker already in a pool?
         if (poolJoinStatus.confirmed) {
@@ -269,7 +265,7 @@ contract MixinStakingPool is
             poolId: poolId,
             confirmed: true
         });
-        poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
+        _poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
         _poolById[poolId].numberOfMakers = uint256(pool.numberOfMakers).safeAdd(1).downcastToUint32();
 
         // Maker has been added to the pool

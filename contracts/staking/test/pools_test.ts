@@ -178,7 +178,7 @@ blockchainTests('Staking Pool Management', env => {
             // maker removes themselves from pool
             await maker.removeMakerFromStakingPoolAsync(poolId, makerAddress);
         });
-        it('should successful remove another maker from a pool', async () => {
+        it('operator can remove a maker from their pool', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = (39 / 100) * PPM_DENOMINATOR;
@@ -192,7 +192,7 @@ blockchainTests('Staking Pool Management', env => {
             await maker.joinStakingPoolAsMakerAsync(poolId);
             // operator adds maker to pool
             await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress);
-            // maker removes themselves from pool
+            // operator removes maker from pool
             await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress);
         });
         it('Should successfully add/remove multiple makers to the same pool', async () => {
