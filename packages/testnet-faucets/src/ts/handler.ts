@@ -183,7 +183,7 @@ export class Handler {
                 .div(1000)
                 .integerValue(BigNumber.ROUND_FLOOR),
             domain: {
-                verifyingContractAddress: networkConfig.contractWrappers.exchange.address,
+                verifyingContract: networkConfig.contractWrappers.exchange.address,
                 chainId: networkConfig.networkId,
             },
         };

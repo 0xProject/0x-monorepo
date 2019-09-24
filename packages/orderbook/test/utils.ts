@@ -12,7 +12,7 @@ export const createOrder = (makerAssetData: string, takerAssetData: string): API
             takerFeeAssetData: takerAssetData,
             domain: {
                 chainId: 0,
-                verifyingContractAddress: '0x00',
+                verifyingContract: '0x00',
             },
             senderAddress: '0x00',
             makerAssetAmount: new BigNumber(1),
