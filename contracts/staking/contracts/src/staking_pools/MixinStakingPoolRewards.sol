@@ -69,7 +69,6 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the reward balance in ETH of the operator of a pool.
-    ///      This does not include the balance in the ETH vault.
     /// @param poolId Unique id of pool.
     /// @return totalReward Balance in ETH.
     function computeRewardBalanceOfOperator(bytes32 poolId)
@@ -77,7 +76,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
-        // Because operator rewards are immediately sent to the ETH vault
+        // Because operator rewards are immediately withdrawn as WETH
         // on finalization, the only factor in this function are unfinalized
         // rewards.
         IStructs.Pool memory pool = _poolById[poolId];
@@ -95,7 +94,6 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
-    ///      This does not include the balance in the ETH vault.
     /// @param poolId Unique id of pool.
     /// @param member The member of the pool.
     /// @return totalReward Balance in ETH.
@@ -125,8 +123,7 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Syncs rewards for a delegator. This includes transferring rewards
-    ///      from the Reward Vault to the Eth Vault, and adding/removing
-    ///      dependencies on cumulative rewards.
+    ///      withdrawing rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
     /// @param initialDelegatedStakeToPoolByOwner The member's delegated
@@ -141,7 +138,7 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
-        // Transfer any rewards from the transient pool vault to the eth vault;
+        // Withdraw any rewards from.
         // this must be done before we can modify the owner's portion of the
         // delegator pool.
         _finalizePoolAndWithdrawDelegatorRewards(

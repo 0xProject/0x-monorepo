@@ -106,7 +106,7 @@ contract TestDelegatorRewards is
 
     /// @dev Create and delegate stake that is active in the current epoch.
     ///      Only used to test purportedly unreachable states.
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function delegateStakeNow(
         address delegator,
         bytes32 poolId,
@@ -131,7 +131,7 @@ contract TestDelegatorRewards is
 
     /// @dev Create and delegate stake that will occur in the next epoch
     ///      (normal behavior).
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function delegateStake(
         address delegator,
         bytes32 poolId,
@@ -158,7 +158,7 @@ contract TestDelegatorRewards is
 
     /// @dev Clear stake that will occur in the next epoch
     ///      (normal behavior).
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function undelegateStake(
         address delegator,
         bytes32 poolId,

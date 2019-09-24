@@ -101,7 +101,7 @@ export interface StakeBalances {
     totalDelegatedStakeByPool: StakeBalanceByPool;
 }
 
-export interface RewardVaultBalanceByPoolId {
+export interface RewardBalanceByPoolId {
     [key: string]: BigNumber;
 }
 

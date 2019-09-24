@@ -344,7 +344,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 membersRewardBalance: rewardForOnlyFirstDelegator.plus(totalSharedRewards),
             });
         });
-        it('Should send existing rewards from reward vault to eth vault correctly when undelegating stake', async () => {
+        it('Should withdraw existing rewards when undelegating stake', async () => {
             const stakeAmount = toBaseUnitAmount(4);
             // first staker delegates (epoch 0)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmount);
@@ -353,7 +353,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // earn reward
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // undelegate (moves delegator's from the transient reward vault into the eth vault)
+            // undelegate (withdraws delegator's rewards)
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 new StakeInfo(StakeStatus.Active),
@@ -365,7 +365,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 stakerWethBalance_1: reward,
             });
         });
-        it('Should send existing rewards from reward vault to eth vault correctly when delegating more stake', async () => {
+        it('Should withdraw existing rewards correctly when delegating more stake', async () => {
             const stakeAmount = toBaseUnitAmount(4);
             // first staker delegates (epoch 0)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmount);
@@ -560,7 +560,7 @@ blockchainTests.resets('Testing Rewards', env => {
                 poolRewardBalance: constants.ZERO_AMOUNT,
             });
         });
-        it('Should withdraw delegator rewards to eth vault when calling `syncDelegatorRewards`', async () => {
+        it('Should withdraw delegator rewards when calling `withdrawDelegatorRewards`', async () => {
             // first staker delegates (epoch 0)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
@@ -602,7 +602,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // Sync rewards to move the rewards into the EthVault.
+            // withdraw rewards
             await staker.withdrawDelegatorRewardsAsync(poolId);
             await validateEndBalances({
                 stakerRewardBalance_1: toBaseUnitAmount(0),
@@ -622,7 +622,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // finalize
             const reward = toBaseUnitAmount(10);
             await payProtocolFeeAndFinalize(reward);
-            // Sync rewards to move rewards from RewardVault into the EthVault.
+            // withdraw rewards
             for (const [staker] of _.reverse(stakersAndStake)) {
                 await staker.withdrawDelegatorRewardsAsync(poolId);
             }
@@ -658,25 +658,23 @@ blockchainTests.resets('Testing Rewards', env => {
                 poolRewardBalance: reward,
                 membersRewardBalance: reward,
             });
-            // First staker will sync rewards to get rewards transferred to EthVault.
+            // First staker will withdraw rewards.
             const sneakyStaker = stakers[0];
-            const sneakyStakerExpectedEthVaultBalance = expectedStakerRewards[0];
+            const sneakyStakerExpectedWethBalance = expectedStakerRewards[0];
             await sneakyStaker.withdrawDelegatorRewardsAsync(poolId);
             // Should have been credited the correct amount of rewards.
-            let sneakyStakerEthVaultBalance = await stakingApiWrapper.wethContract.balanceOf.callAsync(
+            let sneakyStakerWethBalance = await stakingApiWrapper.wethContract.balanceOf.callAsync(
                 sneakyStaker.getOwner(),
             );
-            expect(sneakyStakerEthVaultBalance, 'EthVault balance after first undelegate').to.bignumber.eq(
-                sneakyStakerExpectedEthVaultBalance,
+            expect(sneakyStakerWethBalance, 'WETH balance after first undelegate').to.bignumber.eq(
+                sneakyStakerExpectedWethBalance,
             );
             // Now he'll try to do it again to see if he gets credited twice.
             await sneakyStaker.withdrawDelegatorRewardsAsync(poolId);
             /// The total amount credited should remain the same.
-            sneakyStakerEthVaultBalance = await stakingApiWrapper.wethContract.balanceOf.callAsync(
-                sneakyStaker.getOwner(),
-            );
-            expect(sneakyStakerEthVaultBalance, 'EthVault balance after second undelegate').to.bignumber.eq(
-                sneakyStakerExpectedEthVaultBalance,
+            sneakyStakerWethBalance = await stakingApiWrapper.wethContract.balanceOf.callAsync(sneakyStaker.getOwner());
+            expect(sneakyStakerWethBalance, 'WETH balance after second undelegate').to.bignumber.eq(
+                sneakyStakerExpectedWethBalance,
             );
         });
     });
