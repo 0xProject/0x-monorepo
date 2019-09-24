@@ -260,6 +260,13 @@ export async function runMigrationsAsync(
     //     await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
     // );
 
+    // Fake the above transactions so our nonce increases and we result with the same addresses
+    // while AssetProxyOwner is disabled (TODO: @dekz remove)
+    const dummyTransactionCount = 5;
+    for (let index = 0; index < dummyTransactionCount; index++) {
+        await web3Wrapper.sendTransactionAsync({ to: txDefaults.from, from: txDefaults.from, value: new BigNumber(0) });
+    }
+
     // Fund the Forwarder with ZRX
     const zrxDecimals = await zrxToken.decimals.callAsync();
     const zrxForwarderAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(5000), zrxDecimals);

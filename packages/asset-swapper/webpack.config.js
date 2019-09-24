@@ -39,6 +39,9 @@ module.exports = {
             }),
         ],
     },
+    externals: {
+        fs: true,
+    },
     module: {
         rules: [
             {

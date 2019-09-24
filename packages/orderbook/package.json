@@ -12,6 +12,9 @@
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo.git"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "clean": "shx rm -rf lib generated_docs",
         "test": "jest",
