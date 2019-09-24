@@ -35,8 +35,15 @@ This system is composed of four deployed contracts:
 
 ### 2.1 Basic Architecture
 
+![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Basic.png)
+
 
 
 ### 2.2 Read-Only Mode
 
+![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Read-Only.png)
+
 ### 2.3 Catastrophic Failure Mode
+
+
+![enter image description here](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png)
