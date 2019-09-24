@@ -61,6 +61,14 @@
             {
                 "note": "Introduce multi-block finalization.",
                 "pr": 2155
+            },
+            {
+                "note": "Removed reference counting for cumulative rewards.",
+                "pr": 2188
+            },
+            {
+                "note": "Removed explicit dependency on epoch+1 when delegating.",
+                "pr": 2188
             }
         ]
     }
