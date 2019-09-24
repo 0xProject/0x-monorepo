@@ -81,28 +81,28 @@ describe('AbiGenDummy Contract', () => {
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
             expect(abiGenDummy.simpleRevert.callAsync())
-                .to.be.rejectedWith(StringRevertError)
+                .to.eventually.be.rejectedWith(StringRevertError)
                 .deep.equal(new StringRevertError('SIMPLE_REVERT'));
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            expect(abiGenDummy.simpleRevert.callAsync())
-                .to.be.rejectedWith(StringRevertError)
+            expect(abiGenDummy.revertWithConstant.callAsync())
+                .to.eventually.be.rejectedWith(StringRevertError)
                 .deep.equal(new StringRevertError('REVERT_WITH_CONSTANT'));
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            expect(abiGenDummy.simpleRevert.callAsync())
-                .to.be.rejectedWith(StringRevertError)
+            expect(abiGenDummy.simpleRequire.callAsync())
+                .to.eventually.be.rejectedWith(StringRevertError)
                 .deep.equal(new StringRevertError('SIMPLE_REQUIRE'));
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            expect(abiGenDummy.simpleRevert.callAsync())
-                .to.be.rejectedWith(StringRevertError)
+            expect(abiGenDummy.requireWithConstant.callAsync())
+                .to.eventually.be.rejectedWith(StringRevertError)
                 .deep.equal(new StringRevertError('REQUIRE_WITH_CONSTANT'));
         });
     });
