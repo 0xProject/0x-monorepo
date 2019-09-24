@@ -26,7 +26,7 @@ export const ordersResponse: OrdersResponse = {
                 signature: '0x012761a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
                 domain: {
                     chainId: 1,
-                    verifyingContractAddress: '0x12459c951127e0c374ff9105dda097662a027093',
+                    verifyingContract: '0x12459c951127e0c374ff9105dda097662a027093',
                 },
             },
             metaData: {},

@@ -60,7 +60,7 @@ describe('RemainingFillableCalculator', () => {
             salt: zero,
             expirationTimeSeconds: zero,
             domain: {
-                verifyingContractAddress: zeroAddress,
+                verifyingContract: zeroAddress,
                 chainId,
             },
         };

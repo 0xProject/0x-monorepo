@@ -91,7 +91,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         return orderHashUtils.getOrderHashHex({
             ...order,
             domain: {
-                verifyingContractAddress: testContract.address,
+                verifyingContract: testContract.address,
                 chainId: CHAIN_ID,
             },
         });

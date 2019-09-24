@@ -436,7 +436,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
                 domain: {
-                    verifyingContractAddress: signatureValidator.address,
+                    verifyingContract: signatureValidator.address,
                     chainId,
                 },
             };

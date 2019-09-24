@@ -30,25 +30,25 @@ describe('LibEIP712', () => {
      * @param name The name of the domain.
      * @param version The version of the domain.
      * @param chainId The chain id of the domain.
-     * @param verifyingContractAddress The verifying contract address of the domain.
+     * @param verifyingContract The verifying contract address of the domain.
      */
     async function testHashEIP712DomainAsync(
         name: string,
         version: string,
         chainId: number,
-        verifyingContractAddress: string,
+        verifyingContract: string,
     ): Promise<void> {
         const expectedHash = signTypedDataUtils.generateDomainHash({
             name,
             version,
             chainId,
-            verifyingContractAddress,
+            verifyingContract,
         });
         const actualHash = await lib.externalHashEIP712DomainSeperator.callAsync(
             name,
             version,
             new BigNumber(chainId),
-            verifyingContractAddress,
+            verifyingContract,
         );
         expect(actualHash).to.be.eq(hexConcat(expectedHash));
     }

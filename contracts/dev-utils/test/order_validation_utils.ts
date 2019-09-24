@@ -121,7 +121,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             makerFeeAssetData: feeAssetData,
             takerFeeAssetData: feeAssetData,
             domain: {
-                verifyingContractAddress: exchange.address,
+                verifyingContract: exchange.address,
                 chainId,
             },
         };

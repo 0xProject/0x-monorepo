@@ -96,12 +96,12 @@ export class SignatureWalletError extends RevertError {
 }
 
 export class EIP1271SignatureError extends RevertError {
-    constructor(verifyingContractAddress?: string, data?: string, signature?: string, errorData?: string) {
+    constructor(verifyingContract?: string, data?: string, signature?: string, errorData?: string) {
         super(
             'EIP1271SignatureError',
-            'EIP1271SignatureError(address verifyingContractAddress, bytes data, bytes signature, bytes errorData)',
+            'EIP1271SignatureError(address verifyingContract, bytes data, bytes signature, bytes errorData)',
             {
-                verifyingContractAddress,
+                verifyingContract,
                 data,
                 signature,
                 errorData,

@@ -17,7 +17,7 @@ blockchainTests('LibOrder', env => {
 
     const EMPTY_ORDER: Order = {
         domain: {
-            verifyingContractAddress: constants.NULL_ADDRESS,
+            verifyingContract: constants.NULL_ADDRESS,
             chainId: 0,
         },
         senderAddress: constants.NULL_ADDRESS,
@@ -67,7 +67,7 @@ blockchainTests('LibOrder', env => {
                 ...EMPTY_ORDER,
                 domain: {
                     ...EMPTY_ORDER.domain,
-                    verifyingContractAddress: libOrderContract.address,
+                    verifyingContract: libOrderContract.address,
                 },
             });
         });
@@ -75,7 +75,7 @@ blockchainTests('LibOrder', env => {
         it('should correctly hash a non-empty order', async () => {
             await testGetTypedDataHashAsync({
                 domain: {
-                    verifyingContractAddress: libOrderContract.address,
+                    verifyingContract: libOrderContract.address,
                     chainId: 1337,
                 },
                 senderAddress: randomAddress(),
@@ -136,7 +136,7 @@ blockchainTests('LibOrder', env => {
             await testGetStructHashAsync({
                 // The domain is not used in this test, so it's okay if it is left empty.
                 domain: {
-                    verifyingContractAddress: constants.NULL_ADDRESS,
+                    verifyingContract: constants.NULL_ADDRESS,
                     chainId: 0,
                 },
                 senderAddress: randomAddress(),

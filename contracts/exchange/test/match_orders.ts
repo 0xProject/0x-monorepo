@@ -199,7 +199,7 @@ describe('matchOrders', () => {
         defaultERC721AssetAddress = erc721Token.address;
         defaultERC1155AssetAddress = erc1155Token.address;
         const domain = {
-            verifyingContractAddress: exchange.address,
+            verifyingContract: exchange.address,
             chainId,
         };
         // Create default order parameters

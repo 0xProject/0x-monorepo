@@ -686,7 +686,7 @@ export class CoordinatorWrapper {
             signerAddress,
             data,
             domain: {
-                verifyingContractAddress: this.exchangeAddress,
+                verifyingContract: this.exchangeAddress,
                 chainId: await this._web3Wrapper.getChainIdAsync(),
             },
             // HACK (xianny): arbitrary numbers for now

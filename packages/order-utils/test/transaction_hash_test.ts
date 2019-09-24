@@ -14,7 +14,7 @@ const expect = chai.expect;
 
 describe('0x transaction hashing', () => {
     describe('#getTransactionHashHex', () => {
-        const expectedTransactionHash = '0x420b19f08d5b09c012f381f4bf80a97740b8629f2bac7f42dd7f6aefbb24f3c0';
+        const expectedTransactionHash = '0x7845d260300acfbebaff52f0462f984016473290b9eb865fb6ffac0503cab364';
         const fakeVerifyingContractAddress = '0x5e72914535f202659083db3a02c984188fa26e9f';
         const fakeChainId = 1337;
         const transaction: ZeroExTransaction = {
@@ -24,7 +24,7 @@ describe('0x transaction hashing', () => {
             gasPrice: new BigNumber(0),
             data: constants.NULL_BYTES,
             domain: {
-                verifyingContractAddress: fakeVerifyingContractAddress,
+                verifyingContract: fakeVerifyingContractAddress,
                 chainId: fakeChainId,
             },
         };

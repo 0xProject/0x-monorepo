@@ -40,7 +40,7 @@ describe('ABI Decoding Calldata', () => {
         const exchangeAddress = addressUtils.generatePseudoRandomAddress();
         const feeRecipientAddress = addressUtils.generatePseudoRandomAddress();
         const domain = {
-            verifyingContractAddress: exchangeAddress,
+            verifyingContract: exchangeAddress,
             chainId,
         };
         // Create orders to match.

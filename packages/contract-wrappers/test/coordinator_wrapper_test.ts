@@ -102,7 +102,7 @@ describe.skip('CoordinatorWrapper', () => {
             takerFeeAssetData: feeAssetData,
             senderAddress: contractAddresses.coordinator,
             domain: {
-                verifyingContractAddress: exchangeContractAddress,
+                verifyingContract: exchangeContractAddress,
                 chainId,
             },
         };

@@ -124,7 +124,7 @@ export class FillScenarios {
             fillableAmount,
         );
         const exchangeInstance = new ExchangeContract(
-            signedOrder.domain.verifyingContractAddress,
+            signedOrder.domain.verifyingContract,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );

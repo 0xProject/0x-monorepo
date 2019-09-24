@@ -220,7 +220,7 @@ describe('Schema', () => {
             feeRecipientAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
             domain: {
-                verifyingContractAddress: NULL_ADDRESS,
+                verifyingContract: NULL_ADDRESS,
                 chainId: CHAIN_ID,
             },
         };

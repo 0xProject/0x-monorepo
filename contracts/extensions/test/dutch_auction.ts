@@ -164,7 +164,7 @@ describe(ContractName.DutchAuction, () => {
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
             domain: {
-                verifyingContractAddress: exchangeInstance.address,
+                verifyingContract: exchangeInstance.address,
                 chainId,
             },
         };

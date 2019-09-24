@@ -30,7 +30,7 @@ export const eip712Utils = {
         message: EIP712Object,
         domain: EIP712DomainWithDefaultSchema,
     ): EIP712TypedData => {
-        assert.isETHAddressHex('verifyingContractAddress', domain.verifyingContractAddress);
+        assert.isETHAddressHex('verifyingContract', domain.verifyingContract);
         assert.isString('primaryType', primaryType);
         const typedData = {
             types: {
@@ -41,7 +41,7 @@ export const eip712Utils = {
                 name: domain.name === undefined ? constants.EXCHANGE_DOMAIN_NAME : domain.name,
                 version: domain.version === undefined ? constants.EXCHANGE_DOMAIN_VERSION : domain.version,
                 chainId: domain.chainId,
-                verifyingContractAddress: domain.verifyingContractAddress,
+                verifyingContract: domain.verifyingContract,
             },
             message,
             primaryType,
@@ -75,7 +75,7 @@ export const eip712Utils = {
      */
     createZeroExTransactionTypedData: (zeroExTransaction: ZeroExTransaction): EIP712TypedData => {
         assert.isNumber('domain.chainId', zeroExTransaction.domain.chainId);
-        assert.isETHAddressHex('domain.verifyingContractAddress', zeroExTransaction.domain.verifyingContractAddress);
+        assert.isETHAddressHex('domain.verifyingContract', zeroExTransaction.domain.verifyingContract);
         assert.doesConformToSchema('zeroExTransaction', zeroExTransaction, schemas.zeroExTransactionSchema);
         const normalizedTransaction = _.mapValues(zeroExTransaction, value => {
             return !_.isString(value) ? value.toString() : value;
@@ -91,14 +91,14 @@ export const eip712Utils = {
     /**
      * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
      * @param   transaction A 0x transaction
-     * @param   verifyingContractAddress The coordinator extension contract address that will be verifying the typedData
+     * @param   verifyingContract The coordinator extension contract address that will be verifying the typedData
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
      * @param   approvalExpirationTimeSeconds The approvals expiration time
      * @return  A typed data object
      */
     createCoordinatorApprovalTypedData: (
         transaction: SignedZeroExTransaction,
-        verifyingContractAddress: string,
+        verifyingContract: string,
         txOrigin: string,
         approvalExpirationTimeSeconds: BigNumber,
     ): EIP712TypedData => {
@@ -106,7 +106,7 @@ export const eip712Utils = {
             ...transaction.domain,
             name: constants.COORDINATOR_DOMAIN_NAME,
             version: constants.COORDINATOR_DOMAIN_VERSION,
-            verifyingContractAddress,
+            verifyingContract,
         };
         const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
         const approval = {

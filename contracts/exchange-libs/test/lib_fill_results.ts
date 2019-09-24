@@ -537,7 +537,7 @@ blockchainTests('LibFillResults', env => {
             expirationTimeSeconds: randomUint256(),
             salt: randomUint256(),
             domain: {
-                verifyingContractAddress: constants.NULL_ADDRESS,
+                verifyingContract: constants.NULL_ADDRESS,
                 chainId: 1337, // The chain id for the isolated exchange
             },
         };
@@ -547,7 +547,7 @@ blockchainTests('LibFillResults', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContractAddress = libsContract.address;
+            ORDER_DEFAULTS.domain.verifyingContract = libsContract.address;
         });
 
         it('should correctly calculate the results when only the right order is fully filled', async () => {
@@ -1210,7 +1210,7 @@ blockchainTests('LibFillResults', env => {
             expirationTimeSeconds: randomUint256(),
             salt: randomUint256(),
             domain: {
-                verifyingContractAddress: constants.NULL_ADDRESS,
+                verifyingContract: constants.NULL_ADDRESS,
                 chainId: 1337, // The chain id for the isolated exchange
             },
         };
@@ -1220,7 +1220,7 @@ blockchainTests('LibFillResults', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContractAddress = libsContract.address;
+            ORDER_DEFAULTS.domain.verifyingContract = libsContract.address;
         });
 
         it('should transfer correct amounts when right order is fully filled', async () => {
