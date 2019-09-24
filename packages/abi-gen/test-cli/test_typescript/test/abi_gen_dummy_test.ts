@@ -80,34 +80,30 @@ describe('AbiGenDummy Contract', () => {
     });
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
-            abiGenDummy.simpleRevert.callAsync().catch(err => {
-                const expected = new StringRevertError('SIMPLE_REVERT');
-                expect(err).to.deep.equal(expected);
-            });
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('SIMPLE_REVERT'));
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            abiGenDummy.revertWithConstant.callAsync().catch(err => {
-                const expected = new StringRevertError('REVERT_WITH_CONSTANT');
-                expect(err).to.deep.equal(expected);
-            });
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('REVERT_WITH_CONSTANT'));
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            abiGenDummy.simpleRequire.callAsync().catch(err => {
-                const expected = new StringRevertError('SIMPLE_REQUIRE');
-                expect(err).to.deep.equal(expected);
-            });
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('SIMPLE_REQUIRE'));
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            abiGenDummy.requireWithConstant.callAsync().catch(err => {
-                const expected = new StringRevertError('REQUIRE_WITH_CONSTANT');
-                expect(err).to.deep.equal(expected);
-            });
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('REQUIRE_WITH_CONSTANT'));
         });
     });
 
