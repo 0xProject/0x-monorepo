@@ -29,21 +29,17 @@ pragma solidity ^0.5.9;
 interface IZrxVault {
 
     /// @dev Emitted when Zrx Tokens are deposited into the vault.
-    /// @param sender Address of sender (`msg.sender`).
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens deposited.
     event ZrxDepositedIntoVault(
-        address indexed sender,
         address indexed owner,
         uint256 amount
     );
 
     /// @dev Emitted when Zrx Tokens are withdrawn from the vault.
-    /// @param sender Address of sender (`msg.sender`).
     /// @param owner of Zrx Tokens.
     /// @param amount of Zrx Tokens withdrawn.
     event ZrxWithdrawnFromVault(
-        address indexed sender,
         address indexed owner,
         uint256 amount
     );
