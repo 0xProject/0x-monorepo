@@ -96,7 +96,7 @@ contract ZrxVault is
         _balances[owner] = _balances[owner].safeAdd(amount);
 
         // notify
-        emit Deposit(owner, amount);
+        emit ZrxDepositedIntoVault(msg.sender, owner, amount);
 
         // deposit ZRX from owner
         zrxAssetProxy.transferFrom(
@@ -158,7 +158,7 @@ contract ZrxVault is
         _balances[owner] = _balances[owner].safeSub(amount);
 
         // notify
-        emit Withdraw(owner, amount);
+        emit ZrxWithdrawnFromVault(msg.sender, owner, amount);
 
         // withdraw ZRX to owner
         _zrxToken.transfer(
