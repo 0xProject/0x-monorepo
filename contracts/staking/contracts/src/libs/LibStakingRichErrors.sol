@@ -133,10 +133,6 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
         0xefd6cb33;
 
-    // bytes4(keccak256("InvalidWethAssetDataError()"))
-    bytes internal constant INVALID_WETH_ASSET_DATA_ERROR =
-        hex"24bf322c";
-
     // bytes4(keccak256("PreviousEpochNotFinalizedError(uint256,uint256)"))
     bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
         0x614b800a;
@@ -405,14 +401,6 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return PROXY_DESTINATION_CANNOT_BE_NIL_ERROR;
-    }
-
-    function InvalidWethAssetDataError()
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return INVALID_WETH_ASSET_DATA_ERROR;
     }
 
     function PreviousEpochNotFinalizedError(
