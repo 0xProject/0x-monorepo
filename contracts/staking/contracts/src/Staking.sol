@@ -108,14 +108,6 @@ contract Staking is
             /// MixinStorage
 
             assertSlotAndOffset(
-                wethAssetProxy_slot,
-                wethAssetProxy_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
                 stakingContract_slot,
                 stakingContract_offset,
                 slot,
@@ -262,14 +254,6 @@ contract Staking is
             assertSlotAndOffset(
                 validExchanges_slot,
                 validExchanges_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                zrxVault_slot,
-                zrxVault_offset,
                 slot,
                 offset
             )
