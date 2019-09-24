@@ -35,7 +35,7 @@ This system is composed of four deployed contracts:
 
 The diagram below shows how these contracts connect to each other and the broader 0x ecosystem.
 
-![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Basic.png)
+![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Basic.png)
 
 
 ### 2.1 Read-Only Mode
@@ -45,7 +45,7 @@ If a vulnerability is discovered in the staking contract, operations may be halt
 1.  The 0x Exchange contract stops charging protocol fees.
 2.  The staking contract is set to read-only mode.
 
-![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Read-Only.png)
+![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Read-Only.png)
 
 ### 2.2 Catastrophic Failure Mode
 
@@ -54,7 +54,7 @@ In this worst-case scenario, state has been irreparably corrupted and the stakin
 1. The ZRX vault is detached from the staking contract.
 2. Users withdraw their funds from the ZRX vault directly.
 
-![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png)
+![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png)
 
 
 ## 3 Contract Management
@@ -102,7 +102,7 @@ The staking contracts share the Exchange's ERC20 proxy. It is possible this cont
 
 ## 4 Epochs & Scheduling
 
-![](https://github.com/0xProject/0x-monorepo/blob/feature/staking/spec/contracts/staking/spec/Epochs.png)
+![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Epochs.png)
 
 All processes in the system are segmented into nonoverlapping time intervals, called epochs. Epochs have a fixed minimum period (10 days at time of writing), which is configurable via [MixinParams](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/sys/MixinParams.sol). Epochs serve as the basis for all other timeframes within the system, which provides a more stable and consistent scheduling metric than timestamps.
 
