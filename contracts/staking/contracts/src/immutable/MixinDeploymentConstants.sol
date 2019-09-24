@@ -82,8 +82,8 @@ contract MixinDeploymentConstants {
     /// @dev An overridable way to access the deployed WETH contract.
     ///      Must be view to allow overrides to access state.
     /// @return wethContract The WETH contract instance.
-    function _getWethContract()
-        internal
+    function getWethContract()
+        public
         view
         returns (IEtherToken wethContract)
     {
@@ -94,8 +94,8 @@ contract MixinDeploymentConstants {
     /// @dev An overridable way to access the deployed WETH assetData.
     ///      Must be view to allow overrides to access state.
     /// @return wethAssetData The assetData of the configured WETH contract.
-    function _getWethAssetData()
-        internal
+    function getWethAssetData()
+        public
         view
         returns (bytes memory wethAssetData)
     {
@@ -106,8 +106,8 @@ contract MixinDeploymentConstants {
     /// @dev An overridable way to access the deployed WETH assetProxy.
     ///      Must be view to allow overrides to access state.
     /// @return wethAssetProxy The assetProxy used to transfer WETH.
-    function _getWethAssetProxy()
-        internal
+    function getWethAssetProxy()
+        public
         view
         returns (IAssetProxy wethAssetProxy)
     {
@@ -118,8 +118,8 @@ contract MixinDeploymentConstants {
     /// @dev An overridable way to access the deployed zrxVault.
     ///      Must be view to allow overrides to access state.
     /// @return zrxVault The zrxVault contract.
-    function _getZrxVault()
-        internal
+    function getZrxVault()
+        public
         view
         returns (IZrxVault zrxVault)
     {

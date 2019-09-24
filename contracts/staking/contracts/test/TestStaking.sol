@@ -43,8 +43,8 @@ contract TestStaking is
     }
 
     /// @dev Overridden to use testWethAddress;
-    function _getWethContract()
-        internal
+    function getWethContract()
+        public
         view
         returns (IEtherToken)
     {
@@ -55,8 +55,8 @@ contract TestStaking is
         return IEtherToken(wethAddress);
     }
 
-    function _getWethAssetData()
-        internal
+    function getWethAssetData()
+        public
         view
         returns (bytes memory)
     {
@@ -67,8 +67,8 @@ contract TestStaking is
         ); 
     }
 
-    function _getWethAssetProxy()
-        internal
+    function getWethAssetProxy()
+        public
         view
         returns (IAssetProxy wethAssetProxy)
     {
@@ -77,8 +77,8 @@ contract TestStaking is
         return wethAssetProxy;
     }
 
-    function _getZrxVault()
-        internal
+    function getZrxVault()
+        public
         view
         returns (IZrxVault zrxVault)
     {

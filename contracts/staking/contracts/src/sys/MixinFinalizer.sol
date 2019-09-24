@@ -245,7 +245,7 @@ contract MixinFinalizer is
     {
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            _getWethContract().deposit.value(ethBalance)();
+            getWethContract().deposit.value(ethBalance)();
         }
     }
 
@@ -256,7 +256,7 @@ contract MixinFinalizer is
         view
         returns (uint256 wethBalance)
     {
-        wethBalance = _getWethContract().balanceOf(address(this))
+        wethBalance = getWethContract().balanceOf(address(this))
             .safeSub(wethReservedForPoolRewards);
 
         return wethBalance;

@@ -91,10 +91,6 @@ contract TestProtocolFees is
         emit ERC20ProxyTransferFrom(assetData, from, to, amount);
     }
 
-    function getWethAssetData() external view returns (bytes memory) {
-        return _getWethAssetData();
-    }
-
     /// @dev Overridden to use test pools.
     function getStakingPoolIdOfMaker(address makerAddress)
         public
@@ -131,8 +127,8 @@ contract TestProtocolFees is
         });
     }
 
-    function _getWethAssetProxy()
-        internal
+    function getWethAssetProxy()
+        public
         view
         returns (IAssetProxy wethAssetProxy)
     {
