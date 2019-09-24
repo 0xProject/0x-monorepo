@@ -70,7 +70,7 @@ contract ZrxVault is
     }
 
     /// @dev Sets the Zrx proxy.
-    /// Note that only the contract owner can call this.
+    /// Note that only the contract staker can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
     function setZrxProxy(address _zrxProxyAddress)
@@ -82,87 +82,87 @@ contract ZrxVault is
         emit ZrxProxySet(_zrxProxyAddress);
     }
 
-    /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
+    /// @dev Deposit an `amount` of Zrx Tokens from `staker` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to deposit.
-    function depositFrom(address owner, uint256 amount)
+    function depositFrom(address staker, uint256 amount)
         external
         onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
         // update balance
-        _balances[owner] = _balances[owner].safeAdd(amount);
+        _balances[staker] = _balances[staker].safeAdd(amount);
 
         // notify
-        emit Deposit(owner, amount);
+        emit Deposit(staker, amount);
 
-        // deposit ZRX from owner
+        // deposit ZRX from staker
         zrxAssetProxy.transferFrom(
             _zrxAssetData,
-            owner,
+            staker,
             address(this),
             amount
         );
     }
 
-    /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
+    /// @dev Withdraw an `amount` of Zrx Tokens to `staker` from the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
-    function withdrawFrom(address owner, uint256 amount)
+    function withdrawFrom(address staker, uint256 amount)
         external
         onlyStakingProxy
         onlyNotInCatastrophicFailure
     {
-        _withdrawFrom(owner, amount);
+        _withdrawFrom(staker, amount);
     }
 
-    /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
+    /// @dev Withdraw ALL Zrx Tokens to `staker` from the vault.
     /// Note that this can only be called when *in* Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
-    function withdrawAllFrom(address owner)
+    /// @param staker of Zrx Tokens.
+    function withdrawAllFrom(address staker)
         external
         onlyInCatastrophicFailure
         returns (uint256)
     {
         // get total balance
-        uint256 totalBalance = _balances[owner];
+        uint256 totalBalance = _balances[staker];
 
-        // withdraw ZRX to owner
-        _withdrawFrom(owner, totalBalance);
+        // withdraw ZRX to staker
+        _withdrawFrom(staker, totalBalance);
         return totalBalance;
     }
 
-    /// @dev Returns the balance in Zrx Tokens of the `owner`
+    /// @dev Returns the balance in Zrx Tokens of the `staker`
     /// @return Balance in Zrx.
-    function balanceOf(address owner)
+    function balanceOf(address staker)
         external
         view
         returns (uint256)
     {
-        return _balances[owner];
+        return _balances[staker];
     }
 
-    /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
-    /// @param owner of Zrx Tokens.
+    /// @dev Withdraw an `amount` of Zrx Tokens to `staker` from the vault.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
-    function _withdrawFrom(address owner, uint256 amount)
+    function _withdrawFrom(address staker, uint256 amount)
         internal
     {
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        _balances[owner] = _balances[owner].safeSub(amount);
+        _balances[staker] = _balances[staker].safeSub(amount);
 
         // notify
-        emit Withdraw(owner, amount);
+        emit Withdraw(staker, amount);
 
-        // withdraw ZRX to owner
+        // withdraw ZRX to staker
         _zrxToken.transfer(
-            owner,
+            staker,
             amount
         );
     }

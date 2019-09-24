@@ -80,7 +80,7 @@ contract MixinVaultCore is
     }
 
     /// @dev Sets the address of the StakingProxy contract.
-    /// Note that only the contract owner can call this function.
+    /// Note that only an authorized address can call this function.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external
@@ -92,7 +92,7 @@ contract MixinVaultCore is
 
     /// @dev Vault enters into Catastrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
-    /// Note that only the contract owner can call this function.
+    /// Note that only an authorized address can call this function.
     function enterCatastrophicFailure()
         external
         onlyAuthorized

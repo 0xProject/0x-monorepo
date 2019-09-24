@@ -84,83 +84,83 @@ contract MixinStakeBalances is
         });
     }
 
-    /// @dev Returns the total stake for a given owner.
-    /// @param owner of stake.
-    /// @return Total active stake for owner.
-    function getTotalStake(address owner)
+    /// @dev Returns the total stake for a given staker.
+    /// @param staker of stake.
+    /// @return Total active stake for staker.
+    function getTotalStake(address staker)
         external
         view
         returns (uint256)
     {
-        return getZrxVault().balanceOf(owner);
+        return getZrxVault().balanceOf(staker);
     }
 
-    /// @dev Returns the active stake for a given owner.
-    /// @param owner of stake.
-    /// @return Active stake for owner.
-    function getActiveStake(address owner)
+    /// @dev Returns the active stake for a given staker.
+    /// @param staker of stake.
+    /// @return Active stake for staker.
+    function getActiveStake(address staker)
         external
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_activeStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_activeStakeByOwner[staker]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
         });
     }
 
-    /// @dev Returns the inactive stake for a given owner.
-    /// @param owner of stake.
-    /// @return Inactive stake for owner.
-    function getInactiveStake(address owner)
+    /// @dev Returns the inactive stake for a given staker.
+    /// @param staker of stake.
+    /// @return Inactive stake for staker.
+    function getInactiveStake(address staker)
         external
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_inactiveStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_inactiveStakeByOwner[staker]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
         });
     }
 
-    /// @dev Returns the stake delegated by a given owner.
-    /// @param owner of stake.
-    /// @return Delegated stake for owner.
-    function getStakeDelegatedByOwner(address owner)
+    /// @dev Returns the stake delegated by a given staker.
+    /// @param staker of stake.
+    /// @return Delegated stake for staker.
+    function getStakeDelegatedByOwner(address staker)
         external
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByOwner[staker]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
         });
     }
 
-    /// @dev Returns the amount stake that can be withdrawn for a given owner.
-    /// @param owner of stake.
-    /// @return Withdrawable stake for owner.
-    function getWithdrawableStake(address owner)
+    /// @dev Returns the amount stake that can be withdrawn for a given staker.
+    /// @param staker of stake.
+    /// @return Withdrawable stake for staker.
+    function getWithdrawableStake(address staker)
         public
         view
         returns (uint256)
     {
-        return _computeWithdrawableStake(owner, _withdrawableStakeByOwner[owner]);
+        return _computeWithdrawableStake(staker, _withdrawableStakeByOwner[staker]);
     }
 
-    /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
-    /// @param owner of stake.
+    /// @dev Returns the stake delegated to a specific staking pool, by a given staker.
+    /// @param staker of stake.
     /// @param poolId Unique Id of pool.
-    /// @return Stake delegaated to pool by owner.
-    function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
+    /// @return Stake delegaated to pool by staker.
+    function getStakeDelegatedToPoolByOwner(address staker, bytes32 poolId)
         public
         view
         returns (IStructs.StakeBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
+        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
         return IStructs.StakeBalance({
             currentEpochBalance: storedBalance.currentEpochBalance,
             nextEpochBalance: storedBalance.nextEpochBalance
@@ -183,13 +183,13 @@ contract MixinStakeBalances is
         });
     }
 
-    /// @dev Returns the stake that can be withdrawn for a given owner.
-    /// @param owner to query.
+    /// @dev Returns the stake that can be withdrawn for a given staker.
+    /// @param staker to query.
     /// @param lastStoredWithdrawableStake The amount of withdrawable stake
     ///        that was last stored.
-    /// @return Withdrawable stake for owner.
+    /// @return Withdrawable stake for staker.
     function _computeWithdrawableStake(
-        address owner,
+        address staker,
         uint256 lastStoredWithdrawableStake
     )
         internal
@@ -198,7 +198,7 @@ contract MixinStakeBalances is
     {
         // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
         // so the upper bound of withdrawable stake is always limited by the value of `next`.
-        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(_inactiveStakeByOwner[owner]);
+        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(_inactiveStakeByOwner[staker]);
         if (storedBalance.currentEpoch == currentEpoch) {
             return LibSafeMath.min256(
                 storedBalance.nextEpochBalance,
