@@ -28,6 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IAssetProxyContract extends BaseContract {
+    public static deployedBytecode = '0x';
     /**
      * Transfers assets. Either succeeds or throws.
      */
@@ -472,8 +473,17 @@ export class IAssetProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string = IAssetProxyContract.deployedBytecode,
     ) {
-        super('IAssetProxy', IAssetProxyContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'IAssetProxy',
+            IAssetProxyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

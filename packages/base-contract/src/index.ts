@@ -82,6 +82,7 @@ export class BaseContract {
     public constructorArgs: any[] = [];
     private _evmIfExists?: VM;
     private _evmAccountIfExists?: Buffer;
+    private _deployedBytecodeIfExists?: Buffer;
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
@@ -197,9 +198,11 @@ export class BaseContract {
             await psm.putAccount(accountAddress, account);
 
             // 'deploy' the contract
-            const contractCode = await this._web3Wrapper.getContractCodeAsync(this.address);
-            const deployedBytecode = Buffer.from(contractCode.substr(2), 'hex');
-            await psm.putContractCode(addressBuf, deployedBytecode);
+            if (this._deployedBytecodeIfExists === undefined) {
+                const contractCode = await this._web3Wrapper.getContractCodeAsync(this.address);
+                this._deployedBytecodeIfExists = Buffer.from(contractCode.substr(2), 'hex');
+            }
+            await psm.putContractCode(addressBuf, this._deployedBytecodeIfExists);
 
             // save for later
             this._evmIfExists = vm;
@@ -252,6 +255,8 @@ export class BaseContract {
     /// @param supportedProvider for communicating with an ethereum node.
     /// @param logDecodeDependencies the name and ABI of contracts whose event logs are
     ///        decoded by this wrapper.
+    /// @param deployedBytecode the deployedBytecode of the contract, used for executing
+    ///        pure Solidity functions in memory. This is different from the bytecode.
     constructor(
         contractName: string,
         abi: ContractAbi,
@@ -259,9 +264,13 @@ export class BaseContract {
         supportedProvider: SupportedProvider,
         callAndTxnDefaults?: Partial<CallData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode?: string,
     ) {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
+        if (deployedBytecode !== undefined) {
+            assert.isHexString('deployedBytecode', deployedBytecode);
+        }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         if (callAndTxnDefaults !== undefined) {
             assert.doesConformToSchema('callAndTxnDefaults', callAndTxnDefaults, schemas.callDataSchema, [
@@ -278,6 +287,8 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
         this._abiEncoderByFunctionSignature = {};
+        this._deployedBytecodeIfExists =
+            deployedBytecode === undefined ? deployedBytecode : Buffer.from(deployedBytecode.substr(2), 'hex');
         _.each(methodAbis, methodAbi => {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();

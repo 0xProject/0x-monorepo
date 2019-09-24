@@ -28,6 +28,8 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class EthBalanceCheckerContract extends BaseContract {
+    public static deployedBytecode =
+        '0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063a0901e5114610030575b600080fd5b6100d36004803603602081101561004657600080fd5b81019060208101813564010000000081111561006157600080fd5b82018360208201111561007357600080fd5b8035906020019184602083028401116401000000008311171561009557600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610123945050505050565b60408051602080825283518183015283519192839290830191858101910280838360005b8381101561010f5781810151838201526020016100f7565b505050509050019250505060405180910390f35b6060808251604051908082528060200260200182016040528015610151578160200160208202803883390190505b50905060005b835181146101a95783818151811061016b57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff163182828151811061019657fe5b6020908102919091010152600101610157565b509291505056fea265627a7a723158208e3ee4f32e855ae8a6648cee5637fa515aca850035f9a1a43d11706388208ad064736f6c634300050b0032';
     /**
      * Batch fetches ETH balances
      */
@@ -214,6 +216,7 @@ export class EthBalanceCheckerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string = EthBalanceCheckerContract.deployedBytecode,
     ) {
         super(
             'EthBalanceChecker',
@@ -222,6 +225,7 @@ export class EthBalanceCheckerContract extends BaseContract {
             supportedProvider,
             txDefaults,
             logDecodeDependencies,
+            deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }

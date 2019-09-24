@@ -5,6 +5,10 @@
             {
                 "note": "Use V3 contracts",
                 "pr": 2181
+            },
+            {
+                "note": "Hardcode bytecode for local EVM execution",
+                "pr": 2198
             }
         ]
     },

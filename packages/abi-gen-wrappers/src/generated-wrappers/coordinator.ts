@@ -28,6 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorContract extends BaseContract {
+    public static deployedBytecode = '';
     /**
      * Recovers the address of a signer given a hash and signature.
      */
@@ -1499,8 +1500,17 @@ export class CoordinatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string = CoordinatorContract.deployedBytecode,
     ) {
-        super('Coordinator', CoordinatorContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'Coordinator',
+            CoordinatorContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

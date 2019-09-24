@@ -46,6 +46,7 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorRegistryContract extends BaseContract {
+    public static deployedBytecode = '';
     /**
      * Called by a Coordinator operator to set the endpoint of their Coordinator.
      */
@@ -529,6 +530,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string = CoordinatorRegistryContract.deployedBytecode,
     ) {
         super(
             'CoordinatorRegistry',
@@ -537,6 +539,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             supportedProvider,
             txDefaults,
             logDecodeDependencies,
+            deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>(
