@@ -29,7 +29,7 @@ This system is composed of four deployed contracts:
 |Contract|Description |
 |--|--|
 | Staking Contract | An upgradeable/stateless contract that implements staking logic |
-|Staking Contract Proxy|Stores staking state and delegates to the Staking Contract|
+|Staking Proxy|Stores staking state and delegates to the Staking Contract|
 |ZRX Vault|Securely holds staked ZRX Tokens|
 |Read-Only Proxy|Forces read-only calls to the Staking Contract|
 
@@ -59,7 +59,7 @@ In this worst-case scenario, state has been irreparably corrupted and the stakin
 
 ## 3 Contract Management
 
-This section outlines steps for managing the system of smart contracts. Operations are atomically executed as a group. Specific functions are outlined in the Interface section, below.
+This section outlines steps for managing the system of smart contracts. Operations are atomically executed as a group.
 
 ### 3.1 Deploying the system
 
@@ -78,7 +78,7 @@ This section outlines steps for managing the system of smart contracts. Operatio
 ### 3.3 Upgrading Staking Contract
 
 1. Deploy new Staking Contract.
-2. Attach to Staking Proxy.
+2. Attach Staking Contract to Staking Proxy.
 
 ### 3.4 Upgrading ZRX Vault
 
@@ -98,3 +98,50 @@ The staking contracts share the Exchange's ERC20 proxy. It is possible this cont
 
 1. Update the ERC20 Asset Proxy in the ZRX Vault.
 2. Update the ZRX Asset Data (if necessary) in the ZRX Vault.
+
+
+## 4 Epochs & Scheduling
+
+All processes in the system are segmented into nonoverlapping time intervals, called epochs. Epochs have a fixed minimum period (10 days at time of writing), which is configurable via [MixinParams](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/sys/MixinParams.sol). Epochs serve as the basis for all other timeframes within the system, which provides a more stable and consistent scheduling metric than timestamps.
+
+## 4.1 Ending One Epoch, and Starting a New One
+
+A new epoch automatically begins when the current epoch ends. Anyone can "end" an epoch by calling the staking contract after the minimum epoch period has elapsed.
+
+```
+function endEpoch()
+    external
+    returns (uint256 poolsRemaining);
+```
+
+Note: The return value (`poolsRemaining`) is described in detail in Section 7 Liquidity Rewards.
+
+
+## 5 Staking
+
+
+
+## 6 Market Making
+
+## 7 Protocol Fees
+
+## 8 Liquidity Rewards
+
+## 9 Staking Events
+
+## 10 Algorithms and Data Structures
+
+### 10.1 Stake Management
+
+### 10.2 Reward Tracking
+
+### 10.3 Computing Cobb-Douglas
+
+### 10.4 The Proxy Pattern & Read-Only Calls
+
+Ensuring the storage slot has not been changed.
+
+
+
+
+
