@@ -1,13 +1,12 @@
 import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { BlockParamLiteral, Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as ChaiBigNumber from 'chai-bignumber';
 import * as dirtyChai from 'dirty-chai';
 import * as Sinon from 'sinon';
-import { constants } from 'websocket';
 
 import {
     AbiGenDummyContract,
@@ -81,22 +80,30 @@ describe('AbiGenDummy Contract', () => {
     });
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
-            expect(abiGenDummy.simpleRevert.callAsync()).to.be.rejectedWith('SIMPLE_REVERT');
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('SIMPLE_REVERT'));
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            expect(abiGenDummy.revertWithConstant.callAsync()).to.be.rejectedWith('REVERT_WITH_CONSTANT');
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('REVERT_WITH_CONSTANT'));
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            expect(abiGenDummy.simpleRequire.callAsync()).to.be.rejectedWith('SIMPLE_REQUIRE');
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('SIMPLE_REQUIRE'));
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            expect(abiGenDummy.requireWithConstant.callAsync()).to.be.rejectedWith('REQUIRE_WITH_CONSTANT');
+            expect(abiGenDummy.simpleRevert.callAsync())
+                .to.be.rejectedWith(StringRevertError)
+                .deep.equal(new StringRevertError('REQUIRE_WITH_CONSTANT'));
         });
     });
 
