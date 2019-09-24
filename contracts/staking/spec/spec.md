@@ -102,9 +102,9 @@ The staking contracts share the Exchange's ERC20 proxy. It is possible this cont
 
 ## 4 Epochs & Scheduling
 
-![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Epochs.png)
-
 All processes in the system are segmented into nonoverlapping time intervals, called epochs. Epochs have a fixed minimum period (10 days at time of writing), which is configurable via [MixinParams](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/sys/MixinParams.sol). Epochs serve as the basis for all other timeframes within the system, which provides a more stable and consistent scheduling metric than timestamps.
+
+![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Epochs.png)
 
 ### 4.1 Ending One Epoch, and Starting a New One
 
