@@ -54,7 +54,6 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approveMakerAssetProxy.estimateGasAsync.bind(self, assetData),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -236,7 +235,6 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.withdrawAsset.estimateGasAsync.bind(self, assetData, amount),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -548,14 +546,6 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrdersWithEth.estimateGasAsync.bind(
-                    self,
-                    orders,
-                    makerAssetBuyAmount,
-                    signatures,
-                    feePercentage,
-                    feeRecipient.toLowerCase(),
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -991,13 +981,6 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrdersWithEth.estimateGasAsync.bind(
-                    self,
-                    orders,
-                    signatures,
-                    feePercentage,
-                    feeRecipient.toLowerCase(),
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1378,7 +1361,6 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
