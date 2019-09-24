@@ -9,6 +9,7 @@ import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api
 import { constants as stakingConstants } from './utils/constants';
 
 // tslint:disable:no-unnecessary-type-assertion
+// tslint:disable:max-file-line-count
 blockchainTests('Staking Pool Management', env => {
     // constants
     const { PPM_100_PERCENT, PPM_DENOMINATOR } = constants;
@@ -24,7 +25,7 @@ blockchainTests('Staking Pool Management', env => {
         // create accounts
         accounts = await env.getAccountAddressesAsync();
         owner = accounts[0];
-        users = accounts.slice(1);
+        users = accounts.slice(2);
         // set up ERC20Wrapper
         erc20Wrapper = new ERC20Wrapper(env.provider, accounts, owner);
         // deploy staking contracts
@@ -102,6 +103,65 @@ blockchainTests('Staking Pool Management', env => {
             // operator removes maker from pool
             await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress);
         });
+        it('Should successfully add/remove a maker to a pool if approved by maker', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const maker1Address = users[1];
+            const maker1 = new MakerActor(maker1Address, stakingApiWrapper);
+            const maker2Address = users[2];
+            const maker2 = new MakerActor(maker2Address, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker1.joinStakingPoolAsMakerAsync(poolId);
+            // operator adds maker to pool
+            await poolOperator.addMakerToStakingPoolAsync(poolId, maker1Address);
+            // maker joins pool
+            await maker2.joinStakingPoolAsMakerAsync(poolId);
+            // approved maker adds new maker to pool
+            await maker1.addMakerToStakingPoolAsync(poolId, maker2Address);
+        });
+        it('should fail to add a maker to a pool if called by pending maker', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker.joinStakingPoolAsMakerAsync(poolId);
+            await maker.addMakerToStakingPoolAsync(
+                poolId,
+                makerAddress,
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, operatorAddress),
+            );
+        });
+        it('should fail to add a maker to a pool if not called by operator/registered maker', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const maker1Address = users[1];
+            const maker1 = new MakerActor(maker1Address, stakingApiWrapper);
+            const maker2Address = users[2];
+            const maker2 = new MakerActor(maker2Address, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker1.joinStakingPoolAsMakerAsync(poolId);
+            await maker2.addMakerToStakingPoolAsync(
+                poolId,
+                maker1Address,
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, operatorAddress),
+            );
+        });
         it('Maker should successfully remove themselves from a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
@@ -118,6 +178,23 @@ blockchainTests('Staking Pool Management', env => {
             await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress);
             // maker removes themselves from pool
             await maker.removeMakerFromStakingPoolAsync(poolId, makerAddress);
+        });
+        it('should successful remove another maker from a pool', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker.joinStakingPoolAsMakerAsync(poolId);
+            // operator adds maker to pool
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress);
+            // maker removes themselves from pool
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress);
         });
         it('Should successfully add/remove multiple makers to the same pool', async () => {
             // test parameters
@@ -151,6 +228,28 @@ blockchainTests('Staking Pool Management', env => {
             // check the number of makers in the pool
             pool = await stakingApiWrapper.stakingContract.getStakingPool.callAsync(poolId);
             expect(pool.numberOfMakers, 'number of makers in pool after removing').to.be.bignumber.equal(0);
+        });
+        it('should fail to remove a maker from a pool if not called by operator/registered maker', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const maker1Address = users[1];
+            const maker1 = new MakerActor(maker1Address, stakingApiWrapper);
+            const maker2Address = users[2];
+            const maker2 = new MakerActor(maker2Address, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker1.joinStakingPoolAsMakerAsync(poolId);
+            // operator adds maker to pool
+            await poolOperator.addMakerToStakingPoolAsync(poolId, maker1Address);
+            await maker2.removeMakerFromStakingPoolAsync(
+                poolId,
+                maker1Address,
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(maker2Address, operatorAddress),
+            );
         });
         it('Should fail if maker already assigned to another pool tries to join', async () => {
             // test parameters
@@ -363,6 +462,24 @@ blockchainTests('Staking Pool Management', env => {
             // decrease operator share
             await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare - 1);
         });
+        it('Maker should successfuly decrease their share of rewards', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // maker joins pool
+            await maker.joinStakingPoolAsMakerAsync(poolId);
+            // operator adds maker to pool
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress);
+
+            // decrease operator share
+            await maker.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare - 1);
+        });
         it('Should fail if operator tries to increase their share of rewards', async () => {
             // test parameters
             const operatorAddress = users[0];
@@ -399,6 +516,22 @@ blockchainTests('Staking Pool Management', env => {
             );
             // decrease operator share
             await poolOperator.decreaseStakingPoolOperatorShareAsync(poolId, operatorShare, revertError);
+        });
+        it('should fail to decrease operator share if not called by operator/registered maker', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = (39 / 100) * PPM_DENOMINATOR;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingApiWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingApiWrapper);
+            // create pool
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            await maker.decreaseStakingPoolOperatorShareAsync(
+                poolId,
+                operatorShare - 1,
+                new StakingRevertErrors.OnlyCallableByPoolOperatorOrMakerError(makerAddress, operatorAddress),
+            );
         });
     });
 });
