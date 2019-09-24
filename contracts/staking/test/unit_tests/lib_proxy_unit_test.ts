@@ -4,7 +4,7 @@ import { cartesianProduct } from 'js-combinatorics';
 
 import { artifacts, TestLibProxyContract, TestLibProxyReceiverContract } from '../../src';
 
-blockchainTests.resets('LibProxy', env => {
+blockchainTests.resets('LibProxy unit tests', env => {
     let proxy: TestLibProxyContract;
     let receiver: TestLibProxyReceiverContract;
 

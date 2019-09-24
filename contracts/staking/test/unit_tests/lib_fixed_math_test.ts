@@ -7,7 +7,7 @@ import { artifacts, TestLibFixedMathContract } from '../../src';
 
 import { assertRoughlyEquals, fromFixed, toDecimal, toFixed } from '../utils/number_utils';
 
-blockchainTests('LibFixedMath', env => {
+blockchainTests('LibFixedMath unit tests', env => {
     let testContract: TestLibFixedMathContract;
 
     before(async () => {

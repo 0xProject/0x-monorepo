@@ -3,10 +3,10 @@ import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
+import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../../src/';
 
-import { constants as stakingConstants } from './utils/constants';
-import { StakingParams } from './utils/types';
+import { constants as stakingConstants } from '../utils/constants';
+import { StakingParams } from '../utils/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
     let testContract: MixinParamsContract;

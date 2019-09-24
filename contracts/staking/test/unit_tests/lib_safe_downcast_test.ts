@@ -3,7 +3,7 @@ import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
 import { artifacts, TestLibSafeDowncastContract } from '../../src/';
 
-blockchainTests('LibSafeDowncast', env => {
+blockchainTests('LibSafeDowncast unit tests', env => {
     let testContract: TestLibSafeDowncastContract;
 
     before(async () => {

@@ -2,12 +2,12 @@ import { blockchainTests, Numberish } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestCobbDouglasContract } from '../src/';
+import { artifacts, TestCobbDouglasContract } from '../../src/';
 
-import { assertRoughlyEquals, getRandomInteger, getRandomPortion, toDecimal } from './utils/number_utils';
+import { assertRoughlyEquals, getRandomInteger, getRandomPortion, toDecimal } from '../utils/number_utils';
 
 // tslint:disable: no-unnecessary-type-assertion
-blockchainTests('Cobb-Douglas', env => {
+blockchainTests('LibCobbDouglas unit tests', env => {
     const FUZZ_COUNT = 1024;
     const PRECISION = 15;
 
