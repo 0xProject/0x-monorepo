@@ -262,14 +262,6 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _cumulativeRewardsByPoolReferenceCounter_slot,
-                _cumulativeRewardsByPoolReferenceCounter_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
                 _cumulativeRewardsByPoolLastStored_slot,
                 _cumulativeRewardsByPoolLastStored_offset,
                 slot,
