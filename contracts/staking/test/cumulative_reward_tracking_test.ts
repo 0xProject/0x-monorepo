@@ -53,7 +53,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Creates CR for epoch 1
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 0 }, { event: 'SetCumulativeReward', epoch: 1 }],
+                [{ event: 'SetCumulativeReward', epoch: 0 }],
             );
         });
         it('re-delegating in the same epoch', async () => {
@@ -64,17 +64,13 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 ],
                 [
                     // Updates CR for epoch 0
-                    // Creates CR for epoch 1
                     TestAction.Delegate,
                     // Updates CR for epoch 0
-                    // Updates CR for epoch 1
                     TestAction.Delegate,
                 ],
                 [
                     { event: 'SetCumulativeReward', epoch: 0 },
-                    { event: 'SetCumulativeReward', epoch: 1 },
                     { event: 'SetCumulativeReward', epoch: 0 },
-                    { event: 'SetCumulativeReward', epoch: 1 },
                 ],
             );
         });
@@ -91,13 +87,11 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Creates a CR for epoch 1
                     // Sets MRCR to epoch 1
                     // Unsets the CR for epoch 0
-                    // Creates a CR for epoch 2
                     TestAction.Delegate,
                 ],
                 [
                     { event: 'SetCumulativeReward', epoch: 1 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 1 },
-                    { event: 'SetCumulativeReward', epoch: 2 },
                 ],
             );
         });
@@ -115,14 +109,11 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     // Updates CR for epoch 1
                     // Sets MRCR to epoch 1
-                    // Creates CR for epoch 2
-                    // Clears CR for epoch 0
                     TestAction.Delegate,
                 ],
                 [
                     { event: 'SetCumulativeReward', epoch: 1 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 1 },
-                    { event: 'SetCumulativeReward', epoch: 2 },
                 ],
             );
         });
@@ -135,8 +126,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     TestAction.Finalize,
                     // Creates CR for epoch 1
                     // Sets MRCR to epoch 1
-                    // Clears CR for epoch 0
-                    // Creates CR for epoch 2
                     TestAction.Delegate,
                     // Move to epoch 2
                     TestAction.Finalize,
@@ -151,7 +140,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 2 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 2 },
-                    { event: 'SetCumulativeReward', epoch: 3 },
                 ],
             );
         });
@@ -208,7 +196,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 2 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 2 },
-                    { event: 'SetCumulativeReward', epoch: 3 },
                 ],
             );
         });
@@ -241,7 +228,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 2 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 2 },
-                    { event: 'SetCumulativeReward', epoch: 3 },
                 ],
             );
         });
@@ -300,7 +286,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 2
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 3 }, { event: 'SetCumulativeReward', epoch: 4 }],
+                [{ event: 'SetCumulativeReward', epoch: 3 }],
             );
         });
         it('delegate in epoch 0 and 1, earn reward in epoch 3, then undelegate half', async () => {
@@ -335,7 +321,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 2
                     TestAction.Undelegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 3 }, { event: 'SetCumulativeReward', epoch: 4 }],
+                [{ event: 'SetCumulativeReward', epoch: 3 }],
             );
         });
         it('delegate in epoch 1, 2, earn rewards in epoch 3, skip to epoch 4, then delegate', async () => {
@@ -376,7 +362,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 4 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 4 },
-                    { event: 'SetCumulativeReward', epoch: 5 },
                 ],
             );
         });
@@ -401,7 +386,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 1 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 1 },
-                    { event: 'SetCumulativeReward', epoch: 2 },
                 ],
             );
         });
@@ -440,7 +424,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 4 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 4 },
-                    { event: 'SetCumulativeReward', epoch: 5 },
                 ],
             );
         });
@@ -472,7 +455,6 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                 [
                     { event: 'SetCumulativeReward', epoch: 3 },
                     { event: 'SetMostRecentCumulativeReward', epoch: 3 },
-                    { event: 'SetCumulativeReward', epoch: 4 },
                 ],
             );
         });

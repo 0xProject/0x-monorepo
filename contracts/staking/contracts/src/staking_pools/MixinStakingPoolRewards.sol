@@ -294,10 +294,9 @@ contract MixinStakingPoolRewards is
     /// @param poolId Unique id of pool.
     /// @param unsyncedStake Unsynced delegated stake to pool by owner
     /// @param currentEpoch The epoch in which this call is executing
-    /// @param unfinalizedMembersReward Unfinalized total members reward
-    ///        (if any).
+    /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
-    /// @return totalReward Balance in ETH.
+    /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
         IStructs.StoredBalance memory unsyncedStake,
@@ -322,54 +321,79 @@ contract MixinStakingPoolRewards is
             return 0;
         }
 
-        // If there are unfinalized rewards this epoch, compute the member's
-        // share.
-        if (unfinalizedMembersReward != 0 && unfinalizedMembersStake != 0) {
-            // Unfinalized rewards are always earned from stake in
-            // the prior epoch so we want the stake at `currentEpoch-1`.
-            uint256 _stake = unsyncedStake.currentEpoch >= currentEpoch.safeSub(1) ?
-                unsyncedStake.currentEpochBalance :
-                unsyncedStake.nextEpochBalance;
-            if (_stake != 0) {
-                reward = LibMath.getPartialAmountFloor(
-                    unfinalizedMembersReward,
-                    unfinalizedMembersStake,
-                    _stake
-                );
-            }
-        }
+        // We account for rewards over 3 intervals, below.
 
-        // Get the last epoch where a reward was credited to this pool, which
-        // also happens to be when we last created a cumulative reward entry.
-        uint256 lastRewardEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
+        reward = _computeUnfinalizedDelegatorReward(
+            unsyncedStake,
+            currentEpoch,
+            unfinalizedMembersReward,
+            unfinalizedMembersStake
+        );
 
-        // If the stake has been touched since the last reward epoch,
-        // it has already been claimed.
-        if (unsyncedStake.currentEpoch >= lastRewardEpoch) {
-            return reward;
-        }
-        // From here we know: `unsyncedStake.currentEpoch < currentEpoch > 0`.
-
-        uint256 nextStakeEpoch = uint256(unsyncedStake.currentEpoch).safeAdd(1);
+        // 2/3 Finalized rewards earned in epochs [`unsyncedStake.currentEpoch + 1` .. `currentEpoch - 1`]
+        uint256 unsyncedStakeNextEpoch = uint256(unsyncedStake.currentEpoch).safeAdd(1);
         reward = reward.safeAdd(
             _computeMemberRewardOverInterval(
                 poolId,
                 unsyncedStake.currentEpochBalance,
                 unsyncedStake.currentEpoch,
-                nextStakeEpoch
+                unsyncedStakeNextEpoch
             )
         );
-        if (nextStakeEpoch < lastRewardEpoch) {
-            reward = reward.safeAdd(
-                _computeMemberRewardOverInterval(
-                    poolId,
-                    unsyncedStake.nextEpochBalance,
-                    nextStakeEpoch,
-                    lastRewardEpoch
-                )
-            );
-        }
+
+        // 3/3 Finalized rewards earned in epoch `unsyncedStake.currentEpoch`.
+        reward = reward.safeAdd(
+            _computeMemberRewardOverInterval(
+                poolId,
+                unsyncedStake.nextEpochBalance,
+                unsyncedStakeNextEpoch,
+                currentEpoch
+            )
+        );
+
         return reward;
+    }
+
+    /// @dev Computes the unfinalized rewards earned by a delegator in the last epoch.
+    /// @param unsyncedStake Unsynced delegated stake to pool by owner
+    /// @param currentEpoch The epoch in which this call is executing
+    /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
+    /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
+    /// @return reward Balance in WETH.
+    function _computeUnfinalizedDelegatorReward(
+        IStructs.StoredBalance memory unsyncedStake,
+        uint256 currentEpoch,
+        uint256 unfinalizedMembersReward,
+        uint256 unfinalizedMembersStake
+    )
+        private
+        view
+        returns (uint256)
+    {
+        // If there are unfinalized rewards this epoch, compute the member's
+        // share.
+        if (unfinalizedMembersReward == 0 || unfinalizedMembersStake == 0) {
+            return 0;
+        }
+
+        // Unfinalized rewards are always earned from stake in
+        // the prior epoch so we want the stake at `currentEpoch-1`.
+        uint256 unfinalizedStakeBalance = unsyncedStake.currentEpoch >= currentEpoch.safeSub(1) ?
+            unsyncedStake.currentEpochBalance :
+            unsyncedStake.nextEpochBalance;
+
+        // Sanity check to save gas on computation
+        if (unfinalizedStakeBalance == 0) {
+            return 0;
+        }
+
+        // Compute unfinalized reward
+        return LibMath.getPartialAmountFloor(
+            unfinalizedMembersReward,
+            unfinalizedMembersStake,
+            unfinalizedStakeBalance
+        );
     }
 
     /// @dev Adds or removes cumulative reward dependencies for a delegator.
@@ -388,25 +412,18 @@ contract MixinStakingPoolRewards is
         // reference point when updating dependencies
         IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
 
-        // Record dependency on current epoch.
-        if (_delegatedStakeToPoolByOwner.currentEpochBalance != 0
-            || _delegatedStakeToPoolByOwner.nextEpochBalance != 0)
-        {
-            _trySetCumulativeReward(
-                poolId,
-                _delegatedStakeToPoolByOwner.currentEpoch,
-                mostRecentCumulativeReward
-            );
+        // The delegator depends on the Cumulative Reward for this epoch
+        // only if they are currently staked or will be staked next epoch.
+        if (_delegatedStakeToPoolByOwner.currentEpochBalance == 0 && _delegatedStakeToPoolByOwner.nextEpochBalance == 0) {
+            return;
         }
 
-        // Record dependency on the next epoch
-        if (_delegatedStakeToPoolByOwner.nextEpochBalance != 0) {
-            _trySetCumulativeReward(
-                poolId,
-                uint256(_delegatedStakeToPoolByOwner.currentEpoch).safeAdd(1),
-                mostRecentCumulativeReward
-            );
-        }
+        // Delegator depends on the Cumulative Reward for this epoch - ensure it is set.
+        _trySetCumulativeReward(
+            poolId,
+            _delegatedStakeToPoolByOwner.currentEpoch,
+            mostRecentCumulativeReward
+        );
     }
 
     /// @dev Increments rewards for a pool.

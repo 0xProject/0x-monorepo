@@ -165,22 +165,22 @@ contract MixinCumulativeRewards is
         view
         returns (uint256 reward)
     {
-        if (memberStakeOverInterval == 0) {
+        // Sanity check if we can skip computation, as it will result in zero.
+        if (memberStakeOverInterval == 0 || beginEpoch == endEpoch) {
             return 0;
         }
 
         // Sanity check interval
-        require(beginEpoch <= endEpoch, "CR_INTERVAL_INVALID");
+        require(beginEpoch < endEpoch, "CR_INTERVAL_INVALID");
 
         // Sanity check begin reward
-        IStructs.Fraction memory beginReward =
-            _cumulativeRewardsByPool[poolId][beginEpoch];
-        require(_isCumulativeRewardSet(beginReward), "CR_INTERVAL_INVALID_BEGIN");
+        (IStructs.Fraction memory beginReward, uint256 beginRewardStoredAt) = _getCumulativeRewardAtEpoch(poolId, beginEpoch);
+        (IStructs.Fraction memory endReward, uint256 endRewardStoredAt) = _getCumulativeRewardAtEpoch(poolId, endEpoch);
 
-        // Sanity check end reward
-        IStructs.Fraction memory endReward =
-            _cumulativeRewardsByPool[poolId][endEpoch];
-        require(_isCumulativeRewardSet(endReward), "CR_INTERVAL_INVALID_END");
+        // If the rewards were stored at the same epoch then the computation will result in zero.
+        if (beginRewardStoredAt == endRewardStoredAt) {
+            return 0;
+        }
 
         // Compute reward
         reward = LibFractions.scaleDifference(
@@ -202,5 +202,46 @@ contract MixinCumulativeRewards is
     {
         uint256 lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
         return _cumulativeRewardsByPool[poolId][lastStoredEpoch];
+    }
+
+    /// @dev Fetch the cumulative reward for a given epoch.
+    ///      If the corresponding CR does not exist in state, then we backtrack
+    ///      to find its value by querying `epoch-1` and then most recent CR.
+    /// @param poolId Unique ID of pool.
+    /// @param epoch The epoch to find the
+    /// @return cumulativeReward The cumulative reward for `poolId` at `epoch`.
+    /// @return cumulativeRewardStoredAt Epoch that the `cumulativeReward` is stored at.
+    function _getCumulativeRewardAtEpoch(bytes32 poolId, uint256 epoch)
+        internal
+        view
+        returns (
+            IStructs.Fraction memory cumulativeReward,
+            uint256 cumulativeRewardStoredAt
+        )
+    {
+        // Return CR at `epoch`, given it's set.
+        cumulativeReward = _cumulativeRewardsByPool[poolId][epoch];
+        if (_isCumulativeRewardSet(cumulativeReward)) {
+            return (cumulativeReward, epoch);
+        }
+
+        // Return CR at `epoch-1`, given it's set.
+        uint256 lastEpoch = epoch.safeSub(1);
+        cumulativeReward = _cumulativeRewardsByPool[poolId][lastEpoch];
+        if (_isCumulativeRewardSet(cumulativeReward)) {
+            return (cumulativeReward, lastEpoch);
+        }
+
+        // Return the most recent CR, given it's less than `epoch`.
+        uint256 mostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        if (mostRecentEpoch < epoch) {
+            cumulativeReward = _cumulativeRewardsByPool[poolId][mostRecentEpoch];
+            if (_isCumulativeRewardSet(cumulativeReward)) {
+                return (cumulativeReward, mostRecentEpoch);
+            }
+        }
+
+        // Could not find a CR for `epoch`
+        revert("CR_INVALID_EPOCH");
     }
 }
