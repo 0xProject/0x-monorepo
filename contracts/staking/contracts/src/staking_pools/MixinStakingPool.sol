@@ -279,17 +279,6 @@ contract MixinStakingPool is
         );
     }
 
-    /// @dev return the staking pool operator
-    /// @param poolId Unique id of pool.
-    function _getStakingPoolOperator(bytes32 poolId)
-        internal
-        view
-        returns (address operator)
-    {
-        operator = _poolById[poolId].operator;
-        return operator;
-    }
-
     /// @dev Computes the unique id that comes after the input pool id.
     /// @param poolId Unique id of pool.
     /// @return Next pool id after input pool.
@@ -308,7 +297,7 @@ contract MixinStakingPool is
         view
         returns (bool)
     {
-        if (_getStakingPoolOperator(poolId) == NIL_ADDRESS) {
+        if (_poolById[poolId].operator == NIL_ADDRESS) {
             // we use the pool's operator as a proxy for its existence
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PoolExistenceError(
@@ -355,7 +344,7 @@ contract MixinStakingPool is
         private
         view
     {
-        address operator = _getStakingPoolOperator(poolId);
+        address operator = _poolById[poolId].operator;
         if (
             msg.sender != operator &&
             getStakingPoolIdOfMaker(msg.sender) != poolId
