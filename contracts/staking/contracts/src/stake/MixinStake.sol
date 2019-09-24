@@ -50,7 +50,7 @@ contract MixinStake is
         address payable owner = msg.sender;
 
         // deposit equivalent amount of ZRX into vault
-        zrxVault.depositFrom(owner, amount);
+        getZrxVault().depositFrom(owner, amount);
 
         // mint stake
         _incrementCurrentAndNextBalance(_activeStakeByOwner[owner], amount);
@@ -96,7 +96,7 @@ contract MixinStake is
             currentWithdrawableStake.safeSub(amount);
 
         // withdraw equivalent amount of ZRX from vault
-        zrxVault.withdrawFrom(owner, amount);
+        getZrxVault().withdrawFrom(owner, amount);
 
         // emit stake event
         emit Unstake(
@@ -211,7 +211,7 @@ contract MixinStake is
         // Increment how much stake has been delegated to pool.
         _incrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // Synchronizes reward state in the pool that the staker is delegating
+        // Synchronizes reward state in the pool that the owner is delegating
         // to.
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);
@@ -251,7 +251,7 @@ contract MixinStake is
         // decrement how much stake has been delegated to pool
         _decrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // synchronizes reward state in the pool that the staker is undelegating
+        // synchronizes reward state in the pool that the owner is undelegating
         // from
         IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[owner][poolId]);

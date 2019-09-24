@@ -33,9 +33,6 @@ contract MixinStorage is
     MixinConstants,
     Authorizable
 {
-    // WETH Asset Proxy
-    IAssetProxy public wethAssetProxy;
-
     // address of staking contract
     address public stakingContract;
 
@@ -100,9 +97,6 @@ contract MixinStorage is
 
     // registered 0x Exchange contracts
     mapping (address => bool) public validExchanges;
-
-    // ZRX vault (stores staked ZRX)
-    IZrxVault public zrxVault;
 
     /* Tweakable parameters */
 

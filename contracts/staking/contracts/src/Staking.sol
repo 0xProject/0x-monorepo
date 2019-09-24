@@ -56,22 +56,14 @@ contract Staking is
     /// @dev Initialize storage owned by this contract.
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function init(
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function init()
         public
         onlyAuthorized
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // to prevent accidentally clearing prior state.
         _initMixinScheduler();
-        _initMixinParams(
-            _wethProxyAddress,
-            _zrxVaultAddress
-        );
+        _initMixinParams();
     }
 
     /// @dev This function will fail if the storage layout of this contract deviates from
@@ -114,14 +106,6 @@ contract Staking is
             slot := add(slot, 0x1)
 
             /// MixinStorage
-
-            assertSlotAndOffset(
-                wethAssetProxy_slot,
-                wethAssetProxy_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
 
             assertSlotAndOffset(
                 stakingContract_slot,
@@ -270,14 +254,6 @@ contract Staking is
             assertSlotAndOffset(
                 validExchanges_slot,
                 validExchanges_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                zrxVault_slot,
-                zrxVault_offset,
                 slot,
                 offset
             )

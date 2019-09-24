@@ -1,4 +1,4 @@
-import { constants as testConstants, randomAddress } from '@0x/contracts-test-utils';
+import { constants as testConstants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 const TEN_DAYS = 10 * 24 * 60 * 60;
@@ -17,8 +17,6 @@ export const constants = {
         maximumMakersInPool: new BigNumber(10),
         cobbDouglasAlphaNumerator: new BigNumber(1),
         cobbDouglasAlphaDenominator: new BigNumber(2),
-        wethProxyAddress: randomAddress(),
-        zrxVaultAddress: randomAddress(),
     },
     PPM,
 };

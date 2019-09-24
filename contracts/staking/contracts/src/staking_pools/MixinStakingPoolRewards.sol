@@ -184,7 +184,7 @@ contract MixinStakingPoolRewards is
 
         if (operatorReward > 0) {
             // Transfer the operator's weth reward to the operator
-            _getWethContract().transfer(pool.operator, operatorReward);
+            getWethContract().transfer(pool.operator, operatorReward);
         }
 
         if (membersReward > 0) {
@@ -283,7 +283,7 @@ contract MixinStakingPoolRewards is
         _decreasePoolRewards(poolId, balance);
 
         // Withdraw the member's WETH balance
-        _getWethContract().transfer(member, balance);
+        getWethContract().transfer(member, balance);
     }
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
