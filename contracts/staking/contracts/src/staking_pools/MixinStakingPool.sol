@@ -125,7 +125,8 @@ contract MixinStakingPool is
     {
         // Is the maker already in a pool?
         address makerAddress = msg.sender;
-        if (isMakerAssignedToStakingPool(makerAddress)) {
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+        if (poolJoinStatus.confirmed) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
@@ -133,10 +134,7 @@ contract MixinStakingPool is
             ));
         }
 
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
-            poolId: poolId,
-            confirmed: false
-        });
+        poolJoinStatus.poolId = poolId;
         poolJoinedByMakerAddress[makerAddress] = poolJoinStatus;
 
         // Maker has joined to the pool, awaiting operator confirmation
@@ -204,22 +202,12 @@ contract MixinStakingPool is
         view
         returns (bytes32)
     {
-        if (isMakerAssignedToStakingPool(makerAddress)) {
-            return poolJoinedByMakerAddress[makerAddress].poolId;
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+        if (poolJoinStatus.confirmed) {
+            return poolJoinStatus.poolId;
         } else {
             return NIL_POOL_ID;
         }
-    }
-
-    /// @dev Returns true iff the maker is assigned to a staking pool.
-    /// @param makerAddress Address of maker
-    /// @return True iff assigned.
-    function isMakerAssignedToStakingPool(address makerAddress)
-        public
-        view
-        returns (bool)
-    {
-        return poolJoinedByMakerAddress[makerAddress].confirmed;
     }
 
     /// @dev Returns a staking pool
@@ -242,11 +230,12 @@ contract MixinStakingPool is
     )
         internal
     {
-        // cache pool for use throughout this function
+        // cache pool and join status for use throughout this function
         IStructs.Pool memory pool = _poolById[poolId];
-
+        IStructs.MakerPoolJoinStatus memory poolJoinStatus = poolJoinedByMakerAddress[makerAddress];
+    
         // Is the maker already in a pool?
-        if (isMakerAssignedToStakingPool(makerAddress)) {
+        if (poolJoinStatus.confirmed) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressAlreadyRegistered,
                 makerAddress,
@@ -255,7 +244,7 @@ contract MixinStakingPool is
         }
 
         // Is the maker trying to join this pool; or are they the operator?
-        bytes32 makerPendingPoolId = poolJoinedByMakerAddress[makerAddress].poolId;
+        bytes32 makerPendingPoolId = poolJoinStatus.poolId;
         if (makerPendingPoolId != poolId && makerAddress != pool.operator) {
             LibRichErrors.rrevert(LibStakingRichErrors.MakerPoolAssignmentError(
                 LibStakingRichErrors.MakerPoolAssignmentErrorCodes.MakerAddressNotPendingAdd,
@@ -276,7 +265,7 @@ contract MixinStakingPool is
         }
 
         // Add maker to pool
-        IStructs.MakerPoolJoinStatus memory poolJoinStatus = IStructs.MakerPoolJoinStatus({
+        poolJoinStatus = IStructs.MakerPoolJoinStatus({
             poolId: poolId,
             confirmed: true
         });
