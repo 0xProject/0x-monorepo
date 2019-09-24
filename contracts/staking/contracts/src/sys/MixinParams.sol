@@ -22,10 +22,7 @@ import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../immutable/MixinStorage.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
-import "../interfaces/IEthVault.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IZrxVault.sol";
 import "../libs/LibStakingRichErrors.sol";
 
@@ -33,7 +30,6 @@ import "../libs/LibStakingRichErrors.sol";
 contract MixinParams is
     IStakingEvents,
     MixinConstants,
-    MixinDeploymentConstants,
     Ownable,
     MixinStorage
 {
@@ -45,8 +41,6 @@ contract MixinParams is
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function setParams(
         uint256 _epochDurationInSeconds,
@@ -56,8 +50,6 @@ contract MixinParams is
         uint32 _cobbDouglasAlphaNumerator,
         uint32 _cobbDouglasAlphaDenominator,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         external
@@ -71,8 +63,6 @@ contract MixinParams is
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator,
             _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
             _zrxVaultAddress
         );
     }
@@ -85,8 +75,6 @@ contract MixinParams is
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @return _wethProxyAddress The address that can transfer WETH for fees.
-    /// @return _ethVaultAddress Address of the EthVault contract.
-    /// @return _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @return _zrxVaultAddress Address of the ZrxVault contract.
     function getParams()
         external
@@ -99,8 +87,6 @@ contract MixinParams is
             uint32 _cobbDouglasAlphaNumerator,
             uint32 _cobbDouglasAlphaDenominator,
             address _wethProxyAddress,
-            address _ethVaultAddress,
-            address _rewardVaultAddress,
             address _zrxVaultAddress
         )
     {
@@ -111,20 +97,14 @@ contract MixinParams is
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
         _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
         _wethProxyAddress = address(wethAssetProxy);
-        _ethVaultAddress = address(ethVault);
-        _rewardVaultAddress = address(rewardVault);
         _zrxVaultAddress = address(zrxVault);
     }
 
     /// @dev Initialize storage belonging to this mixin.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _initMixinParams(
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         internal
@@ -142,8 +122,6 @@ contract MixinParams is
             1,                             // cobbDouglasAlphaNumerator
             2,                             // cobbDouglasAlphaDenominator
             _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
             _zrxVaultAddress
         );
     }
@@ -160,8 +138,6 @@ contract MixinParams is
             cobbDouglasAlphaNumerator != 0 &&
             cobbDouglasAlphaDenominator != 0 &&
             address(wethAssetProxy) != NIL_ADDRESS &&
-            address(ethVault) != NIL_ADDRESS &&
-            address(rewardVault) != NIL_ADDRESS &&
             address(zrxVault) != NIL_ADDRESS
         ) {
             LibRichErrors.rrevert(
@@ -169,26 +145,6 @@ contract MixinParams is
                     LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
                 )
             );
-        }
-    }
-
-    /// @dev Rescind the WETH allowance for `oldSpenders` and grant `newSpenders`
-    ///      an unlimited allowance.
-    /// @param oldSpenders Addresses to remove allowance from.
-    /// @param newSpenders Addresses to grant allowance to.
-    function _transferWETHAllownces(
-        address[2] memory oldSpenders,
-        address[2] memory newSpenders
-    )
-        internal
-    {
-        IEtherToken weth = IEtherToken(_getWETHAddress());
-        // Grant new allowances.
-        for (uint256 i = 0; i < oldSpenders.length; i++) {
-            // Rescind old allowance.
-            weth.approve(oldSpenders[i], 0);
-            // Grant new allowance.
-            weth.approve(newSpenders[i], uint256(-1));
         }
     }
 
@@ -200,8 +156,6 @@ contract MixinParams is
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _setParams(
         uint256 _epochDurationInSeconds,
@@ -211,17 +165,10 @@ contract MixinParams is
         uint32 _cobbDouglasAlphaNumerator,
         uint32 _cobbDouglasAlphaDenominator,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         private
     {
-        _transferWETHAllownces(
-            [address(ethVault), address(rewardVault)],
-            [_ethVaultAddress, _rewardVaultAddress]
-        );
-
         epochDurationInSeconds = _epochDurationInSeconds;
         rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
         minimumPoolStake = _minimumPoolStake;
@@ -229,8 +176,6 @@ contract MixinParams is
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = _cobbDouglasAlphaDenominator;
         wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        ethVault = IEthVault(_ethVaultAddress);
-        rewardVault = IStakingPoolRewardVault(_rewardVaultAddress);
         zrxVault = IZrxVault(_zrxVaultAddress);
 
         emit ParamsSet(
@@ -241,8 +186,6 @@ contract MixinParams is
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator,
             _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
             _zrxVaultAddress
         );
     }

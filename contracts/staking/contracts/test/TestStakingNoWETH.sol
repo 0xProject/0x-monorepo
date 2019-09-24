@@ -28,17 +28,37 @@ import "../src/Staking.sol";
 contract TestStakingNoWETH is
     Staking
 {
-    function _transferWETHAllownces(
-        address[2] memory oldSpenders,
-        address[2] memory newSpenders
-    )
+    event Transfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _value
+    );
+
+    function transfer(address to, uint256 amount)
+        external
+        returns (bool)
+    {
+        emit Transfer(address(this), to, amount);
+        return true;
+    }
+
+    function _wrapEth()
         internal
     {}
 
-    function _wrapBalanceToWETHAndGetBalance()
+    function _getAvailableWethBalance()
         internal
-        returns (uint256 balance)
+        view
+        returns (uint256)
     {
         return address(this).balance;
+    }
+
+    function _getWethContract()
+        internal
+        view
+        returns (IEtherToken)
+    {
+        return IEtherToken(address(this));
     }
 }

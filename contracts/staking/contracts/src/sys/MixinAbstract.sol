@@ -27,8 +27,8 @@ import "../interfaces/IStructs.sol";
 contract MixinAbstract {
 
     /// @dev Instantly finalizes a single pool that was active in the previous
-    ///      epoch, crediting it rewards and sending those rewards to the reward
-    ///      and eth vault. This can be called by internal functions that need
+    ///      epoch, crediting it rewards for members and withdrawing operator's 
+    ///      rewards as WETH. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
     ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.

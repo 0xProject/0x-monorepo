@@ -53,8 +53,8 @@ contract MixinStakeStorage is
         }
 
         // load balance from storage and synchronize it
-        IStructs.StoredBalance memory from = _loadAndSyncBalance(fromPtr);
-        IStructs.StoredBalance memory to = _loadAndSyncBalance(toPtr);
+        IStructs.StoredBalance memory from = _loadSyncedBalance(fromPtr);
+        IStructs.StoredBalance memory to = _loadSyncedBalance(toPtr);
 
         // sanity check on balance
         if (amount > from.nextEpochBalance) {
@@ -81,7 +81,7 @@ contract MixinStakeStorage is
     ///      was stored.
     /// @param balancePtr to load and sync.
     /// @return synchronized balance.
-    function _loadAndSyncBalance(IStructs.StoredBalance storage balancePtr)
+    function _loadSyncedBalance(IStructs.StoredBalance storage balancePtr)
         internal
         view
         returns (IStructs.StoredBalance memory balance)
@@ -119,7 +119,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
         balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeAdd(amount).downcastToUint96();
 
@@ -134,7 +134,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
         balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeSub(amount).downcastToUint96();
 
@@ -149,7 +149,7 @@ contract MixinStakeStorage is
         internal
     {
         // Add stake to balance
-        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
 
         // update state
@@ -163,7 +163,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadAndSyncBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
 
         // update state

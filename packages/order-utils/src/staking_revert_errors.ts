@@ -25,8 +25,6 @@ export enum InvalidParamValueErrorCode {
     InvalidMaximumMakersInPool,
     InvalidMinimumPoolStake,
     InvalidWethProxyAddress,
-    InvalidEthVaultAddress,
-    InvalidRewardVaultAddress,
     InvalidZrxVaultAddress,
     InvalidEpochDuration,
 }
@@ -190,18 +188,6 @@ export class InvalidParamValueError extends RevertError {
     }
 }
 
-export class EthVaultNotSetError extends RevertError {
-    constructor() {
-        super('EthVaultNotSetError', 'EthVaultNotSetError()');
-    }
-}
-
-export class RewardVaultNotSetError extends RevertError {
-    constructor() {
-        super('RewardVaultNotSetError', 'RewardVaultNotSetError()');
-    }
-}
-
 export class InvalidStakeStatusError extends RevertError {
     constructor(status?: BigNumber) {
         super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint256 status)', { status });
@@ -247,7 +233,6 @@ export class PreviousEpochNotFinalizedError extends RevertError {
 const types = [
     AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
-    EthVaultNotSetError,
     ExchangeAddressAlreadyRegisteredError,
     ExchangeAddressNotRegisteredError,
     InitializationError,
@@ -267,7 +252,6 @@ const types = [
     PoolExistenceError,
     PreviousEpochNotFinalizedError,
     ProxyDestinationCannotBeNilError,
-    RewardVaultNotSetError,
     WithdrawAmountExceedsMemberBalanceError,
 ];
 

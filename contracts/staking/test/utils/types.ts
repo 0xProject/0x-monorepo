@@ -12,8 +12,6 @@ export interface StakingParams {
     cobbDouglasAlphaNumerator: Numberish;
     cobbDouglasAlphaDenominator: Numberish;
     wethProxyAddress: string;
-    ethVaultAddress: string;
-    rewardVaultAddress: string;
     zrxVaultAddress: string;
 }
 
@@ -103,7 +101,7 @@ export interface StakeBalances {
     totalDelegatedStakeByPool: StakeBalanceByPool;
 }
 
-export interface RewardVaultBalanceByPoolId {
+export interface RewardBalanceByPoolId {
     [key: string]: BigNumber;
 }
 

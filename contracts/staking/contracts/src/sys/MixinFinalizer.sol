@@ -26,7 +26,6 @@ import "../libs/LibCobbDouglas.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
-import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
 import "../stake/MixinStakeBalances.sol";
@@ -43,7 +42,6 @@ contract MixinFinalizer is
     IStakingEvents,
     MixinAbstract,
     MixinConstants,
-    MixinDeploymentConstants,
     Ownable,
     MixinStorage,
     MixinScheduler,
@@ -78,8 +76,11 @@ contract MixinFinalizer is
             );
         }
 
+        // Convert all ETH to WETH
+        _wrapEth();
+
         // Set up unfinalized state.
-        state.rewardsAvailable = _wrapBalanceToWETHAndGetBalance();
+        state.rewardsAvailable = _getAvailableWethBalance();
         state.poolsRemaining = poolsRemaining = numActivePoolsThisEpoch;
         state.totalFeesCollected = totalFeesCollectedThisEpoch;
         state.totalWeightedStake = totalWeightedStakeThisEpoch;
@@ -110,8 +111,8 @@ contract MixinFinalizer is
     }
 
     /// @dev Instantly finalizes a single pool that was active in the previous
-    ///      epoch, crediting it rewards and sending those rewards to the reward
-    ///      and eth vault. This can be called by internal functions that need
+    ///      epoch, crediting it rewards for members and withdrawing operator's 
+    ///      rewards as WETH. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
     ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.
@@ -202,7 +203,7 @@ contract MixinFinalizer is
             return (0, 0);
         }
         IStructs.ActivePool memory pool = _getActivePoolFromEpoch(epoch - 1, poolId);
-        reward = _getUnfinalizedPoolRewards(pool, unfinalizedState);
+        reward = _getUnfinalizedPoolRewardsFromState(pool, unfinalizedState);
         membersStake = pool.membersStake;
     }
 
@@ -238,27 +239,34 @@ contract MixinFinalizer is
         return activePools;
     }
 
-    /// @dev Converts the entire ETH balance of the contract into WETH and
-    ///      returns the total WETH balance of this contract.
-    /// @return The WETH balance of this contract.
-    function _wrapBalanceToWETHAndGetBalance()
+    /// @dev Converts the entire ETH balance of this contract into WETH.
+    function _wrapEth()
         internal
-        returns (uint256 balance)
     {
-        IEtherToken weth = IEtherToken(_getWETHAddress());
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            weth.deposit.value((address(this).balance))();
+            _getWethContract().deposit.value(ethBalance)();
         }
-        balance = weth.balanceOf(address(this));
-        return balance;
+    }
+
+    /// @dev Returns the WETH balance of this contract, minus
+    ///      any WETH that has already been reserved for rewards.
+    function _getAvailableWethBalance()
+        internal
+        view
+        returns (uint256 wethBalance)
+    {
+        wethBalance = _getWethContract().balanceOf(address(this))
+            .safeSub(_wethReservedForPoolRewards);
+
+        return wethBalance;
     }
 
     /// @dev Computes the reward owed to a pool during finalization.
     /// @param pool The active pool.
     /// @param state The current state of finalization.
     /// @return rewards Unfinalized rewards for this pool.
-    function _getUnfinalizedPoolRewards(
+    function _getUnfinalizedPoolRewardsFromState(
         IStructs.ActivePool memory pool,
         IStructs.UnfinalizedState memory state
     )
@@ -314,12 +322,12 @@ contract MixinFinalizer is
         delete _getActivePoolsFromEpoch(epoch.safeSub(1))[poolId];
 
         // Compute the rewards.
-        uint256 rewards = _getUnfinalizedPoolRewards(pool, state);
+        uint256 rewards = _getUnfinalizedPoolRewardsFromState(pool, state);
 
         // Pay the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
         // were earned in the previous epoch.
-        (operatorReward, membersReward) = _depositStakingPoolRewards(
+        (operatorReward, membersReward) = _syncPoolRewards(
             poolId,
             rewards,
             pool.membersStake

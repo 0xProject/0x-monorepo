@@ -24,8 +24,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
-import "../interfaces/IEthVault.sol";
-import "../interfaces/IStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibStakingRichErrors.sol";
 
@@ -52,23 +50,23 @@ contract MixinStorage is
     mapping (uint8 => IStructs.StoredBalance) public globalStakeByStatus;
 
     // mapping from Owner to Amount of Active Stake
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
 
     // Mapping from Owner to Amount of Inactive Stake
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
 
     // Mapping from Owner to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
 
     // Mapping from Owner to Pool Id to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
     // Mapping from Pool Id to Amount Delegated
-    // (access using _loadAndSyncBalance or _loadUnsyncedBalance)
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
     // mapping from Owner to Amount of Withdrawable Stake
@@ -83,6 +81,9 @@ contract MixinStorage is
 
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
+
+    // mapping from PoolId to balance of members
+    mapping (bytes32 => uint256) public rewardsByPoolId;
 
     // current epoch
     uint256 public currentEpoch = INITIAL_EPOCH;
@@ -104,12 +105,6 @@ contract MixinStorage is
 
     // ZRX vault (stores staked ZRX)
     IZrxVault public zrxVault;
-
-    // ETH Vault (stores eth balances of stakers and pool operators)
-    IEthVault public ethVault;
-
-    // Rebate Vault (stores rewards for pools before they are moved to the eth vault on a per-user basis)
-    IStakingPoolRewardVault public rewardVault;
 
     /* Tweakable parameters */
 
@@ -150,6 +145,9 @@ contract MixinStorage is
 
     /// @dev State for unfinalized rewards.
     IStructs.UnfinalizedState public unfinalizedState;
+
+    /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
+    uint256 _wethReservedForPoolRewards;
 
     /// @dev Adds owner as an authorized address.
     constructor()

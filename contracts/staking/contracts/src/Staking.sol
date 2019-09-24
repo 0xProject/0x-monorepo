@@ -32,7 +32,6 @@ contract Staking is
     IStakingEvents,
     MixinAbstract,
     MixinConstants,
-    MixinDeploymentConstants,
     Ownable,
     MixinStorage,
     MixinStakingPoolModifiers,
@@ -60,13 +59,9 @@ contract Staking is
     ///      This function should not be called directly.
     ///      The StakingProxy contract will call it in `attachStakingContract()`.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function init(
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address payable _rewardVaultAddress,
         address _zrxVaultAddress
     )
         public
@@ -77,8 +72,6 @@ contract Staking is
         _initMixinScheduler();
         _initMixinParams(
             _wethProxyAddress,
-            _ethVaultAddress,
-            _rewardVaultAddress,
             _zrxVaultAddress
         );
     }

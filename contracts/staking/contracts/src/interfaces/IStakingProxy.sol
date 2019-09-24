@@ -47,17 +47,11 @@ interface IStakingProxy /* is IStaking */
     /// @param _stakingContract Address of staking contract.
     /// @param _wethProxyAddress The address that can transfer WETH for fees.
     ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _ethVaultAddress Address of the EthVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _rewardVaultAddress Address of the StakingPoolRewardVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
     /// @param _zrxVaultAddress Address of the ZrxVault contract.
     ///        Use address in storage if NIL_ADDRESS is passed in.
     function attachStakingContract(
         address _stakingContract,
         address _wethProxyAddress,
-        address _ethVaultAddress,
-        address _rewardVaultAddress,
         address _zrxVaultAddress
     )
         external;

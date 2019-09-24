@@ -20,24 +20,12 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/interfaces/IStructs.sol";
-import "../src/interfaces/IStakingPoolRewardVault.sol";
-import "../src/interfaces/IEthVault.sol";
 import "./TestStakingNoWETH.sol";
 
 
 contract TestDelegatorRewards is
     TestStakingNoWETH
 {
-    event RecordDepositToEthVault(
-        address owner,
-        uint256 amount
-    );
-
-    event RecordDepositToRewardVault(
-        bytes32 poolId,
-        uint256 membersReward
-    );
-
     event FinalizePool(
         bytes32 poolId,
         uint256 operatorReward,
@@ -51,17 +39,13 @@ contract TestDelegatorRewards is
         uint256 membersStake;
     }
 
-    constructor() public {
+    constructor()
+        public
+    {
         init(
-            address(1),
-            address(1),
             address(1),
             address(1)
         );
-        // Set this contract up as the eth and reward vault to intercept
-        // deposits.
-        ethVault = IEthVault(address(this));
-        rewardVault = IStakingPoolRewardVault(address(this));
     }
 
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
@@ -93,8 +77,8 @@ contract TestDelegatorRewards is
         _initGenesisCumulativeRewards(poolId);
     }
 
-    /// @dev Expose/wrap `_depositStakingPoolRewards`.
-    function depositStakingPoolRewards(
+    /// @dev Expose/wrap `_syncPoolRewards`.
+    function syncPoolRewards(
         bytes32 poolId,
         address payable operatorAddress,
         uint256 operatorReward,
@@ -107,8 +91,8 @@ contract TestDelegatorRewards is
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
         _initGenesisCumulativeRewards(poolId);
-
-        _depositStakingPoolRewards(
+        
+        _syncPoolRewards(
             poolId,
             operatorReward + membersReward,
             membersStake
@@ -122,7 +106,7 @@ contract TestDelegatorRewards is
 
     /// @dev Create and delegate stake that is active in the current epoch.
     ///      Only used to test purportedly unreachable states.
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function delegateStakeNow(
         address delegator,
         bytes32 poolId,
@@ -137,7 +121,7 @@ contract TestDelegatorRewards is
         _stake.currentEpochBalance += uint96(stake);
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
@@ -147,7 +131,7 @@ contract TestDelegatorRewards is
 
     /// @dev Create and delegate stake that will occur in the next epoch
     ///      (normal behavior).
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function delegateStake(
         address delegator,
         bytes32 poolId,
@@ -164,7 +148,7 @@ contract TestDelegatorRewards is
         _stake.isInitialized = true;
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
@@ -174,7 +158,7 @@ contract TestDelegatorRewards is
 
     /// @dev Clear stake that will occur in the next epoch
     ///      (normal behavior).
-    ///      Also withdraws pending rewards to the eth vault.
+    ///      Also withdraws pending rewards.
     function undelegateStake(
         address delegator,
         bytes32 poolId,
@@ -191,38 +175,11 @@ contract TestDelegatorRewards is
         _stake.isInitialized = true;
         _stake.nextEpochBalance -= uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
-        _syncRewardsForDelegator(
+        _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator,
             initialStake,
             _stake
-        );
-    }
-
-    /// @dev `IEthVault.depositFor()`,` overridden to just emit events.
-    function depositFor(
-        address owner,
-        uint256 amount
-    )
-        external
-    {
-        emit RecordDepositToEthVault(
-            owner,
-            amount
-        );
-    }
-
-    /// @dev `IStakingPoolRewardVault.depositFor()`,`
-    ///       overridden to just emit events.
-    function depositFor(
-        bytes32 poolId,
-        uint256 membersReward
-    )
-        external
-    {
-        emit RecordDepositToRewardVault(
-            poolId,
-            membersReward
         );
     }
 
@@ -245,7 +202,7 @@ contract TestDelegatorRewards is
         uint256 totalRewards = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
         (operatorReward, membersReward) =
-            _depositStakingPoolRewards(poolId, totalRewards, membersStake);
+            _syncPoolRewards(poolId, totalRewards, membersStake);
         emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
     }
 

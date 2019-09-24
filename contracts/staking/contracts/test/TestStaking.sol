@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "../src/Staking.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 
 
 contract TestStaking is
@@ -32,10 +33,27 @@ contract TestStaking is
     }
 
     /// @dev Overridden to use testWethAddress;
-    function _getWETHAddress() internal view returns (address) {
+    function _getWethContract()
+        internal
+        view
+        returns (IEtherToken)
+    {
         // `testWethAddress` will not be set on the proxy this contract is
         // attached to, so we need to access the storage of the deployed
         // instance of this contract.
-        return TestStaking(address(uint160(stakingContract))).testWethAddress();
+        address wethAddress = TestStaking(address(uint160(stakingContract))).testWethAddress();
+        return IEtherToken(wethAddress);
+    }
+
+    function _getWethAssetData()
+        internal
+        view
+        returns (bytes memory)
+    {
+        address wethAddress = TestStaking(address(uint160(stakingContract))).testWethAddress();
+        return abi.encodeWithSelector(
+            IAssetData(address(0)).ERC20Token.selector,
+            wethAddress
+        ); 
     }
 }

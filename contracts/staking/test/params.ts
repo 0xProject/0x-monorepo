@@ -1,28 +1,22 @@
-import { blockchainTests, constants, expect, filterLogsToArguments, randomAddress } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    IStakingEventsParamsSetEventArgs,
-    TestMixinParamsContract,
-    TestMixinParamsEvents,
-    TestMixinParamsWETHApproveEventArgs,
-} from '../src/';
+import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
 
 import { constants as stakingConstants } from './utils/constants';
 import { StakingParams } from './utils/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
-    let testContract: TestMixinParamsContract;
+    let testContract: MixinParamsContract;
     let authorizedAddress: string;
     let notAuthorizedAddress: string;
 
     before(async () => {
         [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
-        testContract = await TestMixinParamsContract.deployFrom0xArtifactAsync(
-            artifacts.TestMixinParams,
+        testContract = await MixinParamsContract.deployFrom0xArtifactAsync(
+            artifacts.MixinParams,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -46,8 +40,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
                 _params.wethProxyAddress,
-                _params.ethVaultAddress,
-                _params.rewardVaultAddress,
                 _params.zrxVaultAddress,
                 { from },
             );
@@ -62,8 +54,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(event.cobbDouglasAlphaDenominator).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             expect(event.wethProxyAddress).to.eq(_params.wethProxyAddress);
-            expect(event.ethVaultAddress).to.eq(_params.ethVaultAddress);
-            expect(event.rewardVaultAddress).to.eq(_params.rewardVaultAddress);
             expect(event.zrxVaultAddress).to.eq(_params.zrxVaultAddress);
             // Assert `getParams()`.
             const actual = await testContract.getParams.callAsync();
@@ -74,9 +64,7 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(actual[4]).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(actual[5]).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             expect(actual[6]).to.eq(_params.wethProxyAddress);
-            expect(actual[7]).to.eq(_params.ethVaultAddress);
-            expect(actual[8]).to.eq(_params.rewardVaultAddress);
-            expect(actual[9]).to.eq(_params.zrxVaultAddress);
+            expect(actual[7]).to.eq(_params.zrxVaultAddress);
             return receipt;
         }
 
@@ -88,43 +76,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
 
         it('works if called by owner', async () => {
             return setParamsAndAssertAsync({});
-        });
-
-        describe('WETH allowance', () => {
-            it('rescinds allowance for old vaults and grants unlimited allowance to new ones', async () => {
-                const [oldEthVaultAddress, oldRewardVaultAddress, newEthVaultAddress, newRewardVaultAddress] = _.times(
-                    4,
-                    () => randomAddress(),
-                );
-                await testContract.setVaultAddresses.awaitTransactionSuccessAsync(
-                    oldEthVaultAddress,
-                    oldRewardVaultAddress,
-                );
-                const { logs } = await setParamsAndAssertAsync({
-                    ethVaultAddress: newEthVaultAddress,
-                    rewardVaultAddress: newRewardVaultAddress,
-                });
-                const approveEvents = filterLogsToArguments<TestMixinParamsWETHApproveEventArgs>(
-                    logs,
-                    TestMixinParamsEvents.WETHApprove,
-                );
-                expect(approveEvents[0]).to.deep.eq({
-                    spender: oldEthVaultAddress,
-                    amount: constants.ZERO_AMOUNT,
-                });
-                expect(approveEvents[1]).to.deep.eq({
-                    spender: newEthVaultAddress,
-                    amount: constants.MAX_UINT256,
-                });
-                expect(approveEvents[2]).to.deep.eq({
-                    spender: oldRewardVaultAddress,
-                    amount: constants.ZERO_AMOUNT,
-                });
-                expect(approveEvents[3]).to.deep.eq({
-                    spender: newRewardVaultAddress,
-                    amount: constants.MAX_UINT256,
-                });
-            });
         });
     });
 });
