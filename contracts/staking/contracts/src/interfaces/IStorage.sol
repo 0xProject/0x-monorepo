@@ -51,11 +51,6 @@ interface IStorage {
         view
         returns (bytes32);
 
-    function poolJoinedByMakerAddress(address makerAddress)
-        external
-        view
-        returns (IStructs.MakerPoolJoinStatus memory);
-
     function numMakersByPoolId(bytes32 poolId)
         external
         view

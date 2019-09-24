@@ -34,12 +34,10 @@ contract Staking is
     MixinConstants,
     Ownable,
     MixinStorage,
-    MixinStakingPoolModifiers,
     MixinExchangeManager,
     MixinScheduler,
     MixinParams,
     MixinStakeStorage,
-    MixinStakingPoolMakers,
     MixinStakeBalances,
     MixinCumulativeRewards,
     MixinStakingPoolRewards,
@@ -214,8 +212,8 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                poolJoinedByMakerAddress_slot,
-                poolJoinedByMakerAddress_offset,
+                _poolJoinedByMakerAddress_slot,
+                _poolJoinedByMakerAddress_offset,
                 slot,
                 offset
             )
@@ -378,8 +376,8 @@ contract Staking is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _wethReservedForPoolRewards_slot,
-                _wethReservedForPoolRewards_offset,
+                wethReservedForPoolRewards_slot,
+                wethReservedForPoolRewards_offset,
                 slot,
                 offset
             )

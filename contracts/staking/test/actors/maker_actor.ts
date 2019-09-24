@@ -4,9 +4,9 @@ import * as _ from 'lodash';
 
 import { constants as stakingConstants } from '../utils/constants';
 
-import { BaseActor } from './base_actor';
+import { PoolOperatorActor } from './pool_operator_actor';
 
-export class MakerActor extends BaseActor {
+export class MakerActor extends PoolOperatorActor {
     public async joinStakingPoolAsMakerAsync(poolId: string, revertError?: RevertError): Promise<void> {
         // Join pool
         const txReceiptPromise = this._stakingApiWrapper.stakingContract.joinStakingPoolAsMaker.awaitTransactionSuccessAsync(
@@ -25,30 +25,5 @@ export class MakerActor extends BaseActor {
             this._owner,
         );
         expect(poolIdOfMaker, 'pool id of maker').to.be.equal(stakingConstants.NIL_POOL_ID);
-    }
-
-    public async removeMakerFromStakingPoolAsync(
-        poolId: string,
-        makerAddress: string,
-        revertError?: RevertError,
-    ): Promise<void> {
-        // remove maker (should fail if makerAddress !== this._owner)
-        const txReceiptPromise = this._stakingApiWrapper.stakingContract.removeMakerFromStakingPool.awaitTransactionSuccessAsync(
-            poolId,
-            makerAddress,
-            { from: this._owner },
-        );
-
-        if (revertError !== undefined) {
-            await expect(txReceiptPromise).to.revertWith(revertError);
-            return;
-        }
-        await txReceiptPromise;
-
-        // check the pool id of the maker
-        const poolIdOfMakerAfterRemoving = await this._stakingApiWrapper.stakingContract.getStakingPoolIdOfMaker.callAsync(
-            this._owner,
-        );
-        expect(poolIdOfMakerAfterRemoving, 'pool id of maker').to.be.equal(stakingConstants.NIL_POOL_ID);
     }
 }

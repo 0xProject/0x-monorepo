@@ -77,22 +77,12 @@ export class InsufficientBalanceError extends RevertError {
     }
 }
 
-export class OnlyCallableByPoolOperatorError extends RevertError {
-    constructor(senderAddress?: string, poolOperatorAddress?: string) {
-        super(
-            'OnlyCallableByPoolOperatorError',
-            'OnlyCallableByPoolOperatorError(address senderAddress, address poolOperatorAddress)',
-            { senderAddress, poolOperatorAddress },
-        );
-    }
-}
-
 export class OnlyCallableByPoolOperatorOrMakerError extends RevertError {
-    constructor(senderAddress?: string, poolOperatorAddress?: string, makerAddress?: string) {
+    constructor(senderAddress?: string, poolId?: string) {
         super(
             'OnlyCallableByPoolOperatorOrMakerError',
-            'OnlyCallableByPoolOperatorOrMakerError(address senderAddress, address poolOperatorAddress, address makerAddress)',
-            { senderAddress, poolOperatorAddress, makerAddress },
+            'OnlyCallableByPoolOperatorOrMakerError(address senderAddress, bytes32 poolId)',
+            { senderAddress, poolId },
         );
     }
 }
@@ -243,7 +233,6 @@ const types = [
     MakerPoolAssignmentError,
     MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
-    OnlyCallableByPoolOperatorError,
     OnlyCallableByPoolOperatorOrMakerError,
     OnlyCallableByStakingContractError,
     OnlyCallableIfInCatastrophicFailureError,

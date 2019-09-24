@@ -77,7 +77,8 @@ contract MixinStorage is
 
     // mapping from Maker Address to a struct representing the pool the maker has joined and
     // whether the operator of that pool has subsequently added the maker.
-    mapping (address => IStructs.MakerPoolJoinStatus) public poolJoinedByMakerAddress;
+    // (access externally using `getStakingPoolIdOfMaker`)
+    mapping (address => IStructs.MakerPoolJoinStatus) internal _poolJoinedByMakerAddress;
 
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
@@ -144,7 +145,7 @@ contract MixinStorage is
     IStructs.UnfinalizedState public unfinalizedState;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
-    uint256 _wethReservedForPoolRewards;
+    uint256 public wethReservedForPoolRewards;
 
     /// @dev Adds owner as an authorized address.
     constructor()

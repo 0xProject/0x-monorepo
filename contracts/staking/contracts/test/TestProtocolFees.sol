@@ -56,8 +56,8 @@ contract TestProtocolFees is
     function addMakerToPool(bytes32 poolId, address makerAddress)
         external
     {
-        poolJoinedByMakerAddress[makerAddress].poolId = poolId;
-        poolJoinedByMakerAddress[makerAddress].confirmed = true;
+        _poolJoinedByMakerAddress[makerAddress].poolId = poolId;
+        _poolJoinedByMakerAddress[makerAddress].confirmed = true;
     }
 
     function advanceEpoch()
