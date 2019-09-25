@@ -313,7 +313,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(self, transaction, signature),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -753,7 +752,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.cancelOrder.estimateGasAsync.bind(self, order),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1087,7 +1085,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1458,7 +1455,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.preSign.estimateGasAsync.bind(self, hash),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1631,7 +1627,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.cancelOrdersUpTo.estimateGasAsync.bind(self, targetOrderEpoch),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1955,13 +1950,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchMatchOrdersWithMaximalFill.estimateGasAsync.bind(
-                    self,
-                    leftOrders,
-                    rightOrders,
-                    leftSignatures,
-                    rightSignatures,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -2528,13 +2516,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchMatchOrders.estimateGasAsync.bind(
-                    self,
-                    leftOrders,
-                    rightOrders,
-                    leftSignatures,
-                    rightSignatures,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -3062,11 +3043,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setSignatureValidatorApproval.estimateGasAsync.bind(
-                    self,
-                    validatorAddress.toLowerCase(),
-                    approval,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -3305,7 +3281,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrdersNoThrow.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -4092,7 +4067,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.matchOrders.estimateGasAsync.bind(self, leftOrder, rightOrder, leftSignature, rightSignature),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -4614,7 +4588,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrdersFillOrKill.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -5224,7 +5197,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -5609,7 +5581,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setProtocolFeeMultiplier.estimateGasAsync.bind(self, updatedProtocolFeeMultiplier),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -5830,7 +5801,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -6236,7 +6206,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.fillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -6965,7 +6934,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrdersFillOrKill.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -7354,13 +7322,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.simulateDispatchTransferFromCalls.estimateGasAsync.bind(
-                    self,
-                    assetData,
-                    fromAddresses,
-                    toAddresses,
-                    amounts,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -7678,13 +7639,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.matchOrdersWithMaximalFill.estimateGasAsync.bind(
-                    self,
-                    leftOrder,
-                    rightOrder,
-                    leftSignature,
-                    rightSignature,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -8212,7 +8166,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrKillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -8598,10 +8551,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setProtocolFeeCollectorAddress.estimateGasAsync.bind(
-                    self,
-                    updatedProtocolFeeCollector.toLowerCase(),
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -8877,7 +8826,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxy.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -9249,7 +9197,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchCancelOrders.estimateGasAsync.bind(self, orders),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -9586,7 +9533,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.fillOrKillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -10023,7 +9969,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -10208,7 +10153,6 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.batchExecuteTransactions.estimateGasAsync.bind(self, transactions, signatures),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();

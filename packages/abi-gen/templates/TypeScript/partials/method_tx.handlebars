@@ -21,10 +21,6 @@ txData?: Partial<TxData> | undefined,
             data: encodedData,
         },
         self._web3Wrapper.getContractDefaults(),
-        self.{{languageSpecificName}}.estimateGasAsync.bind(
-            self,
-            {{> normalized_params inputs=inputs}}
-        ),
     );
     if (txDataWithDefaults.from !== undefined) {
         txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();

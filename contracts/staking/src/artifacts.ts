@@ -11,7 +11,6 @@ import * as IStakingProxy from '../generated-artifacts/IStakingProxy.json';
 import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
-import * as IVaultCore from '../generated-artifacts/IVaultCore.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibCobbDouglas from '../generated-artifacts/LibCobbDouglas.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
@@ -34,7 +33,6 @@ import * as MixinStakeStorage from '../generated-artifacts/MixinStakeStorage.jso
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
-import * as MixinVaultCore from '../generated-artifacts/MixinVaultCore.json';
 import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
@@ -48,16 +46,17 @@ import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json'
 import * as TestLibProxy from '../generated-artifacts/TestLibProxy.json';
 import * as TestLibProxyReceiver from '../generated-artifacts/TestLibProxyReceiver.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
-import * as TestMixinVaultCore from '../generated-artifacts/TestMixinVaultCore.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.json';
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
+import * as TestStorageLayoutAndConstants from '../generated-artifacts/TestStorageLayoutAndConstants.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
     Staking: Staking as ContractArtifact,
     StakingProxy: StakingProxy as ContractArtifact,
+    ZrxVault: ZrxVault as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
@@ -69,7 +68,6 @@ export const artifacts = {
     IStorage: IStorage as ContractArtifact,
     IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
-    IVaultCore: IVaultCore as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
     LibCobbDouglas: LibCobbDouglas as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
@@ -87,8 +85,6 @@ export const artifacts = {
     MixinFinalizer: MixinFinalizer as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
-    MixinVaultCore: MixinVaultCore as ContractArtifact,
-    ZrxVault: ZrxVault as ContractArtifact,
     TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
     TestCumulativeRewardTracking: TestCumulativeRewardTracking as ContractArtifact,
@@ -99,9 +95,9 @@ export const artifacts = {
     TestLibProxy: TestLibProxy as ContractArtifact,
     TestLibProxyReceiver: TestLibProxyReceiver as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
-    TestMixinVaultCore: TestMixinVaultCore as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingNoWETH: TestStakingNoWETH as ContractArtifact,
     TestStakingProxy: TestStakingProxy as ContractArtifact,
+    TestStorageLayoutAndConstants: TestStorageLayoutAndConstants as ContractArtifact,
 };

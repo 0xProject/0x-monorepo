@@ -382,14 +382,6 @@ export class CoordinatorContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(
-                    self,
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();

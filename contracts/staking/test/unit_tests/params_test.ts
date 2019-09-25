@@ -3,10 +3,10 @@ import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../src/';
+import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../../src/';
 
-import { constants as stakingConstants } from './utils/constants';
-import { StakingParams } from './utils/types';
+import { constants as stakingConstants } from '../utils/constants';
+import { StakingParams } from '../utils/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
     let testContract: MixinParamsContract;
@@ -39,8 +39,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
                 new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
-                _params.wethProxyAddress,
-                _params.zrxVaultAddress,
                 { from },
             );
             // Assert event.
@@ -53,8 +51,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(event.maximumMakersInPool).to.bignumber.eq(_params.maximumMakersInPool);
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(event.cobbDouglasAlphaDenominator).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
-            expect(event.wethProxyAddress).to.eq(_params.wethProxyAddress);
-            expect(event.zrxVaultAddress).to.eq(_params.zrxVaultAddress);
             // Assert `getParams()`.
             const actual = await testContract.getParams.callAsync();
             expect(actual[0]).to.bignumber.eq(_params.epochDurationInSeconds);
@@ -63,8 +59,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(actual[3]).to.bignumber.eq(_params.maximumMakersInPool);
             expect(actual[4]).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(actual[5]).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
-            expect(actual[6]).to.eq(_params.wethProxyAddress);
-            expect(actual[7]).to.eq(_params.zrxVaultAddress);
             return receipt;
         }
 

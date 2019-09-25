@@ -27,8 +27,6 @@ import "./interfaces/IStakingProxy.sol";
 
 contract StakingProxy is
     IStakingProxy,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     using LibProxy for address;
@@ -36,23 +34,15 @@ contract StakingProxy is
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
     /// @param _readOnlyProxy The address of the read only proxy.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
     constructor(
         address _stakingContract,
-        address _readOnlyProxy,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
+        address _readOnlyProxy
     )
         public
         MixinStorage()
     {
         readOnlyProxy = _readOnlyProxy;
-        _attachStakingContract(
-            _stakingContract,
-            _wethProxyAddress,
-            _zrxVaultAddress
-        );
+        _attachStakingContract(_stakingContract);
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
@@ -68,29 +58,17 @@ contract StakingProxy is
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
-    /// Note that this is callable only by this contract's owner.
+    /// Note that this is callable only by an authorized address.
     /// @param _stakingContract Address of staking contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    function attachStakingContract(
-        address _stakingContract,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function attachStakingContract(address _stakingContract)
         external
         onlyAuthorized
     {
-        _attachStakingContract(
-            _stakingContract,
-            _wethProxyAddress == NIL_ADDRESS ? address(wethAssetProxy) : _wethProxyAddress,
-            _zrxVaultAddress == NIL_ADDRESS ? address(zrxVault) : _zrxVaultAddress
-        );
+        _attachStakingContract(_stakingContract);
     }
 
     /// @dev Detach the current staking contract.
-    /// Note that this is callable only by this contract's owner.
+    /// Note that this is callable only by an authorized address.
     function detachStakingContract()
         external
         onlyAuthorized
@@ -166,7 +144,7 @@ contract StakingProxy is
         if (_epochDurationInSeconds < 5 days || _epochDurationInSeconds > 30 days) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEpochDuration
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidEpochDuration
             ));
         }
 
@@ -175,7 +153,7 @@ contract StakingProxy is
         if (cobbDouglasAlphaNumerator > _cobbDouglasAlphaDenominator || _cobbDouglasAlphaDenominator == 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha
             ));
         }
 
@@ -183,7 +161,7 @@ contract StakingProxy is
         if (rewardDelegatedStakeWeight > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidRewardDelegatedStakeWeight
             ));
         }
 
@@ -191,7 +169,7 @@ contract StakingProxy is
         if (maximumMakersInPool == 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool
             ));
         }
 
@@ -199,35 +177,14 @@ contract StakingProxy is
         if (minimumPoolStake < 2) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMinimumPoolStake
-            ));
-        }
-
-        // ERC20Proxy and Vault contract addresses must always be initialized
-        if (address(wethAssetProxy) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidWethProxyAddress
-            ));
-        }
-
-        if (address(zrxVault) == NIL_ADDRESS) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidZrxVaultAddress
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMinimumPoolStake
             ));
         }
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// @param _stakingContract Address of staking contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _attachStakingContract(
-        address _stakingContract,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function _attachStakingContract(address _stakingContract)
         internal
     {
         // Attach the staking contract
@@ -236,11 +193,7 @@ contract StakingProxy is
 
         // Call `init()` on the staking contract to initialize storage.
         (bool didInitSucceed, bytes memory initReturnData) = stakingContract.delegatecall(
-            abi.encodeWithSelector(
-                IStorageInit(0).init.selector,
-                _wethProxyAddress,
-                _zrxVaultAddress
-            )
+            abi.encodeWithSelector(IStorageInit(0).init.selector)
         );
         if (!didInitSucceed) {
             assembly {

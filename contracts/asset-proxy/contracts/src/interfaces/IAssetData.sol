@@ -30,7 +30,7 @@ interface IAssetData {
     /// @param tokenAddress Address of ERC20Token contract.
     function ERC20Token(address tokenAddress)
         external;
-    
+
     /// @dev Function signature for encoding ERC721 assetData.
     /// @param tokenAddress Address of ERC721 token contract.
     /// @param tokenId Id of ERC721 token to be transferred.
@@ -42,7 +42,7 @@ interface IAssetData {
 
     /// @dev Function signature for encoding ERC1155 assetData.
     /// @param tokenAddress Address of ERC1155 token contract.
-    /// @param tokenIds Array of ids of tokens to be transferred. 
+    /// @param tokenIds Array of ids of tokens to be transferred.
     /// @param values Array of values that correspond to each token id to be transferred.
     ///        Note that each value will be multiplied by the amount being filled in the order before transferring.
     /// @param callbackData Extra data to be passed to receiver's `onERC1155Received` callback function.
@@ -67,7 +67,7 @@ interface IAssetData {
     /// @dev Function signature for encoding StaticCall assetData.
     /// @param staticCallTargetAddress Address that will execute the staticcall.
     /// @param staticCallData Data that will be executed via staticcall on the staticCallTargetAddress.
-    /// @param expectedReturnDataHash Keccak-256 hash of the expected staticcall return data. 
+    /// @param expectedReturnDataHash Keccak-256 hash of the expected staticcall return data.
     function StaticCall(
         address staticCallTargetAddress,
         bytes calldata staticCallData,

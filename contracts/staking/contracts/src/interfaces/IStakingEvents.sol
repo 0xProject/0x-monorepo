@@ -4,26 +4,26 @@ pragma solidity ^0.5.9;
 interface IStakingEvents {
 
     /// @dev Emitted by MixinStake when ZRX is staked.
-    /// @param owner of ZRX.
+    /// @param staker of ZRX.
     /// @param amount of ZRX staked.
     event Stake(
-        address indexed owner,
+        address indexed staker,
         uint256 amount
     );
 
     /// @dev Emitted by MixinStake when ZRX is unstaked.
-    /// @param owner of ZRX.
+    /// @param staker of ZRX.
     /// @param amount of ZRX unstaked.
     event Unstake(
-        address indexed owner,
+        address indexed staker,
         uint256 amount
     );
 
     /// @dev Emitted by MixinStake when ZRX is unstaked.
-    /// @param owner of ZRX.
+    /// @param staker of ZRX.
     /// @param amount of ZRX unstaked.
     event MoveStake(
-        address indexed owner,
+        address indexed staker,
         uint256 amount,
         uint8 fromStatus,
         bytes32 indexed fromPool,
@@ -95,17 +95,13 @@ interface IStakingEvents {
     /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-    /// @param wethProxyAddress The address that can transfer WETH for fees.
-    /// @param zrxVaultAddress Address of the ZrxVault contract.
     event ParamsSet(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,
         uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
-        uint256 cobbDouglasAlphaDenominator,
-        address wethProxyAddress,
-        address zrxVaultAddress
+        uint256 cobbDouglasAlphaDenominator
     );
 
     /// @dev Emitted by MixinStakingPool when a new pool is created.

@@ -43,21 +43,13 @@ interface IStakingProxy /* is IStaking */
         payable;
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
-    /// Note that this is callable only by this contract's owner.
+    /// Note that this is callable only by an authorized address.
     /// @param _stakingContract Address of staking contract.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    ///        Use address in storage if NIL_ADDRESS is passed in.
-    function attachStakingContract(
-        address _stakingContract,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function attachStakingContract(address _stakingContract)
         external;
 
     /// @dev Detach the current staking contract.
-    /// Note that this is callable only by this contract's owner.
+    /// Note that this is callable only by an authorized address.
     function detachStakingContract()
         external;
 }

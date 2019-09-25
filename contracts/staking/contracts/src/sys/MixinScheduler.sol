@@ -33,8 +33,6 @@ import "../interfaces/IStakingEvents.sol";
 /// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     using LibSafeMath for uint256;
@@ -97,7 +95,7 @@ contract MixinScheduler is
         if (currentEpochStartTimeInSeconds != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
+                    LibStakingRichErrors.InitializationErrorCodes.MixinSchedulerAlreadyInitialized
                 )
             );
         }

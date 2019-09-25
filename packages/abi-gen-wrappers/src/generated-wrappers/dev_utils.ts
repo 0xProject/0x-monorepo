@@ -2022,12 +2022,6 @@ export class DevUtilsContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.getSimulatedOrdersTransferResults.estimateGasAsync.bind(
-                    self,
-                    orders,
-                    takerAddresses,
-                    takerAssetFillAmounts,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -3160,12 +3154,6 @@ export class DevUtilsContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.getSimulatedOrderTransferResults.estimateGasAsync.bind(
-                    self,
-                    order,
-                    takerAddress.toLowerCase(),
-                    takerAssetFillAmount,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();

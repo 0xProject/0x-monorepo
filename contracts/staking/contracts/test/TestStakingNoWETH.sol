@@ -42,6 +42,14 @@ contract TestStakingNoWETH is
         return true;
     }
 
+    function getWethContract()
+        public
+        view
+        returns (IEtherToken)
+    {
+        return IEtherToken(address(this));
+    }
+
     function _wrapEth()
         internal
     {}
@@ -52,13 +60,5 @@ contract TestStakingNoWETH is
         returns (uint256)
     {
         return address(this).balance;
-    }
-
-    function _getWethContract()
-        internal
-        view
-        returns (IEtherToken)
-    {
-        return IEtherToken(address(this));
     }
 }

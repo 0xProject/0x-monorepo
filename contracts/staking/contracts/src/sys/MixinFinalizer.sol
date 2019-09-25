@@ -19,18 +19,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibCobbDouglas.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStructs.sol";
-import "../stake/MixinStakeBalances.sol";
-import "../staking_pools/MixinStakingPool.sol";
-import "./MixinScheduler.sol";
+import "../staking_pools/MixinStakingPoolRewards.sol";
 
 
 /// @dev This mixin contains functions related to finalizing epochs.
@@ -39,15 +33,6 @@ import "./MixinScheduler.sol";
 ///      the contract from stalling while we finalize rewards for the previous
 ///      epoch.
 contract MixinFinalizer is
-    IStakingEvents,
-    MixinAbstract,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinCumulativeRewards,
     MixinStakingPoolRewards
 {
     using LibSafeMath for uint256;
@@ -245,7 +230,7 @@ contract MixinFinalizer is
     {
         uint256 ethBalance = address(this).balance;
         if (ethBalance != 0) {
-            _getWethContract().deposit.value(ethBalance)();
+            getWethContract().deposit.value(ethBalance)();
         }
     }
 
@@ -256,7 +241,7 @@ contract MixinFinalizer is
         view
         returns (uint256 wethBalance)
     {
-        wethBalance = _getWethContract().balanceOf(address(this))
+        wethBalance = getWethContract().balanceOf(address(this))
             .safeSub(wethReservedForPoolRewards);
 
         return wethBalance;

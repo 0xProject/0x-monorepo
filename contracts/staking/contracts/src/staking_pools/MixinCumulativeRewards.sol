@@ -25,12 +25,6 @@ import "../stake/MixinStakeBalances.sol";
 
 
 contract MixinCumulativeRewards is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakeStorage,
     MixinStakeBalances
 {
     using LibSafeMath for uint256;

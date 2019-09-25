@@ -19,22 +19,33 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/Staking.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "../src/Staking.sol";
 
 
 contract TestStaking is
     Staking
 {
     address public testWethAddress;
+    address public testWethAssetProxyAddress;
+    address public testZrxVaultAddress;
 
-    constructor(address wethAddress) public {
+    constructor(
+        address wethAddress,
+        address wethAssetProxyAddress,
+        address zrxVaultAddress
+    )
+        public
+    {
         testWethAddress = wethAddress;
+        testWethAssetProxyAddress = wethAssetProxyAddress;
+        testZrxVaultAddress = zrxVaultAddress;
     }
 
     /// @dev Overridden to use testWethAddress;
-    function _getWethContract()
-        internal
+    function getWethContract()
+        public
         view
         returns (IEtherToken)
     {
@@ -45,8 +56,8 @@ contract TestStaking is
         return IEtherToken(wethAddress);
     }
 
-    function _getWethAssetData()
-        internal
+    function getWethAssetData()
+        public
         view
         returns (bytes memory)
     {
@@ -54,6 +65,26 @@ contract TestStaking is
         return abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
             wethAddress
-        ); 
+        );
+    }
+
+    function getWethAssetProxy()
+        public
+        view
+        returns (IAssetProxy wethAssetProxy)
+    {
+        address wethAssetProxyAddress = TestStaking(address(uint160(stakingContract))).testWethAssetProxyAddress();
+        wethAssetProxy = IAssetProxy(wethAssetProxyAddress);
+        return wethAssetProxy;
+    }
+
+    function getZrxVault()
+        public
+        view
+        returns (IZrxVault zrxVault)
+    {
+        address zrxVaultAddress = TestStaking(address(uint160(stakingContract))).testZrxVaultAddress();
+        zrxVault = IZrxVault(zrxVaultAddress);
+        return zrxVault;
     }
 }

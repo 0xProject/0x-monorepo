@@ -22,64 +22,88 @@ pragma solidity ^0.5.9;
 /// @dev This vault manages Zrx Tokens.
 /// When a user mints stake, their Zrx Tokens are deposited into this vault.
 /// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
-/// There is a "Catastrophic Failure Mode" that, when invoked, only
-/// allows withdrawals to be made. Once this vault is in catastrophic
-/// failure mode, it cannot be returned to normal mode; this prevents
-/// corruption of related state in the staking contract.
+/// The contract also includes management of the staking contract
+/// and setting the vault to "Catastrophic Failure Mode".
+/// Catastrophic Failure Mode should only be set iff there is
+/// non-recoverable corruption of the staking contracts. If there is a
+/// recoverable flaw/bug/vulnerability, simply detach the staking contract
+/// by setting its address to `address(0)`. In Catastrophic Failure Mode, only withdrawals
+/// can be made (no deposits). Once Catastrophic Failure Mode  is invoked,
+/// it cannot be returned to normal mode; this prevents corruption of related
+/// state in the staking contract.
 interface IZrxVault {
 
+    /// @dev Emmitted whenever a StakingProxy is set in a vault.
+    event StakingProxySet(address stakingProxyAddress);
+
+    /// @dev Emitted when the Staking contract is put into Catastrophic Failure Mode
+    /// @param sender Address of sender (`msg.sender`)
+    event InCatastrophicFailureMode(address sender);
+
     /// @dev Emitted when Zrx Tokens are deposited into the vault.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens deposited.
     event Deposit(
-        address indexed owner,
+        address indexed staker,
         uint256 amount
     );
 
     /// @dev Emitted when Zrx Tokens are withdrawn from the vault.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens withdrawn.
     event Withdraw(
-        address indexed owner,
+        address indexed staker,
         uint256 amount
     );
 
     /// @dev Emitted whenever the ZRX AssetProxy is set.
     event ZrxProxySet(address zrxProxyAddress);
 
+    /// @dev Sets the address of the StakingProxy contract.
+    /// Note that only the contract staker can call this function.
+    /// @param _stakingProxyAddress Address of Staking proxy contract.
+    function setStakingProxy(address payable _stakingProxyAddress)
+        external;
+
+    /// @dev Vault enters into Catastrophic Failure Mode.
+    /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
+    /// Note that only the contract staker can call this function.
+    function enterCatastrophicFailure()
+        external;
+
     /// @dev Sets the Zrx proxy.
-    /// Note that only the contract owner can call this.
+    /// Note that only the contract staker can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param zrxProxyAddress Address of the 0x Zrx Proxy.
     function setZrxProxy(address zrxProxyAddress)
         external;
 
-    /// @dev Deposit an `amount` of Zrx Tokens from `owner` into the vault.
+    /// @dev Deposit an `amount` of Zrx Tokens from `staker` into the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to deposit.
-    function depositFrom(address owner, uint256 amount)
+    function depositFrom(address staker, uint256 amount)
         external;
 
-    /// @dev Withdraw an `amount` of Zrx Tokens to `owner` from the vault.
+    /// @dev Withdraw an `amount` of Zrx Tokens to `staker` from the vault.
     /// Note that only the Staking contract can call this.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
+    /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
-    function withdrawFrom(address owner, uint256 amount)
+    function withdrawFrom(address staker, uint256 amount)
         external;
 
-    /// @dev Withdraw ALL Zrx Tokens to `owner` from the vault.
+    /// @dev Withdraw ALL Zrx Tokens to `staker` from the vault.
     /// Note that this can only be called when *in* Catastrophic Failure mode.
-    /// @param owner of Zrx Tokens.
-    function withdrawAllFrom(address owner)
+    /// @param staker of Zrx Tokens.
+    function withdrawAllFrom(address staker)
         external
         returns (uint256);
 
-    /// @dev Returns the balance in Zrx Tokens of the `owner`
+    /// @dev Returns the balance in Zrx Tokens of the `staker`
     /// @return Balance in Zrx.
-    function balanceOf(address owner)
+    function balanceOf(address staker)
         external
         view
         returns (uint256);

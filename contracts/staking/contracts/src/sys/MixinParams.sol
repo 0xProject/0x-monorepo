@@ -18,19 +18,14 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
-import "../interfaces/IZrxVault.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
 contract MixinParams is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     /// @dev Set all configurable parameters at once.
@@ -40,17 +35,13 @@ contract MixinParams is
     /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
         uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
-        uint32 _cobbDouglasAlphaDenominator,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
+        uint32 _cobbDouglasAlphaDenominator
     )
         external
         onlyAuthorized
@@ -61,9 +52,7 @@ contract MixinParams is
             _minimumPoolStake,
             _maximumMakersInPool,
             _cobbDouglasAlphaNumerator,
-            _cobbDouglasAlphaDenominator,
-            _wethProxyAddress,
-            _zrxVaultAddress
+            _cobbDouglasAlphaDenominator
         );
     }
 
@@ -74,8 +63,6 @@ contract MixinParams is
     /// @return _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-    /// @return _wethProxyAddress The address that can transfer WETH for fees.
-    /// @return _zrxVaultAddress Address of the ZrxVault contract.
     function getParams()
         external
         view
@@ -85,9 +72,7 @@ contract MixinParams is
             uint256 _minimumPoolStake,
             uint256 _maximumMakersInPool,
             uint32 _cobbDouglasAlphaNumerator,
-            uint32 _cobbDouglasAlphaDenominator,
-            address _wethProxyAddress,
-            address _zrxVaultAddress
+            uint32 _cobbDouglasAlphaDenominator
         )
     {
         _epochDurationInSeconds = epochDurationInSeconds;
@@ -96,17 +81,10 @@ contract MixinParams is
         _maximumMakersInPool = maximumMakersInPool;
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
         _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
-        _wethProxyAddress = address(wethAssetProxy);
-        _zrxVaultAddress = address(zrxVault);
     }
 
     /// @dev Initialize storage belonging to this mixin.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
-    function _initMixinParams(
-        address _wethProxyAddress,
-        address _zrxVaultAddress
-    )
+    function _initMixinParams()
         internal
     {
         // Ensure state is uninitialized.
@@ -120,9 +98,7 @@ contract MixinParams is
             100 * MIN_TOKEN_VALUE,         // minimumPoolStake
             10,                            // maximumMakersInPool
             1,                             // cobbDouglasAlphaNumerator
-            2,                             // cobbDouglasAlphaDenominator
-            _wethProxyAddress,
-            _zrxVaultAddress
+            2                              // cobbDouglasAlphaDenominator
         );
     }
 
@@ -136,13 +112,11 @@ contract MixinParams is
             minimumPoolStake != 0 &&
             maximumMakersInPool != 0 &&
             cobbDouglasAlphaNumerator != 0 &&
-            cobbDouglasAlphaDenominator != 0 &&
-            address(wethAssetProxy) != NIL_ADDRESS &&
-            address(zrxVault) != NIL_ADDRESS
+            cobbDouglasAlphaDenominator != 0
         ) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
+                    LibStakingRichErrors.InitializationErrorCodes.MixinParamsAlreadyInitialized
                 )
             );
         }
@@ -155,17 +129,13 @@ contract MixinParams is
     /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-    /// @param _wethProxyAddress The address that can transfer WETH for fees.
-    /// @param _zrxVaultAddress Address of the ZrxVault contract.
     function _setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
         uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
-        uint32 _cobbDouglasAlphaDenominator,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
+        uint32 _cobbDouglasAlphaDenominator
     )
         private
     {
@@ -175,8 +145,6 @@ contract MixinParams is
         maximumMakersInPool = _maximumMakersInPool;
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = _cobbDouglasAlphaDenominator;
-        wethAssetProxy = IAssetProxy(_wethProxyAddress);
-        zrxVault = IZrxVault(_zrxVaultAddress);
 
         emit ParamsSet(
             _epochDurationInSeconds,
@@ -184,9 +152,7 @@ contract MixinParams is
             _minimumPoolStake,
             _maximumMakersInPool,
             _cobbDouglasAlphaNumerator,
-            _cobbDouglasAlphaDenominator,
-            _wethProxyAddress,
-            _zrxVaultAddress
+            _cobbDouglasAlphaDenominator
         );
     }
 }

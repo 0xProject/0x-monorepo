@@ -227,7 +227,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -400,7 +399,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.revokeConfirmation.estimateGasAsync.bind(self, transactionId),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -933,7 +931,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1122,13 +1119,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.registerFunctionCall.estimateGasAsync.bind(
-                    self,
-                    hasCustomTimeLock,
-                    functionSelector,
-                    destination.toLowerCase(),
-                    newSecondsTimeLocked,
-                ),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -1479,7 +1469,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.changeTimeLock.estimateGasAsync.bind(self, _secondsTimeLocked),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -2297,7 +2286,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.changeRequirement.estimateGasAsync.bind(self, _required),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -2475,7 +2463,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.confirmTransaction.estimateGasAsync.bind(self, transactionId),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -2668,7 +2655,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(self, destination.toLowerCase(), value, data),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -3140,7 +3126,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(self, owner.toLowerCase(), newOwner.toLowerCase()),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -3345,7 +3330,6 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(self, transactionId),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
