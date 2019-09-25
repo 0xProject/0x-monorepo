@@ -20,17 +20,11 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IZrxVault.sol";
 
 
 // solhint-disable separate-by-one-line-in-contract
 contract MixinDeploymentConstants {
-
-    using LibBytes for bytes;
 
     // @TODO SET THESE VALUES FOR DEPLOYMENT
 
@@ -55,29 +49,6 @@ contract MixinDeploymentConstants {
     // @TODO SET THESE VALUES FOR DEPLOYMENT
     address constant private WETH_ASSET_PROXY_ADDRESS = address(1);
     address constant private ZRX_VAULT_ADDRESS = address(1);
-
-    /// @dev Ensures that the WETH_ASSET_DATA is correct.
-    constructor()
-        public
-    {
-        require(
-            WETH_ASSET_DATA.equals(abi.encodeWithSelector(
-                IAssetData(address(0)).ERC20Token.selector,
-                WETH_ADDRESS
-            )),
-            "INVALID_WETH_ASSET_DATA"
-        );
-
-        require(
-            WETH_ASSET_PROXY_ADDRESS != address(0),
-            "WETH_ASSET_PROXY_MUST_BE_SET"
-        );
-
-        require(
-            ZRX_VAULT_ADDRESS != address(0),
-            "ZRX_VAULT_MUST_BE_SET"
-        );
-    }
 
     /// @dev An overridable way to access the deployed WETH contract.
     ///      Must be view to allow overrides to access state.

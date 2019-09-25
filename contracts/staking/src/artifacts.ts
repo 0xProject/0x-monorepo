@@ -53,6 +53,7 @@ import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json'
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.json';
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
+import * as TestStorageLayoutAndConstants from '../generated-artifacts/TestStorageLayoutAndConstants.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
     ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
@@ -104,4 +105,5 @@ export const artifacts = {
     TestStaking: TestStaking as ContractArtifact,
     TestStakingNoWETH: TestStakingNoWETH as ContractArtifact,
     TestStakingProxy: TestStakingProxy as ContractArtifact,
+    TestStorageLayoutAndConstants: TestStorageLayoutAndConstants as ContractArtifact,
 };

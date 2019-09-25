@@ -19,8 +19,9 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/Staking.sol";
+import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "../src/Staking.sol";
 
 
 contract TestStaking is
@@ -64,7 +65,7 @@ contract TestStaking is
         return abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
             wethAddress
-        ); 
+        );
     }
 
     function getWethAssetProxy()
