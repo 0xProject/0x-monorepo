@@ -461,6 +461,28 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
 
             expect(fillableTakerAssetAmount).to.bignumber.equal(0);
         });
+        it('should return correct info even when there are no fees specified', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFee: new BigNumber(0),
+                takerFee: new BigNumber(0),
+                makerFeeAssetData: '0x',
+                takerFeeAssetData: '0x',
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            const [
+                orderInfo,
+                fillableTakerAssetAmount,
+                isValidSignature,
+            ] = await devUtils.getOrderRelevantState.callAsync(signedOrder, signedOrder.signature);
+            expect(orderInfo.orderHash).to.equal(orderHashUtils.getOrderHashHex(signedOrder));
+            expect(orderInfo.orderStatus).to.equal(OrderStatus.Fillable);
+            expect(orderInfo.orderTakerAssetFilledAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(fillableTakerAssetAmount).to.bignumber.equal(signedOrder.takerAssetAmount);
+            expect(isValidSignature).to.equal(true);
+        });
     });
     describe('getOrderRelevantStates', async () => {
         it('should return the correct information for multiple orders', async () => {
