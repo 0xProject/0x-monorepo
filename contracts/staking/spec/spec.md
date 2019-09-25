@@ -377,14 +377,6 @@ function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShar
 
 ### 6.2 Paying Liquidity Rewards Pools (Finalization)
 
-Makers are paid their reward when an epoch is ended.
-
-
-    3. You have until the end of the next trading period to payout every pool from the previous epoch
-    4. In the beginning we have a bunch of keepers that wait for the trading period end then go in and finalize for each pool
-    5. In the future once there’s substantial liquidity rewards being generated then there will be a higher incentive for the MM to call this function
-
-
 The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/CobbDouglas.png" width="200" /></p>
@@ -399,8 +391,36 @@ The Cobb-Douglas function is used to compute how much of the aggregate fees shou
 | _D_ | Total weighted ZRX staked across all (active) market maker pools this epoch. |
 | _α_ | A constant in the range [0..1] that determines the weight of fees vs stake. |
 
+At the end of an epoch, each pool that actively traded can retrieve their liquidity reward. This is done by calling the finalize function.
+
+```
+/// @dev Instantly finalizes a single pool that was active in the previous
+///      epoch, crediting it rewards for members and withdrawing operator's
+///      rewards as WETH. This can be called by internal functions that need
+///      to finalize a pool immediately. Does nothing if the pool is already
+///      finalized or was not active in the previous epoch.
+/// @param poolId The pool ID to finalize.
+/// @return operatorReward The reward credited to the pool operator.
+/// @return membersReward The reward credited to the pool members.
+/// @return membersStake The total stake for all non-operator members in
+///         this pool.
+function finalizePool(bytes32 poolId)
+    public
+    returns (
+        uint256 operatorReward,
+        uint256 membersReward,
+        uint256 membersStake
+    );
+```
+
+Each pool has until the end of the current epoch to finalize their pool for the previous epoch. When finalizing
+
+
+
+
 ### 6.3 Withdrawing Liquidity Rewards
 
+## 7 Batch Transactions
 
 
 ## 9 Staking Events
