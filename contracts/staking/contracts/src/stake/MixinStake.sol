@@ -188,7 +188,7 @@ contract MixinStake is
         _assertStakingPoolExists(poolId);
 
         // Cache amount delegated to pool by staker.
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
+        IStructs.StoredBalance memory initDelegatedStake =
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         // Increment how much stake the staker has delegated to the input pool.
@@ -202,14 +202,14 @@ contract MixinStake is
 
         // Synchronizes reward state in the pool that the owner is delegating
         // to.
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
+        IStructs.StoredBalance memory finalDelegatedStake =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         _withdrawAndSyncDelegatorRewards(
             poolId,
             staker,
-            initDelegatedStakeToPoolByOwner,
-            finalDelegatedStakeToPoolByOwner
+            initDelegatedStake,
+            finalDelegatedStake
         );
     }
 
@@ -228,7 +228,7 @@ contract MixinStake is
         _assertStakingPoolExists(poolId);
 
         // cache amount delegated to pool by staker
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
+        IStructs.StoredBalance memory initDelegatedStake =
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         // decrement how much stake the staker has delegated to the input pool
@@ -242,14 +242,14 @@ contract MixinStake is
 
         // synchronizes reward state in the pool that the owner is undelegating
         // from
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
+        IStructs.StoredBalance memory finalDelegatedStake =
             _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         _withdrawAndSyncDelegatorRewards(
             poolId,
             staker,
-            initDelegatedStakeToPoolByOwner,
-            finalDelegatedStakeToPoolByOwner
+            initDelegatedStake,
+            finalDelegatedStake
         );
     }
 

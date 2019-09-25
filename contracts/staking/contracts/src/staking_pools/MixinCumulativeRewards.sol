@@ -57,27 +57,6 @@ contract MixinCumulativeRewards is
         return cumulativeReward.denominator != 0;
     }
 
-    /// @dev Tries to set a cumulative reward for `poolId` at `epoch`.
-    /// @param poolId Unique Id of pool.
-    /// @param epoch Epoch of cumulative reward.
-    /// @param value Value of cumulative reward.
-    function _trySetCumulativeReward(
-        bytes32 poolId,
-        uint256 epoch,
-        IStructs.Fraction memory value
-    )
-        internal
-    {
-        // Do nothing if it's in the past since we don't want to
-        // rewrite history.
-        if (epoch < currentEpoch
-            && _isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][epoch]))
-        {
-            return;
-        }
-        _forceSetCumulativeReward(poolId, epoch, value);
-    }
-
     /// @dev Sets a cumulative reward for `poolId` at `epoch`.
     /// This can be used to overwrite an existing value.
     /// @param poolId Unique Id of pool.
@@ -95,33 +74,19 @@ contract MixinCumulativeRewards is
         // Never set the most recent reward epoch to one in the future, because
         // it may get removed if there are no more dependencies on it.
         if (epoch <= currentEpoch) {
-            _trySetMostRecentCumulativeRewardEpoch(poolId, epoch);
-        }
-    }
+            // Check if we should do any work
+            uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+            if (epoch == currentMostRecentEpoch) {
+                return;
+            }
 
-    /// @dev Tries to set the epoch of the most recent cumulative reward.
-    ///      The value will only be set if the input epoch is greater than the
-    ///     current most recent value.
-    /// @param poolId Unique Id of pool.
-    /// @param epoch Epoch of the most recent cumulative reward.
-    function _trySetMostRecentCumulativeRewardEpoch(
-        bytes32 poolId,
-        uint256 epoch
-    )
-        internal
-    {
-        // Check if we should do any work
-        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-        if (epoch == currentMostRecentEpoch) {
-            return;
+            // Update state to reflect the most recent cumulative reward
+            _forceSetMostRecentCumulativeRewardEpoch(
+                poolId,
+                currentMostRecentEpoch,
+                epoch
+            );
         }
-
-        // Update state to reflect the most recent cumulative reward
-        _forceSetMostRecentCumulativeRewardEpoch(
-            poolId,
-            currentMostRecentEpoch,
-            epoch
-        );
     }
 
     /// @dev Forcefully sets the epoch of the most recent cumulative reward.
