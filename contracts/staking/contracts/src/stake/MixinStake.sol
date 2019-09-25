@@ -187,6 +187,11 @@ contract MixinStake is
         // Sanity check the pool we're delegating to exists.
         _assertStakingPoolExists(poolId);
 
+        _withdrawAndSyncDelegatorRewards(
+            poolId,
+            staker
+        );
+
         // Increment how much stake the staker has delegated to the input pool.
         _increaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
@@ -195,11 +200,6 @@ contract MixinStake is
 
         // Increment how much stake has been delegated to pool.
         _increaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            staker
-        );
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -216,6 +216,11 @@ contract MixinStake is
         // sanity check the pool we're undelegating from exists
         _assertStakingPoolExists(poolId);
 
+        _withdrawAndSyncDelegatorRewards(
+            poolId,
+            staker
+        );
+
         // decrement how much stake the staker has delegated to the input pool
         _decreaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
@@ -224,11 +229,6 @@ contract MixinStake is
 
         // decrement how much stake has been delegated to pool
         _decreaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            staker
-        );
     }
 
     /// @dev Returns a storage pointer to a user's stake in a given status.
