@@ -7,14 +7,6 @@ library LibSafeMathRichErrors {
     bytes4 internal constant UINT256_BINOP_ERROR_SELECTOR =
         0xe946c1bb;
 
-    // bytes4(keccak256("Uint96BinOpError(uint8,uint96,uint96)"))
-    bytes4 internal constant UINT96_BINOP_ERROR_SELECTOR =
-        0xe486a353;
-
-    // bytes4(keccak256("Uint64BinOpError(uint8,uint64,uint64)"))
-    bytes4 internal constant UINT64_BINOP_ERROR_SELECTOR =
-        0x67e71b32;
-
     // bytes4(keccak256("Uint256DowncastError(uint8,uint256)"))
     bytes4 internal constant UINT256_DOWNCAST_ERROR_SELECTOR =
         0xc996af7b;
@@ -44,40 +36,6 @@ library LibSafeMathRichErrors {
     {
         return abi.encodeWithSelector(
             UINT256_BINOP_ERROR_SELECTOR,
-            errorCode,
-            a,
-            b
-        );
-    }
-
-    function Uint96BinOpError(
-        BinOpErrorCodes errorCode,
-        uint96 a,
-        uint96 b
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            UINT96_BINOP_ERROR_SELECTOR,
-            errorCode,
-            a,
-            b
-        );
-    }
-
-    function Uint64BinOpError(
-        BinOpErrorCodes errorCode,
-        uint64 a,
-        uint64 b
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            UINT64_BINOP_ERROR_SELECTOR,
             errorCode,
             a,
             b

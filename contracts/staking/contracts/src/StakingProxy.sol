@@ -146,7 +146,7 @@ contract StakingProxy is
         if (_epochDurationInSeconds < 5 days || _epochDurationInSeconds > 30 days) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidEpochDuration
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidEpochDuration
             ));
         }
 
@@ -155,7 +155,7 @@ contract StakingProxy is
         if (cobbDouglasAlphaNumerator > _cobbDouglasAlphaDenominator || _cobbDouglasAlphaDenominator == 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha
             ));
         }
 
@@ -163,7 +163,7 @@ contract StakingProxy is
         if (rewardDelegatedStakeWeight > PPM_DENOMINATOR) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidRewardDelegatedStakeWeight
             ));
         }
 
@@ -171,7 +171,7 @@ contract StakingProxy is
         if (maximumMakersInPool == 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool
             ));
         }
 
@@ -179,7 +179,7 @@ contract StakingProxy is
         if (minimumPoolStake < 2) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCode.InvalidMinimumPoolStake
+                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMinimumPoolStake
             ));
         }
     }

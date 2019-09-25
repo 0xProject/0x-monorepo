@@ -97,7 +97,7 @@ contract MixinScheduler is
         if (currentEpochStartTimeInSeconds != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinSchedulerAlreadyInitialized
+                    LibStakingRichErrors.InitializationErrorCodes.MixinSchedulerAlreadyInitialized
                 )
             );
         }

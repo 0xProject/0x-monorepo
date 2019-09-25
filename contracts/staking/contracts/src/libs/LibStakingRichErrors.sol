@@ -34,12 +34,12 @@ library LibStakingRichErrors {
         MismatchedFeeAndPayment
     }
 
-    enum InitializationErrorCode {
+    enum InitializationErrorCodes {
         MixinSchedulerAlreadyInitialized,
         MixinParamsAlreadyInitialized
     }
 
-    enum InvalidParamValueErrorCode {
+    enum InvalidParamValueErrorCodes {
         InvalidCobbDouglasAlpha,
         InvalidRewardDelegatedStakeWeight,
         InvalidMaximumMakersInPool,
@@ -54,21 +54,18 @@ library LibStakingRichErrors {
         PoolIsFull
     }
 
-    // bytes4(keccak256("MiscalculatedRewardsError(uint256,uint256)"))
-    bytes4 internal constant MISCALCULATED_REWARDS_ERROR_SELECTOR =
-        0xf7806c4e;
+    enum ExchangeManagerErrorCodes {
+        ExchangeAlreadyRegistered,
+        ExchangeNotRegistered
+    }
 
     // bytes4(keccak256("OnlyCallableByExchangeError(address)"))
     bytes4 internal constant ONLY_CALLABLE_BY_EXCHANGE_ERROR_SELECTOR =
         0xb56d2df0;
 
-    // bytes4(keccak256("ExchangeAddressAlreadyRegisteredError(address)"))
-    bytes4 internal constant EXCHANGE_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR =
-        0xc87a78b7;
-
-    // bytes4(keccak256("ExchangeAddressNotRegisteredError(address)"))
-    bytes4 internal constant EXCHANGE_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR =
-        0x7dc025b0;
+    // bytes4(keccak256("ExchangeManagerError(uint8,address)"))
+    bytes4 internal constant EXCHANGE_MANAGER_ERROR_SELECTOR =
+        0xb9588e43;
 
     // bytes4(keccak256("InsufficientBalanceError(uint256,uint256)"))
     bytes4 internal constant INSUFFICIENT_BALANCE_ERROR_SELECTOR =
@@ -81,10 +78,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("MakerPoolAssignmentError(uint8,address,bytes32)"))
     bytes4 internal constant MAKER_POOL_ASSIGNMENT_ERROR_SELECTOR =
         0x69945e3f;
-
-    // bytes4(keccak256("WithdrawAmountExceedsMemberBalanceError(uint256,uint256)"))
-    bytes4 internal constant WITHDRAW_AMOUNT_EXCEEDS_MEMBER_BALANCE_ERROR_SELECTOR =
-        0xfc9c065f;
 
     // bytes4(keccak256("BlockTimestampTooLowError(uint256,uint256)"))
     bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR =
@@ -101,10 +94,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("OnlyCallableIfNotInCatastrophicFailureError()"))
     bytes internal constant ONLY_CALLABLE_IF_NOT_IN_CATASTROPHIC_FAILURE_ERROR =
         hex"7dd020ce";
-
-    // bytes4(keccak256("AmountExceedsBalanceOfPoolError(uint256,uint96)"))
-    bytes4 internal constant AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR =
-        0x4c5c09dd;
 
     // bytes4(keccak256("OperatorShareError(uint8,bytes32,uint32)"))
     bytes4 internal constant OPERATOR_SHARE_ERROR_SELECTOR =
@@ -139,21 +128,6 @@ library LibStakingRichErrors {
         0x614b800a;
 
     // solhint-disable func-name-mixedcase
-    function MiscalculatedRewardsError(
-        uint256 totalRewardsPaid,
-        uint256 initialContractBalance
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            MISCALCULATED_REWARDS_ERROR_SELECTOR,
-            totalRewardsPaid,
-            initialContractBalance
-        );
-    }
-
     function OnlyCallableByExchangeError(
         address senderAddress
     )
@@ -167,7 +141,8 @@ library LibStakingRichErrors {
         );
     }
 
-    function ExchangeAddressAlreadyRegisteredError(
+    function ExchangeManagerError(
+        ExchangeManagerErrorCodes errorCodes,
         address exchangeAddress
     )
         internal
@@ -175,20 +150,8 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            EXCHANGE_ADDRESS_ALREADY_REGISTERED_ERROR_SELECTOR,
-            exchangeAddress
-        );
-    }
-
-    function ExchangeAddressNotRegisteredError(
-        address exchangeAddress
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            EXCHANGE_ADDRESS_NOT_REGISTERED_ERROR_SELECTOR,
+            EXCHANGE_MANAGER_ERROR_SELECTOR,
+            errorCodes,
             exchangeAddress
         );
     }
@@ -224,7 +187,7 @@ library LibStakingRichErrors {
     }
 
     function MakerPoolAssignmentError(
-        MakerPoolAssignmentErrorCodes errorCode,
+        MakerPoolAssignmentErrorCodes errorCodes,
         address makerAddress,
         bytes32 poolId
     )
@@ -234,24 +197,9 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             MAKER_POOL_ASSIGNMENT_ERROR_SELECTOR,
-            errorCode,
+            errorCodes,
             makerAddress,
             poolId
-        );
-    }
-
-    function WithdrawAmountExceedsMemberBalanceError(
-        uint256 withdrawAmount,
-        uint256 balance
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            WITHDRAW_AMOUNT_EXCEEDS_MEMBER_BALANCE_ERROR_SELECTOR,
-            withdrawAmount,
-            balance
         );
     }
 
@@ -299,23 +247,8 @@ library LibStakingRichErrors {
         return ONLY_CALLABLE_IF_NOT_IN_CATASTROPHIC_FAILURE_ERROR;
     }
 
-    function AmountExceedsBalanceOfPoolError(
-        uint256 amount,
-        uint96 poolBalance
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            AMOUNT_EXCEEDS_BALANCE_OF_POOL_ERROR_SELECTOR,
-            amount,
-            poolBalance
-        );
-    }
-
     function OperatorShareError(
-        OperatorShareErrorCodes errorCode,
+        OperatorShareErrorCodes errorCodes,
         bytes32 poolId,
         uint32 operatorShare
     )
@@ -325,7 +258,7 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             OPERATOR_SHARE_ERROR_SELECTOR,
-            errorCode,
+            errorCodes,
             poolId,
             operatorShare
         );
@@ -347,7 +280,7 @@ library LibStakingRichErrors {
     }
 
     function InvalidProtocolFeePaymentError(
-        ProtocolFeePaymentErrorCodes errorCode,
+        ProtocolFeePaymentErrorCodes errorCodes,
         uint256 expectedProtocolFeePaid,
         uint256 actualProtocolFeePaid
     )
@@ -357,7 +290,7 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR,
-            errorCode,
+            errorCodes,
             expectedProtocolFeePaid,
             actualProtocolFeePaid
         );
@@ -374,7 +307,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function InitializationError(InitializationErrorCode code)
+    function InitializationError(InitializationErrorCodes code)
         internal
         pure
         returns (bytes memory)
@@ -385,7 +318,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidParamValueError(InvalidParamValueErrorCode code)
+    function InvalidParamValueError(InvalidParamValueErrorCodes code)
         internal
         pure
         returns (bytes memory)
