@@ -295,19 +295,27 @@ Note also that the WETH Asset Proxy is distinct from the standard ERC20 Asset Pr
 
 ### 6.1 Market Making
 
-Makers are paid their reward at the end of each epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker. Market makers create staking pools to
+We want to align market makers with the long-term objectives of the 0x protocol; however, the immobility of staked ZRX exposes makers to potential short-term volatility in the crypto markets. This risk is mitigated through staking pools.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/CobbDouglas.png" width="200" /></p>
+A maker creates a pool, which can be delegated to by any other staker. When computing a maker's reward, we account for all the stake in their pool. We favor ZRX staked directly by the maker by assigning a lower weight (90%) to ZRX delegated by other stakers.
 
-|Term|Definition  |
-|--|--|
-| _r__ | Reward for a specific market maker. |
-| _R_ | Total reward to be split between all market makers. |
-| _f_ | Total fees earned by the market maker this epoch. |
-| _F_ | Total fees earned across all market makers this epoch. |
-| _d_ | Total ZRX staked by the market maker this epoch. |
-| _D_ | Total ZRX staked across all market makers this epoch. |
-| _α_ | A constant in the range [0..1] that determines the weight of fees vs stake. |
+Market makers incentivize delegators to join their pool by setting aside a fixed percentage of their reward for the members of their pool. A member receives an amount of this percentage that is proportional to how much stake they have delegated to the pool.
+
+
+
+
+
+// create a pool
+
+// add/remove MM addresses
+
+// reduce the operator's share
+
+
+
+
+
+
 
 
 
@@ -318,10 +326,27 @@ Makers are paid their reward at the end of each epoch. The Cobb-Douglas function
 
 ### 6.1 Finalizing Rewards
 
+Makers are paid their reward at the end of each epoch.
+
 At the end of an epoch each pool that actively traded gets paid their liquidity reward. Pools are paid out individually via a contract call to the staking system (that can be made by anyone)
     3. You have until the end of the next trading period to payout every pool from the previous epoch
     4. In the beginning we have a bunch of keepers that wait for the trading period end then go in and finalize for each pool
     5. In the future once there’s substantial liquidity rewards being generated then there will be a higher incentive for the MM to call this function
+
+
+The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
+
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/CobbDouglas.png" width="200" /></p>
+
+|Term|Definition  |
+|--|--|
+| _r_ | Reward for a specific market maker. |
+| _R_ | Total reward to be split between all market makers. |
+| _f_ | Total fees earned by the market maker this epoch. |
+| _F_ | Total fees earned across all (staked) market maker pools this epoch. |
+| _d_ | Total weighted ZRX staked by the market maker's pool this epoch. |
+| _D_ | Total weighted ZRX staked across all (active) market maker pools this epoch. |
+| _α_ | A constant in the range [0..1] that determines the weight of fees vs stake. |
 
 
 
