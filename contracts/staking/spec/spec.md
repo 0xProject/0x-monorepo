@@ -714,14 +714,10 @@ mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal _cumulat
 
 #### 9.2.1 Computing Rewards - in Practice
 
-Refer back to these formulas for computing a member's rewards:
-
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
-
 In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
 
 In practice, this equation becomes:
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterNEpochs.png" width="700" /></p>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterManyEpochs-InPractice.png" width="700" /></p>
 
 
 Putting this all together:
