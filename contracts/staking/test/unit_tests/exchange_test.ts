@@ -1,11 +1,16 @@
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { AuthorizableRevertErrors } from '@0x/utils';
-import * as _ from 'lodash';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, TestExchangeManagerContract } from '../../src';
+import {
+    artifacts,
+    TestExchangeManagerContract,
+    TestExchangeManagerExchangeAddedEventArgs,
+    TestExchangeManagerExchangeRemovedEventArgs,
+} from '../../src';
 
-blockchainTests.resets.only('Exchange Unit Tests', env => {
+blockchainTests.resets('Exchange Unit Tests', env => {
     // Addresses
     let nonOwner: string;
     let owner: string;
@@ -53,6 +58,34 @@ blockchainTests.resets.only('Exchange Unit Tests', env => {
         });
     });
 
+    enum ExchangeManagerEventType {
+        ExchangeAdded,
+        ExchangeRemoved,
+    }
+
+    // Verify the logs emitted by `addExchangeAddress` and `removeExchangeAddress`
+    function verifyExchangeManagerEvent(
+        eventType: ExchangeManagerEventType,
+        exchangeAddress: string,
+        receipt: TransactionReceiptWithDecodedLogs,
+    ): void {
+        // Ensure that the length of the logs is correct.
+        expect(receipt.logs.length).to.be.eq(1);
+
+        // Ensure that the event emitted was correct.
+        let log;
+        // tslint:disable:no-unnecessary-type-assertion
+        if (eventType === ExchangeManagerEventType.ExchangeAdded) {
+            log = receipt.logs[0] as LogWithDecodedArgs<TestExchangeManagerExchangeAddedEventArgs>;
+            expect(log.event).to.be.eq('ExchangeAdded');
+        } else {
+            log = receipt.logs[0] as LogWithDecodedArgs<TestExchangeManagerExchangeRemovedEventArgs>;
+            expect(log.event).to.be.eq('ExchangeRemoved');
+        }
+        // tslint:enable:no-unnecessary-type-assertion
+        expect(log.args.exchangeAddress).to.be.eq(exchangeAddress);
+    }
+
     describe('addExchangeAddress', () => {
         it('should revert if called by an unauthorized address', async () => {
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(nonAuthority);
@@ -64,7 +97,12 @@ blockchainTests.resets.only('Exchange Unit Tests', env => {
 
         it('should successfully add an exchange if called by the (authorized) owner', async () => {
             // Register a new exchange.
-            await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, { from: owner });
+            const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
+                from: owner,
+            });
+
+            // Ensure that the logged event was correct.
+            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeAdded, nonExchange, receipt);
 
             // Ensure that the exchange was successfully registered.
             const isValidExchange = await exchangeManager.validExchanges.callAsync(nonExchange);
@@ -73,7 +111,12 @@ blockchainTests.resets.only('Exchange Unit Tests', env => {
 
         it('should successfully add an exchange if called by an authorized address', async () => {
             // Register a new exchange.
-            await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, { from: authority });
+            const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
+                from: authority,
+            });
+
+            // Ensure that the logged event was correct.
+            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeAdded, nonExchange, receipt);
 
             // Ensure that the exchange was successfully registered.
             const isValidExchange = await exchangeManager.validExchanges.callAsync(nonExchange);
@@ -101,7 +144,12 @@ blockchainTests.resets.only('Exchange Unit Tests', env => {
 
         it('should successfully remove an exchange if called by the (authorized) owner', async () => {
             // Remove the registered exchange.
-            await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, { from: owner });
+            const receipt = await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, {
+                from: owner,
+            });
+
+            // Ensure that the logged event was correct.
+            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeRemoved, exchange, receipt);
 
             // Ensure that the exchange was removed.
             const isValidExchange = await exchangeManager.validExchanges.callAsync(exchange);
@@ -110,7 +158,12 @@ blockchainTests.resets.only('Exchange Unit Tests', env => {
 
         it('should successfully remove a registered exchange if called by an authorized address', async () => {
             // Remove the registered exchange.
-            await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, { from: authority });
+            const receipt = await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, {
+                from: authority,
+            });
+
+            // Ensure that the logged event was correct.
+            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeRemoved, exchange, receipt);
 
             // Ensure that the exchange was removed.
             const isValidExchange = await exchangeManager.validExchanges.callAsync(exchange);
