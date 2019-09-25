@@ -46,7 +46,8 @@ contract MixinStakingPoolRewards is
 
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            member
+            member,
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId])
         );
 
         // Update stored balance with synchronized version; this prevents
@@ -103,6 +104,7 @@ contract MixinStakingPoolRewards is
         return _computeDelegatorReward(
             poolId,
             member,
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -112,9 +114,12 @@ contract MixinStakingPoolRewards is
     ///      withdrawing rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
+    /// @param unsyncedStake The member's unsynced delegated balance at the
+    ///        beginning of this transaction.
     function _withdrawAndSyncDelegatorRewards(
         bytes32 poolId,
-        address member
+        address member,
+        IStructs.StoredBalance memory unsyncedStake
     )
         internal
     {
@@ -125,6 +130,7 @@ contract MixinStakingPoolRewards is
         uint256 balance = _computeDelegatorReward(
             poolId,
             member,
+            unsyncedStake,
             // No unfinalized values because we ensured the pool is already
             // finalized.
             0,
@@ -247,12 +253,14 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
+    /// @param unsyncedStake Unsynced delegated stake to pool by staker
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
         address member,
+        IStructs.StoredBalance memory unsyncedStake,
         uint256 unfinalizedMembersReward,
         uint256 unfinalizedMembersStake
     )
@@ -266,9 +274,6 @@ contract MixinStakingPoolRewards is
         if (_currentEpoch == 0) {
             return 0;
         }
-
-        IStructs.StoredBalance memory unsyncedStake =
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
 
         // There can be no rewards if the last epoch when stake was synced is
         // equal to the current epoch, because all prior rewards, including

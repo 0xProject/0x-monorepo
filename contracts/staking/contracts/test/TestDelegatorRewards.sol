@@ -86,7 +86,7 @@ contract TestDelegatorRewards is
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
         _initGenesisCumulativeRewards(poolId);
-        
+
         _syncPoolRewards(
             poolId,
             operatorReward + membersReward,
@@ -110,6 +110,7 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         _stake.isInitialized = true;
         _stake.currentEpochBalance += uint96(stake);
@@ -117,7 +118,8 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator
+            delegator,
+            initialStake
         );
     }
 
@@ -132,6 +134,7 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
@@ -141,7 +144,8 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator
+            delegator,
+            initialStake
         );
     }
 
@@ -156,6 +160,7 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
+        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
@@ -165,7 +170,8 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator
+            delegator,
+            initialStake
         );
     }
 
