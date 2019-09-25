@@ -287,8 +287,9 @@ function getTotalStakeDelegatedToPool(bytes32 poolId)
 
 Liquidity incentives are used to align market participants with long-term objectives of the 0x protocol. Fees are charged by the 0x protocol and paid to market makers as a reward for their trade volume and amount of ZRX staked.
 
-
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/ProtocolFee.png" width="700" /></p>
+
+The protocol fee is paid in either WETH or ETH. If ETH is not included in the transaction (by setting `msg.value`) then the fee will be taken in WETH from the taker, as illustrated in the diagram above.
 
 
 ### 6.1 Market Making
@@ -298,6 +299,9 @@ Makers are paid their reward at the end of every epoch. The Cobb-Douglas functio
 ###
 
 ### 6.1 The Protocol Fee
+
+
+
 
 ### 6.1 Finalizing Rewards
 
