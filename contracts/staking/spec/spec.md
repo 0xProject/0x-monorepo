@@ -375,14 +375,7 @@ Note that a single staker can operate several pools, but a market making address
 Note also that the operator's reward share can only be decreased: so the change can only ever benefit pool members.
 
 
-
-
-###
-
-
-
-
-### 6.1 Finalizing Rewards
+### 6.2 Paying Liquidity Rewards Pools
 
 Makers are paid their reward at the end of each epoch.
 
@@ -405,6 +398,8 @@ The Cobb-Douglas function is used to compute how much of the aggregate fees shou
 | _d_ | Total weighted ZRX staked by the market maker's pool this epoch. |
 | _D_ | Total weighted ZRX staked across all (active) market maker pools this epoch. |
 | _α_ | A constant in the range [0..1] that determines the weight of fees vs stake. |
+
+### 6.3 Withdrawing liquidity Rewards
 
 
 
