@@ -33,8 +33,6 @@ import "../interfaces/IStakingEvents.sol";
 /// and consistent scheduling metric than time. TimeLocks, for example, are measured in epochs.
 contract MixinScheduler is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     using LibSafeMath for uint256;

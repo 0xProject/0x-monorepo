@@ -26,8 +26,6 @@ import "../libs/LibStakingRichErrors.sol";
 
 contract MixinParams is
     IStakingEvents,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     /// @dev Set all configurable parameters at once.

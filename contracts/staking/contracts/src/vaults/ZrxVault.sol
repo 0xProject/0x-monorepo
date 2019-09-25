@@ -34,7 +34,6 @@ import "./MixinVaultCore.sol";
 /// failure mode, it cannot be returned to normal mode; this prevents
 /// corruption of related state in the staking contract.
 contract ZrxVault is
-    IVaultCore,
     IZrxVault,
     MixinVaultCore
 {

@@ -19,33 +19,20 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../libs/LibCobbDouglas.sol";
 import "../interfaces/IStructs.sol";
-import "../stake/MixinStakeBalances.sol";
 import "../sys/MixinFinalizer.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
-    IStakingEvents,
-    MixinAbstract,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
     MixinExchangeManager,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinCumulativeRewards,
-    MixinStakingPoolRewards,
-    MixinFinalizer,
-    MixinStakingPool
+    MixinStakingPool,
+    MixinFinalizer
 {
     using LibSafeMath for uint256;
 

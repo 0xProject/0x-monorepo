@@ -27,8 +27,6 @@ import "./interfaces/IStakingProxy.sol";
 
 contract StakingProxy is
     IStakingProxy,
-    MixinConstants,
-    Ownable,
     MixinStorage
 {
     using LibProxy for address;
