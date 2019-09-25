@@ -121,6 +121,14 @@ Note: The return value (`poolsRemaining`) is described in detail in Section 7 Li
 
 ## 5 Staking
 
+Stake is minted when ZRX is deposited and burned when ZRX is withdrawn from the Staking Contract.
+
+
+
+
+
+At any given time, Stake can exist in one of the following states.
+
 ### 5.1 Staking Pools
 
 ## 6 Market Making
