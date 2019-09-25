@@ -110,17 +110,13 @@ Configurable parameters can be set or queried using the functions below.
 /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
 /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
 /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-/// @param _wethProxyAddress The address that can transfer WETH for fees.
-/// @param _zrxVaultAddress Address of the ZrxVault contract.
 function setParams(
     uint256 _epochDurationInSeconds,
     uint32 _rewardDelegatedStakeWeight,
     uint256 _minimumPoolStake,
     uint256 _maximumMakersInPool,
     uint32 _cobbDouglasAlphaNumerator,
-    uint32 _cobbDouglasAlphaDenominator,
-    address _wethProxyAddress,
-    address _zrxVaultAddress
+    uint32 _cobbDouglasAlphaDenominator
 ) external;
 
 /// @dev Retrieves all configurable parameter values.
@@ -130,8 +126,6 @@ function setParams(
 /// @return _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
 /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
 /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
-/// @return _wethProxyAddress The address that can transfer WETH for fees.
-/// @return _zrxVaultAddress Address of the ZrxVault contract.
 function getParams()
     external
     view
@@ -141,9 +135,7 @@ function getParams()
         uint256 _minimumPoolStake,
         uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
-        uint32 _cobbDouglasAlphaDenominator,
-        address _wethProxyAddress,
-        address _zrxVaultAddress
+        uint32 _cobbDouglasAlphaDenominator
     );
 ```
 
