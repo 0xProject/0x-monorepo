@@ -659,13 +659,94 @@ event OperatorShareDecreased(
 
 This section dives deeper into the mechanics of the smart contracts.
 
+### 9.3 The Proxy Pattern & Read-Only Calls
+
 ### 9.1 Stake Management
 
 
 
 ### 9.2 Reward Tracking
 
-### 9.3 The Proxy Pattern & Read-Only Calls
+
+A reward is paid to a staking pool during finalization. The entire reward is sent in one lump sum to the Staking Reward Vault. It will remain here temporarily. Whenever a delegator modifies their stake in a pool, their portion of the reward is transferred from the Staking Reward Vault to the Eth Vault, where it can be withdrawn by the staker.
+
+The interesting part of this workflow is computing the portion of a pool's reward that belongs to a given delegator. The general equations for this are shown below.
+
+<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn.png" alt="drawing" width="700"/>
+
+When a delegator modifies their stake in the pool, the `StoredBalance` struct gives us:
+1. How many epochs they were staked (`n`)
+2. How much stake they had contributed during those epochs (`d`)
+
+In addition to these values, we also need sum of ratios `R_k / D_k`, for each epoch `k` that the user was delegated, which is available during the finalization for epoch `k`. We are able to do store this information concisely using a cumulative sum of these reward ratios, as follows:
+
+<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn-2.png" alt="drawing" width="700"/>
+
+With this cumulative sum along with the stored balance of a delegator, we are able to compute their reward in the pool at any time.
+
+This information is stored on-chain as follows:
+```
+// mapping from Owner to Pool Id to Amount Delegated
+mapping (address  =>  mapping (bytes32  => IStructs.StoredBalance)) internal delegatedStakeToPoolByOwner;
+
+// mapping from Pool Id to Amount Delegated
+mapping (bytes32  => IStructs.StoredBalance) internal delegatedStakeByPoolId;
+
+// mapping from Pool Id to Epoch to Reward Ratio
+mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal cumulativeRewardsByPool;
+```
+
+#### 9.2.1 Computing Rewards - in Practice
+
+Refer back to these formulas for computing a delegator's rewards:
+
+<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn.png" alt="drawing" width="700"/>
+
+In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
+
+So, in practice, this equation becomes:
+<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/fd9002de9913a0bb6e81840bc36c4cb13a8fc76f/in-practice-1.png" alt="drawing" width="700"/>
+
+
+Putting this all together:
+1. The call to undelegate is made in epoch `n`
+2. We compute their rewards up to epoch `n-1` and move this value from the Staking Pool Reward Vault to the Eth Vault, where it can be withdrawn by the staker.
+3. Once epoch `n` has been finalized, the user is no longer delegated but can extract their reward for epoch `n` at a future epoch.
+
+The final equation for computing a delegator's reward during epoch `n`:
+
+<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/fd9002de9913a0bb6e81840bc36c4cb13a8fc76f/in-practice-2.png" alt="drawing" width="700"/>
+
+
+#### 9.2.2 Handling Epochs With No Rewards
+
+To compute a delegator's reward using this algorithm, we need to know the cumulative rewards at the entry and exit epoch of the delegator. But, what happens if no reward was recorded during one of these epochs?
+
+In this case, there will be `nil` entry in `cumulativeRewardsByPool`. However, this isn't a problem. If a reward is earned in epoch *i* but not epoch *i + 1* then the cumulative rewards will not have changed. So in epoch *i + 1* we can simply use the entry for epoch *i*.
+
+We keep track of the last epoch that the `cumulativeRewardsByPool` was updated in using the following state variable:
+```
+// mapping from Pool Id to Epoch
+mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
+```
+
+#### 9.2.3 Cumulative Rewards - State Examples
+The following examples demonstrate how entries are added and removed from the cumulative rewards mapping. This can serve as a reference guide for testing and debugging.
+
+The fields are as follows:
+```
+Has Entry: yes if there is a Cumulative Reward entry for this epoch
+Ref Count: how many delegators depend on this value
+```
+
+<p align="center">
+<img src="https://gist.githubusercontent.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/2a101f4d34a578ae6d5bd6608f78f397dd04ba1c/CumulativeRewardTracking.jpg" alt="drawing" width="750" /></p>
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbOTA5NDg3ODA2LDIwMTAwMDIxNDAsLTY2NT
+U2MTI1XX0=
+-->
+
+
 
 Ensuring the storage slot has not been changed.
 
