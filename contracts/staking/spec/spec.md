@@ -661,18 +661,18 @@ This section dives deeper into the mechanics of the smart contracts.
 
 ### 9.3 The Proxy Pattern & Read-Only Calls
 
+Ensuring the storage slot has not been changed.
+
 ### 9.1 Stake Management
 
 
 
-### 9.2 Reward Tracking
+### 9.2 Tracking for Reward Balances for Pool Members
 
 
-A reward is paid to a staking pool during finalization. The entire reward is sent in one lump sum to the Staking Reward Vault. It will remain here temporarily. Whenever a delegator modifies their stake in a pool, their portion of the reward is transferred from the Staking Reward Vault to the Eth Vault, where it can be withdrawn by the staker.
+This section describes the workflow for tracking and computing the portion of a pool's reward that belongs to a given delegator. The general equations for this are shown below.
 
-The interesting part of this workflow is computing the portion of a pool's reward that belongs to a given delegator. The general equations for this are shown below.
-
-<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn.png" alt="drawing" width="700"/>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
 
 When a delegator modifies their stake in the pool, the `StoredBalance` struct gives us:
 1. How many epochs they were staked (`n`)
@@ -680,7 +680,7 @@ When a delegator modifies their stake in the pool, the `StoredBalance` struct gi
 
 In addition to these values, we also need sum of ratios `R_k / D_k`, for each epoch `k` that the user was delegated, which is available during the finalization for epoch `k`. We are able to do store this information concisely using a cumulative sum of these reward ratios, as follows:
 
-<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn-2.png" alt="drawing" width="700"/>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/CumulativeRewards.png" width="700" /></p>
 
 With this cumulative sum along with the stored balance of a delegator, we are able to compute their reward in the pool at any time.
 
@@ -700,12 +700,12 @@ mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal cumulati
 
 Refer back to these formulas for computing a delegator's rewards:
 
-<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/45d6b22140510b2a50884d712b2dc277732c60aa/intro-eqn.png" alt="drawing" width="700"/>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
 
 In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
 
 So, in practice, this equation becomes:
-<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/fd9002de9913a0bb6e81840bc36c4cb13a8fc76f/in-practice-1.png" alt="drawing" width="700"/>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterNEpochs.png" width="700" /></p>
 
 
 Putting this all together:
@@ -715,7 +715,7 @@ Putting this all together:
 
 The final equation for computing a delegator's reward during epoch `n`:
 
-<img src="https://gist.github.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/fd9002de9913a0bb6e81840bc36c4cb13a8fc76f/in-practice-2.png" alt="drawing" width="700"/>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/FinalRewardEqn.png" width="700" /></p>
 
 
 #### 9.2.2 Handling Epochs With No Rewards
@@ -739,16 +739,10 @@ Has Entry: yes if there is a Cumulative Reward entry for this epoch
 Ref Count: how many delegators depend on this value
 ```
 
-<p align="center">
-<img src="https://gist.githubusercontent.com/hysz/9d9856bd71ac3795e3e63e10fc3659dc/raw/2a101f4d34a578ae6d5bd6608f78f397dd04ba1c/CumulativeRewardTracking.jpg" alt="drawing" width="750" /></p>
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbOTA5NDg3ODA2LDIwMTAwMDIxNDAsLTY2NT
-U2MTI1XX0=
--->
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardTrackingExamples.png" width="700" /></p>
 
 
 
-Ensuring the storage slot has not been changed.
 
 
 
