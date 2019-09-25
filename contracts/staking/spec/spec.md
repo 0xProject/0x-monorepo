@@ -681,6 +681,9 @@ The member's reward after n epochs (given member does not change their stake) is
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterManyEpochs.png" height="60" /></p>
 
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/WhatWeStore.png" height="60" /></p>
+
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardFromWhatWeStore.png" height="60" /></p>
 
 When a member modifies their stake in the pool, the [StoredBalance struct](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStructs.sol) gives us:
 1. How many epochs they were staked (`n`)
