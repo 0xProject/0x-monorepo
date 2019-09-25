@@ -24,7 +24,7 @@ import {
 } from '../../src';
 import { assertIntegerRoughlyEquals, getRandomInteger, toBaseUnitAmount } from '../utils/number_utils';
 
-blockchainTests.resets('finalizer unit tests', env => {
+blockchainTests.resets('Finalizer unit tests', env => {
     const { ZERO_AMOUNT } = constants;
     const INITIAL_EPOCH = 0;
     const INITIAL_BALANCE = toBaseUnitAmount(32);

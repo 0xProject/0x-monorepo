@@ -18,28 +18,41 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "../interfaces/IZrxVault.sol";
-import "./MixinVaultCore.sol";
+import "./libs/LibStakingRichErrors.sol";
+import "./interfaces/IZrxVault.sol";
 
 
 /// @dev This vault manages Zrx Tokens.
 /// When a user mints stake, their Zrx Tokens are deposited into this vault.
 /// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
-/// There is a "Catastrophic Failure Mode" that, when invoked, only
-/// allows withdrawals to be made. Once this vault is in catastrophic
-/// failure mode, it cannot be returned to normal mode; this prevents
-/// corruption of related state in the staking contract.
+/// The contract also includes management of the staking contract
+/// and setting the vault to "Catastrophic Failure Mode".
+/// Catastrophic Failure Mode should only be set iff there is
+/// non-recoverable corruption of the staking contracts. If there is a
+/// recoverable flaw/bug/vulnerability, simply detach the staking contract
+/// by setting its address to `address(0)`. In Catastrophic Failure Mode, only withdrawals
+/// can be made (no deposits). Once Catastrophic Failure Mode  is invoked,
+/// it cannot be returned to normal mode; this prevents corruption of related
+/// state in the staking contract.
 contract ZrxVault is
-    IZrxVault,
-    MixinVaultCore
+    Authorizable,
+    IZrxVault
 {
     using LibSafeMath for uint256;
 
-    // mapping from Owner to ZRX balance
+    // Address of staking proxy contract
+    address payable public stakingProxyAddress;
+
+    // True iff vault has been set to Catastrophic Failure Mode
+    bool public isInCatastrophicFailure;
+
+    // Mapping from staker to ZRX balance
     mapping (address => uint256) internal _balances;
 
     // Zrx Asset Proxy
@@ -59,13 +72,38 @@ contract ZrxVault is
         address _zrxTokenAddress
     )
         public
+        Authorizable()
     {
+        _addAuthorizedAddress(owner);
+
         zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
         _zrxToken = IERC20Token(_zrxTokenAddress);
         _zrxAssetData = abi.encodeWithSelector(
             IAssetData(address(0)).ERC20Token.selector,
             _zrxTokenAddress
         );
+    }
+
+    /// @dev Sets the address of the StakingProxy contract.
+    /// Note that only the contract owner can call this function.
+    /// @param _stakingProxyAddress Address of Staking proxy contract.
+    function setStakingProxy(address payable _stakingProxyAddress)
+        external
+        onlyAuthorized
+    {
+        stakingProxyAddress = _stakingProxyAddress;
+        emit StakingProxySet(_stakingProxyAddress);
+    }
+
+    /// @dev Vault enters into Catastrophic Failure Mode.
+    /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
+    /// Note that only the contract owner can call this function.
+    function enterCatastrophicFailure()
+        external
+        onlyAuthorized
+    {
+        isInCatastrophicFailure = true;
+        emit InCatastrophicFailureMode(msg.sender);
     }
 
     /// @dev Sets the Zrx proxy.
@@ -164,5 +202,49 @@ contract ZrxVault is
             staker,
             amount
         );
+    }
+
+    modifier onlyStakingProxy() {
+        _assertSenderIsStakingProxy();
+        _;
+    }
+
+    modifier onlyInCatastrophicFailure() {
+        _assertInCatastrophicFailure();
+        _;
+    }
+
+    modifier onlyNotInCatastrophicFailure() {
+        _assertNotInCatastrophicFailure();
+        _;
+    }
+
+    function _assertSenderIsStakingProxy()
+        private
+        view
+    {
+        if (msg.sender != stakingProxyAddress) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableByStakingContractError(
+                msg.sender
+            ));
+        }
+    }
+
+    function _assertInCatastrophicFailure()
+        private
+        view
+    {
+        if (!isInCatastrophicFailure) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfInCatastrophicFailureError());
+        }
+    }
+
+    function _assertNotInCatastrophicFailure()
+        private
+        view
+    {
+        if (isInCatastrophicFailure) {
+            LibRichErrors.rrevert(LibStakingRichErrors.OnlyCallableIfNotInCatastrophicFailureError());
+        }
     }
 }

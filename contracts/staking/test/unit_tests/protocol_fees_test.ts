@@ -19,11 +19,11 @@ import {
     TestProtocolFeesContract,
     TestProtocolFeesERC20ProxyTransferFromEventArgs,
     TestProtocolFeesEvents,
-} from '../src';
+} from '../../src';
 
-import { getRandomInteger } from './utils/number_utils';
+import { getRandomInteger } from '../utils/number_utils';
 
-blockchainTests('Protocol Fee Unit Tests', env => {
+blockchainTests('Protocol Fees unit tests', env => {
     let ownerAddress: string;
     let exchangeAddress: string;
     let notExchangeAddress: string;

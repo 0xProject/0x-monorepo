@@ -25,7 +25,7 @@ import {
     toBaseUnitAmount,
 } from '../utils/number_utils';
 
-blockchainTests.resets('delegator unit rewards', env => {
+blockchainTests.resets('Delegator rewards unit tests', env => {
     let testContract: TestDelegatorRewardsContract;
 
     before(async () => {
