@@ -179,10 +179,109 @@ struct StakeInfo {
     StakeStatus status;
     bytes32 poolId;
 }
+
+/// @dev Statuses that stake can exist in.
+enum StakeStatus {
+    ACTIVE,
+    INACTIVE,
+    DELEGATED
+}
 ```
 
 Note that when stake is moved its new status comes into effect on the _next epoch_. Stake remains in its current status until the end of the current epoch.
 
+### 5.3 Querying Stake
+
+The interface below describes how to query balances in the Staking Contract.
+
+```
+/// @dev Balance struct for stake.
+/// @param currentEpochBalance Balance in the current epoch.
+/// @param nextEpochBalance Balance in the next epoch.
+struct StakeBalance {
+    uint256 currentEpochBalance;
+    uint256 nextEpochBalance;
+}
+
+/// @dev Returns the total active stake across the entire staking system.
+/// @return Global active stake.
+function getGlobalActiveStake()
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the total inactive stake across the entire staking system.
+/// @return Global inactive stake.
+function getGlobalInactiveStake()
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the total stake delegated across the entire staking system.
+/// @return Global delegated stake.
+function getGlobalDelegatedStake()
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the total stake for a given owner.
+/// @param owner of stake.
+/// @return Total active stake for owner.
+function getTotalStake(address owner)
+    external
+    view
+    returns (uint256);
+
+/// @dev Returns the active stake for a given owner.
+/// @param owner of stake.
+/// @return Active stake for owner.
+function getActiveStake(address owner)
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the inactive stake for a given owner.
+/// @param owner of stake.
+/// @return Inactive stake for owner.
+function getInactiveStake(address owner)
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the stake delegated by a given owner.
+/// @param owner of stake.
+/// @return Delegated stake for owner.
+function getStakeDelegatedByOwner(address owner)
+    external
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the amount stake that can be withdrawn for a given owner.
+/// @param owner of stake.
+/// @return Withdrawable stake for owner.
+function getWithdrawableStake(address owner)
+    public
+    view
+    returns (uint256);
+
+/// @dev Returns the stake delegated to a specific staking pool, by a given owner.
+/// @param owner of stake.
+/// @param poolId Unique Id of pool.
+/// @return Stake delegaated to pool by owner.
+function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
+    public
+    view
+    returns (IStructs.StakeBalance memory balance);
+
+/// @dev Returns the total stake delegated to a specific staking pool,
+///      across all members.
+/// @param poolId Unique Id of pool.
+/// @return Total stake delegated to pool.
+function getTotalStakeDelegatedToPool(bytes32 poolId)
+    public
+    view
+    returns (IStructs.StakeBalance memory balance);
+```
 
 ## 6 Market Making & Liquidity Rewards
 
