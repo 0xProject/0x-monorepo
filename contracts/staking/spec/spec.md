@@ -661,6 +661,8 @@ This section dives deeper into the mechanics of the smart contracts.
 
 ### 9.1 The Proxy Pattern & Read-Only Calls
 
+The proxy pattern separates
+
 Ensuring the storage slot has not been changed.
 
 ### 9.2 Tracking for Reward Balances for Pool Members
