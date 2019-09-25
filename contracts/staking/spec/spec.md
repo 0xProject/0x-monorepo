@@ -125,7 +125,19 @@ ZRX is staked by depositing tokens into the Staking Contract. The diagram below 
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking.png" width="700" /></p>
 
-ZRX can simlarly be unstaked by withdrawing tokens from the Staking contract. However, there are time-restricrtions on unstaking ZRX which are discussed more later in this section.
+ZRX can simlarly be unstaked by withdrawing tokens from the Staking contract. However, there are time-restrictions on unstaking ZRX, which are discussed more later in this section.
+
+Below is the interface for staking and unstaking.
+
+```
+/// @dev Stake ZRX tokens. Tokens are deposited into the ZRX Vault.
+/// @param amount of ZRX to stake.
+function stake(uint256 amount) external;
+
+/// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to the owner.
+/// @param amount of ZRX to unstake.
+function unstake(uint256 amount) external;
+```
 
 ### 5.1 Staking Pools
 
