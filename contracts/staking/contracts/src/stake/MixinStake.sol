@@ -20,23 +20,12 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../staking_pools/MixinStakingPoolRewards.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
 /// @dev This mixin contains logic for managing ZRX tokens and Stake.
 contract MixinStake is
-    IStakingEvents,
-    MixinAbstract,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinCumulativeRewards,
-    MixinStakingPoolRewards,
     MixinStakingPool
 {
     using LibSafeMath for uint256;

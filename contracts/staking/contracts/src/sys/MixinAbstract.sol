@@ -19,8 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../interfaces/IStructs.sol";
-
 
 /// @dev Exposes some internal functions from various contracts to avoid
 ///      cyclical dependencies.

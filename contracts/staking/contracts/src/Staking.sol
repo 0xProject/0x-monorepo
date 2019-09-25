@@ -21,28 +21,13 @@ pragma experimental ABIEncoderV2;
 
 import "./interfaces/IStaking.sol";
 import "./sys/MixinParams.sol";
-import "./sys/MixinFinalizer.sol";
 import "./stake/MixinStake.sol";
-import "./staking_pools/MixinStakingPool.sol";
 import "./fees/MixinExchangeFees.sol";
 
 
 contract Staking is
     IStaking,
-    IStakingEvents,
-    MixinAbstract,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinExchangeManager,
-    MixinScheduler,
     MixinParams,
-    MixinStakeStorage,
-    MixinStakeBalances,
-    MixinCumulativeRewards,
-    MixinStakingPoolRewards,
-    MixinFinalizer,
-    MixinStakingPool,
     MixinStake,
     MixinExchangeFees
 {

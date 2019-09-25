@@ -27,14 +27,7 @@ import "../sys/MixinAbstract.sol";
 
 
 contract MixinStakingPoolRewards is
-    IStakingEvents,
     MixinAbstract,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
-    MixinScheduler,
-    MixinStakeStorage,
-    MixinStakeBalances,
     MixinCumulativeRewards
 {
     using LibSafeMath for uint256;

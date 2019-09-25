@@ -26,10 +26,6 @@ import "../sys/MixinScheduler.sol";
 
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
-    IStakingEvents,
-    MixinConstants,
-    Ownable,
-    MixinStorage,
     MixinScheduler
 {
     using LibSafeMath for uint256;
