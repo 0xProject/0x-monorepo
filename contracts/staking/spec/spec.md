@@ -729,9 +729,10 @@ The final equation for computing a member's reward during epoch `n` becomes:
 
 To compute a member's reward using this algorithm, we need to know the cumulative rewards at the entry and exit epoch of the member. But, what happens if no reward was recorded during one of these epochs?
 
-In this case, there will be `nil` entry in `cumulativeRewardsByPool`. However, this isn't a problem. If a reward is earned in epoch *i* but not epoch *i + 1* then the cumulative rewards will not have changed. So in epoch *i + 1* we can simply use the entry for epoch *i*.
+In this case, there will be `nil` entry in `cumulativeRewardsByPool`. However, this isn't a problem. If a reward is earned in epoch *n* but not epoch *n + 1* then the cumulative rewards will not have changed. So in epoch *n + 1* we can simply use the entry for epoch *n*.
 
 We keep track of the last epoch that the `cumulativeRewardsByPool` was updated in using the following state variable:
+
 ```
 // mapping from Pool Id to Epoch
 mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
