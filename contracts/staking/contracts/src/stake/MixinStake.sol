@@ -41,10 +41,10 @@ contract MixinStake is
         getZrxVault().depositFrom(staker, amount);
 
         // mint stake
-        _incrementCurrentAndNextBalance(_activeStakeByOwner[staker], amount);
+        _increaseCurrentAndNextBalance(_activeStakeByOwner[staker], amount);
 
         // update global total of active stake
-        _incrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
+        _increaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
 
         // notify
         emit Stake(
@@ -74,10 +74,10 @@ contract MixinStake is
         }
 
         // burn inactive stake
-        _decrementCurrentAndNextBalance(_inactiveStakeByOwner[staker], amount);
+        _decreaseCurrentAndNextBalance(_inactiveStakeByOwner[staker], amount);
 
         // update global total of inactive stake
-        _decrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
+        _decreaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
 
         // update withdrawable field
         _withdrawableStakeByOwner[staker] =
@@ -186,30 +186,19 @@ contract MixinStake is
         // Sanity check the pool we're delegating to exists.
         _assertStakingPoolExists(poolId);
 
-        // Cache amount delegated to pool by staker.
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
+        _withdrawAndSyncDelegatorRewards(
+            poolId,
+            staker
+        );
 
         // Increment how much stake the staker has delegated to the input pool.
-        _incrementNextBalance(
+        _increaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
         // Increment how much stake has been delegated to pool.
-        _incrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
-
-        // Synchronizes reward state in the pool that the owner is delegating
-        // to.
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            staker,
-            initDelegatedStakeToPoolByOwner,
-            finalDelegatedStakeToPoolByOwner
-        );
+        _increaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -226,30 +215,19 @@ contract MixinStake is
         // sanity check the pool we're undelegating from exists
         _assertStakingPoolExists(poolId);
 
-        // cache amount delegated to pool by staker
-        IStructs.StoredBalance memory initDelegatedStakeToPoolByOwner =
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
+        _withdrawAndSyncDelegatorRewards(
+            poolId,
+            staker
+        );
 
         // decrement how much stake the staker has delegated to the input pool
-        _decrementNextBalance(
+        _decreaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
         // decrement how much stake has been delegated to pool
-        _decrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
-
-        // synchronizes reward state in the pool that the owner is undelegating
-        // from
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            staker,
-            initDelegatedStakeToPoolByOwner,
-            finalDelegatedStakeToPoolByOwner
-        );
+        _decreaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
     }
 
     /// @dev Returns a storage pointer to a user's stake in a given status.

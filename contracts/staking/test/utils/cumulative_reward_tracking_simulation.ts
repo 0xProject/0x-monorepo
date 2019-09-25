@@ -36,12 +36,7 @@ export class CumulativeRewardTrackingSimulation {
     private static _extractTestLogs(txReceiptLogs: DecodedLogs): TestLog[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-            if (log.event === TestCumulativeRewardTrackingEvents.SetMostRecentCumulativeReward) {
-                logs.push({
-                    event: log.event,
-                    epoch: log.args.epoch.toNumber(),
-                });
-            } else if (log.event === TestCumulativeRewardTrackingEvents.SetCumulativeReward) {
+            if (log.event === TestCumulativeRewardTrackingEvents.SetCumulativeReward) {
                 logs.push({
                     event: log.event,
                     epoch: log.args.epoch.toNumber(),

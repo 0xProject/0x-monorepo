@@ -111,7 +111,7 @@ contract MixinStakeStorage is
     /// @dev Increments both the `current` and `next` fields.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _incrementCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
+    function _increaseCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
@@ -126,7 +126,7 @@ contract MixinStakeStorage is
     /// @dev Decrements both the `current` and `next` fields.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.
-    function _decrementCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
+    function _decreaseCurrentAndNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance
@@ -141,7 +141,7 @@ contract MixinStakeStorage is
     /// @dev Increments the `next` field (but not the `current` field).
     /// @param balancePtr storage pointer to balance.
     /// @param amount to increment by.
-    function _incrementNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
+    function _increaseNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Add stake to balance
@@ -155,7 +155,7 @@ contract MixinStakeStorage is
     /// @dev Decrements the `next` field (but not the `current` field).
     /// @param balancePtr storage pointer to balance.
     /// @param amount to decrement by.
-    function _decrementNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
+    function _decreaseNextBalance(IStructs.StoredBalance storage balancePtr, uint256 amount)
         internal
     {
         // Remove stake from balance

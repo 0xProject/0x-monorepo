@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "../src/Staking.sol";
 
 
-// solhint-disable no-empty-blocks
+// solhint-disable no-empty-blocks,no-simple-event-func-name
 /// @dev A version of the staking contract with WETH-related functions
 ///      overridden to do nothing.
 contract TestStakingNoWETH is

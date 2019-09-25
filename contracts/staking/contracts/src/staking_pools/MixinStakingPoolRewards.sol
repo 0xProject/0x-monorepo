@@ -44,21 +44,15 @@ contract MixinStakingPoolRewards is
     {
         address member = msg.sender;
 
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner =
-            _loadSyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
-
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            member,
-            // Initial balance
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
-            finalDelegatedStakeToPoolByOwner
+            member
         );
 
         // Update stored balance with synchronized version; this prevents
         // redundant withdrawals.
         _delegatedStakeToPoolByOwner[member][poolId] =
-            finalDelegatedStakeToPoolByOwner;
+            _loadSyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
     }
 
     /// @dev Computes the reward balance in ETH of the operator of a pool.
@@ -108,7 +102,7 @@ contract MixinStakingPoolRewards is
         );
         return _computeDelegatorReward(
             poolId,
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]),
+            member,
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -118,33 +112,41 @@ contract MixinStakingPoolRewards is
     ///      withdrawing rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
-    /// @param initialDelegatedStakeToPoolByOwner The member's delegated
-    ///        balance at the beginning of this transaction.
-    /// @param finalDelegatedStakeToPoolByOwner The member's delegated balance
-    ///        at the end of this transaction.
     function _withdrawAndSyncDelegatorRewards(
         bytes32 poolId,
-        address member,
-        IStructs.StoredBalance memory initialDelegatedStakeToPoolByOwner,
-        IStructs.StoredBalance memory finalDelegatedStakeToPoolByOwner
+        address member
     )
         internal
     {
-        // Withdraw any rewards from.
-        // this must be done before we can modify the staker's portion of the
-        // delegator pool.
-        _finalizePoolAndWithdrawDelegatorRewards(
+        // Ensure the pool is finalized.
+        finalizePool(poolId);
+
+        // Compute balance owed to delegator
+        uint256 balance = _computeDelegatorReward(
             poolId,
             member,
-            initialDelegatedStakeToPoolByOwner
+            // No unfinalized values because we ensured the pool is already
+            // finalized.
+            0,
+            0
         );
 
-        // Add dependencies on cumulative rewards for this epoch and the next
-        // epoch, if necessary.
-        _setCumulativeRewardDependenciesForDelegator(
-            poolId,
-            finalDelegatedStakeToPoolByOwner
-        );
+        // Withdraw non-0 balance
+        if (balance != 0) {
+            // Decrease the balance of the pool
+            _decreasePoolRewards(poolId, balance);
+
+            // Withdraw the member's WETH balance
+            getWethContract().transfer(member, balance);
+        }
+
+        // Add a cumulative reward entry for this epoch.
+        if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][currentEpoch])) {
+            _forceSetCumulativeReward(
+                poolId,
+                _getMostRecentCumulativeReward(poolId)
+            );
+        }
     }
 
     /// @dev Handles a pool's reward at the current epoch.
@@ -205,7 +207,6 @@ contract MixinStakingPoolRewards is
             // Store cumulative rewards for this epoch.
             _forceSetCumulativeReward(
                 poolId,
-                currentEpoch,
                 cumulativeReward
             );
         }
@@ -244,50 +245,15 @@ contract MixinStakingPoolRewards is
         return (operatorReward, membersReward);
     }
 
-    /// @dev Transfers a delegators accumulated rewards to the delegator.
-    ///      This is required before the member's stake in the pool can be modified.
-    /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
-    /// @param unsyncedStake Unsynced stake of the delegator to the pool.
-    function _finalizePoolAndWithdrawDelegatorRewards(
-        bytes32 poolId,
-        address member,
-        IStructs.StoredBalance memory unsyncedStake
-    )
-        private
-    {
-        // Ensure the pool is finalized.
-        finalizePool(poolId);
-
-        // Compute balance owed to delegator
-        uint256 balance = _computeDelegatorReward(
-            poolId,
-            unsyncedStake,
-            // No unfinalized values because we ensured the pool is already
-            // finalized.
-            0,
-            0
-        );
-        if (balance == 0) {
-            return;
-        }
-
-        // Decrease the balance of the pool
-        _decreasePoolRewards(poolId, balance);
-
-        // Withdraw the member's WETH balance
-        getWethContract().transfer(member, balance);
-    }
-
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
-    /// @param unsyncedStake Unsynced delegated stake to pool by staker
+    /// @param member of the pool.
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
-        IStructs.StoredBalance memory unsyncedStake,
+        address member,
         uint256 unfinalizedMembersReward,
         uint256 unfinalizedMembersStake
     )
@@ -301,6 +267,9 @@ contract MixinStakingPoolRewards is
         if (_currentEpoch == 0) {
             return 0;
         }
+
+        IStructs.StoredBalance memory unsyncedStake =
+            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[member][poolId]);
 
         // There can be no rewards if the last epoch when stake was synced is
         // equal to the current epoch, because all prior rewards, including
@@ -381,36 +350,6 @@ contract MixinStakingPoolRewards is
             unfinalizedMembersReward,
             unfinalizedMembersStake,
             unfinalizedStakeBalance
-        );
-    }
-
-    /// @dev Adds or removes cumulative reward dependencies for a delegator.
-    ///      A delegator always depends on the cumulative reward for the current
-    ///      and next epoch, if they would still have stake in the next epoch.
-    /// @param poolId Unique id of pool.
-    /// @param _delegatedStakeToPoolByOwner Amount of stake the member has
-    ///        delegated to the pool.
-    function _setCumulativeRewardDependenciesForDelegator(
-        bytes32 poolId,
-        IStructs.StoredBalance memory _delegatedStakeToPoolByOwner
-    )
-        private
-    {
-        // Get the most recent cumulative reward, which will serve as a
-        // reference point when updating dependencies
-        IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
-
-        // The delegator depends on the Cumulative Reward for this epoch
-        // only if they are currently staked or will be staked next epoch.
-        if (_delegatedStakeToPoolByOwner.currentEpochBalance == 0 && _delegatedStakeToPoolByOwner.nextEpochBalance == 0) {
-            return;
-        }
-
-        // Delegator depends on the Cumulative Reward for this epoch - ensure it is set.
-        _trySetCumulativeReward(
-            poolId,
-            _delegatedStakeToPoolByOwner.currentEpoch,
-            mostRecentCumulativeReward
         );
     }
 
