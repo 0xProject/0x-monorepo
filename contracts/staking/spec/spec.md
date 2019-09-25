@@ -56,7 +56,7 @@ In this worst-case scenario, state has been irreparably corrupted and the stakin
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png" width="700" /></p>
 
-## 3 Contract Management
+## 3 Contract Migrations
 
 This section outlines steps for managing the system of smart contracts. Operations are atomically executed as a group.
 
@@ -447,6 +447,8 @@ function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
 ```
 
 ## 7 Batch Transactions
+
+
 
 
 ## 9 Staking Events
