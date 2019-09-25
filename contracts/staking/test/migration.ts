@@ -224,7 +224,7 @@ blockchainTests('Migration tests', env => {
                 epochDurationInSeconds: fiveDays.minus(1),
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidEpochDuration,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidEpochDuration,
             );
             expect(tx).to.revertWith(expectedError);
         });
@@ -234,7 +234,7 @@ blockchainTests('Migration tests', env => {
                 epochDurationInSeconds: thirtyDays.plus(1),
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidEpochDuration,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidEpochDuration,
             );
             expect(tx).to.revertWith(expectedError);
         });
@@ -258,7 +258,7 @@ blockchainTests('Migration tests', env => {
                 cobbDouglasAlphaDenominator: constants.ZERO_AMOUNT,
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha,
             );
             expect(tx).to.revertWith(expectedError);
         });
@@ -269,7 +269,7 @@ blockchainTests('Migration tests', env => {
                 cobbDouglasAlphaDenominator: new BigNumber(100),
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidCobbDouglasAlpha,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidCobbDouglasAlpha,
             );
             expect(tx).to.revertWith(expectedError);
         });
@@ -295,7 +295,7 @@ blockchainTests('Migration tests', env => {
                 rewardDelegatedStakeWeight: new BigNumber(stakingConstants.PPM).plus(1),
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidRewardDelegatedStakeWeight,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidRewardDelegatedStakeWeight,
             );
             expect(tx).to.revertWith(expectedError);
         });
@@ -312,7 +312,7 @@ blockchainTests('Migration tests', env => {
                 maximumMakersInPool: constants.ZERO_AMOUNT,
             });
             const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCode.InvalidMaximumMakersInPool,
+                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool,
             );
             expect(tx).to.revertWith(expectedError);
         });

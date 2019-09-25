@@ -51,7 +51,8 @@ contract MixinExchangeManager is
         onlyAuthorized
     {
         if (validExchanges[addr]) {
-            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressAlreadyRegisteredError(
+            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeManagerError(
+                LibStakingRichErrors.ExchangeManagerErrorCodes.ExchangeAlreadyRegistered,
                 addr
             ));
         }
@@ -66,7 +67,8 @@ contract MixinExchangeManager is
         onlyAuthorized
     {
         if (!validExchanges[addr]) {
-            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeAddressNotRegisteredError(
+            LibRichErrors.rrevert(LibStakingRichErrors.ExchangeManagerError(
+                LibStakingRichErrors.ExchangeManagerErrorCodes.ExchangeNotRegistered,
                 addr
             ));
         }

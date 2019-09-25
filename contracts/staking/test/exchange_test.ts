@@ -37,7 +37,10 @@ blockchainTests('Exchange Integrations', env => {
             const isValidAddressValid = await validExchanges.callAsync(exchange);
             expect(isValidAddressValid).to.be.true();
             // 3 try adding valid address again
-            let revertError = new StakingRevertErrors.ExchangeAddressAlreadyRegisteredError(exchange);
+            let revertError = new StakingRevertErrors.ExchangeManagerError(
+                StakingRevertErrors.ExchangeManagerErrorCodes.ExchangeAlreadyRegistered,
+                exchange,
+            );
             let tx = addExchangeAddress.awaitTransactionSuccessAsync(exchange);
             await expect(tx).to.revertWith(revertError);
             // 4 remove valid address
@@ -45,7 +48,10 @@ blockchainTests('Exchange Integrations', env => {
             const isValidAddressStillValid = await validExchanges.callAsync(exchange);
             expect(isValidAddressStillValid).to.be.false();
             // 5 try removing valid address again
-            revertError = new StakingRevertErrors.ExchangeAddressNotRegisteredError(exchange);
+            revertError = new StakingRevertErrors.ExchangeManagerError(
+                StakingRevertErrors.ExchangeManagerErrorCodes.ExchangeNotRegistered,
+                exchange,
+            );
             tx = removeExchangeAddress.awaitTransactionSuccessAsync(exchange);
             await expect(tx).to.revertWith(revertError);
             // @todo should not be able to add / remove an exchange if not contract owner.

@@ -118,7 +118,7 @@ contract MixinParams is
         ) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCode.MixinParamsAlreadyInitialized
+                    LibStakingRichErrors.InitializationErrorCodes.MixinParamsAlreadyInitialized
                 )
             );
         }

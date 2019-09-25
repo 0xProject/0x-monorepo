@@ -19,7 +19,7 @@ export enum ProtocolFeePaymentErrorCodes {
     MismatchedFeeAndPayment,
 }
 
-export enum InvalidParamValueErrorCode {
+export enum InvalidParamValueErrorCodes {
     InvalidCobbDouglasAlpha,
     InvalidRewardDelegatedStakeWeight,
     InvalidMaximumMakersInPool,
@@ -27,19 +27,14 @@ export enum InvalidParamValueErrorCode {
     InvalidEpochDuration,
 }
 
-export enum InitializationErrorCode {
+export enum InitializationErrorCodes {
     MixinSchedulerAlreadyInitialized,
     MixinParamsAlreadyInitialized,
 }
 
-export class MiscalculatedRewardsError extends RevertError {
-    constructor(totalRewardsPaid?: BigNumber | number | string, initialContractBalance?: BigNumber | number | string) {
-        super(
-            'MiscalculatedRewardsError',
-            'MiscalculatedRewardsError(uint256 totalRewardsPaid, uint256 initialContractBalance)',
-            { totalRewardsPaid, initialContractBalance },
-        );
-    }
+export enum ExchangeManagerErrorCodes {
+    ExchangeAlreadyRegistered,
+    ExchangeNotRegistered,
 }
 
 export class OnlyCallableByExchangeError extends RevertError {
@@ -48,20 +43,11 @@ export class OnlyCallableByExchangeError extends RevertError {
     }
 }
 
-export class ExchangeAddressAlreadyRegisteredError extends RevertError {
-    constructor(exchangeAddress?: string) {
-        super(
-            'ExchangeAddressAlreadyRegisteredError',
-            'ExchangeAddressAlreadyRegisteredError(address exchangeAddress)',
-            { exchangeAddress },
-        );
-    }
-}
-
-export class ExchangeAddressNotRegisteredError extends RevertError {
-    constructor(exchangeAddress?: string) {
-        super('ExchangeAddressNotRegisteredError', 'ExchangeAddressNotRegisteredError(address exchangeAddress)', {
-            exchangeAddress,
+export class ExchangeManagerError extends RevertError {
+    constructor(error?: ExchangeManagerErrorCodes, senderAddress?: string) {
+        super('ExchangeManagerError', 'ExchangeManagerError(uint8 errorCode, address senderAddress)', {
+            error,
+            senderAddress,
         });
     }
 }
@@ -99,16 +85,6 @@ export class MakerPoolAssignmentError extends RevertError {
     }
 }
 
-export class WithdrawAmountExceedsMemberBalanceError extends RevertError {
-    constructor(withdrawAmount?: BigNumber | number | string, balance?: BigNumber | number | string) {
-        super(
-            'WithdrawAmountExceedsMemberBalanceError',
-            'WithdrawAmountExceedsMemberBalanceError(uint256 withdrawAmount, uint256 balance)',
-            { withdrawAmount, balance },
-        );
-    }
-}
-
 export class BlockTimestampTooLowError extends RevertError {
     constructor(epochEndTime?: BigNumber | number | string, currentBlockTimestamp?: BigNumber | number | string) {
         super(
@@ -139,16 +115,6 @@ export class OnlyCallableIfNotInCatastrophicFailureError extends RevertError {
     }
 }
 
-export class AmountExceedsBalanceOfPoolError extends RevertError {
-    constructor(amount?: BigNumber | number | string, poolBalance?: BigNumber | number | string) {
-        super(
-            'AmountExceedsBalanceOfPoolError',
-            'AmountExceedsBalanceOfPoolError(uint256 amount, uint96 poolBalance)',
-            { amount, poolBalance },
-        );
-    }
-}
-
 export class OperatorShareError extends RevertError {
     constructor(error?: OperatorShareErrorCodes, poolId?: string, operatorShare?: BigNumber | number | string) {
         super('OperatorShareError', 'OperatorShareError(uint8 error, bytes32 poolId, uint32 operatorShare)', {
@@ -169,7 +135,7 @@ export class PoolExistenceError extends RevertError {
 }
 
 export class InvalidParamValueError extends RevertError {
-    constructor(error?: InvalidParamValueErrorCode) {
+    constructor(error?: InvalidParamValueErrorCodes) {
         super('InvalidParamValueError', 'InvalidParamValueError(uint8 error)', {
             error,
         });
@@ -177,8 +143,8 @@ export class InvalidParamValueError extends RevertError {
 }
 
 export class InvalidStakeStatusError extends RevertError {
-    constructor(status?: BigNumber) {
-        super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint256 status)', { status });
+    constructor(status?: BigNumber | number | string) {
+        super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint8 status)', { status });
     }
 }
 
@@ -197,7 +163,7 @@ export class InvalidProtocolFeePaymentError extends RevertError {
 }
 
 export class InitializationError extends RevertError {
-    constructor(error?: InitializationErrorCode) {
+    constructor(error?: InitializationErrorCodes) {
         super('InitializationError', 'InitializationError(uint8 error)', { error });
     }
 }
@@ -219,17 +185,14 @@ export class PreviousEpochNotFinalizedError extends RevertError {
 }
 
 const types = [
-    AmountExceedsBalanceOfPoolError,
     BlockTimestampTooLowError,
-    ExchangeAddressAlreadyRegisteredError,
-    ExchangeAddressNotRegisteredError,
+    ExchangeManagerError,
     InitializationError,
     InsufficientBalanceError,
     InvalidProtocolFeePaymentError,
     InvalidStakeStatusError,
     InvalidParamValueError,
     MakerPoolAssignmentError,
-    MiscalculatedRewardsError,
     OnlyCallableByExchangeError,
     OnlyCallableByPoolOperatorOrMakerError,
     OnlyCallableByStakingContractError,
@@ -239,7 +202,6 @@ const types = [
     PoolExistenceError,
     PreviousEpochNotFinalizedError,
     ProxyDestinationCannotBeNilError,
-    WithdrawAmountExceedsMemberBalanceError,
 ];
 
 // Register the types we've defined.
