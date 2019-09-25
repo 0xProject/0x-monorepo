@@ -287,7 +287,7 @@ contract MixinStake is
 
         // invalid status
         LibRichErrors.rrevert(
-            LibStakingRichErrors.InvalidStakeStatusError(uint256(status))
+            LibStakingRichErrors.InvalidStakeStatusError(status)
         );
 
         // required to compile ~ we should never hit this.

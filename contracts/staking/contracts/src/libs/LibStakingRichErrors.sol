@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "../interfaces/IStructs.sol";
 
 
 library LibStakingRichErrors {
@@ -113,9 +114,9 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
         0x9ae94f01;
 
-    // bytes4(keccak256("InvalidStakeStatusError(uint256)"))
+    // bytes4(keccak256("InvalidStakeStatusError(uint8)"))
     bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
-        0xb7161acd;
+        0x7cf20260;
 
     // bytes4(keccak256("ProxyDestinationCannotBeNilError()"))
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL_ERROR =
@@ -362,7 +363,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function InvalidStakeStatusError(uint256 status)
+    function InvalidStakeStatusError(IStructs.StakeStatus status)
         internal
         pure
         returns (bytes memory)
