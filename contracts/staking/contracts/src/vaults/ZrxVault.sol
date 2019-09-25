@@ -70,12 +70,12 @@ contract ZrxVault is
     }
 
     /// @dev Sets the Zrx proxy.
-    /// Note that only the contract staker can call this.
+    /// Note that only an authorized address can call this function.
     /// Note that this can only be called when *not* in Catastrophic Failure mode.
     /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
     function setZrxProxy(address _zrxProxyAddress)
         external
-        onlyOwner
+        onlyAuthorized
         onlyNotInCatastrophicFailure
     {
         zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
