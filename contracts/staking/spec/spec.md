@@ -301,7 +301,7 @@ A maker creates a pool, which can be delegated to by any other staker. When comp
 
 Market makers incentivize delegators to join their pool by setting aside a fixed percentage of their reward for the members of their pool. A member receives an amount of this percentage that is proportional to how much stake they have delegated to the pool.
 
-
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Rewards.png" width="700" /></p>
 
 
 
