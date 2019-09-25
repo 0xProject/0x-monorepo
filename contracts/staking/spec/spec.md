@@ -694,6 +694,10 @@ We store the following ratio for each epoch that a reward is earned for the pool
 We compute a member's reward using the following equation:
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardFromWhatWeStore.png" height="40" /></p>
 
+Example:
+
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardFromWhatWeStore-Example.png" height="60" /></p>
+
 This cumulative reward along with the stored balance of a member, we are able to compute their reward in the pool at any time.
 
 This information is stored on-chain as follows:
