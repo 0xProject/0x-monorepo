@@ -76,29 +76,8 @@ contract MixinCumulativeRewards is
         }
 
         // Update state to reflect the most recent cumulative reward
-        _forceSetMostRecentCumulativeRewardEpoch(
-            poolId,
-            currentMostRecentEpoch,
-            currentEpoch_
-        );
-    }
-
-    /// @dev Forcefully sets the epoch of the most recent cumulative reward.
-    /// @param poolId Unique Id of pool.
-    /// @param currentMostRecentEpoch Epoch of the most recent cumulative
-    ///        reward.
-    /// @param newMostRecentEpoch Epoch of the new most recent cumulative
-    ///        reward.
-    function _forceSetMostRecentCumulativeRewardEpoch(
-        bytes32 poolId,
-        uint256 currentMostRecentEpoch,
-        uint256 newMostRecentEpoch
-    )
-        internal
-    {
-        // Sanity check that we're not trying to go back in time
-        assert(newMostRecentEpoch >= currentMostRecentEpoch);
-        _cumulativeRewardsByPoolLastStored[poolId] = newMostRecentEpoch;
+        assert(currentEpoch_ > currentMostRecentEpoch);
+        _cumulativeRewardsByPoolLastStored[poolId] = currentEpoch_;
     }
 
     /// @dev Computes a member's reward over a given epoch interval.

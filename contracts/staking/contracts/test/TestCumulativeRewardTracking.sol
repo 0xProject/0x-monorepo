@@ -30,11 +30,6 @@ contract TestCumulativeRewardTracking is
         uint256 epoch
     );
 
-    event SetMostRecentCumulativeReward(
-        bytes32 poolId,
-        uint256 epoch
-    );
-
     constructor(
         address wethAddress,
         address zrxVaultAddress
@@ -59,21 +54,6 @@ contract TestCumulativeRewardTracking is
         MixinCumulativeRewards._forceSetCumulativeReward(
             poolId,
             value
-        );
-    }
-
-    function _forceSetMostRecentCumulativeRewardEpoch(
-        bytes32 poolId,
-        uint256 currentMostRecentEpoch,
-        uint256 newMostRecentEpoch
-    )
-        internal
-    {
-        emit SetMostRecentCumulativeReward(poolId, newMostRecentEpoch);
-        MixinCumulativeRewards._forceSetMostRecentCumulativeRewardEpoch(
-            poolId,
-            currentMostRecentEpoch,
-            newMostRecentEpoch
         );
     }
 }
