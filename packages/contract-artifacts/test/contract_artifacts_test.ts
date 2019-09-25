@@ -9,6 +9,17 @@ import { FORBIDDEN_PROPERTIES, REQUIRED_PROPERTIES } from '../src/transform';
 
 const expect = chai.expect;
 
+const CONTRACTS_WITH_PURE_FNS = [
+    // 'Coordinator', // missing deployedBytecode
+    'DevUtils',
+    'ERC1155Proxy',
+    'ERC20Proxy',
+    'ERC721Proxy',
+    'IAssetProxy',
+    'MultiAssetProxy',
+    'StaticCallProxy',
+];
+
 describe('Contract Artifacts', () => {
     it('should not include forbidden attributes', () => {
         const forbiddenPropertiesByArtifact: { [name: string]: string[] } = {};
@@ -32,6 +43,11 @@ describe('Contract Artifacts', () => {
                 // HACK (xianny): Remove after `compiler` field is added in v3.
                 if (requiredProperty === 'compiler' && artifact.schemaVersion === '2.0.0') {
                     continue;
+                }
+                if (requiredProperty === 'compilerOutput.evm.deployedBytecode.object') {
+                    if (!CONTRACTS_WITH_PURE_FNS.includes(artifactName)) {
+                        continue;
+                    }
                 }
                 const requiredValue = get(artifact, requiredProperty);
                 if (requiredValue === undefined || requiredValue === '') {
