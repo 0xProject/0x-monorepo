@@ -659,13 +659,9 @@ event OperatorShareDecreased(
 
 This section dives deeper into the mechanics of the smart contracts.
 
-### 9.3 The Proxy Pattern & Read-Only Calls
+### 9.1 The Proxy Pattern & Read-Only Calls
 
 Ensuring the storage slot has not been changed.
-
-### 9.1 Stake Management
-
-
 
 ### 9.2 Tracking for Reward Balances for Pool Members
 
@@ -740,5 +736,5 @@ mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
 
 
 
-
+### 9.3 Stake Management
 
