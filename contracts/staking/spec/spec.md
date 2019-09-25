@@ -1,3 +1,6 @@
+# 0x protocol Staking specification
+
+## Table of Contents 
 [1 Overview](#1-overview)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;[1.1 Motivation](#11-motivation)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;[1.2 Design Principles](#12-design-principles)
