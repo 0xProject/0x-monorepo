@@ -157,7 +157,7 @@ Each staked ZRX has an associated status that reflects its utility within the 0x
 | Active | Can be used to participate in governance. This is the default status. |
 | Inactive | Carries no utility within the 0x ecosystem. |
 | Inactive & Withdrawable | Once ZRX has been inactive for one full epoch it can be withdrawn. |
-| Delegated | ZRX is delegated to a pool. It can be used to participate in governance plus earn liquidity rewards. |
+| Delegated | ZRX is delegated to a pool. It can be used in governance plus contribute to liquidity rewards. |
 
 There is a single function for moving stake between statuses:
 ```
@@ -181,10 +181,7 @@ struct StakeInfo {
 }
 ```
 
-
-
-
-
+Note that when stake is moved its new status comes into effect on the _next epoch_. Stake remains in its current status until the end of the current epoch.
 
 
 ## 6 Market Making & Liquidity Rewards
