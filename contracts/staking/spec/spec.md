@@ -659,7 +659,7 @@ event OperatorShareDecreased(
 
 This section dives deeper into the mechanics of the smart contracts.
 
-### 9.1 Securing the Proxy Pattern & Read-Only Calls
+### 9.1 Securing the Proxy Pattern
 
 The proxy pattern splits the state and logic into different contracts, allowing the logic contract to be upgraded. This is achieved using a `delegate_call` from the state contract into the logic contract.
 
@@ -668,6 +668,8 @@ One of the dangers in this pattern is that the storage slot or offset could chan
 One way to mitigate this danger is to store the state variables in a single immutable contract, which is inherited by both the state and logic contract. This will work, but it does not future-proof against external changes that may result from changes to Solidity or the EVM.
 
 The best way we found to mitigate this danger is with runtime sanity checks. We hardcode the expected slot and offset of each state variable and assert the value every time the logic contract is updated. This is handled in the Staking Contract constructor [here](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/Staking.sol).
+
+See [LibProxy](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/libs/LibProxy.sol) for the proxy code.
 
 ### 9.2 The Read-Only Proxy
 
@@ -679,6 +681,8 @@ Steps:
 3. The revert is caught and returned to the Staking Proxy.
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Read-Only%20Proxy.png" width="600" /></p>
+
+See [LibProxy](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/libs/LibProxy.sol) for the proxy code.
 
 ### 9.3 Tracking for Reward Balances for Pool Members
 
