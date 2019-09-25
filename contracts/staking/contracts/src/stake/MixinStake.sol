@@ -42,10 +42,10 @@ contract MixinStake is
         getZrxVault().depositFrom(staker, amount);
 
         // mint stake
-        _incrementCurrentAndNextBalance(_activeStakeByOwner[staker], amount);
+        _increaseCurrentAndNextBalance(_activeStakeByOwner[staker], amount);
 
         // update global total of active stake
-        _incrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
+        _increaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
 
         // notify
         emit Stake(
@@ -75,10 +75,10 @@ contract MixinStake is
         }
 
         // burn inactive stake
-        _decrementCurrentAndNextBalance(_inactiveStakeByOwner[staker], amount);
+        _decreaseCurrentAndNextBalance(_inactiveStakeByOwner[staker], amount);
 
         // update global total of inactive stake
-        _decrementCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
+        _decreaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
 
         // update withdrawable field
         _withdrawableStakeByOwner[staker] =
@@ -192,13 +192,13 @@ contract MixinStake is
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         // Increment how much stake the staker has delegated to the input pool.
-        _incrementNextBalance(
+        _increaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
         // Increment how much stake has been delegated to pool.
-        _incrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
+        _increaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
         // Synchronizes reward state in the pool that the owner is delegating
         // to.
@@ -232,13 +232,13 @@ contract MixinStake is
             _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
 
         // decrement how much stake the staker has delegated to the input pool
-        _decrementNextBalance(
+        _decreaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
         // decrement how much stake has been delegated to pool
-        _decrementNextBalance(_delegatedStakeByPoolId[poolId], amount);
+        _decreaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
         // synchronizes reward state in the pool that the owner is undelegating
         // from
