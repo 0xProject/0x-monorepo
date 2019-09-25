@@ -678,7 +678,7 @@ Steps:
 2. On re-entry, we delegate to the Staking Contract and then _reverts_ with the return data.
 3. The revert is caught and returned to the Staking Proxy.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Read-Only%20Proxy.png" width="500" /></p>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Read-Only%20Proxy.png" width="600" /></p>
 
 ### 9.3 Tracking for Reward Balances for Pool Members
 
