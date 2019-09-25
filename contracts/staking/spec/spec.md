@@ -121,23 +121,32 @@ Note: The return value (`poolsRemaining`) is described in detail in Section 7 Li
 
 ## 5 Staking
 
-Stake is minted when ZRX is deposited and burned when ZRX is withdrawn from the Staking Contract. The diagram below shows the workflow when the user stakes.
+ZRX is staked by depositing tokens into the Staking Contract. The diagram below illustrates this workflow.
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking.png" width="700" /></p>
 
+ZRX can simlarly be unstaked by withdrawing tokens from the Staking contract. However, there are time-restricrtions on unstaking ZRX which are discussed more later in this section.
 
-
+### 5.2 Stake Status
 At any given time, Stake can exist in one of the following states.
+
+|Status|Definition  |
+|--|--|
+| Active | Stake is minted in this state and can be used as a utility within the 0x ecosystem. |
+| Inactive | Stake can be moved to the Inactive state, meaning it cannot be used as a utility within the 0x ecosystem. |
+| Inactive & Withdrawable | Once stake has been inactive for 1 full epoch it can be burned. |
+| Delegated | Stake can be  |
 
 ### 5.1 Staking Pools
 
-## 6 Market Making
+### 5.3 Delegating ZRX
+
+
+
+## 6 Market Making & Liquidity Rewards
 
 ## 7 Protocol Fees
 
-
-
-## 8 Liquidity Rewards
 
 ## 9 Staking Events
 
