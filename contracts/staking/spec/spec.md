@@ -674,7 +674,7 @@ This section describes the workflow for tracking and computing the portion of a 
 
 A pool with _D_ delegated stake that earned _R_ rewards for its pool members in a given epoch, the reward (_r_) for a member that delegated _d_ stake is computed by:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardSingleEpoch.png" width="200" /></p>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardSingleEpoch.png" width="100" /></p>
 
 
 The member's reward after n epochs (given member does not change their stake) is then given by:
