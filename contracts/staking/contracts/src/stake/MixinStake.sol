@@ -24,7 +24,6 @@ import "../staking_pools/MixinStakingPool.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
-/// @dev This mixin contains logic for managing ZRX tokens and Stake.
 contract MixinStake is
     MixinStakingPool
 {
