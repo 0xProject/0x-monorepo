@@ -9,6 +9,8 @@ import { FORBIDDEN_PROPERTIES, REQUIRED_PROPERTIES } from '../src/transform';
 
 const expect = chai.expect;
 
+// For pure functions, we use local EVM execution in `@0x/base-contract` instead
+// of making an eth_call. This requires the `deployedBytecode` from compiler output.
 const CONTRACTS_WITH_PURE_FNS = [
     // 'Coordinator', // missing deployedBytecode
     'DevUtils',
