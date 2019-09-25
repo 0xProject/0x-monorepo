@@ -67,13 +67,14 @@ contract MixinExchangeWrapper is
                 add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
                 mload(fillOrderCalldata),           // length of input
                 fillOrderCalldata,                  // write output over input
-                128                                 // output size is 128 bytes
+                160                                 // output size is 160 bytes
             )
             if success {
                 mstore(fillResults, mload(fillOrderCalldata))
                 mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
                 mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
                 mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
+                mstore(add(fillResults, 128), mload(add(fillOrderCalldata, 128)))
             }
         }
         // fillResults values will be 0 by default if call was unsuccessful
@@ -107,7 +108,9 @@ contract MixinExchangeWrapper is
                 signature
             );
 
-            wethSpentAmount = singleFillResults.takerAssetFilledAmount;
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
+                singleFillResults.protocolFeePaid
+            );
 
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount.safeSub(
@@ -115,11 +118,13 @@ contract MixinExchangeWrapper is
             );
         // WETH fee
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
+            uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
+
             // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
             // This ensures that we reserve enough to pay the fee.
             uint256 takerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
-                order.takerAssetAmount.safeAdd(order.takerFee),
+                order.takerAssetAmount.safeAdd(order.takerFee).safeAdd(protocolFee),
                 remainingTakerAssetFillAmount
             );
 
@@ -132,6 +137,8 @@ contract MixinExchangeWrapper is
             // WETH is also spent on the taker fee, so we add it here.
             wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
                 singleFillResults.takerFeePaid
+            ).safeAdd(
+                singleFillResults.protocolFeePaid
             );
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
@@ -234,6 +241,8 @@ contract MixinExchangeWrapper is
             // WETH is also spent on the taker fee, so we add it here.
             wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
                 singleFillResults.takerFeePaid
+            ).safeAdd(
+                singleFillResults.protocolFeePaid
             );
 
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount;
@@ -253,7 +262,9 @@ contract MixinExchangeWrapper is
                 signature
             );
 
-            wethSpentAmount = singleFillResults.takerAssetFilledAmount;
+            wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
+                singleFillResults.protocolFeePaid
+            );
 
             // Subtract fee from makerAssetFilledAmount for the net amount acquired.
             makerAssetAcquiredAmount = singleFillResults.makerAssetFilledAmount.safeSub(
