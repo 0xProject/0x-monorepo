@@ -487,12 +487,20 @@ function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
     returns (uint256 reward);
 ```
 
-## 7 Batch Transactions
+## 7 Batch Calls
 
+The staking contract supports arbitrary batch function calls, allowing for several operations in a single transaction. For example, finalizing several pools in one transaction.
 
+```
+/// @dev Batch executes a series of calls to the staking contract.
+/// @param data An array of data that encodes a sequence of functions to
+///             call in the staking contracts.
+function batchExecute(bytes[] calldata data)
+    external
+    returns (bytes[] memory batchReturnData);
+```
 
-
-## 9 Staking Events
+## 8 Staking Events
 
 The events below are defined in [IStakingEvents](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStakingEvents.sol).
 
@@ -647,13 +655,17 @@ event OperatorShareDecreased(
 );
 ```
 
-## 10 Algorithms and Data Structures
+## 9 Algorithms, Data Structures & Design Patterns
 
-### 10.1 Stake Management
+This section dives deeper into the mechanics of the smart contracts.
 
-### 10.2 Reward Tracking
+### 9.1 Stake Management
 
-### 10.3 The Proxy Pattern & Read-Only Calls
+
+
+### 9.2 Reward Tracking
+
+### 9.3 The Proxy Pattern & Read-Only Calls
 
 Ensuring the storage slot has not been changed.
 
