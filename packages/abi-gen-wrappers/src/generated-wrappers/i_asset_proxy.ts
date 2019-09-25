@@ -28,7 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IAssetProxyContract extends BaseContract {
-    public static deployedBytecode = '0x';
+    public static deployedBytecode = '';
     /**
      * Transfers assets. Either succeeds or throws.
      */

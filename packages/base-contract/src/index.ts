@@ -268,8 +268,9 @@ export class BaseContract {
     ) {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
-        if (deployedBytecode !== undefined) {
+        if (deployedBytecode !== undefined && deployedBytecode !== '') {
             assert.isHexString('deployedBytecode', deployedBytecode);
+            this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         if (callAndTxnDefaults !== undefined) {
@@ -287,8 +288,6 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,
         ) as MethodAbi[];
         this._abiEncoderByFunctionSignature = {};
-        this._deployedBytecodeIfExists =
-            deployedBytecode === undefined ? deployedBytecode : Buffer.from(deployedBytecode.substr(2), 'hex');
         _.each(methodAbis, methodAbi => {
             const abiEncoder = new AbiEncoder.Method(methodAbi);
             const functionSignature = abiEncoder.getSignature();

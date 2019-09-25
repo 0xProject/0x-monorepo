@@ -362,8 +362,21 @@ for (const abiFileName of abiFileNames) {
     let deployedBytecode;
     try {
         deployedBytecode = parsedContent.compilerOutput.evm.deployedBytecode.object;
-    } catch (e) {
-        logUtils.log(`Couldn't find deployedBytecode for ${chalk.bold(namedContent.name)}, using undefined`);
+        if (
+            deployedBytecode === '' ||
+            deployedBytecode === undefined ||
+            deployedBytecode === '0x' ||
+            deployedBytecode === '0x00'
+        ) {
+            throw new Error();
+        }
+    } catch (err) {
+        logUtils.log(
+            `Couldn't find deployedBytecode for ${chalk.bold(
+                namedContent.name,
+            )}, using undefined. Found [${deployedBytecode}]`,
+        );
+        deployedBytecode = undefined;
     }
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
     if (ctor === undefined) {
