@@ -735,6 +735,24 @@ mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
 ```
 
 
-
 ### 9.3 Stake Management
 
+Below are the design objectives of stake management:
+
+1. Freshly minted stake is active.
+2. Delegating, un-delegating and re-delegating stake comes into effect next epoch.
+3. Users can freely adjust the distribution of their stake for the next epoch.
+4. Stake can be withdrawn after it is inactive for one full epoch.
+
+There are three statuses that stake can exist in: Active, Inactive or Delegated. Each state has three fields:
+
+1. How much stake is currently in this state (cur)
+2. How much stake is in this state next epoch (next)
+3. The last time this state was stored
+
+These fields combined allow us to compute the correct values at any given epoch without user intervention.
+Inactive stake includes a Withdrawable field (W) that reflects how much stake can be withdrawn at any given time.
+
+The figure below illustrates how these fields are updted to track a user's stake.
+
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/StakeManagementExample.jpg" width="700" /></p>
