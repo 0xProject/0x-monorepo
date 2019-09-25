@@ -22,6 +22,7 @@ import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
+import { utils } from './utils/utils';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -419,19 +420,31 @@ export class SwapQuoter {
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
         const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
-        // get the relevant orders for the makerAsset and fees
-        // if the requested assetData is ZRX, don't get the fee info
-        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData),
-            shouldDisableRequestingFeeOrders || isMakerAssetZrxToken
-                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData),
-        ]);
+        // get the relevant orders for the makerAsset
+        const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);
+        const doesOrdersRequireFeeOrders =
+            !isMakerAssetZrxToken && utils.isFeeOrdersRequiredToFillOrders(ordersAndFillableAmounts);
+        const isRequestingFeeOrders = !shouldDisableRequestingFeeOrders && doesOrdersRequireFeeOrders;
+        let feeOrdersAndFillableAmounts = constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS;
+        if (isRequestingFeeOrders) {
+            feeOrdersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
+                zrxTokenAssetData,
+                takerAssetData,
+            );
+        }
 
         if (ordersAndFillableAmounts.orders.length === 0) {
             throw new Error(
                 `${
                     SwapQuoterError.AssetUnavailable
+                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
+            );
+        }
+
+        if (isRequestingFeeOrders && feeOrdersAndFillableAmounts.orders.length === 0) {
+            throw new Error(
+                `${
+                    SwapQuoterError.FeeAssetUnavailable
                 }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }
