@@ -374,8 +374,7 @@ function getStakingPool(bytes32 poolId)
 function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShare) external;
 ```
 
-
-### 6.2 Paying Liquidity Rewards Pools (Finalization)
+### 6.2 Paying Liquidity Rewards (Finalization)
 
 The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
 
@@ -413,12 +412,39 @@ function finalizePool(bytes32 poolId)
     );
 ```
 
-Each pool has until the end of the current epoch to finalize their pool for the previous epoch. When finalizing
+Each pool has until the end of the current epoch to finalize their pool for the previous epoch. During finalization the market maker will be paid their % of the reward in WETH. Pool members are paid when they modify how much stake they've delegated to the pool (or undelegate). Altenratively, members can retrieve their reward in WETH by calling the withdraw function.
 
+```
+/// @dev Syncs rewards for a delegator. This includes transferring WETH
+///      rewards to the delegator, and adding/removing
+///      dependencies on cumulative rewards.
+///      This is used by a delegator when they want to sync their rewards
+///      without delegating/undelegating. It's effectively the same as
+///      delegating zero stake.
+/// @param poolId Unique id of pool.
+function withdrawDelegatorRewards(bytes32 poolId) external;
+```
 
+Both operators and delegators can compute their unpaid balance in a pool using the functions below.
 
+```
+/// @dev Computes the reward balance in ETH of the operator of a pool.
+/// @param poolId Unique id of pool.
+/// @return totalReward Balance in ETH.
+function computeRewardBalanceOfOperator(bytes32 poolId)
+    external
+    view
+    returns (uint256 reward);
 
-### 6.3 Withdrawing Liquidity Rewards
+/// @dev Computes the reward balance in ETH of a specific member of a pool.
+/// @param poolId Unique id of pool.
+/// @param member The member of the pool.
+/// @return totalReward Balance in ETH.
+function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
+    external
+    view
+    returns (uint256 reward);
+```
 
 ## 7 Batch Transactions
 
