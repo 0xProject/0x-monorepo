@@ -289,12 +289,14 @@ Liquidity incentives are used to align market participants with long-term object
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/ProtocolFee.png" width="700" /></p>
 
-The protocol fee is paid in either WETH or ETH. If ETH is not included in the transaction (by setting `msg.value`) then the fee will be taken in WETH from the taker, as illustrated in the diagram above.
+The protocol fee is paid in either WETH or ETH. If ETH is not included in the transaction (by setting `msg.value`) then the fee will be taken in WETH from the taker, as illustrated in the diagram above. Note also that the WETH Asset Proxy is distinct from the standard ERC20 Asset Proxy, used by the exchange. There are two reasons for this. Firstly, this separation means that users must explicitly opt-in to fees (no hidden fees). Secondly, the Staking Contract only needs access to WETH, whereas the ERC20 Proxy would provide access to _all_ tokens that a user has given allowance for; since the Staking Contract is upgradable, this separation reduces the attack surface.
 
 
 ### 6.1 Market Making
 
 Makers are paid their reward at the end of every epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker. Market makers create staking pools to
+
+
 
 ###
 
