@@ -24,10 +24,6 @@ import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinStorage.sol";
 
 
-/// @dev This mixin contains logic for managing exchanges.
-/// Any exchange contract that connects to the staking contract
-/// must be added here. When an exchange contract is deprecated
-/// then it should be removed.
 contract MixinExchangeManager is
     IStakingEvents,
     MixinStorage

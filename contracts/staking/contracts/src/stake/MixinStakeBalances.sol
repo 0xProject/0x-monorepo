@@ -24,8 +24,6 @@ import "../interfaces/IStructs.sol";
 import "./MixinStakeStorage.sol";
 
 
-/// @dev This mixin contains logic for querying stake balances.
-/// **** Read MixinStake before continuing ****
 contract MixinStakeBalances is
     MixinStakeStorage
 {

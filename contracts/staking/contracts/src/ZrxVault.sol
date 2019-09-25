@@ -28,18 +28,6 @@ import "./libs/LibStakingRichErrors.sol";
 import "./interfaces/IZrxVault.sol";
 
 
-/// @dev This vault manages Zrx Tokens.
-/// When a user mints stake, their Zrx Tokens are deposited into this vault.
-/// Similarly, when they burn stake, their Zrx Tokens are withdrawn from this vault.
-/// The contract also includes management of the staking contract
-/// and setting the vault to "Catastrophic Failure Mode".
-/// Catastrophic Failure Mode should only be set iff there is
-/// non-recoverable corruption of the staking contracts. If there is a
-/// recoverable flaw/bug/vulnerability, simply detach the staking contract
-/// by setting its address to `address(0)`. In Catastrophic Failure Mode, only withdrawals
-/// can be made (no deposits). Once Catastrophic Failure Mode  is invoked,
-/// it cannot be returned to normal mode; this prevents corruption of related
-/// state in the staking contract.
 contract ZrxVault is
     Authorizable,
     IZrxVault

@@ -27,11 +27,6 @@ import "../interfaces/IStructs.sol";
 import "../staking_pools/MixinStakingPoolRewards.sol";
 
 
-/// @dev This mixin contains functions related to finalizing epochs.
-///      Finalization occurs AFTER the current epoch is ended/advanced and
-///      over (potentially) multiple blocks/transactions. This pattern prevents
-///      the contract from stalling while we finalize rewards for the previous
-///      epoch.
 contract MixinFinalizer is
     MixinStakingPoolRewards
 {
@@ -96,7 +91,7 @@ contract MixinFinalizer is
     }
 
     /// @dev Instantly finalizes a single pool that was active in the previous
-    ///      epoch, crediting it rewards for members and withdrawing operator's 
+    ///      epoch, crediting it rewards for members and withdrawing operator's
     ///      rewards as WETH. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
     ///      finalized or was not active in the previous epoch.

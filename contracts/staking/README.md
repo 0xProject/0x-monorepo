@@ -22,7 +22,6 @@ The contracts can be found in `contracts/src`.
 * vaults/            | This contains the vaults (like the Zrx Token Vault).
 ```
 
-
 ## Installation
 
 **Install**
