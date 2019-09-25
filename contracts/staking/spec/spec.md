@@ -672,28 +672,35 @@ Ensuring the storage slot has not been changed.
 
 This section describes the workflow for tracking and computing the portion of a pool's reward that belongs to a given member. The general equations for this are shown below.
 
+A pool with _D_ delegated stake that earned _R_ rewards for its pool members in a given epoch, the reward (_r_) for a member that delegated _d_ stake is computed by:
+
+$$
+\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
+$$
+
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
+
 
 When a member modifies their stake in the pool, the [StoredBalance struct](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStructs.sol) gives us:
 1. How many epochs they were staked (`n`)
 2. How much stake they had contributed during those epochs (`d`)
 
-In addition to these values, we also need sum of ratios `R_k / D_k`, for each epoch `k` that the user was delegated, which is available during the finalization for epoch `k`. We are able to do store this information concisely using a cumulative sum of these reward ratios, as follows:
+In addition to these values, we also need sum of ratios `R_k / D_k`, for each epoch `k` that the member was delegated. This ratio is available during the pool's finalization of epoch `k`. We are able to do store this information concisely using a cumulative sum of these reward ratios, as follows:
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/CumulativeRewards.png" width="700" /></p>
 
-With this cumulative sum along with the stored balance of a member, we are able to compute their reward in the pool at any time.
+This cumulative sum along with the stored balance of a member, we are able to compute their reward in the pool at any time.
 
 This information is stored on-chain as follows:
 ```
 // mapping from Owner to Pool Id to Amount Delegated
-mapping (address  =>  mapping (bytes32  => IStructs.StoredBalance)) internal delegatedStakeToPoolByOwner;
+mapping (address  =>  mapping (bytes32  => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
 // mapping from Pool Id to Amount Delegated
-mapping (bytes32  => IStructs.StoredBalance) internal delegatedStakeByPoolId;
+mapping (bytes32  => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
 // mapping from Pool Id to Epoch to Reward Ratio
-mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal cumulativeRewardsByPool;
+mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal _cumulativeRewardsByPool;
 ```
 
 #### 9.2.1 Computing Rewards - in Practice
@@ -704,7 +711,7 @@ Refer back to these formulas for computing a member's rewards:
 
 In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
 
-So, in practice, this equation becomes:
+In practice, this equation becomes:
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterNEpochs.png" width="700" /></p>
 
 
