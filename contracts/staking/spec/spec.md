@@ -659,13 +659,28 @@ event OperatorShareDecreased(
 
 This section dives deeper into the mechanics of the smart contracts.
 
-### 9.1 The Proxy Pattern & Read-Only Calls
+### 9.1 Securing the Proxy Pattern & Read-Only Calls
 
-The proxy pattern separates
+The proxy pattern splits the state and logic into different contracts, allowing the logic contract to be upgraded. This is achieved using a `delegate_call` from the state contract into the logic contract.
 
-Ensuring the storage slot has not been changed.
+One of the dangers in this pattern is that the storage slot or offset could change in a future version of Solidity. This could happen for any number of reasons; the most likely of which is that the order of state variables changes between two versions of the logic contract. An error like this would certainly be catastrophic, as the state variables in the logic contract would point to _different_ variables in the state contract.
 
-### 9.2 Tracking for Reward Balances for Pool Members
+One way to mitigate this danger is to store the state variables in a single immutable contract, which is inherited by both the state and logic contract. This will work, but it does not future-proof against external changes that may result from changes to Solidity or the EVM.
+
+The best way we found to mitigate this danger is with runtime sanity checks. We hardcode the expected slot and offset of each state variable and assert the value every time the logic contract is updated. This is handled in the Staking Contract constructor [here](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/Staking.sol).
+
+### 9.2 The Read-Only Proxy
+
+The [read-only proxy](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/ReadOnlyProxy.sol) is stateless and sits between the Staking Contract Proxy and Staking Contract. It forces every call to be read-only by using a force-revert delegate-call.
+
+Steps:
+1. The read-only proxy delegates the incoming call to itself.
+2. On re-entry, we delegate to the Staking Contract and then _reverts_ with the return data.
+3. The revert is caught and returned to the Staking Proxy.
+
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Read-Only%20Proxy.png" width="500" /></p>
+
+### 9.3 Tracking for Reward Balances for Pool Members
 
 
 This section describes the workflow for tracking and computing the portion of a pool's reward that belongs to a given member. The general equations for this are shown below.
@@ -710,7 +725,7 @@ mapping (bytes32  => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal _cumulativeRewardsByPool;
 ```
 
-#### 9.2.1 Computing Rewards - in Practice
+#### 9.3.1 Computing Rewards - in Practice
 
 In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
 
@@ -723,7 +738,7 @@ The final equation for computing a member's reward during epoch `n` becomes:
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/Reward-Final.png" height="60" /></p>
 
 
-#### 9.2.2 Handling Epochs With No Rewards
+#### 9.3.2 Handling Epochs With No Rewards
 
 To compute a member's reward using this algorithm, we need to know the cumulative rewards at the entry and exit epoch of the member. But, what happens if no reward was recorded during one of these epochs?
 
@@ -737,7 +752,7 @@ mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
 ```
 
 
-### 9.3 Stake Management
+### 9.4 Stake Management
 
 Below are the design objectives of stake management:
 
