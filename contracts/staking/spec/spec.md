@@ -140,7 +140,7 @@ function unstake(uint256 amount) external;
 
 ### 5.1 Staking Pools
 
-Staking pools can be created to leverage the weight of other stakers. A pool has a single operator and any number of members, who delegate their ZRX to the pool. Any staker can create a pool, although at present it is only beneficial for market makers to create staking pools. This is discussed more in Section 6.
+Staking pools can be created to leverage the weight of other stakers. A pool has a single operator and any number of members, who delegate their ZRX to the pool. Any staker can create a pool, although at present it is only beneficial for market makers to create staking pools. This is discussed more in Section 6, along with details on creating a staking pool.
 
 |Term|Definition  |
 |--|--|
@@ -157,7 +157,31 @@ Each staked ZRX has an associated status that reflects its utility within the 0x
 | Active | Can be used to participate in governance. This is the default status. |
 | Inactive | Carries no utility within the 0x ecosystem. |
 | Inactive & Withdrawable | Once ZRX has been inactive for one full epoch it can be withdrawn. |
-| Delegated | Can be used to participate in governance plus earn liquidity rewards. |
+| Delegated | ZRX is delegated to a pool. It can be used to participate in governance plus earn liquidity rewards. |
+
+There is a single function for moving stake between statuses:
+```
+/// @dev Moves stake between statuses: 'active', 'inactive' or 'delegated'.
+///      This change comes into effect next epoch.
+/// @param from status to move stake out of.
+/// @param to status to move stake into.
+/// @param amount of stake to move.
+function moveStake(
+    IStructs.StakeInfo calldata from,
+    IStructs.StakeInfo calldata to,
+    uint256 amount
+) external;
+
+/// @dev Info used to describe a status.
+/// @param status of the stake.
+/// @param poolId Unique Id of pool. This is set when status=DELEGATED.
+struct StakeInfo {
+    StakeStatus status;
+    bytes32 poolId;
+}
+```
+
+
 
 
 
