@@ -127,19 +127,21 @@ ZRX is staked by depositing tokens into the Staking Contract. The diagram below 
 
 ZRX can simlarly be unstaked by withdrawing tokens from the Staking contract. However, there are time-restricrtions on unstaking ZRX which are discussed more later in this section.
 
+### 5.1 Staking Pools
+
+
+
 ### 5.2 Stake Status
-At any given time, Stake can exist in one of the following states.
+Each staked ZRX has an associated status that reflects its utility within the 0x Ecosystem.
 
 |Status|Definition  |
 |--|--|
-| Active | Stake is minted in this state and can be used as a utility within the 0x ecosystem. |
-| Inactive | Stake can be moved to the Inactive state, meaning it cannot be used as a utility within the 0x ecosystem. |
-| Inactive & Withdrawable | Once stake has been inactive for 1 full epoch it can be burned. |
-| Delegated | Stake can be  |
+| Active | Can be used to participate in governance. This is the default status. |
+| Inactive | Carries no utility within the 0x ecosystem. |
+| Inactive & Withdrawable | Once ZRX has been inactive for one full epoch it can be withdrawn. |
+| Delegated | Can be used to participate in governance plus earn liquidity rewards. |
 
-### 5.1 Staking Pools
-
-### 5.3 Delegating ZRX
+### 5.3 Interfacing with Stake
 
 
 
