@@ -670,11 +670,11 @@ Ensuring the storage slot has not been changed.
 ### 9.2 Tracking for Reward Balances for Pool Members
 
 
-This section describes the workflow for tracking and computing the portion of a pool's reward that belongs to a given delegator. The general equations for this are shown below.
+This section describes the workflow for tracking and computing the portion of a pool's reward that belongs to a given member. The general equations for this are shown below.
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
 
-When a delegator modifies their stake in the pool, the `StoredBalance` struct gives us:
+When a member modifies their stake in the pool, the `StoredBalance` struct gives us:
 1. How many epochs they were staked (`n`)
 2. How much stake they had contributed during those epochs (`d`)
 
@@ -682,7 +682,7 @@ In addition to these values, we also need sum of ratios `R_k / D_k`, for each ep
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/CumulativeRewards.png" width="700" /></p>
 
-With this cumulative sum along with the stored balance of a delegator, we are able to compute their reward in the pool at any time.
+With this cumulative sum along with the stored balance of a member, we are able to compute their reward in the pool at any time.
 
 This information is stored on-chain as follows:
 ```
@@ -698,7 +698,7 @@ mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal cumulati
 
 #### 9.2.1 Computing Rewards - in Practice
 
-Refer back to these formulas for computing a delegator's rewards:
+Refer back to these formulas for computing a member's rewards:
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
 
@@ -713,14 +713,14 @@ Putting this all together:
 2. We compute their rewards up to epoch `n-1` and move this value from the Staking Pool Reward Vault to the Eth Vault, where it can be withdrawn by the staker.
 3. Once epoch `n` has been finalized, the user is no longer delegated but can extract their reward for epoch `n` at a future epoch.
 
-The final equation for computing a delegator's reward during epoch `n`:
+The final equation for computing a member's reward during epoch `n`:
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/FinalRewardEqn.png" width="700" /></p>
 
 
 #### 9.2.2 Handling Epochs With No Rewards
 
-To compute a delegator's reward using this algorithm, we need to know the cumulative rewards at the entry and exit epoch of the delegator. But, what happens if no reward was recorded during one of these epochs?
+To compute a member's reward using this algorithm, we need to know the cumulative rewards at the entry and exit epoch of the member. But, what happens if no reward was recorded during one of these epochs?
 
 In this case, there will be `nil` entry in `cumulativeRewardsByPool`. However, this isn't a problem. If a reward is earned in epoch *i* but not epoch *i + 1* then the cumulative rewards will not have changed. So in epoch *i + 1* we can simply use the entry for epoch *i*.
 
