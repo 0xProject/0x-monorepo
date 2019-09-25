@@ -303,18 +303,64 @@ Market makers incentivize delegators to join their pool by setting aside a fixed
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Rewards.png" width="700" /></p>
 
+The interface below describes how to create a pool, add market making addresses, and set the percentage of rewards for pool members.
 
+```
+/// @dev Create a new staking pool. The sender will be the operator of this pool.
+/// Note that an operator must be payable.
+/// @param operatorShare Portion of rewards owned by the operator, in ppm.
+/// @param addOperatorAsMaker Adds operator to the created pool as a maker for convenience iff true.
+/// @return poolId The unique pool id generated for this pool.
+function createStakingPool(uint32 operatorShare, bool addOperatorAsMaker)
+    external
+    returns (bytes32 poolId);
 
-// create a pool
+/// @dev Adds a maker to a staking pool. Note that this is only callable by the pool operator.
+/// Note also that the maker must have previously called joinStakingPoolAsMaker.
+/// @param poolId Unique id of pool.
+/// @param makerAddress Address of maker.
+function addMakerToStakingPool(
+    bytes32 poolId,
+    address makerAddress
+) external;
 
-// add/remove MM addresses
+/// @dev Allows caller to join a staking pool if already assigned.
+/// @param poolId Unique id of pool.
+function joinStakingPoolAsMaker(bytes32 poolId) external;
 
-// reduce the operator's share
+/// @dev Removes a maker from a staking pool. Note that this is only callable by the pool operator or maker.
+/// Note also that the maker does not have to *agree* to leave the pool; this action is
+/// at the sole discretion of the pool operator.
+/// @param poolId Unique id of pool.
+/// @param makerAddress Address of maker.
+function removeMakerFromStakingPool(
+    bytes32 poolId,
+    address makerAddress
+) external;
 
+/// @dev Returns the pool id of the input maker.
+/// @param makerAddress Address of maker
+/// @return Pool id, nil if maker is not yet assigned to a pool.
+function getStakingPoolIdOfMaker(address makerAddress)
+    public
+    view
+    returns (bytes32);
 
+/// @dev Returns a staking pool
+/// @param poolId Unique id of pool.
+function getStakingPool(bytes32 poolId)
+    public
+    view
+    returns (IStructs.Pool memory);
 
+/// @dev Decreases the operator share for the given pool (i.e. increases pool rewards for members).
+/// @param poolId Unique Id of pool.
+/// @param newOperatorShare The newly decreased percentage of any rewards owned by the operator.
+function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShare) external;
+```
 
-
+Note that a single staker can operate several pools, but a market making address can only belong to one pool.
+Note also that the operator's reward share can only be decreased: so the change can only ever benefit pool members.
 
 
 
