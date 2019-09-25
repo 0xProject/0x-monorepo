@@ -187,10 +187,6 @@ contract MixinStake is
         // Sanity check the pool we're delegating to exists.
         _assertStakingPoolExists(poolId);
 
-        // Cache amount delegated to pool by staker.
-        IStructs.StoredBalance memory initDelegatedStake =
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
         // Increment how much stake the staker has delegated to the input pool.
         _increaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
@@ -200,16 +196,9 @@ contract MixinStake is
         // Increment how much stake has been delegated to pool.
         _increaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // Synchronizes reward state in the pool that the owner is delegating
-        // to.
-        IStructs.StoredBalance memory finalDelegatedStake =
-            _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            staker,
-            initDelegatedStake,
-            finalDelegatedStake
+            staker
         );
     }
 
@@ -227,10 +216,6 @@ contract MixinStake is
         // sanity check the pool we're undelegating from exists
         _assertStakingPoolExists(poolId);
 
-        // cache amount delegated to pool by staker
-        IStructs.StoredBalance memory initDelegatedStake =
-            _loadUnsyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
         // decrement how much stake the staker has delegated to the input pool
         _decreaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
@@ -240,16 +225,9 @@ contract MixinStake is
         // decrement how much stake has been delegated to pool
         _decreaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
 
-        // synchronizes reward state in the pool that the owner is undelegating
-        // from
-        IStructs.StoredBalance memory finalDelegatedStake =
-            _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            staker,
-            initDelegatedStake,
-            finalDelegatedStake
+            staker
         );
     }
 

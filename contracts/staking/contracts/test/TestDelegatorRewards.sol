@@ -110,7 +110,6 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         _stake.isInitialized = true;
         _stake.currentEpochBalance += uint96(stake);
@@ -118,9 +117,7 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator,
-            initialStake,
-            _stake
+            delegator
         );
     }
 
@@ -135,7 +132,6 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
@@ -145,9 +141,7 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator,
-            initialStake,
-            _stake
+            delegator
         );
     }
 
@@ -162,7 +156,6 @@ contract TestDelegatorRewards is
         external
     {
         _initGenesisCumulativeRewards(poolId);
-        IStructs.StoredBalance memory initialStake = _delegatedStakeToPoolByOwner[delegator][poolId];
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
@@ -172,9 +165,7 @@ contract TestDelegatorRewards is
         _stake.currentEpoch = uint32(currentEpoch);
         _withdrawAndSyncDelegatorRewards(
             poolId,
-            delegator,
-            initialStake,
-            _stake
+            delegator
         );
     }
 
