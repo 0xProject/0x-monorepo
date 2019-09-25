@@ -730,20 +730,6 @@ We keep track of the last epoch that the `cumulativeRewardsByPool` was updated i
 mapping (bytes32  =>  uint256) internal cumulativeRewardsByPoolLastStored;
 ```
 
-#### 9.2.3 Cumulative Rewards - State Examples
-The following examples demonstrate how entries are added and removed from the cumulative rewards mapping. This can serve as a reference guide for testing and debugging.
-
-The fields are as follows:
-```
-Has Entry: yes if there is a Cumulative Reward entry for this epoch
-Ref Count: how many delegators depend on this value
-```
-
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardTrackingExamples.png" width="700" /></p>
-
-
-
-
 
 
 
