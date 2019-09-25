@@ -2,7 +2,7 @@
 
 This package implements the stake-based liquidity incentives defined by [ZEIP-31](https://github.com/0xProject/ZEIPs/issues/31).
 
-See the spec in [here](spec/README.md).
+See the spec [here](spec/README.md).
 
 ## Contracts Directory Structure
 
