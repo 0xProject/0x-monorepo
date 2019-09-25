@@ -35,7 +35,7 @@ This system is composed of four deployed contracts:
 
 The diagram below shows how these contracts connect to each other and the broader 0x ecosystem.
 
-![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Basic.png)
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Basic.png" width="700" /></p>
 
 
 ### 2.1 Read-Only Mode
@@ -45,7 +45,7 @@ If a vulnerability is discovered in the staking contract, operations may be halt
 1.  The 0x Exchange contract stops charging protocol fees.
 2.  The staking contract is set to read-only mode.
 
-![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Read-Only.png)
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Read-Only.png" width="700" /></p>
 
 ### 2.2 Catastrophic Failure Mode
 
@@ -54,8 +54,7 @@ In this worst-case scenario, state has been irreparably corrupted and the stakin
 1. The ZRX vault is detached from the staking contract.
 2. Users withdraw their funds from the ZRX vault directly.
 
-![](https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png)
-
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking%20Architecture%20-%20Catastrophic%20Failure.png" width="700" /></p>
 
 ## 3 Contract Management
 
