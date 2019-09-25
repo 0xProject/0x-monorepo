@@ -38,6 +38,7 @@
         "generated-artifacts/TestCobbDouglas.json",
         "generated-artifacts/TestCumulativeRewardTracking.json",
         "generated-artifacts/TestDelegatorRewards.json",
+        "generated-artifacts/TestExchangeManager.json",
         "generated-artifacts/TestFinalizer.json",
         "generated-artifacts/TestInitTarget.json",
         "generated-artifacts/TestLibFixedMath.json",

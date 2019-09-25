@@ -38,6 +38,7 @@ export * from '../generated-wrappers/test_assert_storage_params';
 export * from '../generated-wrappers/test_cobb_douglas';
 export * from '../generated-wrappers/test_cumulative_reward_tracking';
 export * from '../generated-wrappers/test_delegator_rewards';
+export * from '../generated-wrappers/test_exchange_manager';
 export * from '../generated-wrappers/test_finalizer';
 export * from '../generated-wrappers/test_init_target';
 export * from '../generated-wrappers/test_lib_fixed_math';
