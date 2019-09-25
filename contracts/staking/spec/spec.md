@@ -720,12 +720,7 @@ In practice, this equation becomes:
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterManyEpochs-InPractice.png" width="700" /></p>
 
 
-Putting this all together:
-1. The call to undelegate is made in epoch `n`
-2. We compute their rewards up to epoch `n-1` and move this value from the Staking Pool Reward Vault to the Eth Vault, where it can be withdrawn by the staker.
-3. Once epoch `n` has been finalized, the user is no longer delegated but can extract their reward for epoch `n` at a future epoch.
-
-The final equation for computing a member's reward during epoch `n`:
+The final equation for computing a member's reward during epoch `n` becomes:
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/FinalRewardEqn.png" width="700" /></p>
 
