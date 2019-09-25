@@ -121,9 +121,9 @@ Note: The return value (`poolsRemaining`) is described in detail in Section 7 Li
 
 ## 5 Staking
 
-Stake is minted when ZRX is deposited and burned when ZRX is withdrawn from the Staking Contract.
+Stake is minted when ZRX is deposited and burned when ZRX is withdrawn from the Staking Contract. The diagram below shows the workflow when the user stakes.
 
-
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/Staking.png" width="700" /></p>
 
 
 
