@@ -679,6 +679,7 @@ A pool with _D_ delegated stake that earned _R_ rewards for its pool members in 
 
 The member's reward after n epochs (given member does not change their stake) is then given by:
 
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/RewardAfterNEpochs.png" width="200" /></p>
 
 
 When a member modifies their stake in the pool, the [StoredBalance struct](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStructs.sol) gives us:
