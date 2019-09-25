@@ -285,15 +285,15 @@ function getTotalStakeDelegatedToPool(bytes32 poolId)
 
 ## 6 Liquidity Incentives
 
-Liquidity incentives are used to align market participants with long-term objectives of the 0x protocol. Fees are charged by the 0x protocol and paid to market makers as a reward for their trade volume and amount of ZRX staked. Makers are paid their reward at the end of every epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
+Liquidity incentives are used to align market participants with long-term objectives of the 0x protocol. Fees are charged by the 0x protocol and paid to market makers as a reward for their trade volume and amount of ZRX staked.
 
 
-
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/ProtocolFee.png" width="700" /></p>
 
 
 ### 6.1 Market Making
 
-Market makers create staking pools to
+Makers are paid their reward at the end of every epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker. Market makers create staking pools to
 
 ###
 
