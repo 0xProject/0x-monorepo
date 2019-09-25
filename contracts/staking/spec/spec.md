@@ -305,6 +305,9 @@ Market makers incentivize delegators to join their pool by setting aside a fixed
 
 The interface below describes how to create a pool, add market making addresses, and set the percentage of rewards for pool members.
 
+Note that a single staker can operate several pools, but a market making address can only belong to one pool.
+Note also that the operator's reward share can only be decreased: so the change can only ever benefit pool members.
+
 ```
 /// @dev Create a new staking pool. The sender will be the operator of this pool.
 /// Note that an operator must be payable.
@@ -370,9 +373,6 @@ function getStakingPool(bytes32 poolId)
 /// @param newOperatorShare The newly decreased percentage of any rewards owned by the operator.
 function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShare) external;
 ```
-
-Note that a single staker can operate several pools, but a market making address can only belong to one pool.
-Note also that the operator's reward share can only be decreased: so the change can only ever benefit pool members.
 
 
 ### 6.2 Paying Liquidity Rewards Pools (Finalization)
