@@ -674,7 +674,7 @@ This section describes the workflow for tracking and computing the portion of a 
 
 <p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/InitRewardEqn.png" width="700" /></p>
 
-When a member modifies their stake in the pool, the `StoredBalance` struct gives us:
+When a member modifies their stake in the pool, the [StoredBalance struct](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStructs.sol) gives us:
 1. How many epochs they were staked (`n`)
 2. How much stake they had contributed during those epochs (`d`)
 
