@@ -206,7 +206,6 @@ contract MixinStakingPoolRewards is
             // Store cumulative rewards for this epoch.
             _forceSetCumulativeReward(
                 poolId,
-                currentEpoch,
                 cumulativeReward
             );
         }
@@ -381,7 +380,6 @@ contract MixinStakingPoolRewards is
         if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][finalDelegatedStake.currentEpoch])) {
             _forceSetCumulativeReward(
                 poolId,
-                finalDelegatedStake.currentEpoch,
                 mostRecentCumulativeReward
             );
         }

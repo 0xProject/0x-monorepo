@@ -37,7 +37,6 @@ contract MixinCumulativeRewards is
         // Sets the default cumulative reward
         _forceSetCumulativeReward(
             poolId,
-            currentEpoch,
             IStructs.Fraction({
                 numerator: 0,
                 denominator: MIN_TOKEN_VALUE
@@ -60,33 +59,28 @@ contract MixinCumulativeRewards is
     /// @dev Sets a cumulative reward for `poolId` at `epoch`.
     /// This can be used to overwrite an existing value.
     /// @param poolId Unique Id of pool.
-    /// @param epoch Epoch of cumulative reward.
     /// @param value Value of cumulative reward.
     function _forceSetCumulativeReward(
         bytes32 poolId,
-        uint256 epoch,
         IStructs.Fraction memory value
     )
         internal
     {
-        _cumulativeRewardsByPool[poolId][epoch] = value;
+        uint256 currentEpoch_ = currentEpoch;
+        _cumulativeRewardsByPool[poolId][currentEpoch_] = value;
 
-        // Never set the most recent reward epoch to one in the future, because
-        // it may get removed if there are no more dependencies on it.
-        if (epoch <= currentEpoch) {
-            // Check if we should do any work
-            uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-            if (epoch == currentMostRecentEpoch) {
-                return;
-            }
-
-            // Update state to reflect the most recent cumulative reward
-            _forceSetMostRecentCumulativeRewardEpoch(
-                poolId,
-                currentMostRecentEpoch,
-                epoch
-            );
+        // Check if we should do any work
+        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        if (currentEpoch_ == currentMostRecentEpoch) {
+            return;
         }
+
+        // Update state to reflect the most recent cumulative reward
+        _forceSetMostRecentCumulativeRewardEpoch(
+            poolId,
+            currentMostRecentEpoch,
+            currentEpoch_
+        );
     }
 
     /// @dev Forcefully sets the epoch of the most recent cumulative reward.

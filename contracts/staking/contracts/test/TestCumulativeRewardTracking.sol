@@ -51,15 +51,13 @@ contract TestCumulativeRewardTracking is
 
     function _forceSetCumulativeReward(
         bytes32 poolId,
-        uint256 epoch,
         IStructs.Fraction memory value
     )
         internal
     {
-        emit SetCumulativeReward(poolId, epoch);
+        emit SetCumulativeReward(poolId, currentEpoch);
         MixinCumulativeRewards._forceSetCumulativeReward(
             poolId,
-            epoch,
             value
         );
     }
