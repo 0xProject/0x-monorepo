@@ -71,7 +71,7 @@ This system is composed of four deployed contracts:
 
 The diagram below shows how these contracts connect to each other and the broader 0x ecosystem.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Staking%20Architecture%20-%20Basic.png" width="700" /></p>
+<p align="center"><img src="./assets/Staking%20Architecture%20-%20Basic.png" width="700" /></p>
 
 
 ### 2.1 Read-Only Mode
@@ -81,7 +81,7 @@ If a vulnerability is discovered in the staking contract, operations may be halt
 1.  The 0x Exchange contract stops charging protocol fees.
 2.  The staking contract is set to read-only mode.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Staking%20Architecture%20-%20Read-Only.png" width="700" /></p>
+<p align="center"><img src="./assets/Staking%20Architecture%20-%20Read-Only.png" width="700" /></p>
 
 ### 2.2 Catastrophic Failure Mode
 
@@ -90,7 +90,7 @@ In this worst-case scenario, state has been irreparably corrupted and the stakin
 1. The ZRX vault is detached from the staking contract.
 2. Users withdraw their funds from the ZRX vault directly.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Staking%20Architecture%20-%20Catastrophic%20Failure.png" width="700" /></p>
+<p align="center"><img src="./assets/Staking%20Architecture%20-%20Catastrophic%20Failure.png" width="700" /></p>
 
 ## 3 Contract Migrations
 
@@ -180,7 +180,7 @@ function getParams()
 
 All processes in the system are segmented into nonoverlapping time intervals, called epochs. Epochs have a fixed minimum period (10 days at time of writing), which is configurable via [MixinParams](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/sys/MixinParams.sol). Epochs serve as the basis for all other timeframes within the system, which provides a more stable and consistent scheduling metric than timestamps.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Epochs.png" width="700" /></p>
+<p align="center"><img src="./assets/Epochs.png" width="700" /></p>
 
 ### 4.1 Ending One Epoch, and Starting a New One
 
@@ -199,7 +199,7 @@ Note: The return value (`poolsRemaining`) is described in detail in Section 7 Li
 
 ZRX is staked by depositing tokens into the Staking Contract. The diagram below illustrates this workflow.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Staking.png" width="700" /></p>
+<p align="center"><img src="./assets/Staking.png" width="700" /></p>
 
 ZRX can simlarly be unstaked by withdrawing tokens from the Staking contract. However, there are time-restrictions on unstaking ZRX, which are discussed more later in this section.
 
@@ -364,7 +364,7 @@ function getTotalStakeDelegatedToPool(bytes32 poolId)
 
 Liquidity incentives are used to align market participants with long-term objectives of the 0x protocol. Fees are charged by the 0x protocol and paid to market makers as a reward for their trade volume and amount of ZRX staked.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/ProtocolFee.png" width="700" /></p>
+<p align="center"><img src="./assets/ProtocolFee.png" width="700" /></p>
 
 The protocol fee is paid in either WETH or ETH. If ETH is not included in the transaction (by setting `msg.value`) then the fee will be taken in WETH from the taker, as illustrated in the diagram above.
 
@@ -378,7 +378,7 @@ A maker creates a pool, which can be delegated to by any other staker. When comp
 
 Market makers incentivize delegators to join their pool by setting aside a fixed percentage of their reward for the members of their pool. A member receives an amount of this percentage that is proportional to how much stake they have delegated to the pool.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Rewards.png" width="700" /></p>
+<p align="center"><img src="./assets/Rewards.png" width="700" /></p>
 
 The interface below describes how to create a pool, add market making addresses, and set the percentage of rewards for pool members.
 
@@ -455,7 +455,7 @@ function decreaseStakingPoolOperatorShare(bytes32 poolId, uint32 newOperatorShar
 
 The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/CobbDouglas.png" width="200" /></p>
+<p align="center"><img src="./assets/CobbDouglas.png" width="200" /></p>
 
 |Term|Definition  |
 |--|--|
@@ -716,7 +716,7 @@ Steps:
 2. On re-entry, we delegate to the Staking Contract and then _reverts_ with the return data.
 3. The revert is caught and returned to the Staking Proxy.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/Read-Only%20Proxy.png" width="600" /></p>
+<p align="center"><img src="./assets/Read-Only%20Proxy.png" width="600" /></p>
 
 See [LibProxy](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/libs/LibProxy.sol) for the proxy code.
 
@@ -727,12 +727,12 @@ This section describes the workflow for tracking and computing the portion of a 
 
 A pool with _D_ delegated stake that earned _R_ rewards for its pool members in a given epoch, the reward (_r_) for a member that delegated _d_ stake is computed by:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/RewardSingleEpoch.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/RewardSingleEpoch.png" height="60" /></p>
 
 
 The member's reward after n epochs (given member does not change their stake) is then given by:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/RewardAfterManyEpochs.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/RewardAfterManyEpochs.png" height="60" /></p>
 
 
 When a member modifies their stake in the pool, the [StoredBalance struct](https://github.com/0xProject/0x-monorepo/blob/3.0/contracts/staking/contracts/src/interfaces/IStructs.sol) gives us:
@@ -742,14 +742,14 @@ When a member modifies their stake in the pool, the [StoredBalance struct](https
 In addition to these values, we also need sum of ratios `R_k / D_k`, for each epoch `k` that the member was delegated. This ratio is available during the pool's finalization of epoch `k`. We are able to do store this information concisely using a cumulative sum of these reward ratios, as follows:
 
 We store the following ratio for each epoch that a reward is earned for the pool:
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/WhatWeStore.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/WhatWeStore.png" height="60" /></p>
 
 We compute a member's reward using the following equation:
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/RewardFromWhatWeStore.png" height="40" /></p>
+<p align="center"><img src="./assets/reward_tracking/RewardFromWhatWeStore.png" height="40" /></p>
 
 Example:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/RewardFromWhatWeStore-Example.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/RewardFromWhatWeStore-Example.png" height="60" /></p>
 
 This cumulative reward along with the stored balance of a member, we are able to compute their reward in the pool at any time.
 
@@ -770,12 +770,12 @@ mapping (bytes32  =>  mapping (uint256  => IStructs.Fraction)) internal _cumulat
 In the equations above, a staker earned rewards from epochs `[0..n]`. This means that the staker undelegated during epoch `n` and stopped earning rewards in epoch `n+1`. So at the time of the call, we don't have access to the reward for epoch `n`.
 
 In practice, this equation becomes:
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/RewardAfterManyEpochs-InPractice.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/RewardAfterManyEpochs-InPractice.png" height="60" /></p>
 
 
 The final equation for computing a member's reward during epoch `n` becomes:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/reward_tracking/Reward-Final.png" height="60" /></p>
+<p align="center"><img src="./assets/reward_tracking/Reward-Final.png" height="60" /></p>
 
 
 #### 9.3.2 Handling Epochs With No Rewards
@@ -812,4 +812,4 @@ Inactive stake includes a Withdrawable field (W) that reflects how much stake ca
 
 The figure below illustrates how these fields are updted to track a user's stake.
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/assets/StakeManagementExample.jpg" width="700" /></p>
+<p align="center"><img src="./assets/StakeManagementExample.jpg" width="700" /></p>
