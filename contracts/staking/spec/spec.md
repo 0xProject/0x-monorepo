@@ -346,6 +346,18 @@ function getStakingPoolIdOfMaker(address makerAddress)
     view
     returns (bytes32);
 
+/// @dev Holds the metadata for a staking pool.
+/// @param initialized True iff the balance struct is initialized.
+/// @param operator of the pool.
+/// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
+/// @param numberOfMakers Number of makers in the pool.
+struct Pool {
+    bool initialized;
+    address payable operator;
+    uint32 operatorShare;
+    uint32 numberOfMakers;
+}
+
 /// @dev Returns a staking pool
 /// @param poolId Unique id of pool.
 function getStakingPool(bytes32 poolId)
