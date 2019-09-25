@@ -68,7 +68,6 @@ export class DutchAuctionContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.getAuctionDetails.estimateGasAsync.bind(self, order),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
@@ -439,7 +438,6 @@ export class DutchAuctionContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.matchOrders.estimateGasAsync.bind(self, buyOrder, sellOrder, buySignature, sellSignature),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
