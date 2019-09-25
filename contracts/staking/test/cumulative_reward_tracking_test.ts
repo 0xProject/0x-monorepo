@@ -128,7 +128,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 1
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 2 } ],
+                [{ event: 'SetCumulativeReward', epoch: 2 }],
             );
         });
         it('delegate in epoch 1 then undelegate in epoch 2', async () => {
@@ -152,7 +152,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clear CR for epoch 1
                     TestAction.Undelegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 2 } ],
+                [{ event: 'SetCumulativeReward', epoch: 2 }],
             );
         });
         it('delegate in epoch 0 and epoch 1, then undelegate half in epoch 2', async () => {
@@ -181,7 +181,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 1
                     TestAction.Undelegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 2 } ],
+                [{ event: 'SetCumulativeReward', epoch: 2 }],
             );
         });
         it('delegate in epoch 1 and 2 then again in 3', async () => {
@@ -210,7 +210,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 1
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 2 } ],
+                [{ event: 'SetCumulativeReward', epoch: 2 }],
             );
         });
         it('delegate in epoch 0, earn reward in epoch 1', async () => {
@@ -233,7 +233,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Sets MRCR to epoch 2
                     TestAction.Finalize,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 2 } ],
+                [{ event: 'SetCumulativeReward', epoch: 2 }],
             );
         });
         it('delegate in epoch 0, epoch 2, earn reward in epoch 3, then delegate', async () => {
@@ -341,7 +341,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 1
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 4 } ],
+                [{ event: 'SetCumulativeReward', epoch: 4 }],
             );
         });
         it('earn reward in epoch 1 with no stake, then delegate', async () => {
@@ -397,7 +397,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Creates CR for epoch 5
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 4 } ],
+                [{ event: 'SetCumulativeReward', epoch: 4 }],
             );
         });
         it('delegate in epoch 1, then epoch 3', async () => {
@@ -425,7 +425,7 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
                     // Clears CR for epoch 2
                     TestAction.Delegate,
                 ],
-                [{ event: 'SetCumulativeReward', epoch: 3 } ],
+                [{ event: 'SetCumulativeReward', epoch: 3 }],
             );
         });
     });
