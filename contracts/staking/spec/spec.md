@@ -722,7 +722,7 @@ In practice, this equation becomes:
 
 The final equation for computing a member's reward during epoch `n` becomes:
 
-<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/FinalRewardEqn.png" height="60" /></p>
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/reward_tracking/Reward-Final.png" height="60" /></p>
 
 
 #### 9.2.2 Handling Epochs With No Rewards
