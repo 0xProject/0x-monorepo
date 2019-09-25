@@ -283,9 +283,29 @@ function getTotalStakeDelegatedToPool(bytes32 poolId)
     returns (IStructs.StakeBalance memory balance);
 ```
 
-## 6 Market Making & Liquidity Rewards
+## 6 Liquidity Incentives
 
-## 7 Protocol Fees
+Liquidity incentives are used to align market participants with long-term objectives of the 0x protocol. Fees are charged by the 0x protocol and paid to market makers as a reward for their trade volume and amount of ZRX staked. Makers are paid their reward at the end of every epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker.
+
+
+
+
+
+### 6.1 Market Making
+
+Market makers create staking pools to
+
+###
+
+### 6.1 The Protocol Fee
+
+### 6.1 Finalizing Rewards
+
+At the end of an epoch each pool that actively traded gets paid their liquidity reward. Pools are paid out individually via a contract call to the staking system (that can be made by anyone)
+    3. You have until the end of the next trading period to payout every pool from the previous epoch
+    4. In the beginning we have a bunch of keepers that wait for the trading period end then go in and finalize for each pool
+    5. In the future once there’s substantial liquidity rewards being generated then there will be a higher incentive for the MM to call this function
+
 
 
 ## 9 Staking Events
