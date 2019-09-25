@@ -138,7 +138,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         // Withdraw any rewards from.
-        // this must be done before we can modify the owner's portion of the
+        // this must be done before we can modify the staker's portion of the
         // delegator pool.
         _finalizePoolAndWithdrawDelegatorRewards(
             poolId,
@@ -288,7 +288,7 @@ contract MixinStakingPoolRewards is
 
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
-    /// @param unsyncedStake Unsynced delegated stake to pool by owner
+    /// @param unsyncedStake Unsynced delegated stake to pool by staker
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
@@ -351,7 +351,7 @@ contract MixinStakingPoolRewards is
     }
 
     /// @dev Computes the unfinalized rewards earned by a delegator in the last epoch.
-    /// @param unsyncedStake Unsynced delegated stake to pool by owner
+    /// @param unsyncedStake Unsynced delegated stake to pool by staker
     /// @param currentEpoch The epoch in which this call is executing
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).

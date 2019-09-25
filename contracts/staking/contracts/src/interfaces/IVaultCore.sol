@@ -40,14 +40,14 @@ interface IVaultCore {
     event InCatastrophicFailureMode(address sender);
 
     /// @dev Sets the address of the StakingProxy contract.
-    /// Note that only the contract owner can call this function.
+    /// Note that this is callable only by an authorized address.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
     function setStakingProxy(address payable _stakingProxyAddress)
         external;
 
     /// @dev Vault enters into Catastrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
-    /// Note that only the contract owner can call this function.
+    /// Note that this is callable only by an authorized address.
     function enterCatastrophicFailure()
         external;
 }
