@@ -295,16 +295,23 @@ Note also that the WETH Asset Proxy is distinct from the standard ERC20 Asset Pr
 
 ### 6.1 Market Making
 
-Makers are paid their reward at the end of each epoch. Their reward is proportional to their trade volume and amount of ZRX staked.
+Makers are paid their reward at the end of each epoch. The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker. Market makers create staking pools to
 
+<p align="center"><img src="https://github.com/0xProject/0x-monorepo/blob/stakingspec/contracts/staking/spec/CobbDouglas.png" width="200" /></p>
 
-The Cobb-Douglas function is used to compute how much of the aggregate fees should be rewarded to each market maker. Market makers create staking pools to
+|Term|Definition  |
+|--|--|
+| _r__ | Reward for a specific market maker. |
+| _R_ | Total reward to be split between all market makers. |
+| _f_ | Total fees earned by the market maker this epoch. |
+| _F_ | Total fees earned across all market makers this epoch. |
+| _d_ | Total ZRX staked by the market maker this epoch. |
+| _D_ | Total ZRX staked across all market makers this epoch. |
+| _α_ | A constant in the range [0..1] that determines the weight of fees vs stake. |
 
 
 
 ###
-
-### 6.1 The Protocol Fee
 
 
 
