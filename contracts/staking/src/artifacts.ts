@@ -40,6 +40,7 @@ import * as TestAssertStorageParams from '../generated-artifacts/TestAssertStora
 import * as TestCobbDouglas from '../generated-artifacts/TestCobbDouglas.json';
 import * as TestCumulativeRewardTracking from '../generated-artifacts/TestCumulativeRewardTracking.json';
 import * as TestDelegatorRewards from '../generated-artifacts/TestDelegatorRewards.json';
+import * as TestExchangeManager from '../generated-artifacts/TestExchangeManager.json';
 import * as TestFinalizer from '../generated-artifacts/TestFinalizer.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
@@ -89,6 +90,7 @@ export const artifacts = {
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
     TestCumulativeRewardTracking: TestCumulativeRewardTracking as ContractArtifact,
     TestDelegatorRewards: TestDelegatorRewards as ContractArtifact,
+    TestExchangeManager: TestExchangeManager as ContractArtifact,
     TestFinalizer: TestFinalizer as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
