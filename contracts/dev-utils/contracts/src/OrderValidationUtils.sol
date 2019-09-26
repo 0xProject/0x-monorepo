@@ -86,7 +86,7 @@ contract OrderValidationUtils is
                 takerAssetAmount
             );
         } else {
-            if (order.makerAssetData.equals(order.makerFeeAssetData)) {
+            if (order.makerFeeAssetData.equals(order.makerAssetData)) {
                 // The % that can be filled is transferableMakerAssetAmount / (makerAssetAmount + makerFee)
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
