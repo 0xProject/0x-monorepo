@@ -86,9 +86,9 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
 /**
  * Represents the varying smart contracts that can consume a valid swap quote
  */
-export enum ConsumerType {
+export enum ExtensionContractType {
     Forwarder = 'FORWARDER',
-    Exchange = 'EXCHANGE',
+    None = 'NONE',
 }
 
 /**
@@ -183,13 +183,17 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOptsB
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
+export interface GetExtensionContractTypeOpts {
+    takerAddress?: string;
+    ethAmount?: BigNumber;
+}
+
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * useConsumerType: If provided, defaults the SwapQuoteConsumer to create output consumed by ConsumerType.
  */
 export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
-    takerAddress?: string;
-    useConsumerType?: ConsumerType;
+    useExtensionContract: ExtensionContractType;
 }
 
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
