@@ -102,6 +102,26 @@ contract OrderValidationUtils is
                     makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
+            } else if (
+                order.takerAssetData.readBytes4(0) == IAssetData(address(0)).MultiAsset.selector
+                && multiAssetContainsAsset(order.takerAssetData, order.makerFeeAssetData)
+            ) {
+                // find the asset data in order.takerAssetData which matches the makerFeeAsset
+                (
+                    ,
+                    uint256[] memory amounts,
+                    bytes[] memory nestedAssetData
+                ) = decodeMultiAssetData(order.takerAssetData);
+
+                for (uint i=0; i < amounts.length; i++) {
+                    if (order.makerFeeAssetData.equals(nestedAssetData[i])) {
+                        transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
+                            transferableMakerAssetAmount.safeAdd(amounts[i]),
+                            makerAssetAmount.safeAdd(makerFee),
+                            takerAssetAmount
+                        );
+                    }
+                }
             } else {
                 // The % that can be filled is the lower of
                 // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)

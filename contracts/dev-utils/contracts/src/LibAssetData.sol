@@ -515,4 +515,24 @@ contract LibAssetData {
         );
         // solhint-enable indent
     }
+
+    function multiAssetContainsAsset(bytes memory multiAssetData, bytes memory assetData)
+        public
+        pure
+        returns (bool)
+    {
+        (
+            ,
+            uint256[] memory amounts,
+            bytes[] memory nestedAssetData
+        ) = decodeMultiAssetData(multiAssetData);
+
+        for (uint i=0; i < amounts.length; i++) {
+            if (assetData.equals(nestedAssetData[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
