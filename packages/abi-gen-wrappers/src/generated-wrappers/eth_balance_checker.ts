@@ -216,7 +216,7 @@ export class EthBalanceCheckerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = EthBalanceCheckerContract.deployedBytecode,
+        deployedBytecode: string | undefined = EthBalanceCheckerContract.deployedBytecode,
     ) {
         super(
             'EthBalanceChecker',

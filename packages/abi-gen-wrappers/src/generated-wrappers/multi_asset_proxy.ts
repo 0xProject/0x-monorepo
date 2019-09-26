@@ -1942,7 +1942,7 @@ export class MultiAssetProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = MultiAssetProxyContract.deployedBytecode,
+        deployedBytecode: string | undefined = MultiAssetProxyContract.deployedBytecode,
     ) {
         super(
             'MultiAssetProxy',

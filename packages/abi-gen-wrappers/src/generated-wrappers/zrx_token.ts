@@ -1521,7 +1521,7 @@ export class ZRXTokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ZRXTokenContract.deployedBytecode,
+        deployedBytecode: string | undefined = ZRXTokenContract.deployedBytecode,
     ) {
         super(
             'ZRXToken',

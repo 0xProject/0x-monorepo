@@ -3590,7 +3590,7 @@ export class AbiGenDummyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = AbiGenDummyContract.deployedBytecode,
+        deployedBytecode: string | undefined = AbiGenDummyContract.deployedBytecode,
     ) {
         super(
             'AbiGenDummy',

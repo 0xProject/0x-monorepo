@@ -28,7 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class DutchAuctionContract extends BaseContract {
-    public static deployedBytecode = '';
+    public static deployedBytecode: string | undefined;
     /**
      * Calculates the Auction Details for the given order
      */
@@ -1260,7 +1260,7 @@ export class DutchAuctionContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = DutchAuctionContract.deployedBytecode,
+        deployedBytecode: string | undefined = DutchAuctionContract.deployedBytecode,
     ) {
         super(
             'DutchAuction',

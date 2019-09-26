@@ -1883,7 +1883,7 @@ export class ForwarderContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ForwarderContract.deployedBytecode,
+        deployedBytecode: string | undefined = ForwarderContract.deployedBytecode,
     ) {
         super(
             'Forwarder',

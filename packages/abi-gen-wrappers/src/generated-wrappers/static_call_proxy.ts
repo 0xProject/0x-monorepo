@@ -335,7 +335,7 @@ export class StaticCallProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = StaticCallProxyContract.deployedBytecode,
+        deployedBytecode: string | undefined = StaticCallProxyContract.deployedBytecode,
     ) {
         super(
             'StaticCallProxy',

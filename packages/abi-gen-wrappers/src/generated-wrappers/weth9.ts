@@ -1886,7 +1886,7 @@ export class WETH9Contract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = WETH9Contract.deployedBytecode,
+        deployedBytecode: string | undefined = WETH9Contract.deployedBytecode,
     ) {
         super(
             'WETH9',

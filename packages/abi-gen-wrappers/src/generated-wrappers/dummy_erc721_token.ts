@@ -2926,7 +2926,7 @@ export class DummyERC721TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = DummyERC721TokenContract.deployedBytecode,
+        deployedBytecode: string | undefined = DummyERC721TokenContract.deployedBytecode,
     ) {
         super(
             'DummyERC721Token',

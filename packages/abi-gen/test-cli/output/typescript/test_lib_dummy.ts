@@ -289,7 +289,7 @@ export class TestLibDummyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = TestLibDummyContract.deployedBytecode,
+        deployedBytecode: string | undefined = TestLibDummyContract.deployedBytecode,
     ) {
         super(
             'TestLibDummy',

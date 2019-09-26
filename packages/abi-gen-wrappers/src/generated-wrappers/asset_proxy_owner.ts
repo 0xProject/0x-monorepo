@@ -4407,7 +4407,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = AssetProxyOwnerContract.deployedBytecode,
+        deployedBytecode: string | undefined = AssetProxyOwnerContract.deployedBytecode,
     ) {
         super(
             'AssetProxyOwner',

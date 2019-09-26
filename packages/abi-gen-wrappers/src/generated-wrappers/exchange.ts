@@ -13423,7 +13423,7 @@ export class ExchangeContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ExchangeContract.deployedBytecode,
+        deployedBytecode: string | undefined = ExchangeContract.deployedBytecode,
     ) {
         super(
             'Exchange',

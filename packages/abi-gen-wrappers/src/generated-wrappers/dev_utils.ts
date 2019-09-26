@@ -5510,7 +5510,7 @@ export class DevUtilsContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = DevUtilsContract.deployedBytecode,
+        deployedBytecode: string | undefined = DevUtilsContract.deployedBytecode,
     ) {
         super(
             'DevUtils',

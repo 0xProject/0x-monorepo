@@ -1291,7 +1291,7 @@ export class ERC20TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ERC20TokenContract.deployedBytecode,
+        deployedBytecode: string | undefined = ERC20TokenContract.deployedBytecode,
     ) {
         super(
             'ERC20Token',

@@ -1515,7 +1515,7 @@ export class ERC20ProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ERC20ProxyContract.deployedBytecode,
+        deployedBytecode: string | undefined = ERC20ProxyContract.deployedBytecode,
     ) {
         super(
             'ERC20Proxy',

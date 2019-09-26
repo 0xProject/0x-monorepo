@@ -106,7 +106,7 @@ export class LibDummyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = LibDummyContract.deployedBytecode,
+        deployedBytecode: string | undefined = LibDummyContract.deployedBytecode,
     ) {
         super(
             'LibDummy',

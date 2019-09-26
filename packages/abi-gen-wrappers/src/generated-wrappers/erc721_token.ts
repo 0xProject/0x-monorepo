@@ -2000,7 +2000,7 @@ export class ERC721TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = ERC721TokenContract.deployedBytecode,
+        deployedBytecode: string | undefined = ERC721TokenContract.deployedBytecode,
     ) {
         super(
             'ERC721Token',

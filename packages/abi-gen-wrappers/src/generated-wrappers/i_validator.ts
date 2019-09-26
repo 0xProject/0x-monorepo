@@ -28,7 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IValidatorContract extends BaseContract {
-    public static deployedBytecode = '';
+    public static deployedBytecode: string | undefined;
     /**
      * Verifies that a signature is valid.
      */
@@ -241,7 +241,7 @@ export class IValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
-        deployedBytecode: string = IValidatorContract.deployedBytecode,
+        deployedBytecode: string | undefined = IValidatorContract.deployedBytecode,
     ) {
         super(
             'IValidator',
