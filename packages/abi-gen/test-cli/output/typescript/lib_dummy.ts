@@ -28,6 +28,8 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class LibDummyContract extends BaseContract {
+    public static deployedBytecode =
+        '0x73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a72305820b14322cd05aa1dcae66812e472d3ab85cced78118ea7f9a5098d073b2accc45964736f6c634300050a0032';
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -104,8 +106,17 @@ export class LibDummyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = LibDummyContract.deployedBytecode,
     ) {
-        super('LibDummy', LibDummyContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'LibDummy',
+            LibDummyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

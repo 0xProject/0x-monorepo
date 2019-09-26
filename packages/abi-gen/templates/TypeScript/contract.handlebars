@@ -50,6 +50,12 @@ export enum {{contractName}}Events {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class {{contractName}}Contract extends BaseContract {
+    {{#ifEquals this.deployedBytecode undefined~}}
+    public static deployedBytecode: string | undefined;
+    {{else~}}
+    public static deployedBytecode = '{{this.deployedBytecode}}';
+    {{/ifEquals~}}
+
 {{#each methods}}
     {{#if this.devdoc.details}}
     /**
@@ -231,8 +237,14 @@ export class {{contractName}}Contract extends BaseContract {
         );
         return logs;
     }{{/if}}
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
-        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = {{contractName}}Contract.deployedBytecode,
+    ) {
+        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies, deployedBytecode);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);{{#if events}}
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),

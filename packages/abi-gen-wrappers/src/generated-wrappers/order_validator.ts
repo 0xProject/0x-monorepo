@@ -28,6 +28,7 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class OrderValidatorContract extends BaseContract {
+    public static deployedBytecode: string | undefined;
     public getOrderAndTraderInfo = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1789,6 +1790,7 @@ export class OrderValidatorContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = OrderValidatorContract.deployedBytecode,
     ) {
         super(
             'OrderValidator',
@@ -1797,6 +1799,7 @@ export class OrderValidatorContract extends BaseContract {
             supportedProvider,
             txDefaults,
             logDecodeDependencies,
+            deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
