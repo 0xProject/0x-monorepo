@@ -93,6 +93,14 @@ contract OrderValidationUtils is
                     order.makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
+            } else if (order.makerFeeAssetData.equals(order.takerAssetData)) {
+                // The % that can be filled is
+                // (transferableMakerAssetAmount + takerAssetAmount) / (makerAssetAmount + makerFee)
+                transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
+                    transferableMakerAssetAmount.safeAdd(takerAssetAmount),
+                    order.makerAssetAmount.safeAdd(makerFee),
+                    takerAssetAmount
+                );
             } else {
                 // The % that can be filled is the lower of
                 // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
