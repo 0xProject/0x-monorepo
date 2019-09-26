@@ -483,6 +483,51 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             expect(fillableTakerAssetAmount).to.bignumber.equal(signedOrder.takerAssetAmount);
             expect(isValidSignature).to.equal(true);
         });
+        it("should count a maker's trade proceeds towards their ability to pay fees", async () => {
+            // Arrange.
+
+            // construct an order in which the maker will receive the asset needed to pay the maker fees:
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFeeAssetData: signedOrder.takerAssetData,
+            });
+
+            // set maker's makerAsset balance to be enough to fill the order
+            const makerAssetToken = erc20Token;
+            await makerAssetToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount);
+            await makerAssetToken.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                signedOrder.makerAssetAmount,
+                {
+                    from: makerAddress,
+                },
+            );
+
+            // set maker's makerFeeAsset balance to be lower than the amount
+            // needed to pay fees for the whole order, but high enough that the
+            // receipt of the takerAsset will bring their balance high enough
+            // to pay the fees for the whole order.
+            const makersFeeTokenBalance = BigNumber.maximum(
+                signedOrder.makerFee.minus(signedOrder.takerAssetAmount),
+                0,
+            );
+            const makerFeeToken = erc20Token2;
+            await makerFeeToken.setBalance.awaitTransactionSuccessAsync(makerAddress, makersFeeTokenBalance);
+            await makerFeeToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+                from: makerAddress,
+            });
+
+            // Act.
+
+            const [orderInfo, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
+                signedOrder,
+                signedOrder.signature,
+            );
+
+            // Assert.
+
+            expect(orderInfo.orderStatus).to.equal(OrderStatus.Fillable);
+            expect(fillableTakerAssetAmount).to.bignumber.equal(signedOrder.takerAssetAmount);
+        });
     });
     describe('getOrderRelevantStates', async () => {
         it('should return the correct information for multiple orders', async () => {
