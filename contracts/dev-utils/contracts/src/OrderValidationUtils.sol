@@ -87,15 +87,14 @@ contract OrderValidationUtils is
             );
         } else {
             if (order.makerAssetData.equals(order.makerFeeAssetData)) {
-                // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
-                // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
+                // The % that can be filled is transferableMakerAssetAmount / (makerAssetAmount + makerFee)
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
             } else {
-                // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
+                // The % that can be filled is the lower of
                 // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
 
                 // Get the transferable amount of the `makerFeeAsset`
