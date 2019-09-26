@@ -41,10 +41,8 @@ describe('Signature utils', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
-            domain: {
-                verifyingContract: fakeExchangeContractAddress,
-                chainId: fakeChainId,
-            },
+            exchangeAddress: fakeExchangeContractAddress,
+            chainId: fakeChainId,
         };
         transaction = {
             domain: {

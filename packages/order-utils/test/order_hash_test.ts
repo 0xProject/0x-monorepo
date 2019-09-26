@@ -32,10 +32,8 @@ describe('Order hashing', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
-            domain: {
-                verifyingContract: fakeExchangeContractAddress,
-                chainId: fakeChainID,
-            },
+            exchangeAddress: fakeExchangeContractAddress,
+            chainId: fakeChainID,
         };
         it('calculates the order hash', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(order);
@@ -62,7 +60,7 @@ describe('Order hashing', () => {
             };
             const expectedErrorMessage = `Order taker must be of type string. If you want anyone to be able to fill an order - pass ${
                 constants.NULL_ADDRESS
-            }`;
+                }`;
             expect(() => orderHashUtils.getOrderHashHex(orderWithInvalidtakerFormat)).to.throw(expectedErrorMessage);
         });
     });

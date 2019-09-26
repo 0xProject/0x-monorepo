@@ -198,10 +198,7 @@ describe('matchOrders', () => {
         defaultFeeTokenAddress = erc20Tokens[2].address;
         defaultERC721AssetAddress = erc721Token.address;
         defaultERC1155AssetAddress = erc1155Token.address;
-        const domain = {
-            verifyingContract: exchange.address,
-            chainId,
-        };
+
         // Create default order parameters
         const defaultOrderParamsLeft = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -211,7 +208,8 @@ describe('matchOrders', () => {
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressLeft,
-            domain,
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const defaultOrderParamsRight = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -221,7 +219,8 @@ describe('matchOrders', () => {
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressRight,
-            domain,
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const privateKeyLeft = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressLeft)];
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);

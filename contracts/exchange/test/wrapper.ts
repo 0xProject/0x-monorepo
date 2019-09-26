@@ -97,10 +97,8 @@ blockchainTests.resets('Exchange wrappers', env => {
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
-            domain: {
-                verifyingContract: exchange.address,
-                chainId,
-            },
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -607,7 +605,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                    );
+                );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -683,7 +681,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                    );
+                );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -799,7 +797,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                    );
+                );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -876,7 +874,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                    );
+                );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);

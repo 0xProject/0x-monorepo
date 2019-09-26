@@ -124,12 +124,12 @@ export class FillScenarios {
             fillableAmount,
         );
         const exchangeInstance = new ExchangeContract(
-            signedOrder.domain.verifyingContract,
+            signedOrder.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
 
-        const orderWithoutDomain = _.omit(signedOrder, ['signature', 'domain']) as OrderWithoutDomain;
+        const orderWithoutDomain = _.omit(signedOrder, ['signature', 'exchangeAddress', 'chainId']) as OrderWithoutDomain;
 
         const txHash = await exchangeInstance.fillOrder.sendTransactionAsync(
             orderWithoutDomain,

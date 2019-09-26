@@ -101,10 +101,8 @@ describe.skip('CoordinatorWrapper', () => {
             makerFeeAssetData: feeAssetData,
             takerFeeAssetData: feeAssetData,
             senderAddress: contractAddresses.coordinator,
-            domain: {
-                verifyingContract: exchangeContractAddress,
-                chainId,
-            },
+            exchangeAddress: exchangeContractAddress,
+            chainId,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

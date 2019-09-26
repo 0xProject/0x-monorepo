@@ -101,11 +101,11 @@ export class IsolatedExchangeWrapper {
     }
 
     public getOrderHash(order: Order): string {
-        const domain = {
-            verifyingContract: this.instance.address,
+        const domainInfo = {
+            exchangeAddress: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
         };
-        return orderHashUtils.getOrderHashHex({ ...order, domain });
+        return orderHashUtils.getOrderHashHex({ ...order, ...domainInfo });
     }
 
     public async getOrderInfoAsync(order: Order): Promise<OrderInfo> {
@@ -126,11 +126,11 @@ export class IsolatedExchangeWrapper {
         TCallAsyncArgs extends any[],
         TAwaitTransactionSuccessAsyncArgs extends any[],
         TResult
-    >(
-        contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
-        // tslint:disable-next-line: trailing-comma
-        ...args: TAwaitTransactionSuccessAsyncArgs
-    ): Promise<TResult> {
+        >(
+            contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
+            // tslint:disable-next-line: trailing-comma
+            ...args: TAwaitTransactionSuccessAsyncArgs
+        ): Promise<TResult> {
         this.lastTxEvents = createEmptyEvents();
         this.lastTxBalanceChanges = {};
         const [result, receipt] = await this.txHelper.getResultAndReceiptAsync(contractFunction, ...args);

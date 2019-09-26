@@ -59,10 +59,8 @@ describe('RemainingFillableCalculator', () => {
             takerFeeAssetData,
             salt: zero,
             expirationTimeSeconds: zero,
-            domain: {
-                verifyingContract: zeroAddress,
-                chainId,
-            },
+            exchangeAddress: zeroAddress,
+            chainId,
         };
     }
     describe('Maker asset is not fee asset', () => {

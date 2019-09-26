@@ -3,11 +3,9 @@
 import { BigNumber } from 'bignumber.js';
 import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
 
-// HACK: Rather then extending from OrderWithoutDomain
-// we don't, because our docs don't expand inherited types, and it's unnecessarily
-// confusing to introduce the user to the OrderWithoutDomain type.
 export interface Order {
-    domain: EIP712DomainWithDefaultSchema;
+    chainId: number;
+    exchangeAddress: string;
     makerAddress: string;
     takerAddress: string;
     feeRecipientAddress: string;

@@ -120,10 +120,8 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             takerAssetData: erc20AssetData2,
             makerFeeAssetData: feeAssetData,
             takerFeeAssetData: feeAssetData,
-            domain: {
-                verifyingContract: exchange.address,
-                chainId,
-            },
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

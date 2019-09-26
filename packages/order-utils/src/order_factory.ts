@@ -52,10 +52,8 @@ export const orderFactory = {
             salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
-            domain: {
-                verifyingContract: exchangeAddress,
-                chainId,
-            },
+            exchangeAddress,
+            chainId,
         };
         return order;
     },
@@ -87,7 +85,7 @@ export const orderFactory = {
 };
 
 function getChainIdFromPartial(partialOrder: Partial<Order> | Partial<SignedOrder>): number {
-    const chainId: number = _.get(partialOrder, ['domain', 'chainId']);
+    const chainId = partialOrder.chainId;
     if (!_.isNumber(chainId)) {
         throw new Error('chainId must be valid');
     }
@@ -117,10 +115,8 @@ function generateEmptyOrder(chainId: number): Order {
         salt: generatePseudoRandomSalt(),
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
-        domain: {
-            verifyingContract: constants.NULL_ADDRESS,
-            chainId,
-        },
+        exchangeAddress: constants.NULL_ADDRESS,
+        chainId,
     };
 }
 

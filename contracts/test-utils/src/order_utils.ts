@@ -31,7 +31,7 @@ export const orderUtils = {
         return cancel;
     },
     getOrderWithoutDomain(signedOrder: SignedOrder): OrderWithoutDomain {
-        return _.omit(signedOrder, ['signature', 'domain']) as OrderWithoutDomain;
+        return _.omit(signedOrder, ['signature', 'exchangeAddress', 'chainId']) as OrderWithoutDomain;
     },
     createBatchMatchOrders(signedOrdersLeft: SignedOrder[], signedOrdersRight: SignedOrder[]): BatchMatchOrder {
         return {

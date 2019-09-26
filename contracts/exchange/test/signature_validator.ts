@@ -435,10 +435,8 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 takerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
-                domain: {
-                    verifyingContract: signatureValidator.address,
-                    chainId,
-                },
+                exchangeAddress: signatureValidator.address,
+                chainId,
             };
             orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
         });
@@ -1148,7 +1146,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             expect(res.logs.length).to.equal(1);
             const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
                 TestSignatureValidatorSignatureValidatorApprovalEventArgs
-            >;
+                >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
@@ -1166,7 +1164,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
             expect(res.logs.length).to.equal(1);
             const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
                 TestSignatureValidatorSignatureValidatorApprovalEventArgs
-            >;
+                >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);

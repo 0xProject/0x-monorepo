@@ -16,10 +16,8 @@ blockchainTests('LibOrder', env => {
     const randomAssetData = () => hexRandom(36);
 
     const EMPTY_ORDER: Order = {
-        domain: {
-            verifyingContract: constants.NULL_ADDRESS,
-            chainId: 0,
-        },
+        exchangeAddress: constants.NULL_ADDRESS,
+        chainId: 0,
         senderAddress: constants.NULL_ADDRESS,
         makerAddress: constants.NULL_ADDRESS,
         takerAddress: constants.NULL_ADDRESS,
@@ -52,7 +50,8 @@ blockchainTests('LibOrder', env => {
         const expectedHash = orderHashUtils.getOrderHashHex(order);
         const domainHash = ethUtil.bufferToHex(
             signTypedDataUtils.generateDomainHash({
-                ...order.domain,
+                chainId: order.chainId,
+                exchangeAddress: order.exchangeAddress,
                 name: constants.EIP712_DOMAIN_NAME,
                 version: constants.EIP712_DOMAIN_VERSION,
             }),
@@ -65,19 +64,14 @@ blockchainTests('LibOrder', env => {
         it('should correctly hash an empty order', async () => {
             await testGetTypedDataHashAsync({
                 ...EMPTY_ORDER,
-                domain: {
-                    ...EMPTY_ORDER.domain,
-                    verifyingContract: libOrderContract.address,
-                },
+                exchangeAddress: libOrderContract.address,
             });
         });
 
         it('should correctly hash a non-empty order', async () => {
             await testGetTypedDataHashAsync({
-                domain: {
-                    verifyingContract: libOrderContract.address,
-                    chainId: 1337,
-                },
+                exchangeAddress: libOrderContract.address,
+                chainId: 1337,
                 senderAddress: randomAddress(),
                 makerAddress: randomAddress(),
                 takerAddress: randomAddress(),
@@ -98,14 +92,15 @@ blockchainTests('LibOrder', env => {
         it('orderHash should differ if the domain hash is different', async () => {
             const domainHash1 = ethUtil.bufferToHex(
                 signTypedDataUtils.generateDomainHash({
-                    ...EMPTY_ORDER.domain,
+                    chainId: EMPTY_ORDER.chainId,
+                    exchangeAddress: EMPTY_ORDER.exchangeAddress,
                     name: constants.EIP712_DOMAIN_NAME,
                     version: constants.EIP712_DOMAIN_VERSION,
                 }),
             );
             const domainHash2 = ethUtil.bufferToHex(
                 signTypedDataUtils.generateDomainHash({
-                    ...EMPTY_ORDER.domain,
+                    exchangeAddress: EMPTY_ORDER.exchangeAddress,
                     name: constants.EIP712_DOMAIN_NAME,
                     version: constants.EIP712_DOMAIN_VERSION,
                     chainId: 1337,
@@ -135,10 +130,8 @@ blockchainTests('LibOrder', env => {
         it('should correctly hash a non-empty order', async () => {
             await testGetStructHashAsync({
                 // The domain is not used in this test, so it's okay if it is left empty.
-                domain: {
-                    verifyingContract: constants.NULL_ADDRESS,
-                    chainId: 0,
-                },
+                exchangeAddress: constants.NULL_ADDRESS,
+                chainId: 0,
                 senderAddress: randomAddress(),
                 makerAddress: randomAddress(),
                 takerAddress: randomAddress(),
