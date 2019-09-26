@@ -73,6 +73,7 @@ contract OrderValidationUtils is
         // Assign to stack variables to reduce redundant mloads/sloads
         uint256 takerAssetAmount = order.takerAssetAmount;
         uint256 makerFee = order.makerFee;
+        uint256 makerAssetAmount = order.makerAssetAmount;
 
         // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
@@ -82,7 +83,7 @@ contract OrderValidationUtils is
         if (makerFee == 0) {
             transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                 transferableMakerAssetAmount,
-                order.makerAssetAmount,
+                makerAssetAmount,
                 takerAssetAmount
             );
         } else {
@@ -90,7 +91,7 @@ contract OrderValidationUtils is
                 // The % that can be filled is transferableMakerAssetAmount / (makerAssetAmount + makerFee)
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
-                    order.makerAssetAmount.safeAdd(makerFee),
+                    makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
             } else if (order.makerFeeAssetData.equals(order.takerAssetData)) {
@@ -98,7 +99,7 @@ contract OrderValidationUtils is
                 // (transferableMakerAssetAmount + takerAssetAmount) / (makerAssetAmount + makerFee)
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount.safeAdd(takerAssetAmount),
-                    order.makerAssetAmount.safeAdd(makerFee),
+                    makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
             } else {
@@ -110,7 +111,7 @@ contract OrderValidationUtils is
 
                 uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
-                    order.makerAssetAmount,
+                    makerAssetAmount,
                     takerAssetAmount
                 );
                 uint256 transferableMakerFeeToTakerAmount = LibMath.getPartialAmountFloor(
