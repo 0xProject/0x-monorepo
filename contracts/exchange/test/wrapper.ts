@@ -605,7 +605,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                );
+                    );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -681,7 +681,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                );
+                    );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -797,7 +797,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                );
+                    );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);
@@ -874,7 +874,7 @@ blockchainTests.resets('Exchange wrappers', env => {
                             protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
                         }),
                         nullFillResults,
-                );
+                    );
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
                 expect(newBalances).to.be.deep.equal(erc20Balances);

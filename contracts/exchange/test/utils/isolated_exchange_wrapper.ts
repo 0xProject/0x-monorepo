@@ -126,11 +126,11 @@ export class IsolatedExchangeWrapper {
         TCallAsyncArgs extends any[],
         TAwaitTransactionSuccessAsyncArgs extends any[],
         TResult
-        >(
-            contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
-            // tslint:disable-next-line: trailing-comma
-            ...args: TAwaitTransactionSuccessAsyncArgs
-        ): Promise<TResult> {
+    >(
+        contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
+        // tslint:disable-next-line: trailing-comma
+        ...args: TAwaitTransactionSuccessAsyncArgs
+    ): Promise<TResult> {
         this.lastTxEvents = createEmptyEvents();
         this.lastTxBalanceChanges = {};
         const [result, receipt] = await this.txHelper.getResultAndReceiptAsync(contractFunction, ...args);

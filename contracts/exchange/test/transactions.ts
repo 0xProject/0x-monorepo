@@ -141,7 +141,7 @@ blockchainTests.resets('Exchange transactions', env => {
                 expect(transactionExecutionLogs.length).to.eq(1);
                 const executionLogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(executionLogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction),
                 );
@@ -606,7 +606,7 @@ blockchainTests.resets('Exchange transactions', env => {
                 expect(validatorApprovalLogs.length).to.eq(1);
                 const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
                     ExchangeSignatureValidatorApprovalEventArgs
-                    >).args;
+                >).args;
                 expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
                 expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
                 expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
@@ -628,7 +628,7 @@ blockchainTests.resets('Exchange transactions', env => {
                 expect(validatorApprovalLogs.length).to.eq(1);
                 const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
                     ExchangeSignatureValidatorApprovalEventArgs
-                    >).args;
+                >).args;
                 expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
                 expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
                 expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
@@ -656,14 +656,14 @@ blockchainTests.resets('Exchange transactions', env => {
 
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution1LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution2LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction2),
                 );
@@ -722,14 +722,14 @@ blockchainTests.resets('Exchange transactions', env => {
 
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution1LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution2LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction2),
                 );
@@ -787,14 +787,14 @@ blockchainTests.resets('Exchange transactions', env => {
 
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution1LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution2LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction2),
                 );
@@ -881,14 +881,14 @@ blockchainTests.resets('Exchange transactions', env => {
 
                 const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution1LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction1),
                 );
 
                 const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
                     ExchangeTransactionExecutionEventArgs
-                    >).args;
+                >).args;
                 expect(execution2LogArgs.transactionHash).to.equal(
                     transactionHashUtils.getTransactionHashHex(transaction2),
                 );

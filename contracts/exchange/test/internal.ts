@@ -292,7 +292,7 @@ blockchainTests('Exchange core internal functions', env => {
             );
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
-                >;
+            >;
             expect(logs.length === 4);
             expect(_.every(logs, log => log.event === 'DispatchTransferFromCalled')).to.be.true();
             // taker -> maker
@@ -472,7 +472,7 @@ blockchainTests('Exchange core internal functions', env => {
             );
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
-                >;
+            >;
 
             // Ensure that the logs have the correct lengths and names
             expect(logs.length).to.be.eq(7);
@@ -566,7 +566,7 @@ blockchainTests('Exchange core internal functions', env => {
             );
             const logs = receipt.logs as Array<
                 LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
-                >;
+            >;
 
             // Ensure that the logs have the correct lengths and names
             expect(logs.length).to.be.eq(8);
