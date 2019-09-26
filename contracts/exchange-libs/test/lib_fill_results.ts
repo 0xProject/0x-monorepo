@@ -8,7 +8,7 @@ import {
     uint256Values,
 } from '@0x/contracts-test-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { FillResults, MatchedFillResults, OrderWithoutDomain as Order } from '@0x/types';
+import { FillResults, MatchedFillResults, Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -39,6 +39,8 @@ blockchainTests('LibFillResults', env => {
         salt: constants.ZERO_AMOUNT,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
+        chainId: 1,
+        exchangeAddress: constants.NULL_ADDRESS,
     };
 
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);

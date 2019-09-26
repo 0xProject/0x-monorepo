@@ -22,23 +22,6 @@ export interface Order {
     takerFeeAssetData: string;
 }
 
-export interface OrderWithoutDomain {
-    makerAddress: string;
-    takerAddress: string;
-    feeRecipientAddress: string;
-    senderAddress: string;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    expirationTimeSeconds: BigNumber;
-    salt: BigNumber;
-    makerAssetData: string;
-    takerAssetData: string;
-    makerFeeAssetData: string;
-    takerFeeAssetData: string;
-}
-
 export interface SignedOrder extends Order {
     signature: string;
 }

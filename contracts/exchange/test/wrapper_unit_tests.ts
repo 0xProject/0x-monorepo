@@ -10,7 +10,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilReferenceFunctions } from '@0x/contracts-utils';
 import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
-import { FillResults, OrderWithoutDomain as Order } from '@0x/types';
+import { FillResults, Order } from '@0x/types';
 import { AnyRevertError, BigNumber, SafeMathRevertErrors, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
@@ -83,16 +83,10 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             takerAssetData: randomAssetData(),
             makerFeeAssetData: randomAssetData(),
             takerFeeAssetData: randomAssetData(),
+            exchangeAddress: constants.NULL_ADDRESS,
+            chainId: CHAIN_ID,
             ...(fields || {}),
         };
-    }
-
-    function getExpectedOrderHash(order: Order): string {
-        return orderHashUtils.getOrderHashHex({
-            ...order,
-            exchangeAddress: testContract.address,
-            chainId: CHAIN_ID,
-        });
     }
 
     // Computes the expected (fake) fill results from `TestWrapperFunctions` `_fillOrder` implementation.
@@ -112,7 +106,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
     // Creates a deterministic order signature, even though no signature validation
     // actually occurs in the test contract.
     function createOrderSignature(order: Order): string {
-        return ethjs.bufferToHex(ethjs.sha3(ethjs.toBuffer(getExpectedOrderHash(order))));
+        return ethjs.bufferToHex(ethjs.sha3(ethjs.toBuffer(orderHashUtils.getOrderHashHex(order))));
     }
 
     // Asserts that `_fillOrder()` was called in the same order and with the same
