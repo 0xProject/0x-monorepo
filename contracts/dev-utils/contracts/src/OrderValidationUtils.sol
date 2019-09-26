@@ -77,26 +77,27 @@ contract OrderValidationUtils is
         // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
         uint256 transferableTakerAssetAmount;
-        if (order.makerAssetData.equals(order.makerFeeAssetData)) {
-            // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
-            // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
+
+        // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
+        if (makerFee == 0) {
             transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                 transferableMakerAssetAmount,
-                order.makerAssetAmount.safeAdd(makerFee),
+                order.makerAssetAmount,
                 takerAssetAmount
             );
         } else {
-            // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
-            if (makerFee == 0) {
+            if (order.makerAssetData.equals(order.makerFeeAssetData)) {
+                // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
+                // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
-                    order.makerAssetAmount,
+                    order.makerAssetAmount.safeAdd(makerFee),
                     takerAssetAmount
                 );
-
-            // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
-            // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
             } else {
+                // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
+                // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
+
                 // Get the transferable amount of the `makerFeeAsset`
                 uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
 
