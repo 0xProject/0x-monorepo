@@ -82,10 +82,8 @@ describe('ExchangeSwapQuoteConsumer', () => {
             takerAssetData,
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
-            domain: {
-                verifyingContract: contractAddresses.exchange,
-                chainId: networkId,
-            },
+            exchangeAddress: contractAddresses.exchange,
+            chainId: networkId,
         };
         const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
