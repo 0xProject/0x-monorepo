@@ -351,7 +351,7 @@ export function getThrownErrorRevertErrorBytes(error: Error | GanacheTransaction
             // so we do nothing.
         }
     }
-    throw new Error(`Cannot decode thrown Errror "${error.message}" as a RevertError`);
+    throw new Error(`Cannot decode thrown Error "${error.message}" as a RevertError`);
 }
 
 function isGanacheTransactionRevertError(

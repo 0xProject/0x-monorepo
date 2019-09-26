@@ -117,7 +117,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     );
 
     const logDecoder = new LogDecoder(web3Wrapper, artifacts);
-    const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
+    const exchangeWrapper = new ExchangeWrapper(exchangeContract);
     await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, ownerAddress);
     await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, ownerAddress);
@@ -646,7 +646,7 @@ export class FillOrderCombinatorialUtils {
 
         const exchangeLogs = _.filter(
             txReceipt.logs,
-            txLog => txLog.address === this.exchangeWrapper.getExchangeAddress(),
+            txLog => txLog.address === this.exchangeWrapper.exchangeContract.address,
         );
         expect(exchangeLogs.length).to.be.equal(1, 'logs length');
         // tslint:disable-next-line:no-unnecessary-type-assertion

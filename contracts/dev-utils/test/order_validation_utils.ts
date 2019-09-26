@@ -94,7 +94,7 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             txDefaults,
             artifacts,
         );
-        const exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        const exchangeWrapper = new ExchangeWrapper(exchange);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(multiAssetProxy.address, owner);

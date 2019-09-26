@@ -135,7 +135,7 @@ describe('matchOrders', () => {
             {},
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        exchangeWrapper = new ExchangeWrapper(exchange);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, owner);

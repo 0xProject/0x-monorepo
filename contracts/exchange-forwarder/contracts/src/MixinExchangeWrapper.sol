@@ -57,26 +57,12 @@ contract MixinExchangeWrapper is
         );
 
         address exchange = address(EXCHANGE);
-
-        // Call `fillOrder` and handle any exceptions gracefully
-        assembly {
-            let success := call(
-                gas,                                // forward all gas
-                exchange,                           // call address of Exchange contract
-                0,                                  // transfer 0 wei
-                add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
-                mload(fillOrderCalldata),           // length of input
-                fillOrderCalldata,                  // write output over input
-                160                                 // output size is 160 bytes
-            )
-            if success {
-                mstore(fillResults, mload(fillOrderCalldata))
-                mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
-                mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
-                mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
-                mstore(add(fillResults, 128), mload(add(fillOrderCalldata, 128)))
-            }
+        (bool didSucceed, bytes memory returnData) = exchange.call(fillOrderCalldata);
+        if (didSucceed) {
+            assert(returnData.length == 160);
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
         }
+
         // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
     }
@@ -99,12 +85,14 @@ contract MixinExchangeWrapper is
             uint256 makerAssetAcquiredAmount
         )
     {
-        // No fee or percentage fee
+        uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
+
+        // No taker fee or percentage fee
         if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.makerAssetData)) {
             // Attempt to sell the remaining amount of WETH
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
-                remainingTakerAssetFillAmount,
+                remainingTakerAssetFillAmount.safeSub(protocolFee),
                 signature
             );
 
@@ -118,14 +106,13 @@ contract MixinExchangeWrapper is
             );
         // WETH fee
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
-            uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
 
             // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
-            // This ensures that we reserve enough to pay the fee.
+            // This ensures that we reserve enough to pay the taker and protocol fees.
             uint256 takerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
-                order.takerAssetAmount.safeAdd(order.takerFee).safeAdd(protocolFee),
-                remainingTakerAssetFillAmount
+                order.takerAssetAmount.safeAdd(order.takerFee),
+                remainingTakerAssetFillAmount.safeSub(protocolFee)
             );
 
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
@@ -222,7 +209,7 @@ contract MixinExchangeWrapper is
             uint256 makerAssetAcquiredAmount
         )
     {
-        // No fee or WETH fee
+        // No taker fee or WETH fee
         if (order.takerFee == 0 || order.takerFeeAssetData.equals(order.takerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
@@ -238,7 +225,7 @@ contract MixinExchangeWrapper is
                 signature
             );
 
-            // WETH is also spent on the taker fee, so we add it here.
+            // WETH is also spent on the protocol and taker fees, so we add it here.
             wethSpentAmount = singleFillResults.takerAssetFilledAmount.safeAdd(
                 singleFillResults.takerFeePaid
             ).safeAdd(

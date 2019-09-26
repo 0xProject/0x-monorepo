@@ -115,7 +115,7 @@ describe('OrderMatcher', () => {
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        exchangeWrapper = new ExchangeWrapper(exchange);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
         // Authorize ERC20 trades by exchange

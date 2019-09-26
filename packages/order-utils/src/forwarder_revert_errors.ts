@@ -64,10 +64,10 @@ export class InsufficientEthForFeeError extends RevertError {
     }
 }
 
-export class OversoldWethError extends RevertError {
-    constructor(wethSold?: BigNumber | number | string, msgValue?: BigNumber | number | string) {
-        super('OversoldWethError', 'OversoldWethError(uint256 wethSold, uint256 msgValue)', {
-            wethSold,
+export class OverspentWethError extends RevertError {
+    constructor(wethSpent?: BigNumber | number | string, msgValue?: BigNumber | number | string) {
+        super('OverspentWethError', 'OverspentWethError(uint256 wethSpent, uint256 msgValue)', {
+            wethSpent,
             msgValue,
         });
     }
@@ -87,9 +87,9 @@ export class DefaultFunctionWethContractOnlyError extends RevertError {
     }
 }
 
-export class MsgValueCantEqualZeroError extends RevertError {
+export class MsgValueCannotEqualZeroError extends RevertError {
     constructor() {
-        super('MsgValueCantEqualZeroError', 'MsgValueCantEqualZeroError()', {});
+        super('MsgValueCannotEqualZeroError', 'MsgValueCannotEqualZeroError()', {});
     }
 }
 
@@ -109,10 +109,10 @@ const types = [
     UnsupportedFeeError,
     FeePercentageTooLargeError,
     InsufficientEthForFeeError,
-    OversoldWethError,
+    OverspentWethError,
     TransferFailedError,
     DefaultFunctionWethContractOnlyError,
-    MsgValueCantEqualZeroError,
+    MsgValueCannotEqualZeroError,
     Erc721AmountMustEqualOneError,
 ];
 

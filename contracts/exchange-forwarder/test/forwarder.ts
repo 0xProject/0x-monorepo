@@ -14,21 +14,24 @@ import {
 import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, ForwarderContract, ForwarderTestFactory, ForwarderWrapper } from '../src';
+import {
+    artifacts,
+    ForwarderContract,
+    ForwarderTestFactory,
+    ForwarderWrapper,
+    TestProtocolFeeCollectorContract,
+} from '../src';
 
 const DECIMALS_DEFAULT = 18;
 
 blockchainTests(ContractName.Forwarder, env => {
-    let chainId: number;
-    let makerAddress: string;
     let owner: string;
+    let makerAddress: string;
     let takerAddress: string;
     let orderFeeRecipientAddress: string;
     let forwarderFeeRecipientAddress: string;
     let defaultMakerAssetAddress: string;
-    let wethAssetData: string;
 
     let weth: DummyERC20TokenContract;
     let erc20Token: DummyERC20TokenContract;
@@ -36,22 +39,26 @@ blockchainTests(ContractName.Forwarder, env => {
     let erc721Token: DummyERC721TokenContract;
     let forwarderContract: ForwarderContract;
     let wethContract: WETH9Contract;
+    let exchangeContract: ExchangeContract;
+    let protocolFeeCollector: TestProtocolFeeCollectorContract;
+
     let forwarderWrapper: ForwarderWrapper;
     let exchangeWrapper: ExchangeWrapper;
+    let erc20Wrapper: ERC20Wrapper;
 
     let orderFactory: OrderFactory;
     let forwarderTestFactory: ForwarderTestFactory;
-    let erc20Wrapper: ERC20Wrapper;
-    let tx: TransactionReceiptWithDecodedLogs;
 
+    let chainId: number;
+    let wethAssetData: string;
     let erc721MakerAssetIds: BigNumber[];
-    const gasPrice = new BigNumber(constants.DEFAULT_GAS_PRICE);
+
+    const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+    const PROTOCOL_FEE = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 
     before(async () => {
-        await env.blockchainLifecycle.startAsync();
-
-        chainId = await env.getChainIdAsync();
-
+        // Set up addresses
         const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([
             owner,
@@ -61,24 +68,27 @@ blockchainTests(ContractName.Forwarder, env => {
             forwarderFeeRecipientAddress,
         ] = accounts);
 
-        const erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
-        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
-
-        const numDummyErc20ToDeploy = 2;
-        [erc20Token, secondErc20Token] = await erc20Wrapper.deployDummyTokensAsync(
-            numDummyErc20ToDeploy,
-            constants.DUMMY_TOKEN_DECIMALS,
+        // Set up Exchange
+        chainId = await env.getChainIdAsync();
+        exchangeContract = await ExchangeContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            {},
+            new BigNumber(chainId),
         );
+        exchangeWrapper = new ExchangeWrapper(exchangeContract);
 
+        // Set up ERC20
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
+        [erc20Token, secondErc20Token] = await erc20Wrapper.deployDummyTokensAsync(2, constants.DUMMY_TOKEN_DECIMALS);
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        await erc20Wrapper.setBalancesAndAllowancesAsync();
+        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
+            from: owner,
+        });
 
-        [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
-        const erc721Proxy = await erc721Wrapper.deployProxyAsync();
-        await erc721Wrapper.setBalancesAndAllowancesAsync();
-        const erc721Balances = await erc721Wrapper.getBalancesAsync();
-        erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
-
+        // Set up WETH
         wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
             erc20Artifacts.WETH9,
             env.provider,
@@ -86,59 +96,68 @@ blockchainTests(ContractName.Forwarder, env => {
             {},
         );
         weth = new DummyERC20TokenContract(wethContract.address, env.provider);
-        erc20Wrapper.addDummyTokenContract(weth);
-
         wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
-        const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
-            exchangeArtifacts.Exchange,
+        erc20Wrapper.addDummyTokenContract(weth);
+        await erc20Wrapper.setBalancesAndAllowancesAsync();
+
+        // Set up ERC721
+        const erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
+        [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
+        const erc721Proxy = await erc721Wrapper.deployProxyAsync();
+        await erc721Wrapper.setBalancesAndAllowancesAsync();
+        const erc721Balances = await erc721Wrapper.getBalancesAsync();
+        erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
+        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
+        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeContract.address, {
+            from: owner,
+        });
+
+        // Set up Protocol Fee Collector
+        protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
+            artifacts.TestProtocolFeeCollector,
             env.provider,
             env.txDefaults,
             {},
-            new BigNumber(chainId),
+            wethContract.address,
+            erc20Proxy.address,
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
-        await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
-
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
-            from: owner,
-        });
-        await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
+        await exchangeContract.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER);
+        await exchangeContract.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(
+            protocolFeeCollector.address,
+        );
+        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(protocolFeeCollector.address, {
             from: owner,
         });
 
+        // Set defaults
         defaultMakerAssetAddress = erc20Token.address;
-        const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             makerAddress,
             feeRecipientAddress: orderFeeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerAssetAmount: Web3Wrapper.toBaseUnitAmount(200, DECIMALS_DEFAULT),
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, DECIMALS_DEFAULT),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
-            exchangeAddress: exchangeInstance.address,
+            exchangeAddress: exchangeContract.address,
             chainId,
         };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
 
+        // Set up Forwarder
         forwarderContract = await ForwarderContract.deployFrom0xArtifactAsync(
             artifacts.Forwarder,
             env.provider,
             env.txDefaults,
             {},
-            exchangeInstance.address,
+            exchangeContract.address,
             wethAssetData,
         );
         forwarderWrapper = new ForwarderWrapper(forwarderContract, env.provider);
-
         await forwarderWrapper.approveMakerAssetProxyAsync(defaultOrderParams.makerAssetData, { from: takerAddress });
         erc20Wrapper.addTokenOwnerAddress(forwarderContract.address);
 
+        // Set up factories
+        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         forwarderTestFactory = new ForwarderTestFactory(
             exchangeWrapper,
             forwarderWrapper,
@@ -146,16 +165,18 @@ blockchainTests(ContractName.Forwarder, env => {
             forwarderContract.address,
             makerAddress,
             takerAddress,
+            protocolFeeCollector.address,
             orderFeeRecipientAddress,
             forwarderFeeRecipientAddress,
             weth.address,
-            gasPrice,
+            GAS_PRICE,
+            PROTOCOL_FEE_MULTIPLIER,
         );
     });
 
     blockchainTests.resets('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
-            const exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
+            const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
                 exchangeArtifacts.Exchange,
                 env.provider,
                 env.txDefaults,
@@ -168,7 +189,7 @@ blockchainTests(ContractName.Forwarder, env => {
                 env.provider,
                 env.txDefaults,
                 {},
-                exchangeInstance.address,
+                exchange.address,
                 wethAssetData,
             ) as any) as sendTransactionResult;
 
@@ -223,7 +244,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             // Execute test case
-            tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
+            const tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
                 value: ethValue,
                 from: takerAddress,
             });
@@ -231,7 +252,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
-            const totalEthSpent = gasPrice.times(tx.gasUsed);
+            const totalEthSpent = GAS_PRICE.times(tx.gasUsed);
 
             // Validate test case
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
@@ -273,15 +294,15 @@ blockchainTests(ContractName.Forwarder, env => {
         });
         it('should refund remaining ETH if amount is greater than takerAssetAmount', async () => {
             const order = await orderFactory.newSignedOrderAsync();
-            const ethValue = order.takerAssetAmount.plus(2);
+            const ethValue = order.takerAssetAmount.plus(PROTOCOL_FEE).plus(2);
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
-            tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
+            const tx = await forwarderWrapper.marketSellOrdersWithEthAsync([order], {
                 value: ethValue,
                 from: takerAddress,
             });
             const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
-            const totalEthSpent = order.takerAssetAmount.plus(gasPrice.times(tx.gasUsed));
+            const totalEthSpent = order.takerAssetAmount.plus(PROTOCOL_FEE).plus(GAS_PRICE.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
@@ -527,7 +548,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const fillableOrder = await orderFactory.newSignedOrderAsync();
             await forwarderTestFactory.marketBuyTestAsync([cancelledOrder, fillableOrder], 1.5, erc20Token);
         });
-        it('Should buy slightly greater MakerAsset when exchange rate is rounded', async () => {
+        it('Should buy slightly greater makerAsset when exchange rate is rounded', async () => {
             // The 0x Protocol contracts round the exchange rate in favor of the Maker.
             // In this case, the taker must round up how much they're going to spend, which
             // in turn increases the amount of MakerAsset being purchased.
@@ -553,13 +574,14 @@ blockchainTests(ContractName.Forwarder, env => {
             });
             const desiredMakerAssetFillAmount = new BigNumber('5');
             const makerAssetFillAmount = new BigNumber('6');
-            const ethValue = new BigNumber('4');
+            const primaryTakerAssetFillAmount = new BigNumber('4');
+            const ethValue = primaryTakerAssetFillAmount.plus(PROTOCOL_FEE);
 
             const erc20Balances = await erc20Wrapper.getBalancesAsync();
             const takerEthBalanceBefore = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
 
             // Execute test case
-            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync([order], desiredMakerAssetFillAmount, {
+            const tx = await forwarderWrapper.marketBuyOrdersWithEthAsync([order], desiredMakerAssetFillAmount, {
                 value: ethValue,
                 from: takerAddress,
             });
@@ -567,8 +589,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const takerEthBalanceAfter = await env.web3Wrapper.getBalanceInWeiAsync(takerAddress);
             const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
-            const primaryTakerAssetFillAmount = ethValue;
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            const totalEthSpent = ethValue.plus(GAS_PRICE.times(tx.gasUsed));
             // Validate test case
             expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
@@ -588,6 +609,8 @@ blockchainTests(ContractName.Forwarder, env => {
             expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('Should buy slightly greater MakerAsset when exchange rate is rounded (Regression Test)', async () => {
+            // Disable protocol fees for regression test
+            await exchangeContract.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(constants.NULL_ADDRESS);
             // Order taken from a transaction on mainnet that failed due to a rounding error.
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber('268166666666666666666'),
@@ -608,7 +631,7 @@ blockchainTests(ContractName.Forwarder, env => {
                 .times(order.makerAssetAmount)
                 .dividedToIntegerBy(order.takerAssetAmount);
             // Execute test case
-            tx = await forwarderWrapper.marketBuyOrdersWithEthAsync([order], desiredMakerAssetFillAmount, {
+            const tx = await forwarderWrapper.marketBuyOrdersWithEthAsync([order], desiredMakerAssetFillAmount, {
                 value: ethValue,
                 from: takerAddress,
             });
@@ -617,7 +640,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const forwarderEthBalance = await env.web3Wrapper.getBalanceInWeiAsync(forwarderContract.address);
             const newBalances = await erc20Wrapper.getBalancesAsync();
             const primaryTakerAssetFillAmount = ethValue;
-            const totalEthSpent = primaryTakerAssetFillAmount.plus(gasPrice.times(tx.gasUsed));
+            const totalEthSpent = primaryTakerAssetFillAmount.plus(GAS_PRICE.times(tx.gasUsed));
             // Validate test case
             expect(makerAssetFillAmount).to.be.bignumber.greaterThan(desiredMakerAssetFillAmount);
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
@@ -661,7 +684,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const order = await orderFactory.newSignedOrderAsync();
             const forwarderFeePercentage = new BigNumber(2);
             const ethFee = ForwarderTestFactory.getPercentageOfValue(
-                order.takerAssetAmount.times(0.5),
+                order.takerAssetAmount.times(0.5).plus(PROTOCOL_FEE),
                 forwarderFeePercentage,
             );
 
