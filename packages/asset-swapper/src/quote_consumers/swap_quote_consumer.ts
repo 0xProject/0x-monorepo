@@ -6,7 +6,8 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ConsumerType,
+    ExtensionContractType,
+    GetExtensionContractTypeOpts,
     SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
@@ -25,9 +26,9 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
-    private readonly _contractWrappers: ContractWrappers;
     private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
+    private readonly _contractWrappers: ContractWrappers;
 
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -36,12 +37,12 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
         this.networkId = networkId;
-        this._contractWrappers = new ContractWrappers(this.provider, {
-            networkId,
-        });
 
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
+        this._contractWrappers = new ContractWrappers(this.provider, {
+            networkId,
+        });
     }
 
     /**
@@ -54,7 +55,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this._getConsumerForSwapQuoteAsync(opts);
         return consumer.getCalldataOrThrowAsync(quote, opts);
     }
 
@@ -68,7 +69,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<SmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this._getConsumerForSwapQuoteAsync(opts);
         return consumer.getSmartContractParamsOrThrowAsync(quote, opts);
     }
 
@@ -82,25 +83,26 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         opts: Partial<SwapQuoteExecutionOpts> = {},
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this._getConsumerForSwapQuoteAsync(opts);
         return consumer.executeSwapQuoteOrThrowAsync(quote, opts);
     }
 
-    private async _getConsumerForSwapQuoteAsync(
+    public async getOptimalExtensionContractTypeAsync(
         quote: SwapQuote,
+        opts: Partial<GetExtensionContractTypeOpts> = {},
+    ): Promise<ExtensionContractType> {
+        return swapQuoteConsumerUtils.getExtensionContractTypeForSwapQuoteAsync(
+            quote,
+            this._contractWrappers,
+            this.provider,
+            opts,
+        );
+    }
+
+    private async _getConsumerForSwapQuoteAsync(
         opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
-        const useConsumerType =
-            opts.useConsumerType ||
-            (await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
-                quote,
-                this._contractWrappers,
-                this.provider,
-                opts,
-            ));
-        if (useConsumerType === ConsumerType.Exchange) {
-            return this._exchangeConsumer;
-        } else if (useConsumerType === ConsumerType.Forwarder) {
+        if (opts.useExtensionContract === ExtensionContractType.Forwarder) {
             return this._forwarderConsumer;
         }
         return this._exchangeConsumer;
