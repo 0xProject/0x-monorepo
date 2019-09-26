@@ -14,8 +14,11 @@ export const orderResponse = {
         salt: new BigNumber('1532559225'),
         makerAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
         takerAssetData: '0x0257179264389b814a946f3e92105513705ca6b990',
+        makerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+        takerFeeAssetData: '0x0257179264389b814a946f3e92105513705ca6b990',
         exchangeAddress: '0x12459c951127e0c374ff9105dda097662a027093',
         signature: '0x012761a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc33',
+        chainId: 1,
     },
     metaData: {},
 };
