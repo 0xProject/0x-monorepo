@@ -1,6 +1,6 @@
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { crypto } from '@0x/order-utils/lib/src/crypto';
-import { SignedOrder } from '@0x/types';
+import { Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -30,11 +30,14 @@ export const orderUtils = {
         };
         return cancel;
     },
+    createOrderWithoutSignature(signedOrder: SignedOrder): Order {
+        return _.omit(signedOrder, ['signature']) as Order;
+    },
     createBatchMatchOrders(signedOrdersLeft: SignedOrder[], signedOrdersRight: SignedOrder[]): BatchMatchOrder {
         return {
-            leftOrders: signedOrdersLeft.map(order => order),
+            leftOrders: signedOrdersLeft.map(order => orderUtils.createOrderWithoutSignature(order)),
             rightOrders: signedOrdersRight.map(order => {
-                const right = order;
+                const right = orderUtils.createOrderWithoutSignature(order);
                 right.makerAssetData = constants.NULL_BYTES;
                 right.takerAssetData = constants.NULL_BYTES;
                 return right;
@@ -45,8 +48,8 @@ export const orderUtils = {
     },
     createMatchOrders(signedOrderLeft: SignedOrder, signedOrderRight: SignedOrder): MatchOrder {
         const fill = {
-            left: signedOrderLeft,
-            right: signedOrderRight,
+            left: orderUtils.createOrderWithoutSignature(signedOrderLeft),
+            right: orderUtils.createOrderWithoutSignature(signedOrderRight),
             leftSignature: signedOrderLeft.signature,
             rightSignature: signedOrderRight.signature,
         };

@@ -63,6 +63,8 @@ export const eip712Utils = {
             chainId: order.chainId,
             verifyingContract: order.exchangeAddress,
         };
+        // Since we are passing in the EXCHANGE_ORDER_SCHEMA
+        // order paramaters that are not in there get ignored
         const typedData = eip712Utils.createTypedData(
             constants.EXCHANGE_ORDER_SCHEMA.name,
             { Order: constants.EXCHANGE_ORDER_SCHEMA.parameters },
