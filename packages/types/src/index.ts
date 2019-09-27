@@ -428,6 +428,8 @@ export interface OrdersRequestOpts {
     senderAddress?: string;
     makerAssetData?: string;
     takerAssetData?: string;
+    makerFeeAssetData?: string;
+    takerFeeAssetData?: string;
     makerAddress?: string;
     takerAddress?: string;
     traderAddress?: string;
@@ -467,6 +469,8 @@ export interface OrderConfigResponse {
     takerFee: BigNumber;
     feeRecipientAddress: string;
     senderAddress: string;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export type FeeRecipientsResponse = PaginatedCollection<string>;
