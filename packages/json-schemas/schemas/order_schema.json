@@ -1,21 +1,54 @@
 {
     "id": "/orderSchema",
     "properties": {
-        "makerAddress": { "$ref": "/addressSchema" },
-        "takerAddress": { "$ref": "/addressSchema" },
-        "makerFee": { "$ref": "/wholeNumberSchema" },
-        "takerFee": { "$ref": "/wholeNumberSchema" },
-        "senderAddress": { "$ref": "/addressSchema" },
-        "makerAssetAmount": { "$ref": "/wholeNumberSchema" },
-        "takerAssetAmount": { "$ref": "/wholeNumberSchema" },
-        "makerAssetData": { "$ref": "/hexSchema" },
-        "takerAssetData": { "$ref": "/hexSchema" },
-        "makerFeeAssetData": { "$ref": "/hexSchema" },
-        "takerFeeAssetData": { "$ref": "/hexSchema" },
-        "salt": { "$ref": "/wholeNumberSchema" },
-        "feeRecipientAddress": { "$ref": "/addressSchema" },
-        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" },
-        "domain": { "$ref": "/eip712DomainSchema" }
+        "makerAddress": {
+            "$ref": "/addressSchema"
+        },
+        "takerAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "takerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "senderAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerAssetAmount": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "takerAssetAmount": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "makerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "makerFeeAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerFeeAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "salt": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "feeRecipientAddress": {
+            "$ref": "/addressSchema"
+        },
+        "expirationTimeSeconds": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "chainId": {
+            "type": "number"
+        },
+        "exchangeAddress": {
+            "$ref": "/addressSchema"
+        }
     },
     "required": [
         "makerAddress",
@@ -32,7 +65,8 @@
         "salt",
         "feeRecipientAddress",
         "expirationTimeSeconds",
-        "domain"
+        "chainId",
+        "exchangeAddress"
     ],
     "type": "object"
 }

@@ -111,10 +111,8 @@ describe('Coordinator tests', () => {
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
-            domain: {
-                verifyingContract: exchange.address,
-                chainId,
-            },
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         const takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];

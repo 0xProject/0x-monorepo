@@ -6,7 +6,7 @@ import {
     txDefaults as testTxDefaults,
 } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { FillResults, OrderInfo, OrderWithoutDomain, SignatureType } from '@0x/types';
+import { FillResults, Order, OrderInfo, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
@@ -28,7 +28,7 @@ export interface IsolatedExchangeEvents {
     transferFromCalls: DispatchTransferFromCallArgs[];
 }
 
-export type Order = OrderWithoutDomain;
+export type Order = Order;
 export type Numberish = string | number | BigNumber;
 
 export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();
@@ -101,11 +101,11 @@ export class IsolatedExchangeWrapper {
     }
 
     public getOrderHash(order: Order): string {
-        const domain = {
-            verifyingContract: this.instance.address,
+        const domainInfo = {
+            exchangeAddress: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
         };
-        return orderHashUtils.getOrderHashHex({ ...order, domain });
+        return orderHashUtils.getOrderHashHex({ ...order, ...domainInfo });
     }
 
     public async getOrderInfoAsync(order: Order): Promise<OrderInfo> {

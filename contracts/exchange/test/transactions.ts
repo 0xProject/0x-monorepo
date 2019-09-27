@@ -11,7 +11,7 @@ import {
     TransactionFactory,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
-import { EIP712DomainWithDefaultSchema, FillResults, OrderStatus } from '@0x/types';
+import { FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -51,7 +51,6 @@ blockchainTests.resets('Exchange transactions', env => {
     let exchangeInstance: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
 
-    let domain: EIP712DomainWithDefaultSchema;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
     let takerTransactionFactory: TransactionFactory;
@@ -107,11 +106,6 @@ blockchainTests.resets('Exchange transactions', env => {
         defaultMakerFeeTokenAddress = makerFeeToken.address;
         defaultTakerFeeTokenAddress = takerFeeToken.address;
 
-        domain = {
-            verifyingContract: exchangeInstance.address,
-            chainId,
-        };
-
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
@@ -120,7 +114,8 @@ blockchainTests.resets('Exchange transactions', env => {
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerFeeTokenAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerFeeTokenAddress),
-            domain,
+            exchangeAddress: exchangeInstance.address,
+            chainId,
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];

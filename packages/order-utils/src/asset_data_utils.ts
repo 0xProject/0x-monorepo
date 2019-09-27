@@ -296,7 +296,7 @@ export const assetDataUtils = {
             throw new Error(
                 `Could not decode assetData. Expected length of encoded data to be at least 10. Got ${
                     assetData.length
-                }`,
+                } for assetData ${assetData}`,
             );
         }
         const assetProxyId = assetData.slice(0, constants.SELECTOR_CHAR_LENGTH_WITH_PREFIX);

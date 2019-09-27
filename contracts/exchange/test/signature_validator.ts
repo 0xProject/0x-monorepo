@@ -435,10 +435,8 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 takerFeeAssetData: assetDataUtils.encodeERC20AssetData(randomAddress()),
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
-                domain: {
-                    verifyingContract: signatureValidator.address,
-                    chainId,
-                },
+                exchangeAddress: signatureValidator.address,
+                chainId,
             };
             orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
         });

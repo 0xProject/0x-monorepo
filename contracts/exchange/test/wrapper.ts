@@ -97,10 +97,8 @@ blockchainTests.resets('Exchange wrappers', env => {
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
-            domain: {
-                verifyingContract: exchange.address,
-                chainId,
-            },
+            exchangeAddress: exchange.address,
+            chainId,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

@@ -1,7 +1,7 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, hexRandom, LogDecoder } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
-import { Order, OrderWithoutDomain } from '@0x/types';
+import { Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -56,10 +56,8 @@ blockchainTests('Exchange core internal functions', env => {
             salt: new BigNumber(_.random(0, 1e8)),
             feeRecipientAddress: randomAddress(),
             expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
-            domain: {
-                verifyingContract: constants.NULL_ADDRESS,
-                chainId: 1337, // The chain id for the isolated exchange
-            },
+            exchangeAddress: constants.NULL_ADDRESS,
+            chainId: 1337, // The chain id for the isolated exchange
         };
 
         function makeOrder(details?: Partial<Order>): Order {
@@ -67,7 +65,7 @@ blockchainTests('Exchange core internal functions', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContract = testExchange.address;
+            ORDER_DEFAULTS.exchangeAddress = testExchange.address;
         });
 
         it('should revert if the maker asset multiplication should overflow', async () => {
@@ -160,14 +158,16 @@ blockchainTests('Exchange core internal functions', env => {
             salt: new BigNumber(_.random(0, 1e8)),
             feeRecipientAddress: randomAddress(),
             expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
+            chainId: 1337,
+            exchangeAddress: constants.NULL_ADDRESS,
         };
 
-        function makeOrder(details?: Partial<OrderWithoutDomain>): OrderWithoutDomain {
+        function makeOrder(details?: Partial<Order>): Order {
             return _.assign({}, ORDER_DEFAULTS, details);
         }
 
         async function testUpdateFilledStateAsync(
-            order: OrderWithoutDomain,
+            order: Order,
             orderTakerAssetFilledAmount: BigNumber,
             takerAddress: string,
             takerAssetFillAmount: BigNumber,

@@ -39,8 +39,8 @@ describe('ABI Decoding Calldata', () => {
         const [privateKeyLeft, privateKeyRight] = constants.TESTRPC_PRIVATE_KEYS;
         const exchangeAddress = addressUtils.generatePseudoRandomAddress();
         const feeRecipientAddress = addressUtils.generatePseudoRandomAddress();
-        const domain = {
-            verifyingContract: exchangeAddress,
+        const domainInfo = {
+            exchangeAddress,
             chainId,
         };
         // Create orders to match.
@@ -78,9 +78,9 @@ describe('ABI Decoding Calldata', () => {
             salt: new BigNumber(50010),
         };
         const orderFactoryLeft = new OrderFactory(privateKeyLeft, orderLeft);
-        signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({ domain });
+        signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync(domainInfo);
         const orderFactoryRight = new OrderFactory(privateKeyRight, orderRight);
-        signedOrderRight = await orderFactoryRight.newSignedOrderAsync({ domain });
+        signedOrderRight = await orderFactoryRight.newSignedOrderAsync(domainInfo);
         // Encode match orders transaction
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();

@@ -10,12 +10,15 @@ describe('Utils', () => {
             takerAddress: '0x0000000000000000000000000000000000000000',
             takerAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
             takerAssetAmount: '1000000000000000061',
+            makerFeeAssetData: '0xf47261b00000000000000000000000000f5d2fb29fb7d3cfee444a200298f468908cc942',
+            takerFeeAssetData: '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
             takerFee: '0',
             senderAddress: '0x0000000000000000000000000000000000000000',
             exchangeAddress: '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
             feeRecipientAddress: '0xa258b39954cef5cb142fd567a46cddb31a670124',
             expirationTimeSeconds: '1559422407',
             salt: '1559422141994',
+            chainId: 1,
             signature:
                 '0x1cf16c2f3a210965b5e17f51b57b869ba4ddda33df92b0017b4d8da9dacd3152b122a73844eaf50ccde29a42950239ba36a525ed7f1698a8a5e1896cf7d651aed203',
         };
@@ -23,7 +26,7 @@ describe('Utils', () => {
             const orderHash = utils.getOrderHash(order as any);
             const calculatedOrderHash = utils.getOrderHash({ order: order as any, metaData: {} });
             expect(orderHash).toBe(calculatedOrderHash);
-            expect(orderHash).toBe('0x96e6eb6174dbf0458686bdae44c9a330d9a9eb563962512a7be545c4ecc13fd4');
+            expect(orderHash).toBe('0x5a0f346c671a39b832a487d2d7eb63ca19301554cf1f8a98a19d478a3a8be32c');
         });
     });
     describe('.attemptAsync', () => {

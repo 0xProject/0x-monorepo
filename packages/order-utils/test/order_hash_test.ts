@@ -32,10 +32,8 @@ describe('Order hashing', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
-            domain: {
-                verifyingContract: fakeExchangeContractAddress,
-                chainId: fakeChainID,
-            },
+            exchangeAddress: fakeExchangeContractAddress,
+            chainId: fakeChainID,
         };
         it('calculates the order hash', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(order);

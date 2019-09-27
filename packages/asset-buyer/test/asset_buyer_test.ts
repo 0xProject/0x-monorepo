@@ -102,14 +102,17 @@ describe('AssetBuyer', () => {
 
         // TODO (xianny): needs to be updated to new SignedOrder interface
         describe('assetData is supported', () => {
+            const chainId = 1;
             // orders
             const sellTwoTokensFor1Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: baseUnitAmount(2),
                 takerAssetAmount: baseUnitAmount(1, WETH_DECIMALS),
+                chainId,
             });
             const sellTenTokensFor10Weth: SignedOrder = orderFactory.createSignedOrderFromPartial({
                 makerAssetAmount: baseUnitAmount(10),
                 takerAssetAmount: baseUnitAmount(10, WETH_DECIMALS),
+                chainId,
             });
 
             beforeEach(() => {

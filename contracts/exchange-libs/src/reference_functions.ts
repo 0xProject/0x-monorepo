@@ -1,6 +1,6 @@
 import { ReferenceFunctions } from '@0x/contracts-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { FillResults, OrderWithoutDomain } from '@0x/types';
+import { FillResults, Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
@@ -94,7 +94,7 @@ export function addFillResults(a: FillResults, b: FillResults): FillResults {
  * Calculates amounts filled and fees paid by maker and taker.
  */
 export function calculateFillResults(
-    order: OrderWithoutDomain,
+    order: Order,
     takerAssetFilledAmount: BigNumber,
     protocolFeeMultiplier: BigNumber,
     gasPrice: BigNumber,

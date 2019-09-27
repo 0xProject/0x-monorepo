@@ -120,10 +120,8 @@ blockchainTests(ContractName.Forwarder, env => {
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
-            domain: {
-                verifyingContract: exchangeInstance.address,
-                chainId,
-            },
+            exchangeAddress: exchangeInstance.address,
+            chainId,
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);

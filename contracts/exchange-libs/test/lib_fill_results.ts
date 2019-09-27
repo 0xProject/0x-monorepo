@@ -8,7 +8,7 @@ import {
     uint256Values,
 } from '@0x/contracts-test-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { FillResults, MatchedFillResults, OrderWithoutDomain as Order } from '@0x/types';
+import { FillResults, MatchedFillResults, Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -39,6 +39,8 @@ blockchainTests('LibFillResults', env => {
         salt: constants.ZERO_AMOUNT,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
+        chainId: 1,
+        exchangeAddress: constants.NULL_ADDRESS,
     };
 
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
@@ -536,10 +538,8 @@ blockchainTests('LibFillResults', env => {
             feeRecipientAddress: randomAddress(),
             expirationTimeSeconds: randomUint256(),
             salt: randomUint256(),
-            domain: {
-                verifyingContract: constants.NULL_ADDRESS,
-                chainId: 1337, // The chain id for the isolated exchange
-            },
+            exchangeAddress: constants.NULL_ADDRESS,
+            chainId: 1337, // The chain id for the isolated exchange
         };
 
         function makeOrder(details?: Partial<Order>): Order {
@@ -547,7 +547,7 @@ blockchainTests('LibFillResults', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContract = libsContract.address;
+            ORDER_DEFAULTS.exchangeAddress = libsContract.address;
         });
 
         it('should correctly calculate the results when only the right order is fully filled', async () => {
@@ -1209,10 +1209,8 @@ blockchainTests('LibFillResults', env => {
             feeRecipientAddress: randomAddress(),
             expirationTimeSeconds: randomUint256(),
             salt: randomUint256(),
-            domain: {
-                verifyingContract: constants.NULL_ADDRESS,
-                chainId: 1337, // The chain id for the isolated exchange
-            },
+            exchangeAddress: constants.NULL_ADDRESS,
+            chainId: 1337, // The chain id for the isolated exchange
         };
 
         function makeOrder(details?: Partial<Order>): Order {
@@ -1220,7 +1218,7 @@ blockchainTests('LibFillResults', env => {
         }
 
         before(async () => {
-            ORDER_DEFAULTS.domain.verifyingContract = libsContract.address;
+            ORDER_DEFAULTS.exchangeAddress = libsContract.address;
         });
 
         it('should transfer correct amounts when right order is fully filled', async () => {

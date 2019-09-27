@@ -219,10 +219,8 @@ describe('Schema', () => {
             salt: '67006738228878699843088602623665307406148487219438534730168799356281242528500',
             feeRecipientAddress: NULL_ADDRESS,
             expirationTimeSeconds: '42',
-            domain: {
-                verifyingContract: NULL_ADDRESS,
-                chainId: CHAIN_ID,
-            },
+            exchangeAddress: NULL_ADDRESS,
+            chainId: CHAIN_ID,
         };
         const relayerApiOrder = {
             order,

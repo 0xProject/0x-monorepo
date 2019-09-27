@@ -163,10 +163,8 @@ describe(ContractName.DutchAuction, () => {
             expirationTimeSeconds: auctionEndTimeSeconds,
             makerFee: constants.ZERO_AMOUNT,
             takerFee: constants.ZERO_AMOUNT,
-            domain: {
-                verifyingContract: exchangeInstance.address,
-                chainId,
-            },
+            exchangeAddress: exchangeInstance.address,
+            chainId,
         };
         // Default buy order is for the auction begin price
         const buyerDefaultOrderParams = {

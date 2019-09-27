@@ -12,7 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { transactionHashUtils } from '@0x/order-utils';
-import { EIP712DomainWithDefaultSchema, RevertReason, SignatureType, SignedOrder } from '@0x/types';
+import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, LibBytesRevertErrors, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
@@ -34,7 +34,6 @@ describe('Mixins tests', () => {
     let approvalFactory2: ApprovalFactory;
     let defaultOrder: SignedOrder;
     const exchangeAddress = randomAddress();
-    let exchangeDomain: EIP712DomainWithDefaultSchema;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -54,10 +53,6 @@ describe('Mixins tests', () => {
         );
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts.slice(0, 3);
-        exchangeDomain = {
-            verifyingContract: constants.NULL_ADDRESS,
-            chainId,
-        };
         defaultOrder = {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
@@ -74,7 +69,8 @@ describe('Mixins tests', () => {
             expirationTimeSeconds: constants.ZERO_AMOUNT,
             salt: constants.ZERO_AMOUNT,
             signature: constants.NULL_BYTES,
-            domain: exchangeDomain,
+            exchangeAddress: constants.NULL_ADDRESS,
+            chainId,
         };
         const transactionSignerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(transactionSignerAddress)];
         const approvalSignerPrivateKey1 = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(approvalSignerAddress1)];
@@ -152,7 +148,8 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     signature: constants.NULL_BYTES,
-                    domain: exchangeDomain,
+                    exchangeAddress: constants.NULL_ADDRESS,
+                    chainId,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
@@ -165,7 +162,8 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     signature: constants.NULL_BYTES,
-                    domain: exchangeDomain,
+                    exchangeAddress: constants.NULL_ADDRESS,
+                    chainId,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
@@ -178,7 +176,8 @@ describe('Mixins tests', () => {
                 const decodedSignedOrders = decodedOrders.map(order => ({
                     ...order,
                     signature: constants.NULL_BYTES,
-                    domain: exchangeDomain,
+                    exchangeAddress: constants.NULL_ADDRESS,
+                    chainId,
                 }));
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });

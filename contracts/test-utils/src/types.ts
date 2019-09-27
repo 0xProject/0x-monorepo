@@ -1,4 +1,4 @@
-import { OrderWithoutDomain } from '@0x/types';
+import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { AbiDefinition } from 'ethereum-types';
 
@@ -42,25 +42,25 @@ export interface SubmissionContractEventArgs {
 }
 
 export interface BatchFillOrders {
-    orders: OrderWithoutDomain[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmounts: BigNumber[];
 }
 
 export interface MarketSellOrders {
-    orders: OrderWithoutDomain[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmount: BigNumber;
 }
 
 export interface MarketBuyOrders {
-    orders: OrderWithoutDomain[];
+    orders: Order[];
     signatures: string[];
     makerAssetFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
-    orders: OrderWithoutDomain[];
+    orders: Order[];
 }
 
 export interface CancelOrdersBefore {
@@ -120,20 +120,20 @@ export enum ContractName {
 }
 
 export interface CancelOrder {
-    order: OrderWithoutDomain;
+    order: Order;
     takerAssetCancelAmount: BigNumber;
 }
 
 export interface BatchMatchOrder {
-    leftOrders: OrderWithoutDomain[];
-    rightOrders: OrderWithoutDomain[];
+    leftOrders: Order[];
+    rightOrders: Order[];
     leftSignatures: string[];
     rightSignatures: string[];
 }
 
 export interface MatchOrder {
-    left: OrderWithoutDomain;
-    right: OrderWithoutDomain;
+    left: Order;
+    right: Order;
     leftSignature: string;
     rightSignature: string;
 }

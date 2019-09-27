@@ -36,6 +36,8 @@ blockchainTests('Isolated fillOrder() tests', env => {
         takerAssetData: createGoodAssetData(),
         makerFeeAssetData: createGoodAssetData(),
         takerFeeAssetData: createGoodAssetData(),
+        exchangeAddress: constants.NULL_ADDRESS,
+        chainId: 1,
     };
     const DEFAULT_GAS_PRICE = new BigNumber(20000);
     const DEFAULT_PROTOCOL_FEE_MULTIPLIER = new BigNumber(15000);

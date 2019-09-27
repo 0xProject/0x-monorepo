@@ -1,7 +1,7 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { constants, describe, expect } from '@0x/contracts-test-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { OrderWithoutDomain as Order } from '@0x/types';
+import { Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -24,6 +24,8 @@ describe('Reference functions', () => {
         salt: constants.ZERO_AMOUNT,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
+        chainId: 1,
+        exchangeAddress: constants.NULL_ADDRESS,
     };
 
     describe('calculateFillResults', () => {

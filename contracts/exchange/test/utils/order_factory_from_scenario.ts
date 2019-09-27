@@ -430,10 +430,8 @@ export class OrderFactoryFromScenario {
             salt: generatePseudoRandomSalt(),
             feeRecipientAddress,
             expirationTimeSeconds,
-            domain: {
-                verifyingContract: this._exchangeAddress,
-                chainId: this._chainId,
-            },
+            exchangeAddress: this._exchangeAddress,
+            chainId: this._chainId,
         };
 
         return order;

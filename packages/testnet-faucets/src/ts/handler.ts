@@ -182,10 +182,8 @@ export class Handler {
                 // tslint:disable-next-line:custom-no-magic-numbers
                 .div(1000)
                 .integerValue(BigNumber.ROUND_FLOOR),
-            domain: {
-                verifyingContract: networkConfig.contractWrappers.exchange.address,
-                chainId: networkConfig.networkId,
-            },
+            exchangeAddress: networkConfig.contractWrappers.exchange.address,
+            chainId: networkConfig.networkId,
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);
         const signature = await signatureUtils.ecSignHashAsync(
