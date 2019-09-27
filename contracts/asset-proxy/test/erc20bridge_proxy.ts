@@ -244,8 +244,6 @@ blockchainTests.resets.only('ERC20BridgeProxy unit tests', env => {
                     }),
                 }),
             });
-            // This will actually revert when the AP tries to decode the return
-            // value.
             return expect(tx).to.revertWith(revertError);
         });
 
@@ -259,8 +257,6 @@ blockchainTests.resets.only('ERC20BridgeProxy unit tests', env => {
                     }),
                 }),
             });
-            // This will actually revert when the AP tries to decode the return
-            // value.
             return expect(tx).to.revertWith('BRIDGE_UNDERPAY');
         });
 
@@ -275,8 +271,6 @@ blockchainTests.resets.only('ERC20BridgeProxy unit tests', env => {
                     }),
                 }),
             });
-            // This will actually revert when the AP tries to decode the return
-            // value.
             return expect(tx).to.revertWith('BRIDGE_UNDERPAY');
         });
     });
