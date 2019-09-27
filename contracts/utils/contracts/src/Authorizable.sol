@@ -151,6 +151,6 @@ contract Authorizable is
         delete authorized[target];
         authorities[index] = authorities[authorities.length - 1];
         authorities.length -= 1;
-        emit AuthorizedAddressRemoved(target, msg.sender);        
+        emit AuthorizedAddressRemoved(target, msg.sender);
     }
 }
