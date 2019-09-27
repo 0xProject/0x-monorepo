@@ -59,6 +59,13 @@ export interface EndOfEpochInfo {
     totalWeightedStake: BigNumber;
 }
 
+export interface StoredBalance {
+    isInitialized: boolean;
+    currentEpoch: number | BigNumber;
+    currentEpochBalance: BigNumber;
+    nextEpochBalance: BigNumber;
+}
+
 export interface StakeBalance {
     currentEpochBalance: BigNumber;
     nextEpochBalance: BigNumber;
