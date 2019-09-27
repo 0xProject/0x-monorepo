@@ -51,7 +51,7 @@ blockchainTests('LibOrder', env => {
         const domainHash = ethUtil.bufferToHex(
             signTypedDataUtils.generateDomainHash({
                 chainId: order.chainId,
-                exchangeAddress: order.exchangeAddress,
+                verifyingContract: order.exchangeAddress,
                 name: constants.EIP712_DOMAIN_NAME,
                 version: constants.EIP712_DOMAIN_VERSION,
             }),
@@ -93,14 +93,14 @@ blockchainTests('LibOrder', env => {
             const domainHash1 = ethUtil.bufferToHex(
                 signTypedDataUtils.generateDomainHash({
                     chainId: EMPTY_ORDER.chainId,
-                    exchangeAddress: EMPTY_ORDER.exchangeAddress,
+                    verifyingContract: EMPTY_ORDER.exchangeAddress,
                     name: constants.EIP712_DOMAIN_NAME,
                     version: constants.EIP712_DOMAIN_VERSION,
                 }),
             );
             const domainHash2 = ethUtil.bufferToHex(
                 signTypedDataUtils.generateDomainHash({
-                    exchangeAddress: EMPTY_ORDER.exchangeAddress,
+                    verifyingContract: EMPTY_ORDER.exchangeAddress,
                     name: constants.EIP712_DOMAIN_NAME,
                     version: constants.EIP712_DOMAIN_VERSION,
                     chainId: 1337,
