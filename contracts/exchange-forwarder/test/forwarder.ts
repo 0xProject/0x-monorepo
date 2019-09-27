@@ -131,6 +131,7 @@ blockchainTests(ContractName.Forwarder, env => {
 
         // Set defaults
         defaultMakerAssetAddress = erc20Token.address;
+        const defaultTakerAssetAddress = wethContract.address;
         const defaultOrderParams = {
             makerAddress,
             feeRecipientAddress: orderFeeRecipientAddress,
@@ -138,6 +139,10 @@ blockchainTests(ContractName.Forwarder, env => {
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, DECIMALS_DEFAULT),
             makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
+            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             exchangeAddress: exchangeContract.address,
             chainId,
         };
