@@ -96,7 +96,7 @@
             },
             {
                 "note": "Add `number_utils.ts` and `hexSize()`",
-                "pr": "TODO"
+                "pr": 2220
             }
         ]
     },

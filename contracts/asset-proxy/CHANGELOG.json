@@ -20,7 +20,7 @@
             },
             {
                 "note": "Add `ERC20BridgeProxy`",
-                "pr": "TODO"
+                "pr": 2220
             }
         ]
     },
