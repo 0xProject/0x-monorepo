@@ -1,18 +1,6 @@
 import {
     APIOrder,
-    AssetPairsItem,
-    AssetPairsRequestOpts,
-    FeeRecipientsResponse,
-    OrderbookRequest,
-    OrderbookResponse,
-    OrderConfigRequest,
-    OrderConfigResponse,
     OrdersChannelSubscriptionOpts,
-    OrdersRequestOpts,
-    PagedRequestOpts,
-    PaginatedCollection,
-    RequestOpts,
-    SignedOrder,
 } from '@0x/types';
 
 export interface OrdersChannel {
