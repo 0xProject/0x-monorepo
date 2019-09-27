@@ -1,6 +1,6 @@
 {
-    "domain": "sra-spec",
-    "build_command": "yarn build-json",
+    "domain": "sra3-spec",
+    "build_command": "yarn build",
     "upload_directory": "public",
     "index_key": "index.html",
     "error_key": "index.html",

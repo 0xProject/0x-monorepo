@@ -112,7 +112,7 @@ describe('HttpClient', () => {
         it('gets orderbook with default page options when none are provided', async () => {
             const urlWithQuery = `${url}?baseAssetData=${request.baseAssetData}&quoteAssetData=${
                 request.quoteAssetData
-                }`;
+            }`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const orderbook = await relayerClient.getOrderbookAsync(request);
             expect(orderbook).to.be.deep.equal(orderbookResponse);
@@ -120,7 +120,7 @@ describe('HttpClient', () => {
         it('gets orderbook with specified page options', async () => {
             const urlWithQuery = `${url}?baseAssetData=${
                 request.baseAssetData
-                }&networkId=42&page=3&perPage=50&quoteAssetData=${request.quoteAssetData}`;
+            }&networkId=42&page=3&perPage=50&quoteAssetData=${request.quoteAssetData}`;
             fetchMock.get(urlWithQuery, orderbookJSON);
             const pagedRequestOptions = {
                 page: 3,
