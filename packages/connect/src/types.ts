@@ -11,20 +11,9 @@ import {
     OrdersRequestOpts,
     PagedRequestOpts,
     PaginatedCollection,
+    RequestOpts,
     SignedOrder,
 } from '@0x/types';
-
-export interface Client {
-    getAssetPairsAsync: (
-        requestOpts?: AssetPairsRequestOpts & PagedRequestOpts,
-    ) => Promise<PaginatedCollection<AssetPairsItem>>;
-    getOrdersAsync: (requestOpts?: OrdersRequestOpts & PagedRequestOpts) => Promise<PaginatedCollection<APIOrder>>;
-    getOrderAsync: (orderHash: string) => Promise<APIOrder>;
-    getOrderbookAsync: (request: OrderbookRequest, requestOpts?: PagedRequestOpts) => Promise<OrderbookResponse>;
-    getOrderConfigAsync: (request: OrderConfigRequest) => Promise<OrderConfigResponse>;
-    getFeeRecipientsAsync: (requestOpts?: PagedRequestOpts) => Promise<FeeRecipientsResponse>;
-    submitOrderAsync: (signedOrder: SignedOrder) => Promise<void>;
-}
 
 export interface OrdersChannel {
     subscribe: (subscriptionOpts: OrdersChannelSubscriptionOpts) => void;
