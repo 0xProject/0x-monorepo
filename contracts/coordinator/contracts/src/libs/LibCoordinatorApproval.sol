@@ -34,7 +34,8 @@ contract LibCoordinatorApproval is
     //     "uint256 approvalExpirationTimeSeconds",
     //     ")"
     // ));
-    bytes32 constant public EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = 0x2fbcdbaa76bc7589916958ae919dfbef04d23f6bbf26de6ff317b32c6cc01e05;
+    bytes32 constant public EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH =
+        0x2fbcdbaa76bc7589916958ae919dfbef04d23f6bbf26de6ff317b32c6cc01e05;
 
     struct CoordinatorApproval {
         address txOrigin;                       // Required signer of Ethereum transaction that is submitting approval.
@@ -43,9 +44,12 @@ contract LibCoordinatorApproval is
         uint256 approvalExpirationTimeSeconds;  // Timestamp in seconds for which the approval expires.
     }
 
-    /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
-    /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
-    /// @return EIP712 hash of the Coordinator approval message with the domain separator of this contract.
+    /// @dev Calculates the EIP712 hash of the Coordinator approval mesasage using the domain
+    ///      separator of this contract.
+    /// @param approval Coordinator approval message containing the transaction hash, transaction
+    ///        signature, and expiration of the approval.
+    /// @return approvalHash EIP712 hash of the Coordinator approval message with the domain
+    ///         separator of this contract.
     function getCoordinatorApprovalHash(CoordinatorApproval memory approval)
         public
         view
@@ -55,9 +59,10 @@ contract LibCoordinatorApproval is
         return approvalHash;
     }
 
-    /// @dev Calculated the EIP712 hash of the Coordinator approval mesasage with no domain separator.
-    /// @param approval Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
-    /// @return EIP712 hash of the Coordinator approval message with no domain separator.
+    /// @dev Calculates the EIP712 hash of the Coordinator approval mesasage with no domain separator.
+    /// @param approval Coordinator approval message containing the transaction hash, transaction
+    //         signature, and expiration of the approval.
+    /// @return result EIP712 hash of the Coordinator approval message with no domain separator.
     function _hashCoordinatorApproval(CoordinatorApproval memory approval)
         internal
         pure
