@@ -20,13 +20,17 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IWallet.sol";
 import "./ERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
 
 
+// solhint-disable space-after-comma
 contract Eth2DaiBridge is
-    ERC20Bridge
+    ERC20Bridge,
+    IWallet
 {
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
     /* Mainnet addresses */
     address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
@@ -38,7 +42,14 @@ contract Eth2DaiBridge is
         _getDaiContract().approve(address(_getEth2DaiContract()), uint256(-1));
     }
 
-    // solhint-disable space-after-comma
+    /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
+    ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
+    ///      (DAI or WETH) to the Eth2Dai contract, then transfers the bought
+    ///      tokens to `to`.
+    /// @param toTokenAddress The token to give to `to` (either DAI or WETH).
+    /// @param to The recipient of the bought tokens.
+    /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
+    /// @return success The magic bytes `0xb5d40d78` if successful.
     function transfer(
         bytes calldata /* bridgeData */,
         address toTokenAddress,
@@ -71,6 +82,19 @@ contract Eth2DaiBridge is
         // Transfer the converted `toToken`s to `to`.
         toToken.transfer(to, boughtAmount);
         return BRIDGE_SUCCESS;
+    }
+
+    /// @dev `SignatureType.Wallet` callback, so that this bridge can be the maker
+    ///      and sign for itself in orders. Always succeeds.
+    function isValidSignature(
+        bytes32,
+        bytes calldata
+    )
+        external
+        view
+        returns (bytes4 magicValue)
+    {
+        return LEGACY_WALLET_MAGIC_VALUE;
     }
 
     /// @dev Overridable way to get the weth contract.
