@@ -4,6 +4,7 @@ import {
     expect,
     filterLogsToArguments,
     getRandomInteger,
+    hexRandom,
     Numberish,
     randomAddress,
     TransactionHelper,
@@ -20,7 +21,7 @@ import {
     TestEth2DaiBridgeTokenTransferEventArgs,
 } from '../src';
 
-blockchainTests.resets('Eth2DaiBridge unit tests', env => {
+blockchainTests.resets.only('Eth2DaiBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestEth2DaiBridgeContract;
     let daiTokenAddress: string;
@@ -44,6 +45,14 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
             const [wethAllowance, daiAllowance] = await testContract.getEth2DaiTokenAllowances.callAsync();
             expect(wethAllowance).to.bignumber.eq(constants.MAX_UINT256);
             expect(daiAllowance).to.bignumber.eq(constants.MAX_UINT256);
+        });
+    });
+
+    describe('isValidSignature()', () => {
+        it('returns success bytes', async () => {
+            const LEGACY_WALLET_MAGIC_VALUE = '0xb0671381';
+            const result = await testContract.isValidSignature.callAsync(hexRandom(), hexRandom(_.random(0, 32)));
+            expect(result).to.eq(LEGACY_WALLET_MAGIC_VALUE);
         });
     });
 
