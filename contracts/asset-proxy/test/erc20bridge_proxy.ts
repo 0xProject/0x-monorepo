@@ -20,7 +20,7 @@ import {
     TestERC20BridgeContract,
 } from '../src';
 
-blockchainTests.resets.only('ERC20BridgeProxy unit tests', env => {
+blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
     const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad('0xb5d40d78');
     let owner: string;
     let badCaller: string;
