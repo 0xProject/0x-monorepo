@@ -21,6 +21,10 @@
             {
                 "note": "Add `ERC20BridgeProxy`",
                 "pr": 2220
+            },
+            {
+                "note": "Add `Eth2DaiBridge`",
+                "pr": "TODO"
             }
         ]
     },
