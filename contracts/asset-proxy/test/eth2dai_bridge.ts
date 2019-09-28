@@ -21,7 +21,7 @@ import {
     TestEth2DaiBridgeTokenTransferEventArgs,
 } from '../src';
 
-blockchainTests.resets('Eth2DaiBridge unit tests', env => {
+blockchainTests.resets.only('Eth2DaiBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestEth2DaiBridgeContract;
     let daiTokenAddress: string;
@@ -131,6 +131,30 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
             expect(transfers[0].buyToken).to.eq(opts.toTokenAddress);
             expect(transfers[0].sellTokenAmount).to.bignumber.eq(opts.fromTokenBalance);
             expect(transfers[0].minimumFillAmount).to.bignumber.eq(opts.amount);
+        });
+
+        it('can swap DAI for WETH', async () => {
+            const opts = createTransferOpts({ toTokenAddress: wethTokenAddress });
+            const [, logs] = await transferAsync(opts);
+            const transfers = filterLogsToArguments<TestEth2DaiBridgeSellAllAmountEventArgs>(
+                logs,
+                TestEth2DaiBridgeEvents.SellAllAmount,
+            );
+            expect(transfers.length).to.eq(1);
+            expect(transfers[0].sellToken).to.eq(daiTokenAddress);
+            expect(transfers[0].buyToken).to.eq(wethTokenAddress);
+        });
+
+        it('can swap WETH for DAI', async () => {
+            const opts = createTransferOpts({ toTokenAddress: daiTokenAddress });
+            const [, logs] = await transferAsync(opts);
+            const transfers = filterLogsToArguments<TestEth2DaiBridgeSellAllAmountEventArgs>(
+                logs,
+                TestEth2DaiBridgeEvents.SellAllAmount,
+            );
+            expect(transfers.length).to.eq(1);
+            expect(transfers[0].sellToken).to.eq(wethTokenAddress);
+            expect(transfers[0].buyToken).to.eq(daiTokenAddress);
         });
 
         it('transfers filled amount to `to`', async () => {
