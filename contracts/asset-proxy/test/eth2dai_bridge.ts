@@ -1,0 +1,147 @@
+import {
+    blockchainTests,
+    constants,
+    expect,
+    filterLogsToArguments,
+    getRandomInteger,
+    Numberish,
+    randomAddress,
+    TransactionHelper,
+} from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
+import { DecodedLogs } from 'ethereum-types';
+import * as _ from 'lodash';
+
+import {
+    artifacts,
+    TestEth2DaiBridgeContract,
+    TestEth2DaiBridgeEvents,
+    TestEth2DaiBridgeSellAllAmountEventArgs,
+    TestEth2DaiBridgeTokenTransferEventArgs,
+} from '../src';
+
+blockchainTests.resets('Eth2DaiBridge unit tests', env => {
+    const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
+    let testContract: TestEth2DaiBridgeContract;
+    let daiTokenAddress: string;
+    let wethTokenAddress: string;
+
+    before(async () => {
+        testContract = await TestEth2DaiBridgeContract.deployFrom0xArtifactAsync(
+            artifacts.TestEth2DaiBridge,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+        );
+        [daiTokenAddress, wethTokenAddress] = await Promise.all([
+            testContract.daiToken.callAsync(),
+            testContract.wethToken.callAsync(),
+        ]);
+    });
+
+    describe('deployment', () => {
+        it('sets Eth2Dai allowances to maximum', async () => {
+            const [wethAllowance, daiAllowance] = await testContract.getEth2DaiTokenAllowances.callAsync();
+            expect(wethAllowance).to.bignumber.eq(constants.MAX_UINT256);
+            expect(daiAllowance).to.bignumber.eq(constants.MAX_UINT256);
+        });
+    });
+
+    describe('transfer()', () => {
+        interface TransferOpts {
+            toTokenAddress: string;
+            toAddress: string;
+            amount: Numberish;
+            fromTokenBalance: Numberish;
+            revertReason: string;
+            fillAmount: Numberish;
+        }
+
+        function createTransferOpts(opts?: Partial<TransferOpts>): TransferOpts {
+            return {
+                toTokenAddress: _.sampleSize([wethTokenAddress, daiTokenAddress], 1)[0],
+                toAddress: randomAddress(),
+                amount: getRandomInteger(1, 100e18),
+                revertReason: '',
+                fillAmount: getRandomInteger(1, 100e18),
+                fromTokenBalance: getRandomInteger(1, 100e18),
+                ...opts,
+            };
+        }
+
+        async function transferAsync(opts?: Partial<TransferOpts>): Promise<[string, DecodedLogs]> {
+            const _opts = createTransferOpts(opts);
+            // Set the fill behavior.
+            await testContract.setFillBehavior.awaitTransactionSuccessAsync(
+                _opts.revertReason,
+                new BigNumber(_opts.fillAmount),
+            );
+            // Set the token balance for the token we're converting from.
+            await testContract.setTokenBalances.awaitTransactionSuccessAsync(
+                _opts.toTokenAddress === daiTokenAddress
+                    ? new BigNumber(_opts.fromTokenBalance)
+                    : constants.ZERO_AMOUNT,
+                _opts.toTokenAddress === wethTokenAddress
+                    ? new BigNumber(_opts.fromTokenBalance)
+                    : constants.ZERO_AMOUNT,
+            );
+            // Call transfer().
+            const [result, { logs }] = await txHelper.getResultAndReceiptAsync(
+                testContract.transfer,
+                '0x',
+                _opts.toTokenAddress,
+                randomAddress(),
+                _opts.toAddress,
+                new BigNumber(_opts.amount),
+            );
+            return [result, (logs as any) as DecodedLogs];
+        }
+
+        function getOppositeToken(tokenAddress: string): string {
+            if (tokenAddress === daiTokenAddress) {
+                return wethTokenAddress;
+            }
+            return daiTokenAddress;
+        }
+
+        it('returns magic bytes on success', async () => {
+            const BRIDGE_SUCCESS_RETURN_DATA = '0xb5d40d78';
+            const [result] = await transferAsync();
+            expect(result).to.eq(BRIDGE_SUCCESS_RETURN_DATA);
+        });
+
+        it('calls `Eth2Dai.sellAllAmount()`', async () => {
+            const opts = createTransferOpts();
+            const [, logs] = await transferAsync(opts);
+            const transfers = filterLogsToArguments<TestEth2DaiBridgeSellAllAmountEventArgs>(
+                logs,
+                TestEth2DaiBridgeEvents.SellAllAmount,
+            );
+            expect(transfers.length).to.eq(1);
+            expect(transfers[0].sellToken).to.eq(getOppositeToken(opts.toTokenAddress));
+            expect(transfers[0].buyToken).to.eq(opts.toTokenAddress);
+            expect(transfers[0].sellTokenAmount).to.bignumber.eq(opts.fromTokenBalance);
+            expect(transfers[0].minimumFillAmount).to.bignumber.eq(opts.amount);
+        });
+
+        it('transfers filled amount to `to`', async () => {
+            const opts = createTransferOpts();
+            const [, logs] = await transferAsync(opts);
+            const transfers = filterLogsToArguments<TestEth2DaiBridgeTokenTransferEventArgs>(
+                logs,
+                TestEth2DaiBridgeEvents.TokenTransfer,
+            );
+            expect(transfers.length).to.eq(1);
+            expect(transfers[0].token).to.eq(opts.toTokenAddress);
+            expect(transfers[0].from).to.eq(testContract.address);
+            expect(transfers[0].to).to.eq(opts.toAddress);
+            expect(transfers[0].amount).to.bignumber.eq(opts.fillAmount);
+        });
+
+        it('fails if `Eth2Dai.sellAllAmount()` reverts', async () => {
+            const opts = createTransferOpts({ revertReason: 'FOOBAR' });
+            const tx = transferAsync(opts);
+            return expect(tx).to.revertWith(opts.revertReason);
+        });
+    });
+});
