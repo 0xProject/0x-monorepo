@@ -21,7 +21,7 @@ import {
     TestEth2DaiBridgeTokenTransferEventArgs,
 } from '../src';
 
-blockchainTests.resets.only('Eth2DaiBridge unit tests', env => {
+blockchainTests.resets('Eth2DaiBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestEth2DaiBridgeContract;
     let daiTokenAddress: string;
