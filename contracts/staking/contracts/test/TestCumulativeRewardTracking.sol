@@ -37,7 +37,6 @@ contract TestCumulativeRewardTracking is
         public
         TestStaking(
             wethAddress,
-            address(0),
             zrxVaultAddress
         )
     {}
