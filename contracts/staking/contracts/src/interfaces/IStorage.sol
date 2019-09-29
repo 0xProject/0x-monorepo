@@ -19,7 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IStructs.sol";
 
