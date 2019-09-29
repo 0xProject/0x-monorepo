@@ -19,14 +19,20 @@
 pragma solidity ^0.5.9;
 
 
-// solhint-disable func-param-name-mixedcase
 interface IEth2Dai {
+
+    /// @dev Sell `sellAmount` of `fromToken` token and receive `toToken` token.
+    /// @param fromToken The token being sold.
+    /// @param sellAmount The amount of `fromToken` token being sold.
+    /// @param toToken The token being bought.
+    /// @param minFillAmount Minimum amount of `toToken` token to buy.
+    /// @return fillAmount Amount of `toToken` bought.
     function sellAllAmount(
-        address pay_gem,
-        uint256 pay_amt,
-        address buy_gem,
-        uint256 min_fill_amount
+        address fromToken,
+        uint256 sellAmount,
+        address toToken,
+        uint256 minFillAmount
     )
         external
-        returns (uint256 fill_amt);
+        returns (uint256 fillAmount);
 }
