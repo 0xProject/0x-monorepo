@@ -35,6 +35,9 @@ contract UniswaBridge is
     address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = address(0);
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
+    /// @dev Whether we've granted an allowance to a spender for a token.
+    mapping (address => mapping (address => bool)) private _hasAllowance;
+
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
     ///      token encoded in the bridge data.
@@ -67,6 +70,8 @@ contract UniswaBridge is
             fromTokenAddress,
             toTokenAddress
         );
+        // Grant an allowance to the exchange.
+        _grantAllowanceForTokens(address(exchange), [fromTokenAddress, toTokenAddress]);
         // Get our balance of `fromTokenAddress` token.
         uint256 fromTokenBalance = IERC20Token(fromToken).balanceOf(address(this));
 
@@ -157,6 +162,30 @@ contract UniswaBridge is
         return IUniswapExchangeFactory(ETH2DAI_ADDRESS);
     }
 
+    /// @dev Grants an unlimited allowance to `spender` for `fromTokenAddress`
+    ///      and `toTokenAddress` tokens, if they're not WETH and we haven't
+    ///      already granted `spender` an allowance.
+    /// @param spender The spender being granted an aloowance.
+    /// @param tokenAddresses Array of token addresses.
+    function _grantAllowanceForTokens(
+        address spender,
+        address[2] memory tokenAddresses,
+    )
+        private
+    {
+        address wethAddress = address(_getWethContract());
+        mapping (address => bool) storage doesSpenderHaveAllowance = _hasAllowance[spender];
+        for (uint256 i = 0; i < tokenAddresses.length; ++i) {
+            address tokenAddress = tokenAddresses[i];
+            if (tokenAddress != wethAddress) {
+                if (!doesSpenderHaveAllowance[tokenAddress]) {
+                    IERC20Token(tokenAddress).approve(spender, uint256(-1));
+                    doesSpenderHaveAllowance[tokenAddress] = true;
+                }
+            }
+        }
+    }
+
     /// @dev Retrieves the uniswap exchange contract for a given token pair.
     /// @return exchange The exchange contract for the token pair.
     function _getUniswapExchangeForTokenPair(
@@ -168,8 +197,7 @@ contract UniswaBridge is
         returns (IUniswapExchange exchange)
     {
         // Whichever isn't WETH is the exchange token.
-        address wethAddress = address(_getWethContract());
-        if (fromTokenAddress != wethAddress) {
+        if (fromTokenAddress != address(_getWethContract())) {
             return _getUniswapExchangeForToken(fromTokenAddress);
         }
         return _getUniswapExchangeForToken(toTokenAddress);

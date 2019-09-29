@@ -20,25 +20,34 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "../src/bridges/Eth2DaiBridge.sol";
-import "../src/interfaces/IEth2Dai.sol";
+import "../src/bridges/UniswapBridge.sol";
+import "../src/interfaces/IUniswap.sol";
 
 
 // solhint-disable no-simple-event-func-name
-/// @dev Interface that allows `TestToken` to call `raiseTransferEvent` on
-///      the `TestEth2DaiBridge` contract.
-interface ITestTokenCaller {
+/// @dev Interface that allows `TestToken` to call functions on the
+///      `TestUniswapBridge` contract.
+interface ITestEventRaiser {
 
-    function raiseTransferEvent(
+    function raiseTokenTransferEvent(
         address from,
         address to,
         uint256 amount
     )
         external;
 
-    function raiseTransferEvent(
-        address from,
-        address to,
+    function raiseTokenApproveEvent(
+        address spender,
+        uint256 allowance
+    )
+        external;
+
+    function raiseWethDeposit(
+        uint256 amount
+    )
+        external;
+
+    function raiseWethWithdraw(
         uint256 amount
     )
         external;
@@ -50,12 +59,21 @@ contract TestToken {
 
     mapping (address => uint256) public balances;
 
-    /// @dev Just calls `raiseTransferEvent()` on the caller.
+    /// @dev Just calls `raiseTokenTransferEvent()` on the caller.
     function transfer(address to, uint256 amount)
         external
         returns (bool)
     {
-        IRaiseTransferEvent(msg.sender).raiseTransferEvent(msg.sender, to, amount);
+        ITestEventRaiser(msg.sender).raiseTokenTransferEvent(msg.sender, to, amount);
+        return true;
+    }
+
+    /// @dev Just calls `raiseTokenApproveEvent()` on the caller.
+    function approve(address spender, uint256 allowance)
+        external
+        returns (bool)
+    {
+        ITestEventRaiser(msg.sender).raiseTokenApproveEvent(spender, allowance);
         return true;
     }
 
@@ -66,13 +84,19 @@ contract TestToken {
         balances[owner] = balance;
     }
 
-    /// @dev Just calls `raiseApproveEvent()` on the caller.
-    function approve(address spender, uint256 allowance)
+    // @dev `IWETH.deposit()` that just calls `raiseWethDeposit()` on the caller.
+    function deposit()
         external
-        returns (bool)
+        payable
     {
-        allowances[msg.sender][spender] = allowance;
-        return true;
+        ITestEventRaiser(msg.sender).raiseWethDeposit(msg.value);
+    }
+
+    // @dev `IWETH.withdraw()` that just calls `raiseWethWithdraw()` on the caller.
+    function withdraw(uint256 amount)
+        external
+    {
+        ITestEventRaiser(msg.sender).raiseWethWithdraw(amount);
     }
 
     /// @dev Retrieve the balance for `owner`.
@@ -86,11 +110,10 @@ contract TestToken {
 }
 
 
-/// @dev Eth2DaiBridge overridden to mock tokens and
-///      implement IEth2Dai.
-contract TestEth2DaiBridge is
-    IEth2Dai,
-    Eth2DaiBridge
+/// @dev UniswapBridge overridden to mock tokens and implement IUniswap.
+contract TestUniswapBridge is
+    IUniswap,
+    UniswapBridge
 {
     event SellAllAmount(
         address sellToken,
@@ -103,6 +126,19 @@ contract TestEth2DaiBridge is
         address token,
         address from,
         address to,
+        uint256 amount
+    );
+
+    event TokenApprove(
+        address spender,
+        uint256 allowance
+    );
+
+    event WethDeposit(
+        uint256 amount
+    );
+
+    event WethWithdraw(
         uint256 amount
     );
 
@@ -119,7 +155,7 @@ contract TestEth2DaiBridge is
         daiToken.setBalance(address(this), daiBalance);
     }
 
-    /// @dev Set the behavior for `IEth2Dai.sellAllAmount()`.
+    /// @dev Set the behavior for `IUniswap.sellAllAmount()`.
     function setFillBehavior(string calldata revertReason, uint256 fillAmount)
         external
     {
@@ -127,7 +163,7 @@ contract TestEth2DaiBridge is
         _nextFillAmount = fillAmount;
     }
 
-    /// @dev Implementation of `IEth2Dai.sellAllAmount()`
+    /// @dev Implementation of `IUniswap.sellAllAmount()`
     function sellAllAmount(
         address sellTokenAddress,
         uint256 sellTokenAmount,
@@ -149,7 +185,7 @@ contract TestEth2DaiBridge is
         return _nextFillAmount;
     }
 
-    function raiseTransferEvent(
+    function raiseTokenTransferEvent(
         address from,
         address to,
         uint256 amount
@@ -164,8 +200,20 @@ contract TestEth2DaiBridge is
         );
     }
 
+    function raiseTokenApproveEvent(
+        address spender,
+        uint256 allowance
+    )
+        external
+    {
+        emit TokenApprove(
+            spender,
+            allowance
+        );
+    }
+
     /// @dev Retrieves the allowances of the test tokens.
-    function getEth2DaiTokenAllowances()
+    function getUniswapTokenAllowances()
         external
         view
         returns (uint256 wethAllowance, uint256 daiAllowance)
@@ -193,12 +241,12 @@ contract TestEth2DaiBridge is
         return IERC20Token(address(daiToken));
     }
 
-    // @dev This contract will double as the Eth2Dai contract.
-    function _getEth2DaiContract()
+    // @dev This contract will double as the Uniswap contract.
+    function _getUniswapContract()
         internal
         view
-        returns (IEth2Dai)
+        returns (IUniswap)
     {
-        return IEth2Dai(address(this));
+        return IUniswap(address(this));
     }
 }
