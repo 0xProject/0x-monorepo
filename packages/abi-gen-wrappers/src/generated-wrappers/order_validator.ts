@@ -246,6 +246,16 @@ export class OrderValidatorContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public getBalanceAndAllowance = {
         /**
@@ -338,6 +348,14 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
+            return abiEncoder.getSelector();
         },
     };
     public getOrdersAndTradersInfo = {
@@ -559,6 +577,16 @@ export class OrderValidatorContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public getTradersInfo = {
         /**
@@ -761,6 +789,16 @@ export class OrderValidatorContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public getERC721TokenOwner = {
         /**
@@ -854,6 +892,14 @@ export class OrderValidatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public getBalancesAndAllowances = {
         /**
@@ -946,6 +992,14 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
+            return abiEncoder.getSelector();
         },
     };
     public getTraderInfo = {
@@ -1138,6 +1192,16 @@ export class OrderValidatorContract extends BaseContract {
                 takerZrxAllowance: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -119,6 +119,14 @@ export class EthBalanceCheckerContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as EthBalanceCheckerContract;
+            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
+            return abiEncoder.getSelector();
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

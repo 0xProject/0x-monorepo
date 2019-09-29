@@ -136,6 +136,14 @@ export class IValidatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as IValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

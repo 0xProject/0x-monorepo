@@ -117,6 +117,14 @@ export class CoordinatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
@@ -213,6 +221,14 @@ export class CoordinatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getTransactionHash((uint256,address,bytes))');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -331,6 +347,14 @@ export class CoordinatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -663,6 +687,16 @@ export class CoordinatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         /**
@@ -740,6 +774,14 @@ export class CoordinatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('EIP712_EXCHANGE_DOMAIN_HASH()');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -891,6 +933,16 @@ export class CoordinatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decodes the orders from Exchange calldata representing any fill method.
@@ -1033,6 +1085,14 @@ export class CoordinatorContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrdersFromFillData(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     public EIP712_COORDINATOR_DOMAIN_HASH = {
         /**
@@ -1110,6 +1170,14 @@ export class CoordinatorContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('EIP712_COORDINATOR_DOMAIN_HASH()');
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

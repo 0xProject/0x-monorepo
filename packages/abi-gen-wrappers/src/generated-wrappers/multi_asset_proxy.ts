@@ -142,6 +142,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Authorizes an address.
@@ -314,6 +322,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     public authorities = {
         /**
@@ -397,6 +413,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -487,6 +511,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -660,6 +692,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     public owner = {
         /**
@@ -737,6 +777,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -956,6 +1004,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets the proxy id associated with the proxy address.
@@ -1029,6 +1085,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            return abiEncoder.getSelector();
         },
     };
     public authorized = {
@@ -1115,6 +1179,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1296,6 +1368,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets all authorized addresses.
@@ -1377,6 +1457,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            return abiEncoder.getSelector();
         },
     };
     public transferOwnership = {
@@ -1541,6 +1629,14 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>;

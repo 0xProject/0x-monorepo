@@ -266,6 +266,14 @@ export class ERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Query total supply of token
@@ -347,6 +355,14 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -583,6 +599,14 @@ export class ERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Query the balance of owner
@@ -672,6 +696,14 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -871,6 +903,14 @@ export class ERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public allowance = {
         /**
@@ -968,6 +1008,14 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;

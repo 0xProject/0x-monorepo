@@ -111,6 +111,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, number]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderStatusError(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decode ERC-721 asset data from the format described in the AssetProxy contract specification.
@@ -194,6 +202,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeERC721AssetData(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -298,6 +314,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAssetProxyAllowance(address,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded IncompleteFillError.
@@ -381,6 +405,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, BigNumber, BigNumber]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeIncompleteFillError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -485,6 +517,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getTransferableAssetAmount(address,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded AssetProxyTransferError.
@@ -568,6 +608,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyTransferError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -653,6 +701,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeNegativeSpreadError(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded AssetProxyDispatchError.
@@ -736,6 +792,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyDispatchError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -823,6 +887,14 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureWalletError(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded FillError.
@@ -904,6 +976,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeFillError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1008,6 +1088,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getBatchAssetProxyAllowances(address,bytes[])');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Encode ERC-20 asset data into the format described in the AssetProxy contract specification.
@@ -1096,6 +1184,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('encodeERC20AssetData(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded OrderEpochError.
@@ -1177,6 +1273,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, BigNumber]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrderEpochError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1352,6 +1456,14 @@ export class DevUtilsContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeZeroExTransactionData(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded AssetProxyExistsError.
@@ -1435,6 +1547,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeAssetProxyExistsError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1522,6 +1642,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureValidatorNotApprovedError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1626,6 +1754,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalance(address,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decode ERC-20 asset data from the format described in the AssetProxy contract specification.
@@ -1707,6 +1843,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeERC20AssetData(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1791,6 +1935,14 @@ export class DevUtilsContract extends BaseContract {
                 returnData,
             );
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeSignatureError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1879,6 +2031,14 @@ export class DevUtilsContract extends BaseContract {
                 [string, string, BigNumber[], BigNumber[], string]
             >(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeERC1155AssetData(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1969,6 +2129,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2355,6 +2523,16 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number[]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Encode ERC-721 asset data into the format described in the AssetProxy specification.
@@ -2450,6 +2628,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('encodeERC721AssetData(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded SignatureValidatorError.
@@ -2535,6 +2721,14 @@ export class DevUtilsContract extends BaseContract {
                 returnData,
             );
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeEIP1271SignatureError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2648,6 +2842,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('encodeERC1155AssetData(address,uint256[],uint256[],bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decode multi-asset data from the format described in the AssetProxy contract specification.
@@ -2731,6 +2933,14 @@ export class DevUtilsContract extends BaseContract {
                 returnData,
             );
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeMultiAssetData(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2816,6 +3026,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionExecutionError(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded TransactionError.
@@ -2897,6 +3115,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeTransactionError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -3001,6 +3227,14 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getBatchBalances(address,bytes[])');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Returns the number of asset(s) (described by assetData) that the corresponding AssetProxy contract is authorized to spend.  When the asset data contains multiple assets (eg for Multi-Asset), the return value indicates how many complete "baskets" of those assets may be spent by all of the corresponding AssetProxy contracts.
@@ -3103,6 +3337,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxyAllowance(address,bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -3477,6 +3719,16 @@ export class DevUtilsContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Encode data for multiple assets, per the AssetProxy contract specification.
@@ -3571,6 +3823,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('encodeMultiAssetData(uint256[],bytes[])');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -3780,6 +4040,16 @@ export class DevUtilsContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantStates((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Calls getBatchBalances() and getBatchAllowances() for each element of assetData.
@@ -3882,6 +4152,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('getBatchBalancesAndAssetProxyAllowances(address,bytes[])');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -4073,6 +4351,16 @@ export class DevUtilsContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderRelevantState((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Decompose an ABI-encoded OrderStatusError.
@@ -4156,6 +4444,14 @@ export class DevUtilsContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[number, string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeExchangeInvalidContextError(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

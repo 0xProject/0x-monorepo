@@ -206,6 +206,14 @@ export class ForwarderContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('approveMakerAssetProxy(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Withdraws assets from this contract. The contract formerly required a ZRX balance in order
@@ -409,6 +417,14 @@ export class ForwarderContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public owner = {
         /**
@@ -486,6 +502,14 @@ export class ForwarderContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -927,6 +951,16 @@ export class ForwarderContract extends BaseContract {
             );
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[],uint256,address)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
@@ -1344,6 +1378,16 @@ export class ForwarderContract extends BaseContract {
             );
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public transferOwnership = {
         /**
@@ -1507,6 +1551,14 @@ export class ForwarderContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

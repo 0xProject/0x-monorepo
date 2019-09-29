@@ -280,6 +280,14 @@ export class IAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as IAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets the proxy id associated with the proxy address.
@@ -353,6 +361,14 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as IAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(
