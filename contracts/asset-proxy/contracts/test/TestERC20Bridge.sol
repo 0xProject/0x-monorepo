@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/interfaces/IERC20Bridge.sol";
+import "../src/bridges/ERC20Bridge.sol";
 
 
 /// @dev Test bridge token
@@ -50,16 +50,16 @@ contract TestERC20BridgeToken {
 
 /// @dev Test bridge contract.
 contract TestERC20Bridge is
-    IERC20Bridge
+    ERC20Bridge
 {
     TestERC20BridgeToken public testToken;
 
-    event BridgeTransfer(
-        bytes bridgeData,
+    event BridgeWithdrawTo(
         address tokenAddress,
         address from,
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes bridgeData
     );
 
     constructor() public {
@@ -72,22 +72,22 @@ contract TestERC20Bridge is
         testToken.setBalance(owner, balance);
     }
 
-    function transfer(
-        bytes calldata bridgeData,
+    function withdrawTo(
         address tokenAddress,
         address from,
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes calldata bridgeData
     )
         external
         returns (bytes4)
     {
-        emit BridgeTransfer(
-            bridgeData,
+        emit BridgeWithdrawTo(
             tokenAddress,
             from,
             to,
-            amount
+            amount,
+            bridgeData
         );
         // Unpack the bridgeData.
         (

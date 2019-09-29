@@ -34,9 +34,7 @@ contract ERC20BridgeProxy is
     using LibBytes for bytes;
     using LibSafeMath for uint256;
 
-    // @dev Result of a successful bridge call.
-    bytes4 constant public BRIDGE_SUCCESS = 0xb5d40d78;
-    // @dev Id of this proxy.
+    // @dev Id of this proxy. Also the result of a successful bridge call.
     //      bytes4(keccak256("ERC20BridgeProxy(address,address,bytes)"))
     bytes4 constant private PROXY_ID = 0x37708e9b;
 
@@ -75,15 +73,15 @@ contract ERC20BridgeProxy is
         uint256 balanceBefore = balanceOf(tokenAddress, to);
         // Call the bridge, who should transfer `amount` of `tokenAddress` to
         // `to`.
-        bytes4 success = IERC20Bridge(bridgeAddress).transfer(
-            bridgeData,
+        bytes4 success = IERC20Bridge(bridgeAddress).withdrawTo(
             tokenAddress,
             from,
             to,
-            amount
+            amount,
+            bridgeData
         );
-        // Bridge must return the magic bytes to indicate success.
-        require(success == BRIDGE_SUCCESS, "BRIDGE_FAILED");
+        // Bridge must return the proxy ID to indicate success.
+        require(success == PROXY_ID, "BRIDGE_FAILED");
         // Ensure that the balance of `to` has increased by at least `amount`.
         require(
             balanceBefore.safeAdd(amount) <= balanceOf(tokenAddress, to),
@@ -109,9 +107,9 @@ contract ERC20BridgeProxy is
         view
         returns (uint256 balance)
     {
-        (address tokenAddress, ,) = abi.decode(
+        (address tokenAddress) = abi.decode(
             assetData.sliceDestructive(4, assetData.length),
-            (address, address, bytes)
+            (address)
         );
         return balanceOf(tokenAddress, owner);
     }

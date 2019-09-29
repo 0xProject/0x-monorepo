@@ -19,21 +19,21 @@
 pragma solidity ^0.5.9;
 
 
-contract IERC20Bridge {
+interface IERC20Bridge {
 
     /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
-    /// @param bridgeData Arbitrary asset data needed by the bridge contract.
     /// @param tokenAddress The address of the ERC20 token to transfer.
     /// @param from Address to transfer asset from.
     /// @param to Address to transfer asset to.
     /// @param amount Amount of asset to transfer.
-    /// @return success The magic bytes `0xb5d40d78` if successful.
-    function transfer(
-        bytes calldata bridgeData,
+    /// @param bridgeData Arbitrary asset data needed by the bridge contract.
+    /// @return success The magic bytes `0x37708e9b` if successful.
+    function withdrawTo(
         address tokenAddress,
         address from,
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes calldata bridgeData
     )
         external
         returns (bytes4 success);

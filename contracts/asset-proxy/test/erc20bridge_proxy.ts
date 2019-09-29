@@ -16,12 +16,13 @@ import * as _ from 'lodash';
 import {
     artifacts,
     ERC20BridgeProxyContract,
-    TestERC20BridgeBridgeTransferEventArgs,
+    TestERC20BridgeBridgeWithdrawToEventArgs,
     TestERC20BridgeContract,
 } from '../src';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
-    const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad('0xb5d40d78');
+    const PROXY_ID = '0xb5d40d78';
+    const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad(PROXY_ID);
     let owner: string;
     let badCaller: string;
     let assetProxy: ERC20BridgeProxyContract;
@@ -162,12 +163,12 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             const opts = createTransferFromOpts();
             const logs = await transferFromAsync(opts);
             expect(logs.length).to.eq(1);
-            const args = logs[0].args as TestERC20BridgeBridgeTransferEventArgs;
-            expect(args.bridgeData).to.eq(encodeBridgeData(opts.assetData.bridgeData));
+            const args = logs[0].args as TestERC20BridgeBridgeWithdrawToEventArgs;
             expect(args.tokenAddress).to.eq(opts.assetData.tokenAddress);
             expect(args.from).to.eq(opts.from);
             expect(args.to).to.eq(opts.to);
             expect(args.amount).to.bignumber.eq(opts.amount);
+            expect(args.bridgeData).to.eq(encodeBridgeData(opts.assetData.bridgeData));
         });
 
         it('fails if not called by an authorized address', async () => {
@@ -285,6 +286,13 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             });
             const actualBalance = await assetProxy.balanceOf.callAsync(encodeAssetData(assetData), _owner);
             expect(actualBalance).to.bignumber.eq(balance);
+        });
+    });
+
+    describe('getProxyId()', () => {
+        it('returns the correct proxy ID', async () => {
+            const proxyId = await assetProxy.getProxyId.callAsync();
+            expect(proxyId).to.eq(PROXY_ID);
         });
     });
 });
