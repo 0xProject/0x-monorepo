@@ -62,20 +62,18 @@ contract UniswaBridge is
             return BRIDGE_SUCCESS;
         }
 
-        uint256 fromTokenBalance = IERC20Token(fromToken).balanceOf(address(this));
-        uint256 toTokenBalance = IERC20Token(toToken).balanceOf(address(this));
-
         // Get the exchange for the token pair.
         IUniswapExchange exchange = _getUniswapExchangeForTokenPair(
             fromTokenAddress,
             toTokenAddress
         );
+        // Get our balance of `fromTokenAddress` token.
+        uint256 fromTokenBalance = IERC20Token(fromToken).balanceOf(address(this));
 
         // Convert from WETH to a token.
         if (fromTokenAddress == address(weth)) {
             // Unwrap the WETH.
-            IEtherToken weth = _getWethContract();
-            weth.withdraw(weth.balanceOf(this));
+            _getWethContract().withdraw(fromTokenBalance);
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
             exchange.ethToTokenTransferInput.value(fromTokenBalance)(
@@ -99,10 +97,9 @@ contract UniswaBridge is
                 to
             );
             // Wrap the ETH.
-            IEtherToken weth = _getWethContract();
-            weth.deposit.value(ethBought)();
+            _getWethContract().deposit.value(ethBought)();
             // Transfer the WETH to `to`.
-            weth.transfer(to, ethBought);
+            IERC20Token(toTokenAddress).transfer(to, ethBought);
 
         // Convert from one token to another.
         } else {
