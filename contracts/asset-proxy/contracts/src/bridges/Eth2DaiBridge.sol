@@ -49,13 +49,13 @@ contract Eth2DaiBridge is
     /// @param toTokenAddress The token to give to `to` (either DAI or WETH).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
-    /// @return success The magic bytes `0xb5d40d78` if successful.
-    function transfer(
-        bytes calldata /* bridgeData */,
+    /// @return success The magic bytes if successful.
+    function withdrawTo(
         address toTokenAddress,
         address /* from */,
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes calldata /* bridgeData */
     )
         external
         returns (bytes4 success)
@@ -86,6 +86,7 @@ contract Eth2DaiBridge is
 
     /// @dev `SignatureType.Wallet` callback, so that this bridge can be the maker
     ///      and sign for itself in orders. Always succeeds.
+    /// @return magicValue Magic success bytes, always.
     function isValidSignature(
         bytes32,
         bytes calldata
@@ -98,28 +99,31 @@ contract Eth2DaiBridge is
     }
 
     /// @dev Overridable way to get the weth contract.
+    /// @return weth The WETH contract.
     function _getWethContract()
         internal
         view
-        returns (IERC20Token)
+        returns (IERC20Token weth)
     {
         return IERC20Token(WETH_ADDRESS);
     }
 
     /// @dev Overridable way to get the dai contract.
+    /// @return token The token contract.
     function _getDaiContract()
         internal
         view
-        returns (IERC20Token)
+        returns (IERC20Token token)
     {
         return IERC20Token(DAI_ADDRESS);
     }
 
     /// @dev Overridable way to get the eth2dai contract.
+    /// @return exchange The Eth2Dai exchange contract.
     function _getEth2DaiContract()
         internal
         view
-        returns (IEth2Dai)
+        returns (IEth2Dai exchange)
     {
         return IEth2Dai(ETH2DAI_ADDRESS);
     }
