@@ -13,15 +13,15 @@ async function ledgerEthereumNodeJsClientFactoryAsync(): Promise<LedgerEthereumC
     return ledgerEthClient;
 }
 export const providerFactory = {
-    async getKovanLedgerProviderAsync(): Promise<Provider> {
+    async getLedgerProviderAsync(networkId: number, rpcUrl: string): Promise<Provider> {
         const provider = new Web3ProviderEngine();
         const ledgerWalletConfigs = {
-            networkId: constants.KOVAN_NETWORK_ID,
+            networkId,
             ledgerEthereumClientFactoryAsync: ledgerEthereumNodeJsClientFactoryAsync,
         };
         const ledgerSubprovider = new LedgerSubprovider(ledgerWalletConfigs);
         provider.addProvider(ledgerSubprovider);
-        provider.addProvider(new RPCSubprovider(constants.KOVAN_RPC_URL));
+        provider.addProvider(new RPCSubprovider(rpcUrl));
         providerUtils.startProviderEngine(provider);
         return provider;
     },
