@@ -28,7 +28,6 @@ blockchainTests('Protocol Fees unit tests', env => {
     let exchangeAddress: string;
     let notExchangeAddress: string;
     let testContract: TestProtocolFeesContract;
-    let wethAssetData: string;
     let minimumStake: BigNumber;
 
     before(async () => {
@@ -46,7 +45,6 @@ blockchainTests('Protocol Fees unit tests', env => {
             exchangeAddress,
         );
 
-        wethAssetData = await testContract.getWethAssetData.callAsync();
         minimumStake = (await testContract.getParams.callAsync())[2];
     });
 
@@ -230,7 +228,6 @@ blockchainTests('Protocol Fees unit tests', env => {
                 );
                 expect(logsArgs.length).to.eq(1);
                 for (const args of logsArgs) {
-                    expect(args.assetData).to.eq(wethAssetData);
                     expect(args.from).to.eq(fromAddress);
                     expect(args.to).to.eq(testContract.address);
                     expect(args.amount).to.bignumber.eq(amount);

@@ -243,7 +243,6 @@ export async function deployAndConfigureContractsAsync(
         env.txDefaults,
         artifacts,
         wethContract.address,
-        erc20ProxyContract.address,
         zrxVaultContract.address,
     );
 
