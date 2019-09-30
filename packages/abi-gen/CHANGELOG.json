@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Add `getSelector` method to all functions",
+                "pr": 2224
+            }
+        ]
+    },
+    {
         "version": "4.2.1",
         "changes": [
             {
