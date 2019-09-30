@@ -317,6 +317,11 @@ export async function runMigrationsAsync(
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
+        exchange_v3: '',
+        zrxVault: '',
+        readOnlyProxy: '',
+        staking: '',
+        stakingProxy: '',
     };
 
     return contractAddresses;
