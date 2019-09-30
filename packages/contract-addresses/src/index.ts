@@ -6,6 +6,7 @@ export interface ContractAddresses {
     zrxToken: string;
     etherToken: string;
     exchange: string;
+    exchange_v3: string;
     assetProxyOwner: string;
     forwarder: string;
     orderValidator: string;
@@ -16,6 +17,10 @@ export interface ContractAddresses {
     staticCallProxy: string;
     erc1155Proxy: string;
     devUtils: string;
+    zrxVault: string;
+    readOnlyProxy: string;
+    staking: string;
+    stakingProxy: string;
 }
 
 export enum NetworkId {
@@ -31,6 +36,7 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const networkToAddresses: { [networkId: number]: ContractAddresses } = {
     1: {
         exchange: '0x080bf510fcbf18b91105470639e9561022937712',
+        exchange_v3: '',
         erc20Proxy: '0x95e6f48254609a6ee006f7d493c8e5fb97094cef',
         erc721Proxy: '0xefc70a1b18c432bdc64b596838b4d138f6bc6cad',
         forwarder: '0x76481caa104b5f6bccb540dae4cefaf1c398ebea',
@@ -45,6 +51,10 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         staticCallProxy: '0x3517b88c19508c08650616019062b898ab65ed29',
         erc1155Proxy: '0x7eefbd48fd63d441ec7435d024ec7c5131019add',
         devUtils: '0x92d9a4d50190ae04e03914db2ee650124af844e6',
+        zrxVault: '',
+        readOnlyProxy: '',
+        staking: '',
+        stakingProxy: '',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -52,7 +62,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxToken: '0xff67881f8d12f372d91baae9752eb3631ff0ed00',
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
         exchange: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
-        assetProxyOwner: '0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b',
+        exchange_v3: '0x725bc2f8c85ed0289d3da79cde3125d33fc1d7e6',
+        assetProxyOwner: '0xdcf20f7b447d51f2b3e5499b7f6cbbf7295a5d26',
         forwarder: '0x1ebdc9758e85c1c6a85af06cc96cf89000a31913',
         orderValidator: '0x6eb6237350f3c110c96223e6ff9db55532525d2b',
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
@@ -62,14 +73,19 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
         devUtils: '0x3e0b46bad8e374e4a110c12b832cb120dbe4a479',
+        zrxVault: '0xffd161026865ad8b4ab28a76840474935eec4dfa',
+        readOnlyProxy: '0x8e1dfaf747b804d041adaed79d68dcef85b8de85',
+        staking: '0xb2ca5824630e526f0f3181a4ea0447c795a84411',
+        stakingProxy: '0x5d751aa855a1aee5fe44cf5350ed25b5727b66ae',
     },
     4: {
         exchange: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
+        exchange_v3: '0x8e1dfaf747b804d041adaed79d68dcef85b8de85',
         erc20Proxy: '0x2f5ae4f6106e89b4147651688a92256885c5f410',
         erc721Proxy: '0x7656d773e11ff7383a14dcf09a9c50990481cd10',
         zrxToken: '0x8080c7e4b81ecf23aa6f877cfbfd9b0c228c6ffa',
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
-        assetProxyOwner: '0xe1703da878afcebff5b7624a826902af475b9c03',
+        assetProxyOwner: '0x5d751aa855a1aee5fe44cf5350ed25b5727b66ae',
         forwarder: '0x1ebdc9758e85c1c6a85af06cc96cf89000a31913',
         orderValidator: '0x6eb6237350f3c110c96223e6ff9db55532525d2b',
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
@@ -79,6 +95,10 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
         devUtils: '0x2d4a9abda7b8b3605c8dbd34e3550a7467c78287',
+        zrxVault: '0xa5bf6ac73bc40790fc6ffc9dbbbce76c9176e224',
+        readOnlyProxy: '0xffd161026865ad8b4ab28a76840474935eec4dfa',
+        staking: '0x725bc2f8c85ed0289d3da79cde3125d33fc1d7e6',
+        stakingProxy: '0xb2ca5824630e526f0f3181a4ea0447c795a84411',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -86,7 +106,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxToken: '0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa',
         etherToken: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
         exchange: '0x30589010550762d2f0d06f650d8e8b6ade6dbf4b',
-        assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
+        exchange_v3: '0x617602cd3f734cf1e028c96b3f54c0489bed8022',
+        assetProxyOwner: '0x3654e5363cd75c8974c76208137df9691e820e97',
         forwarder: '0x1ebdc9758e85c1c6a85af06cc96cf89000a31913',
         orderValidator: '0xbcd49bf9b75cab056610fab3c788e8ce1b209f30',
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
@@ -96,6 +117,10 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         staticCallProxy: '0x48e94bdb9033640d45ea7c721e25f380f8bffa43',
         erc1155Proxy: '0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f',
         devUtils: '0xb1863ac46ae23ec55d6eeb8ecc8815655ee638a8',
+        zrxVault: '0xf36eabdfe986b35b62c8fd5a98a7f2aebb79b291',
+        readOnlyProxy: '0x25397d8aa7e6844dae70ee658fe072d45d6cf528',
+        staking: '0xa9290221e4632394e0209abe893a90f5445e1f23',
+        stakingProxy: '0x9e7eef766702c3d9056a3de779e5d9d976bc3bdb',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -105,6 +130,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         zrxToken: '0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c',
         etherToken: '0x0b1ba0af832d7c05fd64161e0db78e85978e8082',
         exchange: '0x48bacb9266a570d521063ef5dd96e61686dbe788',
+        exchange_v3: '',
         assetProxyOwner: '0x8d42e38980ce74736c21c059b2240df09958d3c8',
         forwarder: '0xaa86dda78e9434aca114b6676fc742a18d15a1cc',
         orderValidator: '0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29',
@@ -114,6 +140,10 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xcfc18cec799fbd1793b5c43e773c98d4d61cc2db',
         staticCallProxy: '0x6dfff22588be9b3ef8cf0ad6dc9b84796f9fb45f',
         devUtils: '0x38ef19fdf8e8415f18c307ed71967e19aac28ba1',
+        zrxVault: '',
+        readOnlyProxy: '',
+        staking: '',
+        stakingProxy: '',
     },
 };
 
