@@ -4,6 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/ERC1155Proxy.json",
+        "generated-artifacts/ERC20Bridge.json",
         "generated-artifacts/ERC20BridgeProxy.json",
         "generated-artifacts/ERC20Proxy.json",
         "generated-artifacts/ERC721Proxy.json",

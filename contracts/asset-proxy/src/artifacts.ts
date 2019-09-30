@@ -6,6 +6,7 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as ERC1155Proxy from '../generated-artifacts/ERC1155Proxy.json';
+import * as ERC20Bridge from '../generated-artifacts/ERC20Bridge.json';
 import * as ERC20BridgeProxy from '../generated-artifacts/ERC20BridgeProxy.json';
 import * as ERC20Proxy from '../generated-artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
@@ -31,6 +32,7 @@ export const artifacts = {
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     StaticCallProxy: StaticCallProxy as ContractArtifact,
+    ERC20Bridge: ERC20Bridge as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,

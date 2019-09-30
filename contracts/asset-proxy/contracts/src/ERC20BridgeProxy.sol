@@ -35,8 +35,8 @@ contract ERC20BridgeProxy is
     using LibSafeMath for uint256;
 
     // @dev Id of this proxy. Also the result of a successful bridge call.
-    //      bytes4(keccak256("ERC20BridgeProxy(address,address,bytes)"))
-    bytes4 constant private PROXY_ID = 0x37708e9b;
+    //      bytes4(keccak256("ERC20Bridge(address,address,bytes)"))
+    bytes4 constant private PROXY_ID = 0xdc1600f3;
 
     /// @dev Calls a bridge contract to transfer `amount` of ERC20 from `from`
     ///      to `to`. Asserts that the balance of `to` has increased by `amount`.

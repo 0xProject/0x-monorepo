@@ -26,5 +26,5 @@ contract ERC20Bridge is
     IERC20Bridge
 {
     // @dev Result of a successful bridge call.
-    bytes4 constant internal BRIDGE_SUCCESS = 0x37708e9b;
+    bytes4 constant internal BRIDGE_SUCCESS = 0xdc1600f3;
 }

@@ -21,7 +21,7 @@ import {
 } from '../src';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
-    const PROXY_ID = '0xb5d40d78';
+    const PROXY_ID = '0xdc1600f3';
     const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad(PROXY_ID);
     let owner: string;
     let badCaller: string;
