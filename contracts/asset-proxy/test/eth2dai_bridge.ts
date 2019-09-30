@@ -56,7 +56,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
         });
     });
 
-    describe('transfer()', () => {
+    describe('withdrawTo()', () => {
         interface TransferOpts {
             toTokenAddress: string;
             toAddress: string;
@@ -94,14 +94,14 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
                     ? new BigNumber(_opts.fromTokenBalance)
                     : constants.ZERO_AMOUNT,
             );
-            // Call transfer().
+            // Call withdrawTo().
             const [result, { logs }] = await txHelper.getResultAndReceiptAsync(
-                testContract.transfer,
-                '0x',
+                testContract.withdrawTo,
                 _opts.toTokenAddress,
                 randomAddress(),
                 _opts.toAddress,
                 new BigNumber(_opts.amount),
+                '0x',
             );
             return [result, (logs as any) as DecodedLogs];
         }
@@ -114,7 +114,7 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
         }
 
         it('returns magic bytes on success', async () => {
-            const BRIDGE_SUCCESS_RETURN_DATA = '0xb5d40d78';
+            const BRIDGE_SUCCESS_RETURN_DATA = '0xdc1600f3';
             const [result] = await transferAsync();
             expect(result).to.eq(BRIDGE_SUCCESS_RETURN_DATA);
         });
