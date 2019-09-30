@@ -14,6 +14,7 @@ export * from '../generated-wrappers/i_asset_proxy_dispatcher';
 export * from '../generated-wrappers/i_authorizable';
 export * from '../generated-wrappers/i_erc20_bridge';
 export * from '../generated-wrappers/i_eth2_dai';
+export * from '../generated-wrappers/i_wallet';
 export * from '../generated-wrappers/mixin_asset_proxy_dispatcher';
 export * from '../generated-wrappers/mixin_authorizable';
 export * from '../generated-wrappers/multi_asset_proxy';

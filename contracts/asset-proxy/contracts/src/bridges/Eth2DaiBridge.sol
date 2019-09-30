@@ -20,9 +20,9 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IWallet.sol";
 import "./ERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
+import "../interfaces/IWallet.sol";
 
 
 // solhint-disable space-after-comma
@@ -30,17 +30,11 @@ contract Eth2DaiBridge is
     ERC20Bridge,
     IWallet
 {
-    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
     /* Mainnet addresses */
     address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
-    address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    address constant public DAI_ADDRESS = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
 
-    constructor() public {
-        // Grant the Eth2Dai contract unlimited weth and dai allowances.
-        _getWethContract().approve(address(_getEth2DaiContract()), uint256(-1));
-        _getDaiContract().approve(address(_getEth2DaiContract()), uint256(-1));
-    }
+    /// @dev Whether we've granted an allowance to a spender for a token.
+    mapping (address => mapping (address => bool)) private _hasAllowance;
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
@@ -49,38 +43,34 @@ contract Eth2DaiBridge is
     /// @param toTokenAddress The token to give to `to` (either DAI or WETH).
     /// @param to The recipient of the bought tokens.
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
+    /// @param bridgeData The abi-encoeded "from" token address.
     /// @return success The magic bytes if successful.
     function withdrawTo(
         address toTokenAddress,
         address /* from */,
         address to,
         uint256 amount,
-        bytes calldata /* bridgeData */
+        bytes calldata bridgeData
     )
         external
         returns (bytes4 success)
     {
-        // The "from" token is the opposite of the "to" token.
-        IERC20Token fromToken = _getWethContract();
-        IERC20Token toToken = _getDaiContract();
-        // Swap them if necessary.
-        if (toTokenAddress == address(fromToken)) {
-            (fromToken, toToken) = (toToken, fromToken);
-        } else {
-            require(
-                toTokenAddress == address(toToken),
-                "INVALID_ETH2DAI_TOKEN"
-            );
-        }
-        // Try to sell all of this contract's `fromToken` balance.
+        // Decode the bridge data to get the `fromTokenAddress`.
+        (address fromTokenAddress) = abi.decode(bridgeData, (address));
+
+        IEth2Dai exchange = _getEth2DaiContract();
+        // Grant an allowance to the exchange to spend `fromTokenAddress` token.
+        _grantAllowanceForToken(address(exchange), fromTokenAddress);
+
+        // Try to sell all of this contract's `fromTokenAddress` token balance.
         uint256 boughtAmount = _getEth2DaiContract().sellAllAmount(
-            address(fromToken),
-            fromToken.balanceOf(address(this)),
-            address(toToken),
+            address(fromTokenAddress),
+            IERC20Token(fromTokenAddress).balanceOf(address(this)),
+            toTokenAddress,
             amount
         );
         // Transfer the converted `toToken`s to `to`.
-        toToken.transfer(to, boughtAmount);
+        _transferERC20Token(toTokenAddress, to, boughtAmount);
         return BRIDGE_SUCCESS;
     }
 
@@ -98,26 +88,6 @@ contract Eth2DaiBridge is
         return LEGACY_WALLET_MAGIC_VALUE;
     }
 
-    /// @dev Overridable way to get the weth contract.
-    /// @return weth The WETH contract.
-    function _getWethContract()
-        internal
-        view
-        returns (IERC20Token weth)
-    {
-        return IERC20Token(WETH_ADDRESS);
-    }
-
-    /// @dev Overridable way to get the dai contract.
-    /// @return token The token contract.
-    function _getDaiContract()
-        internal
-        view
-        returns (IERC20Token token)
-    {
-        return IERC20Token(DAI_ADDRESS);
-    }
-
     /// @dev Overridable way to get the eth2dai contract.
     /// @return exchange The Eth2Dai exchange contract.
     function _getEth2DaiContract()
@@ -126,5 +96,67 @@ contract Eth2DaiBridge is
         returns (IEth2Dai exchange)
     {
         return IEth2Dai(ETH2DAI_ADDRESS);
+    }
+
+    /// @dev Grants an unlimited allowance to `spender` for `tokenAddress` token,
+    ///      if we haven't done so already.
+    /// @param spender The spender address.
+    /// @param tokenAddress The token address.
+    function _grantAllowanceForToken(
+        address spender,
+        address tokenAddress
+    )
+        private
+    {
+        mapping (address => bool) storage spenderHasAllowance = _hasAllowance[spender];
+        if (!spenderHasAllowance[tokenAddress]) {
+            spenderHasAllowance[tokenAddress] = true;
+            IERC20Token(tokenAddress).approve(spender, uint256(-1));
+        }
+    }
+
+    /// @dev Permissively transfers an ERC20 token that may not adhere to
+    ///      specs.
+    /// @param tokenAddress The token contract address.
+    /// @param to The token recipient.
+    /// @param amount The amount of tokens to transfer.
+    function _transferERC20Token(
+        address tokenAddress,
+        address to,
+        uint256 amount
+    )
+        private
+    {
+        // Transfer tokens.
+        // We do a raw call so we can check the success separate
+        // from the return data.
+        (bool didSucceed, bytes memory returnData) = tokenAddress.call(
+            abi.encodeWithSelector(
+                IERC20Token(0).transfer.selector,
+                to,
+                amount
+            )
+        );
+        if (!didSucceed) {
+            assembly { revert(add(returnData, 0x20), mload(returnData)) }
+        }
+
+        // Check return data.
+        // If there is no return data, we assume the token incorrectly
+        // does not return a bool. In this case we expect it to revert
+        // on failure, which was handled above.
+        // If the token does return data, we require that it is a single
+        // value that evaluates to true.
+        assembly {
+            if returndatasize {
+                didSucceed := 0
+                if eq(returndatasize, 32) {
+                    // First 64 bytes of memory are reserved scratch space
+                    returndatacopy(0, 0, 32)
+                    didSucceed := mload(0)
+                }
+            }
+        }
+        require(didSucceed, "ERC20_TRANSFER_FAILED");
     }
 }
