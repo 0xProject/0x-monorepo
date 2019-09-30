@@ -16,6 +16,7 @@ import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispat
 import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
 import * as IERC20Bridge from '../generated-artifacts/IERC20Bridge.json';
 import * as IEth2Dai from '../generated-artifacts/IEth2Dai.json';
+import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
@@ -40,6 +41,7 @@ export const artifacts = {
     IAuthorizable: IAuthorizable as ContractArtifact,
     IERC20Bridge: IERC20Bridge as ContractArtifact,
     IEth2Dai: IEth2Dai as ContractArtifact,
+    IWallet: IWallet as ContractArtifact,
     TestERC20Bridge: TestERC20Bridge as ContractArtifact,
     TestEth2DaiBridge: TestEth2DaiBridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,

@@ -25,15 +25,41 @@ import "../src/interfaces/IEth2Dai.sol";
 
 
 // solhint-disable no-simple-event-func-name
-/// @dev Interface that allows `TestToken` to call `raiseTransferEvent` on
-///      the `TestEth2DaiBridge` contract.
-interface IRaiseTransferEvent {
-    function raiseTransferEvent(
+contract TestEvents {
+
+    event TokenTransfer(
+        address token,
+        address from,
+        address to,
+        uint256 amount
+    );
+
+    event TokenApprove(
+        address token,
+        address spender,
+        uint256 allowance
+    );
+
+    function raiseTokenTransfer(
         address from,
         address to,
         uint256 amount
     )
-        external;
+        external
+    {
+        emit TokenTransfer(
+            msg.sender,
+            from,
+            to,
+            amount
+        );
+    }
+
+    function raiseTokenApprove(address spender, uint256 allowance)
+        external
+    {
+        emit TokenApprove(msg.sender, spender, allowance);
+    }
 }
 
 
@@ -41,15 +67,20 @@ interface IRaiseTransferEvent {
 contract TestToken {
 
     mapping (address => uint256) public balances;
-    mapping (address => mapping (address => uint256)) public allowances;
+    string private _nextTransferRevertReason;
+    bytes private _nextTransferReturnData;
 
-    /// @dev Just calls `raiseTransferEvent()` on the caller.
+    /// @dev Just calls `raiseTokenTransfer()` on the caller.
     function transfer(address to, uint256 amount)
         external
         returns (bool)
     {
-        IRaiseTransferEvent(msg.sender).raiseTransferEvent(msg.sender, to, amount);
-        return true;
+        TestEvents(msg.sender).raiseTokenTransfer(msg.sender, to, amount);
+        if (bytes(_nextTransferRevertReason).length != 0) {
+            revert(_nextTransferRevertReason);
+        }
+        bytes memory returnData = _nextTransferReturnData;
+        assembly { return(add(returnData, 0x20), mload(returnData)) }
     }
 
     /// @dev Set the balance for `owner`.
@@ -59,12 +90,23 @@ contract TestToken {
         balances[owner] = balance;
     }
 
-    /// @dev Records allowance values.
+    /// @dev Set the behavior of the `transfer()` call.
+    function setTransferBehavior(
+        string calldata revertReason,
+        bytes calldata returnData
+    )
+        external
+    {
+        _nextTransferRevertReason = revertReason;
+        _nextTransferReturnData = returnData;
+    }
+
+    /// @dev Just calls `raiseTokenApprove()` on the caller.
     function approve(address spender, uint256 allowance)
         external
         returns (bool)
     {
-        allowances[msg.sender][spender] = allowance;
+        TestEvents(msg.sender).raiseTokenApprove(spender, allowance);
         return true;
     }
 
@@ -82,6 +124,7 @@ contract TestToken {
 /// @dev Eth2DaiBridge overridden to mock tokens and
 ///      implement IEth2Dai.
 contract TestEth2DaiBridge is
+    TestEvents,
     IEth2Dai,
     Eth2DaiBridge
 {
@@ -92,24 +135,19 @@ contract TestEth2DaiBridge is
         uint256 minimumFillAmount
     );
 
-    event TokenTransfer(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    );
-
-    TestToken public wethToken = new TestToken();
-    TestToken public daiToken = new TestToken();
+    mapping (address => TestToken)  public testTokens;
     string private _nextRevertReason;
     uint256 private _nextFillAmount;
 
-    /// @dev Set token balances for this contract.
-    function setTokenBalances(uint256 wethBalance, uint256 daiBalance)
+    /// @dev Create a token and set this contract's balance.
+    function createToken(uint256 balance)
         external
+        returns (address tokenAddress)
     {
-        wethToken.setBalance(address(this), wethBalance);
-        daiToken.setBalance(address(this), daiBalance);
+        TestToken token = new TestToken();
+        testTokens[address(token)] = token;
+        token.setBalance(address(this), balance);
+        return address(token);
     }
 
     /// @dev Set the behavior for `IEth2Dai.sellAllAmount()`.
@@ -118,6 +156,17 @@ contract TestEth2DaiBridge is
     {
         _nextRevertReason = revertReason;
         _nextFillAmount = fillAmount;
+    }
+
+    /// @dev Set the behavior of a token's `transfer()`.
+    function setTransferBehavior(
+        address tokenAddress,
+        string calldata revertReason,
+        bytes calldata returnData
+    )
+        external
+    {
+        testTokens[tokenAddress].setTransferBehavior(revertReason, returnData);
     }
 
     /// @dev Implementation of `IEth2Dai.sellAllAmount()`
@@ -140,50 +189,6 @@ contract TestEth2DaiBridge is
             revert(_nextRevertReason);
         }
         return _nextFillAmount;
-    }
-
-    function raiseTransferEvent(
-        address from,
-        address to,
-        uint256 amount
-    )
-        external
-    {
-        emit TokenTransfer(
-            msg.sender,
-            from,
-            to,
-            amount
-        );
-    }
-
-    /// @dev Retrieves the allowances of the test tokens.
-    function getEth2DaiTokenAllowances()
-        external
-        view
-        returns (uint256 wethAllowance, uint256 daiAllowance)
-    {
-        wethAllowance = wethToken.allowances(address(this), address(this));
-        daiAllowance = daiToken.allowances(address(this), address(this));
-        return (wethAllowance, daiAllowance);
-    }
-
-    // @dev Use `wethToken`.
-    function _getWethContract()
-        internal
-        view
-        returns (IERC20Token)
-    {
-        return IERC20Token(address(wethToken));
-    }
-
-    // @dev Use `daiToken`.
-    function _getDaiContract()
-        internal
-        view
-        returns (IERC20Token)
-    {
-        return IERC20Token(address(daiToken));
     }
 
     // @dev This contract will double as the Eth2Dai contract.
