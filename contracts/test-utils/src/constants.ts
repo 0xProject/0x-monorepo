@@ -84,9 +84,4 @@ export const constants = {
     PPM_DENOMINATOR: 1e6,
     PPM_100_PERCENT: 1e6,
     MAX_CODE_SIZE: 24576,
-    ERC20_PROXY_ID: '0xf47261b0',
-    ERC721_PROXY_ID: '0x02571792',
-    ERC1155_PROXY_ID: '0xa7cb5fb7',
-    MULTI_ASSET_PROXY_ID: '0x94cfcdd7',
-    STATIC_CALL_PROXY_ID: '0xc339d10a',
 };

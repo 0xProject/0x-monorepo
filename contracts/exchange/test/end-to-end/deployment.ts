@@ -6,28 +6,35 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
-import {
-    artifacts as exchangeArtifacts,
-    ExchangeContract,
-    MixinAssetProxyDispatcherAssetProxyRegisteredEventArgs,
-    MixinProtocolFeesProtocolFeeCollectorAddressEventArgs,
-    MixinProtocolFeesProtocolFeeMultiplierEventArgs,
-} from '@0x/contracts-exchange';
 import { artifacts as multisigArtifacts, AssetProxyOwnerContract } from '@0x/contracts-multisig';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import {
+    artifacts as stakingArtifacts,
+    ReadOnlyProxyContract,
+    StakingContract,
+    StakingEvents,
+    StakingExchangeAddedEventArgs,
+    StakingProxyContract,
+} from '@0x/contracts-staking';
+import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import {
     AuthorizableAuthorizedAddressAddedEventArgs,
     AuthorizableAuthorizedAddressRemovedEventArgs,
+    AuthorizableEvents,
 } from '@0x/contracts-utils';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { LogWithDecodedArgs, TxData } from 'ethereum-types';
+import { TxData } from 'ethereum-types';
 
 import {
-    artifacts as stakingArtifacts,
-    MixinExchangeManagerExchangeAddedEventArgs,
-    ReadOnlyProxyContract,
-    StakingContract,
-    StakingProxyContract,
+    artifacts as exchangeArtifacts,
+    AssetProxyDispatcher,
+    Authorizable,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeContract,
+    ExchangeEvents,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    Ownable,
 } from '../../src';
 
 // tslint:disable:no-unnecessary-type-assertion
@@ -160,7 +167,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         describe('exchange specific', () => {
             // Registers an asset proxy in the exchange contract and ensure that the correct state changes occurred.
             async function registerAssetProxyAndAssertSuccessAsync(
-                registrationContract: any, // TODO(jalextowle): Express this in a type-safe way (during a debt-demolition)
+                registrationContract: AssetProxyDispatcher,
                 assetProxyAddress: string,
                 assetProxyId: string,
             ): Promise<void> {
@@ -173,13 +180,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 );
 
                 // Ensure that the correct event was logged.
-                expect(receipt.logs.length).to.be.eq(1);
-                const log = receipt.logs[0] as LogWithDecodedArgs<
-                    MixinAssetProxyDispatcherAssetProxyRegisteredEventArgs
-                >;
-                expect(log.event).to.be.eq('AssetProxyRegistered');
-                expect(log.args.id).to.be.eq(assetProxyId);
-                expect(log.args.assetProxy).to.be.eq(assetProxyAddress);
+                const logs = filterLogsToArguments<ExchangeAssetProxyRegisteredEventArgs>(
+                    receipt.logs,
+                    ExchangeEvents.AssetProxyRegistered,
+                );
+                expect(logs).to.be.deep.eq([{ id: assetProxyId, assetProxy: assetProxyAddress }]);
 
                 // Ensure that the asset proxy was actually registered.
                 const proxyAddress = await registrationContract.getAssetProxy.callAsync(assetProxyId);
@@ -188,7 +193,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
 
             // Authorizes an address for a given asset proxy using the owner address.
             async function authorizeAddressAndAssertSuccessAsync(
-                authorizable: any, // TODO(jalextowle): Express this in a type-safe way (during a debt-demolition)
+                authorizable: Authorizable,
                 newAuthorityAddress: string,
             ): Promise<void> {
                 // Authorize the address.
@@ -198,11 +203,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 );
 
                 // Ensure that the correct log was emitted.
-                expect(receipt.logs.length).to.be.eq(1);
-                const log = receipt.logs[0] as LogWithDecodedArgs<AuthorizableAuthorizedAddressAddedEventArgs>;
-                expect(log.event).to.be.eq('AuthorizedAddressAdded');
-                expect(log.args.target).to.be.eq(newAuthorityAddress);
-                expect(log.args.caller).to.be.eq(owner);
+                const logs = filterLogsToArguments<AuthorizableAuthorizedAddressAddedEventArgs>(
+                    receipt.logs,
+                    AuthorizableEvents.AuthorizedAddressAdded,
+                );
+                expect(logs).to.be.deep.eq([{ target: newAuthorityAddress, caller: owner }]);
 
                 // Ensure that the address was actually authorized.
                 const wasAuthorized = await authorizable.authorized.callAsync(newAuthorityAddress);
@@ -211,46 +216,38 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
 
             it('should successfully register the asset proxies in the exchange', async () => {
                 // Register the asset proxies in the exchange.
-                await registerAssetProxyAndAssertSuccessAsync(exchange, erc20Proxy.address, constants.ERC20_PROXY_ID);
-                await registerAssetProxyAndAssertSuccessAsync(exchange, erc721Proxy.address, constants.ERC721_PROXY_ID);
-                await registerAssetProxyAndAssertSuccessAsync(
-                    exchange,
-                    erc1155Proxy.address,
-                    constants.ERC1155_PROXY_ID,
-                );
+                await registerAssetProxyAndAssertSuccessAsync(exchange, erc20Proxy.address, AssetProxyId.ERC20);
+                await registerAssetProxyAndAssertSuccessAsync(exchange, erc721Proxy.address, AssetProxyId.ERC721);
+                await registerAssetProxyAndAssertSuccessAsync(exchange, erc1155Proxy.address, AssetProxyId.ERC1155);
                 await registerAssetProxyAndAssertSuccessAsync(
                     exchange,
                     multiAssetProxy.address,
-                    constants.MULTI_ASSET_PROXY_ID,
+                    AssetProxyId.MultiAsset,
                 );
                 await registerAssetProxyAndAssertSuccessAsync(
                     exchange,
                     staticCallProxy.address,
-                    constants.STATIC_CALL_PROXY_ID,
+                    AssetProxyId.StaticCall,
                 );
             });
 
             it('should successfully register the asset proxies in the multi-asset proxy', async () => {
                 // Register the asset proxies in the multi-asset proxy.
-                await registerAssetProxyAndAssertSuccessAsync(
-                    multiAssetProxy,
-                    erc20Proxy.address,
-                    constants.ERC20_PROXY_ID,
-                );
+                await registerAssetProxyAndAssertSuccessAsync(multiAssetProxy, erc20Proxy.address, AssetProxyId.ERC20);
                 await registerAssetProxyAndAssertSuccessAsync(
                     multiAssetProxy,
                     erc721Proxy.address,
-                    constants.ERC721_PROXY_ID,
+                    AssetProxyId.ERC721,
                 );
                 await registerAssetProxyAndAssertSuccessAsync(
                     multiAssetProxy,
                     erc1155Proxy.address,
-                    constants.ERC1155_PROXY_ID,
+                    AssetProxyId.ERC1155,
                 );
                 await registerAssetProxyAndAssertSuccessAsync(
                     multiAssetProxy,
                     staticCallProxy.address,
-                    constants.STATIC_CALL_PROXY_ID,
+                    AssetProxyId.StaticCall,
                 );
             });
 
@@ -273,12 +270,12 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         describe('staking specific', () => {
             it('should have properly configured the staking proxy with the logic contract and read-only proxy', async () => {
                 // Ensure that the registered read-only proxy is correct.
-                const readOnlyProxyAddres = await stakingProxy.readOnlyProxy.callAsync();
-                expect(readOnlyProxyAddres).to.be.eq(readOnlyProxy.address);
+                const readOnlyProxyAddress = await stakingProxy.readOnlyProxy.callAsync();
+                expect(readOnlyProxyAddress).to.be.eq(readOnlyProxy.address);
 
                 // Ensure that the registered read-only proxy callee is correct.
-                const readOnlyProxyCalleeAddres = await stakingProxy.readOnlyProxyCallee.callAsync();
-                expect(readOnlyProxyCalleeAddres).to.be.eq(staking.address);
+                const readOnlyProxyCalleeAddress = await stakingProxy.readOnlyProxyCallee.callAsync();
+                expect(readOnlyProxyCalleeAddress).to.be.eq(staking.address);
 
                 // Ensure that the registered staking contract is correct.
                 const stakingAddress = await stakingProxy.stakingContract.callAsync();
@@ -288,13 +285,16 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             it('should have initialized the correct parameters in the staking proxy', async () => {
                 // Ensure that the correct parameters were set.
                 const params = await stakingWrapper.getParams.callAsync();
-                expect(params.length).to.be.eq(6);
-                expect(params[0]).bignumber.to.be.eq(new BigNumber(864000)); // epochDurationInSeconds
-                expect(params[1]).bignumber.to.be.eq(new BigNumber(900000)); // rewardDelegatedStakeWeight
-                expect(params[2]).bignumber.to.be.eq(new BigNumber(100000000000000000000)); // minimumPoolStake
-                expect(params[3]).bignumber.to.be.eq(10); // maximumMakerInPool
-                expect(params[4]).bignumber.to.be.eq(1); // cobbDouglasAlphaNumerator
-                expect(params[5]).bignumber.to.be.eq(2); // cobbDouglasAlphaDenominator
+                expect(params).to.be.deep.eq(
+                    [
+                        864000, // epochDurationInSeconds
+                        900000, // rewardDelegatedStakeWeight
+                        100000000000000000000, // minimumPoolStake
+                        10, // maximumMakerInPool
+                        1, // cobbDouglasAlphaNumerator
+                        2, // cobbDouglasAlphaDenominator
+                    ].map(value => new BigNumber(value)),
+                );
             });
         });
 
@@ -306,10 +306,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 });
 
                 // Ensure that the correct events were logged.
-                expect(receipt.logs.length).to.be.eq(1);
-                const log = receipt.logs[0] as LogWithDecodedArgs<MixinExchangeManagerExchangeAddedEventArgs>;
-                expect(log.event).to.be.eq('ExchangeAdded');
-                expect(log.args.exchangeAddress).to.be.eq(exchange.address);
+                const logs = filterLogsToArguments<StakingExchangeAddedEventArgs>(
+                    receipt.logs,
+                    StakingEvents.ExchangeAdded,
+                );
+                expect(logs).to.be.deep.eq([{ exchangeAddress: exchange.address }]);
 
                 // Ensure that the exchange was registered.
                 const wasRegistered = await stakingWrapper.validExchanges.callAsync(exchange.address);
@@ -326,13 +327,16 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 );
 
                 // Ensure that the correct events were logged.
-                expect(receipt.logs.length).to.be.eq(1);
-                const log = receipt.logs[0] as LogWithDecodedArgs<
-                    MixinProtocolFeesProtocolFeeCollectorAddressEventArgs
-                >;
-                expect(log.event).to.be.eq('ProtocolFeeCollectorAddress');
-                expect(log.args.oldProtocolFeeCollector).bignumber.to.be.eq(constants.NULL_ADDRESS);
-                expect(log.args.updatedProtocolFeeCollector).bignumber.to.be.eq(stakingProxy.address);
+                const logs = filterLogsToArguments<ExchangeProtocolFeeCollectorAddressEventArgs>(
+                    receipt.logs,
+                    ExchangeEvents.ProtocolFeeCollectorAddress,
+                );
+                expect(logs).to.be.deep.eq([
+                    {
+                        oldProtocolFeeCollector: constants.NULL_ADDRESS,
+                        updatedProtocolFeeCollector: stakingProxy.address,
+                    },
+                ]);
 
                 // Ensure that the staking contract was registered.
                 const feeCollector = await exchange.protocolFeeCollector.callAsync();
@@ -346,11 +350,16 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 );
 
                 // Ensure that the correct events were logged.
-                expect(receipt.logs.length).to.be.eq(1);
-                const log = receipt.logs[0] as LogWithDecodedArgs<MixinProtocolFeesProtocolFeeMultiplierEventArgs>;
-                expect(log.event).to.be.eq('ProtocolFeeMultiplier');
-                expect(log.args.oldProtocolFeeMultiplier).bignumber.to.be.eq(constants.ZERO_AMOUNT);
-                expect(log.args.updatedProtocolFeeMultiplier).bignumber.to.be.eq(protocolFeeMultiplier);
+                const logs = filterLogsToArguments<ExchangeProtocolFeeMultiplierEventArgs>(
+                    receipt.logs,
+                    ExchangeEvents.ProtocolFeeMultiplier,
+                );
+                expect(logs).to.be.deep.eq([
+                    {
+                        oldProtocolFeeMultiplier: constants.ZERO_AMOUNT,
+                        updatedProtocolFeeMultiplier: protocolFeeMultiplier,
+                    },
+                ]);
 
                 // Ensure that the protocol fee multiplier was set correctly.
                 const multiplier = await exchange.protocolFeeMultiplier.callAsync();
@@ -360,19 +369,18 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
     });
 
     describe('transferring ownership', () => {
-        // TODO(jalextowle): Express this in a type-safe way (during a debt-demolition)
         // Removes authorization of the "externally owned address" owner and transfers the authorization
         // to the asset proxy owner.
-        async function transferAuthorizationAndAssertSuccessAsync(contract: any): Promise<void> {
+        async function transferAuthorizationAndAssertSuccessAsync(contract: Authorizable): Promise<void> {
             // Remove authorization from the old owner.
             let receipt = await contract.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
 
             // Ensure that the correct log was recorded.
-            expect(receipt.logs.length).to.be.eq(1);
-            let log = receipt.logs[0] as LogWithDecodedArgs<AuthorizableAuthorizedAddressRemovedEventArgs>;
-            expect(log.event).to.be.eq('AuthorizedAddressRemoved');
-            expect(log.args.target).to.be.eq(owner);
-            expect(log.args.caller).to.be.eq(owner);
+            let logs = filterLogsToArguments<AuthorizableAuthorizedAddressRemovedEventArgs>(
+                receipt.logs,
+                AuthorizableEvents.AuthorizedAddressRemoved,
+            );
+            expect(logs).to.be.deep.eq([{ target: owner, caller: owner }]);
 
             // Ensure that the owner was actually removed.
             let isAuthorized = await contract.authorized.callAsync(owner);
@@ -384,20 +392,19 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             });
 
             // Ensure that the correct log was recorded.
-            expect(receipt.logs.length).to.be.eq(1);
-            log = receipt.logs[0] as LogWithDecodedArgs<AuthorizableAuthorizedAddressRemovedEventArgs>;
-            expect(log.event).to.be.eq('AuthorizedAddressAdded');
-            expect(log.args.target).to.be.eq(assetProxyOwner.address);
-            expect(log.args.caller).to.be.eq(owner);
+            logs = filterLogsToArguments<AuthorizableAuthorizedAddressAddedEventArgs>(
+                receipt.logs,
+                AuthorizableEvents.AuthorizedAddressAdded,
+            );
+            expect(logs).to.be.deep.eq([{ target: assetProxyOwner.address, caller: owner }]);
 
             // Ensure that the asset-proxy owner was actually authorized.
             isAuthorized = await contract.authorized.callAsync(assetProxyOwner.address);
             expect(isAuthorized).to.be.true();
         }
 
-        // TODO(jalextowle): Express this in a type-safe way (during a debt-demolition)
         // Transfers ownership of a contract to the asset-proxy owner, and ensures that the change was actually made.
-        async function transferOwnershipAndAssertSuccessAsync(contract: any): Promise<void> {
+        async function transferOwnershipAndAssertSuccessAsync(contract: Ownable): Promise<void> {
             // Transfer ownership to the new owner.
             await contract.transferOwnership.awaitTransactionSuccessAsync(assetProxyOwner.address, { from: owner });
 

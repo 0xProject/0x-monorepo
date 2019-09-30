@@ -51,7 +51,6 @@
     "devDependencies": {
         "@0x/abi-gen": "^4.1.0",
         "@0x/contracts-gen": "^1.0.13",
-        "@0x/contracts-exchange": "^2.1.14",
         "@0x/contracts-multisig": "^3.1.14",
         "@0x/contracts-test-utils": "^3.1.2",
         "@0x/dev-utils": "^2.2.1",
