@@ -56,9 +56,11 @@ contract TestFinalizer is
     )
         public
     {
+        _addAuthorizedAddress(msg.sender);
         init();
         _operatorRewardsReceiver = operatorRewardsReceiver;
         _membersRewardsReceiver = membersRewardsReceiver;
+        _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
     /// @dev Activate a pool in the current epoch.

@@ -40,7 +40,9 @@ contract TestDelegatorRewards is
     }
 
     constructor() public {
+        _addAuthorizedAddress(msg.sender);
         init();
+        _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
