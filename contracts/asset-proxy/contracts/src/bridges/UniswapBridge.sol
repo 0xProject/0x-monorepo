@@ -20,20 +20,30 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IWallet.sol";
-import "../interfaces/IUniswap.sol";
+import "../interfaces/IUniswapExchangeFactory.sol";
+import "../interfaces/IUniswapExchange.sol";
 import "./ERC20Bridge.sol";
 
 
 // solhint-disable space-after-comma
-contract UniswaBridge is
+contract UniswapBridge is
     ERC20Bridge,
     IWallet
 {
     bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
     /* Mainnet addresses */
-    address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = address(0);
+    address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
+    // Struct to hold `withdrawTo()` local variables in memory and to avoid
+    // stack overflows.
+    struct WithdrawToState {
+        IUniswapExchange exchange;
+        uint256 fromTokenBalance;
+        IEtherToken weth;
+    }
 
     /// @dev Whether we've granted an allowance to a spender for a token.
     mapping (address => mapping (address => bool)) private _hasAllowance;
@@ -51,37 +61,41 @@ contract UniswaBridge is
         address /* from */,
         address to,
         uint256 amount,
-        bytes calldata bridgeData,
+        bytes calldata bridgeData
     )
         external
         returns (bytes4 success)
     {
+        // State memory object to avoid stack overflows.
+        WithdrawToState memory state;
         // Decode the bridge data to get the `fromTokenAddress`.
         (address fromTokenAddress) = abi.decode(bridgeData, (address));
 
         // Just transfer the tokens if they're the same.
         if (fromTokenAddress == toTokenAddress) {
-            IERC20Token(fromToken).transfer(to, amount);
+            IERC20Token(fromTokenAddress).transfer(to, amount);
             return BRIDGE_SUCCESS;
         }
 
         // Get the exchange for the token pair.
-        IUniswapExchange exchange = _getUniswapExchangeForTokenPair(
+        state.exchange = _getUniswapExchangeForTokenPair(
             fromTokenAddress,
             toTokenAddress
         );
         // Grant an allowance to the exchange.
-        _grantAllowanceForTokens(address(exchange), [fromTokenAddress, toTokenAddress]);
+        _grantAllowanceForTokens(address(state.exchange), [fromTokenAddress, toTokenAddress]);
         // Get our balance of `fromTokenAddress` token.
-        uint256 fromTokenBalance = IERC20Token(fromToken).balanceOf(address(this));
+        state.fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
+        // Get the weth contract.
+        state.weth = _getWethContract();
 
         // Convert from WETH to a token.
-        if (fromTokenAddress == address(weth)) {
+        if (fromTokenAddress == address(state.weth)) {
             // Unwrap the WETH.
-            _getWethContract().withdraw(fromTokenBalance);
+            state.weth.withdraw(state.fromTokenBalance);
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
-            exchange.ethToTokenTransferInput.value(fromTokenBalance)(
+            state.exchange.ethToTokenTransferInput.value(state.fromTokenBalance)(
                 // No minimum buy amount.
                 0,
                 // Expires after this block.
@@ -91,18 +105,18 @@ contract UniswaBridge is
             );
 
         // Convert from a token to WETH.
-        } else if (toTokenAddress == address(weth)) {
+        } else if (toTokenAddress == address(state.weth)) {
             // Buy as much ETH with `toTokenAddress` token as possible.
-            uint256 ethBought = exchange.tokenToEthSwapInput(
+            uint256 ethBought = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
-                fromTokenBalance,
+                state.fromTokenBalance,
+                // No minimum buy amount.
+                0,
                 // Expires after this block.
-                block.timestamp,
-                // Recipient is `to`.
-                to
+                block.timestamp
             );
             // Wrap the ETH.
-            _getWethContract().deposit.value(ethBought)();
+            state.weth.deposit.value(ethBought)();
             // Transfer the WETH to `to`.
             IERC20Token(toTokenAddress).transfer(to, ethBought);
 
@@ -110,9 +124,9 @@ contract UniswaBridge is
         } else {
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
             // and transfer it to `to`.
-            exchange.tokenToTokenTransferInput(
+            state.exchange.tokenToTokenTransferInput(
                 // Sell all tokens we hold.
-                fromTokenBalance,
+                state.fromTokenBalance,
                 // No minimum buy amount.
                 0,
                 // No minimum intermediate ETH buy amount.
@@ -147,9 +161,9 @@ contract UniswaBridge is
     function _getWethContract()
         internal
         view
-        returns (IERC20Token token)
+        returns (IEtherToken token)
     {
-        return IERC20Token(WETH_ADDRESS);
+        return IEtherToken(WETH_ADDRESS);
     }
 
     /// @dev Overridable way to get the uniswap exchange factory contract.
@@ -159,17 +173,17 @@ contract UniswaBridge is
         view
         returns (IUniswapExchangeFactory factory)
     {
-        return IUniswapExchangeFactory(ETH2DAI_ADDRESS);
+        return IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS);
     }
 
-    /// @dev Grants an unlimited allowance to `spender` for `fromTokenAddress`
-    ///      and `toTokenAddress` tokens, if they're not WETH and we haven't
-    ///      already granted `spender` an allowance.
+    /// @dev Grants an unlimited allowance to `spender` for the tokens passed,
+    ///      if they're not WETH and we haven't already granted `spender` an
+    ///      allowance.
     /// @param spender The spender being granted an aloowance.
     /// @param tokenAddresses Array of token addresses.
     function _grantAllowanceForTokens(
         address spender,
-        address[2] memory tokenAddresses,
+        address[2] memory tokenAddresses
     )
         private
     {
@@ -210,9 +224,8 @@ contract UniswaBridge is
         view
         returns (IUniswapExchange exchange)
     {
-        address exchangeAddress = _getUniswapExchangeFactoryContract()
-            .getExchange(tokenAddress);
-        require(exchangeAddress != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
-        return IUniswapExchange(exchangeAddress);
+        exchange = _getUniswapExchangeFactoryContract().getExchange(tokenAddress);
+        require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
+        return exchange;
     }
 }

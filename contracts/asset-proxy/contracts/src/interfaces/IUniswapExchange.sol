@@ -19,7 +19,6 @@
 pragma solidity ^0.5.9;
 
 
-// solhint-disable func-param-name-mixedcase
 interface IUniswapExchange {
 
     /// @dev Buys at least `minTokensBought` tokens with ETH and transfer them
@@ -30,7 +29,7 @@ interface IUniswapExchange {
     /// @return tokensBought Amount of tokens bought.
     function ethToTokenTransferInput(
         uint256 minTokensBought,
-        uint64 deadline,
+        uint256 deadline,
         address recipient
     )
         external
@@ -45,7 +44,7 @@ interface IUniswapExchange {
     function tokenToEthSwapInput(
         uint256 tokensSold,
         uint256 minEthBought,
-        uint64 deadline
+        uint256 deadline
     )
         external
         payable
@@ -63,21 +62,10 @@ interface IUniswapExchange {
         uint256 tokensSold,
         uint256 minTokensBought,
         uint256 minEthBought,
-        uint64 deadline,
+        uint256 deadline,
         address recipient,
         address toTokenAddress
     )
         external
         returns (uint256 tokensBought);
-}
-
-
-interface IUniswapExchangeFactory {
-
-    /// @dev Get the exchange for a token.
-    /// @param tokenAddress The address of the token contract.
-    function getExchange(address tokenAddress)
-        external
-        view
-        returns (IUniswapExchange);
 }
