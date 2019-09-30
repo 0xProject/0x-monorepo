@@ -16,7 +16,7 @@ import { LogWithDecodedArgs, SupportedProvider, TxData } from 'ethereum-types';
 import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
 
-export async function submitAndExecuteTransactionAsync(
+async function submitAndExecuteTransactionAsync(
     assetProxyOwner: AssetProxyOwnerContract,
     destination: string,
     data: string,
@@ -26,12 +26,18 @@ export async function submitAndExecuteTransactionAsync(
         constants.ZERO_AMOUNT,
         data,
     );
+    // tslint:disable-next-line:no-unnecessary-type-assertion
     const txId = (txReceipt.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>).args.transactionId;
     logUtils.log(`${txId} submitted`);
     await assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(txId);
     logUtils.log(`${txId} executed`);
 }
 
+/**
+ * Deploys all 3.0 contracts and reconfigures existing 2.0 contracts.
+ * @param supportedProvider  Web3 provider instance. Your provider instance should connect to the testnet you want to deploy to.
+ * @param txDefaults Default transaction values to use when deploying contracts (e.g., specify the desired contract creator with the `from` parameter).
+ */
 export async function runMigrationsAsync(supportedProvider: SupportedProvider, txDefaults: TxData): Promise<void> {
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
     const web3Wrapper = new Web3Wrapper(provider);
