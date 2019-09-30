@@ -56,6 +56,7 @@
         "bowser": "^1.9.4",
         "copy-to-clipboard": "^3.0.8",
         "ethereum-types": "^2.1.6",
+        "fortmatic": "^0.8.2",
         "lodash": "^4.17.11",
         "polished": "^1.9.2",
         "react": "^16.5.2",

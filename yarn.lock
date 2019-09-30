@@ -994,6 +994,12 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.2"
 
+"@babel/runtime@7.3.4":
+  version "7.3.4"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.3.4.tgz#73d12ba819e365fcf7fd152aed56d6df97d21c83"
+  dependencies:
+    regenerator-runtime "^0.12.0"
+
 "@babel/runtime@^7.1.5", "@babel/runtime@^7.3.1":
   version "7.5.5"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.5.5.tgz#74fba56d35efbeca444091c7850ccd494fd2f132"
@@ -7810,6 +7816,12 @@ format-util@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/format-util/-/format-util-1.0.3.tgz#032dca4a116262a12c43f4c3ec8566416c5b2d95"
 
+fortmatic@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/fortmatic/-/fortmatic-0.8.2.tgz#a93fc97d1a1808faf82210d6554e1ebdcb6c5379"
+  dependencies:
+    "@babel/runtime" "7.3.4"
+
 forwarded@~0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
@@ -14339,6 +14351,10 @@ regenerate@^1.2.1:
 regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
+
+regenerator-runtime@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.12.1.tgz#fa1a71544764c036f8c49b13a08b2594c9f8a0de"
 
 regenerator-runtime@^0.13.2:
   version "0.13.2"
