@@ -10,3 +10,4 @@ declare module '*.json' {
     export default json;
     /* tslint:enable */
 }
+declare module 'fortmatic';
