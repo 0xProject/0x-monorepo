@@ -85,7 +85,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         erc721Proxy: '0x2a9127c745688a165106c11cd4d647d2220af821',
         zrxToken: '0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa',
         etherToken: '0xd0a1e359811322d97991e03f863a0c30c2cf029c',
-        exchange: '0x30589010550762d2f0d06f650d8e8b6ade6dbf4b',
+        exchange: '0x617602cd3f734cf1e028c96b3f54c0489bed8022',
         assetProxyOwner: '0x2c824d2882baa668e0d5202b1e7f2922278703f8',
         forwarder: '0x1ebdc9758e85c1c6a85af06cc96cf89000a31913',
         orderValidator: '0xbcd49bf9b75cab056610fab3c788e8ce1b209f30',
