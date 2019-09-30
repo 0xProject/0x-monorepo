@@ -21,6 +21,7 @@ blockchainTests('Configurable Parameters unit tests', env => {
             env.txDefaults,
             artifacts,
         );
+        await testContract.addAuthorizedAddress.awaitTransactionSuccessAsync(authorizedAddress);
     });
 
     blockchainTests.resets('setParams()', () => {

@@ -95,20 +95,6 @@ blockchainTests.resets('Exchange Unit Tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should successfully add an exchange if called by the (authorized) owner', async () => {
-            // Register a new exchange.
-            const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
-                from: owner,
-            });
-
-            // Ensure that the logged event was correct.
-            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeAdded, nonExchange, receipt);
-
-            // Ensure that the exchange was successfully registered.
-            const isValidExchange = await exchangeManager.validExchanges.callAsync(nonExchange);
-            expect(isValidExchange).to.be.true();
-        });
-
         it('should successfully add an exchange if called by an authorized address', async () => {
             // Register a new exchange.
             const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
@@ -140,20 +126,6 @@ blockchainTests.resets('Exchange Unit Tests', env => {
                 from: nonAuthority,
             });
             return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should successfully remove an exchange if called by the (authorized) owner', async () => {
-            // Remove the registered exchange.
-            const receipt = await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, {
-                from: owner,
-            });
-
-            // Ensure that the logged event was correct.
-            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeRemoved, exchange, receipt);
-
-            // Ensure that the exchange was removed.
-            const isValidExchange = await exchangeManager.validExchanges.callAsync(exchange);
-            expect(isValidExchange).to.be.false();
         });
 
         it('should successfully remove a registered exchange if called by an authorized address', async () => {

@@ -57,6 +57,8 @@ blockchainTests.resets('ZrxVault unit tests', env => {
             zrxTokenContract.address,
         );
 
+        await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(owner);
+
         // configure erc20 proxy to accept calls from zrx vault
         await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVault.address);
     });
