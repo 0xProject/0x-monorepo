@@ -86,9 +86,6 @@ contract OrderValidationUtils is
                 takerAssetAmount
             );
         } else {
-            // Get the transferable amount of the `makerFeeAsset`
-            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
-
             // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
             if (makerFee == 0) {
                 transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
@@ -100,6 +97,9 @@ contract OrderValidationUtils is
             // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
             // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
             } else {
+                // Get the transferable amount of the `makerFeeAsset`
+                uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
+
                 uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
