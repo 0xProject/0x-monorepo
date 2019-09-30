@@ -95,7 +95,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xf6313a772c222f51c28f2304c0703b8cf5428fd8',
         staticCallProxy: '0x48e94bdb9033640d45ea7c721e25f380f8bffa43',
         erc1155Proxy: '0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f',
-        devUtils: '0xa5f985e8df08e17e88001dd85724707bcb80e413',
+        devUtils: '0xb1863ac46ae23ec55d6eeb8ecc8815655ee638a8',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
