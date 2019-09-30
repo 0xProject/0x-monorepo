@@ -39,8 +39,12 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const chainId = new BigNumber(await providerUtils.getChainIdAsync(provider));
     const deployedAddresses = getContractAddressesForNetworkOrThrow(networkId);
 
+    // NOTE: This must be deployed before running these migrations, since its address is hard coded in the
+    // staking logic contract.
     const zrxVault = new ZrxVaultContract(deployedAddresses.zrxVault, provider, txDefaults);
 
+    // NOTE: This may need to be deployed in its own step, since this contract requires a smaller
+    // amount of optimizer runs in order to deploy below the codesize limit.
     const stakingLogic = await StakingContract.deployFrom0xArtifactAsync(
         stakingArtifacts.Staking,
         provider,
