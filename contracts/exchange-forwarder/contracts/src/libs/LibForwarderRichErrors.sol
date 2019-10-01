@@ -35,10 +35,6 @@ library LibForwarderRichErrors {
     bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
         0x91353a0c;
 
-    // bytes4(keccak256("MakerAssetMismatchError(bytes,bytes)"))
-    bytes4 internal constant MAKER_ASSET_MISMATCH_ERROR_SELECTOR =
-        0x56677f2c;
-
     // bytes4(keccak256("UnsupportedFeeError(bytes)"))
     bytes4 internal constant UNSUPPORTED_FEE_ERROR_SELECTOR =
         0x31360af1;
@@ -105,21 +101,6 @@ library LibForwarderRichErrors {
             COMPLETE_BUY_FAILED_ERROR_SELECTOR,
             expectedAssetBuyAmount,
             actualAssetBuyAmount
-        );
-    }
-
-    function MakerAssetMismatchError(
-        bytes memory firstOrderMakerAssetData,
-        bytes memory mismatchedMakerAssetData
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            MAKER_ASSET_MISMATCH_ERROR_SELECTOR,
-            firstOrderMakerAssetData,
-            mismatchedMakerAssetData
         );
     }
 

@@ -53,6 +53,11 @@ contract MixinForwarderCore is
             LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
         }
         ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
+
+        address protocolFeeCollector = EXCHANGE.protocolFeeCollector();
+        if (protocolFeeCollector != address(0)) {
+            ETHER_TOKEN.approve(protocolFeeCollector, MAX_UINT);
+        }
     }
 
     /// @dev Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent

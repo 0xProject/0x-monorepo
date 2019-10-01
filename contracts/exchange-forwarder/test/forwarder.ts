@@ -119,15 +119,12 @@ blockchainTests(ContractName.Forwarder, env => {
             env.txDefaults,
             {},
             wethContract.address,
-            erc20Proxy.address,
         );
         await exchangeContract.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER);
         await exchangeContract.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(
             protocolFeeCollector.address,
         );
-        await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(protocolFeeCollector.address, {
-            from: owner,
-        });
+        erc20Wrapper.addTokenOwnerAddress(protocolFeeCollector.address);
 
         // Set defaults
         defaultMakerAssetAddress = erc20Token.address;
@@ -157,7 +154,9 @@ blockchainTests(ContractName.Forwarder, env => {
             wethAssetData,
         );
         forwarderWrapper = new ForwarderWrapper(forwarderContract, env.provider);
-        await forwarderWrapper.approveMakerAssetProxyAsync(defaultOrderParams.makerAssetData, { from: takerAddress });
+        await forwarderWrapper.approveMakerAssetProxyAsync(assetDataUtils.encodeERC20AssetData(erc20Token.address), {
+            from: takerAddress,
+        });
         erc20Wrapper.addTokenOwnerAddress(forwarderContract.address);
 
         // Set up factories
@@ -310,27 +309,6 @@ blockchainTests(ContractName.Forwarder, env => {
             const totalEthSpent = order.takerAssetAmount.plus(PROTOCOL_FEE).plus(GAS_PRICE.times(tx.gasUsed));
 
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
-        });
-        it('should fail to fill orders with mismatched makerAssetData', async () => {
-            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
-            const firstOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: firstOrderMakerAssetData,
-            });
-
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
-            const secondOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: secondOrderMakerAssetData,
-            });
-
-            const orders = [firstOrder, secondOrder];
-
-            const revertError = new ForwarderRevertErrors.MakerAssetMismatchError(
-                firstOrderMakerAssetData,
-                secondOrderMakerAssetData,
-            );
-            await forwarderTestFactory.marketSellTestAsync(orders, 2, erc20Token, {
-                revertError,
-            });
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
             const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);

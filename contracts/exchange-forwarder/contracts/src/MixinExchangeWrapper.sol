@@ -154,13 +154,6 @@ contract MixinExchangeWrapper is
         uint256 protocolFee = tx.gasprice.safeMul(EXCHANGE.protocolFeeMultiplier());
 
         for (uint256 i = 0; i != ordersLength; i++) {
-            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
-                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
-                    orders[0].makerAssetData,
-                    orders[i].makerAssetData
-                ));
-            }
-
             // Preemptively skip to avoid division by zero in _marketSellSingleOrder
             if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
                 continue;
@@ -284,13 +277,6 @@ contract MixinExchangeWrapper is
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
-                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
-                    orders[0].makerAssetData,
-                    orders[i].makerAssetData
-                ));
-            }
-
             // Preemptively skip to avoid division by zero in _marketBuySingleOrder
             if (orders[i].makerAssetAmount == 0 || orders[i].takerAssetAmount == 0) {
                 continue;

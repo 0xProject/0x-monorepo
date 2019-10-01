@@ -19,25 +19,20 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetData.sol";
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 
 
  // solhint-disable no-unused-vars
 contract TestProtocolFeeCollector {
 
     address private _wethAddress;
-    address private _wethAssetProxyAddress;
 
     constructor (
-        address wethAddress,
-        address wethAssetProxyAddress
+        address wethAddress
     )
         public
     {
         _wethAddress = wethAddress;
-        _wethAssetProxyAddress = wethAssetProxyAddress;
     }
 
     /// @dev Pays a protocol fee in WETH (Forwarder orders will always pay protocol fees in WETH).
@@ -54,14 +49,8 @@ contract TestProtocolFeeCollector {
     {
         assert(msg.value == 0);
 
-        IAssetProxy wethAssetProxy = IAssetProxy(_wethAssetProxyAddress);
-        bytes memory wethAssetData = abi.encodeWithSelector(
-            IAssetData(address(0)).ERC20Token.selector,
-            _wethAddress
-        );
         // Transfer the protocol fee to this address in WETH.
-        wethAssetProxy.transferFrom(
-            wethAssetData,
+        IEtherToken(_wethAddress).transferFrom(
             payerAddress,
             address(this),
             protocolFeePaid

@@ -27,19 +27,6 @@ export class CompleteBuyFailedError extends RevertError {
     }
 }
 
-export class MakerAssetMismatchError extends RevertError {
-    constructor(firstOrderMakerAssetData?: string, mismatchedMakerAssetData?: string) {
-        super(
-            'MakerAssetMismatchError',
-            'MakerAssetMismatchError(bytes firstOrderMakerAssetData, bytes mismatchedMakerAssetData)',
-            {
-                firstOrderMakerAssetData,
-                mismatchedMakerAssetData,
-            },
-        );
-    }
-}
-
 export class UnsupportedFeeError extends RevertError {
     constructor(takerFeeAssetData?: string) {
         super('UnsupportedFeeError', 'UnsupportedFeeError(bytes takerFeeAssetData)', { takerFeeAssetData });
@@ -105,7 +92,6 @@ const types = [
     UnregisteredAssetProxyError,
     UnsupportedAssetProxyError,
     CompleteBuyFailedError,
-    MakerAssetMismatchError,
     UnsupportedFeeError,
     FeePercentageTooLargeError,
     InsufficientEthForFeeError,
