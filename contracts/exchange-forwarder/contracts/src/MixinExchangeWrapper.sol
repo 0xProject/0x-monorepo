@@ -27,10 +27,12 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
+import "./MixinAssets.sol";
 
 
 contract MixinExchangeWrapper is
-    LibConstants
+    LibConstants,
+    MixinAssets
 {
     using LibSafeMath for uint256;
 
@@ -72,14 +74,12 @@ contract MixinExchangeWrapper is
     /// @param order A single order specification.
     /// @param signature Signature for the given order.
     /// @param remainingTakerAssetFillAmount Remaining amount of WETH to sell.
-    /// @param protocolFee Amount of WETH that will be spent on the protocol fee for each order.
     /// @return wethSpentAmount Amount of WETH spent on the given order.
     /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given order.
     function _marketSellSingleOrder(
         LibOrder.Order memory order,
         bytes memory signature,
-        uint256 remainingTakerAssetFillAmount,
-        uint256 protocolFee
+        uint256 remainingTakerAssetFillAmount
     )
         internal
         returns (
@@ -92,7 +92,7 @@ contract MixinExchangeWrapper is
             // Attempt to sell the remaining amount of WETH
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
                 order,
-                remainingTakerAssetFillAmount.safeSub(protocolFee),
+                remainingTakerAssetFillAmount,
                 signature
             );
 
@@ -110,7 +110,7 @@ contract MixinExchangeWrapper is
             uint256 takerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
                 order.takerAssetAmount.safeAdd(order.takerFee),
-                remainingTakerAssetFillAmount.safeSub(protocolFee)
+                remainingTakerAssetFillAmount
             );
 
             LibFillResults.FillResults memory singleFillResults = _fillOrderNoThrow(
@@ -161,7 +161,8 @@ contract MixinExchangeWrapper is
 
             // The remaining amount of WETH to sell
             uint256 remainingTakerAssetFillAmount = wethSellAmount
-                .safeSub(totalWethSpentAmount);
+                .safeSub(totalWethSpentAmount)
+                .safeSub(protocolFee);
 
             (
                 uint256 wethSpentAmount,
@@ -169,9 +170,10 @@ contract MixinExchangeWrapper is
             ) = _marketSellSingleOrder(
                 orders[i],
                 signatures[i],
-                remainingTakerAssetFillAmount,
-                protocolFee
+                remainingTakerAssetFillAmount
             );
+
+            _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
 
             totalWethSpentAmount = totalWethSpentAmount
                 .safeAdd(wethSpentAmount);
@@ -293,6 +295,8 @@ contract MixinExchangeWrapper is
                 signatures[i],
                 remainingMakerAssetFillAmount
             );
+
+            _transferAssetToSender(orders[i].makerAssetData, makerAssetAcquiredAmount);
 
             totalWethSpentAmount = totalWethSpentAmount
                 .safeAdd(wethSpentAmount);

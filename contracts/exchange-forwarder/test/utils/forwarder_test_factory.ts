@@ -3,6 +3,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeWrapper } from '@0x/contracts-exchange';
 import { constants, ERC20BalancesByOwner, expect, OrderStatus, web3Wrapper } from '@0x/contracts-test-utils';
+import { assetDataUtils } from '@0x/order-utils';
 import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
@@ -12,10 +13,14 @@ import { ForwarderWrapper } from './forwarder_wrapper';
 // Necessary bookkeeping to validate Forwarder results
 interface ForwarderFillState {
     takerAssetFillAmount: BigNumber;
-    makerAssetFillAmount: BigNumber;
+    makerAssetFillAmount: {
+        [makerAssetData: string]: BigNumber;
+    };
     protocolFees: BigNumber;
     wethFees: BigNumber;
-    percentageFees: BigNumber;
+    percentageFees: {
+        [makerAssetData: string]: BigNumber;
+    };
     maxOversoldWeth: BigNumber;
     maxOverboughtMakerAsset: BigNumber;
 }
@@ -51,7 +56,7 @@ export class ForwarderTestFactory {
     public async marketBuyTestAsync(
         orders: SignedOrder[],
         fractionalNumberOfOrdersToFill: number,
-        makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
+        makerAssetContracts: Array<DummyERC20TokenContract | DummyERC721TokenContract>,
         options: {
             ethValueAdjustment?: number; // Used to provided insufficient/excess ETH
             forwarderFeePercentage?: BigNumber;
@@ -83,9 +88,16 @@ export class ForwarderTestFactory {
             constants.PERCENTAGE_DENOMINATOR,
             forwarderFeePercentage,
         );
+
+        const totalMakerAssetFillAmount = Object.values(expectedResults.makerAssetFillAmount).reduce((prev, current) =>
+            prev.plus(current),
+        );
+        const totalPercentageFees = Object.values(expectedResults.percentageFees).reduce((prev, current) =>
+            prev.plus(current),
+        );
         const tx = this._forwarderWrapper.marketBuyOrdersWithEthAsync(
             orders,
-            expectedResults.makerAssetFillAmount.minus(expectedResults.percentageFees),
+            totalMakerAssetFillAmount.minus(totalPercentageFees),
             {
                 value: ethValue,
                 from: this._takerAddress,
@@ -110,7 +122,7 @@ export class ForwarderTestFactory {
                 expectedResults,
                 takerEthBalanceBefore,
                 erc20Balances,
-                makerAssetContract,
+                makerAssetContracts,
                 {
                     forwarderFeePercentage,
                     forwarderFeeRecipientEthBalanceBefore,
@@ -123,7 +135,7 @@ export class ForwarderTestFactory {
     public async marketSellTestAsync(
         orders: SignedOrder[],
         fractionalNumberOfOrdersToFill: number,
-        makerAssetContract: DummyERC20TokenContract,
+        makerAssetContracts: DummyERC20TokenContract[],
         options: {
             forwarderFeePercentage?: BigNumber;
             revertError?: RevertError;
@@ -179,7 +191,7 @@ export class ForwarderTestFactory {
                 expectedResults,
                 takerEthBalanceBefore,
                 erc20Balances,
-                makerAssetContract,
+                makerAssetContracts,
                 {
                     forwarderFeePercentage,
                     forwarderFeeRecipientEthBalanceBefore,
@@ -195,31 +207,35 @@ export class ForwarderTestFactory {
         makerAssetContract: DummyERC20TokenContract,
     ): void {
         const makerAssetAddress = makerAssetContract.address;
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerAssetAddress);
+
+        const {
+            maxOverboughtMakerAsset,
+            makerAssetFillAmount: { [makerAssetData]: makerAssetFillAmount },
+            percentageFees: { [makerAssetData]: percentageFees },
+        } = expectedResults;
+
         expectBalanceWithin(
             newBalances[this._makerAddress][makerAssetAddress],
             oldBalances[this._makerAddress][makerAssetAddress]
-                .minus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.maxOverboughtMakerAsset),
-            oldBalances[this._makerAddress][makerAssetAddress].minus(expectedResults.makerAssetFillAmount),
+                .minus(makerAssetFillAmount)
+                .minus(maxOverboughtMakerAsset),
+            oldBalances[this._makerAddress][makerAssetAddress].minus(makerAssetFillAmount),
             'Maker makerAsset balance',
         );
         expectBalanceWithin(
             newBalances[this._takerAddress][makerAssetAddress],
+            oldBalances[this._takerAddress][makerAssetAddress].plus(makerAssetFillAmount).minus(percentageFees),
             oldBalances[this._takerAddress][makerAssetAddress]
-                .plus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.percentageFees),
-            oldBalances[this._takerAddress][makerAssetAddress]
-                .plus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.percentageFees)
-                .plus(expectedResults.maxOverboughtMakerAsset),
+                .plus(makerAssetFillAmount)
+                .minus(percentageFees)
+                .plus(maxOverboughtMakerAsset),
             'Taker makerAsset balance',
         );
         expect(
             newBalances[this._orderFeeRecipientAddress][makerAssetAddress],
             'Order fee recipient makerAsset balance',
-        ).to.be.bignumber.equal(
-            oldBalances[this._orderFeeRecipientAddress][makerAssetAddress].plus(expectedResults.percentageFees),
-        );
+        ).to.be.bignumber.equal(oldBalances[this._orderFeeRecipientAddress][makerAssetAddress].plus(percentageFees));
         expect(
             newBalances[this._forwarderAddress][makerAssetAddress],
             'Forwarder contract makerAsset balance',
@@ -234,7 +250,7 @@ export class ForwarderTestFactory {
         expectedResults: ForwarderFillState,
         takerEthBalanceBefore: BigNumber,
         erc20Balances: ERC20BalancesByOwner,
-        makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
+        makerAssetContracts: Array<DummyERC20TokenContract | DummyERC721TokenContract>,
         options: {
             forwarderFeePercentage?: BigNumber;
             forwarderFeeRecipientEthBalanceBefore?: BigNumber;
@@ -277,11 +293,13 @@ export class ForwarderTestFactory {
             );
         }
 
-        if (makerAssetContract instanceof DummyERC20TokenContract) {
-            this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
-        } else if (options.makerAssetId !== undefined) {
-            const newOwner = await makerAssetContract.ownerOf.callAsync(options.makerAssetId);
-            expect(newOwner, 'New ERC721 owner').to.be.bignumber.equal(this._takerAddress);
+        for (const makerAssetContract of makerAssetContracts) {
+            if (makerAssetContract instanceof DummyERC20TokenContract) {
+                this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
+            } else if (options.makerAssetId !== undefined) {
+                const newOwner = await makerAssetContract.ownerOf.callAsync(options.makerAssetId);
+                expect(newOwner, 'New ERC721 owner').to.be.bignumber.equal(this._takerAddress);
+            }
         }
 
         expectBalanceWithin(
@@ -313,18 +331,25 @@ export class ForwarderTestFactory {
         ordersInfoBefore: OrderInfo[],
         fractionalNumberOfOrdersToFill: number,
     ): ForwarderFillState {
-        const currentState = {
+        const currentState: ForwarderFillState = {
             takerAssetFillAmount: constants.ZERO_AMOUNT,
-            makerAssetFillAmount: constants.ZERO_AMOUNT,
+            makerAssetFillAmount: {},
             protocolFees: constants.ZERO_AMOUNT,
             wethFees: constants.ZERO_AMOUNT,
-            percentageFees: constants.ZERO_AMOUNT,
+            percentageFees: {},
             maxOversoldWeth: constants.ZERO_AMOUNT,
             maxOverboughtMakerAsset: constants.ZERO_AMOUNT,
         };
         let remainingOrdersToFill = fractionalNumberOfOrdersToFill;
 
         for (const [i, order] of orders.entries()) {
+            if (currentState.makerAssetFillAmount[order.makerAssetData] === undefined) {
+                currentState.makerAssetFillAmount[order.makerAssetData] = new BigNumber(0);
+            }
+            if (currentState.percentageFees[order.makerAssetData] === undefined) {
+                currentState.percentageFees[order.makerAssetData] = new BigNumber(0);
+            }
+
             if (remainingOrdersToFill === 0) {
                 break;
             }
@@ -365,7 +390,9 @@ export class ForwarderTestFactory {
             makerAssetAmount = BigNumber.max(makerAssetAmount.minus(makerAssetFilled), constants.ZERO_AMOUNT);
 
             currentState.takerAssetFillAmount = currentState.takerAssetFillAmount.plus(takerAssetAmount);
-            currentState.makerAssetFillAmount = currentState.makerAssetFillAmount.plus(makerAssetAmount);
+            currentState.makerAssetFillAmount[order.makerAssetData] = currentState.makerAssetFillAmount[
+                order.makerAssetData
+            ].plus(makerAssetAmount);
 
             if (this._protocolFeeCollectorAddress !== constants.NULL_ADDRESS) {
                 currentState.protocolFees = currentState.protocolFees.plus(
@@ -373,7 +400,9 @@ export class ForwarderTestFactory {
                 );
             }
             if (order.takerFeeAssetData === order.makerAssetData) {
-                currentState.percentageFees = currentState.percentageFees.plus(takerFee);
+                currentState.percentageFees[order.makerAssetData] = currentState.percentageFees[
+                    order.makerAssetData
+                ].plus(takerFee);
             } else if (order.takerFeeAssetData === order.takerAssetData) {
                 currentState.wethFees = currentState.wethFees.plus(takerFee);
             }

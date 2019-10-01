@@ -28,7 +28,6 @@ import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
 import "./interfaces/IForwarderCore.sol";
-import "./MixinAssets.sol";
 import "./MixinExchangeWrapper.sol";
 import "./MixinWeth.sol";
 
@@ -38,7 +37,6 @@ contract MixinForwarderCore is
     IAssets,
     IForwarderCore,
     MixinWeth,
-    MixinAssets,
     MixinExchangeWrapper
 {
     using LibBytes for bytes;
@@ -93,7 +91,8 @@ contract MixinForwarderCore is
             msg.value
         );
 
-        // Spends up to wethSellAmount to fill orders and pay WETH order fees.
+        // Spends up to wethSellAmount to fill orders, transfers purchased assets to msg.sender,
+        // and pays WETH order fees.
         (
             wethSpentAmount,
             makerAssetAcquiredAmount
@@ -109,12 +108,6 @@ contract MixinForwarderCore is
             wethSpentAmount,
             feePercentage,
             feeRecipient
-        );
-
-        // Transfer purchased assets to msg.sender.
-        _transferAssetToSender(
-            orders[0].makerAssetData,
-            makerAssetAcquiredAmount
         );
     }
 
@@ -148,9 +141,7 @@ contract MixinForwarderCore is
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        // Attempt to fill the desired amount of makerAsset. Note that makerAssetAcquiredAmount < makerAssetBuyAmount
-        // if any of the orders filled have an takerFee denominated in makerAsset, since these fees will be paid out
-        // from the Forwarder's temporary makerAsset balance.
+        // Attempts to fill the desired amount of makerAsset and trasnfer purchased assets to msg.sender.
         (
             wethSpentAmount,
             makerAssetAcquiredAmount
@@ -166,12 +157,6 @@ contract MixinForwarderCore is
             wethSpentAmount,
             feePercentage,
             feeRecipient
-        );
-
-        // Transfer acquired assets to msg.sender.
-        _transferAssetToSender(
-            orders[0].makerAssetData,
-            makerAssetAcquiredAmount
         );
     }
 }
