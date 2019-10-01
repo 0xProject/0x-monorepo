@@ -77,5 +77,6 @@ export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
     [ProviderType.Parity]: 'Parity',
     [ProviderType.TrustWallet]: 'Trust Wallet',
     [ProviderType.Opera]: 'Opera Wallet',
+    [ProviderType.Fortmatic]: 'Fortmatic',
     [ProviderType.Fallback]: 'Fallback',
 };
