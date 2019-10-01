@@ -10,6 +10,7 @@ import {
     randomAddress,
     TransactionHelper,
 } from '@0x/contracts-test-utils';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -123,7 +124,7 @@ blockchainTests.resets.only('Eth2DaiBridge unit tests', env => {
         }
 
         it('returns magic bytes on success', async () => {
-            const BRIDGE_SUCCESS_RETURN_DATA = '0xdc1600f3';
+            const BRIDGE_SUCCESS_RETURN_DATA = AssetProxyId.ERC20Bridge;
             const { result } = await withdrawToAsync();
             expect(result).to.eq(BRIDGE_SUCCESS_RETURN_DATA);
         });
