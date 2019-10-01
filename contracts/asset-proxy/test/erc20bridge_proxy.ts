@@ -9,6 +9,7 @@ import {
     Numberish,
     randomAddress,
 } from '@0x/contracts-test-utils';
+import { AssetProxyId } from '@0x/types';
 import { AbiEncoder, AuthorizableRevertErrors, BigNumber, StringRevertError } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -21,7 +22,7 @@ import {
 } from '../src';
 
 blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
-    const PROXY_ID = '0xdc1600f3';
+    const PROXY_ID = AssetProxyId.ERC20Bridge;
     const BRIDGE_SUCCESS_RETURN_DATA = hexRightPad(PROXY_ID);
     let owner: string;
     let badCaller: string;
@@ -141,7 +142,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             return (logs as any) as DecodedLogs;
         }
 
-        it('succeeds if the bridge succeeds and balance increases', async () => {
+        it('succeeds if the bridge succeeds and balance increases by `amount`', async () => {
             const tx = transferFromAsync();
             return expect(tx).to.be.fulfilled('');
         });
@@ -248,7 +249,7 @@ blockchainTests.resets('ERC20BridgeProxy unit tests', env => {
             return expect(tx).to.revertWith(revertError);
         });
 
-        it('fails if balance of `to` increases by `amount - 1`', async () => {
+        it('fails if balance of `to` increases by less than `amount`', async () => {
             const amount = getRandomInteger(1, 100e18);
             const tx = transferFromAsync({
                 amount,
