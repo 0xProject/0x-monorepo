@@ -22,7 +22,6 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
@@ -35,7 +34,6 @@ import "./MixinTransactions.sol";
 
 
 contract MixinSignatureValidator is
-    ReentrancyGuard,
     LibEIP712ExchangeDomain,
     LibEIP1271,
     ISignatureValidator,
@@ -61,8 +59,7 @@ contract MixinSignatureValidator is
     function preSign(bytes32 hash)
         external
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
     {
         address signerAddress = _getCurrentContextAddress();
         preSigned[hash][signerAddress] = true;
@@ -78,8 +75,7 @@ contract MixinSignatureValidator is
     )
         external
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
     {
         address signerAddress = _getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
@@ -465,7 +461,7 @@ contract MixinSignatureValidator is
         return signatureType;
     }
 
-    /// @dev ABI encodes an order and hash with a selector to be passed into 
+    /// @dev ABI encodes an order and hash with a selector to be passed into
     ///      an EIP1271 compliant `isValidSignature` function.
     function _encodeEIP1271OrderWithHash(
         LibOrder.Order memory order,
@@ -482,7 +478,7 @@ contract MixinSignatureValidator is
         );
     }
 
-    /// @dev ABI encodes a transaction and hash with a selector to be passed into 
+    /// @dev ABI encodes a transaction and hash with a selector to be passed into
     ///      an EIP1271 compliant `isValidSignature` function.
     function _encodeEIP1271TransactionWithHash(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
