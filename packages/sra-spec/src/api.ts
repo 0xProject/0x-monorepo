@@ -9,7 +9,7 @@ import { generateResponses } from './responses';
 export const api: OpenApiSpec = {
     openapi: '3.0.0',
     info: {
-        version: '2.0.0',
+        version: '3.0.0',
         title: 'Standard Relayer REST API',
         description: md.introduction,
         license: {
@@ -18,7 +18,7 @@ export const api: OpenApiSpec = {
         },
     },
     paths: {
-        '/v2/asset_pairs': {
+        '/v3/asset_pairs': {
             get: {
                 description:
                     'Retrieves a list of available asset pairs and the information required to trade them (in any order). Setting only `assetDataA` or `assetDataB` returns pairs filtered by that asset only.',
@@ -53,7 +53,7 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/orders': {
+        '/v3/orders': {
             get: {
                 description:
                     'Retrieves a list of orders given query parameters. This endpoint should be [paginated](#section/Pagination). For querying an entire orderbook snapshot, the [orderbook endpoint](#operation/getOrderbook) is recommended. If both makerAssetData and takerAssetData are specified, returned orders will be sorted by price determined by (takerTokenAmount/makerTokenAmount) in ascending order. By default, orders returned by this endpoint are unsorted.',
@@ -99,7 +99,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'exchangeAddress',
                             in: 'query',
-                            description: `Same as exchangeAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as exchangeAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
@@ -108,7 +108,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'senderAddress',
                             in: 'query',
-                            description: `Same as senderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as senderAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
@@ -117,7 +117,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'makerAssetData',
                             in: 'query',
-                            description: `Same as makerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as makerAssetData in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/hexSchema',
@@ -126,7 +126,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'takerAssetData',
                             in: 'query',
-                            description: `Same as takerAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as takerAssetData in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/hexSchema',
@@ -135,7 +135,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'traderAssetData',
                             in: 'query',
-                            description: `Same as traderAssetData in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as traderAssetData in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/hexSchema',
@@ -144,7 +144,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'makerAddress',
                             in: 'query',
-                            description: `Same as makerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as makerAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
@@ -153,7 +153,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'takerAddress',
                             in: 'query',
-                            description: `Same as takerAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as takerAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
@@ -162,7 +162,7 @@ export const api: OpenApiSpec = {
                         {
                             name: 'traderAddress',
                             in: 'query',
-                            description: `Same as traderAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as traderAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
@@ -171,10 +171,28 @@ export const api: OpenApiSpec = {
                         {
                             name: 'feeRecipientAddress',
                             in: 'query',
-                            description: `Same as feeRecipientAddress in the [0x Protocol v2 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md#order-message-format)`,
+                            description: `Same as feeRecipientAddress in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
                             example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
                             schema: {
                                 $ref: '#/components/schemas/addressSchema',
+                            },
+                        },
+                        {
+                            name: 'makerFeeAssetData',
+                            in: 'query',
+                            description: `Same as makerFeeAssetData in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
+                            example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
+                            schema: {
+                                $ref: '#/components/schemas/hexSchema',
+                            },
+                        },
+                        {
+                            name: 'takerFeeAssetData',
+                            in: 'query',
+                            description: `Same as takerFeeAssetData in the [0x Protocol v3 Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v3/v3-specification.md#order-message-format)`,
+                            example: '0xe41d2489571d322189246dafa5ebde1f4699f498',
+                            schema: {
+                                $ref: '#/components/schemas/hexSchema',
                             },
                         },
                     ],
@@ -187,7 +205,7 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/order/{orderHash}': {
+        '/v3/order/{orderHash}': {
             get: {
                 description: 'Retrieves the 0x order with meta info that is associated with the hash.',
                 operationId: 'getOrder',
@@ -212,7 +230,7 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/orderbook': {
+        '/v3/orderbook': {
             get: {
                 description: `Retrieves the orderbook for a given asset pair. This endpoint should be [paginated](#section/Pagination). Bids will be sorted in descending order by price, and asks will be sorted in ascending order by price. Within the price sorted orders, the orders are further sorted by _taker fee price_ which is defined as the **takerFee** divided by **takerTokenAmount**. After _taker fee price_, orders are to be sorted by expiration in ascending order. The way pagination works for this endpoint is that the **page** and **perPage** query params apply to both \`bids\` and \`asks\` collections, and if \`page\` * \`perPage\` > \`total\` for a certain collection, the \`records\` for that collection should just be empty. `,
                 operationId: 'getOrderbook',
@@ -248,9 +266,9 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/order_config': {
+        '/v3/order_config': {
             post: {
-                description: `Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: \`senderAddress\`, \`feeRecipientAddress\`, \`makerFee\`, \`takerFee\`. `,
+                description: `Relayers have full discretion over the orders that they are willing to host on their orderbooks (e.g what fees they charge, etc...). In order for traders to discover their requirements programmatically, they can send an incomplete order to this endpoint and receive the missing fields, specifc to that order. This gives relayers a large amount of flexibility to tailor fees to unique traders, trading pairs and volume amounts. Submit a partial order and receive information required to complete the order: \`senderAddress\`, \`feeRecipientAddress\`, \`makerFee\`, \`takerFee\`, \`makerFeeAssetData\`, \`takerFeeAssetData\`. `,
                 operationId: 'getOrderConfig',
                 parameters: generateParameters([], false),
                 requestBody: {
@@ -272,7 +290,7 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/fee_recipients': {
+        '/v3/fee_recipients': {
             get: {
                 description: `Retrieves a collection of all fee recipient addresses for a relayer. This endpoint should be [paginated](#section/Pagination).`,
                 operationId: 'getFeeRecipients',
@@ -284,7 +302,7 @@ export const api: OpenApiSpec = {
                 ),
             },
         },
-        '/v2/order': {
+        '/v3/order': {
             post: {
                 description: `Submit a signed order to the relayer.`,
                 operationId: 'postOrder',

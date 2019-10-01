@@ -19,7 +19,7 @@ import { fetchAsync } from '@0x/utils';
 import * as _ from 'lodash';
 import * as queryString from 'query-string';
 
-import { Client, HttpRequestOptions, HttpRequestType } from './types';
+import { HttpRequestOptions, HttpRequestType } from './types';
 import { relayerResponseJsonParsers } from './utils/relayer_response_json_parsers';
 
 const TRAILING_SLASHES_REGEX = /\/+$/;
@@ -28,7 +28,7 @@ const TRAILING_SLASHES_REGEX = /\/+$/;
  * This class includes all the functionality related to interacting with a set of HTTP endpoints
  * that implement the standard relayer API v2
  */
-export class HttpClient implements Client {
+export class HttpClient {
     private readonly _apiEndpointUrl: string;
     /**
      * Format parameters to be appended to http requests into query string form
