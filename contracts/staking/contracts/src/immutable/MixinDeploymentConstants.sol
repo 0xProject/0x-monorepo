@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 import "../interfaces/IZrxVault.sol";
 
@@ -37,17 +36,7 @@ contract MixinDeploymentConstants {
     // Ropsten & Rinkeby WETH9 Address
     // address constant private WETH_ADDRESS = address(0xc778417e063141139fce010982780140aa0cd5ab);
 
-    // Mainnet Weth Asset Data
-    bytes constant private WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
-    // Kovan Weth Asset Data
-    // bytes constant private WETH_ASSET_DATA = hex"f47261b0000000000000000000000000d0a1e359811322d97991e03f863a0c30c2cf029c";
-
-    // Ropsten & Rinkeby Weth Asset Data
-    // bytes constant private WETH_ASSET_DATA = hex"f47261b0000000000000000000000000c778417e063141139fce010982780140aa0cd5ab";
-
     // @TODO SET THESE VALUES FOR DEPLOYMENT
-    address constant private WETH_ASSET_PROXY_ADDRESS = address(1);
     address constant private ZRX_VAULT_ADDRESS = address(1);
 
     /// @dev An overridable way to access the deployed WETH contract.
@@ -60,30 +49,6 @@ contract MixinDeploymentConstants {
     {
         wethContract = IEtherToken(WETH_ADDRESS);
         return wethContract;
-    }
-
-    /// @dev An overridable way to access the deployed WETH assetData.
-    ///      Must be view to allow overrides to access state.
-    /// @return wethAssetData The assetData of the configured WETH contract.
-    function getWethAssetData()
-        public
-        view
-        returns (bytes memory wethAssetData)
-    {
-        wethAssetData = WETH_ASSET_DATA;
-        return wethAssetData;
-    }
-
-    /// @dev An overridable way to access the deployed WETH assetProxy.
-    ///      Must be view to allow overrides to access state.
-    /// @return wethAssetProxy The assetProxy used to transfer WETH.
-    function getWethAssetProxy()
-        public
-        view
-        returns (IAssetProxy wethAssetProxy)
-    {
-        wethAssetProxy = IAssetProxy(WETH_ASSET_PROXY_ADDRESS);
-        return wethAssetProxy;
     }
 
     /// @dev An overridable way to access the deployed zrxVault.

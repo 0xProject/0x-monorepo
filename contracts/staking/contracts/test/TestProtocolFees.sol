@@ -19,7 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-asset-proxy/contracts/src/interfaces/IAssetProxy.sol";
 import "../src/interfaces/IStructs.sol";
 import "./TestStakingNoWETH.sol";
 
@@ -34,7 +33,6 @@ contract TestProtocolFees is
     }
 
     event ERC20ProxyTransferFrom(
-        bytes assetData,
         address from,
         address to,
         uint256 amount
@@ -81,14 +79,15 @@ contract TestProtocolFees is
 
     /// @dev The ERC20Proxy `transferFrom()` function.
     function transferFrom(
-        bytes calldata assetData,
         address from,
         address to,
         uint256 amount
     )
         external
+        returns (bool)
     {
-        emit ERC20ProxyTransferFrom(assetData, from, to, amount);
+        emit ERC20ProxyTransferFrom(from, to, amount);
+        return true;
     }
 
     /// @dev Overridden to use test pools.
@@ -127,12 +126,11 @@ contract TestProtocolFees is
         });
     }
 
-    function getWethAssetProxy()
+    function getWethContract()
         public
         view
-        returns (IAssetProxy wethAssetProxy)
+        returns (IEtherToken wethContract)
     {
-        wethAssetProxy = IAssetProxy(address(this));
-        return wethAssetProxy;
+        return IEtherToken(address(this));
     }
 }

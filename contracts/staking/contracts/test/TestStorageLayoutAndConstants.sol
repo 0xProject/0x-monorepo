@@ -43,16 +43,8 @@ contract TestStorageLayoutAndConstants is
         view
     {
         require(
-            getWethAssetData().equals(abi.encodeWithSelector(
-                IAssetData(address(0)).ERC20Token.selector,
-                getWethContract()
-            )),
-            "INVALID_WETH_ASSET_DATA"
-        );
-
-        require(
-            address(getWethAssetProxy()) != address(0),
-            "WETH_ASSET_PROXY_MUST_BE_SET"
+            address(getWethContract()) != address(0),
+            "WETH_MUST_BE_SET"
         );
 
         require(
