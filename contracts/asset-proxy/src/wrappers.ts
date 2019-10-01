@@ -4,7 +4,6 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/erc1155_proxy';
-export * from '../generated-wrappers/erc20_bridge';
 export * from '../generated-wrappers/erc20_bridge_proxy';
 export * from '../generated-wrappers/erc20_proxy';
 export * from '../generated-wrappers/erc721_proxy';

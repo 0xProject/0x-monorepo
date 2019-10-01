@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/bridges/ERC20Bridge.sol";
+import "../src/interfaces/IERC20Bridge.sol";
 
 
 /// @dev Test bridge token
@@ -50,7 +50,7 @@ contract TestERC20BridgeToken {
 
 /// @dev Test bridge contract.
 contract TestERC20Bridge is
-    ERC20Bridge
+    IERC20Bridge
 {
     TestERC20BridgeToken public testToken;
 

@@ -19,7 +19,10 @@
 pragma solidity ^0.5.9;
 
 
-interface IERC20Bridge {
+contract IERC20Bridge {
+
+    // @dev Result of a successful bridge call.
+    bytes4 constant internal BRIDGE_SUCCESS = 0xdc1600f3;
 
     /// @dev Transfers `amount` of the ERC20 `tokenAddress` from `from` to `to`.
     /// @param tokenAddress The address of the ERC20 token to transfer.
