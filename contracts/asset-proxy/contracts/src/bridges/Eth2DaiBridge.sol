@@ -20,14 +20,14 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "./ERC20Bridge.sol";
+import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
 import "../interfaces/IWallet.sol";
 
 
 // solhint-disable space-after-comma
 contract Eth2DaiBridge is
-    ERC20Bridge,
+    IERC20Bridge,
     IWallet
 {
     /* Mainnet addresses */
