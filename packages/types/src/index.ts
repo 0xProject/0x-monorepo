@@ -158,6 +158,7 @@ export enum AssetProxyId {
     MultiAsset = '0x94cfcdd7',
     ERC1155 = '0xa7cb5fb7',
     StaticCall = '0xc339d10a',
+    ERC20Bridge = '0xdc1600f3',
 }
 
 export interface ERC20AssetData {

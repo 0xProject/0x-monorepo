@@ -6,23 +6,27 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as ERC1155Proxy from '../generated-artifacts/ERC1155Proxy.json';
+import * as ERC20BridgeProxy from '../generated-artifacts/ERC20BridgeProxy.json';
 import * as ERC20Proxy from '../generated-artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as IAssetData from '../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispatcher.json';
 import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
+import * as IERC20Bridge from '../generated-artifacts/IERC20Bridge.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
+import * as TestERC20Bridge from '../generated-artifacts/TestERC20Bridge.json';
 import * as TestStaticCallTarget from '../generated-artifacts/TestStaticCallTarget.json';
 export const artifacts = {
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     ERC1155Proxy: ERC1155Proxy as ContractArtifact,
+    ERC20BridgeProxy: ERC20BridgeProxy as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
@@ -31,5 +35,7 @@ export const artifacts = {
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
+    IERC20Bridge: IERC20Bridge as ContractArtifact,
+    TestERC20Bridge: TestERC20Bridge as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
 };

@@ -436,6 +436,8 @@ export interface LogEntry {
     topics: string[];
 }
 
+export type DecodedLogs = Array<LogWithDecodedArgs<DecodedLogArgs>>;
+
 export interface TxDataPayable extends TxData {
     value?: BigNumber;
 }

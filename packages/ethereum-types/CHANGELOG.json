@@ -5,6 +5,10 @@
             {
                 "note": "Add `RevertErrorAbi` interface as part of `AbiDefinition` types",
                 "pr": 1761
+            },
+            {
+                "note": "Add `DecodedLogs` type",
+                "pr": 2220
             }
         ]
     },

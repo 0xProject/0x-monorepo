@@ -13,6 +13,10 @@
             {
                 "note": "Add status types for Staking contracts",
                 "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
             }
         ]
     },

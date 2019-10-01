@@ -93,6 +93,10 @@
             {
                 "note": "Add `shortZip()` to `lang_utils.ts`",
                 "pr": 2155
+            },
+            {
+                "note": "Add `number_utils.ts` and `hexSize()`",
+                "pr": 2220
             }
         ]
     },

@@ -17,6 +17,10 @@
             {
                 "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
                 "pr": 1910
+            },
+            {
+                "note": "Add `ERC20BridgeProxy`",
+                "pr": 2220
             }
         ]
     },
