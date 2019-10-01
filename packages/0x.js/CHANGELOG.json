@@ -1,5 +1,13 @@
 [
     {
+        "version": "7.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Updated to work with 0x v3"
+            }
+        ]
+    },
+    {
         "timestamp": 1568744790,
         "version": "7.0.2",
         "changes": [

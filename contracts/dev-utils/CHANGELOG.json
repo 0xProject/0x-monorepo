@@ -1,6 +1,6 @@
 [
     {
-        "version": "1.0.0",
+        "version": "0.1.0-beta.0",
         "changes": [
             {
                 "note": "Use built in selectors instead of hard coded constants",

@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.4.0",
+        "version": "4.4.0-beta.0",
         "changes": [
             {
                 "note": "Update Coordinator and Exchange deployments to pass `chainId`",
