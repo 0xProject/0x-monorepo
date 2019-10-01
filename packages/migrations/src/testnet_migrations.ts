@@ -184,7 +184,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     const oldAssetProxyOwner = new AssetProxyOwnerContract(deployedAddresses.assetProxyOwner, provider, txDefaults);
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
-        deployedAddresses.exchange, // Exchange 2.1 address
+        deployedAddresses.exchangeV2, // Exchange 2.1 address
         ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
     );
     await submitAndExecuteTransactionAsync(

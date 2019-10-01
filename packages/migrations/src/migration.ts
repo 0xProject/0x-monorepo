@@ -284,7 +284,7 @@ export async function runMigrationsAsync(
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
         devUtils: devUtils.address,
-        exchange_v3: constants.NULL_ADDRESS,
+        exchangeV2: constants.NULL_ADDRESS,
         zrxVault: constants.NULL_ADDRESS,
         readOnlyProxy: constants.NULL_ADDRESS,
         staking: constants.NULL_ADDRESS,
