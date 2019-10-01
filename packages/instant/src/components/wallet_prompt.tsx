@@ -7,10 +7,11 @@ import { Flex } from './ui/flex';
 import { Text } from './ui/text';
 
 export interface WalletPromptProps {
-    image: React.ReactNode;
+    image?: React.ReactNode;
     onClick?: () => void;
     primaryColor: ColorOption;
     secondaryColor: ColorOption;
+    marginTop?: string;
 }
 
 export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
@@ -19,16 +20,19 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
     children,
     secondaryColor,
     primaryColor,
+    marginTop,
 }) => (
     <Container
         padding="10px"
-        border={`1px solid ${primaryColor}`}
+        border={`1px solid`}
+        borderColor={primaryColor}
         backgroundColor={secondaryColor}
         width="100%"
         borderRadius="4px"
         onClick={onClick}
         cursor={onClick ? 'pointer' : undefined}
         boxShadowOnHover={!!onClick}
+        marginTop={marginTop}
     >
         <Flex>
             {image}
