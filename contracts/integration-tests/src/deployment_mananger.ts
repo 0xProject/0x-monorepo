@@ -6,6 +6,9 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
+import { artifacts as ERC1155Artifacts, ERC1155Contract } from '@0x/contracts-erc1155';
+import { artifacts as ERC20Artifacts, ERC20TokenContract, ZRXTokenContract, WETH9Contract } from '@0x/contracts-erc20';
+import { artifacts as ERC721Artifacts, ERC721TokenContract } from '@0x/contracts-erc721';
 import {
     artifacts as exchangeArtifacts,
     AssetProxyDispatcher,
@@ -95,6 +98,14 @@ interface StakingContracts {
     stakingWrapper: StakingContract;
 }
 
+interface TokenContracts {
+    erc1155: ERC1155Contract;
+    erc20: ERC20TokenContract;
+    erc721: ERC721TokenContract;
+    weth: WETH9Contract;
+    zrx: ZRXTokenContract;
+}
+
 export class DeploymentManager {
     public static protocolFeeMultiplier = new BigNumber(150000);
 
@@ -102,6 +113,7 @@ export class DeploymentManager {
     public assetProxyOwner: AssetProxyOwnerContract;
     public exchange: ExchangeContract;
     public staking: StakingContracts;
+    public tokens: TokenContracts;
 
     /**
      * Fully deploy the 0x exchange and staking contracts and configure the system with the
@@ -138,10 +150,16 @@ export class DeploymentManager {
             new BigNumber(1),
             constants.ZERO_AMOUNT,
         );
+        const tokens = await DeploymentManager._deployTokenContractsAsync(environment, txDefaults);
 
         // Configure the asset proxies with the exchange and the exchange with the staking contracts.
         await DeploymentManager._configureAssetProxiesWithExchangeAsync(assetProxies, exchange, owner);
         await DeploymentManager._configureExchangeWithStakingAsync(exchange, staking, owner);
+
+        // Authorize the asset-proxy owner in the Staking contract.
+        await staking.stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
+            from: owner,
+        });
 
         // Transfer complete ownership of the system to the asset proxy owner.
         await batchTransferOwnershipAsync(owner, assetProxyOwner, [
@@ -154,7 +172,7 @@ export class DeploymentManager {
             staking.stakingProxy,
         ]);
 
-        return new DeploymentManager(assetProxies, assetProxyOwner, exchange, staking);
+        return new DeploymentManager(assetProxies, assetProxyOwner, exchange, staking, tokens);
     }
 
     protected static async _configureAssetProxiesWithExchangeAsync(
@@ -299,15 +317,65 @@ export class DeploymentManager {
         };
     }
 
+    protected static async _deployTokenContractsAsync(
+        environment: BlockchainTestsEnvironment,
+        txDefaults: Partial<TxData>,
+    ): Promise<TokenContracts> {
+        const erc20 = await ERC20TokenContract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.ERC20Token,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+        );
+
+        const erc721 = await ERC721TokenContract.deployFrom0xArtifactAsync(
+            ERC721Artifacts.ERC721Token,
+            environment.provider,
+            txDefaults,
+            ERC721Artifacts,
+        );
+
+        const erc1155 = await ERC1155Contract.deployFrom0xArtifactAsync(
+            ERC1155Artifacts.ERC1155,
+            environment.provider,
+            txDefaults,
+            ERC1155Artifacts,
+        );
+
+        const weth = await WETH9Contract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.WETH9,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+        );
+
+        const zrx = await ZRXTokenContract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.ZRXToken,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+        );
+
+        return {
+            erc1155,
+            erc20,
+            erc721,
+            weth,
+            zrx,
+        };
+    }
+
     private constructor(
         assetProxies: AssetProxyContracts,
         assetProxyOwner: AssetProxyOwnerContract,
         exchange: ExchangeContract,
         staking: StakingContracts,
+        tokens: TokenContracts,
     ) {
         this.assetProxies = assetProxies;
         this.assetProxyOwner = assetProxyOwner;
         this.exchange = exchange;
         this.staking = staking;
+        this.tokens = tokens;
     }
 }
