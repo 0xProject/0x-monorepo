@@ -1,9 +1,9 @@
 import * as bowser from 'bowser';
-import { ZeroExProvider } from 'ethereum-types';
+import {ZeroExProvider} from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { PROVIDER_TYPE_TO_NAME } from '../constants';
-import { Browser, OperatingSystem, ProviderType } from '../types';
+import {PROVIDER_TYPE_TO_NAME} from '../constants';
+import {Browser, OperatingSystem, ProviderType} from '../types';
 
 export const envUtil = {
     getBrowser(): Browser {
@@ -58,7 +58,8 @@ export const envUtil = {
         } else if (envUtil.getBrowser() === Browser.Opera && !anyProvider.isMetaMask) {
             return ProviderType.Opera;
         }
-        return;
+        // If the provider is not supported by 0x, use fortmatic
+        return ProviderType.Fortmatic;
     },
     getProviderName(provider: ZeroExProvider): string {
         const providerTypeIfExists = envUtil.getProviderType(provider);

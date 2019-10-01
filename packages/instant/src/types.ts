@@ -185,6 +185,7 @@ export enum ProviderType {
     Cipher = 'CIPHER',
     TrustWallet = 'TRUST_WALLET',
     Opera = 'OPERA',
+    Fortmatic = 'Fortmatic',
     Fallback = 'FALLBACK',
 }
 
