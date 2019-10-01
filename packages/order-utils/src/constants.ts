@@ -140,7 +140,7 @@ export const constants = {
         ],
     },
     COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
-    COORDINATOR_DOMAIN_VERSION: '2.0.0',
+    COORDINATOR_DOMAIN_VERSION: '3.0.0',
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',
         parameters: [

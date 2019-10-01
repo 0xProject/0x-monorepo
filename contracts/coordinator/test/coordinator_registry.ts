@@ -1,43 +1,24 @@
-import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
-import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import * as chai from 'chai';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 
 import { CoordinatorRegistryCoordinatorEndpointSetEventArgs } from '../src';
 
 import { CoordinatorRegistryWrapper } from './utils/coordinator_registry_wrapper';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-web3Wrapper.abiDecoder.addABI(exchangeArtifacts.Exchange.compilerOutput.abi);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Coordinator Registry tests', () => {
+blockchainTests.resets('Coordinator Registry tests', env => {
     let coordinatorOperator: string;
     const coordinatorEndpoint = 'http://sometec.0x.org';
     const nilCoordinatorEndpoint = '';
     let coordinatorRegistryWrapper: CoordinatorRegistryWrapper;
     // tests
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // setup accounts (skip owner)
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         [, coordinatorOperator] = accounts;
         // deploy coordinator registry
-        coordinatorRegistryWrapper = new CoordinatorRegistryWrapper(provider);
+        coordinatorRegistryWrapper = new CoordinatorRegistryWrapper(env.provider);
         await coordinatorRegistryWrapper.deployCoordinatorRegistryAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
     });
     describe('core', () => {
         it('Should successfully set a Coordinator endpoint', async () => {

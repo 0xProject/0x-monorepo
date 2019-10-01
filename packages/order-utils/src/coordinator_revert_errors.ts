@@ -34,17 +34,17 @@ export class ApprovalExpiredError extends RevertError {
     }
 }
 
-export class InvalidApprovalSignature extends RevertError {
+export class InvalidApprovalSignatureError extends RevertError {
     constructor(transactionHash?: string, approverAddress?: string) {
         super(
-            'InvalidApprovalSignature',
-            'InvalidApprovalSignature(bytes32 transactionHash, address approverAddress)',
+            'InvalidApprovalSignatureError',
+            'InvalidApprovalSignatureError(bytes32 transactionHash, address approverAddress)',
             { transactionHash, approverAddress },
         );
     }
 }
 
-const types = [SignatureError, InvalidOriginError, ApprovalExpiredError, InvalidApprovalSignature];
+const types = [SignatureError, InvalidOriginError, ApprovalExpiredError, InvalidApprovalSignatureError];
 
 // Register the types we've defined.
 for (const type of types) {

@@ -1,29 +1,20 @@
 import { constants as exchangeConstants, exchangeDataEncoder, ExchangeFunctionName } from '@0x/contracts-exchange';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
-    expectContractCallFailedAsync,
+    expect,
     getLatestBlockTimestampAsync,
-    provider,
     randomAddress,
     TransactionFactory,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { transactionHashUtils } from '@0x/order-utils';
-import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, LibBytesRevertErrors, providerUtils } from '@0x/utils';
-import * as chai from 'chai';
+import { CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
+import { SignatureType, SignedOrder } from '@0x/types';
+import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('Mixins tests', () => {
+blockchainTests.resets('Mixins tests', env => {
     let chainId: number;
     let transactionSignerAddress: string;
     let approvalSignerAddress1: string;
@@ -36,23 +27,17 @@ describe('Mixins tests', () => {
     const exchangeAddress = randomAddress();
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
+        chainId = await env.getChainIdAsync();
         mixins = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             artifacts,
             exchangeAddress,
             new BigNumber(chainId),
         );
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts.slice(0, 3);
+        const accounts = await env.getAccountAddressesAsync();
+        [transactionSignerAddress, approvalSignerAddress1, approvalSignerAddress2] = accounts;
         defaultOrder = {
             makerAddress: constants.NULL_ADDRESS,
             takerAddress: constants.NULL_ADDRESS,
@@ -79,12 +64,6 @@ describe('Mixins tests', () => {
         approvalFactory1 = new ApprovalFactory(approvalSignerPrivateKey1, mixins.address);
         approvalFactory2 = new ApprovalFactory(approvalSignerPrivateKey2, mixins.address);
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
 
     describe('getSignerAddress', () => {
         it('should return the correct address using the EthSign signature type', async () => {
@@ -110,8 +89,12 @@ describe('Mixins tests', () => {
                 transaction.signature.length - 2,
             )}${illegalSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
-                RevertReason.SignatureIllegal,
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.revertWith(
+                new CoordinatorRevertErrors.SignatureError(
+                    CoordinatorRevertErrors.SignatureErrorCodes.Illegal,
+                    transactionHash,
+                    transaction.signature,
+                ),
             );
         });
         it('should revert with with the Invalid signature type', async () => {
@@ -120,8 +103,12 @@ describe('Mixins tests', () => {
             const invalidSignatureByte = ethUtil.toBuffer(SignatureType.Invalid).toString('hex');
             transaction.signature = `0x${invalidSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
-                RevertReason.SignatureInvalid,
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.revertWith(
+                new CoordinatorRevertErrors.SignatureError(
+                    CoordinatorRevertErrors.SignatureErrorCodes.Invalid,
+                    transactionHash,
+                    transaction.signature,
+                ),
             );
         });
         it("should revert with with a signature type that doesn't exist", async () => {
@@ -133,8 +120,12 @@ describe('Mixins tests', () => {
                 transaction.signature.length - 2,
             )}${invalidSignatureByte}`;
             const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.be.rejectedWith(
-                RevertReason.SignatureUnsupported,
+            expect(mixins.getSignerAddress.callAsync(transactionHash, transaction.signature)).to.revertWith(
+                new CoordinatorRevertErrors.SignatureError(
+                    CoordinatorRevertErrors.SignatureErrorCodes.Unsupported,
+                    transactionHash,
+                    transaction.signature,
+                ),
             );
         });
     });
@@ -320,16 +311,18 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [signature],
+                    { from: transactionSignerAddress },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, approvalSignerAddress1),
                 );
             });
             it(`Should revert: function=${fnName}, caller=tx_signer, senderAddress=[verifier], approval_sig=[approver1], expiration=[invalid]`, async () => {
@@ -343,16 +336,18 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approval.signature],
+                    { from: transactionSignerAddress },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
             it(`Should revert: function=${fnName}, caller=approver2, senderAddress=[verifier], approval_sig=[approver1], expiration=[valid]`, async () => {
@@ -366,17 +361,16 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: approvalSignerAddress2 },
-                    ),
-                    RevertReason.InvalidOrigin,
+
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approval.signature],
+                    { from: approvalSignerAddress2 },
                 );
+                expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(transactionSignerAddress));
             });
         }
     });
@@ -514,32 +508,33 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval2.signature],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.InvalidOrigin,
+
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approval2.signature],
+                    { from: approvalSignerAddress1 },
                 );
+                expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(transactionSignerAddress));
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[], expiration=[]`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await transactionFactory.newSignedTransactionAsync({ data });
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [],
-                        [],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [],
+                    [],
+                    { from: transactionSignerAddress },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, approvalSignerAddress1),
                 );
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[invalid], expiration=[valid]`, async () => {
@@ -554,16 +549,18 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [signature],
+                    { from: transactionSignerAddress },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, approvalSignerAddress1),
                 );
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid,invalid], expiration=[valid,valid]`, async () => {
@@ -583,16 +580,18 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
-                        [approval1.signature, approvalSignature2],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds, approvalExpirationTimeSeconds],
+                    [approval1.signature, approvalSignature2],
+                    { from: transactionSignerAddress },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, approvalSignerAddress2),
                 );
             });
             it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[invalid], expiration=[valid]`, async () => {
@@ -607,16 +606,18 @@ describe('Mixins tests', () => {
                     approvalExpirationTimeSeconds,
                 );
                 const approvalSignature2 = `${approval2.signature.slice(0, 4)}FFFFFFFF${approval2.signature.slice(12)}`;
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        approvalSignerAddress1,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approvalSignature2],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    approvalSignerAddress1,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approvalSignature2],
+                    { from: approvalSignerAddress1 },
+                );
+
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, approvalSignerAddress2),
                 );
             });
             it(`Should revert: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid,valid], expiration=[valid,invalid]`, async () => {
@@ -636,16 +637,18 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds2,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
-                        [approval1.signature, approval2.signature],
-                        { from: transactionSignerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
+
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds1, approvalExpirationTimeSeconds2],
+                    [approval1.signature, approval2.signature],
+                    { from: transactionSignerAddress },
+                );
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds2),
                 );
             });
             it(`Should revert: function=${fnName} caller=approver1, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver2], approval_sig=[valid], expiration=[invalid]`, async () => {
@@ -659,16 +662,18 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        approvalSignerAddress1,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval2.signature],
-                        { from: approvalSignerAddress1 },
-                    ),
-                    RevertReason.ApprovalExpired,
+
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    approvalSignerAddress1,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approval2.signature],
+                    { from: approvalSignerAddress1 },
+                );
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                expect(tx).to.revertWith(
+                    new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
             it(`Should revert: function=${fnName} caller=approver2, senderAddress=[verifier,verifier], feeRecipient=[approver1, approver1], approval_sig=[valid], expiration=[valid]`, async () => {
@@ -682,17 +687,16 @@ describe('Mixins tests', () => {
                     transactionSignerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                expectContractCallFailedAsync(
-                    mixins.assertValidCoordinatorApprovals.callAsync(
-                        transaction,
-                        transactionSignerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval1.signature],
-                        { from: approvalSignerAddress2 },
-                    ),
-                    RevertReason.InvalidOrigin,
+
+                const tx = mixins.assertValidCoordinatorApprovals.callAsync(
+                    transaction,
+                    transactionSignerAddress,
+                    transaction.signature,
+                    [approvalExpirationTimeSeconds],
+                    [approval1.signature],
+                    { from: approvalSignerAddress2 },
                 );
+                expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(transactionSignerAddress));
             });
         }
     });

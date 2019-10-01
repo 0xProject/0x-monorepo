@@ -1,3 +1,4 @@
+import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
@@ -17,7 +18,7 @@ export class CoordinatorRegistryWrapper {
     constructor(provider: ZeroExProvider) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, { ...exchangeArtifacts, ...artifacts });
     }
     public async deployCoordinatorRegistryAsync(): Promise<CoordinatorRegistryContract> {
         this._coordinatorRegistryContract = await CoordinatorRegistryContract.deployFrom0xArtifactAsync(
