@@ -252,6 +252,9 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
             lernaPublishArgs.push('--no-git-tag-version');
             lernaPublishArgs.push('--no-push');
         }
+        if (configs.DIST_TAG !== '') {
+            lernaPublishArgs.push(`--dist-tag ${configs.DIST_TAG}`);
+        }
         utils.log('Lerna is publishing...');
         try {
             const child = spawn(lernaPublishCmd, lernaPublishArgs, {

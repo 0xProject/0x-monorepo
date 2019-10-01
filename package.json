@@ -21,7 +21,7 @@
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
         "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
-        "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
+        "script:publish": "DIST_TAG=protocolV3 node ./packages/monorepo-scripts/lib/publish.js",
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
