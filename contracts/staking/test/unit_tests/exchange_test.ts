@@ -95,6 +95,14 @@ blockchainTests.resets('Exchange Unit Tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
+        it('should revert when adding an exchange if called by the (non-authorized) owner', async () => {
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(owner);
+            const tx = exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
+                from: owner,
+            });
+            return expect(tx).to.revertWith(expectedError);
+        });
+
         it('should successfully add an exchange if called by an authorized address', async () => {
             // Register a new exchange.
             const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
@@ -124,6 +132,14 @@ blockchainTests.resets('Exchange Unit Tests', env => {
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(nonAuthority);
             const tx = exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, {
                 from: nonAuthority,
+            });
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert when removing an exchange if called by the (non-authorized) owner', async () => {
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(owner);
+            const tx = exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
+                from: owner,
             });
             return expect(tx).to.revertWith(expectedError);
         });
