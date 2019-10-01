@@ -46,7 +46,7 @@ const mapDispatchToProps = (
     unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
         analytics.trackAccountUnlockRequested();
         // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
+        asyncData.fetchAccountInfoAndDispatchToStore2(providerState, dispatch, true);
     },
 });
 
