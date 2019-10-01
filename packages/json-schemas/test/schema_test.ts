@@ -478,6 +478,8 @@ describe('Schema', () => {
                                 takerFee: '30000000000000000',
                                 feeRecipientAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
                                 senderAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
+                                makerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
+                                takerFeeAssetData: '0xf47261b04c32345ced77393b3530b1eed0f346429d',
                             },
                         ];
                         validateAgainstSchema(testCases, relayerApiOrderConfigResponseSchema);
