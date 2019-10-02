@@ -43,7 +43,6 @@ export {
     ZRXTokenTransferEventArgs,
     ZRXTokenApprovalEventArgs,
     ZRXTokenContract,
-    EventCallback,
     ExchangeProtocolFeeCollectorAddressEventArgs,
     ExchangeProtocolFeeMultiplierEventArgs,
     ExchangeTransactionExecutionEventArgs,
@@ -84,6 +83,8 @@ export {
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
     EIP712DomainWithDefaultSchema,
+    EventCallback,
+    IndexedFilterValues,
 } from '@0x/types';
 
 export {
@@ -132,6 +133,5 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
-    IndexedFilterValues,
     RevertErrorAbi,
 } from 'ethereum-types';

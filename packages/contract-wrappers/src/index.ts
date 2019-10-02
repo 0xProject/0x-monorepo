@@ -83,13 +83,10 @@ export {
     ForwarderError,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
-    IndexedFilterValues,
     ContractWrappersConfig,
     OrderTransactionOpts,
     TransactionOpts,
     OrderInfo,
-    EventCallback,
-    DecodedLogEvent,
 } from './types';
 
 export {
@@ -158,6 +155,9 @@ export {
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
     EIP712DomainWithDefaultSchema,
+    EventCallback,
+    DecodedLogEvent,
+    IndexedFilterValues,
 } from '@0x/types';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';
