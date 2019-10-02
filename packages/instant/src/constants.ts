@@ -94,3 +94,5 @@ export const PROVIDER_TYPE_TO_NAME: { [key in ProviderType]: string } = {
     [ProviderType.Fortmatic]: 'Fortmatic',
     [ProviderType.Fallback]: 'Fallback',
 };
+
+export const FORTMATIC_API_KEY = process.env.INSTANT_FORTMATIC_API_KEY;

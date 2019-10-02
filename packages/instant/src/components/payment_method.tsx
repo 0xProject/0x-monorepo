@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network } from '../types';
+import { Account, AccountState, Network, ProviderType } from '../types';
 import { envUtil } from '../util/env';
 
 import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
@@ -20,21 +20,22 @@ export interface PaymentMethodProps {
     account: Account;
     network: Network;
     walletDisplayName: string;
+    providerType: ProviderType | undefined;
     onInstallWalletClick: () => void;
-    onUnlockWalletClick: () => void;
+    onUnlockWalletClick: (providerType?: ProviderType) => void;
 }
 
 export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
     public render(): React.ReactNode {
         return (
-            <Container width="100%" height="120px" padding="20px 20px 0px 20px">
+            <Container width="100%" height="100%" padding="20px 20px 0px 20px">
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <SectionHeader>{this._renderTitleText()}</SectionHeader>
                         {this._renderTitleLabel()}
                     </Flex>
                 </Container>
-                {this._renderMainContent()}
+                <Container>{this._renderMainContent()}</Container>
             </Container>
         );
     }
@@ -74,22 +75,34 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
         const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.darkOrange;
         const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
         const colors = { primaryColor, secondaryColor };
+        const onUnlockGenericWallet = () => this.props.onUnlockWalletClick(ProviderType.MetaMask);
+        const onUnlockFormatic = () => this.props.onUnlockWalletClick(ProviderType.Fortmatic);
         switch (account.state) {
             case AccountState.Loading:
                 return null;
             case AccountState.Locked:
                 return (
-                    <WalletPrompt
-                        onClick={this.props.onUnlockWalletClick}
-                        image={
-                            <Container position="relative" top="2px">
-                                <Icon width={13} icon="lock" color={ColorOption.black} />
-                            </Container>
-                        }
-                        {...colors}
-                    >
-                        Click to Connect {this.props.walletDisplayName}
-                    </WalletPrompt>
+                    <Flex direction="column" justify="space-between" height="100%">
+                        <WalletPrompt
+                            onClick={onUnlockGenericWallet}
+                            image={
+                                <Container position="relative" top="2px">
+                                    <Icon width={13} icon="lock" color={ColorOption.black} />
+                                </Container>
+                            }
+                            {...colors}
+                        >
+                            Click to Connect Metamask
+                        </WalletPrompt>
+                        <WalletPrompt
+                            onClick={onUnlockFormatic}
+                            primaryColor={ColorOption.fortmaticPrimary}
+                            secondaryColor={ColorOption.fortmaticSecondary}
+                            marginTop="5px"
+                        >
+                            Connect with <Icon width={13} height={22} icon="lock" color={ColorOption.black} /> Fortmatic
+                        </WalletPrompt>
+                    </Flex>
                 );
             case AccountState.None:
                 return (

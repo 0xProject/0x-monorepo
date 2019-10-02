@@ -252,6 +252,11 @@ export const createReducer = (initialState: State) => {
                     ...state,
                     baseCurrency: action.data,
                 };
+            case ActionTypes.SetProviderState:
+                return {
+                    ...state,
+                    providerState: action.data,
+                };
             default:
                 return state;
         }
