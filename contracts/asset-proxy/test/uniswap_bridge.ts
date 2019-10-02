@@ -29,7 +29,7 @@ import {
     TestUniswapBridgeWethWithdrawEventArgs as WethWithdrawArgs,
 } from '../src';
 
-blockchainTests.resets.only('UniswapBridge unit tests', env => {
+blockchainTests.resets('UniswapBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestUniswapBridgeContract;
     let wethTokenAddress: string;
