@@ -25,6 +25,10 @@
             {
                 "note": "Refactor out `Error` coercion code into the `utils` package",
                 "pr": 1819
+            },
+            {
+                "note": "Inline `Chai` namesapce extension into `chai_setup.ts`.",
+                "pr": "TODO"
             }
         ]
     },
