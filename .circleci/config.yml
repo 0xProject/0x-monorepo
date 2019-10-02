@@ -82,7 +82,9 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn test:publish:circleci
+            - run: 
+                command: yarn test:publish:circleci
+                no_output_timeout: 1800
     test-doc-generation:
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
