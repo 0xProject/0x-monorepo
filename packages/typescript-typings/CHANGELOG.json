@@ -5,6 +5,10 @@
             {
                 "note": "Add types for `@0x/dev-utils` chai helpers in `types/@0x`",
                 "pr": 1761
+            },
+            {
+                "note": "Remove `@0x` namespace",
+                "pr": "TODO"
             }
         ]
     },
