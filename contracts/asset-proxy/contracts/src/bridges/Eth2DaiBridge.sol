@@ -57,7 +57,7 @@ contract Eth2DaiBridge is
 
         IEth2Dai exchange = _getEth2DaiContract();
         // Grant an allowance to the exchange to spend `fromTokenAddress` token.
-        _grantAllowanceForToken(address(exchange), fromTokenAddress);
+        IERC20Token(fromTokenAddress).approve(address(exchange), uint256(-1));
 
         // Try to sell all of this contract's `fromTokenAddress` token balance.
         uint256 boughtAmount = _getEth2DaiContract().sellAllAmount(
@@ -93,18 +93,6 @@ contract Eth2DaiBridge is
         returns (IEth2Dai exchange)
     {
         return IEth2Dai(ETH2DAI_ADDRESS);
-    }
-
-    /// @dev Grants an unlimited allowance to `spender` for `tokenAddress` token.
-    /// @param spender The spender address.
-    /// @param tokenAddress The token address.
-    function _grantAllowanceForToken(
-        address spender,
-        address tokenAddress
-    )
-        private
-    {
-        IERC20Token(tokenAddress).approve(spender, uint256(-1));
     }
 
     /// @dev Permissively transfers an ERC20 token that may not adhere to
