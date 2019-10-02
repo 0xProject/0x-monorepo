@@ -76,6 +76,9 @@ export {
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export { ForwarderContract } from './generated-wrappers/forwarder';
 export { IAssetProxyContract } from './generated-wrappers/i_asset_proxy';

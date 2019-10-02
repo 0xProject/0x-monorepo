@@ -54,6 +54,7 @@ export {
     Web3JsV1Provider,
     Web3JsV2Provider,
     Web3JsV3Provider,
+    RevertErrorAbi,
 } from 'ethereum-types';
 export {
     Web3WrapperErrors,

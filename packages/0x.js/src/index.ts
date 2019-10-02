@@ -9,19 +9,6 @@ export {
 } from '@0x/order-utils';
 
 export {
-    CoordinatorWrapper,
-    CoordinatorServerCancellationResponse,
-    CoordinatorServerError,
-    IndexedFilterValues,
-    OrderTransactionOpts,
-    TransactionOpts,
-    OrderInfo,
-    EventCallback,
-    DecodedLogEvent,
-    OrderStatus,
-} from '@0x/contract-wrappers';
-
-export {
     ExchangeEventArgs,
     ExchangeEvents,
     ExchangeSignatureValidatorApprovalEventArgs,
@@ -31,10 +18,6 @@ export {
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
     DevUtilsContract,
-    CoordinatorRegistryEventArgs,
-    CoordinatorRegistryEvents,
-    CoordinatorRegistryCoordinatorEndpointSetEventArgs,
-    CoordinatorRegistryContract,
     IValidatorContract,
     IWalletContract,
     WETH9EventArgs,
@@ -55,16 +38,15 @@ export {
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenContract,
-    ERC1155ProxyEventArgs,
-    ERC1155ProxyEvents,
-    ERC1155ProxyAuthorizedAddressAddedEventArgs,
-    ERC1155ProxyAuthorizedAddressRemovedEventArgs,
-    ERC1155ProxyContract,
     ZRXTokenEventArgs,
     ZRXTokenEvents,
     ZRXTokenTransferEventArgs,
     ZRXTokenApprovalEventArgs,
     ZRXTokenContract,
+    EventCallback,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeTransactionExecutionEventArgs,
 } from '@0x/abi-gen-wrappers';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
@@ -101,18 +83,17 @@ export {
     SimpleStandardContractOutput,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
+    EIP712DomainWithDefaultSchema,
 } from '@0x/types';
 
 export {
     BlockRange,
     ContractAbi,
-    LogWithDecodedArgs,
     ContractEventArg,
     SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
-    DecodedLogArgs,
     AbiDefinition,
     FunctionAbi,
     EventAbi,
@@ -151,4 +132,6 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
+    IndexedFilterValues,
+    RevertErrorAbi,
 } from 'ethereum-types';
