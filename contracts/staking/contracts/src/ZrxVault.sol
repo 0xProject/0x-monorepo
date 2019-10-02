@@ -62,8 +62,6 @@ contract ZrxVault is
         public
         Authorizable()
     {
-        _addAuthorizedAddress(owner);
-
         zrxAssetProxy = IAssetProxy(_zrxProxyAddress);
         _zrxToken = IERC20Token(_zrxTokenAddress);
         _zrxAssetData = abi.encodeWithSelector(

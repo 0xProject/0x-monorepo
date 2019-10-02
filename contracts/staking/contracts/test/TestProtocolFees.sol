@@ -42,8 +42,10 @@ contract TestProtocolFees is
     mapping(address => bytes32) private _makersToTestPoolIds;
 
     constructor(address exchangeAddress) public {
+        _addAuthorizedAddress(msg.sender);
         init();
         validExchanges[exchangeAddress] = true;
+        _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
     function addMakerToPool(bytes32 poolId, address makerAddress)

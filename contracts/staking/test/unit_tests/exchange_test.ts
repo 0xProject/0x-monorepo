@@ -95,18 +95,12 @@ blockchainTests.resets('Exchange Unit Tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should successfully add an exchange if called by the (authorized) owner', async () => {
-            // Register a new exchange.
-            const receipt = await exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
+        it('should revert when adding an exchange if called by the (non-authorized) owner', async () => {
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(owner);
+            const tx = exchangeManager.addExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
                 from: owner,
             });
-
-            // Ensure that the logged event was correct.
-            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeAdded, nonExchange, receipt);
-
-            // Ensure that the exchange was successfully registered.
-            const isValidExchange = await exchangeManager.validExchanges.callAsync(nonExchange);
-            expect(isValidExchange).to.be.true();
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should successfully add an exchange if called by an authorized address', async () => {
@@ -142,18 +136,12 @@ blockchainTests.resets('Exchange Unit Tests', env => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should successfully remove an exchange if called by the (authorized) owner', async () => {
-            // Remove the registered exchange.
-            const receipt = await exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(exchange, {
+        it('should revert when removing an exchange if called by the (non-authorized) owner', async () => {
+            const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(owner);
+            const tx = exchangeManager.removeExchangeAddress.awaitTransactionSuccessAsync(nonExchange, {
                 from: owner,
             });
-
-            // Ensure that the logged event was correct.
-            verifyExchangeManagerEvent(ExchangeManagerEventType.ExchangeRemoved, exchange, receipt);
-
-            // Ensure that the exchange was removed.
-            const isValidExchange = await exchangeManager.validExchanges.callAsync(exchange);
-            expect(isValidExchange).to.be.false();
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should successfully remove a registered exchange if called by an authorized address', async () => {

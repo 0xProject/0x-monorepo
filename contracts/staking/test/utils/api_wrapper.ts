@@ -236,6 +236,8 @@ export async function deployAndConfigureContractsAsync(
         zrxTokenContract.address,
     );
 
+    await zrxVaultContract.addAuthorizedAddress.awaitTransactionSuccessAsync(ownerAddress);
+
     // deploy staking contract
     const stakingContract = await TestStakingContract.deployFrom0xArtifactAsync(
         customStakingArtifact !== undefined ? customStakingArtifact : artifacts.TestStaking,
@@ -263,6 +265,9 @@ export async function deployAndConfigureContractsAsync(
         stakingContract.address,
         readOnlyProxyContract.address,
     );
+
+    await stakingProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(ownerAddress);
+
     // deploy cobb douglas contract
     const cobbDouglasContract = await TestCobbDouglasContract.deployFrom0xArtifactAsync(
         artifacts.TestCobbDouglas,

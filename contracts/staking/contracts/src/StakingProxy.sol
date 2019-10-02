@@ -42,7 +42,15 @@ contract StakingProxy is
         MixinStorage()
     {
         readOnlyProxy = _readOnlyProxy;
+
+        // Deployer address must be authorized in order to call `init`
+        _addAuthorizedAddress(msg.sender);
+
+        // Attach the staking contract and initialize state
         _attachStakingContract(_stakingContract);
+
+        // Remove the sender as an authorized address
+        _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.

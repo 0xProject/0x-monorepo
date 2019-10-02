@@ -28,6 +28,7 @@ blockchainTests('Migration tests', env => {
             env.txDefaults,
             artifacts,
         );
+        await stakingContract.addAuthorizedAddress.awaitTransactionSuccessAsync(authorizedAddress);
     });
 
     describe('StakingProxy', () => {
@@ -37,13 +38,15 @@ blockchainTests('Migration tests', env => {
         let revertAddress: string;
 
         async function deployStakingProxyAsync(stakingContractAddress?: string): Promise<TestStakingProxyContract> {
-            return TestStakingProxyContract.deployFrom0xArtifactAsync(
+            const proxyContract = await TestStakingProxyContract.deployFrom0xArtifactAsync(
                 artifacts.TestStakingProxy,
                 env.provider,
                 env.txDefaults,
                 artifacts,
                 stakingContractAddress || constants.NULL_ADDRESS,
             );
+            await proxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(authorizedAddress);
+            return proxyContract;
         }
 
         before(async () => {
