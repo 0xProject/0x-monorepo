@@ -249,10 +249,10 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
 }
 
 (async () => {
-    const networkId = 3;
-    const rpcUrl = 'https://ropsten.infura.io/v3/';
+    const networkId = 4;
+    const rpcUrl = 'https://rinkeby.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
-    await runMigrationsAsync(provider, { from: constants.ASSET_PROXY_OWNER_OWNERS[0], gasPrice: 40000000000 });
+    await runMigrationsAsync(provider, { from: constants.ASSET_PROXY_OWNER_OWNERS[0], gasPrice: 60000000000 });
 })().catch(err => {
     logUtils.log(err);
     process.exit(1);

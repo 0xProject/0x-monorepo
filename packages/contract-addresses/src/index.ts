@@ -97,7 +97,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         devUtils: '0x2d4a9abda7b8b3605c8dbd34e3550a7467c78287',
         zrxVault: '0xa5bf6ac73bc40790fc6ffc9dbbbce76c9176e224',
         readOnlyProxy: '0xffd161026865ad8b4ab28a76840474935eec4dfa',
-        staking: '0x725bc2f8c85ed0289d3da79cde3125d33fc1d7e6',
+        staking: '0x8ec5a989a06432dace637c8d592727627a45a592',
         stakingProxy: '0xb2ca5824630e526f0f3181a4ea0447c795a84411',
     },
     42: {
@@ -119,7 +119,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         devUtils: '0xb1863ac46ae23ec55d6eeb8ecc8815655ee638a8',
         zrxVault: '0xf36eabdfe986b35b62c8fd5a98a7f2aebb79b291',
         readOnlyProxy: '0x25397d8aa7e6844dae70ee658fe072d45d6cf528',
-        staking: '0xa9290221e4632394e0209abe893a90f5445e1f23',
+        staking: '0xd67f2f346f6e85db70632d9f18f50e04192ab54d',
         stakingProxy: '0x9e7eef766702c3d9056a3de779e5d9d976bc3bdb',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
