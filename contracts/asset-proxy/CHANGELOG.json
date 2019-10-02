@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.0.0",
+        "version": "2.3.0-beta.0",
         "changes": [
             {
                 "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",

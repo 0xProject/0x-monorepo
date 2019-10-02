@@ -1,6 +1,6 @@
 [
     {
-        "version": "6.0.14",
+        "version": "6.1.0-beta.0",
         "changes": [
             {
                 "note": "Let `toBaseUnitAmount()` accept a `number`",

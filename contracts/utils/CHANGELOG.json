@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.2.5",
+        "version": "3.3.0-beta.0",
         "changes": [
             {
                 "note": "Change ReentrancyGuard implementation to cheaper one",

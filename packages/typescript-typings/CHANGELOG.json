@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.4.0",
+        "version": "4.4.0-beta.0",
         "changes": [
             {
                 "note": "Add types for `@0x/dev-utils` chai helpers in `types/@0x`",
