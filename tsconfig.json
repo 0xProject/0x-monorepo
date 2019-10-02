@@ -46,7 +46,6 @@
         { "path": "./packages/contracts-gen" },
         { "path": "./packages/dev-utils" },
         { "path": "./packages/ethereum-types" },
-        { "path": "./packages/fill-scenarios" },
         { "path": "./packages/json-schemas" },
         { "path": "./packages/migrations" },
         { "path": "./packages/monorepo-scripts" },
