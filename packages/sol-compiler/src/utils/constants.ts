@@ -4,7 +4,7 @@ export const constants = {
     SOLIDITY_FILE_EXTENSION: '.sol',
     BASE_COMPILER_URL: 'https://ethereum.github.io/solc-bin/bin/',
     LATEST_ARTIFACT_VERSION: '2.0.0',
-    SOLC_BIN_DIR: path.join(__dirname, '..', '..', 'solc_bin'),
+    SOLC_BIN_DIR: path.join(__dirname, '..', '..', '..', 'solc_bin'),
     SOLC_BIN_PATHS: {
         '0.5.6': 'soljson-v0.5.6+commit.b259423e.js',
         '0.5.5': 'soljson-v0.5.5+commit.47a71e8f.js',
