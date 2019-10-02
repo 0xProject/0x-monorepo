@@ -1,7 +1,14 @@
 // tslint:disable:max-file-line-count
 
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi, ContractEventArg, ContractNetworks, DecodedLogArgs, DevdocOutput, LogWithDecodedArgs } from 'ethereum-types';
+import {
+    ContractAbi,
+    ContractEventArg,
+    ContractNetworks,
+    DecodedLogArgs,
+    DevdocOutput,
+    LogWithDecodedArgs,
+} from 'ethereum-types';
 
 export interface Order {
     chainId: number;
