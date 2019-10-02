@@ -149,6 +149,21 @@ blockchainTests('Deployment Manager', env => {
             expect(stakingContract).to.be.eq(deploymentManager.staking.stakingLogic.address);
         });
 
+        it('should have registered the weth contract in the staking contract', async () => {
+            const weth = await deploymentManager.staking.stakingWrapper.wethAddress.callAsync();
+            expect(weth).to.be.eq(deploymentManager.tokens.weth.address);
+        });
+
+        it('should have registered the zrx vault in the staking contract', async () => {
+            const zrxVault = await deploymentManager.staking.stakingWrapper.zrxVault.callAsync();
+            expect(zrxVault).to.be.eq(deploymentManager.staking.zrxVault.address);
+        });
+
+        it('should have registered the staking proxy in the zrx vault', async () => {
+            const stakingProxy = await deploymentManager.staking.zrxVault.stakingProxyAddress.callAsync();
+            expect(stakingProxy).to.be.eq(deploymentManager.staking.stakingProxy.address);
+        });
+
         it('should have correctly set the params', async () => {
             const params = await deploymentManager.staking.stakingWrapper.getParams.callAsync();
             expect(params).to.be.deep.eq(

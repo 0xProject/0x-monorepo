@@ -5,5 +5,5 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as Empty from '../generated-artifacts/Empty.json';
-export const artifacts = { Empty: Empty as ContractArtifact };
+import * as StakingWithTokens from '../generated-artifacts/StakingWithTokens.json';
+export const artifacts = { StakingWithTokens: StakingWithTokens as ContractArtifact };

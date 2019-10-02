@@ -22,12 +22,15 @@ import {
     ReadOnlyProxyContract,
     StakingContract,
     StakingProxyContract,
+    ZrxVaultContract,
 } from '@0x/contracts-staking';
 import { BlockchainTestsEnvironment, constants } from '@0x/contracts-test-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
+
+import { artifacts, StakingWithTokensContract } from './';
 
 /**
  * Adds a batch of authorities to a list of authorizable contracts.
@@ -93,11 +96,13 @@ interface AssetProxyContracts {
 // Contract wrappers for all of the staking contracts
 interface StakingContracts {
     readOnlyProxy: ReadOnlyProxyContract;
-    stakingLogic: StakingContract;
+    stakingLogic: StakingWithTokensContract;
     stakingProxy: StakingProxyContract;
-    stakingWrapper: StakingContract;
+    stakingWrapper: StakingWithTokensContract;
+    zrxVault: ZrxVaultContract;
 }
 
+// Contract wrappers for tokens.
 interface TokenContracts {
     erc1155: ERC1155Contract;
     erc20: ERC20TokenContract;
@@ -130,7 +135,6 @@ export class DeploymentManager {
 
         // Deploy the contracts using the same owner and environment.
         const assetProxies = await DeploymentManager._deployAssetProxyContractsAsync(environment, owner, txDefaults);
-        const staking = await DeploymentManager._deployStakingContractsAsync(environment, owner, txDefaults);
         const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             environment.provider,
@@ -151,6 +155,13 @@ export class DeploymentManager {
             constants.ZERO_AMOUNT,
         );
         const tokens = await DeploymentManager._deployTokenContractsAsync(environment, txDefaults);
+        const staking = await DeploymentManager._deployStakingContractsAsync(
+            environment,
+            owner,
+            txDefaults,
+            tokens,
+            assetProxies,
+        );
 
         // Configure the asset proxies with the exchange and the exchange with the staking contracts.
         await DeploymentManager._configureAssetProxiesWithExchangeAsync(assetProxies, exchange, owner);
@@ -175,6 +186,12 @@ export class DeploymentManager {
         return new DeploymentManager(assetProxies, assetProxyOwner, exchange, staking, tokens);
     }
 
+    /**
+     * Configures a set of asset proxies with an exchange contract.
+     * @param assetProxies A set of asset proxies to be configured.
+     * @param exchange An exchange contract to configure with the asset proxies.
+     * @param owner An owner address to use when configuring the asset proxies.
+     */
     protected static async _configureAssetProxiesWithExchangeAsync(
         assetProxies: AssetProxyContracts,
         exchange: ExchangeContract,
@@ -225,6 +242,12 @@ export class DeploymentManager {
         );
     }
 
+    /**
+     * Configures an exchange contract with staking contracts
+     * @param exchange
+     * @param staking
+     * @param owner An owner address to use when configuring the asset proxies.
+     */
     protected static async _configureExchangeWithStakingAsync(
         exchange: ExchangeContract,
         staking: StakingContracts,
@@ -240,6 +263,12 @@ export class DeploymentManager {
         await staking.stakingWrapper.addExchangeAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
     }
 
+    /**
+     * Deploy a set of asset proxy contracts.
+     * @param environment The blockchain environment to use.
+     * @param owner An owner address to use when configuring the asset proxies.
+     * @param txDefaults Defaults to use when deploying the asset proxies.
+     */
     protected static async _deployAssetProxyContractsAsync(
         environment: BlockchainTestsEnvironment,
         owner: string,
@@ -284,19 +313,37 @@ export class DeploymentManager {
         };
     }
 
+    /**
+     * Deploy a set of staking contracts.
+     * @param environment The blockchain environment to use.
+     * @param owner An owner address to use when configuring the asset proxies.
+     * @param txDefaults Defaults to use when deploying the asset proxies.
+     * @param tokens A set of token contracts to use during deployment of the staking contracts.
+     * @param assetProxies A set of asset proxies to use with the staking contracts.
+     */
     protected static async _deployStakingContractsAsync(
         environment: BlockchainTestsEnvironment,
         owner: string,
         txDefaults: Partial<TxData>,
+        tokens: TokenContracts,
+        assetProxies: AssetProxyContracts,
     ): Promise<StakingContracts> {
+        const zrxVault = await ZrxVaultContract.deployFrom0xArtifactAsync(
+            stakingArtifacts.ZrxVault,
+            environment.provider,
+            txDefaults,
+            stakingArtifacts,
+            assetProxies.erc20Proxy.address,
+            tokens.zrx.address,
+        );
         const readOnlyProxy = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
             stakingArtifacts.ReadOnlyProxy,
             environment.provider,
             txDefaults,
             stakingArtifacts,
         );
-        const stakingLogic = await StakingContract.deployFrom0xArtifactAsync(
-            stakingArtifacts.Staking,
+        const stakingLogic = await StakingWithTokensContract.deployFrom0xArtifactAsync(
+            artifacts.StakingWithTokens,
             environment.provider,
             txDefaults,
             stakingArtifacts,
@@ -309,14 +356,28 @@ export class DeploymentManager {
             stakingLogic.address,
             readOnlyProxy.address,
         );
+        const stakingWrapper = new StakingWithTokensContract(stakingProxy.address, environment.provider);
+
+        // Configure the zrx vault and the staking contract.
+        await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
+        await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
+        await stakingWrapper.setZrxVault.awaitTransactionSuccessAsync(zrxVault.address, { from: owner });
+        await stakingWrapper.setWethAddress.awaitTransactionSuccessAsync(tokens.weth.address, { from: owner });
+
         return {
             readOnlyProxy,
             stakingLogic,
             stakingProxy,
-            stakingWrapper: new StakingContract(stakingProxy.address, environment.provider),
+            stakingWrapper,
+            zrxVault,
         };
     }
 
+    /**
+     * Deploy a set of token contracts.
+     * @param environment The blockchain environment to use.
+     * @param txDefaults Defaults to use when deploying the asset proxies.
+     */
     protected static async _deployTokenContractsAsync(
         environment: BlockchainTestsEnvironment,
         txDefaults: Partial<TxData>,
