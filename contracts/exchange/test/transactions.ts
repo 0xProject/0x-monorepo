@@ -96,7 +96,7 @@ blockchainTests.resets('Exchange transactions', env => {
             {},
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeInstance.address, { from: owner });

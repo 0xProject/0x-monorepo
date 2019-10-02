@@ -95,7 +95,7 @@ describe(ContractName.DutchAuction, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        const exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        const exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 

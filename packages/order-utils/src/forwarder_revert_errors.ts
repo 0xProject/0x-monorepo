@@ -27,19 +27,6 @@ export class CompleteBuyFailedError extends RevertError {
     }
 }
 
-export class MakerAssetMismatchError extends RevertError {
-    constructor(firstOrderMakerAssetData?: string, mismatchedMakerAssetData?: string) {
-        super(
-            'MakerAssetMismatchError',
-            'MakerAssetMismatchError(bytes firstOrderMakerAssetData, bytes mismatchedMakerAssetData)',
-            {
-                firstOrderMakerAssetData,
-                mismatchedMakerAssetData,
-            },
-        );
-    }
-}
-
 export class UnsupportedFeeError extends RevertError {
     constructor(takerFeeAssetData?: string) {
         super('UnsupportedFeeError', 'UnsupportedFeeError(bytes takerFeeAssetData)', { takerFeeAssetData });
@@ -64,10 +51,10 @@ export class InsufficientEthForFeeError extends RevertError {
     }
 }
 
-export class OversoldWethError extends RevertError {
-    constructor(wethSold?: BigNumber | number | string, msgValue?: BigNumber | number | string) {
-        super('OversoldWethError', 'OversoldWethError(uint256 wethSold, uint256 msgValue)', {
-            wethSold,
+export class OverspentWethError extends RevertError {
+    constructor(wethSpent?: BigNumber | number | string, msgValue?: BigNumber | number | string) {
+        super('OverspentWethError', 'OverspentWethError(uint256 wethSpent, uint256 msgValue)', {
+            wethSpent,
             msgValue,
         });
     }
@@ -87,9 +74,9 @@ export class DefaultFunctionWethContractOnlyError extends RevertError {
     }
 }
 
-export class MsgValueCantEqualZeroError extends RevertError {
+export class MsgValueCannotEqualZeroError extends RevertError {
     constructor() {
-        super('MsgValueCantEqualZeroError', 'MsgValueCantEqualZeroError()', {});
+        super('MsgValueCannotEqualZeroError', 'MsgValueCannotEqualZeroError()', {});
     }
 }
 
@@ -105,14 +92,13 @@ const types = [
     UnregisteredAssetProxyError,
     UnsupportedAssetProxyError,
     CompleteBuyFailedError,
-    MakerAssetMismatchError,
     UnsupportedFeeError,
     FeePercentageTooLargeError,
     InsufficientEthForFeeError,
-    OversoldWethError,
+    OverspentWethError,
     TransferFailedError,
     DefaultFunctionWethContractOnlyError,
-    MsgValueCantEqualZeroError,
+    MsgValueCannotEqualZeroError,
     Erc721AmountMustEqualOneError,
 ];
 

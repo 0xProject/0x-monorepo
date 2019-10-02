@@ -15,6 +15,7 @@ import * as MixinAssets from '../generated-artifacts/MixinAssets.json';
 import * as MixinExchangeWrapper from '../generated-artifacts/MixinExchangeWrapper.json';
 import * as MixinForwarderCore from '../generated-artifacts/MixinForwarderCore.json';
 import * as MixinWeth from '../generated-artifacts/MixinWeth.json';
+import * as TestProtocolFeeCollector from '../generated-artifacts/TestProtocolFeeCollector.json';
 export const artifacts = {
     Forwarder: Forwarder as ContractArtifact,
     MixinAssets: MixinAssets as ContractArtifact,
@@ -26,4 +27,5 @@ export const artifacts = {
     IForwarderCore: IForwarderCore as ContractArtifact,
     LibConstants: LibConstants as ContractArtifact,
     LibForwarderRichErrors: LibForwarderRichErrors as ContractArtifact,
+    TestProtocolFeeCollector: TestProtocolFeeCollector as ContractArtifact,
 };
