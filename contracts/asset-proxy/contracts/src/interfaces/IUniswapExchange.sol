@@ -47,7 +47,6 @@ interface IUniswapExchange {
         uint256 deadline
     )
         external
-        payable
         returns (uint256 ethBought);
 
     /// @dev Buys at least `minTokensBought` tokens with the exchange token
@@ -68,4 +67,11 @@ interface IUniswapExchange {
     )
         external
         returns (uint256 tokensBought);
+
+    /// @dev Retrieves the token that is associated with this exchange.
+    /// @return tokenAddress The token address.
+    function toTokenAddress()
+        external
+        view
+        returns (address tokenAddress);
 }

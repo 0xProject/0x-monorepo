@@ -2,13 +2,16 @@ import {
     blockchainTests,
     constants,
     expect,
+    filterLogs,
     filterLogsToArguments,
     getRandomInteger,
+    hexLeftPad,
     hexRandom,
     Numberish,
     randomAddress,
     TransactionHelper,
 } from '@0x/contracts-test-utils';
+import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { DecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -16,15 +19,19 @@ import * as _ from 'lodash';
 import {
     artifacts,
     TestUniswapBridgeContract,
-    TestUniswapBridgeEvents,
-    TestUniswapBridgeSellAllAmountEventArgs,
-    TestUniswapBridgeTokenTransferEventArgs,
+    TestUniswapBridgeEthToTokenTransferInputEventArgs as EthToTokenTransferInputArgs,
+    TestUniswapBridgeEvents as ContractEvents,
+    TestUniswapBridgeTokenApproveEventArgs as TokenApproveArgs,
+    TestUniswapBridgeTokenToEthSwapInputEventArgs as TokenToEthSwapInputArgs,
+    TestUniswapBridgeTokenToTokenTransferInputEventArgs as TokenToTokenTransferInputArgs,
+    TestUniswapBridgeTokenTransferEventArgs as TokenTransferArgs,
+    TestUniswapBridgeWethDepositEventArgs as WethDepositArgs,
+    TestUniswapBridgeWethWithdrawEventArgs as WethWithdrawArgs,
 } from '../src';
 
-blockchainTests.resets('UniswapBridge unit tests', env => {
+blockchainTests.resets.only('UniswapBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestUniswapBridgeContract;
-    let daiTokenAddress: string;
     let wethTokenAddress: string;
 
     before(async () => {
@@ -34,18 +41,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
             env.txDefaults,
             artifacts,
         );
-        [daiTokenAddress, wethTokenAddress] = await Promise.all([
-            testContract.daiToken.callAsync(),
-            testContract.wethToken.callAsync(),
-        ]);
-    });
-
-    describe('deployment', () => {
-        it('sets Uniswap allowances to maximum', async () => {
-            const [wethAllowance, daiAllowance] = await testContract.getUniswapTokenAllowances.callAsync();
-            expect(wethAllowance).to.bignumber.eq(constants.MAX_UINT256);
-            expect(daiAllowance).to.bignumber.eq(constants.MAX_UINT256);
-        });
+        wethTokenAddress = await testContract.wethToken.callAsync();
     });
 
     describe('isValidSignature()', () => {
@@ -56,125 +52,333 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
         });
     });
 
-    describe('transfer()', () => {
-        interface TransferOpts {
+    describe('withdrawTo()', () => {
+        interface WithdrawToOpts {
+            fromTokenAddress: string;
             toTokenAddress: string;
+            fromTokenBalance: Numberish;
             toAddress: string;
             amount: Numberish;
-            fromTokenBalance: Numberish;
-            revertReason: string;
-            fillAmount: Numberish;
+            exchangeRevertReason: string;
+            exchangeFillAmount: Numberish;
+            toTokenRevertReason: string;
+            fromTokenRevertReason: string;
         }
 
-        function createTransferOpts(opts?: Partial<TransferOpts>): TransferOpts {
+        function createWithdrawToOpts(opts?: Partial<WithdrawToOpts>): WithdrawToOpts {
             return {
-                toTokenAddress: _.sampleSize([wethTokenAddress, daiTokenAddress], 1)[0],
+                fromTokenAddress: constants.NULL_ADDRESS,
+                toTokenAddress: constants.NULL_ADDRESS,
+                fromTokenBalance: getRandomInteger(1, 1e18),
                 toAddress: randomAddress(),
-                amount: getRandomInteger(1, 100e18),
-                revertReason: '',
-                fillAmount: getRandomInteger(1, 100e18),
-                fromTokenBalance: getRandomInteger(1, 100e18),
+                amount: getRandomInteger(1, 1e18),
+                exchangeRevertReason: '',
+                exchangeFillAmount: getRandomInteger(1, 1e18),
+                toTokenRevertReason: '',
+                fromTokenRevertReason: '',
                 ...opts,
             };
         }
 
-        async function transferAsync(opts?: Partial<TransferOpts>): Promise<[string, DecodedLogs]> {
-            const _opts = createTransferOpts(opts);
-            // Set the fill behavior.
-            await testContract.setFillBehavior.awaitTransactionSuccessAsync(
-                _opts.revertReason,
-                new BigNumber(_opts.fillAmount),
-            );
-            // Set the token balance for the token we're converting from.
-            await testContract.setTokenBalances.awaitTransactionSuccessAsync(
-                _opts.toTokenAddress === daiTokenAddress
-                    ? new BigNumber(_opts.fromTokenBalance)
-                    : constants.ZERO_AMOUNT,
-                _opts.toTokenAddress === wethTokenAddress
-                    ? new BigNumber(_opts.fromTokenBalance)
-                    : constants.ZERO_AMOUNT,
-            );
-            // Call transfer().
-            const [result, { logs }] = await txHelper.getResultAndReceiptAsync(
-                testContract.transfer,
-                '0x',
-                _opts.toTokenAddress,
-                randomAddress(),
-                _opts.toAddress,
-                new BigNumber(_opts.amount),
-            );
-            return [result, (logs as any) as DecodedLogs];
+        interface WithdrawToResult {
+            opts: WithdrawToOpts;
+            result: string;
+            logs: DecodedLogs;
+            blockTime: number;
         }
 
-        function getOppositeToken(tokenAddress: string): string {
-            if (tokenAddress === daiTokenAddress) {
-                return wethTokenAddress;
-            }
-            return daiTokenAddress;
+        async function withdrawToAsync(opts?: Partial<WithdrawToOpts>): Promise<WithdrawToResult> {
+            const _opts = createWithdrawToOpts(opts);
+            // Create the "from" token and exchange.
+            [[_opts.fromTokenAddress]] = await txHelper.getResultAndReceiptAsync(
+                testContract.createTokenAndExchange,
+                _opts.fromTokenAddress,
+                _opts.exchangeRevertReason,
+                { value: new BigNumber(_opts.exchangeFillAmount) },
+            );
+            // Create the "to" token and exchange.
+            [[_opts.toTokenAddress]] = await txHelper.getResultAndReceiptAsync(
+                testContract.createTokenAndExchange,
+                _opts.toTokenAddress,
+                _opts.exchangeRevertReason,
+                { value: new BigNumber(_opts.exchangeFillAmount) },
+            );
+            await testContract.setTokenRevertReason.awaitTransactionSuccessAsync(
+                _opts.toTokenAddress,
+                _opts.toTokenRevertReason,
+            );
+            await testContract.setTokenRevertReason.awaitTransactionSuccessAsync(
+                _opts.fromTokenAddress,
+                _opts.fromTokenRevertReason,
+            );
+            // Set the token balance for the token we're converting from.
+            await testContract.setTokenBalance.awaitTransactionSuccessAsync(_opts.fromTokenAddress, {
+                value: new BigNumber(_opts.fromTokenBalance),
+            });
+            // Call withdrawTo().
+            const [result, receipt] = await txHelper.getResultAndReceiptAsync(
+                testContract.withdrawTo,
+                // The "to" token address.
+                _opts.toTokenAddress,
+                // The "from" address.
+                randomAddress(),
+                // The "to" address.
+                _opts.toAddress,
+                // The amount to transfer to "to"
+                new BigNumber(_opts.amount),
+                // ABI-encoded "from" token address.
+                hexLeftPad(_opts.fromTokenAddress),
+            );
+            return {
+                opts: _opts,
+                result,
+                logs: receipt.logs,
+                blockTime: await env.web3Wrapper.getBlockTimestampAsync(receipt.blockNumber),
+            };
+        }
+
+        async function getExchangeForTokenAsync(tokenAddress: string): Promise<string> {
+            return testContract.getExchange.callAsync(tokenAddress);
         }
 
         it('returns magic bytes on success', async () => {
-            const BRIDGE_SUCCESS_RETURN_DATA = '0xb5d40d78';
-            const [result] = await transferAsync();
-            expect(result).to.eq(BRIDGE_SUCCESS_RETURN_DATA);
+            const { result } = await withdrawToAsync();
+            expect(result).to.eq(AssetProxyId.ERC20Bridge);
         });
 
-        it('calls `Uniswap.sellAllAmount()`', async () => {
-            const opts = createTransferOpts();
-            const [, logs] = await transferAsync(opts);
-            const transfers = filterLogsToArguments<TestUniswapBridgeSellAllAmountEventArgs>(
-                logs,
-                TestUniswapBridgeEvents.SellAllAmount,
+        it('just transfers tokens to `to` if the same tokens are in play', async () => {
+            const [[tokenAddress]] = await txHelper.getResultAndReceiptAsync(
+                testContract.createTokenAndExchange,
+                constants.NULL_ADDRESS,
+                '',
             );
+            const { opts, result, logs } = await withdrawToAsync({
+                fromTokenAddress: tokenAddress,
+                toTokenAddress: tokenAddress,
+            });
+            expect(result).to.eq(AssetProxyId.ERC20Bridge);
+            const transfers = filterLogsToArguments<TokenTransferArgs>(logs, ContractEvents.TokenTransfer);
             expect(transfers.length).to.eq(1);
-            expect(transfers[0].sellToken).to.eq(getOppositeToken(opts.toTokenAddress));
-            expect(transfers[0].buyToken).to.eq(opts.toTokenAddress);
-            expect(transfers[0].sellTokenAmount).to.bignumber.eq(opts.fromTokenBalance);
-            expect(transfers[0].minimumFillAmount).to.bignumber.eq(opts.amount);
-        });
-
-        it('can swap DAI for WETH', async () => {
-            const opts = createTransferOpts({ toTokenAddress: wethTokenAddress });
-            const [, logs] = await transferAsync(opts);
-            const transfers = filterLogsToArguments<TestUniswapBridgeSellAllAmountEventArgs>(
-                logs,
-                TestUniswapBridgeEvents.SellAllAmount,
-            );
-            expect(transfers.length).to.eq(1);
-            expect(transfers[0].sellToken).to.eq(daiTokenAddress);
-            expect(transfers[0].buyToken).to.eq(wethTokenAddress);
-        });
-
-        it('can swap WETH for DAI', async () => {
-            const opts = createTransferOpts({ toTokenAddress: daiTokenAddress });
-            const [, logs] = await transferAsync(opts);
-            const transfers = filterLogsToArguments<TestUniswapBridgeSellAllAmountEventArgs>(
-                logs,
-                TestUniswapBridgeEvents.SellAllAmount,
-            );
-            expect(transfers.length).to.eq(1);
-            expect(transfers[0].sellToken).to.eq(wethTokenAddress);
-            expect(transfers[0].buyToken).to.eq(daiTokenAddress);
-        });
-
-        it('transfers filled amount to `to`', async () => {
-            const opts = createTransferOpts();
-            const [, logs] = await transferAsync(opts);
-            const transfers = filterLogsToArguments<TestUniswapBridgeTokenTransferEventArgs>(
-                logs,
-                TestUniswapBridgeEvents.TokenTransfer,
-            );
-            expect(transfers.length).to.eq(1);
-            expect(transfers[0].token).to.eq(opts.toTokenAddress);
+            expect(transfers[0].token).to.eq(tokenAddress);
             expect(transfers[0].from).to.eq(testContract.address);
             expect(transfers[0].to).to.eq(opts.toAddress);
-            expect(transfers[0].amount).to.bignumber.eq(opts.fillAmount);
+            expect(transfers[0].amount).to.bignumber.eq(opts.amount);
         });
 
-        it('fails if `Uniswap.sellAllAmount()` reverts', async () => {
-            const opts = createTransferOpts({ revertReason: 'FOOBAR' });
-            const tx = transferAsync(opts);
-            return expect(tx).to.revertWith(opts.revertReason);
+        describe('token -> token', () => {
+            it('calls `IUniswapExchange.tokenToTokenTransferInput()', async () => {
+                const { opts, logs, blockTime } = await withdrawToAsync();
+                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
+                const calls = filterLogsToArguments<TokenToTokenTransferInputArgs>(
+                    logs,
+                    ContractEvents.TokenToTokenTransferInput,
+                );
+                expect(calls.length).to.eq(1);
+                expect(calls[0].exchange).to.eq(exchangeAddress);
+                expect(calls[0].tokensSold).to.bignumber.eq(opts.fromTokenBalance);
+                expect(calls[0].minTokensBought).to.bignumber.eq(0);
+                expect(calls[0].minEthBought).to.bignumber.eq(0);
+                expect(calls[0].deadline).to.bignumber.eq(blockTime);
+                expect(calls[0].recipient).to.eq(opts.toAddress);
+                expect(calls[0].toTokenAddress).to.eq(opts.toTokenAddress);
+            });
+
+            it('sets allowance for "from" token', async () => {
+                const { opts, logs } = await withdrawToAsync();
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
+                expect(transfers.length).to.eq(1);
+                expect(transfers[0].spender).to.eq(exchangeAddress);
+                expect(transfers[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
+            });
+
+            it('sets allowance for "from" token only once', async () => {
+                const { opts } = await withdrawToAsync();
+                const { logs } = await withdrawToAsync(opts);
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                expect(transfers.length).to.eq(0);
+            });
+
+            it('fails if "from" token does not exist', async () => {
+                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                    randomAddress(),
+                    randomAddress(),
+                    randomAddress(),
+                    getRandomInteger(1, 1e18),
+                    hexLeftPad(randomAddress()),
+                );
+                return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
+            });
+
+            it('fails if the exchange fails', async () => {
+                const revertReason = 'FOOBAR';
+                const tx = withdrawToAsync({
+                    exchangeRevertReason: revertReason,
+                });
+                return expect(tx).to.revertWith(revertReason);
+            });
+        });
+
+        describe('token -> ETH', () => {
+            it('calls `IUniswapExchange.tokenToEthSwapInput()`, `WETH.deposit()`, then `transfer()`', async () => {
+                const { opts, logs, blockTime } = await withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                });
+                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
+                let calls: any = filterLogs<TokenToEthSwapInputArgs>(logs, ContractEvents.TokenToEthSwapInput);
+                expect(calls.length).to.eq(1);
+                expect(calls[0].args.exchange).to.eq(exchangeAddress);
+                expect(calls[0].args.tokensSold).to.bignumber.eq(opts.fromTokenBalance);
+                expect(calls[0].args.minEthBought).to.bignumber.eq(0);
+                expect(calls[0].args.deadline).to.bignumber.eq(blockTime);
+                calls = filterLogs<WethDepositArgs>(
+                    logs.slice(calls[0].logIndex as number),
+                    ContractEvents.WethDeposit,
+                );
+                expect(calls.length).to.eq(1);
+                expect(calls[0].args.amount).to.bignumber.eq(opts.exchangeFillAmount);
+                calls = filterLogs<TokenTransferArgs>(
+                    logs.slice(calls[0].logIndex as number),
+                    ContractEvents.TokenTransfer,
+                );
+                expect(calls.length).to.eq(1);
+                expect(calls[0].args.token).to.eq(opts.toTokenAddress);
+                expect(calls[0].args.from).to.eq(testContract.address);
+                expect(calls[0].args.to).to.eq(opts.toAddress);
+                expect(calls[0].args.amount).to.bignumber.eq(opts.exchangeFillAmount);
+            });
+
+            it('calls `IUniswapExchange.tokenToEthSwapInput()`', async () => {
+                const { opts, logs, blockTime } = await withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                });
+                const calls = filterLogsToArguments<TokenToEthSwapInputArgs>(logs, ContractEvents.TokenToEthSwapInput);
+                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
+                expect(calls.length).to.eq(1);
+                expect(calls[0].exchange).to.eq(exchangeAddress);
+                expect(calls[0].tokensSold).to.bignumber.eq(opts.fromTokenBalance);
+                expect(calls[0].minEthBought).to.bignumber.eq(0);
+                expect(calls[0].deadline).to.bignumber.eq(blockTime);
+            });
+
+            it('sets allowance for "from" token', async () => {
+                const { opts, logs } = await withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                });
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
+                expect(transfers.length).to.eq(1);
+                expect(transfers[0].spender).to.eq(exchangeAddress);
+                expect(transfers[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
+            });
+
+            it('sets allowance for "from" token only once', async () => {
+                const { opts } = await withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                });
+                const { logs } = await withdrawToAsync(opts);
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                expect(transfers.length).to.eq(0);
+            });
+
+            it('fails if "from" token does not exist', async () => {
+                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                    randomAddress(),
+                    randomAddress(),
+                    randomAddress(),
+                    getRandomInteger(1, 1e18),
+                    hexLeftPad(wethTokenAddress),
+                );
+                return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
+            });
+
+            it('fails if `WETH.deposit()` fails', async () => {
+                const revertReason = 'FOOBAR';
+                const tx = withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                    toTokenRevertReason: revertReason,
+                });
+                return expect(tx).to.revertWith(revertReason);
+            });
+
+            it('fails if the exchange fails', async () => {
+                const revertReason = 'FOOBAR';
+                const tx = withdrawToAsync({
+                    toTokenAddress: wethTokenAddress,
+                    exchangeRevertReason: revertReason,
+                });
+                return expect(tx).to.revertWith(revertReason);
+            });
+        });
+
+        describe('ETH -> token', () => {
+            it('calls  `WETH.withdraw()`, then `IUniswapExchange.ethToTokenTransferInput()`', async () => {
+                const { opts, logs, blockTime } = await withdrawToAsync({
+                    fromTokenAddress: wethTokenAddress,
+                });
+                const exchangeAddress = await getExchangeForTokenAsync(opts.toTokenAddress);
+                let calls: any = filterLogs<WethWithdrawArgs>(logs, ContractEvents.WethWithdraw);
+                expect(calls.length).to.eq(1);
+                expect(calls[0].args.amount).to.bignumber.eq(opts.fromTokenBalance);
+                calls = filterLogs<EthToTokenTransferInputArgs>(
+                    logs.slice(calls[0].logIndex as number),
+                    ContractEvents.EthToTokenTransferInput,
+                );
+                expect(calls.length).to.eq(1);
+                expect(calls[0].args.exchange).to.eq(exchangeAddress);
+                expect(calls[0].args.minTokensBought).to.bignumber.eq(0);
+                expect(calls[0].args.deadline).to.bignumber.eq(blockTime);
+                expect(calls[0].args.recipient).to.eq(opts.toAddress);
+            });
+
+            it('sets allowance for "to" token', async () => {
+                const { opts, logs } = await withdrawToAsync({
+                    fromTokenAddress: wethTokenAddress,
+                });
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                const exchangeAddress = await getExchangeForTokenAsync(opts.toTokenAddress);
+                expect(transfers.length).to.eq(1);
+                expect(transfers[0].spender).to.eq(exchangeAddress);
+                expect(transfers[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
+            });
+
+            it('sets allowance for "from" token only', async () => {
+                const { opts } = await withdrawToAsync({
+                    fromTokenAddress: wethTokenAddress,
+                });
+                const { logs } = await withdrawToAsync(opts);
+                const transfers = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
+                expect(transfers.length).to.eq(0);
+            });
+
+            it('fails if "to" token does not exist', async () => {
+                const tx = testContract.withdrawTo.awaitTransactionSuccessAsync(
+                    wethTokenAddress,
+                    randomAddress(),
+                    randomAddress(),
+                    getRandomInteger(1, 1e18),
+                    hexLeftPad(randomAddress()),
+                );
+                return expect(tx).to.revertWith('NO_UNISWAP_EXCHANGE_FOR_TOKEN');
+            });
+
+            it('fails if the `WETH.withdraw()` fails', async () => {
+                const revertReason = 'FOOBAR';
+                const tx = withdrawToAsync({
+                    fromTokenAddress: wethTokenAddress,
+                    fromTokenRevertReason: revertReason,
+                });
+                return expect(tx).to.revertWith(revertReason);
+            });
+
+            it('fails if the exchange fails', async () => {
+                const revertReason = 'FOOBAR';
+                const tx = withdrawToAsync({
+                    fromTokenAddress: wethTokenAddress,
+                    exchangeRevertReason: revertReason,
+                });
+                return expect(tx).to.revertWith(revertReason);
+            });
         });
     });
 });

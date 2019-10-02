@@ -21,18 +21,18 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
-import "@0x/contracts-exchange/contracts/src/interfaces/IWallet.sol";
 import "../interfaces/IUniswapExchangeFactory.sol";
 import "../interfaces/IUniswapExchange.sol";
-import "./ERC20Bridge.sol";
+import "../interfaces/IWallet.sol";
+import "../interfaces/IERC20Bridge.sol";
 
 
 // solhint-disable space-after-comma
+// solhint-disable not-rely-on-time
 contract UniswapBridge is
-    ERC20Bridge,
+    IERC20Bridge,
     IWallet
 {
-    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
     /* Mainnet addresses */
     address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
@@ -45,8 +45,15 @@ contract UniswapBridge is
         IEtherToken weth;
     }
 
-    /// @dev Whether we've granted an allowance to a spender for a token.
-    mapping (address => mapping (address => bool)) private _hasAllowance;
+    // solhint-disable no-empty-blocks
+    /// @dev Payable fallback to receive ETH from uniswap.
+    function ()
+        external
+        payable
+    {}
+
+    /// @dev Whether we've granted an allowance to the exchange for a token.
+    mapping (address => bool) private _hasAllowance;
 
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
@@ -83,7 +90,7 @@ contract UniswapBridge is
             toTokenAddress
         );
         // Grant an allowance to the exchange.
-        _grantAllowanceForTokens(address(state.exchange), [fromTokenAddress, toTokenAddress]);
+        _grantExchangeAllowance(state.exchange);
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
         // Get the weth contract.
@@ -176,27 +183,16 @@ contract UniswapBridge is
         return IUniswapExchangeFactory(UNISWAP_EXCHANGE_FACTORY_ADDRESS);
     }
 
-    /// @dev Grants an unlimited allowance to `spender` for the tokens passed,
-    ///      if they're not WETH and we haven't already granted `spender` an
-    ///      allowance.
-    /// @param spender The spender being granted an aloowance.
-    /// @param tokenAddresses Array of token addresses.
-    function _grantAllowanceForTokens(
-        address spender,
-        address[2] memory tokenAddresses
-    )
+    /// @dev Grants an unlimited allowance to the exchange for its token
+    ///      on behalf of this contract, if we haven't already done so.
+    /// @param exchange The Uniswap token exchange.
+    function _grantExchangeAllowance(IUniswapExchange exchange)
         private
     {
-        address wethAddress = address(_getWethContract());
-        mapping (address => bool) storage doesSpenderHaveAllowance = _hasAllowance[spender];
-        for (uint256 i = 0; i < tokenAddresses.length; ++i) {
-            address tokenAddress = tokenAddresses[i];
-            if (tokenAddress != wethAddress) {
-                if (!doesSpenderHaveAllowance[tokenAddress]) {
-                    IERC20Token(tokenAddress).approve(spender, uint256(-1));
-                    doesSpenderHaveAllowance[tokenAddress] = true;
-                }
-            }
+        address tokenAddress = exchange.toTokenAddress();
+        if (!_hasAllowance[tokenAddress]) {
+            IERC20Token(tokenAddress).approve(address(exchange), uint256(-1));
+            _hasAllowance[tokenAddress] = true;
         }
     }
 

@@ -26,14 +26,8 @@ import "../src/interfaces/IUniswapExchangeFactory.sol";
 import "../src/interfaces/IUniswapExchange.sol";
 
 
+// solhint-disable no-simple-event-func-name
 contract TestEventsRaiser {
-
-    event SellAllAmount(
-        address sellToken,
-        uint256 sellTokenAmount,
-        address buyToken,
-        uint256 minimumFillAmount
-    );
 
     event TokenTransfer(
         address token,
@@ -56,18 +50,21 @@ contract TestEventsRaiser {
     );
 
     event EthToTokenTransferInput(
+        address exchange,
         uint256 minTokensBought,
         uint256 deadline,
         address recipient
     );
 
     event TokenToEthSwapInput(
+        address exchange,
         uint256 tokensSold,
         uint256 minEthBought,
         uint256 deadline
     );
 
     event TokenToTokenTransferInput(
+        address exchange,
         uint256 tokensSold,
         uint256 minTokensBought,
         uint256 minEthBought,
@@ -84,6 +81,7 @@ contract TestEventsRaiser {
         external
     {
         emit EthToTokenTransferInput(
+            msg.sender,
             minTokensBought,
             deadline,
             recipient
@@ -98,6 +96,7 @@ contract TestEventsRaiser {
         external
     {
         emit TokenToEthSwapInput(
+            msg.sender,
             tokensSold,
             minEthBought,
             deadline
@@ -115,6 +114,7 @@ contract TestEventsRaiser {
         external
     {
         emit TokenToTokenTransferInput(
+            msg.sender,
             tokensSold,
             minTokensBought,
             minEthBought,
@@ -158,21 +158,38 @@ contract TestEventsRaiser {
     }
 }
 
+
 /// @dev A minimalist ERC20/WETH token.
 contract TestToken {
 
     using LibSafeMath for uint256;
 
     mapping (address => uint256) public balances;
+    string private _nextRevertReason;
 
-    /// @dev Calls `raiseTokenTransfer()` on the caller.
+    /// @dev Set the balance for `owner`.
+    function setBalance(address owner)
+        external
+        payable
+    {
+        balances[owner] = msg.value;
+    }
+
+    /// @dev Set the revert reason for `transfer()`,
+    ///      `deposit()`, and `withdraw()`.
+    function setRevertReason(string calldata reason)
+        external
+    {
+        _nextRevertReason = reason;
+    }
+
+    /// @dev Just calls `raiseTokenTransfer()` on the caller.
     function transfer(address to, uint256 amount)
         external
         returns (bool)
     {
+        _revertIfReasonExists();
         TestEventsRaiser(msg.sender).raiseTokenTransfer(msg.sender, to, amount);
-        balances[msg.sender] = balances[msg.sender].safeSub(amount);
-        balances[to] = balances[to].safeAdd(amount);
         return true;
     }
 
@@ -185,20 +202,13 @@ contract TestToken {
         return true;
     }
 
-    /// @dev Set the balance for `owner`.
-    function setBalance(address owner, uint256 balance)
-        external
-        payable
-    {
-        balances[owner] = balance;
-    }
-
     /// @dev `IWETH.deposit()` that increases balances and calls
     ///     `raiseWethDeposit()` on the caller.
     function deposit()
         external
         payable
     {
+        _revertIfReasonExists();
         balances[msg.sender] += balances[msg.sender].safeAdd(msg.value);
         TestEventsRaiser(msg.sender).raiseWethDeposit(msg.value);
     }
@@ -208,6 +218,7 @@ contract TestToken {
     function withdraw(uint256 amount)
         external
     {
+        _revertIfReasonExists();
         balances[msg.sender] = balances[msg.sender].safeSub(amount);
         msg.sender.transfer(amount);
         TestEventsRaiser(msg.sender).raiseWethWithdraw(amount);
@@ -221,6 +232,15 @@ contract TestToken {
     {
         return balances[owner];
     }
+
+    function _revertIfReasonExists()
+        private
+        view
+    {
+        if (bytes(_nextRevertReason).length != 0) {
+            revert(_nextRevertReason);
+        }
+    }
 }
 
 
@@ -229,21 +249,18 @@ contract TestExchange is
 {
     address public tokenAddress;
     string private _nextRevertReason;
-    uint256 private _nextFillAmount;
 
     constructor(address _tokenAddress) public {
         tokenAddress = _tokenAddress;
     }
 
     function setFillBehavior(
-        string calldata revertReason,
-        uint256 fillAmount
+        string calldata revertReason
     )
         external
         payable
     {
         _nextRevertReason = revertReason;
-        _nextFillAmount = fillAmount;
     }
 
     function ethToTokenTransferInput(
@@ -261,7 +278,7 @@ contract TestExchange is
             recipient
         );
         _revertIfReasonExists();
-        return _nextFillAmount;
+        return address(this).balance;
     }
 
     function tokenToEthSwapInput(
@@ -270,7 +287,6 @@ contract TestExchange is
         uint256 deadline
     )
         external
-        payable
         returns (uint256 ethBought)
     {
         TestEventsRaiser(msg.sender).raiseTokenToEthSwapInput(
@@ -279,7 +295,9 @@ contract TestExchange is
             deadline
         );
         _revertIfReasonExists();
-        return _nextFillAmount;
+        uint256 fillAmount = address(this).balance;
+        msg.sender.transfer(fillAmount);
+        return fillAmount;
     }
 
     function tokenToTokenTransferInput(
@@ -302,11 +320,20 @@ contract TestExchange is
             toTokenAddress
         );
         _revertIfReasonExists();
-        return _nextFillAmount;
+        return address(this).balance;
+    }
+
+    function toTokenAddress()
+        external
+        view
+        returns (address _tokenAddress)
+    {
+        return tokenAddress;
     }
 
     function _revertIfReasonExists()
         private
+        view
     {
         if (bytes(_nextRevertReason).length != 0) {
             revert(_nextRevertReason);
@@ -321,50 +348,59 @@ contract TestUniswapBridge is
     TestEventsRaiser,
     UniswapBridge
 {
-
-    TestToken public wethToken = new TestToken();
+    TestToken public wethToken;
     // Token address to TestToken instance.
     mapping (address => TestToken) private _testTokens;
     // Token address to TestExchange instance.
     mapping (address => TestExchange) private _testExchanges;
 
-    /// @dev Set token balances for this contract.
-    function setTokenBalances(address tokenAddress, uint256 balance)
-        external
-    {
-        TestToken token = _testTokens[tokenAddress];
-        // Create the token if it doesn't exist.
-        if (address(token) == address(0)) {
-            _testTokens[tokenAddress] = token = new TestToken();
-        }
-        token.setBalance(address(this), balance);
+    constructor() public {
+        wethToken = new TestToken();
+        _testTokens[address(wethToken)] = wethToken;
     }
 
-    /// @dev Set the behavior for a fill on a uniswap exchange.
-    function setExchangeFillBehavior(
-        address exchangeAddress,
-        string calldata revertReason,
-        uint256 fillAmount
-    )
+    /// @dev Sets the balance of this contract for an existing token.
+    ///      The wei attached will be the balance.
+    function setTokenBalance(address tokenAddress)
         external
         payable
     {
-        createExchange(exchangeAddress).setFillBehavior.value(msg.value)(
-            revertReason,
-            fillAmount
-        );
+        TestToken token = _testTokens[tokenAddress];
+        token.deposit.value(msg.value)();
     }
 
-    /// @dev Create an exchange for a token.
-    function createExchange(address tokenAddress)
-        public
-        returns (TestExchange exchangeAddress)
+    /// @dev Sets the revert reason for an existing token.
+    function setTokenRevertReason(address tokenAddress, string calldata revertReason)
+        external
     {
-        TestExchange exchange = _testExchanges[tokenAddress];
-        if (address(exchange) == address(0)) {
-            _testExchanges[tokenAddress] = exchange = new TestExchange(tokenAddress);
+        TestToken token = _testTokens[tokenAddress];
+        token.setRevertReason(revertReason);
+    }
+
+    /// @dev Create a token and exchange (if they don't exist) for a new token
+    ///      and sets the exchange revert and fill behavior. The wei attached
+    ///      will be the fill amount for the exchange.
+    /// @param tokenAddress The token address. If zero, one will be created.
+    /// @param revertReason The revert reason for exchange operations.
+    function createTokenAndExchange(
+        address tokenAddress,
+        string calldata revertReason
+    )
+        external
+        payable
+        returns (TestToken token, TestExchange exchange)
+    {
+        token = TestToken(tokenAddress);
+        if (tokenAddress == address(0)) {
+            token = new TestToken();
         }
-        return exchange;
+        _testTokens[address(token)] = token;
+        exchange = _testExchanges[address(token)];
+        if (address(exchange) == address(0)) {
+            _testExchanges[address(token)] = exchange = new TestExchange(address(token));
+        }
+        exchange.setFillBehavior.value(msg.value)(revertReason);
+        return (token, exchange);
     }
 
     /// @dev `IUniswapExchangeFactory.getExchange`
