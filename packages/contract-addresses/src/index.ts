@@ -53,7 +53,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         etherToken: '0xc778417e063141139fce010982780140aa0cd5ab',
         exchange: '0x725bc2f8c85ed0289d3da79cde3125d33fc1d7e6',
         assetProxyOwner: '0xdcf20f7b447d51f2b3e5499b7f6cbbf7295a5d26',
-        forwarder: NULL_ADDRESS,
+        forwarder: '0x31c3890769ed3bb30b2781fd238a5bb7ecfeb7c8',
         orderValidator: NULL_ADDRESS,
         dutchAuction: NULL_ADDRESS,
         coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
@@ -61,7 +61,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xab8fbd189c569ccdee3a4d929bb7f557be4028f6',
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
-        devUtils: NULL_ADDRESS,
+        devUtils: '0x3dfd5157eec10eb1a357c1074de30787ce92cb43',
     },
     4: {
         exchange: '0x8e1dfaf747b804d041adaed79d68dcef85b8de85',
