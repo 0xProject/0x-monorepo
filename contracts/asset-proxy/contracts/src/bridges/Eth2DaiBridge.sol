@@ -33,9 +33,6 @@ contract Eth2DaiBridge is
     /* Mainnet addresses */
     address constant public ETH2DAI_ADDRESS = 0x39755357759cE0d7f32dC8dC45414CCa409AE24e;
 
-    /// @dev Whether we've granted an allowance to a spender for a token.
-    mapping (address => mapping (address => bool)) private _hasAllowance;
-
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the opposing asset
     ///      (DAI or WETH) to the Eth2Dai contract, then transfers the bought
@@ -98,8 +95,7 @@ contract Eth2DaiBridge is
         return IEth2Dai(ETH2DAI_ADDRESS);
     }
 
-    /// @dev Grants an unlimited allowance to `spender` for `tokenAddress` token,
-    ///      if we haven't done so already.
+    /// @dev Grants an unlimited allowance to `spender` for `tokenAddress` token.
     /// @param spender The spender address.
     /// @param tokenAddress The token address.
     function _grantAllowanceForToken(
@@ -108,11 +104,7 @@ contract Eth2DaiBridge is
     )
         private
     {
-        mapping (address => bool) storage spenderHasAllowance = _hasAllowance[spender];
-        if (!spenderHasAllowance[tokenAddress]) {
-            spenderHasAllowance[tokenAddress] = true;
-            IERC20Token(tokenAddress).approve(spender, uint256(-1));
-        }
+        IERC20Token(tokenAddress).approve(spender, uint256(-1));
     }
 
     /// @dev Permissively transfers an ERC20 token that may not adhere to

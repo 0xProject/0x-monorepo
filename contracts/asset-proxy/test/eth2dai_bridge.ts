@@ -154,16 +154,6 @@ blockchainTests.resets('Eth2DaiBridge unit tests', env => {
             expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
         });
 
-        it('does not set an unlimited allowance on the `fromTokenAddress` token if already set', async () => {
-            const { opts } = await withdrawToAsync();
-            const { logs } = await withdrawToAsync({ fromTokenAddress: opts.fromTokenAddress });
-            const approvals = filterLogsToArguments<TestEth2DaiBridgeTokenApproveEventArgs>(
-                logs,
-                TestEth2DaiBridgeEvents.TokenApprove,
-            );
-            expect(approvals.length).to.eq(0);
-        });
-
         it('transfers filled amount to `to`', async () => {
             const { opts, logs } = await withdrawToAsync();
             const transfers = filterLogsToArguments<TestEth2DaiBridgeTokenTransferEventArgs>(
