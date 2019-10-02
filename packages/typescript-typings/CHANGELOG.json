@@ -8,7 +8,7 @@
             },
             {
                 "note": "Remove `@0x` namespace",
-                "pr": "TODO"
+                "pr": 2238
             }
         ]
     },

@@ -28,7 +28,7 @@
             },
             {
                 "note": "Inline `Chai` namesapce extension into `chai_setup.ts`.",
-                "pr": "TODO"
+                "pr": 2238
             }
         ]
     },
