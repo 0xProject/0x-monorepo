@@ -52,9 +52,6 @@ contract UniswapBridge is
         payable
     {}
 
-    /// @dev Whether we've granted an allowance to the exchange for a token.
-    mapping (address => bool) private _hasAllowance;
-
     /// @dev Callback for `IERC20Bridge`. Tries to buy `amount` of
     ///      `toTokenAddress` tokens by selling the entirety of the `fromTokenAddress`
     ///      token encoded in the bridge data.
@@ -184,16 +181,13 @@ contract UniswapBridge is
     }
 
     /// @dev Grants an unlimited allowance to the exchange for its token
-    ///      on behalf of this contract, if we haven't already done so.
+    ///      on behalf of this contract.
     /// @param exchange The Uniswap token exchange.
     function _grantExchangeAllowance(IUniswapExchange exchange)
         private
     {
         address tokenAddress = exchange.toTokenAddress();
-        if (!_hasAllowance[tokenAddress]) {
-            IERC20Token(tokenAddress).approve(address(exchange), uint256(-1));
-            _hasAllowance[tokenAddress] = true;
-        }
+        IERC20Token(tokenAddress).approve(address(exchange), uint256(-1));
     }
 
     /// @dev Retrieves the uniswap exchange contract for a given token pair.
