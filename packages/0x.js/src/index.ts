@@ -85,6 +85,7 @@ export {
     EIP712DomainWithDefaultSchema,
     EventCallback,
     IndexedFilterValues,
+    DecodedLogEvent,
 } from '@0x/types';
 
 export {
@@ -134,4 +135,6 @@ export {
     ParamDescription,
     EvmBytecodeOutput,
     RevertErrorAbi,
+    DecodedLogArgs,
+    LogWithDecodedArgs,
 } from 'ethereum-types';
