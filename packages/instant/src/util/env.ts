@@ -1,9 +1,9 @@
 import * as bowser from 'bowser';
-import {ZeroExProvider} from 'ethereum-types';
+import { ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import {PROVIDER_TYPE_TO_NAME} from '../constants';
-import {Browser, OperatingSystem, ProviderType} from '../types';
+import { PROVIDER_TYPE_TO_NAME } from '../constants';
+import { Browser, OperatingSystem, ProviderType } from '../types';
 
 export const envUtil = {
     getBrowser(): Browser {

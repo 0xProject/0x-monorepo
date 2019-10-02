@@ -1,7 +1,14 @@
 import { BuyQuote } from '@0x/asset-buyer';
 import { BigNumber } from '@0x/utils';
 
-import { ActionsUnion, AddressAndEthBalanceInWei, Asset, BaseCurrency, StandardSlidingPanelContent } from '../types';
+import {
+    ActionsUnion,
+    AddressAndEthBalanceInWei,
+    Asset,
+    BaseCurrency,
+    ProviderState,
+    StandardSlidingPanelContent,
+} from '../types';
 
 export interface PlainAction<T extends string> {
     type: T;
@@ -43,6 +50,7 @@ export enum ActionTypes {
     OpenStandardSlidingPanel = 'OPEN_STANDARD_SLIDING_PANEL',
     CloseStandardSlidingPanel = 'CLOSE_STANDARD_SLIDING_PANEL',
     UpdateBaseCurrency = 'UPDATE_BASE_CURRENCY',
+    SetProviderState = 'SET_PROVIDER_STATE',
 }
 
 export const actions = {
@@ -72,4 +80,5 @@ export const actions = {
         createAction(ActionTypes.OpenStandardSlidingPanel, content),
     closeStandardSlidingPanel: () => createAction(ActionTypes.CloseStandardSlidingPanel),
     updateBaseCurrency: (baseCurrency: BaseCurrency) => createAction(ActionTypes.UpdateBaseCurrency, baseCurrency),
+    setProviderState: (providerState: ProviderState) => createAction(ActionTypes.SetProviderState, providerState),
 };
