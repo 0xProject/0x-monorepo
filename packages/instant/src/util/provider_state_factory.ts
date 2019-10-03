@@ -2,10 +2,9 @@ import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as Fortmatic from 'fortmatic';
-import * as _ from 'lodash';
 
-import {FORTMATIC_API_KEY, LOADING_ACCOUNT, NO_ACCOUNT} from '../constants';
-import { Maybe, Network, OrderSource, ProviderState } from '../types';
+import { FORTMATIC_API_KEY, LOADING_ACCOUNT, LOCKED_ACCOUNT, NO_ACCOUNT } from '../constants';
+import { Maybe, Network, OrderSource, ProviderState, ProviderType } from '../types';
 import { envUtil } from '../util/env';
 
 import { assetBuyerFactory } from './asset_buyer_factory';
@@ -51,6 +50,7 @@ export const providerStateFactory = {
             web3Wrapper: new Web3Wrapper(provider),
             assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
             account: LOADING_ACCOUNT,
+            orderSource,
         };
         return providerState;
     },
@@ -68,21 +68,11 @@ export const providerStateFactory = {
                 web3Wrapper: new Web3Wrapper(injectedProviderIfExists),
                 assetBuyer: assetBuyerFactory.getAssetBuyer(injectedProviderIfExists, orderSource, network),
                 account: LOADING_ACCOUNT,
+                orderSource,
             };
             return providerState;
         } else {
-            // If there was no provider injected to the windows, uses fortmatic as default
-            const fm = new Fortmatic(FORTMATIC_API_KEY);
-            const fmProvider = fm.getProvider();
-            const providerState: ProviderState = {
-                displayName: envUtil.getProviderDisplayName(fmProvider),
-                name: envUtil.getProviderName(fmProvider),
-                provider: fmProvider,
-                web3Wrapper: new Web3Wrapper(fmProvider),
-                assetBuyer: assetBuyerFactory.getAssetBuyer(fmProvider, orderSource, network),
-                account: LOADING_ACCOUNT,
-            };
-            return providerState;
+            return undefined;
         }
     },
     getInitialProviderStateFallback: (
@@ -90,15 +80,69 @@ export const providerStateFactory = {
         network: Network,
         walletDisplayName?: string,
     ): ProviderState => {
-        const provider = providerFactory.getFallbackNoSigningProvider(network);
-        const providerState: ProviderState = {
-            name: 'Fallback',
-            displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
-            provider,
-            web3Wrapper: new Web3Wrapper(provider),
-            assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
-            account: NO_ACCOUNT,
-        };
+        // Uses fortmatic as default provider
+        const fm = new Fortmatic(FORTMATIC_API_KEY);
+        if (fm) {
+            const fmProvider = fm.getProvider();
+            const providerState: ProviderState = {
+                displayName: envUtil.getProviderDisplayName(fmProvider),
+                name: envUtil.getProviderName(fmProvider),
+                provider: fmProvider,
+                web3Wrapper: new Web3Wrapper(fmProvider),
+                assetBuyer: assetBuyerFactory.getAssetBuyer(fmProvider, orderSource, network),
+                account: NO_ACCOUNT,
+                orderSource,
+            };
+            return providerState;
+        } else {
+            const provider = providerFactory.getFallbackNoSigningProvider(network);
+            const providerState: ProviderState = {
+                name: 'Fallback',
+                displayName: walletDisplayName || envUtil.getProviderDisplayName(provider),
+                provider,
+                web3Wrapper: new Web3Wrapper(provider),
+                assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
+                account: NO_ACCOUNT,
+                orderSource,
+            };
+            return providerState;
+        }
+    },
+    getProviderStateBasedOnProviderType: (
+        currentProviderState: ProviderState,
+        providerType: ProviderType,
+    ): ProviderState => {
+        let providerState = currentProviderState;
+        const network = currentProviderState.assetBuyer.networkId;
+        const orderSource = currentProviderState.orderSource;
+        // Returns current provider if the provider type selected is not found
+        if (providerType === ProviderType.MetaMask) {
+            const provider = providerFactory.getInjectedProviderIfExists();
+            if (provider) {
+                providerState = {
+                    displayName: envUtil.getProviderDisplayName(provider),
+                    name: envUtil.getProviderName(provider),
+                    provider,
+                    web3Wrapper: new Web3Wrapper(provider),
+                    assetBuyer: assetBuyerFactory.getAssetBuyer(provider, orderSource, network),
+                    account: LOADING_ACCOUNT,
+                    orderSource,
+                };
+            }
+        }
+        if (providerType === ProviderType.Fortmatic) {
+            const fm = new Fortmatic(FORTMATIC_API_KEY);
+            const fmProvider = fm.getProvider();
+            providerState = {
+                displayName: envUtil.getProviderDisplayName(fmProvider),
+                name: envUtil.getProviderName(fmProvider),
+                provider: fmProvider,
+                web3Wrapper: new Web3Wrapper(fmProvider),
+                assetBuyer: assetBuyerFactory.getAssetBuyer(fmProvider, orderSource, network),
+                account: LOADING_ACCOUNT,
+                orderSource,
+            };
+        }
         return providerState;
     },
 };

@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 
 import { ColorOption } from '../style/theme';
@@ -20,10 +19,8 @@ export interface PaymentMethodProps {
     account: Account;
     network: Network;
     walletDisplayName: string;
-    providerType: ProviderType | undefined;
     onInstallWalletClick: () => void;
-    onUnlockWalletClick: (providerType?: ProviderType) => void;
-    onUnlockWalletWithFortmaticProvider: () => void;
+    onUnlockWalletClick: (providerType: ProviderType) => void;
 }
 
 export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
@@ -76,8 +73,10 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
         const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.darkOrange;
         const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
         const colors = { primaryColor, secondaryColor };
-        const onUnlockGenericWallet = () => this.props.onUnlockWalletClick(ProviderType.MetaMask);
-        const onUnlockFormatic = () => this.props.onUnlockWalletWithFortmaticProvider();
+        const onUnlockGenericWallet = () => {
+            this.props.onUnlockWalletClick(ProviderType.MetaMask);
+        };
+        const onUnlockFormatic = () => this.props.onUnlockWalletClick(ProviderType.Fortmatic);
         switch (account.state) {
             case AccountState.Loading:
                 return null;
