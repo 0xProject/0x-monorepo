@@ -56,15 +56,14 @@ function logIfDefined(x: any): void {
     // fail. But package B only fails because of an error in package A.
     // Since the error in package A is the root cause, we log it first.
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
-    const installablePackages = _.filter(
-        packages,
-        pkg => {
-            return !pkg.packageJson.private &&
-                    pkg.packageJson.main !== undefined &&
-                    pkg.packageJson.main.endsWith('.js') &&
-                    !UNINSTALLABLE_PACKAGES.includes(pkg.packageJson.name);
-        },
-    );
+    const installablePackages = _.filter(packages, pkg => {
+        return (
+            !pkg.packageJson.private &&
+            pkg.packageJson.main !== undefined &&
+            pkg.packageJson.main.endsWith('.js') &&
+            !UNINSTALLABLE_PACKAGES.includes(pkg.packageJson.name)
+        );
+    });
     const CHUNK_SIZE = 15;
     const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
     utils.log(`Testing all packages in ${chunkedInstallablePackages.length} chunks`);
