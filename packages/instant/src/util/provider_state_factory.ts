@@ -3,7 +3,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as Fortmatic from 'fortmatic';
 
-import { FORTMATIC_API_KEY, LOADING_ACCOUNT, LOCKED_ACCOUNT, NO_ACCOUNT } from '../constants';
+import { FORTMATIC_API_KEY, LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
 import { Maybe, Network, OrderSource, ProviderState, ProviderType } from '../types';
 import { envUtil } from '../util/env';
 
