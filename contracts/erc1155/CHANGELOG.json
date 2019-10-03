@@ -6,7 +6,8 @@
                 "note": "Add `mintKnownFungibleTokensAsync()`, `isNonFungibleItemAsync()`, `isFungibleItemAsync()`, `getOwnerOfAsync()`, `getBalanceAsync()` to `Erc1155Wrapper`.",
                 "pr": 1819
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

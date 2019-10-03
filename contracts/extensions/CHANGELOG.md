@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0-beta.0 - _October 3, 2019_
+
+    * Dependencies updated
+
 ## v4.0.8 - _September 17, 2019_
 
     * Dependencies updated
@@ -40,6 +44,9 @@ CHANGELOG
 ## v4.0.0 - _July 13, 2019_
 
     * Move `OrderValidator` to contracts/dev-utils package as `OrderValidationUtils` (#1848)
+    * Remove unused `LibOrder` inheritance (#1742)
+    * Refactor BalanceThresholdFilter to use new ITransactions interface (#1753)
+    * Update tests for rich reverts (#1761)
 
 ## v3.1.5 - _May 24, 2019_
 

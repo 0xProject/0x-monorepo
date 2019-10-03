@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.0-beta.0 - _October 3, 2019_
+
+    * Break up `LibEIP712` into reusable components (#1742)
+    * Add `chainId` to EIP712 domain schema (#1742)
+    * Rename `verifyingContract` to `verifyingContractAddress` in domain schema (#1742)
+    * Add LibZeroExTransaction contract (#1753)
+    * Add verifyingContractIfExists arg to LibEIP712ExchangeDomain constructor (#1753)
+    * Remove LibEIP712ExchangeDomainConstants and LibEIP712 contracts (#1753)
+    * Add `LibExchangeRichErrorDecoder` contract. (#1790)
+    * Break out types/interaces from `MExchangeRichErrors` into `MExchangeRichErrorTypes`. (#1790)
+    * Reorder some revert error parameters for consistency (#1790)
+    * Add new `Order` fields for arbitrary fee tokens (ZEIP-28). (#1819)
+    * Remove `LibAbiEncoder` and `LibConstants`. (#1819)
+    * Add `generate-exchange-selectors` package script. (#1819)
+    * Add `expirationTimeSeconds` to `ZeroExTransaction` struct (#1823)
+    * Add reference functions for `LibMath` and `LibFillResults` (#2031)
+    * Move in revamped `LibMath` tests from the `contracts-exchange` package. (#2031)
+    * Move in revamped `LibFillResults` tests from the `contracts-exchange` package. (#2031)
+    * Remove unecessary zero-denominator checks in `LibMath`. (#2031)
+    * Fix coverage hooks. (#2031)
+    * Regenerate selectors. (#2042)
+    * Convert `LibFillResults`, `LibOrder`, `LibZeroExTransaction`, and `LibMath` to libraries (#2055)
+    * Remove `LibExchangeSelectors` (#2055)
+    * Add `LibExchangeRichErrors` (#2055)
+    * Add `calculateFillResults` and `calculateMatchedFillResults` to `LibFillResults` (#2055)
+    * Remove `_hashEIP712ExchangeMessage` from `LibEIP712ExchangeDomain` (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields. (#2075)
+
 ## v3.0.8 - _September 17, 2019_
 
     * Dependencies updated

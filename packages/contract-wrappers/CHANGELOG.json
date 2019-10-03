@@ -10,7 +10,8 @@
                 "note": "Update exchange wrapper",
                 "pr": 1742
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "12.1.0",

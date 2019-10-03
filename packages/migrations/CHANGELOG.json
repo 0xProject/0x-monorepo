@@ -6,7 +6,8 @@
                 "note": "Update Coordinator and Exchange deployments to pass `chainId`",
                 "pr": 1742
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "4.3.2",

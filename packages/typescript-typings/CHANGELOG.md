@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.0 - _October 3, 2019_
+
+    * Add types for `@0x/dev-utils` chai helpers in `types/@0x` (#1761)
+
 ## v4.3.0 - _September 17, 2019_
 
     * Add declaration for `ethereumjs-vm` (#2108)

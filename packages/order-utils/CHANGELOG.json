@@ -110,7 +110,8 @@
                 "note": "Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`.",
                 "pr": 2155
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "8.4.0",

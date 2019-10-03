@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.0 - _October 3, 2019_
+
+    * Use V3 contracts (#2181)
+    * Add `deployedBytecode` field (#2181)
+
 ## v2.2.2 - _September 17, 2019_
 
     * Dependencies updated

@@ -5,6 +5,19 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0-beta.0 - _October 3, 2019_
+
+    * Add chainId to domain separator (#1742)
+    * Inherit Exchange domain constants from `exchange-libs` to reduce code duplication (#1742)
+    * Update domain separator (#1742)
+    * Refactor contract to use new ITransactions interface (#1753)
+    * Add verifyingContractIfExists arg to LibEIP712CoordinatorDomain constructor (#1753)
+    * Remove LibZeroExTransaction contract (#1753)
+    * Update tests for arbitrary fee tokens (ZEIP-28). (#1819)
+    * Update for new `marketXOrders` consolidation. (#2042)
+    * Use built in selectors instead of hard coded constants (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+
 ## v2.0.13 - _September 17, 2019_
 
     * Dependencies updated

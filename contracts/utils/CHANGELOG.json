@@ -62,7 +62,8 @@
                 "note": "Introduce automatic normalization and some zero-value shortcuts in `LibFractions`.",
                 "pr": 2155
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

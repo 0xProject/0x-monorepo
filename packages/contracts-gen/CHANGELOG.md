@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.1.0-beta.0 - _October 3, 2019_
+
+    * Generate boilerplate for all contracts if none are specified or if all contracts identifier is used (#2055)
+    * Fixed sorting in artifact generation (#1910)
+
 ## v1.0.15 - _September 17, 2019_
 
     * Dependencies updated

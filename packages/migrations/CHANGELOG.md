@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.4.0-beta.0 - _October 3, 2019_
+
+    * Update Coordinator and Exchange deployments to pass `chainId` (#1742)
+
 ## v4.3.2 - _September 17, 2019_
 
     * Removed dependency on @0x/order-utils (#2096)

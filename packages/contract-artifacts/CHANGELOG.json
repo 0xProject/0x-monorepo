@@ -10,7 +10,8 @@
                 "note": "Add `deployedBytecode` field",
                 "pr": 2181
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

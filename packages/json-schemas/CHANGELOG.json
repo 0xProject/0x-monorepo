@@ -18,7 +18,8 @@
                 "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` schema",
                 "pr": 1832
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

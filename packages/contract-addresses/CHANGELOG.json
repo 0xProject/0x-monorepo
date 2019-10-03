@@ -6,7 +6,8 @@
                 "note": "Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling.",
                 "pr": 2170
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "3.2.0",

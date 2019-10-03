@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.6.0-beta.0 - _October 3, 2019_
+
+    * Allow for array types in `RevertError`s. (#2075)
+    * Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector. (#2109)
+    * Add `LibFixedMath` `RevertError` types. (#2109)
+    * Add `RawRevertError` `RevertError` type. (#2109)
+    * Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown. (#2109)
+    * Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`. (#2109)
+
 ## v4.5.2 - _September 17, 2019_
 
     * Dependencies updated
@@ -15,6 +24,7 @@ CHANGELOG
 
 ## v4.5.0 - _August 8, 2019_
 
+    * Add `SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero` (#2031)
     * Updated to include `strictDecode` for decoding method arguments (#2018)
     * Throw exception when trying to decode beyond boundaries of calldata (#2018)
 
@@ -29,6 +39,12 @@ CHANGELOG
 ## v4.4.0 - _July 13, 2019_
 
     * Add function deleteNestedProperty (#1842)
+    * Add `getChainIdAsync()` to `providerUtils` (#1742)
+    * More robust normalization of `uint256` types in `sign_typed_data_utils` (#1742)
+    * Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities (#1761)
+    * Update `RevertError` construction to produce a readable `Error` message (#1819)
+    * Add `Error` -> `RevertError` functions (#1819)
+    * Add `toStringTag` symbol to `RevertError` (#1885)
 
 ## v4.3.3 - _May 10, 2019_
 

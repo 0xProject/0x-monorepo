@@ -26,7 +26,8 @@
                 "note": "Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`.",
                 "pr": 2109
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

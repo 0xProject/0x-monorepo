@@ -22,7 +22,8 @@
                 "note": "Properly encode `BigNumber` indexed filter values in `getTopicsForIndexedArgs()`",
                 "pr": 2155
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "5.4.0",

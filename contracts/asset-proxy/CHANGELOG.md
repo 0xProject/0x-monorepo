@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0-beta.0 - _October 3, 2019_
+
+    * Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable (#2019)
+    * Remove `LibAssetProxyIds` contract (#2055)
+    * Compile and export all contracts, artifacts, and wrappers by default (#2055)
+    * Remove unused dependency on IAuthorizable in IAssetProxy (#1910)
+    * Add `ERC20BridgeProxy` (#2220)
+    * Add `Eth2DaiBridge` (#2221)
+
 ## v2.2.8 - _September 17, 2019_
 
     * Dependencies updated
@@ -58,6 +67,9 @@ CHANGELOG
 ## v2.1.2 - _May 10, 2019_
 
     * Update tests to use contract-built-in `awaitTransactionSuccessAsync` (#1797)
+    * Make `ERC721Wrapper.setApprovalForAll()` take an owner address instead of a token ID (#1819)
+    * Automatically set unlimited proxy allowances in `ERC721.setBalancesAndAllowancesAsync()` (#1819)
+    * Add `setProxyAllowanceForAllAsync()` to `ERC1155ProxyWrapper`. (#1819)
 
 ## v2.1.1 - _April 11, 2019_
 

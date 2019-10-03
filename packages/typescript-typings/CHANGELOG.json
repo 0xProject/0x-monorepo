@@ -6,7 +6,8 @@
                 "note": "Add types for `@0x/dev-utils` chai helpers in `types/@0x`",
                 "pr": 1761
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "4.3.0",
