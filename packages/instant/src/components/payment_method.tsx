@@ -23,6 +23,7 @@ export interface PaymentMethodProps {
     providerType: ProviderType | undefined;
     onInstallWalletClick: () => void;
     onUnlockWalletClick: (providerType?: ProviderType) => void;
+    onUnlockWalletWithFortmaticProvider: () => void;
 }
 
 export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
@@ -76,7 +77,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
         const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
         const colors = { primaryColor, secondaryColor };
         const onUnlockGenericWallet = () => this.props.onUnlockWalletClick(ProviderType.MetaMask);
-        const onUnlockFormatic = () => this.props.onUnlockWalletClick(ProviderType.Fortmatic);
+        const onUnlockFormatic = () => this.props.onUnlockWalletWithFortmaticProvider();
         switch (account.state) {
             case AccountState.Loading:
                 return null;
@@ -106,9 +107,19 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                 );
             case AccountState.None:
                 return (
-                    <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
-                        {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
-                    </WalletPrompt>
+                    <Flex direction="column" justify="space-between" height="100%">
+                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
+                            {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
+                        </WalletPrompt>
+                        <WalletPrompt
+                            onClick={onUnlockFormatic}
+                            primaryColor={ColorOption.fortmaticPrimary}
+                            secondaryColor={ColorOption.fortmaticSecondary}
+                            marginTop="5px"
+                        >
+                            Connect with <Icon width={13} height={22} icon="lock" color={ColorOption.black} /> Fortmatic
+                        </WalletPrompt>
+                    </Flex>
                 );
             case AccountState.Ready:
                 return (
