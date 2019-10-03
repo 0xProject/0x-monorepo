@@ -27,7 +27,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
+import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
 import "./interfaces/ISignatureValidator.sol";
 import "./interfaces/IEIP1271Data.sol";
@@ -465,7 +465,7 @@ contract MixinSignatureValidator is
         return signatureType;
     }
 
-    /// @dev ABI encodes an order and hash with a selector to be passed into
+    /// @dev ABI encodes an order and hash with a selector to be passed into 
     ///      an EIP1271 compliant `isValidSignature` function.
     function _encodeEIP1271OrderWithHash(
         LibOrder.Order memory order,
@@ -482,7 +482,7 @@ contract MixinSignatureValidator is
         );
     }
 
-    /// @dev ABI encodes a transaction and hash with a selector to be passed into
+    /// @dev ABI encodes a transaction and hash with a selector to be passed into 
     ///      an EIP1271 compliant `isValidSignature` function.
     function _encodeEIP1271TransactionWithHash(
         LibZeroExTransaction.ZeroExTransaction memory transaction,

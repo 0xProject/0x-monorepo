@@ -18,6 +18,7 @@ import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator
 import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
 import * as ITransferSimulator from '../generated-artifacts/ITransferSimulator.json';
+import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
 import * as LibExchangeRichErrorDecoder from '../generated-artifacts/LibExchangeRichErrorDecoder.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
@@ -59,6 +60,7 @@ export const artifacts = {
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
     ITransferSimulator: ITransferSimulator as ContractArtifact,
+    IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
     LibExchangeRichErrorDecoder: LibExchangeRichErrorDecoder as ContractArtifact,
     IsolatedExchange: IsolatedExchange as ContractArtifact,
