@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 
 
+// solhint-disable no-simple-event-func-name
 contract IProtocolFees {
 
     // Logs updates to the protocol fee multiplier.

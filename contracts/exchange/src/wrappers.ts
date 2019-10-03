@@ -15,7 +15,6 @@ export * from '../generated-wrappers/i_protocol_fees';
 export * from '../generated-wrappers/i_signature_validator';
 export * from '../generated-wrappers/i_transactions';
 export * from '../generated-wrappers/i_transfer_simulator';
-export * from '../generated-wrappers/i_wallet';
 export * from '../generated-wrappers/i_wrapper_functions';
 export * from '../generated-wrappers/isolated_exchange';
 export * from '../generated-wrappers/lib_exchange_rich_error_decoder';

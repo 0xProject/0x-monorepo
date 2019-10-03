@@ -189,6 +189,10 @@
             {
                 "note": "Overridden functions in `ReentrancyTester` now return sane values.",
                 "pr": 2075
+            },
+            {
+                "note": "Move `IWallet.sol` to `exchange-libs`.",
+                "pr": 2233
             }
         ],
         "timestamp": 1570135330

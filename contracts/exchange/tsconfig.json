@@ -15,7 +15,6 @@
         "generated-artifacts/ISignatureValidator.json",
         "generated-artifacts/ITransactions.json",
         "generated-artifacts/ITransferSimulator.json",
-        "generated-artifacts/IWallet.json",
         "generated-artifacts/IWrapperFunctions.json",
         "generated-artifacts/IsolatedExchange.json",
         "generated-artifacts/LibExchangeRichErrorDecoder.json",
