@@ -21,9 +21,9 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
+import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "../interfaces/IUniswapExchangeFactory.sol";
 import "../interfaces/IUniswapExchange.sol";
-import "../interfaces/IWallet.sol";
 import "../interfaces/IERC20Bridge.sol";
 
 
@@ -110,7 +110,7 @@ contract UniswapBridge is
 
         // Convert from a token to WETH.
         } else if (toTokenAddress == address(state.weth)) {
-            // Buy as much ETH with `toTokenAddress` token as possible.
+            // Buy as much ETH with `fromTokenAddress` token as possible.
             uint256 ethBought = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
                 state.fromTokenBalance,
