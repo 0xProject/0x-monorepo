@@ -68,11 +68,10 @@ async function confirmAsync(message: string): Promise<void> {
         }
     });
 
-    // Generate markdown docs for packages
-    await generateDocMDAsync(packagesWithDocs);
-
     // Push changelogs changes and markdown docs to Github
     if (!configs.IS_LOCAL_PUBLISH) {
+        // Generate markdown docs for packages
+        await generateDocMDAsync(packagesWithDocs);
         await pushChangelogsAndMDDocsToGithubAsync();
     }
 
