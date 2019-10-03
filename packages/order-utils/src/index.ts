@@ -1,7 +1,7 @@
-import * as ExchangeRevertErrors from './exchange_revert_errors';
-import * as ForwarderRevertErrors from './forwarder_revert_errors';
-import * as LibMathRevertErrors from './lib_math_revert_errors';
-import * as StakingRevertErrors from './staking_revert_errors';
+export import ExchangeRevertErrors = require('./exchange_revert_errors');
+export import ForwarderRevertErrors = require('./forwarder_revert_errors');
+export import LibMathRevertErrors = require('./lib_math_revert_errors');
+export import StakingRevertErrors = require('./staking_revert_errors');
 
 export { orderHashUtils } from './order_hash';
 export { signatureUtils } from './signature_utils';
@@ -85,8 +85,4 @@ export {
     FeeOrdersAndRemainingFeeAmount,
     OrdersAndRemainingTakerFillAmount,
     OrdersAndRemainingMakerFillAmount,
-    ValidateOrderFillableOpts,
 } from './types';
-
-export { ExchangeRevertErrors, ForwarderRevertErrors, LibMathRevertErrors, StakingRevertErrors };
-export { NetworkId, ExchangeContract } from '@0x/abi-gen-wrappers';

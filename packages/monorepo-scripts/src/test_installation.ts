@@ -13,6 +13,11 @@ import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
 const UNRUNNABLE_PACKAGES = ['@0x/abi-gen'];
+// HACK(fabio): Temporarily adding '@0x/contracts-coordinator', '@0x/contracts-extensions' since they
+// aren't working in the V3 branch yet.
+// TODO(dorothy-zbornak): Remove '@0x/contracts-coordinator', '@0x/contracts-extensions' after updating
+// these packages for 3.0.
+const UNINSTALLABLE_PACKAGES = ['@0x/contracts-coordinator', '@0x/contracts-extensions'];
 
 const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);
@@ -51,10 +56,14 @@ function logIfDefined(x: any): void {
     // fail. But package B only fails because of an error in package A.
     // Since the error in package A is the root cause, we log it first.
     const packages = utils.getTopologicallySortedPackages(monorepoRootPath);
-    const installablePackages = _.filter(
-        packages,
-        pkg => !pkg.packageJson.private && pkg.packageJson.main !== undefined && pkg.packageJson.main.endsWith('.js'),
-    );
+    const installablePackages = _.filter(packages, pkg => {
+        return (
+            !pkg.packageJson.private &&
+            pkg.packageJson.main !== undefined &&
+            pkg.packageJson.main.endsWith('.js') &&
+            !UNINSTALLABLE_PACKAGES.includes(pkg.packageJson.name)
+        );
+    });
     const CHUNK_SIZE = 15;
     const chunkedInstallablePackages = _.chunk(installablePackages, CHUNK_SIZE);
     utils.log(`Testing all packages in ${chunkedInstallablePackages.length} chunks`);
@@ -143,7 +152,9 @@ async function testInstallPackageAsync(
     if (!isUnrunnablePkg) {
         const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
         utils.log(`Running test script with ${packageName} imported`);
-        await execAsync(`node ${transpiledIndexFilePath}`);
+        // tslint:disable-next-line:custom-no-magic-numbers
+        const fiveMb = 1024 * 1024 * 5;
+        await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: fiveMb });
         utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);

@@ -44,6 +44,7 @@
     "dependencies": {
         "@0x/assert": "^2.1.6",
         "@0x/json-schemas": "^4.0.2",
+        "@0x/types": "^2.4.3",
         "@0x/typescript-typings": "^4.3.0",
         "@0x/utils": "^4.5.2",
         "@0x/web3-wrapper": "^6.0.13",

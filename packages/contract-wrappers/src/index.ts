@@ -72,6 +72,9 @@ export {
     ERC721ProxyAuthorizedAddressRemovedEventArgs,
     ERC721ProxyContract,
     OrderValidatorContract,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeTransactionExecutionEventArgs,
 } from '@0x/abi-gen-wrappers';
 
 export {
@@ -80,13 +83,10 @@ export {
     ForwarderError,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
-    IndexedFilterValues,
     ContractWrappersConfig,
     OrderTransactionOpts,
     TransactionOpts,
     OrderInfo,
-    EventCallback,
-    DecodedLogEvent,
 } from './types';
 
 export {
@@ -142,6 +142,7 @@ export {
     ConstructorStateMutability,
     JSONRPCResponseError,
     StateMutability,
+    RevertErrorAbi,
 } from 'ethereum-types';
 
 export {
@@ -153,6 +154,10 @@ export {
     SignedZeroExTransaction,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
+    EIP712DomainWithDefaultSchema,
+    EventCallback,
+    DecodedLogEvent,
+    IndexedFilterValues,
 } from '@0x/types';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';

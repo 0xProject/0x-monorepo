@@ -3,21 +3,20 @@ import { Web3ProviderEngine } from '@0x/subproviders';
 import { providerUtils } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
-// Import ambient declarations (and clobber Jest).
-import 'mocha';
+import * as mocha from 'mocha';
 import * as process from 'process';
 
 import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 
 // tslint:disable: no-namespace only-arrow-functions no-unbound-method
 
-export type ISuite = Mocha.ISuite;
-export type ISuiteCallbackContext = Mocha.ISuiteCallbackContext;
+export type ISuite = mocha.ISuite;
+export type ISuiteCallbackContext = mocha.ISuiteCallbackContext;
 export type SuiteCallback = (this: ISuiteCallbackContext) => void;
 export type ContextDefinitionCallback<T> = (description: string, callback: SuiteCallback) => T;
 export type BlockchainSuiteCallback = (this: ISuiteCallbackContext, env: BlockchainTestsEnvironment) => void;
 export type BlockchainContextDefinitionCallback<T> = (description: string, callback: BlockchainSuiteCallback) => T;
-export interface ContextDefinition extends Mocha.IContextDefinition {
+export interface ContextDefinition extends mocha.IContextDefinition {
     optional: ContextDefinitionCallback<ISuite | void>;
 }
 
@@ -88,10 +87,10 @@ export class BlockchainTestsEnvironmentSingleton {
 }
 
 // The original `describe()` global provided by mocha.
-const mochaDescribe = (global as any).describe as Mocha.IContextDefinition;
+const mochaDescribe = (global as any).describe as mocha.IContextDefinition;
 
 /**
- * An augmented version of Mocha's `describe()`.
+ * An augmented version of mocha's `describe()`.
  */
 export const describe = _.assign(mochaDescribe, {
     optional(description: string, callback: SuiteCallback): ISuite | void {
