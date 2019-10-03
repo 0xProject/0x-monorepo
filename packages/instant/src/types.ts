@@ -114,6 +114,7 @@ export interface ProviderState {
     swapQuoteConsumer: SwapQuoteConsumer;
     web3Wrapper: Web3Wrapper;
     account: Account;
+    orderSource: OrderSource;
 }
 
 export enum AccountState {
