@@ -125,6 +125,9 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             readOnlyProxy.address,
         );
 
+        // Authorize owner in the staking proxy.
+        await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner);
+
         // Deploy the asset proxy contracts.
         erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(
             assetProxyArtifacts.ERC20Proxy,
@@ -416,8 +419,6 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             // Transfer authorization of the staking system. We intentionally neglect
             // to add the asset-proxy owner as an authorized address in the asset proxies
             // as a security precaution.
-            await transferAuthorizationAndAssertSuccessAsync(readOnlyProxy);
-            await transferAuthorizationAndAssertSuccessAsync(staking);
             await transferAuthorizationAndAssertSuccessAsync(stakingProxy);
         });
 

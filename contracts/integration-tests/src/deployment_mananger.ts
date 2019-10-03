@@ -167,10 +167,17 @@ export class DeploymentManager {
         await DeploymentManager._configureAssetProxiesWithExchangeAsync(assetProxies, exchange, owner);
         await DeploymentManager._configureExchangeWithStakingAsync(exchange, staking, owner);
 
-        // Authorize the asset-proxy owner in the Staking contract.
+        // Authorize the asset-proxy owner in the staking proxy and in the zrx vault.
         await staking.stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
             from: owner,
         });
+        await staking.zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
+            from: owner,
+        });
+
+        // Remove authorization for the original owner address.
+        await staking.stakingProxy.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
+        await staking.zrxVault.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
 
         // Transfer complete ownership of the system to the asset proxy owner.
         await batchTransferOwnershipAsync(owner, assetProxyOwner, [
@@ -357,6 +364,10 @@ export class DeploymentManager {
             readOnlyProxy.address,
         );
         const stakingWrapper = new StakingWithTokensContract(stakingProxy.address, environment.provider);
+
+        // Authorize the owner address in the staking proxy and the zrx vault.
+        await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
+        await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
 
         // Configure the zrx vault and the staking contract.
         await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
