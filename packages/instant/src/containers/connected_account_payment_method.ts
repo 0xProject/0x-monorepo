@@ -8,7 +8,6 @@ import {
     COINBASE_WALLET_ANDROID_APP_STORE_URL,
     COINBASE_WALLET_IOS_APP_STORE_URL,
     COINBASE_WALLET_SITE_URL,
-    FORTMATIC_API_KEY, LOADING_ACCOUNT,
 } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
@@ -24,6 +23,7 @@ import {
 } from '../types';
 import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
+import { providerStateFactory } from '../util/provider_state_factory';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
@@ -31,13 +31,11 @@ interface ConnectedState {
     network: Network;
     providerState: ProviderState;
     walletDisplayName?: string;
-    providerType?: ProviderType;
 }
 
 interface ConnectedDispatch {
     openInstallWalletPanel: () => void;
-    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType?: ProviderType) => void;
-    unlockWalletWithFormaticProvider: (providerState: ProviderState) => void;
+    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType: ProviderType) => void;
 }
 
 type ConnectedProps = Omit<PaymentMethodProps, keyof ConnectedAccountPaymentMethodProps>;
@@ -47,7 +45,6 @@ type FinalProps = ConnectedProps & ConnectedAccountPaymentMethodProps;
 const mapStateToProps = (state: State, _ownProps: ConnectedAccountPaymentMethodProps): ConnectedState => ({
     network: state.network,
     providerState: state.providerState,
-    providerType: envUtil.getProviderType(state.providerState.provider),
     walletDisplayName: state.walletDisplayName,
 });
 
@@ -56,25 +53,11 @@ const mapDispatchToProps = (
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
     openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
-    unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
-        analytics.trackAccountUnlockRequested();
-        // tslint:disable-next-line:no-floating-promises
-        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
-    },
-    unlockWalletWithFormaticProvider: (providerState: ProviderState) => {
-        // Sets fortmatic as the new provider and updates the state
-        const web3Wrapper = providerState.web3Wrapper;
-        const fm = new Fortmatic(FORTMATIC_API_KEY);
-        const fmProvider = fm.getProvider();
-        web3Wrapper.setProvider(fmProvider);
-        const newProviderState = {
-            name: envUtil.getProviderName(fmProvider),
-            displayName: envUtil.getProviderDisplayName(fmProvider),
-            provider: fmProvider,
-            web3Wrapper,
-            assetBuyer: providerState.assetBuyer,
-            account: LOADING_ACCOUNT,
-        };
+    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType: ProviderType) => {
+        const newProviderState: ProviderState = providerStateFactory.getProviderStateBasedOnProviderType(
+            providerState,
+            providerType,
+        );
         // Updates provider state
         dispatch(actions.setProviderState(newProviderState));
         // Unlocks wallet
@@ -93,8 +76,7 @@ const mergeProps = (
     network: connectedState.network,
     account: connectedState.providerState.account,
     walletDisplayName: connectedState.providerState.displayName,
-    providerType: connectedState.providerType,
-    onUnlockWalletClick: (providerType?: ProviderType) =>
+    onUnlockWalletClick: (providerType: ProviderType) =>
         connectedDispatch.unlockWalletAndDispatchToStore(connectedState.providerState, providerType),
     onInstallWalletClick: () => {
         const isMobile = envUtil.isMobileOperatingSystem();
@@ -121,7 +103,6 @@ const mergeProps = (
             window.open(url, '_blank');
         }
     },
-    onUnlockWalletWithFortmaticProvider: () => connectedDispatch.unlockWalletWithFormaticProvider(connectedState.providerState),
 });
 
 export const ConnectedAccountPaymentMethod: React.ComponentClass<ConnectedAccountPaymentMethodProps> = connect(
