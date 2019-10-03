@@ -7,7 +7,8 @@ import { PaymentMethod, PaymentMethodProps } from '../components/payment_method'
 import {
     COINBASE_WALLET_ANDROID_APP_STORE_URL,
     COINBASE_WALLET_IOS_APP_STORE_URL,
-    COINBASE_WALLET_SITE_URL, FORTMATIC_API_KEY,
+    COINBASE_WALLET_SITE_URL,
+    FORTMATIC_API_KEY, LOADING_ACCOUNT,
 } from '../constants';
 import { Action, actions } from '../redux/actions';
 import { asyncData } from '../redux/async_data';
@@ -23,7 +24,6 @@ import {
 } from '../types';
 import { analytics } from '../util/analytics';
 import { envUtil } from '../util/env';
-import { providerFactory } from '../util/provider_factory';
 
 export interface ConnectedAccountPaymentMethodProps {}
 
@@ -37,6 +37,7 @@ interface ConnectedState {
 interface ConnectedDispatch {
     openInstallWalletPanel: () => void;
     unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType?: ProviderType) => void;
+    unlockWalletWithFormaticProvider: (providerState: ProviderState) => void;
 }
 
 type ConnectedProps = Omit<PaymentMethodProps, keyof ConnectedAccountPaymentMethodProps>;
@@ -55,41 +56,29 @@ const mapDispatchToProps = (
     ownProps: ConnectedAccountPaymentMethodProps,
 ): ConnectedDispatch => ({
     openInstallWalletPanel: () => dispatch(actions.openStandardSlidingPanel(StandardSlidingPanelContent.InstallWallet)),
-    unlockWalletAndDispatchToStore: (providerState: ProviderState, providerType?: ProviderType) => {
+    unlockWalletAndDispatchToStore: (providerState: ProviderState) => {
         analytics.trackAccountUnlockRequested();
-        let newProviderState: ProviderState = {
-            ...providerState,
+        // tslint:disable-next-line:no-floating-promises
+        asyncData.fetchAccountInfoAndDispatchToStore(providerState, dispatch, true);
+    },
+    unlockWalletWithFormaticProvider: (providerState: ProviderState) => {
+        // Sets fortmatic as the new provider and updates the state
+        const web3Wrapper = providerState.web3Wrapper;
+        const fm = new Fortmatic(FORTMATIC_API_KEY);
+        const fmProvider = fm.getProvider();
+        web3Wrapper.setProvider(fmProvider);
+        const newProviderState = {
+            name: envUtil.getProviderName(fmProvider),
+            displayName: envUtil.getProviderDisplayName(fmProvider),
+            provider: fmProvider,
+            web3Wrapper,
+            assetBuyer: providerState.assetBuyer,
+            account: LOADING_ACCOUNT,
         };
-        // Updates the provider state based on the provider type
-        if (providerType && providerType === ProviderType.Fortmatic) {
-            const web3Wrapper = providerState.web3Wrapper;
-            const fm = new Fortmatic(FORTMATIC_API_KEY);
-            const fmProvider = fm.getProvider();
-            web3Wrapper.setProvider(fmProvider);
-            newProviderState = {
-                ...newProviderState,
-                provider: fmProvider,
-                web3Wrapper,
-                displayName: envUtil.getProviderDisplayName(fmProvider),
-                name: envUtil.getProviderName(fmProvider),
-            };
-        } else {
-            // As default uses the injected provider
-            const injected = providerFactory.getInjectedProviderIfExists();
-            const web3Wrapper = providerState.web3Wrapper;
-            if (injected) {
-                web3Wrapper.setProvider(injected);
-                newProviderState = {
-                    ...newProviderState,
-                    provider: injected,
-                    web3Wrapper,
-                    displayName: envUtil.getProviderDisplayName(injected),
-                    name: envUtil.getProviderName(injected),
-                };
-            }
-        }
         // Updates provider state
         dispatch(actions.setProviderState(newProviderState));
+        // Unlocks wallet
+        analytics.trackAccountUnlockRequested();
         // tslint:disable-next-line:no-floating-promises
         asyncData.fetchAccountInfoAndDispatchToStore(newProviderState, dispatch, true);
     },
@@ -132,6 +121,7 @@ const mergeProps = (
             window.open(url, '_blank');
         }
     },
+    onUnlockWalletWithFortmaticProvider: () => connectedDispatch.unlockWalletWithFormaticProvider(connectedState.providerState),
 });
 
 export const ConnectedAccountPaymentMethod: React.ComponentClass<ConnectedAccountPaymentMethodProps> = connect(
