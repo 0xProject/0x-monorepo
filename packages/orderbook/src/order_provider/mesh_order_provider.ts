@@ -32,8 +32,9 @@ export class MeshOrderProvider extends BaseOrderProvider {
         const remainingFillableTakerAssetAmount = (orderEvent as OrderEvent).fillableTakerAssetAmount
             ? (orderEvent as OrderEvent).fillableTakerAssetAmount
             : new BigNumber(0);
+        // TODO(dekz): Remove the any hack when mesh is published v3
         return {
-            order: orderEvent.signedOrder,
+            order: orderEvent.signedOrder as any,
             metaData: {
                 orderHash: orderEvent.orderHash,
                 remainingFillableTakerAssetAmount,
@@ -89,9 +90,10 @@ export class MeshOrderProvider extends BaseOrderProvider {
      */
     public async addOrdersAsync(orders: SignedOrder[]): Promise<AcceptedRejectedOrders> {
         const { accepted, rejected } = await utils.attemptAsync(() => this._wsClient.addOrdersAsync(orders));
+        // TODO(dekz): Remove the any hack when mesh is published v3
         return {
-            accepted: accepted.map(o => o.signedOrder),
-            rejected: rejected.map(o => ({ order: o.signedOrder, message: o.status.message })),
+            accepted: accepted.map(o => o.signedOrder) as any,
+            rejected: rejected.map(o => ({ order: o.signedOrder, message: o.status.message })) as any,
         };
     }
 
