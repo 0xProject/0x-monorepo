@@ -6,6 +6,17 @@ import {
     MultiAssetProxyContract,
     StaticCallProxyContract,
 } from '@0x/contracts-asset-proxy';
+import {
+    artifacts as exchangeArtifacts,
+    AssetProxyDispatcher,
+    Authorizable,
+    ExchangeAssetProxyRegisteredEventArgs,
+    ExchangeContract,
+    ExchangeEvents,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    Ownable,
+} from '@0x/contracts-exchange';
 import { artifacts as multisigArtifacts, AssetProxyOwnerContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
@@ -24,18 +35,6 @@ import {
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
-
-import {
-    artifacts as exchangeArtifacts,
-    AssetProxyDispatcher,
-    Authorizable,
-    ExchangeAssetProxyRegisteredEventArgs,
-    ExchangeContract,
-    ExchangeEvents,
-    ExchangeProtocolFeeCollectorAddressEventArgs,
-    ExchangeProtocolFeeMultiplierEventArgs,
-    Ownable,
-} from '../../src';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests('Deployment and Configuration End to End Tests', env => {

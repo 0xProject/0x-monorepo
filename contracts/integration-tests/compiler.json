@@ -1,0 +1,26 @@
+{
+    "artifactsDir": "./generated-artifacts",
+    "contractsDir": "./contracts",
+    "useDockerisedSolc": false,
+    "isOfflineMode": false,
+    "compilerSettings": {
+        "evmVersion": "constantinople",
+        "optimizer": {
+            "enabled": true,
+            "runs": 1000000,
+            "details": { "yul": true, "deduplicate": true, "cse": true, "constantOptimizer": true }
+        },
+        "outputSelection": {
+            "*": {
+                "*": [
+                    "abi",
+                    "devdoc",
+                    "evm.bytecode.object",
+                    "evm.bytecode.sourceMap",
+                    "evm.deployedBytecode.object",
+                    "evm.deployedBytecode.sourceMap"
+                ]
+            }
+        }
+    }
+}
