@@ -100,7 +100,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                             secondaryColor={ColorOption.fortmaticSecondary}
                             marginTop="5px"
                         >
-                            Connect with <Icon width={13} height={22} icon="lock" color={ColorOption.black} /> Fortmatic
+                            Connect with Fortmatic
                         </WalletPrompt>
                     </Flex>
                 );
