@@ -1,9 +1,10 @@
 import { providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
+import * as Fortmatic from 'fortmatic';
 import * as _ from 'lodash';
 
-import { LOADING_ACCOUNT, NO_ACCOUNT } from '../constants';
+import {FORTMATIC_API_KEY, LOADING_ACCOUNT, NO_ACCOUNT} from '../constants';
 import { Maybe, Network, OrderSource, ProviderState } from '../types';
 import { envUtil } from '../util/env';
 
@@ -72,7 +73,18 @@ export const providerStateFactory = {
             };
             return providerState;
         } else {
-            return undefined;
+            // If there was no provider injected to the windows, uses fortmatic as default
+            const fm = new Fortmatic(FORTMATIC_API_KEY);
+            const fmProvider = fm.getProvider();
+            const providerState: ProviderState = {
+                displayName: envUtil.getProviderDisplayName(fmProvider),
+                name: envUtil.getProviderName(fmProvider),
+                provider: fmProvider,
+                web3Wrapper: new Web3Wrapper(fmProvider),
+                assetBuyer: assetBuyerFactory.getAssetBuyer(fmProvider, orderSource, network),
+                account: LOADING_ACCOUNT,
+            };
+            return providerState;
         }
     },
     getInitialProviderStateFallback: (
