@@ -12,7 +12,11 @@ import { Changelog, Package } from './types';
 import { utils } from './utils/utils';
 
 // Packages might not be runnable if they are command-line tools or only run in browsers.
-const UNRUNNABLE_PACKAGES = ['@0x/abi-gen'];
+// HACK(fabio): Temporarily adding '@0x/contracts-coordinator', '@0x/contracts-extensions' since they
+// aren't working in the V3 branch yet.
+// TODO(dorothy-zbornak): Remove '@0x/contracts-coordinator', '@0x/contracts-extensions' after updating
+// these packages for 3.0.
+const UNRUNNABLE_PACKAGES = ['@0x/abi-gen', '@0x/contracts-coordinator', '@0x/contracts-extensions'];
 
 const mkdirpAsync = promisify(mkdirp);
 const rimrafAsync = promisify(rimraf);
@@ -145,7 +149,7 @@ async function testInstallPackageAsync(
         utils.log(`Running test script with ${packageName} imported`);
         // tslint:disable-next-line:custom-no-magic-numbers
         const fiveMb = 1024 * 1024 * 5;
-        await execAsync(`node ${transpiledIndexFilePath}`, {maxBuffer: fiveMb});
+        await execAsync(`node ${transpiledIndexFilePath}`, { maxBuffer: fiveMb });
         utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);
