@@ -143,7 +143,9 @@ async function testInstallPackageAsync(
     if (!isUnrunnablePkg) {
         const transpiledIndexFilePath = path.join(testDirectory, 'index.js');
         utils.log(`Running test script with ${packageName} imported`);
-        await execAsync(`node ${transpiledIndexFilePath}`);
+        // tslint:disable-next-line:custom-no-magic-numbers
+        const fiveMb = 1024 * 1024 * 5;
+        await execAsync(`node ${transpiledIndexFilePath}`, {maxBuffer: fiveMb});
         utils.log(`Successfully ran test script with ${packageName} imported`);
     }
     await rimrafAsync(testDirectory);
