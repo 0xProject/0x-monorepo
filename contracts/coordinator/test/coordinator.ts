@@ -1,5 +1,5 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
     constants as exchangeConstants,
@@ -10,6 +10,7 @@ import {
     ExchangeEvents,
     ExchangeFillEventArgs,
     ExchangeFunctionName,
+    TestProtocolFeeCollectorContract,
 } from '@0x/contracts-exchange';
 import {
     blockchainTests,
@@ -48,25 +49,16 @@ blockchainTests.resets('Coordinator tests', env => {
     let makerTransactionFactory: TransactionFactory;
     let approvalFactory: ApprovalFactory;
 
-    // const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
-    // const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
-    // const PROTOCOL_FEE = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
-    const PROTOCOL_FEE = new BigNumber(0);
+    const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+    const PROTOCOL_FEE = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 
     before(async () => {
         chainId = await env.getChainIdAsync();
         const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
-        erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
-            numDummyErc20ToDeploy,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
-        await erc20Wrapper.setBalancesAndAllowancesAsync();
-
+        // Deploy Exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             env.provider,
@@ -75,17 +67,53 @@ blockchainTests.resets('Coordinator tests', env => {
             new BigNumber(chainId),
         );
 
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+        // Set up ERC20
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
+        erc20Proxy = await erc20Wrapper.deployProxyAsync();
+        const numDummyErc20ToDeploy = 3;
+        [erc20TokenA, erc20TokenB, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
+            numDummyErc20ToDeploy,
+            constants.DUMMY_TOKEN_DECIMALS,
         );
-        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: owner });
 
+        // Set up WETH
+        const wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
+            erc20Artifacts.WETH9,
+            env.provider,
+            env.txDefaults,
+            {},
+        );
+        const weth = new DummyERC20TokenContract(wethContract.address, env.provider);
+        erc20Wrapper.addDummyTokenContract(weth);
+        await erc20Wrapper.setBalancesAndAllowancesAsync();
+
+        // Set up Protocol Fee Collector
+        const protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.TestProtocolFeeCollector,
+            env.provider,
+            env.txDefaults,
+            {},
+            weth.address,
+        );
+        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER);
+        await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(protocolFeeCollector.address);
+        for (const account of usedAddresses) {
+            await wethContract.deposit.awaitTransactionSuccessAsync({
+                from: account,
+                value: constants.ONE_ETHER,
+            });
+            await wethContract.approve.awaitTransactionSuccessAsync(
+                protocolFeeCollector.address,
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                {
+                    from: account,
+                },
+            );
+        }
+
+        // Deploy Coordinator
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
             env.provider,
@@ -100,7 +128,6 @@ blockchainTests.resets('Coordinator tests', env => {
             ...constants.STATIC_ORDER_PARAMS,
             senderAddress: coordinatorContract.address,
             makerAddress,
-            takerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
@@ -133,13 +160,13 @@ blockchainTests.resets('Coordinator tests', env => {
     function expectedFillEvent(order: SignedOrder): ExchangeFillEventArgs {
         return {
             makerAddress: order.makerAddress,
+            takerAddress,
+            senderAddress: order.senderAddress,
             feeRecipientAddress: order.feeRecipientAddress,
             makerAssetData: order.makerAssetData,
             takerAssetData: order.takerAssetData,
             makerFeeAssetData: order.makerFeeAssetData,
             takerFeeAssetData: order.takerFeeAssetData,
-            takerAddress: order.takerAddress,
-            senderAddress: order.senderAddress,
             makerAssetFilledAmount: order.makerAssetAmount,
             takerAssetFilledAmount: order.takerAssetAmount,
             makerFeePaid: order.makerFee,
@@ -152,10 +179,10 @@ blockchainTests.resets('Coordinator tests', env => {
     function expectedCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
         return {
             makerAddress: order.makerAddress,
+            senderAddress: order.senderAddress,
             feeRecipientAddress: order.feeRecipientAddress,
             makerAssetData: order.makerAssetData,
             takerAssetData: order.takerAssetData,
-            senderAddress: order.senderAddress,
             orderHash: orderHashUtils.getOrderHashHex(order),
         };
     }
@@ -179,10 +206,8 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: takerAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { from: takerAddress, value: PROTOCOL_FEE },
                 );
-
                 verifyEvents(transactionReceipt, [expectedFillEvent(orders[0])], ExchangeEvents.Fill);
             });
             it(`${fnName} should fill the order if called by approver`, async () => {
@@ -195,8 +220,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [],
                     [],
-                    { from: feeRecipientAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { from: feeRecipientAddress, value: PROTOCOL_FEE },
                 );
                 verifyEvents(transactionReceipt, [expectedFillEvent(orders[0])], ExchangeEvents.Fill);
             });
@@ -213,6 +237,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     {
                         from: takerAddress,
                         gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                        value: PROTOCOL_FEE,
                     },
                 );
 
@@ -239,7 +264,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [signature],
-                    { from: takerAddress },
+                    { from: takerAddress, value: PROTOCOL_FEE },
                 );
 
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -265,7 +290,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: takerAddress },
+                    { from: takerAddress, value: PROTOCOL_FEE },
                 );
 
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -291,7 +316,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: owner },
+                    { from: owner, value: PROTOCOL_FEE },
                 );
                 expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(takerAddress));
             });
@@ -316,8 +341,11 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: takerAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    {
+                        from: takerAddress,
+                        gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                        value: PROTOCOL_FEE.times(orders.length),
+                    },
                 );
 
                 const expectedEvents = orders.map(order => expectedFillEvent(order));
@@ -333,8 +361,11 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [],
                     [],
-                    { from: feeRecipientAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    {
+                        from: feeRecipientAddress,
+                        gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                        value: PROTOCOL_FEE.times(orders.length),
+                    },
                 );
 
                 const expectedEvents = orders.map(order => expectedFillEvent(order));
@@ -358,7 +389,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [signature],
-                    { from: takerAddress },
+                    { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
                 );
 
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -383,7 +414,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: takerAddress },
+                    { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
                 );
 
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
@@ -409,7 +440,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: owner },
+                    { from: owner, value: PROTOCOL_FEE.times(orders.length) },
                 );
                 expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(takerAddress));
             });

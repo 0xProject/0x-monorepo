@@ -26,12 +26,21 @@ import "./interfaces/ICoordinatorCore.sol";
 import "./interfaces/ICoordinatorApprovalVerifier.sol";
 
 
+// solhint-disable no-empty-blocks
 contract MixinCoordinatorCore is
     Refundable,
     LibConstants,
     ICoordinatorApprovalVerifier,
     ICoordinatorCore
 {
+
+    /// @dev A payable fallback function that makes this contract "payable". This is necessary to allow
+    ///      this contract to gracefully handle refunds from the Exchange.
+    function ()
+        external
+        payable
+    {}
+
     /// @dev Executes a 0x transaction that has been signed by the feeRecipients that correspond to
     ///      each order in the transaction's Exchange calldata.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.

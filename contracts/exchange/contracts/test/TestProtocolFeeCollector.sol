@@ -22,7 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-erc20/contracts/src/interfaces/IEtherToken.sol";
 
 
- // solhint-disable no-unused-vars
+ // solhint-disable no-unused-vars, no-empty-blocks
 contract TestProtocolFeeCollector {
 
     address private _wethAddress;
@@ -34,6 +34,11 @@ contract TestProtocolFeeCollector {
     {
         _wethAddress = wethAddress;
     }
+
+    function ()
+        external
+        payable
+    {}
 
     /// @dev Pays a protocol fee in WETH (Forwarder orders will always pay protocol fees in WETH).
     /// @param makerAddress The address of the order's maker.
@@ -47,13 +52,15 @@ contract TestProtocolFeeCollector {
         external
         payable
     {
-        assert(msg.value == 0);
+        if (msg.value != protocolFeePaid) {
+            assert(msg.value == 0);
 
-        // Transfer the protocol fee to this address in WETH.
-        IEtherToken(_wethAddress).transferFrom(
-            payerAddress,
-            address(this),
-            protocolFeePaid
-        );
+            // Transfer the protocol fee to this address in WETH.
+            IEtherToken(_wethAddress).transferFrom(
+                payerAddress,
+                address(this),
+                protocolFeePaid
+            );
+        }
     }
 }

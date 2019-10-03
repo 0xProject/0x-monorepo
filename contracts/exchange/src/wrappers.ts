@@ -31,6 +31,7 @@ export * from '../generated-wrappers/reentrancy_tester';
 export * from '../generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../generated-wrappers/test_exchange_internals';
 export * from '../generated-wrappers/test_lib_exchange_rich_error_decoder';
+export * from '../generated-wrappers/test_protocol_fee_collector';
 export * from '../generated-wrappers/test_protocol_fees';
 export * from '../generated-wrappers/test_protocol_fees_receiver';
 export * from '../generated-wrappers/test_signature_validator';
