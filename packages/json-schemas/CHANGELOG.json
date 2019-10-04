@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.0.3",
+        "version": "4.1.0-beta.0",
         "changes": [
             {
                 "note": "Add `eip712DomainSchema` schema",
@@ -18,7 +18,8 @@
                 "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` schema",
                 "pr": 1832
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

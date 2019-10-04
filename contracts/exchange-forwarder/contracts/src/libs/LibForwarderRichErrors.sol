@@ -35,10 +35,6 @@ library LibForwarderRichErrors {
     bytes4 internal constant COMPLETE_BUY_FAILED_ERROR_SELECTOR =
         0x91353a0c;
 
-    // bytes4(keccak256("MakerAssetMismatchError(bytes,bytes)"))
-    bytes4 internal constant MAKER_ASSET_MISMATCH_ERROR_SELECTOR =
-        0x56677f2c;
-
     // bytes4(keccak256("UnsupportedFeeError(bytes)"))
     bytes4 internal constant UNSUPPORTED_FEE_ERROR_SELECTOR =
         0x31360af1;
@@ -51,9 +47,9 @@ library LibForwarderRichErrors {
     bytes4 internal constant INSUFFICIENT_ETH_FOR_FEE_ERROR_SELECTOR =
         0xecf40fd9;
 
-    // bytes4(keccak256("OversoldWethError(uint256,uint256)"))
-    bytes4 internal constant OVERSOLD_WETH_ERROR_SELECTOR =
-        0x5cc555c8;
+    // bytes4(keccak256("OverspentWethError(uint256,uint256)"))
+    bytes4 internal constant OVERSPENT_WETH_ERROR_SELECTOR =
+        0xcdcbed5d;
 
     // bytes4(keccak256("TransferFailedError(bytes)"))
     bytes4 internal constant TRANSFER_FAILED_ERROR_SELECTOR =
@@ -63,9 +59,9 @@ library LibForwarderRichErrors {
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
 
-    // bytes4(keccak256("MsgValueCantEqualZeroError()"))
-    bytes4 internal constant MSG_VALUE_CANT_EQUAL_ZERO_ERROR_SELECTOR =
-        0x1213e1d6;
+    // bytes4(keccak256("MsgValueCannotEqualZeroError()"))
+    bytes4 internal constant MSG_VALUE_CANNOT_EQUAL_ZERO_ERROR_SELECTOR =
+        0x8c0e562b;
 
     // bytes4(keccak256("Erc721AmountMustEqualOneError(uint256)"))
     bytes4 internal constant ERC721_AMOUNT_MUST_EQUAL_ONE_ERROR_SELECTOR =
@@ -105,21 +101,6 @@ library LibForwarderRichErrors {
             COMPLETE_BUY_FAILED_ERROR_SELECTOR,
             expectedAssetBuyAmount,
             actualAssetBuyAmount
-        );
-    }
-
-    function MakerAssetMismatchError(
-        bytes memory firstOrderMakerAssetData,
-        bytes memory mismatchedMakerAssetData
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            MAKER_ASSET_MISMATCH_ERROR_SELECTOR,
-            firstOrderMakerAssetData,
-            mismatchedMakerAssetData
         );
     }
 
@@ -164,8 +145,8 @@ library LibForwarderRichErrors {
         );
     }
 
-    function OversoldWethError(
-        uint256 wethSold,
+    function OverspentWethError(
+        uint256 wethSpent,
         uint256 msgValue
     )
         internal
@@ -173,8 +154,8 @@ library LibForwarderRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            OVERSOLD_WETH_ERROR_SELECTOR,
-            wethSold,
+            OVERSPENT_WETH_ERROR_SELECTOR,
+            wethSpent,
             msgValue
         );
     }
@@ -205,12 +186,12 @@ library LibForwarderRichErrors {
         );
     }
 
-    function MsgValueCantEqualZeroError()
+    function MsgValueCannotEqualZeroError()
         internal
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(MSG_VALUE_CANT_EQUAL_ZERO_ERROR_SELECTOR);
+        return abi.encodeWithSelector(MSG_VALUE_CANNOT_EQUAL_ZERO_ERROR_SELECTOR);
     }
 
     function Erc721AmountMustEqualOneError(

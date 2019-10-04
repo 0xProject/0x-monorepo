@@ -1,12 +1,13 @@
 [
     {
-        "version": "3.2.0",
+        "version": "3.2.0-beta.0",
         "changes": [
             {
                 "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
                 "pr": 2055
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

@@ -1,6 +1,6 @@
 export { HttpClient } from './http_client';
 export { ordersChannelFactory } from './orders_channel_factory';
-export { Client, OrdersChannel, OrdersChannelHandler } from './types';
+export { OrdersChannel, OrdersChannelHandler } from './types';
 export {
     APIOrder,
     AssetPairsRequestOpts,

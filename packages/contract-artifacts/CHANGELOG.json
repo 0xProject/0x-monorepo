@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.0.0",
+        "version": "2.3.0-beta.0",
         "changes": [
             {
                 "note": "Use V3 contracts",
@@ -10,7 +10,8 @@
                 "note": "Add `deployedBytecode` field",
                 "pr": 2181
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

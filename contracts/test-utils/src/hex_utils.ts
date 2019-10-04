@@ -66,6 +66,13 @@ export function hexHash(n: Numberish): string {
 }
 
 /**
+ * Get the length, in bytes, of a hex string.
+ */
+export function hexSize(hex: string): number {
+    return Math.ceil((hex.length - 2) / 2);
+}
+
+/**
  * Convert a string, a number, or a BigNumber into a hex string.
  * Works with negative numbers, as well.
  */

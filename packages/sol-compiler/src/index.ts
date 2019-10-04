@@ -27,4 +27,5 @@ export {
     StandardOutput,
     StateMutability,
     SourceLocation,
+    RevertErrorAbi,
 } from 'ethereum-types';

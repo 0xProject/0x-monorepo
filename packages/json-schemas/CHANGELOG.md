@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0-beta.0 - _October 3, 2019_
+
+    * Add `eip712DomainSchema` schema (#1742)
+    * Add required field `domain` to `order` and `zeroExTransaction` schemas (#1742)
+    * Add `makerAssetData` and `takerAssetData` to `Order` schemas (#1819)
+    * Add `expirationTimeSeconds` to `ZeroExTransaction` schema (#1832)
+
 ## v4.0.2 - _September 17, 2019_
 
     * Dependencies updated

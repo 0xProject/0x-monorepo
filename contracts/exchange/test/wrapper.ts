@@ -78,7 +78,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             from: owner,
         });
 
-        exchangeWrapper = new ExchangeWrapper(exchange, env.provider);
+        exchangeWrapper = new ExchangeWrapper(exchange);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {

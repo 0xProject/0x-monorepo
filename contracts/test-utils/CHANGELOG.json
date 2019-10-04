@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.0.0",
+        "version": "3.2.0-beta.0",
         "changes": [
             {
                 "note": "Add `chainId` to `TransactionFactory` constructor",
@@ -93,8 +93,13 @@
             {
                 "note": "Add `shortZip()` to `lang_utils.ts`",
                 "pr": 2155
+            },
+            {
+                "note": "Add `number_utils.ts` and `hexSize()`",
+                "pr": 2220
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

@@ -1,27 +1,11 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { BigNumber } from '@0x/utils';
 
-import { ContractEventArg, DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
-
-export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
-    isRemoved: boolean;
-    log: LogWithDecodedArgs<ArgsType>;
-}
-
-export type EventCallback<ArgsType extends DecodedLogArgs> = (
-    err: null | Error,
-    log?: DecodedLogEvent<ArgsType>,
-) => void;
-
 export interface TxOpts {
     from: string;
     gas?: number;
     value?: BigNumber;
     gasPrice?: BigNumber;
-}
-
-export interface IndexedFilterValues {
-    [index: string]: ContractEventArg;
 }
 
 export enum ForwarderError {

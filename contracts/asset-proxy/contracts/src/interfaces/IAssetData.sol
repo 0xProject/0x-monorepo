@@ -74,4 +74,15 @@ interface IAssetData {
         bytes32 expectedReturnDataHash
     )
         external;
+
+    /// @dev Function signature for encoding ERC20Bridge assetData.
+    /// @param tokenAddress Address of token to transfer.
+    /// @param bridgeAddress Address of the bridge contract.
+    /// @param bridgeData Arbitrary data to be passed to the bridge contract.
+    function ERC20Bridge(
+        address tokenAddress,
+        address bridgeAddress,
+        bytes calldata bridgeData
+    )
+        external;
 }

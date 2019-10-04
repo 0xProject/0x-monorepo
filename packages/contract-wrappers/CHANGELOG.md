@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v12.2.0-beta.0 - _October 3, 2019_
+
+    * Use new `Order` and `ZeroExTransaction` structures with `domain` field (#1742)
+    * Update exchange wrapper (#1742)
+
 ## v12.1.0 - _September 17, 2019_
 
     * Add `devUtils` to `ContractWrappers` class. (#2146)

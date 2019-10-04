@@ -1,7 +1,14 @@
 // tslint:disable:max-file-line-count
 
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
+import {
+    ContractAbi,
+    ContractEventArg,
+    ContractNetworks,
+    DecodedLogArgs,
+    DevdocOutput,
+    LogWithDecodedArgs,
+} from 'ethereum-types';
 
 export interface Order {
     chainId: number;
@@ -158,6 +165,7 @@ export enum AssetProxyId {
     MultiAsset = '0x94cfcdd7',
     ERC1155 = '0xa7cb5fb7',
     StaticCall = '0xc339d10a',
+    ERC20Bridge = '0xdc1600f3',
 }
 
 export interface ERC20AssetData {
@@ -428,6 +436,8 @@ export interface OrdersRequestOpts {
     senderAddress?: string;
     makerAssetData?: string;
     takerAssetData?: string;
+    makerFeeAssetData?: string;
+    takerFeeAssetData?: string;
     makerAddress?: string;
     takerAddress?: string;
     traderAddress?: string;
@@ -467,6 +477,8 @@ export interface OrderConfigResponse {
     takerFee: BigNumber;
     feeRecipientAddress: string;
     senderAddress: string;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export type FeeRecipientsResponse = PaginatedCollection<string>;
@@ -835,4 +847,18 @@ export interface OrderInfo {
     orderStatus: number;
     orderHash: string;
     orderTakerAssetFilledAmount: BigNumber;
+}
+
+export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
+    isRemoved: boolean;
+    log: LogWithDecodedArgs<ArgsType>;
+}
+
+export type EventCallback<ArgsType extends DecodedLogArgs> = (
+    err: null | Error,
+    log?: DecodedLogEvent<ArgsType>,
+) => void;
+
+export interface IndexedFilterValues {
+    [index: string]: ContractEventArg;
 }

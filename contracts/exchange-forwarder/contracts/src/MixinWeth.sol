@@ -47,19 +47,19 @@ contract MixinWeth is
         internal
     {
         if (msg.value == 0) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.MsgValueCantEqualZeroError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.MsgValueCannotEqualZeroError());
         }
         ETHER_TOKEN.deposit.value(msg.value)();
     }
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
     ///      Refunds any excess ETH to msg.sender.
-    /// @param wethSold Amount of WETH sold when filling primary orders.
+    /// @param wethSpent Amount of WETH spent when filling orders.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return ethFee Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
-        uint256 wethSold,
+        uint256 wethSpent,
         uint256 feePercentage,
         address payable feeRecipient
     )
@@ -73,22 +73,22 @@ contract MixinWeth is
             ));
         }
 
-        // Ensure that no extra WETH owned by this contract has been sold.
-        if (wethSold > msg.value) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.OversoldWethError(
-                wethSold,
+        // Ensure that no extra WETH owned by this contract has been spent.
+        if (wethSpent > msg.value) {
+            LibRichErrors.rrevert(LibForwarderRichErrors.OverspentWethError(
+                wethSpent,
                 msg.value
             ));
         }
 
-        // Calculate amount of WETH that hasn't been sold.
-        uint256 wethRemaining = msg.value.safeSub(wethSold);
+        // Calculate amount of WETH that hasn't been spent.
+        uint256 wethRemaining = msg.value.safeSub(wethSpent);
 
         // Calculate ETH fee to pay to feeRecipient.
         ethFee = LibMath.getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
-            wethSold
+            wethSpent
         );
 
         // Ensure fee is less than amount of WETH remaining.

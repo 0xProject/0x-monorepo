@@ -1,6 +1,6 @@
 [
     {
-        "version": "4.0.0",
+        "version": "3.3.0-beta.0",
         "changes": [
             {
                 "note": "Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling.",
@@ -14,7 +14,8 @@
                 "note": "Update `assetProxyOwner` address for each testnet",
                 "pr": 2224
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "3.2.0",

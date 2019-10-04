@@ -1,6 +1,6 @@
 [
     {
-        "version": "1.0.0",
+        "version": "1.1.0-beta.0",
         "changes": [
             {
                 "note": "Created package",
@@ -70,6 +70,7 @@
                 "note": "Removed explicit dependency on epoch+1 when delegating.",
                 "pr": 2188
             }
-        ]
+        ],
+        "timestamp": 1570135330
     }
 ]

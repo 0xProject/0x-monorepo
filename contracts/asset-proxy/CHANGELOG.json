@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.0.0",
+        "version": "2.3.0-beta.0",
         "changes": [
             {
                 "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
@@ -17,8 +17,17 @@
             {
                 "note": "Remove unused dependency on IAuthorizable in IAssetProxy",
                 "pr": 1910
+            },
+            {
+                "note": "Add `ERC20BridgeProxy`",
+                "pr": 2220
+            },
+            {
+                "note": "Add `Eth2DaiBridge`",
+                "pr": 2221
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

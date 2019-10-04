@@ -1,6 +1,6 @@
 [
     {
-        "version": "3.0.0",
+        "version": "2.2.0-beta.0",
         "changes": [
             {
                 "note": "Use new/cheaper reentrancy guard/mutex",
@@ -190,7 +190,8 @@
                 "note": "Overridden functions in `ReentrancyTester` now return sane values.",
                 "pr": 2075
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

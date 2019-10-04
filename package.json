@@ -21,11 +21,11 @@
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
         "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
-        "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
+        "script:publish": "DIST_TAG=protocolV3 node ./packages/monorepo-scripts/lib/publish.js",
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
-        "build": "lerna link && wsrun build $PKG -r --stages --fast-exit --exclude-missing",
+        "build": "lerna link && wsrun build $PKG -r --stages --fast-exit --exclude-missing --exclude @0x/contracts-extensions --exclude @0x/contracts-coordinator",
         "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing --exclude @0x/contracts-extensions --exclude @0x/contracts-coordinator",
         "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
@@ -65,7 +65,7 @@
             },
             {
                 "path": "packages/instant/umd/instant.js",
-                "maxSize": "1460kB"
+                "maxSize": "1960kB"
             }
         ],
         "ci": {

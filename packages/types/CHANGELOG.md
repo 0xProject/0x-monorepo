@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.5.0-beta.0 - _October 3, 2019_
+
+    * Add `OrderStatus` type (#1761)
+    * Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types (#2031)
+    * Add status types for Staking contracts (#1910)
+    * Add `ERC20Bridge` to `AssetProxyId` (#2220)
+
 ## v2.4.3 - _September 17, 2019_
 
     * Dependencies updated
@@ -25,6 +32,16 @@ CHANGELOG
 
     * Add StaticCallProxy types (#1863)
     * Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum (#1863)
+    * Add `domain` field to `Order`, `ZeroExTransaction` (#1742)
+    * Rename OrderWithoutExchangeAddress to OrderWithoutDomain (#1742)
+    * Add `chainId` field to `EIP712DomainWithDefaultSchema` (#1742)
+    * Add `OrderStatus` type (#1761)
+    * Add `SignatureType.OrderValidator` and `SignatureType.WalletOrderValidator` (#1774)
+    * Update `Order` type for arbitrary fee tokens (ZEIP-28). (#1819)
+    * Add `expirationTimeSeconds` to `ZeroExTransaction` type (#1832)
+    * Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum (#1868)
+    * Consolidate all Validator `SignatureType`s to just `Validator` (#1885)
+    * Add `EIP1271Wallet` to `SignatureType` (#1885)
 
 ## v2.2.2 - _April 11, 2019_
 

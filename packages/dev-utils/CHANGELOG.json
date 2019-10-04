@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.4.0",
+        "version": "2.4.0-beta.0",
         "changes": [
             {
                 "note": "`revertWith` mocha extensions now accept Promise-like objects instead of just Promises",
@@ -26,7 +26,8 @@
                 "note": "Refactor out `Error` coercion code into the `utils` package",
                 "pr": 1819
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,

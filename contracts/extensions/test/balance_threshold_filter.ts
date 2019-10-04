@@ -136,7 +136,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             zrxAssetData,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         // Register proxies
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {

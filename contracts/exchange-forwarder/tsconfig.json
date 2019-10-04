@@ -12,7 +12,8 @@
         "generated-artifacts/MixinAssets.json",
         "generated-artifacts/MixinExchangeWrapper.json",
         "generated-artifacts/MixinForwarderCore.json",
-        "generated-artifacts/MixinWeth.json"
+        "generated-artifacts/MixinWeth.json",
+        "generated-artifacts/TestProtocolFeeCollector.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

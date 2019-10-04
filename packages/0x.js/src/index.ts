@@ -1,4 +1,4 @@
-export { ContractAddresses } from '@0x/contract-addresses';
+export { getContractAddressesForNetworkOrThrow, NetworkId, ContractAddresses } from '@0x/contract-addresses';
 
 export {
     assetDataUtils,
@@ -7,21 +7,6 @@ export {
     orderHashUtils,
     transactionHashUtils,
 } from '@0x/order-utils';
-
-export {
-    ContractWrappers,
-    CoordinatorWrapper,
-    CoordinatorServerCancellationResponse,
-    CoordinatorServerError,
-    IndexedFilterValues,
-    ContractWrappersConfig,
-    OrderTransactionOpts,
-    TransactionOpts,
-    OrderInfo,
-    EventCallback,
-    DecodedLogEvent,
-    OrderStatus,
-} from '@0x/contract-wrappers';
 
 export {
     ExchangeEventArgs,
@@ -33,13 +18,6 @@ export {
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
     DevUtilsContract,
-    ForwarderContract,
-    DutchAuctionContract,
-    CoordinatorContract,
-    CoordinatorRegistryEventArgs,
-    CoordinatorRegistryEvents,
-    CoordinatorRegistryCoordinatorEndpointSetEventArgs,
-    CoordinatorRegistryContract,
     IValidatorContract,
     IWalletContract,
     WETH9EventArgs,
@@ -60,38 +38,14 @@ export {
     ERC721TokenApprovalEventArgs,
     ERC721TokenApprovalForAllEventArgs,
     ERC721TokenContract,
-    ERC1155ProxyEventArgs,
-    ERC1155ProxyEvents,
-    ERC1155ProxyAuthorizedAddressAddedEventArgs,
-    ERC1155ProxyAuthorizedAddressRemovedEventArgs,
-    ERC1155ProxyContract,
     ZRXTokenEventArgs,
     ZRXTokenEvents,
     ZRXTokenTransferEventArgs,
     ZRXTokenApprovalEventArgs,
     ZRXTokenContract,
-    DummyERC20TokenEventArgs,
-    DummyERC20TokenEvents,
-    DummyERC20TokenTransferEventArgs,
-    DummyERC20TokenApprovalEventArgs,
-    DummyERC20TokenContract,
-    DummyERC721TokenEventArgs,
-    DummyERC721TokenEvents,
-    DummyERC721TokenTransferEventArgs,
-    DummyERC721TokenApprovalEventArgs,
-    DummyERC721TokenApprovalForAllEventArgs,
-    DummyERC721TokenContract,
-    ERC20ProxyEventArgs,
-    ERC20ProxyEvents,
-    ERC20ProxyContract,
-    ERC20ProxyAuthorizedAddressAddedEventArgs,
-    ERC20ProxyAuthorizedAddressRemovedEventArgs,
-    ERC721ProxyEventArgs,
-    ERC721ProxyEvents,
-    ERC721ProxyAuthorizedAddressAddedEventArgs,
-    ERC721ProxyAuthorizedAddressRemovedEventArgs,
-    ERC721ProxyContract,
-    OrderValidatorContract,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeTransactionExecutionEventArgs,
 } from '@0x/abi-gen-wrappers';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
@@ -104,7 +58,7 @@ export {
     MetamaskSubprovider,
 } from '@0x/subproviders';
 
-export { AbiDecoder, DecodedCalldata, BigNumber } from '@0x/utils';
+export { DecodedCalldata, BigNumber } from '@0x/utils';
 
 export {
     Order,
@@ -128,23 +82,20 @@ export {
     SimpleStandardContractOutput,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
+    EIP712DomainWithDefaultSchema,
+    EventCallback,
+    IndexedFilterValues,
+    DecodedLogEvent,
 } from '@0x/types';
 
 export {
     BlockRange,
     ContractAbi,
-    LogWithDecodedArgs,
     ContractEventArg,
     SupportedProvider,
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
-    LogEntry,
-    DecodedLogArgs,
-    LogEntryEvent,
-    DecodedLogEntry,
-    DecodedLogEntryEvent,
-    RawLog,
     AbiDefinition,
     FunctionAbi,
     EventAbi,
@@ -183,4 +134,7 @@ export {
     OutputField,
     ParamDescription,
     EvmBytecodeOutput,
+    RevertErrorAbi,
+    DecodedLogArgs,
+    LogWithDecodedArgs,
 } from 'ethereum-types';

@@ -1,5 +1,7 @@
 {
     "id": "/relayerApiOrdersSchema",
     "type": "array",
-    "items": { "$ref": "/relayerApiOrderSchema" }
+    "items": {
+        "$ref": "/relayerApiOrderSchema"
+    }
 }

@@ -68,11 +68,10 @@ async function confirmAsync(message: string): Promise<void> {
         }
     });
 
-    // Generate markdown docs for packages
-    await generateDocMDAsync(packagesWithDocs);
-
     // Push changelogs changes and markdown docs to Github
     if (!configs.IS_LOCAL_PUBLISH) {
+        // Generate markdown docs for packages
+        await generateDocMDAsync(packagesWithDocs);
         await pushChangelogsAndMDDocsToGithubAsync();
     }
 
@@ -251,6 +250,9 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         if (configs.IS_LOCAL_PUBLISH) {
             lernaPublishArgs.push('--no-git-tag-version');
             lernaPublishArgs.push('--no-push');
+        }
+        if (configs.DIST_TAG !== '') {
+            lernaPublishArgs.push(`--dist-tag ${configs.DIST_TAG}`);
         }
         utils.log('Lerna is publishing...');
         try {

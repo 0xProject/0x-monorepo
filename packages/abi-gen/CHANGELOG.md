@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0-beta.0 - _October 3, 2019_
+
+    * Dependencies updated
+
 ## v4.2.1 - _September 17, 2019_
 
     * Redirect to `evmExecAsync` to use local EVM instead of eth_call for pure functions (#2108)

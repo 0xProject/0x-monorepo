@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-gen",
-    "version": "1.0.15",
+    "version": "1.1.0-beta.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -27,12 +27,12 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts-gen/README.md",
     "dependencies": {
-        "@0x/sol-compiler": "^3.1.15",
-        "@0x/sol-resolver": "^2.0.11",
-        "@0x/types": "^2.4.3",
-        "@0x/typescript-typings": "^4.3.0",
-        "@0x/utils": "^4.5.2",
-        "ethereum-types": "^2.1.6",
+        "@0x/sol-compiler": "^3.2.0-beta.0",
+        "@0x/sol-resolver": "^2.1.0-beta.0",
+        "@0x/types": "^2.5.0-beta.0",
+        "@0x/typescript-typings": "^4.4.0-beta.0",
+        "@0x/utils": "^4.6.0-beta.0",
+        "ethereum-types": "^2.2.0-beta.0",
         "lodash": "^4.17.11",
         "prettier": "^1.16.3",
         "to-snake-case": "^1.0.0"

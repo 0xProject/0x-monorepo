@@ -1,7 +1,6 @@
 import {
     assetDataUtils,
     BigNumber,
-    ContractWrappers,
     generatePseudoRandomSalt,
     Order,
     orderHashUtils,
@@ -10,9 +9,10 @@ import {
     SignedOrder,
     Web3ProviderEngine,
 } from '0x.js';
+import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { NonceTrackerSubprovider, PrivateKeyWalletSubprovider } from '@0x/subproviders';
 import { logUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import * as express from 'express';
 import * as _ from 'lodash';
 
@@ -26,7 +26,7 @@ import { TOKENS_BY_NETWORK } from './tokens';
 interface NetworkConfig {
     dispatchQueue: DispatchQueue;
     web3Wrapper: Web3Wrapper;
-    contractWrappers: ContractWrappers;
+    provider: SupportedProvider;
     networkId: number;
 }
 
@@ -64,15 +64,11 @@ export class Handler {
             const web3Wrapper = new Web3Wrapper(providerObj);
             // tslint:disable-next-line:custom-no-magic-numbers
             const networkId = parseInt(networkIdString, 10);
-            const contractWrappersConfig = {
-                networkId,
-            };
-            const contractWrappers = new ContractWrappers(providerObj, contractWrappersConfig);
             const dispatchQueue = new DispatchQueue();
             this._networkConfigByNetworkId[networkId] = {
                 dispatchQueue,
                 web3Wrapper,
-                contractWrappers,
+                provider: providerObj,
                 networkId,
             };
         });
@@ -124,7 +120,7 @@ export class Handler {
                     recipient,
                     requestedAssetType,
                     networkConfig.networkId,
-                    networkConfig.contractWrappers.getProvider(),
+                    networkConfig.provider,
                 );
                 break;
             default:
@@ -164,6 +160,7 @@ export class Handler {
         const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(ASSET_AMOUNT, takerTokenIfExists.decimals);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenIfExists.address);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenIfExists.address);
+        const contractAddresses = getContractAddressesForNetworkOrThrow(networkConfig.networkId);
         const order: Order = {
             makerAddress: configs.DISPENSER_ADDRESS,
             takerAddress: req.params.recipient as string,
@@ -182,7 +179,7 @@ export class Handler {
                 // tslint:disable-next-line:custom-no-magic-numbers
                 .div(1000)
                 .integerValue(BigNumber.ROUND_FLOOR),
-            exchangeAddress: networkConfig.contractWrappers.exchange.address,
+            exchangeAddress: contractAddresses.exchange,
             chainId: networkConfig.networkId,
         };
         const orderHash = orderHashUtils.getOrderHashHex(order);

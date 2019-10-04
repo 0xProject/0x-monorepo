@@ -1,10 +1,10 @@
-import * as AuthorizableRevertErrors from './authorizable_revert_errors';
-import * as FixedMathRevertErrors from './fixed_math_revert_errors';
-import * as LibAddressArrayRevertErrors from './lib_address_array_revert_errors';
-import * as LibBytesRevertErrors from './lib_bytes_revert_errors';
-import * as OwnableRevertErrors from './ownable_revert_errors';
-import * as ReentrancyGuardRevertErrors from './reentrancy_guard_revert_errors';
-import * as SafeMathRevertErrors from './safe_math_revert_errors';
+export import AuthorizableRevertErrors = require('./authorizable_revert_errors');
+export import FixedMathRevertErrors = require('./fixed_math_revert_errors');
+export import LibAddressArrayRevertErrors = require('./lib_address_array_revert_errors');
+export import LibBytesRevertErrors = require('./lib_bytes_revert_errors');
+export import OwnableRevertErrors = require('./ownable_revert_errors');
+export import ReentrancyGuardRevertErrors = require('./reentrancy_guard_revert_errors');
+export import SafeMathRevertErrors = require('./safe_math_revert_errors');
 
 export { promisify } from './promisify';
 export { addressUtils } from './address_utils';
@@ -33,13 +33,3 @@ export {
     StringRevertError,
     AnyRevertError,
 } from './revert_error';
-
-export {
-    AuthorizableRevertErrors,
-    FixedMathRevertErrors,
-    LibAddressArrayRevertErrors,
-    LibBytesRevertErrors,
-    OwnableRevertErrors,
-    ReentrancyGuardRevertErrors,
-    SafeMathRevertErrors,
-};

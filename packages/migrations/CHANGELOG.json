@@ -1,12 +1,13 @@
 [
     {
-        "version": "4.4.0",
+        "version": "4.4.0-beta.0",
         "changes": [
             {
                 "note": "Update Coordinator and Exchange deployments to pass `chainId`",
                 "pr": 1742
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "version": "4.3.2",

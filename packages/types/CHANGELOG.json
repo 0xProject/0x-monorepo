@@ -1,6 +1,6 @@
 [
     {
-        "version": "2.4.4",
+        "version": "2.5.0-beta.0",
         "changes": [
             {
                 "note": "Add `OrderStatus` type",
@@ -13,8 +13,13 @@
             {
                 "note": "Add status types for Staking contracts",
                 "pr": 1910
+            },
+            {
+                "note": "Add `ERC20Bridge` to `AssetProxyId`",
+                "pr": 2220
             }
-        ]
+        ],
+        "timestamp": 1570135330
     },
     {
         "timestamp": 1568744790,
