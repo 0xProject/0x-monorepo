@@ -34,6 +34,7 @@ export class MeshOrderProvider extends BaseOrderProvider {
             : new BigNumber(0);
         // TODO(dekz): Remove the any hack when mesh is published v3
         return {
+            // tslint:disable:no-unnecessary-type-assertion
             order: orderEvent.signedOrder as any,
             metaData: {
                 orderHash: orderEvent.orderHash,
