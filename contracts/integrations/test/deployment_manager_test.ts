@@ -1,4 +1,5 @@
 import { Authorizable, Ownable } from '@0x/contracts-exchange';
+import { constants as stakingConstants } from '@0x/contracts-staking';
 import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
@@ -150,12 +151,12 @@ blockchainTests('Deployment Manager', env => {
         });
 
         it('should have registered the weth contract in the staking contract', async () => {
-            const weth = await deploymentManager.staking.stakingWrapper.wethAddress.callAsync();
+            const weth = await deploymentManager.staking.stakingWrapper.testWethAddress.callAsync();
             expect(weth).to.be.eq(deploymentManager.tokens.weth.address);
         });
 
         it('should have registered the zrx vault in the staking contract', async () => {
-            const zrxVault = await deploymentManager.staking.stakingWrapper.zrxVault.callAsync();
+            const zrxVault = await deploymentManager.staking.stakingWrapper.testZrxVaultAddress.callAsync();
             expect(zrxVault).to.be.eq(deploymentManager.staking.zrxVault.address);
         });
 
@@ -166,11 +167,14 @@ blockchainTests('Deployment Manager', env => {
 
         it('should have correctly set the params', async () => {
             const params = await deploymentManager.staking.stakingWrapper.getParams.callAsync();
-            expect(params).to.be.deep.eq(
-                [10 * 60 * 60 * 24, (90 * constants.PPM_DENOMINATOR) / 100, 100 * 1e18, 10, 1, 2].map(
-                    value => new BigNumber(value),
-                ),
-            );
+            expect(params).to.be.deep.eq([
+                stakingConstants.DEFAULT_PARAMS.epochDurationInSeconds,
+                stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
+                stakingConstants.DEFAULT_PARAMS.minimumPoolStake,
+                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
+                stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator,
+                stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator,
+            ]);
         });
     });
 });

@@ -30,7 +30,7 @@ import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, StakingWithTokensContract } from './';
+import { artifacts, TestStakingPlaceholderContract } from './';
 
 /**
  * Adds a batch of authorities to a list of authorizable contracts.
@@ -96,9 +96,9 @@ interface AssetProxyContracts {
 // Contract wrappers for all of the staking contracts
 interface StakingContracts {
     readOnlyProxy: ReadOnlyProxyContract;
-    stakingLogic: StakingWithTokensContract;
+    stakingLogic: TestStakingPlaceholderContract;
     stakingProxy: StakingProxyContract;
-    stakingWrapper: StakingWithTokensContract;
+    stakingWrapper: TestStakingPlaceholderContract;
     zrxVault: ZrxVaultContract;
 }
 
@@ -349,11 +349,13 @@ export class DeploymentManager {
             txDefaults,
             stakingArtifacts,
         );
-        const stakingLogic = await StakingWithTokensContract.deployFrom0xArtifactAsync(
-            artifacts.StakingWithTokens,
+        const stakingLogic = await TestStakingPlaceholderContract.deployFrom0xArtifactAsync(
+            artifacts.TestStakingPlaceholder,
             environment.provider,
             txDefaults,
             stakingArtifacts,
+            tokens.weth.address,
+            tokens.zrx.address,
         );
         const stakingProxy = await StakingProxyContract.deployFrom0xArtifactAsync(
             stakingArtifacts.StakingProxy,
@@ -363,7 +365,11 @@ export class DeploymentManager {
             stakingLogic.address,
             readOnlyProxy.address,
         );
-        const stakingWrapper = new StakingWithTokensContract(stakingProxy.address, environment.provider);
+        const stakingWrapper = new TestStakingPlaceholderContract(stakingProxy.address, environment.provider);
+
+        // Add the zrx vault and the weth contract to the staking proxy.
+        await stakingWrapper.setWethContract.awaitTransactionSuccessAsync(tokens.weth.address, { from: owner });
+        await stakingWrapper.setZrxVault.awaitTransactionSuccessAsync(zrxVault.address, { from: owner });
 
         // Authorize the owner address in the staking proxy and the zrx vault.
         await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
@@ -372,8 +378,6 @@ export class DeploymentManager {
         // Configure the zrx vault and the staking contract.
         await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
         await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
-        await stakingWrapper.setZrxVault.awaitTransactionSuccessAsync(zrxVault.address, { from: owner });
-        await stakingWrapper.setWethAddress.awaitTransactionSuccessAsync(tokens.weth.address, { from: owner });
 
         return {
             readOnlyProxy,

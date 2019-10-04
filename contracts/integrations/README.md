@@ -7,7 +7,7 @@ This package implements integration tests against 0x's smart contracts and will 
 **Install**
 
 ```bash
-npm install @0x/contracts-staking --save
+npm install @0x/contracts-integrations --save
 ```
 
 ## Contributing
@@ -37,13 +37,13 @@ yarn install
 To build this package and all other monorepo packages that it depends on, run the following from the monorepo root directory:
 
 ```bash
-PKG=@0x/contracts-integration-tests yarn build
+PKG=@0x/contracts-integrations yarn build
 ```
 
 Or continuously rebuild on change:
 
 ```bash
-PKG=@0x/contracts-integration-tests yarn watch
+PKG=@0x/contracts-integrations yarn watch
 ```
 
 ### Clean

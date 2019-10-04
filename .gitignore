@@ -82,7 +82,7 @@ TODO.md
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
-contracts/integration-tests/generated-artifacts/
+contracts/integrations/generated-artifacts/
 contracts/staking/generated-artifacts/
 contracts/coordinator/generated-artifacts/
 contracts/exchange/generated-artifacts/
@@ -116,7 +116,7 @@ contracts/dev-utils/build/
 
 # generated contract wrappers
 packages/python-contract-wrappers/generated/
-contracts/integration-tests/generated-wrappers/
+contracts/integrations/generated-wrappers/
 contracts/staking/generated-wrappers/
 contracts/coordinator/generated-wrappers/
 contracts/exchange/generated-wrappers/

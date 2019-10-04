@@ -20,6 +20,7 @@ import {
 import { artifacts as multisigArtifacts, AssetProxyOwnerContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
+    constants as stakingConstants,
     ReadOnlyProxyContract,
     StakingContract,
     StakingEvents,
@@ -287,16 +288,14 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             it('should have initialized the correct parameters in the staking proxy', async () => {
                 // Ensure that the correct parameters were set.
                 const params = await stakingWrapper.getParams.callAsync();
-                expect(params).to.be.deep.eq(
-                    [
-                        864000, // epochDurationInSeconds
-                        900000, // rewardDelegatedStakeWeight
-                        100000000000000000000, // minimumPoolStake
-                        10, // maximumMakerInPool
-                        1, // cobbDouglasAlphaNumerator
-                        2, // cobbDouglasAlphaDenominator
-                    ].map(value => new BigNumber(value)),
-                );
+                expect(params).to.be.deep.eq([
+                    stakingConstants.DEFAULT_PARAMS.epochDurationInSeconds,
+                    stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
+                    stakingConstants.DEFAULT_PARAMS.minimumPoolStake,
+                    stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
+                    stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator,
+                    stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator,
+                ]);
             });
         });
 
