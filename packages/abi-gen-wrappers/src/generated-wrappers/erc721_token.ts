@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -81,6 +81,7 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -101,6 +102,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.approve.callAsync(_approved, _tokenId, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -117,21 +122,20 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -169,15 +173,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _approved: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_approved, _tokenId, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -487,6 +482,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -509,6 +505,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -527,8 +527,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -539,6 +538,7 @@ export class ERC721TokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _tokenId,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -546,8 +546,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -589,16 +589,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -705,6 +695,7 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             _data: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -729,6 +720,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -749,8 +744,7 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             _data: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -763,6 +757,7 @@ export class ERC721TokenContract extends BaseContract {
                 _tokenId,
                 _data,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -770,8 +765,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -817,23 +812,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
-            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
-                _from,
-                _to,
-                _tokenId,
-                _data,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -936,6 +914,7 @@ export class ERC721TokenContract extends BaseContract {
             _operator: string,
             _approved: boolean,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
@@ -956,6 +935,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.setApprovalForAll.callAsync(_operator, _approved, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -972,8 +955,7 @@ export class ERC721TokenContract extends BaseContract {
             _operator: string,
             _approved: boolean,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
@@ -982,6 +964,7 @@ export class ERC721TokenContract extends BaseContract {
                 _operator.toLowerCase(),
                 _approved,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -989,8 +972,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1028,15 +1011,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
-            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1131,6 +1105,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1153,6 +1128,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferFrom.callAsync(_from, _to, _tokenId, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1171,8 +1150,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1183,6 +1161,7 @@ export class ERC721TokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _tokenId,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1190,8 +1169,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1233,16 +1212,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

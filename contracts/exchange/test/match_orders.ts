@@ -144,52 +144,52 @@ describe('matchOrders', () => {
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             exchange.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             exchange.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             exchange.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
             exchange.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxyContract.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxyContract.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxyContract.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
             erc721Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
             erc1155Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Set default addresses

@@ -100,7 +100,7 @@ export class Erc1155Wrapper {
             beneficiaries,
             tokenAmountsAsArray,
             { from: this._contractOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async mintNonFungibleTokensAsync(beneficiaries: string[]): Promise<[BigNumber, BigNumber[]]> {
@@ -118,7 +118,7 @@ export class Erc1155Wrapper {
             token,
             beneficiaries,
             { from: this._contractOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         const encodedNftIds: BigNumber[] = [];
         const nftIdBegin = 1;

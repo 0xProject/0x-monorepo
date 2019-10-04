@@ -126,61 +126,61 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
     await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         exchangeContract.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         exchangeContract.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         exchangeContract.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         exchangeContract.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         multiAssetProxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         multiAssetProxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
         multiAssetProxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
         erc20Proxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
         erc721Proxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
         erc1155Proxy.address,
         { from: ownerAddress },
-        constants.AWAIT_TRANSACTION_MINED_MS,
+        { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
     );
 
     const orderFactory = new OrderFactoryFromScenario(

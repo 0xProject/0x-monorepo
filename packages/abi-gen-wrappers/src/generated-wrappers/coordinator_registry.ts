@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -55,7 +55,11 @@ export class CoordinatorRegistryContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            coordinatorEndpoint: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
@@ -69,6 +73,10 @@ export class CoordinatorRegistryContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -85,20 +93,19 @@ export class CoordinatorRegistryContract extends BaseContract {
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
-            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
+            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -127,14 +134,6 @@ export class CoordinatorRegistryContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
-            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

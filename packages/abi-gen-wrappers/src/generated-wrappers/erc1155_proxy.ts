@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -64,7 +64,11 @@ export class ERC1155ProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            target: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -78,6 +82,10 @@ export class ERC1155ProxyContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.addAuthorizedAddress.callAsync(target, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -94,20 +102,19 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
-            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
+            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -136,11 +143,6 @@ export class ERC1155ProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).addAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).addAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -437,7 +439,11 @@ export class ERC1155ProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            target: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -451,6 +457,10 @@ export class ERC1155ProxyContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.removeAuthorizedAddress.callAsync(target, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -467,20 +477,19 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
-            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
+            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -509,11 +518,6 @@ export class ERC1155ProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).removeAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).removeAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -590,6 +594,7 @@ export class ERC1155ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -610,6 +615,10 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -626,8 +635,7 @@ export class ERC1155ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -636,6 +644,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 target.toLowerCase(),
                 index,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -643,8 +652,8 @@ export class ERC1155ProxyContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -682,19 +691,6 @@ export class ERC1155ProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
-            const txHash = await (this as any).removeAuthorizedAddressAtIndex.sendTransactionAsync(
-                target,
-                index,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -790,6 +786,7 @@ export class ERC1155ProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -814,6 +811,10 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferFrom.callAsync(assetData, from, to, amount, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -836,8 +837,7 @@ export class ERC1155ProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -850,6 +850,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 to.toLowerCase(),
                 amount,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -857,8 +858,8 @@ export class ERC1155ProxyContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -906,17 +907,6 @@ export class ERC1155ProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetData: string,
-            from: string,
-            to: string,
-            amount: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(assetData, from, to, amount, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(assetData, from, to, amount, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1013,7 +1003,11 @@ export class ERC1155ProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ERC1155ProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1029,6 +1023,10 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferOwnership.callAsync(newOwner, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1042,20 +1040,19 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ERC1155ProxyContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1083,11 +1080,6 @@ export class ERC1155ProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).transferOwnership.callAsync(newOwner, txData);
-            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

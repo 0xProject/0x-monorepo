@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -168,6 +168,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -188,6 +189,10 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.approve.callAsync(_spender, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -204,21 +209,20 @@ export class DummyERC20TokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_spender.toLowerCase(), _value, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_spender.toLowerCase(), _value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -256,15 +260,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _spender: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_spender, _value, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -446,7 +441,11 @@ export class DummyERC20TokenContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(_value: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
             const encodedData = self._strictEncodeArguments('mint(uint256)', [_value]);
@@ -460,6 +459,10 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.mint.callAsync(_value, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -476,20 +479,19 @@ export class DummyERC20TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
-            const txHashPromise = self.mint.sendTransactionAsync(_value, txData);
+            const txHashPromise = self.mint.sendTransactionAsync(_value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -518,14 +520,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).mint.callAsync(_value, txData);
-            const txHash = await (this as any).mint.sendTransactionAsync(_value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -686,6 +680,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _target: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_target', _target);
             assert.isBigNumber('_value', _value);
@@ -706,6 +701,10 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.setBalance.callAsync(_target, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -722,21 +721,20 @@ export class DummyERC20TokenContract extends BaseContract {
             _target: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_target', _target);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
-            const txHashPromise = self.setBalance.sendTransactionAsync(_target.toLowerCase(), _value, txData);
+            const txHashPromise = self.setBalance.sendTransactionAsync(_target.toLowerCase(), _value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -774,15 +772,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _target: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setBalance.callAsync(_target, _value, txData);
-            const txHash = await (this as any).setBalance.sendTransactionAsync(_target, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -962,6 +951,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -977,6 +967,10 @@ export class DummyERC20TokenContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.transfer.callAsync(_to, _value, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -995,21 +989,20 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
-            const txHashPromise = self.transfer.sendTransactionAsync(_to.toLowerCase(), _value, txData);
+            const txHashPromise = self.transfer.sendTransactionAsync(_to.toLowerCase(), _value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1040,15 +1033,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transfer.callAsync(_to, _value, txData);
-            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1138,6 +1122,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1160,6 +1145,10 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferFrom.callAsync(_from, _to, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1178,8 +1167,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1190,6 +1178,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _value,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1197,8 +1186,8 @@ export class DummyERC20TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1240,16 +1229,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1338,7 +1317,11 @@ export class DummyERC20TokenContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC20TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1354,6 +1337,10 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferOwnership.callAsync(newOwner, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1367,20 +1354,19 @@ export class DummyERC20TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC20TokenContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1408,11 +1394,6 @@ export class DummyERC20TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).transferOwnership.callAsync(newOwner, txData);
-            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

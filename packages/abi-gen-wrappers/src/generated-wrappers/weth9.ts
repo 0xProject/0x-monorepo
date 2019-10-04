@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -119,7 +119,12 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            guy: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -136,6 +141,10 @@ export class WETH9Contract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.approve.callAsync(guy, wad, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -150,21 +159,20 @@ export class WETH9Contract extends BaseContract {
             guy: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -193,15 +201,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            guy: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(guy, wad, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(guy, wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -323,6 +322,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -345,6 +345,10 @@ export class WETH9Contract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferFrom.callAsync(src, dst, wad, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -360,8 +364,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -372,6 +375,7 @@ export class WETH9Contract extends BaseContract {
                 dst.toLowerCase(),
                 wad,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -379,8 +383,8 @@ export class WETH9Contract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -419,16 +423,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(src, dst, wad, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(src, dst, wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -510,7 +504,11 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -526,6 +524,10 @@ export class WETH9Contract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.withdraw.callAsync(wad, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -539,20 +541,19 @@ export class WETH9Contract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData);
+            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -580,11 +581,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).withdraw.callAsync(wad, txData);
-            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -782,7 +778,12 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            dst: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -799,6 +800,10 @@ export class WETH9Contract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transfer.callAsync(dst, wad, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -813,21 +818,20 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData);
+            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -856,15 +860,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transfer.callAsync(dst, wad, txData);
-            const txHash = await (this as any).transfer.sendTransactionAsync(dst, wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -938,7 +933,10 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -953,6 +951,10 @@ export class WETH9Contract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.deposit.callAsync(txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -965,19 +967,18 @@ export class WETH9Contract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.deposit.sendTransactionAsync(txData);
+            const txHashPromise = self.deposit.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1004,11 +1005,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).deposit.callAsync(txData);
-            const txHash = await (this as any).deposit.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

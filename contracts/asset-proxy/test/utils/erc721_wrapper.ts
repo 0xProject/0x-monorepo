@@ -97,7 +97,7 @@ export class ERC721Wrapper {
             proxyAddress,
             isApproved,
             { from: ownerAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async approveAsync(to: string, tokenAddress: string, tokenId: BigNumber): Promise<void> {
@@ -107,7 +107,7 @@ export class ERC721Wrapper {
             to,
             tokenId,
             { from: tokenOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async transferFromAsync(
@@ -122,7 +122,7 @@ export class ERC721Wrapper {
             userAddress,
             tokenId,
             { from: currentOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async mintAsync(tokenAddress: string, tokenId: BigNumber, userAddress: string): Promise<void> {
@@ -131,7 +131,7 @@ export class ERC721Wrapper {
             userAddress,
             tokenId,
             { from: this._contractOwnerAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async burnAsync(tokenAddress: string, tokenId: BigNumber, owner: string): Promise<void> {
@@ -140,7 +140,7 @@ export class ERC721Wrapper {
             owner,
             tokenId,
             { from: this._contractOwnerAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async ownerOfAsync(tokenAddress: string, tokenId: BigNumber): Promise<string> {

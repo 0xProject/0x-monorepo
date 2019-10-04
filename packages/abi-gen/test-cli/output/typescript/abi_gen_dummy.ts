@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -416,7 +416,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -431,6 +434,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.emitSimpleEvent.callAsync(txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -443,19 +450,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData);
+            const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -482,11 +488,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).emitSimpleEvent.callAsync(txData);
-            const txHash = await (this as any).emitSimpleEvent.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1246,6 +1247,7 @@ export class AbiGenDummyContract extends BaseContract {
             id: BigNumber,
             someValue: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isBigNumber('id', id);
             assert.isBigNumber('someValue', someValue);
@@ -1263,6 +1265,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.nonPureFunction.callAsync(id, someValue, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1277,21 +1283,20 @@ export class AbiGenDummyContract extends BaseContract {
             id: BigNumber,
             someValue: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('id', id);
             assert.isBigNumber('someValue', someValue);
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.nonPureFunction.sendTransactionAsync(id, someValue, txData);
+            const txHashPromise = self.nonPureFunction.sendTransactionAsync(id, someValue, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1324,15 +1329,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            id: BigNumber,
-            someValue: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).nonPureFunction.callAsync(id, someValue, txData);
-            const txHash = await (this as any).nonPureFunction.sendTransactionAsync(id, someValue, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1430,7 +1426,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1445,6 +1444,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.nonPureMethod.callAsync(txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1457,19 +1460,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData);
+            const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1496,11 +1498,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethod.callAsync(txData);
-            const txHash = await (this as any).nonPureMethod.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1586,7 +1583,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1601,6 +1601,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.nonPureMethodThatReturnsNothing.callAsync(txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1613,19 +1617,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
+            const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1652,11 +1655,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethodThatReturnsNothing.callAsync(txData);
-            const txHash = await (this as any).nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2891,7 +2889,11 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -2907,6 +2909,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.withdraw.callAsync(wad, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2920,20 +2926,19 @@ export class AbiGenDummyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData);
+            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -2961,11 +2966,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).withdraw.callAsync(wad, txData);
-            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

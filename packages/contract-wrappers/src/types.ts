@@ -40,6 +40,7 @@ export interface ContractWrappersConfig {
     blockPollingIntervalMs?: number;
 }
 
+// TODO(xianny): remove after refactoring coordinator wrapper
 /**
  * gasPrice: Gas price in Wei to use for a transaction
  * gasLimit: The amount of gas to send with a transaction (in Gwei)
@@ -51,6 +52,7 @@ export interface TransactionOpts {
     nonce?: number;
 }
 
+// TODO(xianny): remove after refactoring coordinator wrapper
 /**
  * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
  * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.

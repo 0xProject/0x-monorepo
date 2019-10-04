@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -115,7 +115,11 @@ export class MultiAssetProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            target: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -129,6 +133,10 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.addAuthorizedAddress.callAsync(target, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -145,20 +153,19 @@ export class MultiAssetProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
-            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
+            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -187,11 +194,6 @@ export class MultiAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).addAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).addAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -364,7 +366,11 @@ export class MultiAssetProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            target: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -378,6 +384,10 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.removeAuthorizedAddress.callAsync(target, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -394,20 +404,19 @@ export class MultiAssetProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
-            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
+            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -436,11 +445,6 @@ export class MultiAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).removeAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).removeAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -560,6 +564,7 @@ export class MultiAssetProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -580,6 +585,10 @@ export class MultiAssetProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -596,8 +605,7 @@ export class MultiAssetProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -606,6 +614,7 @@ export class MultiAssetProxyContract extends BaseContract {
                 target.toLowerCase(),
                 index,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -613,8 +622,8 @@ export class MultiAssetProxyContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -652,19 +661,6 @@ export class MultiAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
-            const txHash = await (this as any).removeAuthorizedAddressAtIndex.sendTransactionAsync(
-                target,
-                index,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -837,7 +833,11 @@ export class MultiAssetProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            assetProxy: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
@@ -851,6 +851,10 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.registerAssetProxy.callAsync(assetProxy, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -867,20 +871,19 @@ export class MultiAssetProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData);
+            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -909,14 +912,6 @@ export class MultiAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetProxy: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).registerAssetProxy.callAsync(assetProxy, txData);
-            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(assetProxy, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1035,7 +1030,11 @@ export class MultiAssetProxyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1051,6 +1050,10 @@ export class MultiAssetProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferOwnership.callAsync(newOwner, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1064,20 +1067,19 @@ export class MultiAssetProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1105,11 +1107,6 @@ export class MultiAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).transferOwnership.callAsync(newOwner, txData);
-            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

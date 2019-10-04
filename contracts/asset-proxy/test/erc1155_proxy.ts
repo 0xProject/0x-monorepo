@@ -75,12 +75,12 @@ describe('ERC1155Proxy', () => {
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             authorized,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             erc1155Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         // deploy & configure ERC1155 tokens and receiver
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
@@ -702,7 +702,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
 
                 // mint balance for spender
@@ -713,7 +713,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
             }
             ///// Step 2/5 /////
@@ -811,7 +811,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
 
                 // mint balance for spender
@@ -822,7 +822,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
             }
             ///// Step 2/5 /////
@@ -943,7 +943,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
 
                 // mint balance for spender
@@ -954,7 +954,7 @@ describe('ERC1155Proxy', () => {
                     {
                         from: owner,
                     },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
             }
             ///// Step 2/5 /////
@@ -1672,7 +1672,7 @@ describe('ERC1155Proxy', () => {
                 {
                     from: owner,
                 },
-                constants.AWAIT_TRANSACTION_MINED_MS,
+                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
             );
             // setup test parameters
             const tokenHolders = [spender, receiverContract];

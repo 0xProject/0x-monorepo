@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -107,6 +107,7 @@ export class ZRXTokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -127,6 +128,10 @@ export class ZRXTokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.approve.callAsync(_spender, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -141,21 +146,20 @@ export class ZRXTokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_spender.toLowerCase(), _value, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_spender.toLowerCase(), _value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -191,15 +195,6 @@ export class ZRXTokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _spender: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_spender, _value, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -330,6 +325,7 @@ export class ZRXTokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -352,6 +348,10 @@ export class ZRXTokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferFrom.callAsync(_from, _to, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -370,8 +370,7 @@ export class ZRXTokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -382,6 +381,7 @@ export class ZRXTokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _value,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -389,8 +389,8 @@ export class ZRXTokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -432,16 +432,6 @@ export class ZRXTokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -668,6 +658,7 @@ export class ZRXTokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -685,6 +676,10 @@ export class ZRXTokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transfer.callAsync(_to, _value, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -699,21 +694,20 @@ export class ZRXTokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const txHashPromise = self.transfer.sendTransactionAsync(_to.toLowerCase(), _value, txData);
+            const txHashPromise = self.transfer.sendTransactionAsync(_to.toLowerCase(), _value, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -742,15 +736,6 @@ export class ZRXTokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _to: string,
-            _value: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transfer.callAsync(_to, _value, txData);
-            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -280,6 +280,7 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             }>,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             const self = (this as any) as ExchangeContract;
@@ -297,6 +298,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchCancelOrders.callAsync(orders, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -328,20 +333,19 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             }>,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders, txData);
+            const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -391,29 +395,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchCancelOrders.callAsync(orders, txData);
-            const txHash = await (this as any).batchCancelOrders.sendTransactionAsync(orders, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -539,6 +520,7 @@ export class ExchangeContract extends BaseContract {
             }>,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('transactions', transactions);
             assert.isArray('signatures', signatures);
@@ -557,6 +539,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchExecuteTransactions.callAsync(transactions, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -582,21 +568,25 @@ export class ExchangeContract extends BaseContract {
             }>,
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('transactions', transactions);
             assert.isArray('signatures', signatures);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchExecuteTransactions.sendTransactionAsync(transactions, signatures, txData);
+            const txHashPromise = self.batchExecuteTransactions.sendTransactionAsync(
+                transactions,
+                signatures,
+                txData,
+                opts,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -641,25 +631,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            transactions: Array<{
-                salt: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                gasPrice: BigNumber;
-                signerAddress: string;
-                data: string;
-            }>,
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchExecuteTransactions.callAsync(transactions, signatures, txData);
-            const txHash = await (this as any).batchExecuteTransactions.sendTransactionAsync(
-                transactions,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -787,6 +758,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -806,6 +778,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchFillOrKillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -842,8 +818,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -854,6 +829,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmounts,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -861,8 +837,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -919,36 +895,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchFillOrKillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
-            const txHash = await (this as any).batchFillOrKillOrders.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1116,6 +1062,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1135,6 +1082,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchFillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1171,8 +1122,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1183,6 +1133,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmounts,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1190,8 +1141,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1248,36 +1199,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchFillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
-            const txHash = await (this as any).batchFillOrders.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1445,6 +1366,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1464,6 +1386,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchFillOrdersNoThrow.callAsync(orders, takerAssetFillAmounts, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1500,8 +1426,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1512,6 +1437,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmounts,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1519,8 +1445,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1577,36 +1503,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchFillOrdersNoThrow.callAsync(orders, takerAssetFillAmounts, signatures, txData);
-            const txHash = await (this as any).batchFillOrdersNoThrow.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1794,6 +1690,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -1814,6 +1711,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchMatchOrders.callAsync(leftOrders, rightOrders, leftSignatures, rightSignatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1868,8 +1769,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -1882,6 +1782,7 @@ export class ExchangeContract extends BaseContract {
                 leftSignatures,
                 rightSignatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1889,8 +1790,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1966,59 +1867,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            leftOrders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            rightOrders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            leftSignatures: string[],
-            rightSignatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchMatchOrders.callAsync(
-                leftOrders,
-                rightOrders,
-                leftSignatures,
-                rightSignatures,
-                txData,
-            );
-            const txHash = await (this as any).batchMatchOrders.sendTransactionAsync(
-                leftOrders,
-                rightOrders,
-                leftSignatures,
-                rightSignatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2263,6 +2111,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -2283,6 +2132,16 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.batchMatchOrdersWithMaximalFill.callAsync(
+                    leftOrders,
+                    rightOrders,
+                    leftSignatures,
+                    rightSignatures,
+                    txData,
+                );
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -2337,8 +2196,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -2351,6 +2209,7 @@ export class ExchangeContract extends BaseContract {
                 leftSignatures,
                 rightSignatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -2358,8 +2217,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -2435,59 +2294,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            leftOrders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            rightOrders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            leftSignatures: string[],
-            rightSignatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).batchMatchOrdersWithMaximalFill.callAsync(
-                leftOrders,
-                rightOrders,
-                leftSignatures,
-                rightSignatures,
-                txData,
-            );
-            const txHash = await (this as any).batchMatchOrdersWithMaximalFill.sendTransactionAsync(
-                leftOrders,
-                rightOrders,
-                leftSignatures,
-                rightSignatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2706,6 +2512,7 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             },
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments(
@@ -2722,6 +2529,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.cancelOrder.callAsync(order, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -2753,19 +2564,18 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             },
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.cancelOrder.sendTransactionAsync(order, txData);
+            const txHashPromise = self.cancelOrder.sendTransactionAsync(order, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -2814,29 +2624,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).cancelOrder.callAsync(order, txData);
-            const txHash = await (this as any).cancelOrder.sendTransactionAsync(order, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2948,7 +2735,11 @@ export class ExchangeContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            targetOrderEpoch: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch]);
@@ -2962,6 +2753,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.cancelOrdersUpTo.callAsync(targetOrderEpoch, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -2979,20 +2774,19 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData);
+            const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -3022,14 +2816,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            targetOrderEpoch: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).cancelOrdersUpTo.callAsync(targetOrderEpoch, txData);
-            const txHash = await (this as any).cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -3209,6 +2995,7 @@ export class ExchangeContract extends BaseContract {
             },
             signature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -3226,6 +3013,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.executeTransaction.callAsync(transaction, signature, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -3250,20 +3041,19 @@ export class ExchangeContract extends BaseContract {
             },
             signature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.executeTransaction.sendTransactionAsync(transaction, signature, txData);
+            const txHashPromise = self.executeTransaction.sendTransactionAsync(transaction, signature, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -3306,21 +3096,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            transaction: {
-                salt: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                gasPrice: BigNumber;
-                signerAddress: string;
-                data: string;
-            },
-            signature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).executeTransaction.callAsync(transaction, signature, txData);
-            const txHash = await (this as any).executeTransaction.sendTransactionAsync(transaction, signature, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -3443,6 +3218,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
@@ -3461,6 +3237,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.fillOrKillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -3496,8 +3276,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
@@ -3507,6 +3286,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmount,
                 signature,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -3514,8 +3294,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -3570,36 +3350,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).fillOrKillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
-            const txHash = await (this as any).fillOrKillOrder.sendTransactionAsync(
-                order,
-                takerAssetFillAmount,
-                signature,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -3757,6 +3507,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
@@ -3775,6 +3526,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.fillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -3810,21 +3565,26 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.fillOrder.sendTransactionAsync(order, takerAssetFillAmount, signature, txData);
+            const txHashPromise = self.fillOrder.sendTransactionAsync(
+                order,
+                takerAssetFillAmount,
+                signature,
+                txData,
+                opts,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -3879,36 +3639,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).fillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
-            const txHash = await (this as any).fillOrder.sendTransactionAsync(
-                order,
-                takerAssetFillAmount,
-                signature,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -4449,6 +4179,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4468,6 +4199,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.marketBuyOrdersFillOrKill.callAsync(orders, makerAssetFillAmount, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -4503,8 +4238,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4515,6 +4249,7 @@ export class ExchangeContract extends BaseContract {
                 makerAssetFillAmount,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -4522,8 +4257,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -4579,36 +4314,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).marketBuyOrdersFillOrKill.callAsync(orders, makerAssetFillAmount, signatures, txData);
-            const txHash = await (this as any).marketBuyOrdersFillOrKill.sendTransactionAsync(
-                orders,
-                makerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -4771,6 +4476,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4790,6 +4496,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.marketBuyOrdersNoThrow.callAsync(orders, makerAssetFillAmount, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -4825,8 +4535,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4837,6 +4546,7 @@ export class ExchangeContract extends BaseContract {
                 makerAssetFillAmount,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -4844,8 +4554,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -4901,36 +4611,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).marketBuyOrdersNoThrow.callAsync(orders, makerAssetFillAmount, signatures, txData);
-            const txHash = await (this as any).marketBuyOrdersNoThrow.sendTransactionAsync(
-                orders,
-                makerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -5092,6 +4772,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5111,6 +4792,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.marketSellOrdersFillOrKill.callAsync(orders, takerAssetFillAmount, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -5146,8 +4831,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5158,6 +4842,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmount,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -5165,8 +4850,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -5222,36 +4907,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).marketSellOrdersFillOrKill.callAsync(orders, takerAssetFillAmount, signatures, txData);
-            const txHash = await (this as any).marketSellOrdersFillOrKill.sendTransactionAsync(
-                orders,
-                takerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -5414,6 +5069,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5433,6 +5089,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.marketSellOrdersNoThrow.callAsync(orders, takerAssetFillAmount, signatures, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -5468,8 +5128,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5480,6 +5139,7 @@ export class ExchangeContract extends BaseContract {
                 takerAssetFillAmount,
                 signatures,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -5487,8 +5147,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -5544,36 +5204,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            }>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).marketSellOrdersNoThrow.callAsync(orders, takerAssetFillAmount, signatures, txData);
-            const txHash = await (this as any).marketSellOrdersNoThrow.sendTransactionAsync(
-                orders,
-                takerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -5754,6 +5384,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -5772,6 +5403,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.matchOrders.callAsync(leftOrder, rightOrder, leftSignature, rightSignature, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -5824,8 +5459,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -5836,6 +5470,7 @@ export class ExchangeContract extends BaseContract {
                 leftSignature,
                 rightSignature,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -5843,8 +5478,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -5916,53 +5551,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            leftSignature: string,
-            rightSignature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).matchOrders.callAsync(leftOrder, rightOrder, leftSignature, rightSignature, txData);
-            const txHash = await (this as any).matchOrders.sendTransactionAsync(
-                leftOrder,
-                rightOrder,
-                leftSignature,
-                rightSignature,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -6197,6 +5785,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -6215,6 +5804,16 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.matchOrdersWithMaximalFill.callAsync(
+                    leftOrder,
+                    rightOrder,
+                    leftSignature,
+                    rightSignature,
+                    txData,
+                );
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -6267,8 +5866,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -6279,6 +5877,7 @@ export class ExchangeContract extends BaseContract {
                 leftSignature,
                 rightSignature,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -6286,8 +5885,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -6359,59 +5958,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-                makerFeeAssetData: string;
-                takerFeeAssetData: string;
-            },
-            leftSignature: string,
-            rightSignature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).matchOrdersWithMaximalFill.callAsync(
-                leftOrder,
-                rightOrder,
-                leftSignature,
-                rightSignature,
-                txData,
-            );
-            const txHash = await (this as any).matchOrdersWithMaximalFill.sendTransactionAsync(
-                leftOrder,
-                rightOrder,
-                leftSignature,
-                rightSignature,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -6701,7 +6247,11 @@ export class ExchangeContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(hash: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            hash: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('hash', hash);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32)', [hash]);
@@ -6715,6 +6265,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.preSign.callAsync(hash, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -6731,20 +6285,19 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             hash: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('hash', hash);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.preSign.sendTransactionAsync(hash, txData);
+            const txHashPromise = self.preSign.sendTransactionAsync(hash, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -6773,11 +6326,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(hash: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).preSign.callAsync(hash, txData);
-            const txHash = await (this as any).preSign.sendTransactionAsync(hash, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -6987,7 +6535,11 @@ export class ExchangeContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            assetProxy: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
@@ -7001,6 +6553,10 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.registerAssetProxy.callAsync(assetProxy, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -7017,20 +6573,19 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData);
+            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -7059,14 +6614,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetProxy: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).registerAssetProxy.callAsync(assetProxy, txData);
-            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(assetProxy, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -7146,6 +6693,7 @@ export class ExchangeContract extends BaseContract {
         async sendTransactionAsync(
             updatedProtocolFeeCollector: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('updatedProtocolFeeCollector', updatedProtocolFeeCollector);
             const self = (this as any) as ExchangeContract;
@@ -7164,6 +6712,10 @@ export class ExchangeContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.setProtocolFeeCollectorAddress.callAsync(updatedProtocolFeeCollector, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -7179,14 +6731,14 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             updatedProtocolFeeCollector: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('updatedProtocolFeeCollector', updatedProtocolFeeCollector);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.setProtocolFeeCollectorAddress.sendTransactionAsync(
                 updatedProtocolFeeCollector.toLowerCase(),
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -7194,8 +6746,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -7230,17 +6782,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            updatedProtocolFeeCollector: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setProtocolFeeCollectorAddress.callAsync(updatedProtocolFeeCollector, txData);
-            const txHash = await (this as any).setProtocolFeeCollectorAddress.sendTransactionAsync(
-                updatedProtocolFeeCollector,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -7323,6 +6864,7 @@ export class ExchangeContract extends BaseContract {
         async sendTransactionAsync(
             updatedProtocolFeeMultiplier: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isBigNumber('updatedProtocolFeeMultiplier', updatedProtocolFeeMultiplier);
             const self = (this as any) as ExchangeContract;
@@ -7341,6 +6883,10 @@ export class ExchangeContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.setProtocolFeeMultiplier.callAsync(updatedProtocolFeeMultiplier, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -7355,14 +6901,14 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             updatedProtocolFeeMultiplier: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('updatedProtocolFeeMultiplier', updatedProtocolFeeMultiplier);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.setProtocolFeeMultiplier.sendTransactionAsync(
                 updatedProtocolFeeMultiplier,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -7370,8 +6916,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -7405,17 +6951,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            updatedProtocolFeeMultiplier: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setProtocolFeeMultiplier.callAsync(updatedProtocolFeeMultiplier, txData);
-            const txHash = await (this as any).setProtocolFeeMultiplier.sendTransactionAsync(
-                updatedProtocolFeeMultiplier,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -7499,6 +7034,7 @@ export class ExchangeContract extends BaseContract {
             validatorAddress: string,
             approval: boolean,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
@@ -7519,6 +7055,10 @@ export class ExchangeContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.setSignatureValidatorApproval.callAsync(validatorAddress, approval, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -7535,8 +7075,7 @@ export class ExchangeContract extends BaseContract {
             validatorAddress: string,
             approval: boolean,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
@@ -7545,6 +7084,7 @@ export class ExchangeContract extends BaseContract {
                 validatorAddress.toLowerCase(),
                 approval,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -7552,8 +7092,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -7591,19 +7131,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            validatorAddress: string,
-            approval: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setSignatureValidatorApproval.callAsync(validatorAddress, approval, txData);
-            const txHash = await (this as any).setSignatureValidatorApproval.sendTransactionAsync(
-                validatorAddress,
-                approval,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -7701,6 +7228,7 @@ export class ExchangeContract extends BaseContract {
             toAddresses: string[],
             amounts: BigNumber[],
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isArray('assetData', assetData);
             assert.isArray('fromAddresses', fromAddresses);
@@ -7721,6 +7249,16 @@ export class ExchangeContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.simulateDispatchTransferFromCalls.callAsync(
+                    assetData,
+                    fromAddresses,
+                    toAddresses,
+                    amounts,
+                    txData,
+                );
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -7747,8 +7285,7 @@ export class ExchangeContract extends BaseContract {
             toAddresses: string[],
             amounts: BigNumber[],
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('assetData', assetData);
             assert.isArray('fromAddresses', fromAddresses);
@@ -7761,6 +7298,7 @@ export class ExchangeContract extends BaseContract {
                 toAddresses,
                 amounts,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -7768,8 +7306,8 @@ export class ExchangeContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -7817,29 +7355,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetData: string[],
-            fromAddresses: string[],
-            toAddresses: string[],
-            amounts: BigNumber[],
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).simulateDispatchTransferFromCalls.callAsync(
-                assetData,
-                fromAddresses,
-                toAddresses,
-                amounts,
-                txData,
-            );
-            const txHash = await (this as any).simulateDispatchTransferFromCalls.sendTransactionAsync(
-                assetData,
-                fromAddresses,
-                toAddresses,
-                amounts,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -7994,7 +7509,11 @@ export class ExchangeContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -8010,6 +7529,10 @@ export class ExchangeContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate) {
+                await self.transferOwnership.callAsync(newOwner, txData);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -8023,20 +7546,19 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -8064,11 +7586,6 @@ export class ExchangeContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).transferOwnership.callAsync(newOwner, txData);
-            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

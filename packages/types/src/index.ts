@@ -670,6 +670,16 @@ export interface Type {
     tupleElements?: Type[];
 }
 
+/**
+ * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+ */
+export interface TxOpts {
+    shouldValidate?: boolean;
+    pollingIntervalMs?: number;
+    timeoutMs?: number;
+}
+
 export interface ElementType {
     name: string;
     typeDocType: TypeDocTypes;

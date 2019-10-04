@@ -138,14 +138,6 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
-    describe('validate and send transaction', () => {
-        it('should call validateAndSendTransactionAsync', async () => {
-            const txHash = await abiGenDummy.nonPureMethod.validateAndSendTransactionAsync();
-            const hexRegex = /^0x[a-fA-F0-9]+$/;
-            expect(txHash.match(hexRegex)).to.deep.equal([txHash]);
-        });
-    });
-
     describe('event subscription', () => {
         const indexFilterValues = {};
         const emptyCallback = () => {}; // tslint:disable-line:no-empty

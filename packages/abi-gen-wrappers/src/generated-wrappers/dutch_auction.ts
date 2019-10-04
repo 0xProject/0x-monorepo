@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -59,6 +59,7 @@ export class DutchAuctionContract extends BaseContract {
                 takerAssetData: string;
             },
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             const self = (this as any) as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments(
@@ -75,6 +76,10 @@ export class DutchAuctionContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.getAuctionDetails.callAsync(order, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -104,19 +109,18 @@ export class DutchAuctionContract extends BaseContract {
                 takerAssetData: string;
             },
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as DutchAuctionContract;
-            const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData);
+            const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -163,27 +167,6 @@ export class DutchAuctionContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).getAuctionDetails.callAsync(order, txData);
-            const txHash = await (this as any).getAuctionDetails.sendTransactionAsync(order, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -355,6 +338,7 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
+            opts: TxOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
@@ -373,6 +357,10 @@ export class DutchAuctionContract extends BaseContract {
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate) {
+                await self.matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -423,8 +411,7 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: TxOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
@@ -435,6 +422,7 @@ export class DutchAuctionContract extends BaseContract {
                 buySignature,
                 sellSignature,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -442,8 +430,8 @@ export class DutchAuctionContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -513,49 +501,6 @@ export class DutchAuctionContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            buyOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            sellOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            buySignature: string,
-            sellSignature: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
-            const txHash = await (this as any).matchOrders.sendTransactionAsync(
-                buyOrder,
-                sellOrder,
-                buySignature,
-                sellSignature,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

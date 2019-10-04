@@ -70,13 +70,13 @@ export class ERC20Wrapper {
                     tokenOwnerAddress,
                     constants.INITIAL_ERC20_BALANCE,
                     { from: this._contractOwnerAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 await dummyTokenContract.approve.awaitTransactionSuccessAsync(
                     (this._proxyContract as ERC20ProxyContract).address,
                     constants.INITIAL_ERC20_ALLOWANCE,
                     { from: tokenOwnerAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
             }
         }
@@ -92,7 +92,7 @@ export class ERC20Wrapper {
             userAddress,
             amount,
             { from: this._contractOwnerAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
@@ -108,7 +108,7 @@ export class ERC20Wrapper {
             proxyAddress,
             amount,
             { from: userAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {

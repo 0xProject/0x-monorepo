@@ -108,24 +108,24 @@ describe('Asset Transfer Proxies', () => {
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             authorized,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Configure ERC721Proxy
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             authorized,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Configure ERC115Proxy
@@ -134,34 +134,34 @@ describe('Asset Transfer Proxies', () => {
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             authorized,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             multiAssetProxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Configure MultiAssetProxy
         await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
             authorized,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
             erc721Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
             erc1155Proxy.address,
             { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Deploy and configure ERC20 tokens
@@ -198,13 +198,13 @@ describe('Asset Transfer Proxies', () => {
             {
                 from: owner,
             },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             constants.INITIAL_ERC20_ALLOWANCE,
             { from: fromAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multipleReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
             fromAddress,
@@ -212,13 +212,13 @@ describe('Asset Transfer Proxies', () => {
             {
                 from: owner,
             },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
         await multipleReturnErc20Token.approve.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             constants.INITIAL_ERC20_ALLOWANCE,
             { from: fromAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
+            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
         );
 
         // Deploy and configure ERC721 tokens and receiver
@@ -411,7 +411,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.address,
                     allowance,
                     { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 // Perform a transfer; expect this to fail.
@@ -443,7 +443,7 @@ describe('Asset Transfer Proxies', () => {
                     erc20Proxy.address,
                     allowance,
                     { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 const initialFromBalance = await noReturnErc20Token.balanceOf.callAsync(fromAddress);
                 const initialToBalance = await noReturnErc20Token.balanceOf.callAsync(toAddress);
@@ -684,14 +684,14 @@ describe('Asset Transfer Proxies', () => {
                     erc721Proxy.address,
                     false,
                     { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 // Remove token transfer approval for fromAddress.
                 await erc721TokenA.approve.awaitTransactionSuccessAsync(
                     constants.NULL_ADDRESS,
                     erc721AFromTokenId,
                     { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 // Perform a transfer; expect this to fail.
                 const amount = new BigNumber(1);
