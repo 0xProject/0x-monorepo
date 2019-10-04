@@ -46,6 +46,9 @@ export interface AbiGenDummyWithdrawalEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class AbiGenDummyContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode =
         '0x608060405234801561001057600080fd5b50600436106101ef5760003560e01c8063647341eb1161010f578063bb607362116100a2578063d88be12f11610071578063d88be12f146103d7578063ee8b86fb146103df578063f408fb311461028f578063fa315f9d146103f2576101ef565b8063bb6073621461038f578063bdab1688146103a5578063cd3c0b97146103ba578063d6d7618c146103c2576101ef565b80638ee52b4e116100de5780638ee52b4e1461035e5780639a3b618514610371578063a3c2f6b614610379578063ae2dae1714610381576101ef565b8063647341eb1461032057806376f15d5b1461032e5780637833bec0146103365780637a791e6e14610356576101ef565b80634582eab211610187578063586f84b211610156578063586f84b2146102db57806359c28add146102f05780635ba3c7c01461030557806363d69c881461030d576101ef565b80634582eab2146102a557806345fdbdb7146102ad5780634bb9a37b146102b557806351bd9ce7146102c8576101ef565b80633687617d116101c35780633687617d1461024d57806336b323961461026f5780633e9ef66a1461028f5780634303a5421461029d576101ef565b806209e437146101f45780630527c28f146101fe5780631310e444146102115780632e1a7d4d1461023a575b600080fd5b6101fc610400565b005b6101fc61020c366004610ce2565b61043d565b61022461021f366004610dea565b610440565b6040516102319190611419565b60405180910390f35b6101fc610248366004610dea565b610447565b61026061025b366004610f5f565b610498565b604051610231939291906111a3565b61028261027d366004610d6e565b610538565b6040516102319190611118565b6101fc61020c366004610daf565b61022461061a565b6101fc610621565b6101fc610686565b6102246102c3366004610dea565b6106b8565b6102246102d6366004610fc9565b6106ca565b6102e36106e7565b60405161023191906113a4565b6102f86106ef565b60405161023191906113af565b6101fc6106f7565b61028261031b366004610c91565b61075c565b6101fc61020c366004610f2c565b610224610765565b610349610344366004610e02565b610772565b60405161023191906112d9565b6101fc61082f565b61022461036c366004610dea565b610834565b6101fc61083a565b610224610844565b6101fc61020c366004610e9c565b610397610849565b604051610231929190611422565b6103ad610882565b6040516102319190611139565b6101fc610887565b6103ca6108be565b6040516102319190611406565b610224610a17565b6101fc6103ed366004610dea565b61020c565b6101fc61020c366004610dea565b6040517f08c379a0000000000000000000000000000000000000000000000000000000008152600401610432906112a2565b60405180910390fd5b565b50565b506107c790565b3373ffffffffffffffffffffffffffffffffffffffff167f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b658260405161048d9190611419565b60405180910390a250565b505060408051808201825260048082527f1234567800000000000000000000000000000000000000000000000000000000602080840191909152835180850185528281527f87654321000000000000000000000000000000000000000000000000000000008183015284518086019095529184527f616d657400000000000000000000000000000000000000000000000000000000908401529093909250565b600060606040518060400160405280601c81526020017f19457468657265756d205369676e6564204d6573736167653a0a3332000000008152509050600081876040516020016105899291906110f6565b604051602081830303815290604052805190602001209050600181878787604051600081526020016040526040516105c49493929190611185565b6020604051602081039080840390855afa1580156105e6573d6000803e3d6000fd5b50506040517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0015198975050505050505050565b6107c75b90565b604080518082018252601481527f5245564552545f574954485f434f4e5354414e54000000000000000000000000602082015290517f08c379a000000000000000000000000000000000000000000000000000000000815261043291906004016111e5565b6040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016104329061126b565b60006020819052908152604090205481565b600082815260208190526040902060018201908190555b92915050565b61061e610a1d565b61061e610a35565b604080518082018252601581527f524551554952455f574954485f434f4e5354414e540000000000000000000000602082015290517f08c379a000000000000000000000000000000000000000000000000000000000815261043291906004016111e5565b50929392505050565b6001805481019081905590565b61077a610a55565b50604080516080810182529182528051808201825260048082527f123456780000000000000000000000000000000000000000000000000000000060208381019190915280850192909252825180840184528181527f87654321000000000000000000000000000000000000000000000000000000008184015284840152825180840190935282527f616d65740000000000000000000000000000000000000000000000000000000090820152606082015290565b61043b565b60010190565b6001805481019055565b600190565b60408051808201909152600581527f68656c6c6f0000000000000000000000000000000000000000000000000000006020820152600191565b606090565b7f61a6029a4c7ddee5824d171331eecbd015d26a271310a223718b837facb5b7716040516108b4906111ff565b60405180910390a1565b6108c6610a83565b6040805160028082526060828101909352816020015b60608152602001906001900390816108dc5790505090506040518060400160405280600581526020017f30783132330000000000000000000000000000000000000000000000000000008152508160008151811061093657fe5b60200260200101819052506040518060400160405280600581526020017f30783332310000000000000000000000000000000000000000000000000000008152508160018151811061098457fe5b6020908102919091018101919091526040805160c0810182526005608082018181527f307831323300000000000000000000000000000000000000000000000000000060a0840152825281840152808201939093528051808201909152600381527f6162630000000000000000000000000000000000000000000000000000000000918101919091526060820152905090565b6104d290565b6040518060200160405280610a30610ab1565b905290565b6040518060400160405280610a48610a83565b8152602001606081525090565b6040518060800160405280610a68610ac4565b81526020016060815260200160608152602001606081525090565b604051806080016040528060608152602001600063ffffffff16815260200160608152602001606081525090565b6040518060200160405280600081525090565b60405180606001604052806000815260200160608152602001606081525090565b600082601f830112610af5578081fd5b8135610b08610b0382611462565b61143b565b8181529150602080830190840160005b83811015610b4557610b308760208435890101610b4f565b83526020928301929190910190600101610b18565b5050505092915050565b600082601f830112610b5f578081fd5b813567ffffffffffffffff811115610b75578182fd5b610ba660207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f8401160161143b565b9150808252836020828501011115610bbd57600080fd5b8060208401602084013760009082016020015292915050565b600060808284031215610be7578081fd5b610bf1608061143b565b9050813567ffffffffffffffff80821115610c0b57600080fd5b610c1785838601610b4f565b8352610c268560208601610c7d565b60208401526040840135915080821115610c3f57600080fd5b610c4b85838601610ae5565b60408401526060840135915080821115610c6457600080fd5b50610c7184828501610b4f565b60608301525092915050565b803563ffffffff811681146106e157600080fd5b600080600080600060a08688031215610ca8578081fd5b8535610cb3816114b2565b945060208601359350604086013592506060860135610cd1816114b2565b949793965091946080013592915050565b60006020808385031215610cf4578182fd5b823567ffffffffffffffff811115610d0a578283fd5b80840185601f820112610d1b578384fd5b80359150610d2b610b0383611462565b82815283810190828501865b85811015610d6057610d4e8a888435880101610b4f565b84529286019290860190600101610d37565b509098975050505050505050565b60008060008060808587031215610d83578384fd5b84359350602085013560ff81168114610d9a578384fd5b93969395505050506040820135916060013590565b600060208284031215610dc0578081fd5b813567ffffffffffffffff811115610dd6578182fd5b610de284828501610b4f565b949350505050565b600060208284031215610dfb578081fd5b5035919050565b600060208284031215610e13578081fd5b813567ffffffffffffffff80821115610e2a578283fd5b81840160608187031215610e3c578384fd5b610e46606061143b565b925080358352602081013582811115610e5d578485fd5b610e6987828401610b4f565b602085015250604081013582811115610e80578485fd5b610e8c87828401610b4f565b6040850152509195945050505050565b600060208284031215610ead578081fd5b813567ffffffffffffffff80821115610ec4578283fd5b81840160408187031215610ed6578384fd5b610ee0604061143b565b9250803582811115610ef0578485fd5b610efc87828401610bd6565b845250602081013582811115610f10578485fd5b610f1c87828401610b4f565b6020850152509195945050505050565b600060208284031215610f3d578081fd5b813567ffffffffffffffff811115610f53578182fd5b610de284828501610bd6565b600080600060608486031215610f73578081fd5b83359250602084013567ffffffffffffffff80821115610f91578283fd5b610f9d87838801610b4f565b93506040860135915080821115610fb2578283fd5b50610fbf86828701610b4f565b9150509250925092565b60008060408385031215610fdb578182fd5b50508035926020909101359150565b60008151808452611002816020860160208601611482565b601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0169290920160200192915050565b60008151608084526110496080850182610fea565b6020915063ffffffff828501511682860152604084015185820360408701528181518084528484019150848582028501018584018794505b828510156110cf577fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe08683030184526110bb828251610fea565b600195909501949387019391508601611081565b506060880151955088810360608a01526110e98187610fea565b9998505050505050505050565b60008351611108818460208801611482565b9190910191825250602001919050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b6000602080830181845280855180835283830191508192508381028201848801865b83811015610d60578583038552611173838351611034565b9487019492509086019060010161115b565b93845260ff9290921660208401526040830152606082015260800190565b6000606082526111b66060830186610fea565b82810360208401526111c88186610fea565b83810360408501526111da8186610fea565b979650505050505050565b6000602082526111f86020830184610fea565b9392505050565b60408082526004908201527f123456780000000000000000000000000000000000000000000000000000000060608201526080602082018190526005908201527f6c6f72656d00000000000000000000000000000000000000000000000000000060a082015260c00190565b6020808252600d908201527f53494d504c455f52455645525400000000000000000000000000000000000000604082015260600190565b6020808252600e908201527f53494d504c455f52455155495245000000000000000000000000000000000000604082015260600190565b60006020825260a08201835160806020850152805182526020810151606060208401526113096060840182610fea565b6040830151915083810360408501526113228183610fea565b935050505060208401517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0808584030160408601526113618383610fea565b604087015193508186820301606087015261137c8185610fea565b92505060608601519250808583030160808601525061139b8183610fea565b95945050505050565b905151815260200190565b6000602082528251604060208401526113cb6060840182611034565b602085015191507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe084820301604085015261139b8183610fea565b6000602082526111f86020830184611034565b90815260200190565b600083825260406020830152610de26040830184610fea565b60405181810167ffffffffffffffff8111828210171561145a57600080fd5b604052919050565b600067ffffffffffffffff821115611478578081fd5b5060209081020190565b60005b8381101561149d578181015183820152602001611485565b838111156114ac576000848401525b50505050565b73ffffffffffffffffffffffffffffffffffffffff8116811461043d57600080fdfea365627a7a723158205a98646a73bbda266999b92495c98b4f927e585bf6c08197e203d8da3d3643766c6578706572696d656e74616cf564736f6c634300050c0040';
     /**
@@ -74,7 +77,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -147,7 +150,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -232,7 +235,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -344,7 +347,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -586,7 +589,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -662,7 +665,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -738,7 +741,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -829,7 +832,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -920,7 +923,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1026,7 +1029,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1110,7 +1113,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1183,7 +1186,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1754,7 +1757,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1826,7 +1829,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1897,7 +1900,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1967,7 +1970,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2037,7 +2040,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2115,7 +2118,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2194,7 +2197,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2267,7 +2270,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2338,7 +2341,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2409,7 +2412,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2479,7 +2482,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2637,7 +2640,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2726,7 +2729,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2824,7 +2827,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;

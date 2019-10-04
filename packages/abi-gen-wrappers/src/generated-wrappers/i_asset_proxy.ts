@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IAssetProxyContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode: string | undefined;
     /**
      * Transfers assets. Either succeeds or throws.
@@ -282,7 +285,7 @@ export class IAssetProxyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;

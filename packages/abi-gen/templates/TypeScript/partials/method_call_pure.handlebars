@@ -29,7 +29,7 @@ async callAsync(
 
     let rawCallResult;
     try {
-        rawCallResult = await self.evmExecAsync(encodedDataBytes);
+        rawCallResult = await self._evmExecAsync(encodedDataBytes);
     } catch (err) {
         BaseContract._throwIfThrownErrorIsRevertError(err);
         throw err;

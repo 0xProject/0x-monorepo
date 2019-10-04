@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode: string | undefined;
     /**
      * Recovers the address of a signer given a hash and signature.
@@ -62,7 +65,7 @@ export class CoordinatorContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -658,7 +661,7 @@ export class CoordinatorContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;

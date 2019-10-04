@@ -40,6 +40,9 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorRegistryContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode: string | undefined;
     /**
      * Called by a Coordinator operator to set the endpoint of their Coordinator.

@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class LibDummyContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode =
         '0x73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a7231582037c7442e7486017ed5720d9da5f4e361beac78b78c346709ebca457eec00558064736f6c634300050c0032';
     public static async deployFrom0xArtifactAsync(

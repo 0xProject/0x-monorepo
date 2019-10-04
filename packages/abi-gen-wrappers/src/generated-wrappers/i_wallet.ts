@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IWalletContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode: string | undefined;
     /**
      * Validates a hash with the `Wallet` signature type.
