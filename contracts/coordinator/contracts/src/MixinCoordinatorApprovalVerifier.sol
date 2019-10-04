@@ -127,16 +127,7 @@ contract MixinCoordinatorApprovalVerifier is
             orders = new LibOrder.Order[](2);
             orders[0] = leftOrder;
             orders[1] = rightOrder;
-         } /* else if (
-            selector == IExchange(address(0)).batchMatchOrders.selector ||
-            selector == IExchange(address(0)).batchMatchOrdersWithMaximalFill.selector
-        ) {
-            // Decode left and right orders
-            (LibOrder.Order[] memory leftOrders, LibOrder.Order[] memory rightOrders) = abi.decode(
-                data.slice(4, data.length),
-                (LibOrder.Order[], LibOrder.Order[])
-            );
-        } */
+        } 
         return orders;
     }
 

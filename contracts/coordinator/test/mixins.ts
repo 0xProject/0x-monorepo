@@ -173,11 +173,21 @@ blockchainTests.resets('Mixins tests', env => {
                 expect(orders).to.deep.eq(decodedSignedOrders);
             });
         }
-        for (const fnName of [
-            ExchangeFunctionName.CancelOrder,
-            ExchangeFunctionName.BatchCancelOrders,
-            ExchangeFunctionName.CancelOrdersUpTo,
-        ]) {
+        for (const fnName of exchangeConstants.MATCH_ORDER_FN_NAMES) {
+            it(`should correctly decode the orders for ${fnName} data`, async () => {
+                const orders = [defaultOrder, defaultOrder];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const decodedOrders = await mixins.decodeOrdersFromFillData.callAsync(data);
+                const decodedSignedOrders = decodedOrders.map(order => ({
+                    ...order,
+                    signature: constants.NULL_BYTES,
+                    exchangeAddress: constants.NULL_ADDRESS,
+                    chainId,
+                }));
+                expect(orders).to.deep.eq(decodedSignedOrders);
+            });
+        }
+        for (const fnName of exchangeConstants.CANCEL_ORDER_FN_NAMES) {
             it(`should correctly decode the orders for ${fnName} data`, async () => {
                 const orders = [defaultOrder, defaultOrder];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
@@ -378,7 +388,7 @@ blockchainTests.resets('Mixins tests', env => {
         for (const fnName of [
             ...exchangeConstants.BATCH_FILL_FN_NAMES,
             ...exchangeConstants.MARKET_FILL_FN_NAMES,
-            ExchangeFunctionName.MatchOrders,
+            ...exchangeConstants.MATCH_ORDER_FN_NAMES,
         ]) {
             it(`Should be successful: function=${fnName} caller=tx_signer, senderAddress=[verifier,verifier], feeRecipient=[approver1,approver1], approval_sig=[approver1], expiration=[valid]`, async () => {
                 const orders = [defaultOrder, defaultOrder];

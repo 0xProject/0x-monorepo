@@ -3,30 +3,22 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } f
 import {
     artifacts as exchangeArtifacts,
     constants as exchangeConstants,
-    ExchangeCancelEventArgs,
-    ExchangeCancelUpToEventArgs,
     ExchangeContract,
     exchangeDataEncoder,
-    ExchangeEvents,
-    ExchangeFillEventArgs,
     ExchangeFunctionName,
     TestProtocolFeeCollectorContract,
 } from '@0x/contracts-exchange';
 import {
     blockchainTests,
     constants,
-    expect,
-    filterLogsToArguments,
     getLatestBlockTimestampAsync,
     OrderFactory,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { assetDataUtils, CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
-import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
+import { ApprovalFactory, artifacts, CoordinatorTestFactory, CoordinatorContract } from '../src';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator tests', env => {
@@ -40,14 +32,18 @@ blockchainTests.resets('Coordinator tests', env => {
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
     let makerFeeToken: DummyERC20TokenContract;
+    let takerFeeToken: DummyERC20TokenContract;
     let coordinatorContract: CoordinatorContract;
     let exchange: ExchangeContract;
+    let protocolFeeCollector: TestProtocolFeeCollectorContract;
+    let wethContract: WETH9Contract;
 
     let erc20Wrapper: ERC20Wrapper;
     let orderFactory: OrderFactory;
     let takerTransactionFactory: TransactionFactory;
     let makerTransactionFactory: TransactionFactory;
     let approvalFactory: ApprovalFactory;
+    let testFactory: CoordinatorTestFactory;
 
     const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
     const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
@@ -70,8 +66,8 @@ blockchainTests.resets('Coordinator tests', env => {
         // Set up ERC20
         erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
+        const numDummyErc20ToDeploy = 4;
+        [erc20TokenA, erc20TokenB, makerFeeToken, takerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -79,7 +75,7 @@ blockchainTests.resets('Coordinator tests', env => {
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: owner });
 
         // Set up WETH
-        const wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
             erc20Artifacts.WETH9,
             env.provider,
             env.txDefaults,
@@ -90,7 +86,7 @@ blockchainTests.resets('Coordinator tests', env => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
         // Set up Protocol Fee Collector
-        const protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
+        protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.TestProtocolFeeCollector,
             env.provider,
             env.txDefaults,
@@ -112,6 +108,7 @@ blockchainTests.resets('Coordinator tests', env => {
                 },
             );
         }
+        erc20Wrapper.addTokenOwnerAddress(protocolFeeCollector.address);
 
         // Deploy Coordinator
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
@@ -122,6 +119,7 @@ blockchainTests.resets('Coordinator tests', env => {
             exchange.address,
             new BigNumber(chainId),
         );
+        erc20Wrapper.addTokenOwnerAddress(coordinatorContract.address);
 
         // Configure order defaults
         const defaultOrderParams = {
@@ -132,7 +130,7 @@ blockchainTests.resets('Coordinator tests', env => {
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(takerFeeToken.address),
             exchangeAddress: exchange.address,
             chainId,
         };
@@ -143,55 +141,28 @@ blockchainTests.resets('Coordinator tests', env => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
         approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address);
-    });
-
-    function verifyEvents<TEventArgs>(
-        txReceipt: TransactionReceiptWithDecodedLogs,
-        expectedEvents: TEventArgs[],
-        eventName: string,
-    ): void {
-        const logs = filterLogsToArguments<TEventArgs>(txReceipt.logs, eventName);
-        expect(logs.length).to.eq(expectedEvents.length);
-        logs.forEach((log, index) => {
-            expect(log).to.deep.equal(expectedEvents[index]);
-        });
-    }
-
-    function expectedFillEvent(order: SignedOrder): ExchangeFillEventArgs {
-        return {
-            makerAddress: order.makerAddress,
+        testFactory = new CoordinatorTestFactory(
+            coordinatorContract,
+            erc20Wrapper,
+            makerAddress,
             takerAddress,
-            senderAddress: order.senderAddress,
-            feeRecipientAddress: order.feeRecipientAddress,
-            makerAssetData: order.makerAssetData,
-            takerAssetData: order.takerAssetData,
-            makerFeeAssetData: order.makerFeeAssetData,
-            takerFeeAssetData: order.takerFeeAssetData,
-            makerAssetFilledAmount: order.makerAssetAmount,
-            takerAssetFilledAmount: order.takerAssetAmount,
-            makerFeePaid: order.makerFee,
-            takerFeePaid: order.takerFee,
-            protocolFeePaid: PROTOCOL_FEE,
-            orderHash: orderHashUtils.getOrderHashHex(order),
-        };
-    }
-
-    function expectedCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
-        return {
-            makerAddress: order.makerAddress,
-            senderAddress: order.senderAddress,
-            feeRecipientAddress: order.feeRecipientAddress,
-            makerAssetData: order.makerAssetData,
-            takerAssetData: order.takerAssetData,
-            orderHash: orderHashUtils.getOrderHashHex(order),
-        };
-    }
+            feeRecipientAddress,
+            protocolFeeCollector.address,
+            erc20TokenA.address,
+            erc20TokenB.address,
+            makerFeeToken.address,
+            takerFeeToken.address,
+            weth.address,
+            GAS_PRICE,
+            PROTOCOL_FEE_MULTIPLIER,
+        );
+    });
 
     describe('single order fills', () => {
         for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`${fnName} should fill the order with a signed approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
                 const currentTimestamp = await getLatestBlockTimestampAsync();
                 const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
@@ -200,38 +171,95 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const txData = { from: takerAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
-                    { from: takerAddress, value: PROTOCOL_FEE },
+                    txData,
                 );
-                verifyEvents(transactionReceipt, [expectedFillEvent(orders[0])], ExchangeEvents.Fill);
             });
-            it(`${fnName} should fill the order if called by approver`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+            it(`${fnName} should fill the order if called by approver (eth protocol fee, no refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
                     transaction,
                     feeRecipientAddress,
-                    transaction.signature,
                     [],
                     [],
-                    { from: feeRecipientAddress, value: PROTOCOL_FEE },
+                    txData,
                 );
-                verifyEvents(transactionReceipt, [expectedFillEvent(orders[0])], ExchangeEvents.Fill);
+            });
+            it(`${fnName} should fill the order if called by approver (eth protocol fee, refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE.plus(1) };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    [],
+                    txData,
+                );
+            });
+            it(`${fnName} should fill the order if called by approver (weth protocol fee, no refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    [],
+                    txData,
+                );
+            });
+            it(`${fnName} should fill the order if called by approver (weth protocol fee, refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: new BigNumber(1) };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    [],
+                    txData,
+                );
+            });
+            it(`${fnName} should fill the order if called by approver`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    [],
+                    txData,
+                );
             });
             it(`${fnName} should revert with no approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [],
                     [],
                     {
@@ -239,10 +267,6 @@ blockchainTests.resets('Coordinator tests', env => {
                         gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
                         value: PROTOCOL_FEE,
                     },
-                );
-
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                expect(tx).to.revertWith(
                     new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
@@ -258,17 +282,14 @@ blockchainTests.resets('Coordinator tests', env => {
                     approvalExpirationTimeSeconds,
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [signature],
                     { from: takerAddress, value: PROTOCOL_FEE },
-                );
-
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                expect(tx).to.revertWith(
                     new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
@@ -283,18 +304,14 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: takerAddress, value: PROTOCOL_FEE },
-                );
-
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                expect(tx).to.revertWith(
                     new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
@@ -309,16 +326,15 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: owner, value: PROTOCOL_FEE },
+                    new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
                 );
-                expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(takerAddress));
             });
         }
     });
@@ -335,10 +351,10 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
                     {
@@ -347,29 +363,26 @@ blockchainTests.resets('Coordinator tests', env => {
                         value: PROTOCOL_FEE.times(orders.length),
                     },
                 );
-
-                const expectedEvents = orders.map(order => expectedFillEvent(order));
-                verifyEvents(transactionReceipt, expectedEvents, ExchangeEvents.Fill);
             });
-            it(`${fnName} should fill the orders if called by approver`, async () => {
+            it(`${fnName} should fill the orders if called by approver (eth fee, no refund)`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
-                    transaction,
-                    feeRecipientAddress,
-                    transaction.signature,
-                    [],
-                    [],
-                    {
-                        from: feeRecipientAddress,
-                        gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
-                        value: PROTOCOL_FEE.times(orders.length),
-                    },
-                );
-
-                const expectedEvents = orders.map(order => expectedFillEvent(order));
-                verifyEvents(transactionReceipt, expectedEvents, ExchangeEvents.Fill);
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], [], {
+                    from: feeRecipientAddress,
+                    gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                    value: PROTOCOL_FEE.times(orders.length),
+                });
+            });
+            it(`${fnName} should fill the orders if called by approver (mixed fees, refund)`, async () => {
+                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], [], {
+                    from: feeRecipientAddress,
+                    gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                    value: PROTOCOL_FEE.times(orders.length).plus(1),
+                });
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
@@ -383,17 +396,14 @@ blockchainTests.resets('Coordinator tests', env => {
                     approvalExpirationTimeSeconds,
                 );
                 const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [signature],
                     { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
-                );
-
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                expect(tx).to.revertWith(
                     new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
@@ -408,17 +418,14 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
-                );
-
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                expect(tx).to.revertWith(
                     new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
@@ -433,16 +440,15 @@ blockchainTests.resets('Coordinator tests', env => {
                     takerAddress,
                     approvalExpirationTimeSeconds,
                 );
-
-                const tx = coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    transaction.signature,
                     [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: owner, value: PROTOCOL_FEE.times(orders.length) },
+                    new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
                 );
-                expect(tx).to.revertWith(new CoordinatorRevertErrors.InvalidOriginError(takerAddress));
             });
         }
     });
@@ -451,55 +457,48 @@ blockchainTests.resets('Coordinator tests', env => {
             const orders = [await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.CancelOrder,
+                orders,
                 transaction,
                 makerAddress,
-                transaction.signature,
                 [],
                 [],
                 {
                     from: makerAddress,
                 },
             );
-            verifyEvents(transactionReceipt, [expectedCancelEvent(orders[0])], ExchangeEvents.Cancel);
         });
         it('batchCancelOrders call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.BatchCancelOrders,
+                orders,
                 transaction,
                 makerAddress,
-                transaction.signature,
                 [],
                 [],
                 {
                     from: makerAddress,
                 },
             );
-            const expectedEvents = orders.map(order => expectedCancelEvent(order));
-            verifyEvents(transactionReceipt, expectedEvents, ExchangeEvents.Cancel);
         });
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
-            const targetEpoch = constants.ZERO_AMOUNT;
-            const data = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, []);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.CancelOrdersUpTo,
+                [],
                 transaction,
                 makerAddress,
-                transaction.signature,
                 [],
                 [],
                 {
                     from: makerAddress,
                 },
             );
-            const expectedEvent: ExchangeCancelUpToEventArgs = {
-                makerAddress,
-                orderSenderAddress: coordinatorContract.address,
-                orderEpoch: targetEpoch.plus(1),
-            };
-            verifyEvents(transactionReceipt, [expectedEvent], ExchangeEvents.CancelUpTo);
         });
     });
 });
