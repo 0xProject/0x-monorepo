@@ -31,6 +31,17 @@ export class CoordinatorTestFactory {
         });
     }
 
+    private static _expectedCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
+        return {
+            makerAddress: order.makerAddress,
+            senderAddress: order.senderAddress,
+            feeRecipientAddress: order.feeRecipientAddress,
+            makerAssetData: order.makerAssetData,
+            takerAssetData: order.takerAssetData,
+            orderHash: orderHashUtils.getOrderHashHex(order),
+        };
+    }
+
     constructor(
         private readonly _coordinatorContract: CoordinatorContract,
         private readonly _erc20Wrapper: ERC20Wrapper,
@@ -65,7 +76,7 @@ export class CoordinatorTestFactory {
         txData: Partial<TxData>,
         revertError?: RevertError,
     ): Promise<void> {
-        const initBalances = await this._getTokenBalances();
+        const initBalances = await this._getTokenBalancesAsync();
         const tx = this._coordinatorContract.executeTransaction.awaitTransactionSuccessAsync(
             transaction,
             txOrigin,
@@ -124,8 +135,8 @@ export class CoordinatorTestFactory {
         }
     }
 
-    private async _getTokenBalances(): Promise<TokenBalances> {
-        let erc20Balances = await this._erc20Wrapper.getBalancesAsync();
+    private async _getTokenBalancesAsync(): Promise<TokenBalances> {
+        const erc20Balances = await this._erc20Wrapper.getBalancesAsync();
         const ethBalances = _.zipObject(
             this._addresses,
             await Promise.all(this._addresses.map(address => web3Wrapper.getBalanceInWeiAsync(address))),
@@ -208,7 +219,7 @@ export class CoordinatorTestFactory {
 
     private async _verifyBalancesAsync(expectedBalances: TokenBalances): Promise<void> {
         const { erc20: expectedErc20Balances, eth: expectedEthBalances } = expectedBalances;
-        const { erc20: actualErc20Balances, eth: actualEthBalances } = await this._getTokenBalances();
+        const { erc20: actualErc20Balances, eth: actualEthBalances } = await this._getTokenBalancesAsync();
         const ownersByName = {
             maker: this._makerAddress,
             taker: this._takerAddress,
@@ -251,17 +262,6 @@ export class CoordinatorTestFactory {
             makerFeePaid: order.makerFee,
             takerFeePaid: order.takerFee,
             protocolFeePaid: this._protocolFee,
-            orderHash: orderHashUtils.getOrderHashHex(order),
-        };
-    }
-
-    private static _expectedCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
-        return {
-            makerAddress: order.makerAddress,
-            senderAddress: order.senderAddress,
-            feeRecipientAddress: order.feeRecipientAddress,
-            makerAssetData: order.makerAssetData,
-            takerAssetData: order.takerAssetData,
             orderHash: orderHashUtils.getOrderHashHex(order),
         };
     }

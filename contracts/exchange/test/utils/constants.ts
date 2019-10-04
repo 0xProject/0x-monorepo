@@ -24,10 +24,7 @@ export const constants = {
         ExchangeFunctionName.MarketBuyOrdersNoThrow,
         ExchangeFunctionName.MarketSellOrdersNoThrow,
     ],
-    MATCH_ORDER_FN_NAMES: [
-        ExchangeFunctionName.MatchOrders,
-        ExchangeFunctionName.MatchOrdersWithMaximalFill,
-    ],
+    MATCH_ORDER_FN_NAMES: [ExchangeFunctionName.MatchOrders, ExchangeFunctionName.MatchOrdersWithMaximalFill],
     BATCH_MATCH_ORDER_FN_NAMES: [
         ExchangeFunctionName.BatchMatchOrders,
         ExchangeFunctionName.BatchMatchOrdersWithMaximalFill,

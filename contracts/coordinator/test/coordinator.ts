@@ -18,7 +18,7 @@ import {
 import { assetDataUtils, CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { ApprovalFactory, artifacts, CoordinatorTestFactory, CoordinatorContract } from '../src';
+import { ApprovalFactory, artifacts, CoordinatorContract, CoordinatorTestFactory } from '../src';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator tests', env => {
