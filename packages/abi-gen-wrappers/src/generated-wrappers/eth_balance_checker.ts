@@ -82,43 +82,6 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param addresses Array of addresses.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(addresses: string[]): string {
-            assert.isArray('addresses', addresses);
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string[] {
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber[] {
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

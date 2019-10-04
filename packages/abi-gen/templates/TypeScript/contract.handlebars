@@ -69,7 +69,7 @@ export class {{contractName}}Contract extends BaseContract {
         {{else}}
         {{> method_call contractName=../contractName}}
         {{/ifEquals}}
-        {{> method_abi_helper contractName=../contractName}}
+        {{> method_abi_helper contractName=../contractName debug=../debug}}
     };
 {{/each}}
 {{#if events}}private readonly _subscriptionManager: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;

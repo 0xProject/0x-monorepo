@@ -27,6 +27,7 @@ contract AbiGenDummy
     uint256 constant internal SOME_CONSTANT = 1234;
     string constant internal REVERT_REASON = "REVERT_WITH_CONSTANT";
     string constant internal REQUIRE_REASON = "REQUIRE_WITH_CONSTANT";
+    mapping (uint256 => uint256) public someMapping;
 
     function simplePureFunction ()
         public
@@ -186,6 +187,14 @@ contract AbiGenDummy
             hex'12345678',
             "lorem"
         );
+    }
+
+    function nonPureFunction (uint256 id, uint256 someValue)
+        public
+        returns (uint256 result)
+    {
+        someMapping[id] = someValue + 1;
+        return someMapping[id];
     }
 
     // begin tests for `decodeTransactionData`, `decodeReturnData`

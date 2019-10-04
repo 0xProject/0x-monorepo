@@ -44,6 +44,10 @@ const args = yargs
         normalize: true,
         demandOption: true,
     })
+    .option('debug', {
+        describe: 'Enable debug functions',
+        type: 'count',
+    })
     .option('partials', {
         describe: 'Glob pattern for the partial template files',
         type: 'string',
@@ -73,12 +77,11 @@ const args = yargs
         default: 'TypeScript',
     })
     .example(
-        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
+        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --debug --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
         'Full usage example',
     ).argv;
 
 const templateFilename = args.template || `${__dirname}/../../templates/${args.language}/contract.handlebars`;
-
 const mainTemplate = utils.getNamedContent(templateFilename);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
@@ -425,6 +428,7 @@ for (const abiFileName of abiFileNames) {
         ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
+        debug: args.debug > 0,
     };
     const renderedCode = template(contextData);
     utils.writeOutputFile(outFilePath, renderedCode);

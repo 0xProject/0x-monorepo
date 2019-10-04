@@ -96,53 +96,6 @@ export class StaticCallProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param assetData Byte array encoded with staticCallTarget, staticCallData,
-         *     and expectedCallResultHash
-         * @param from This value is ignored.
-         * @param to This value is ignored.
-         * @param amount This value is ignored.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(assetData: string, from: string, to: string, amount: BigNumber): string {
-            assert.isString('assetData', assetData);
-            assert.isString('from', from);
-            assert.isString('to', to);
-            assert.isBigNumber('amount', amount);
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'transferFrom(bytes,address,address,uint256)',
-                [assetData, from.toLowerCase(), to.toLowerCase(), amount],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, string, BigNumber] {
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * Gets the proxy id associated with the proxy address.
@@ -181,41 +134,6 @@ export class StaticCallProxyContract extends BaseContract {
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as StaticCallProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(
