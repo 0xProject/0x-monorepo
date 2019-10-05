@@ -238,30 +238,6 @@ describe('AssetProxyDispatcher', () => {
             expect(newBalances).to.deep.equal(erc20Balances);
         });
 
-        it('should perform a noop transfer if from == to', async () => {
-            // Register ERC20 proxy
-            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
-                from: owner,
-            });
-            // Construct metadata for ERC20 proxy
-            const encodedAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
-
-            // Perform a transfer from makerAddress to takerAddress
-            const erc20Balances = await erc20Wrapper.getBalancesAsync();
-            const amount = new BigNumber(10);
-            const txReceipt = await assetProxyDispatcher.dispatchTransferFrom.awaitTransactionSuccessAsync(
-                orderHash,
-                encodedAssetData,
-                makerAddress,
-                makerAddress,
-                amount,
-                { from: owner },
-            );
-            expect(txReceipt.logs.length).to.be.equal(1);
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-            expect(newBalances).to.deep.equal(erc20Balances);
-        });
-
         it('should revert if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
             const encodedAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
@@ -288,6 +264,29 @@ describe('AssetProxyDispatcher', () => {
                 from: owner,
             });
             const encodedAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address).slice(0, 8);
+            const amount = new BigNumber(1);
+            const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
+                ExchangeRevertErrors.AssetProxyDispatchErrorCode.InvalidAssetDataLength,
+                orderHash,
+                encodedAssetData,
+            );
+            const tx = assetProxyDispatcher.dispatchTransferFrom.sendTransactionAsync(
+                orderHash,
+                encodedAssetData,
+                makerAddress,
+                takerAddress,
+                amount,
+                { from: owner },
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert if assetData is not padded to 32 bytes (excluding the id)', async () => {
+            await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+                from: owner,
+            });
+            // Shave off the last byte
+            const encodedAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address).slice(0, 72);
             const amount = new BigNumber(1);
             const expectedError = new ExchangeRevertErrors.AssetProxyDispatchError(
                 ExchangeRevertErrors.AssetProxyDispatchErrorCode.InvalidAssetDataLength,
