@@ -169,38 +169,6 @@ contract MixinSignatureValidator is
         return isValid;
     }
 
-    /// @dev Checks if a signature is of a type that should be verified for
-    /// every action.
-    /// @param hash The hash of the order/transaction.
-    /// @param signerAddress The address of the signer.
-    /// @param signature The signature for `hash`.
-    /// @return needsRegularValidation True if the signature should be validated
-    ///                                for every action.
-    function _doesSignatureRequireRegularValidation(
-        bytes32 hash,
-        address signerAddress,
-        bytes memory signature
-    )
-        internal
-        pure
-        returns (bool needsRegularValidation)
-    {
-        // Read the signatureType from the signature
-        SignatureType signatureType = _readSignatureType(
-            hash,
-            signerAddress,
-            signature
-        );
-
-        // Any signature type that makes an external call needs to be revalidated
-        // with every partial fill
-        needsRegularValidation =
-            signatureType == SignatureType.Wallet ||
-            signatureType == SignatureType.Validator ||
-            signatureType == SignatureType.EIP1271Wallet;
-        return needsRegularValidation;
-    }
-
     /// @dev Verifies that an order, with provided order hash, has been signed
     ///      by the given signer.
     /// @param order The order.
