@@ -314,18 +314,18 @@ contract MixinStakingPoolRewards is
 
     /// @dev Computes the unfinalized rewards earned by a delegator in the last epoch.
     /// @param unsyncedStake Unsynced delegated stake to pool by staker
-    /// @param currentEpoch The epoch in which this call is executing
+    /// @param currentEpoch_ The epoch in which this call is executing
     /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
     /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeUnfinalizedDelegatorReward(
         IStructs.StoredBalance memory unsyncedStake,
-        uint256 currentEpoch,
+        uint256 currentEpoch_,
         uint256 unfinalizedMembersReward,
         uint256 unfinalizedMembersStake
     )
         private
-        view
+        pure
         returns (uint256)
     {
         // If there are unfinalized rewards this epoch, compute the member's
@@ -335,8 +335,8 @@ contract MixinStakingPoolRewards is
         }
 
         // Unfinalized rewards are always earned from stake in
-        // the prior epoch so we want the stake at `currentEpoch-1`.
-        uint256 unfinalizedStakeBalance = unsyncedStake.currentEpoch >= currentEpoch.safeSub(1) ?
+        // the prior epoch so we want the stake at `currentEpoch_-1`.
+        uint256 unfinalizedStakeBalance = unsyncedStake.currentEpoch >= currentEpoch_.safeSub(1) ?
             unsyncedStake.currentEpochBalance :
             unsyncedStake.nextEpochBalance;
 
