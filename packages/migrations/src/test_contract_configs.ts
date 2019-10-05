@@ -19,6 +19,7 @@ const networkIdToRpcUrl = {
     42: `https://kovan.infura.io/v3/${INFURA_PROJECT_ID}`,
 };
 
+// tslint:disable:custom-no-magic-numbers
 async function testContractConfigsAsync(provider: SupportedProvider): Promise<void> {
     const web3Wrapper = new Web3Wrapper(provider);
     const networkId = await web3Wrapper.getNetworkIdAsync();
@@ -252,12 +253,13 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         warnIfMismatch(isAssetProxyOwnerAuthorizedInZrxVault, true, 'AssetProxyOwner not authorized in ZrxVault');
     }
 
-    async function verifyAssetProxyOwnerConfigsAsync(): Promise<void> {}
+    // TODO: implement AssetProxyOwner config tests
+    // async function verifyAssetProxyOwnerConfigsAsync(): Promise<void> {}
 
     await verifyExchangeV2ConfigsAsync();
     await verifyExchangeV3ConfigsAsync();
-    await verifyAssetProxyConfigsAsync();
     await verifyStakingConfigsAsync();
+    await verifyAssetProxyConfigsAsync();
 }
 
 (async () => {
