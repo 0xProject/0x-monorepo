@@ -1,5 +1,7 @@
 lib
 .nyc_output
+/contracts/integrations/generated-wrappers
+/contracts/integrations/generated-artifacts
 /contracts/staking/generated-wrappers
 /contracts/staking/generated-artifacts
 /contracts/coordinator/generated-wrappers

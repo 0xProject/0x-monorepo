@@ -46,7 +46,7 @@ contract AssetProxyOwner is
     mapping (bytes4 => mapping (address => TimeLock)) public functionCallTimeLocks;
 
     /// @dev Contract constructor sets initial owners, required number of confirmations, and default time lock
-    ///      It will also register unique timelocks for each passed in function selector / destination combo. 
+    ///      It will also register unique timelocks for each passed in function selector / destination combo.
     /// @param _functionSelectors Array of function selectors for registered functions.
     /// @param _destinations Array of destinations for registered function calls.
     /// @param _functionCallTimeLockSeconds Array of seconds that each registered function call will be timelocked.
@@ -170,7 +170,7 @@ contract AssetProxyOwner is
         bool hasCustomTimeLock,
         bytes4 functionSelector,
         address destination,
-        uint128 newSecondsTimeLocked    
+        uint128 newSecondsTimeLocked
     )
         internal
     {
