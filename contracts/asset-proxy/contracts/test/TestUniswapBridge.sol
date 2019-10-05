@@ -413,8 +413,8 @@ contract TestUniswapBridge is
     }
 
     // @dev Use `wethToken`.
-    function _getWethContract()
-        internal
+    function getWethContract()
+        public
         view
         returns (IEtherToken)
     {
@@ -422,8 +422,8 @@ contract TestUniswapBridge is
     }
 
     // @dev This contract will double as the Uniswap contract.
-    function _getUniswapExchangeFactoryContract()
-        internal
+    function getUniswapExchangeFactoryContract()
+        public
         view
         returns (IUniswapExchangeFactory)
     {

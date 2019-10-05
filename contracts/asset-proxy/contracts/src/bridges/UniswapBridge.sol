@@ -34,12 +34,13 @@ contract UniswapBridge is
     IWallet
 {
     /* Mainnet addresses */
-    address constant public UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
-    address constant public WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
+    address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     // Struct to hold `withdrawTo()` local variables in memory and to avoid
     // stack overflows.
     struct WithdrawToState {
+        address exchangeTokenAddress;
         IUniswapExchange exchange;
         uint256 fromTokenBalance;
         IEtherToken weth;
@@ -81,17 +82,19 @@ contract UniswapBridge is
             return BRIDGE_SUCCESS;
         }
 
-        // Get the exchange for the token pair.
-        state.exchange = _getUniswapExchangeForTokenPair(
+        // Get the  exchange token for the token pair.
+        state.exchangeTokenAddress = _getUniswapExchangeTokenAddressForTokenPair(
             fromTokenAddress,
             toTokenAddress
         );
+        // Get the exchange.
+        state.exchange = _getUniswapExchangeForToken(state.exchangeTokenAddress);
         // Grant an allowance to the exchange.
-        _grantExchangeAllowance(state.exchange);
+        _grantExchangeAllowance(state.exchange, state.exchangeTokenAddress);
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
         // Get the weth contract.
-        state.weth = _getWethContract();
+        state.weth = getWethContract();
 
         // Convert from WETH to a token.
         if (fromTokenAddress == address(state.weth)) {
@@ -100,8 +103,8 @@ contract UniswapBridge is
             // Buy as much of `toTokenAddress` token with ETH as possible and
             // transfer it to `to`.
             state.exchange.ethToTokenTransferInput.value(state.fromTokenBalance)(
-                // No minimum buy amount.
-                0,
+                // Minimum buy amount.
+                amount,
                 // Expires after this block.
                 block.timestamp,
                 // Recipient is `to`.
@@ -114,15 +117,15 @@ contract UniswapBridge is
             uint256 ethBought = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
                 state.fromTokenBalance,
-                // No minimum buy amount.
-                0,
+                // Minimum buy amount.
+                amount,
                 // Expires after this block.
                 block.timestamp
             );
             // Wrap the ETH.
             state.weth.deposit.value(ethBought)();
             // Transfer the WETH to `to`.
-            IERC20Token(toTokenAddress).transfer(to, ethBought);
+            IEtherToken(toTokenAddress).transfer(to, ethBought);
 
         // Convert from one token to another.
         } else {
@@ -131,8 +134,8 @@ contract UniswapBridge is
             state.exchange.tokenToTokenTransferInput(
                 // Sell all tokens we hold.
                 state.fromTokenBalance,
-                // No minimum buy amount.
-                0,
+                // Minimum buy amount.
+                amount,
                 // No minimum intermediate ETH buy amount.
                 0,
                 // Expires after this block.
@@ -162,8 +165,8 @@ contract UniswapBridge is
 
     /// @dev Overridable way to get the weth contract.
     /// @return token The WETH contract.
-    function _getWethContract()
-        internal
+    function getWethContract()
+        public
         view
         returns (IEtherToken token)
     {
@@ -172,8 +175,8 @@ contract UniswapBridge is
 
     /// @dev Overridable way to get the uniswap exchange factory contract.
     /// @return factory The exchange factory contract.
-    function _getUniswapExchangeFactoryContract()
-        internal
+    function getUniswapExchangeFactoryContract()
+        public
         view
         returns (IUniswapExchangeFactory factory)
     {
@@ -183,28 +186,33 @@ contract UniswapBridge is
     /// @dev Grants an unlimited allowance to the exchange for its token
     ///      on behalf of this contract.
     /// @param exchange The Uniswap token exchange.
-    function _grantExchangeAllowance(IUniswapExchange exchange)
+    /// @param tokenAddress The token address for the exchange.
+    function _grantExchangeAllowance(IUniswapExchange exchange, address tokenAddress)
         private
     {
-        address tokenAddress = exchange.toTokenAddress();
         IERC20Token(tokenAddress).approve(address(exchange), uint256(-1));
     }
 
-    /// @dev Retrieves the uniswap exchange contract for a given token pair.
-    /// @return exchange The exchange contract for the token pair.
-    function _getUniswapExchangeForTokenPair(
+    /// @dev Retrieves the uniswap exchange token address for a given token pair.
+    ///      In the case of a WETH-token exchange, this will be the non-WETH token.
+    ///      In th ecase of a token-token exchange, this will be the first token.
+    /// @param fromTokenAddress The address of the token we are converting from.
+    /// @param toTokenAddress The address of the token we are converting to.
+    /// @return exchangeTokenAddress The address of the token for the uniswap
+    ///         exchange.
+    function _getUniswapExchangeTokenAddressForTokenPair(
         address fromTokenAddress,
         address toTokenAddress
     )
         private
         view
-        returns (IUniswapExchange exchange)
+        returns (address exchangeTokenAddress)
     {
         // Whichever isn't WETH is the exchange token.
-        if (fromTokenAddress != address(_getWethContract())) {
-            return _getUniswapExchangeForToken(fromTokenAddress);
+        if (fromTokenAddress != address(getWethContract())) {
+            return fromTokenAddress;
         }
-        return _getUniswapExchangeForToken(toTokenAddress);
+        return toTokenAddress;
     }
 
     /// @dev Retrieves the uniswap exchange contract for a given token.
@@ -214,7 +222,7 @@ contract UniswapBridge is
         view
         returns (IUniswapExchange exchange)
     {
-        exchange = _getUniswapExchangeFactoryContract().getExchange(tokenAddress);
+        exchange = getUniswapExchangeFactoryContract().getExchange(tokenAddress);
         require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
         return exchange;
     }

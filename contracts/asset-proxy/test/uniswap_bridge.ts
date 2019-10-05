@@ -176,7 +176,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 expect(calls.length).to.eq(1);
                 expect(calls[0].exchange).to.eq(exchangeAddress);
                 expect(calls[0].tokensSold).to.bignumber.eq(opts.fromTokenBalance);
-                expect(calls[0].minTokensBought).to.bignumber.eq(0);
+                expect(calls[0].minTokensBought).to.bignumber.eq(opts.amount);
                 expect(calls[0].minEthBought).to.bignumber.eq(0);
                 expect(calls[0].deadline).to.bignumber.eq(blockTime);
                 expect(calls[0].recipient).to.eq(opts.toAddress);
@@ -232,7 +232,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 expect(calls.length).to.eq(1);
                 expect(calls[0].args.exchange).to.eq(exchangeAddress);
                 expect(calls[0].args.tokensSold).to.bignumber.eq(opts.fromTokenBalance);
-                expect(calls[0].args.minEthBought).to.bignumber.eq(0);
+                expect(calls[0].args.minEthBought).to.bignumber.eq(opts.amount);
                 expect(calls[0].args.deadline).to.bignumber.eq(blockTime);
                 calls = filterLogs<WethDepositArgs>(
                     logs.slice(calls[0].logIndex as number),
@@ -249,19 +249,6 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 expect(calls[0].args.from).to.eq(testContract.address);
                 expect(calls[0].args.to).to.eq(opts.toAddress);
                 expect(calls[0].args.amount).to.bignumber.eq(opts.exchangeFillAmount);
-            });
-
-            it('calls `IUniswapExchange.tokenToEthSwapInput()`', async () => {
-                const { opts, logs, blockTime } = await withdrawToAsync({
-                    toTokenAddress: wethTokenAddress,
-                });
-                const calls = filterLogsToArguments<TokenToEthSwapInputArgs>(logs, ContractEvents.TokenToEthSwapInput);
-                const exchangeAddress = await getExchangeForTokenAsync(opts.fromTokenAddress);
-                expect(calls.length).to.eq(1);
-                expect(calls[0].exchange).to.eq(exchangeAddress);
-                expect(calls[0].tokensSold).to.bignumber.eq(opts.fromTokenBalance);
-                expect(calls[0].minEthBought).to.bignumber.eq(0);
-                expect(calls[0].deadline).to.bignumber.eq(blockTime);
             });
 
             it('sets allowance for "from" token', async () => {
@@ -332,7 +319,7 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 );
                 expect(calls.length).to.eq(1);
                 expect(calls[0].args.exchange).to.eq(exchangeAddress);
-                expect(calls[0].args.minTokensBought).to.bignumber.eq(0);
+                expect(calls[0].args.minTokensBought).to.bignumber.eq(opts.amount);
                 expect(calls[0].args.deadline).to.bignumber.eq(blockTime);
                 expect(calls[0].args.recipient).to.eq(opts.toAddress);
             });
