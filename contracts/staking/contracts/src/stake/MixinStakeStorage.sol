@@ -176,7 +176,7 @@ contract MixinStakeStorage is
         private
     {
         // note - this compresses into a single `sstore` when optimizations are enabled,
-        // since the StakeBalance struct occupies a single word of storage.
+        // since the StoredBalance struct occupies a single word of storage.
         balancePtr.currentEpoch = balance.currentEpoch;
         balancePtr.nextEpochBalance = balance.nextEpochBalance;
         balancePtr.currentEpochBalance = balance.currentEpochBalance;

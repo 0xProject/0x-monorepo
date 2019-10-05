@@ -29,52 +29,36 @@ contract MixinStakeBalances is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Returns the total active stake across the entire staking system.
-    /// @return Global active stake.
-    function getGlobalActiveStake()
+    /// @dev Gets global stake for a given status.
+    /// @param stakeStatus ACTIVE, INACTIVE, or DELEGATED
+    /// @return Global stake for given status.
+    function getGlobalStakeByStatus(IStructs.StakeStatus stakeStatus)
         external
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)]
+        balance = _loadSyncedBalance(
+            _globalStakeByStatus[uint8(stakeStatus)]
         );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        return balance;
     }
 
-    /// @dev Returns the total inactive stake across the entire staking system.
-    /// @return Global inactive stake.
-    function getGlobalInactiveStake()
+    /// @dev Gets an owner's stake balances by status.
+    /// @param staker Owner of stake.
+    /// @param stakeStatus ACTIVE, INACTIVE, or DELEGATED
+    /// @return Owner's stake balances for given status.
+    function getOwnerStakeByStatus(
+        address staker,
+        IStructs.StakeStatus stakeStatus
+    )
         external
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)]
+        balance = _loadSyncedBalance(
+            _ownerStakeByStatus[uint8(stakeStatus)][staker]
         );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the total stake delegated across the entire staking system.
-    /// @return Global delegated stake.
-    function getGlobalDelegatedStake()
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
-        );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        return balance;
     }
 
     /// @dev Returns the total stake for a given staker.
@@ -88,68 +72,17 @@ contract MixinStakeBalances is
         return getZrxVault().balanceOf(staker);
     }
 
-    /// @dev Returns the active stake for a given staker.
-    /// @param staker of stake.
-    /// @return Active stake for staker.
-    function getActiveStake(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance =
-            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)][staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the inactive stake for a given staker.
-    /// @param staker of stake.
-    /// @return Inactive stake for staker.
-    function getInactiveStake(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance =
-            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the stake delegated by a given staker.
-    /// @param staker of stake.
-    /// @return Delegated stake for staker.
-    function getStakeDelegatedByOwner(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance =
-            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)][staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
     /// @dev Returns the stake delegated to a specific staking pool, by a given staker.
     /// @param staker of stake.
     /// @param poolId Unique Id of pool.
-    /// @return Stake delegaated to pool by staker.
+    /// @return Stake delegated to pool by staker.
     function getStakeDelegatedToPoolByOwner(address staker, bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        balance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
+        return balance;
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool,
@@ -159,12 +92,9 @@ contract MixinStakeBalances is
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByPoolId[poolId]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        balance = _loadSyncedBalance(_delegatedStakeByPoolId[poolId]);
+        return balance;
     }
 }

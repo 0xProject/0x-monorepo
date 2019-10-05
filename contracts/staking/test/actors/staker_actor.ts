@@ -3,24 +3,24 @@ import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { StakingApiWrapper } from '../utils/api_wrapper';
-import { StakeBalance, StakeBalances, StakeInfo, StakeStatus } from '../utils/types';
+import { StakeBalances, StakeInfo, StakeStatus, StoredBalance } from '../utils/types';
 
 import { BaseActor } from './base_actor';
 
 export class StakerActor extends BaseActor {
     private readonly _poolIds: string[];
 
-    private static _incrementNextBalance(balance: StakeBalance, amount: BigNumber): void {
+    private static _incrementNextBalance(balance: StoredBalance, amount: BigNumber): void {
         balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
     }
-    private static _decrementNextBalance(balance: StakeBalance, amount: BigNumber): void {
+    private static _decrementNextBalance(balance: StoredBalance, amount: BigNumber): void {
         balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
     }
-    private static _incrementCurrentAndNextBalance(balance: StakeBalance, amount: BigNumber): void {
+    private static _incrementCurrentAndNextBalance(balance: StoredBalance, amount: BigNumber): void {
         balance.currentEpochBalance = balance.currentEpochBalance.plus(amount);
         balance.nextEpochBalance = balance.nextEpochBalance.plus(amount);
     }
-    private static _decrementCurrentAndNextBalance(balance: StakeBalance, amount: BigNumber): void {
+    private static _decrementCurrentAndNextBalance(balance: StoredBalance, amount: BigNumber): void {
         balance.currentEpochBalance = balance.currentEpochBalance.minus(amount);
         balance.nextEpochBalance = balance.nextEpochBalance.minus(amount);
     }
@@ -191,23 +191,38 @@ export class StakerActor extends BaseActor {
             ...this._poolIds.map(poolId => nextBalances.delegatedStakeByPool[poolId]),
             ...this._poolIds.map(poolId => nextBalances.totalDelegatedStakeByPool[poolId]),
         ]) {
+            balance.currentEpoch = balances.currentEpoch.plus(1);
             balance.currentEpochBalance = balance.nextEpochBalance;
         }
         return nextBalances;
     }
     private async _getBalancesAsync(): Promise<StakeBalances> {
         const balances: StakeBalances = {
+            currentEpoch: await this._stakingApiWrapper.stakingContract.currentEpoch.callAsync(),
             zrxBalance: await this._stakingApiWrapper.zrxTokenContract.balanceOf.callAsync(this._owner),
             stakeBalance: await this._stakingApiWrapper.stakingContract.getTotalStake.callAsync(this._owner),
             stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balanceOf.callAsync(this._owner),
-            activeStakeBalance: await this._stakingApiWrapper.stakingContract.getActiveStake.callAsync(this._owner),
-            inactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getInactiveStake.callAsync(this._owner),
-            delegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getStakeDelegatedByOwner.callAsync(
+            activeStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 this._owner,
+                StakeStatus.Active,
             ),
-            globalActiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalActiveStake.callAsync(),
-            globalInactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalInactiveStake.callAsync(),
-            globalDelegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalDelegatedStake.callAsync(),
+            inactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
+                this._owner,
+                StakeStatus.Inactive,
+            ),
+            delegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
+                this._owner,
+                StakeStatus.Delegated,
+            ),
+            globalActiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
+                StakeStatus.Active,
+            ),
+            globalInactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
+                StakeStatus.Inactive,
+            ),
+            globalDelegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
+                StakeStatus.Delegated,
+            ),
             delegatedStakeByPool: {},
             totalDelegatedStakeByPool: {},
         };

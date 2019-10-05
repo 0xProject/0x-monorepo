@@ -239,9 +239,7 @@ blockchainTests.resets('Stake Statuses', env => {
             // run test, checking balances in epochs [n .. n + 2]
             // in epoch `n` - `next` is set
             // in epoch `n+1` - `current` is set
-            // in epoch `n+2` - only withdrawable balance should change.
             await staker.moveStakeAsync(from, to, amount.div(2));
-            await staker.goToNextEpochAsync();
             await staker.goToNextEpochAsync();
         };
         it('active -> active', async () => {

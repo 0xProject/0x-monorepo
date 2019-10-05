@@ -62,14 +62,6 @@ interface IStructs {
         uint96 nextEpochBalance;
     }
 
-    /// @dev Balance struct for stake.
-    /// @param currentEpochBalance Balance in the current epoch.
-    /// @param nextEpochBalance Balance in the next epoch.
-    struct StakeBalance {
-        uint256 currentEpochBalance;
-        uint256 nextEpochBalance;
-    }
-
     /// @dev Statuses that stake can exist in.
     enum StakeStatus {
         ACTIVE,

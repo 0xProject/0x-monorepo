@@ -63,13 +63,8 @@ export interface StoredBalance {
     nextEpochBalance: BigNumber;
 }
 
-export interface StakeBalance {
-    currentEpochBalance: BigNumber;
-    nextEpochBalance: BigNumber;
-}
-
 export interface StakeBalanceByPool {
-    [key: string]: StakeBalance;
+    [key: string]: StoredBalance;
 }
 
 export enum StakeStatus {
@@ -89,15 +84,16 @@ export class StakeInfo {
 }
 
 export interface StakeBalances {
+    currentEpoch: BigNumber;
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
     stakeBalanceInVault: BigNumber;
-    activeStakeBalance: StakeBalance;
-    inactiveStakeBalance: StakeBalance;
-    delegatedStakeBalance: StakeBalance;
-    globalActiveStakeBalance: StakeBalance;
-    globalInactiveStakeBalance: StakeBalance;
-    globalDelegatedStakeBalance: StakeBalance;
+    activeStakeBalance: StoredBalance;
+    inactiveStakeBalance: StoredBalance;
+    delegatedStakeBalance: StoredBalance;
+    globalActiveStakeBalance: StoredBalance;
+    globalInactiveStakeBalance: StoredBalance;
+    globalDelegatedStakeBalance: StoredBalance;
     delegatedStakeByPool: StakeBalanceByPool;
     totalDelegatedStakeByPool: StakeBalanceByPool;
 }

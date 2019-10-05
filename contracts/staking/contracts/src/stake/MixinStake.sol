@@ -48,7 +48,7 @@ contract MixinStake is
 
         // update global total of active stake
         _increaseCurrentAndNextBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)],
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)],
             amount
         );
 
@@ -94,7 +94,7 @@ contract MixinStake is
 
         // update global total of inactive stake
         _decreaseCurrentAndNextBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
             amount
         );
 
@@ -151,8 +151,8 @@ contract MixinStake is
 
         // update global total of stake in the statuses being moved between
         _moveStake(
-            globalStakeByStatus[uint8(from.status)],
-            globalStakeByStatus[uint8(to.status)],
+            _globalStakeByStatus[uint8(from.status)],
+            _globalStakeByStatus[uint8(to.status)],
             amount
         );
 

@@ -43,7 +43,8 @@ contract MixinStorage is
 
     // mapping from StakeStatus to the total amount of stake in that status for the entire
     // staking system.
-    mapping (uint8 => IStructs.StoredBalance) public globalStakeByStatus;
+    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
+    mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
 
     // mapping from StakeStatus to address of staker to stored balance
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
