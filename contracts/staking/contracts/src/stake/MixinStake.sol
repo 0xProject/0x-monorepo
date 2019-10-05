@@ -41,10 +41,16 @@ contract MixinStake is
         getZrxVault().depositFrom(staker, amount);
 
         // mint stake
-        _increaseCurrentAndNextBalance(_activeStakeByOwner[staker], amount);
+        _increaseCurrentAndNextBalance(
+            _ownerStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)][staker],
+            amount
+        );
 
         // update global total of active stake
-        _increaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)], amount);
+        _increaseCurrentAndNextBalance(
+            globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)],
+            amount
+        );
 
         // notify
         emit Stake(
@@ -60,10 +66,17 @@ contract MixinStake is
     function unstake(uint256 amount)
         external
     {
-        address payable staker = msg.sender;
+        address staker = msg.sender;
 
-        // sanity check
-        uint256 currentWithdrawableStake = getWithdrawableStake(staker);
+        IStructs.StoredBalance memory inactiveBalance =
+            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker]);
+
+        // stake must be inactive in current and next epoch to be withdrawn
+        uint256 currentWithdrawableStake = LibSafeMath.min256(
+            inactiveBalance.currentEpochBalance,
+            inactiveBalance.nextEpochBalance
+        );
+
         if (amount > currentWithdrawableStake) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InsufficientBalanceError(
@@ -74,14 +87,16 @@ contract MixinStake is
         }
 
         // burn inactive stake
-        _decreaseCurrentAndNextBalance(_inactiveStakeByOwner[staker], amount);
+        _decreaseCurrentAndNextBalance(
+            _ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker],
+            amount
+        );
 
         // update global total of inactive stake
-        _decreaseCurrentAndNextBalance(globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)], amount);
-
-        // update withdrawable field
-        _withdrawableStakeByOwner[staker] =
-            currentWithdrawableStake.safeSub(amount);
+        _decreaseCurrentAndNextBalance(
+            globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
+            amount
+        );
 
         // withdraw equivalent amount of ZRX from vault
         getZrxVault().withdrawFrom(staker, amount);
@@ -105,17 +120,6 @@ contract MixinStake is
     )
         external
     {
-        // sanity check - do nothing if moving stake between the same status
-        if (from.status != IStructs.StakeStatus.DELEGATED
-            && from.status == to.status)
-        {
-            return;
-        } else if (from.status == IStructs.StakeStatus.DELEGATED
-            && from.poolId == to.poolId)
-        {
-            return;
-        }
-
         address payable staker = msg.sender;
 
         // handle delegation; this must be done before moving stake as the
@@ -136,17 +140,14 @@ contract MixinStake is
             );
         }
 
-        // cache the current withdrawal amount, which may change if we're
-        // moving out of the inactive status.
-        uint256 withdrawableStake =
-            (from.status == IStructs.StakeStatus.INACTIVE)
-            ? getWithdrawableStake(staker)
-            : 0;
-
         // execute move
-        IStructs.StoredBalance storage fromPtr = _getBalancePtrFromStatus(staker, from.status);
-        IStructs.StoredBalance storage toPtr = _getBalancePtrFromStatus(staker, to.status);
-        _moveStake(fromPtr, toPtr, amount);
+        IStructs.StoredBalance storage fromPtr = _ownerStakeByStatus[uint8(from.status)][staker];
+        IStructs.StoredBalance storage toPtr = _ownerStakeByStatus[uint8(to.status)][staker];
+        _moveStake(
+            fromPtr,
+            toPtr,
+            amount
+        );
 
         // update global total of stake in the statuses being moved between
         _moveStake(
@@ -154,12 +155,6 @@ contract MixinStake is
             globalStakeByStatus[uint8(to.status)],
             amount
         );
-
-        // update withdrawable field, if necessary
-        if (from.status == IStructs.StakeStatus.INACTIVE) {
-            _withdrawableStakeByOwner[staker] =
-                _computeWithdrawableStake(staker, withdrawableStake);
-        }
 
         // notify
         emit MoveStake(
@@ -198,7 +193,10 @@ contract MixinStake is
         );
 
         // Increment how much stake has been delegated to pool.
-        _increaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
+        _increaseNextBalance(
+            _delegatedStakeByPoolId[poolId],
+            amount
+        );
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -227,36 +225,9 @@ contract MixinStake is
         );
 
         // decrement how much stake has been delegated to pool
-        _decreaseNextBalance(_delegatedStakeByPoolId[poolId], amount);
-    }
-
-    /// @dev Returns a storage pointer to a user's stake in a given status.
-    /// @param staker Owner of stake to query.
-    /// @param status Status of user's stake to lookup.
-    /// @return storage A storage pointer to the corresponding stake stake
-    function _getBalancePtrFromStatus(
-        address staker,
-        IStructs.StakeStatus status
-    )
-        private
-        view
-        returns (IStructs.StoredBalance storage)
-    {
-        // lookup status
-        if (status == IStructs.StakeStatus.ACTIVE) {
-            return _activeStakeByOwner[staker];
-        } else if (status == IStructs.StakeStatus.INACTIVE) {
-            return _inactiveStakeByOwner[staker];
-        } else if (status == IStructs.StakeStatus.DELEGATED) {
-            return _delegatedStakeByOwner[staker];
-        }
-
-        // invalid status
-        LibRichErrors.rrevert(
-            LibStakingRichErrors.InvalidStakeStatusError(status)
+        _decreaseNextBalance(
+            _delegatedStakeByPoolId[poolId],
+            amount
         );
-
-        // required to compile ~ we should never hit this.
-        revert("INVALID_STATE");
     }
 }
