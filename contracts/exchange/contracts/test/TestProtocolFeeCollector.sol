@@ -53,7 +53,10 @@ contract TestProtocolFeeCollector {
         payable
     {
         if (msg.value != protocolFeePaid) {
-            assert(msg.value == 0);
+            require(
+                msg.value == 0,
+                "No value should be forwarded to collector when paying fee in WETH"
+            );
 
             // Transfer the protocol fee to this address in WETH.
             IEtherToken(_wethAddress).transferFrom(

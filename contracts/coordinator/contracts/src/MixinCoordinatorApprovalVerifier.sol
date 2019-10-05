@@ -47,15 +47,12 @@ contract MixinCoordinatorApprovalVerifier is
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param txOrigin Required signer of Ethereum transaction calling this function.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
-    /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each
-    ///        corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each
     ///        order in the transaction's Exchange calldata.
     function assertValidCoordinatorApprovals(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         address txOrigin,
         bytes memory transactionSignature,
-        uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
         public
@@ -72,7 +69,6 @@ contract MixinCoordinatorApprovalVerifier is
                 orders,
                 txOrigin,
                 transactionSignature,
-                approvalExpirationTimeSeconds,
                 approvalSignatures
             );
         }
@@ -127,7 +123,7 @@ contract MixinCoordinatorApprovalVerifier is
             orders = new LibOrder.Order[](2);
             orders[0] = leftOrder;
             orders[1] = rightOrder;
-        } 
+        }
         return orders;
     }
 
@@ -136,15 +132,12 @@ contract MixinCoordinatorApprovalVerifier is
     /// @param orders Array of order structs containing order specifications.
     /// @param txOrigin Required signer of Ethereum transaction calling this function.
     /// @param transactionSignature Proof that the transaction has been signed by the signer.
-    /// @param approvalExpirationTimeSeconds Array of expiration times in seconds for which each
-    ///        corresponding approval signature expires.
     /// @param approvalSignatures Array of signatures that correspond to the feeRecipients of each order.
     function _assertValidTransactionOrdersApproval(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         LibOrder.Order[] memory orders,
         address txOrigin,
         bytes memory transactionSignature,
-        uint256[] memory approvalExpirationTimeSeconds,
         bytes[] memory approvalSignatures
     )
         internal
@@ -164,22 +157,11 @@ contract MixinCoordinatorApprovalVerifier is
         uint256 signaturesLength = approvalSignatures.length;
         for (uint256 i = 0; i != signaturesLength; i++) {
             // Create approval message
-            uint256 currentApprovalExpirationTimeSeconds = approvalExpirationTimeSeconds[i];
             CoordinatorApproval memory approval = CoordinatorApproval({
                 txOrigin: txOrigin,
                 transactionHash: transactionHash,
-                transactionSignature: transactionSignature,
-                approvalExpirationTimeSeconds: currentApprovalExpirationTimeSeconds
+                transactionSignature: transactionSignature
             });
-
-            // Ensure approval has not expired
-            // solhint-disable-next-line not-rely-on-time
-            if (currentApprovalExpirationTimeSeconds <= block.timestamp) {
-                LibRichErrors.rrevert(LibCoordinatorRichErrors.ApprovalExpiredError(
-                    transactionHash,
-                    currentApprovalExpirationTimeSeconds
-                ));
-            }
 
             // Hash approval message and recover signer address
             bytes32 approvalHash = getCoordinatorApprovalHash(approval);

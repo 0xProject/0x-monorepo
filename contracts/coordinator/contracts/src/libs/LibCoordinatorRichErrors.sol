@@ -35,10 +35,6 @@ library LibCoordinatorRichErrors {
     bytes4 internal constant INVALID_ORIGIN_ERROR_SELECTOR =
         0xa458d7ff;
 
-    // bytes4(keccak256("ApprovalExpiredError(bytes32,uint256)"))
-    bytes4 internal constant APPROVAL_EXPIRED_ERROR_SELECTOR =
-        0x677b712d;
-
     // bytes4(keccak256("InvalidApprovalSignatureError(bytes32,address)"))
     bytes4 internal constant INVALID_APPROVAL_SIGNATURE_ERROR_SELECTOR =
         0xd789b640;
@@ -71,21 +67,6 @@ library LibCoordinatorRichErrors {
         return abi.encodeWithSelector(
             INVALID_ORIGIN_ERROR_SELECTOR,
             expectedOrigin
-        );
-    }
-
-    function ApprovalExpiredError(
-        bytes32 transactionHash,
-        uint256 approvalExpirationTime
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            APPROVAL_EXPIRED_ERROR_SELECTOR,
-            transactionHash,
-            approvalExpirationTime
         );
     }
 

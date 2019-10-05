@@ -11,7 +11,8 @@ import {
 import {
     blockchainTests,
     constants,
-    getLatestBlockTimestampAsync,
+    hexConcat,
+    hexSlice,
     OrderFactory,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
@@ -46,7 +47,7 @@ blockchainTests.resets('Coordinator tests', env => {
     let testFactory: CoordinatorTestFactory;
 
     const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
-    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
     const PROTOCOL_FEE = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 
     before(async () => {
@@ -164,19 +165,12 @@ blockchainTests.resets('Coordinator tests', env => {
                 const order = await orderFactory.newSignedOrderAsync();
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
                 const txData = { from: takerAddress, value: PROTOCOL_FEE };
                 await testFactory.executeFillTransactionTestAsync(
                     [order],
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [approval.signature],
                     txData,
                 );
@@ -191,7 +185,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction,
                     feeRecipientAddress,
                     [],
-                    [],
                     txData,
                 );
             });
@@ -204,7 +197,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     [order],
                     transaction,
                     feeRecipientAddress,
-                    [],
                     [],
                     txData,
                 );
@@ -219,7 +211,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction,
                     feeRecipientAddress,
                     [],
-                    [],
                     txData,
                 );
             });
@@ -232,7 +223,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     [order],
                     transaction,
                     feeRecipientAddress,
-                    [],
                     [],
                     txData,
                 );
@@ -247,7 +237,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction,
                     feeRecipientAddress,
                     [],
-                    [],
                     txData,
                 );
             });
@@ -261,7 +250,6 @@ blockchainTests.resets('Coordinator tests', env => {
                     transaction,
                     takerAddress,
                     [],
-                    [],
                     {
                         from: takerAddress,
                         gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
@@ -274,63 +262,31 @@ blockchainTests.resets('Coordinator tests', env => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                const signature = hexConcat(
+                    hexSlice(approval.signature, 0, 2),
+                    '0xFFFFFFFF',
+                    hexSlice(approval.signature, 6),
                 );
-                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
                 await testFactory.executeFillTransactionTestAsync(
                     orders,
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [signature],
                     { from: takerAddress, value: PROTOCOL_FEE },
                     new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
-                );
-            });
-            it(`${fnName} should revert with an expired approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                await testFactory.executeFillTransactionTestAsync(
-                    orders,
-                    transaction,
-                    takerAddress,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: takerAddress, value: PROTOCOL_FEE },
-                    new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
                 await testFactory.executeFillTransactionTestAsync(
                     orders,
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: owner, value: PROTOCOL_FEE },
                     new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
@@ -344,18 +300,11 @@ blockchainTests.resets('Coordinator tests', env => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
                 await testFactory.executeFillTransactionTestAsync(
                     orders,
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [approval.signature],
                     {
                         from: takerAddress,
@@ -368,7 +317,7 @@ blockchainTests.resets('Coordinator tests', env => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], [], {
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], {
                     from: feeRecipientAddress,
                     gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
                     value: PROTOCOL_FEE.times(orders.length),
@@ -378,7 +327,7 @@ blockchainTests.resets('Coordinator tests', env => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], [], {
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], {
                     from: feeRecipientAddress,
                     gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
                     value: PROTOCOL_FEE.times(orders.length).plus(1),
@@ -388,63 +337,31 @@ blockchainTests.resets('Coordinator tests', env => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                const signature = hexConcat(
+                    hexSlice(approval.signature, 0, 2),
+                    '0xFFFFFFFF',
+                    hexSlice(approval.signature, 6),
                 );
-                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
                 await testFactory.executeFillTransactionTestAsync(
                     orders,
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [signature],
                     { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
                     new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
-                );
-            });
-            it(`${fnName} should revert with an expired approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                await testFactory.executeFillTransactionTestAsync(
-                    orders,
-                    transaction,
-                    takerAddress,
-                    [approvalExpirationTimeSeconds],
-                    [approval.signature],
-                    { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
-                    new CoordinatorRevertErrors.ApprovalExpiredError(transactionHash, approvalExpirationTimeSeconds),
                 );
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
                 await testFactory.executeFillTransactionTestAsync(
                     orders,
                     transaction,
                     takerAddress,
-                    [approvalExpirationTimeSeconds],
                     [approval.signature],
                     { from: owner, value: PROTOCOL_FEE.times(orders.length) },
                     new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
@@ -463,7 +380,6 @@ blockchainTests.resets('Coordinator tests', env => {
                 transaction,
                 makerAddress,
                 [],
-                [],
                 {
                     from: makerAddress,
                 },
@@ -479,7 +395,6 @@ blockchainTests.resets('Coordinator tests', env => {
                 transaction,
                 makerAddress,
                 [],
-                [],
                 {
                     from: makerAddress,
                 },
@@ -493,7 +408,6 @@ blockchainTests.resets('Coordinator tests', env => {
                 [],
                 transaction,
                 makerAddress,
-                [],
                 [],
                 {
                     from: makerAddress,

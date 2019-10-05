@@ -24,9 +24,9 @@ blockchainTests.resets('Libs tests', env => {
     describe('getApprovalHash', () => {
         it('should return the correct approval hash', async () => {
             const signedTx = {
-                salt: new BigNumber(0),
-                gasPrice: new BigNumber(0),
-                expirationTimeSeconds: new BigNumber(0),
+                salt: constants.ZERO_AMOUNT,
+                gasPrice: constants.ZERO_AMOUNT,
+                expirationTimeSeconds: constants.ZERO_AMOUNT,
                 signerAddress: constants.NULL_ADDRESS,
                 data: '0x1234',
                 signature: '0x5678',
@@ -35,20 +35,13 @@ blockchainTests.resets('Libs tests', env => {
                     chainId,
                 },
             };
-            const approvalExpirationTimeSeconds = new BigNumber(0);
             const txOrigin = constants.NULL_ADDRESS;
             const approval = {
                 txOrigin,
                 transactionHash: transactionHashUtils.getTransactionHashHex(signedTx),
                 transactionSignature: signedTx.signature,
-                approvalExpirationTimeSeconds,
             };
-            const expectedApprovalHash = hashUtils.getApprovalHashHex(
-                signedTx,
-                coordinatorContract.address,
-                txOrigin,
-                approvalExpirationTimeSeconds,
-            );
+            const expectedApprovalHash = hashUtils.getApprovalHashHex(signedTx, coordinatorContract.address, txOrigin);
             const approvalHash = await coordinatorContract.getCoordinatorApprovalHash.callAsync(approval);
             expect(expectedApprovalHash).to.eq(approvalHash);
         });

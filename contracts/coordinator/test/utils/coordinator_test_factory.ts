@@ -71,7 +71,6 @@ export class CoordinatorTestFactory {
         orders: SignedOrder[],
         transaction: SignedZeroExTransaction,
         txOrigin: string,
-        approvalExpirationTimeSeconds: BigNumber[],
         approvalSignatures: string[],
         txData: Partial<TxData>,
         revertError?: RevertError,
@@ -81,7 +80,6 @@ export class CoordinatorTestFactory {
             transaction,
             txOrigin,
             transaction.signature,
-            approvalExpirationTimeSeconds,
             approvalSignatures,
             txData,
         );
@@ -106,7 +104,6 @@ export class CoordinatorTestFactory {
         orders: SignedOrder[],
         transaction: SignedZeroExTransaction,
         txOrigin: string,
-        approvalExpirationTimeSeconds: BigNumber[],
         approvalSignatures: string[],
         txData: Partial<TxData>,
     ): Promise<void> {
@@ -114,7 +111,6 @@ export class CoordinatorTestFactory {
             transaction,
             txOrigin,
             transaction.signature,
-            approvalExpirationTimeSeconds,
             approvalSignatures,
             txData,
         );

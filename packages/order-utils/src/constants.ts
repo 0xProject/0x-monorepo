@@ -147,7 +147,6 @@ export const constants = {
             { name: 'txOrigin', type: 'address' },
             { name: 'transactionHash', type: 'bytes32' },
             { name: 'transactionSignature', type: 'bytes' },
-            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
         ],
     },
     ERC20_METHOD_ABI,
