@@ -16,7 +16,6 @@ export interface StakerBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
     stakeBalanceInVault: BigNumber;
-    withdrawableStakeBalance: BigNumber;
     activatableStakeBalance: BigNumber;
     activatedStakeBalance: BigNumber;
     deactivatedStakeBalance: BigNumber;
@@ -93,7 +92,6 @@ export interface StakeBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
     stakeBalanceInVault: BigNumber;
-    withdrawableStakeBalance: BigNumber;
     activeStakeBalance: StakeBalance;
     inactiveStakeBalance: StakeBalance;
     delegatedStakeBalance: StakeBalance;

@@ -344,12 +344,11 @@ blockchainTests.resets('Stake Statuses', env => {
             const amount = toBaseUnitAmount(0);
             await staker.unstakeAsync(amount);
         });
-        it('should successfully unstake after being inactive for 1 epoch', async () => {
+        it('should successfully unstake after becoming inactive', async () => {
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
-            await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.unstakeAsync(amount);
         });
         it('should fail to unstake with insufficient balance', async () => {
@@ -363,30 +362,21 @@ blockchainTests.resets('Stake Statuses', env => {
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
-        it('should fail to unstake after being inactive for <1 epoch', async () => {
-            const amount = toBaseUnitAmount(10);
-            await staker.stakeAsync(amount);
-            await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
-            await staker.goToNextEpochAsync();
-            await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
-        });
-        it('should fail to unstake in same epoch that inactive/withdrawable stake has been reactivated', async () => {
+        it('should fail to unstake in same epoch that inactive stake has been reactivated', async () => {
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
-            await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Inactive), new StakeInfo(StakeStatus.Active), amount);
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
-        it('should fail to unstake one epoch after inactive/withdrawable stake has been reactivated', async () => {
+        it('should fail to unstake one epoch after inactive stake has been reactivated', async () => {
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Active), new StakeInfo(StakeStatus.Inactive), amount);
             await staker.goToNextEpochAsync(); // stake is now inactive
-            await staker.goToNextEpochAsync(); // stake is now withdrawable
             await staker.moveStakeAsync(new StakeInfo(StakeStatus.Inactive), new StakeInfo(StakeStatus.Active), amount);
-            await staker.goToNextEpochAsync(); // stake is active and not withdrawable
+            await staker.goToNextEpochAsync(); // stake is active
             await staker.unstakeAsync(amount, new StakingRevertErrors.InsufficientBalanceError(amount, ZERO));
         });
         it('should fail to unstake >1 epoch after inactive/withdrawable stake has been reactivated', async () => {

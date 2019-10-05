@@ -108,7 +108,6 @@ export class StakerActor extends BaseActor {
         expectedBalances.stakeBalanceInVault = initBalances.stakeBalanceInVault.minus(amount);
         StakerActor._decrementCurrentAndNextBalance(expectedBalances.inactiveStakeBalance, amount);
         StakerActor._decrementCurrentAndNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
-        expectedBalances.withdrawableStakeBalance = initBalances.withdrawableStakeBalance.minus(amount);
         await this._assertBalancesAsync(expectedBalances);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingApiWrapper.utils.getZrxTokenBalanceOfZrxVaultAsync();
@@ -182,12 +181,6 @@ export class StakerActor extends BaseActor {
     }
     private _getNextEpochBalances(balances: StakeBalances): StakeBalances {
         const nextBalances = _.cloneDeep(balances);
-        nextBalances.withdrawableStakeBalance = nextBalances.inactiveStakeBalance.nextEpochBalance.isLessThan(
-            nextBalances.inactiveStakeBalance.currentEpochBalance,
-        )
-            ? nextBalances.inactiveStakeBalance.nextEpochBalance
-            : nextBalances.inactiveStakeBalance.currentEpochBalance;
-
         for (const balance of [
             nextBalances.activeStakeBalance,
             nextBalances.inactiveStakeBalance,
@@ -207,9 +200,6 @@ export class StakerActor extends BaseActor {
             zrxBalance: await this._stakingApiWrapper.zrxTokenContract.balanceOf.callAsync(this._owner),
             stakeBalance: await this._stakingApiWrapper.stakingContract.getTotalStake.callAsync(this._owner),
             stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balanceOf.callAsync(this._owner),
-            withdrawableStakeBalance: await this._stakingApiWrapper.stakingContract.getWithdrawableStake.callAsync(
-                this._owner,
-            ),
             activeStakeBalance: await this._stakingApiWrapper.stakingContract.getActiveStake.callAsync(this._owner),
             inactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getInactiveStake.callAsync(this._owner),
             delegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getStakeDelegatedByOwner.callAsync(
@@ -240,9 +230,6 @@ export class StakerActor extends BaseActor {
         expect(balances.zrxBalance, 'zrx balance').to.be.bignumber.equal(expectedBalances.zrxBalance);
         expect(balances.stakeBalanceInVault, 'stake balance, recorded in vault').to.be.bignumber.equal(
             expectedBalances.stakeBalanceInVault,
-        );
-        expect(balances.withdrawableStakeBalance, 'withdrawable stake balance').to.be.bignumber.equal(
-            expectedBalances.withdrawableStakeBalance,
         );
         expect(balances.activeStakeBalance.currentEpochBalance, 'active stake balance (current)').to.be.bignumber.equal(
             expectedBalances.activeStakeBalance.currentEpochBalance,
@@ -315,13 +302,6 @@ export class StakerActor extends BaseActor {
         } else if (from.status === StakeStatus.Inactive) {
             StakerActor._decrementNextBalance(expectedBalances.inactiveStakeBalance, amount);
             StakerActor._decrementNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
-            if (
-                expectedBalances.inactiveStakeBalance.nextEpochBalance.isLessThan(
-                    expectedBalances.withdrawableStakeBalance,
-                )
-            ) {
-                expectedBalances.withdrawableStakeBalance = expectedBalances.inactiveStakeBalance.nextEpochBalance;
-            }
         } else if (from.status === StakeStatus.Delegated && from.poolId !== undefined) {
             StakerActor._decrementNextBalance(expectedBalances.delegatedStakeBalance, amount);
             StakerActor._decrementNextBalance(expectedBalances.globalDelegatedStakeBalance, amount);

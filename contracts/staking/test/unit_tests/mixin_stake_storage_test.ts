@@ -67,13 +67,11 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
                 getTestBalancesAsync(INDEX_ONE),
             ]);
             expect(actualBalances[0]).to.deep.equal({
-                isInitialized: true,
                 currentEpoch: CURRENT_EPOCH,
                 currentEpochBalance: fromBalance.currentEpochBalance,
                 nextEpochBalance: fromBalance.nextEpochBalance.minus(amount),
             });
             expect(actualBalances[1]).to.deep.equal({
-                isInitialized: true,
                 currentEpoch: CURRENT_EPOCH,
                 currentEpochBalance: toBalance.currentEpochBalance,
                 nextEpochBalance: toBalance.nextEpochBalance.plus(amount),
