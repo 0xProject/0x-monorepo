@@ -1,7 +1,6 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, LibMathRevertErrors } from '@0x/order-utils';
-import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
@@ -596,11 +595,11 @@ blockchainTests('Isolated fillOrder() tests', env => {
             await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[0], goodSignature);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
-                orderHashUtils.getOrderHashHex(order),
+                exchange.getOrderHash(order),
                 order.makerAddress,
                 badSignature,
             );
-            expect(fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature)).to.revertWith(
+            return expect(fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature)).to.revertWith(
                 expectedError,
             );
         });
