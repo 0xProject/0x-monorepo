@@ -1,6 +1,7 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, LibMathRevertErrors } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
@@ -587,13 +588,21 @@ blockchainTests('Isolated fillOrder() tests', env => {
             return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount);
         });
 
-        it('can complementary fill an order with a bad signature that is checked only once', async () => {
+        it('cannot fill an order with a bad signature that has already been partially filled', async () => {
             const order = createOrder();
             const takerAssetFillAmounts = splitAmount(order.takerAssetAmount);
             const goodSignature = createGoodSignature(SignatureType.EthSign);
             const badSignature = createBadSignature(SignatureType.EthSign);
             await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[0], goodSignature);
-            await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                orderHashUtils.getOrderHashHex(order),
+                order.makerAddress,
+                badSignature,
+            );
+            expect(fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature)).to.revertWith(
+                expectedError,
+            );
         });
     });
 });
