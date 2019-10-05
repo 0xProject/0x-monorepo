@@ -59,7 +59,6 @@ export interface EndOfEpochInfo {
 }
 
 export interface StoredBalance {
-    isInitialized: boolean;
     currentEpoch: number | BigNumber;
     currentEpochBalance: BigNumber;
     nextEpochBalance: BigNumber;

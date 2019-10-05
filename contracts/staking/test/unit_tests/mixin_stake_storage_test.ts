@@ -26,19 +26,16 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
         );
         await testContract.setCurrentEpoch.awaitTransactionSuccessAsync(CURRENT_EPOCH);
         defaultUninitializedBalance = {
-            isInitialized: false,
             currentEpoch: constants.INITIAL_EPOCH,
             currentEpochBalance: new BigNumber(0),
             nextEpochBalance: new BigNumber(0),
         };
         defaultSyncedBalance = {
-            isInitialized: true,
             currentEpoch: CURRENT_EPOCH,
             currentEpochBalance: new BigNumber(16),
             nextEpochBalance: new BigNumber(16),
         };
         defaultUnsyncedBalance = {
-            isInitialized: true,
             currentEpoch: CURRENT_EPOCH.minus(1),
             currentEpochBalance: new BigNumber(10),
             nextEpochBalance: new BigNumber(16),
@@ -48,7 +45,6 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
     async function getTestBalancesAsync(index: Numberish): Promise<StoredBalance> {
         const storedBalance: Partial<StoredBalance> = {};
         [
-            storedBalance.isInitialized,
             storedBalance.currentEpoch,
             storedBalance.currentEpochBalance,
             storedBalance.nextEpochBalance,
