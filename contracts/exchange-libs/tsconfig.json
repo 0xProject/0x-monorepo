@@ -3,6 +3,7 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./scripts/**/*", "./generated-wrappers/**/*"],
     "files": [
+        "generated-artifacts/IWallet.json",
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibExchangeRichErrors.json",
         "generated-artifacts/LibFillResults.json",
