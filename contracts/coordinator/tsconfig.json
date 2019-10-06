@@ -2,6 +2,21 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["generated-artifacts/Coordinator.json", "generated-artifacts/CoordinatorRegistry.json"],
+    "files": [
+        "generated-artifacts/Coordinator.json",
+        "generated-artifacts/CoordinatorRegistry.json",
+        "generated-artifacts/ICoordinatorApprovalVerifier.json",
+        "generated-artifacts/ICoordinatorCore.json",
+        "generated-artifacts/ICoordinatorRegistryCore.json",
+        "generated-artifacts/ICoordinatorSignatureValidator.json",
+        "generated-artifacts/LibConstants.json",
+        "generated-artifacts/LibCoordinatorApproval.json",
+        "generated-artifacts/LibCoordinatorRichErrors.json",
+        "generated-artifacts/LibEIP712CoordinatorDomain.json",
+        "generated-artifacts/MixinCoordinatorApprovalVerifier.json",
+        "generated-artifacts/MixinCoordinatorCore.json",
+        "generated-artifacts/MixinCoordinatorRegistryCore.json",
+        "generated-artifacts/MixinSignatureValidator.json"
+    ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

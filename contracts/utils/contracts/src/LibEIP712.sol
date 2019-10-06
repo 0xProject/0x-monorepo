@@ -31,17 +31,17 @@ library LibEIP712 {
     //     ")"
     // ))
     bytes32 constant internal _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
-    
+
     /// @dev Calculates a EIP712 domain separator.
     /// @param name The EIP712 domain name.
     /// @param version The EIP712 domain version.
-    /// @param verifyingContractAddress The EIP712 verifying contract.
+    /// @param verifyingContract The EIP712 verifying contract.
     /// @return EIP712 domain separator.
     function hashEIP712Domain(
         string memory name,
         string memory version,
         uint256 chainId,
-        address verifyingContractAddress
+        address verifyingContract
     )
         internal
         pure
@@ -55,7 +55,7 @@ library LibEIP712 {
         //     keccak256(bytes(name)),
         //     keccak256(bytes(version)),
         //     chainId,
-        //     uint256(verifyingContractAddress)
+        //     uint256(verifyingContract)
         // ))
 
         assembly {
@@ -71,7 +71,7 @@ library LibEIP712 {
             mstore(add(memPtr, 32), nameHash)
             mstore(add(memPtr, 64), versionHash)
             mstore(add(memPtr, 96), chainId)
-            mstore(add(memPtr, 128), verifyingContractAddress)
+            mstore(add(memPtr, 128), verifyingContract)
 
             // Compute hash
             result := keccak256(memPtr, 160)

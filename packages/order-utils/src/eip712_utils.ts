@@ -9,7 +9,6 @@ import {
     SignedZeroExTransaction,
     ZeroExTransaction,
 } from '@0x/types';
-import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
@@ -95,18 +94,16 @@ export const eip712Utils = {
         return typedData;
     },
     /**
-     * Creates an Coordiantor typedData EIP712TypedData object for use with the Coordinator extension contract
+     * Creates an Coordinator typedData EIP712TypedData object for use with the Coordinator extension contract
      * @param   transaction A 0x transaction
      * @param   verifyingContract The coordinator extension contract address that will be verifying the typedData
      * @param   txOrigin The desired `tx.origin` that should be able to submit an Ethereum txn involving this 0x transaction
-     * @param   approvalExpirationTimeSeconds The approvals expiration time
      * @return  A typed data object
      */
     createCoordinatorApprovalTypedData: (
         transaction: SignedZeroExTransaction,
         verifyingContract: string,
         txOrigin: string,
-        approvalExpirationTimeSeconds: BigNumber,
     ): EIP712TypedData => {
         const domain = {
             ...transaction.domain,
@@ -119,7 +116,6 @@ export const eip712Utils = {
             txOrigin,
             transactionHash,
             transactionSignature: transaction.signature,
-            approvalExpirationTimeSeconds: approvalExpirationTimeSeconds.toString(),
         };
         const typedData = eip712Utils.createTypedData(
             constants.COORDINATOR_APPROVAL_SCHEMA.name,

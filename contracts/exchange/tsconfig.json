@@ -31,6 +31,7 @@
         "generated-artifacts/TestAssetProxyDispatcher.json",
         "generated-artifacts/TestExchangeInternals.json",
         "generated-artifacts/TestLibExchangeRichErrorDecoder.json",
+        "generated-artifacts/TestProtocolFeeCollector.json",
         "generated-artifacts/TestProtocolFees.json",
         "generated-artifacts/TestProtocolFeesReceiver.json",
         "generated-artifacts/TestSignatureValidator.json",
