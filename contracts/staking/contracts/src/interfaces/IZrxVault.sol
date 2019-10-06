@@ -95,4 +95,10 @@ interface IZrxVault {
         external
         view
         returns (uint256);
+
+    /// @dev Returns the entire balance of Zrx tokens in the vault.
+    function balanceOfVault()
+        external
+        view
+        returns (uint256);
 }

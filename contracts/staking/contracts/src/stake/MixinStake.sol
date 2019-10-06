@@ -46,12 +46,6 @@ contract MixinStake is
             amount
         );
 
-        // update global total of active stake
-        _increaseCurrentAndNextBalance(
-            _globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
-            amount
-        );
-
         // notify
         emit Stake(
             staker,
@@ -89,12 +83,6 @@ contract MixinStake is
         // burn inactive stake
         _decreaseCurrentAndNextBalance(
             _ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker],
-            amount
-        );
-
-        // update global total of inactive stake
-        _decreaseCurrentAndNextBalance(
-            _globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
             amount
         );
 
@@ -149,13 +137,6 @@ contract MixinStake is
             amount
         );
 
-        // update global total of stake in the statuses being moved between
-        _moveStake(
-            _globalStakeByStatus[uint8(from.status)],
-            _globalStakeByStatus[uint8(to.status)],
-            amount
-        );
-
         // notify
         emit MoveStake(
             staker,
@@ -197,6 +178,12 @@ contract MixinStake is
             _delegatedStakeByPoolId[poolId],
             amount
         );
+
+        // Increase next balance of global delegated stake
+        _increaseNextBalance(
+            _globalDelegatedStake,
+            amount
+        );
     }
 
     /// @dev Un-Delegates a owners stake from a staking pool.
@@ -227,6 +214,12 @@ contract MixinStake is
         // decrement how much stake has been delegated to pool
         _decreaseNextBalance(
             _delegatedStakeByPoolId[poolId],
+            amount
+        );
+
+        // decrease next balance of global delegated stake
+        _decreaseNextBalance(
+            _globalDelegatedStake,
             amount
         );
     }

@@ -119,8 +119,8 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _globalStakeByStatus_slot,
-                _globalStakeByStatus_offset,
+                _globalDelegatedStake_slot,
+                _globalDelegatedStake_offset,
                 slot,
                 offset
             )
