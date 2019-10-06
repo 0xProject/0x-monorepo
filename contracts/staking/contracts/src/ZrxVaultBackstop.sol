@@ -61,7 +61,7 @@ contract ZrxVaultBackstop {
         // Ensure that the stakingProxy has been in read-only mode for a long enough time
         require(
             block.timestamp.safeSub(readOnlyState.lastSetTimestamp) >= 40 days,
-            "READ_ONLY_MODE_LENGTH_TOO_SHORT"
+            "READ_ONLY_MODE_DURATION_TOO_SHORT"
         );
 
         zrxVault.enterCatastrophicFailure();
