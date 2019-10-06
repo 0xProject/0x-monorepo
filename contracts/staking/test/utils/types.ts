@@ -68,7 +68,6 @@ export interface StakeBalanceByPool {
 }
 
 export enum StakeStatus {
-    Active,
     Inactive,
     Delegated,
 }
@@ -88,10 +87,8 @@ export interface StakeBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
     stakeBalanceInVault: BigNumber;
-    activeStakeBalance: StoredBalance;
     inactiveStakeBalance: StoredBalance;
     delegatedStakeBalance: StoredBalance;
-    globalActiveStakeBalance: StoredBalance;
     globalInactiveStakeBalance: StoredBalance;
     globalDelegatedStakeBalance: StoredBalance;
     delegatedStakeByPool: StakeBalanceByPool;

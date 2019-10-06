@@ -148,7 +148,7 @@ export class StakerActor extends BaseActor {
     public async stakeWithPoolAsync(poolId: string, amount: BigNumber): Promise<void> {
         await this.stakeAsync(amount);
         await this.moveStakeAsync(
-            new StakeInfo(StakeStatus.Active),
+            new StakeInfo(StakeStatus.Inactive),
             new StakeInfo(StakeStatus.Delegated, poolId),
             amount,
         );
@@ -182,10 +182,8 @@ export class StakerActor extends BaseActor {
     private _getNextEpochBalances(balances: StakeBalances): StakeBalances {
         const nextBalances = _.cloneDeep(balances);
         for (const balance of [
-            nextBalances.activeStakeBalance,
             nextBalances.inactiveStakeBalance,
             nextBalances.delegatedStakeBalance,
-            nextBalances.globalActiveStakeBalance,
             nextBalances.globalInactiveStakeBalance,
             nextBalances.globalDelegatedStakeBalance,
             ...this._poolIds.map(poolId => nextBalances.delegatedStakeByPool[poolId]),
@@ -202,10 +200,6 @@ export class StakerActor extends BaseActor {
             zrxBalance: await this._stakingApiWrapper.zrxTokenContract.balanceOf.callAsync(this._owner),
             stakeBalance: await this._stakingApiWrapper.stakingContract.getTotalStake.callAsync(this._owner),
             stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balanceOf.callAsync(this._owner),
-            activeStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
-                this._owner,
-                StakeStatus.Active,
-            ),
             inactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 this._owner,
                 StakeStatus.Inactive,
@@ -213,9 +207,6 @@ export class StakerActor extends BaseActor {
             delegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 this._owner,
                 StakeStatus.Delegated,
-            ),
-            globalActiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
-                StakeStatus.Active,
             ),
             globalInactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
                 StakeStatus.Inactive,
@@ -246,12 +237,6 @@ export class StakerActor extends BaseActor {
         expect(balances.stakeBalanceInVault, 'stake balance, recorded in vault').to.be.bignumber.equal(
             expectedBalances.stakeBalanceInVault,
         );
-        expect(balances.activeStakeBalance.currentEpochBalance, 'active stake balance (current)').to.be.bignumber.equal(
-            expectedBalances.activeStakeBalance.currentEpochBalance,
-        );
-        expect(balances.activeStakeBalance.nextEpochBalance, 'active stake balance (next)').to.be.bignumber.equal(
-            expectedBalances.activeStakeBalance.nextEpochBalance,
-        );
         expect(
             balances.inactiveStakeBalance.currentEpochBalance,
             'inactive stake balance (current)',
@@ -267,10 +252,6 @@ export class StakerActor extends BaseActor {
             expectedBalances.delegatedStakeBalance.nextEpochBalance,
         );
         expect(
-            balances.globalActiveStakeBalance.currentEpochBalance,
-            'global active stake (current)',
-        ).to.bignumber.equal(expectedBalances.globalActiveStakeBalance.currentEpochBalance);
-        expect(
             balances.globalInactiveStakeBalance.currentEpochBalance,
             'global inactive stake (current)',
         ).to.bignumber.equal(expectedBalances.globalInactiveStakeBalance.currentEpochBalance);
@@ -278,9 +259,6 @@ export class StakerActor extends BaseActor {
             balances.globalDelegatedStakeBalance.currentEpochBalance,
             'global delegated stake (current)',
         ).to.bignumber.equal(expectedBalances.globalDelegatedStakeBalance.currentEpochBalance);
-        expect(balances.globalActiveStakeBalance.nextEpochBalance, 'global active stake (next)').to.bignumber.equal(
-            expectedBalances.globalActiveStakeBalance.nextEpochBalance,
-        );
         expect(balances.globalInactiveStakeBalance.nextEpochBalance, 'global inactive stake (next)').to.bignumber.equal(
             expectedBalances.globalInactiveStakeBalance.nextEpochBalance,
         );
@@ -311,10 +289,7 @@ export class StakerActor extends BaseActor {
         // @TODO check receipt logs and return value via eth_call
         // check balances
         // from
-        if (from.status === StakeStatus.Active) {
-            StakerActor._decrementNextBalance(expectedBalances.activeStakeBalance, amount);
-            StakerActor._decrementNextBalance(expectedBalances.globalActiveStakeBalance, amount);
-        } else if (from.status === StakeStatus.Inactive) {
+        if (from.status === StakeStatus.Inactive) {
             StakerActor._decrementNextBalance(expectedBalances.inactiveStakeBalance, amount);
             StakerActor._decrementNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
         } else if (from.status === StakeStatus.Delegated && from.poolId !== undefined) {
@@ -324,10 +299,7 @@ export class StakerActor extends BaseActor {
             StakerActor._decrementNextBalance(expectedBalances.totalDelegatedStakeByPool[from.poolId], amount);
         }
         // to
-        if (to.status === StakeStatus.Active) {
-            StakerActor._incrementNextBalance(expectedBalances.activeStakeBalance, amount);
-            StakerActor._incrementNextBalance(expectedBalances.globalActiveStakeBalance, amount);
-        } else if (to.status === StakeStatus.Inactive) {
+        if (to.status === StakeStatus.Inactive) {
             StakerActor._incrementNextBalance(expectedBalances.inactiveStakeBalance, amount);
             StakerActor._incrementNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
         } else if (to.status === StakeStatus.Delegated && to.poolId !== undefined) {
@@ -347,8 +319,8 @@ export class StakerActor extends BaseActor {
         // check balances
         expectedBalances.zrxBalance = expectedBalances.zrxBalance.minus(amount);
         expectedBalances.stakeBalanceInVault = expectedBalances.stakeBalanceInVault.plus(amount);
-        StakerActor._incrementCurrentAndNextBalance(expectedBalances.activeStakeBalance, amount);
-        StakerActor._incrementCurrentAndNextBalance(expectedBalances.globalActiveStakeBalance, amount);
+        StakerActor._incrementCurrentAndNextBalance(expectedBalances.inactiveStakeBalance, amount);
+        StakerActor._incrementCurrentAndNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
         return expectedBalances;
     }
 }

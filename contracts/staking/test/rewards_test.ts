@@ -176,7 +176,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const amount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(amount);
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 amount,
             );
@@ -248,7 +248,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const totalStakeAmount = toBaseUnitAmount(10);
             await stakers[0].stakeAsync(stakeAmounts[0]);
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmounts[0],
             );
@@ -259,7 +259,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // second staker delegates (epoch 1)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmounts[1],
             );
@@ -355,7 +355,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // undelegate (withdraws delegator's rewards)
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 stakeAmount,
             );
             // sanity check final balances
@@ -436,7 +436,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 stakeAmount,
             );
 
@@ -472,7 +472,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();
@@ -499,7 +499,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 stakeAmount,
             );
             await payProtocolFeeAndFinalize();
@@ -507,7 +507,7 @@ blockchainTests.resets('Testing Rewards', env => {
             await payProtocolFeeAndFinalize(rewardNotForDelegator);
             // delegate stake and go to next epoch
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
@@ -530,7 +530,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
@@ -539,7 +539,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // undelegate stake and finalize epoch
             await stakers[0].moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 stakeAmount,
             );
             // this should go to the delegator
@@ -547,7 +547,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // delegate stake ~ this will result in a payout where rewards are computed on
             // the balance's `currentEpochBalance` field but not the `nextEpochBalance` field.
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
@@ -565,7 +565,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const stakeAmount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
             await stakers[0].moveStakeAsync(
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 new StakeInfo(StakeStatus.Delegated, poolId),
                 stakeAmount,
             );
@@ -595,7 +595,7 @@ blockchainTests.resets('Testing Rewards', env => {
             const undelegateAmount = toBaseUnitAmount(2.5);
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolId),
-                new StakeInfo(StakeStatus.Active),
+                new StakeInfo(StakeStatus.Inactive),
                 undelegateAmount,
             );
             // finalize
