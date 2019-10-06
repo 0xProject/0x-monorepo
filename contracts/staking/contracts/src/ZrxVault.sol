@@ -105,6 +105,7 @@ contract ZrxVault is
     function enterCatastrophicFailure()
         external
         onlyAuthorized
+        onlyNotInCatastrophicFailure
     {
         isInCatastrophicFailure = true;
         emit InCatastrophicFailureMode(msg.sender);

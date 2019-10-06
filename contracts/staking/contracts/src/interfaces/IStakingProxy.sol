@@ -17,9 +17,12 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
+
+import "./IStructs.sol";
 
 
-interface IStakingProxy /* is IStaking */
+contract IStakingProxy /* is IStaking */
 {
 
     /// @dev Emitted by StakingProxy when a staking contract is attached.
@@ -33,7 +36,8 @@ interface IStakingProxy /* is IStaking */
 
     /// @dev Emitted by StakingProxy when read-only mode is set.
     event ReadOnlyModeSet(
-        bool readOnlyMode
+        bool readOnlyMode,
+        uint96 timestamp
     );
 
     /// @dev Delegates calls to the staking contract, if it is set.
@@ -52,4 +56,10 @@ interface IStakingProxy /* is IStaking */
     /// Note that this is callable only by an authorized address.
     function detachStakingContract()
         external;
+
+    /// @dev Gets state of stakingProxy read-only mode.
+    function readOnlyState()
+        external
+        view
+        returns (IStructs.ReadOnlyState memory);
 }
