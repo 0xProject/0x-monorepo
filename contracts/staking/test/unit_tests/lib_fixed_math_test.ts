@@ -7,7 +7,7 @@ import { artifacts, TestLibFixedMathContract } from '../../src';
 
 import { assertRoughlyEquals, fromFixed, toDecimal, toFixed } from '../utils/number_utils';
 
-blockchainTests('LibFixedMath unit tests', env => {
+blockchainTests.only('LibFixedMath unit tests', env => {
     let testContract: TestLibFixedMathContract;
 
     before(async () => {
@@ -131,6 +131,19 @@ blockchainTests('LibFixedMath unit tests', env => {
             const tx = testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
             return expect(tx).to.revertWith(expectedError);
         });
+
+        it('int(-1) * int(1) / int(-1) == int(1)', async () => {
+            const [a, n, d] = [-1, 1, -1];
+            const r = await testContract.mulDiv.callAsync(new BigNumber(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, fromFixed(1));
+        });
+
+        it('-1 * int(1) / int(-1) == 1', async () => {
+            const [a, n, d] = [-1, 1, -1];
+            const r = await testContract.mulDiv.callAsync(toFixed(a), new BigNumber(n), new BigNumber(d));
+            assertFixedEquals(r, 1);
+        });
+
     });
 
     describe('add()', () => {
@@ -170,12 +183,40 @@ blockchainTests('LibFixedMath unit tests', env => {
         it('throws on underflow', async () => {
             const [a, b] = [MIN_FIXED_VALUE, new BigNumber(-1)];
             const expectedError = new FixedMathRevertErrors.BinOpError(
-                FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b,
             );
             const tx = testContract.add.callAsync(a, b);
             return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MIN_FIXED + MIN_FIXED throws', async () => {
+            const [a, b] = [MIN_FIXED_VALUE, MIN_FIXED_VALUE];
+            const expectedError = new FixedMathRevertErrors.BinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
+                a,
+                b,
+            );
+            const tx = testContract.add.callAsync(a, b);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MAX_FIXED + MAX_FIXED throws', async () => {
+            const [a, b] = [MAX_FIXED_VALUE, MAX_FIXED_VALUE];
+            const expectedError = new FixedMathRevertErrors.BinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
+                a,
+                b,
+            );
+            const tx = testContract.add.callAsync(a, b);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MIN_FIXED + MAX_FIXED == int(-1)', async () => {
+            const [a, b] = [MIN_FIXED_VALUE, MAX_FIXED_VALUE];
+            const r = await testContract.add.callAsync(a, b);
+            expect(r).to.bignumber.eq(-1);
         });
     });
 
@@ -205,7 +246,7 @@ blockchainTests('LibFixedMath unit tests', env => {
         it('throws on underflow', async () => {
             const [a, b] = [MIN_FIXED_VALUE, new BigNumber(1)];
             const expectedError = new FixedMathRevertErrors.BinOpError(
-                FixedMathRevertErrors.BinOpErrorCodes.SubtractionUnderflow,
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b.negated(),
             );
@@ -219,6 +260,46 @@ blockchainTests('LibFixedMath unit tests', env => {
                 FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
                 a,
                 b.negated(),
+            );
+            const tx = testContract.sub.callAsync(a, b);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MIN_FIXED - MIN_FIXED throws', async () => {
+            const [a, b] = [MIN_FIXED_VALUE, MIN_FIXED_VALUE];
+            // This fails because `-MIN_FIXED_VALUE == MIN_FIXED_VALUE` because of
+            // twos-complement.
+            const expectedError = new FixedMathRevertErrors.BinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
+                a,
+                b,
+            );
+            const tx = testContract.sub.callAsync(a, b);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MAX_FIXED - MAX_FIXED == 0', async () => {
+            const [a, b] = [MAX_FIXED_VALUE, MAX_FIXED_VALUE];
+            const r = await testContract.sub.callAsync(a, b);
+            return expect(r).to.bignumber.eq(0);
+        });
+
+        it('MIN_FIXED - MAX_FIXED throws', async () => {
+            const [a, b] = [MIN_FIXED_VALUE, MAX_FIXED_VALUE];
+            const expectedError = new FixedMathRevertErrors.BinOpError(
+                FixedMathRevertErrors.BinOpErrorCodes.AdditionOverflow,
+                a,
+                b.negated(),
+            );
+            const tx = testContract.sub.callAsync(a, b);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('MAX_FIXED - MIN_FIXED throws', async () => {
+            const [a, b] = [MAX_FIXED_VALUE, MIN_FIXED_VALUE];
+            const expectedError = new FixedMathRevertErrors.SignedValueError(
+                FixedMathRevertErrors.ValueErrorCodes.TooSmall,
+                b,
             );
             const tx = testContract.sub.callAsync(a, b);
             return expect(tx).to.revertWith(expectedError);

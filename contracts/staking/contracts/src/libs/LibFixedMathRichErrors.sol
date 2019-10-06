@@ -30,7 +30,6 @@ library LibFixedMathRichErrors {
 
     enum BinOpErrorCodes {
         ADDITION_OVERFLOW,
-        SUBTRACTION_OVERFLOW,
         MULTIPLICATION_OVERFLOW,
         DIVISION_BY_ZERO
     }

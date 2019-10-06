@@ -10,7 +10,6 @@ export enum ValueErrorCodes {
 
 export enum BinOpErrorCodes {
     AdditionOverflow,
-    SubtractionUnderflow,
     MultiplicationOverflow,
     DivisionByZero,
 }
