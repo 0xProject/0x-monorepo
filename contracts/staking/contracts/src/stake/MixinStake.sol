@@ -42,13 +42,13 @@ contract MixinStake is
 
         // mint stake
         _increaseCurrentAndNextBalance(
-            _ownerStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)][staker],
+            _ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker],
             amount
         );
 
         // update global total of active stake
         _increaseCurrentAndNextBalance(
-            _globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)],
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)],
             amount
         );
 
