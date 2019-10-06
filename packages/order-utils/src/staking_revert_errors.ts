@@ -142,12 +142,6 @@ export class InvalidParamValueError extends RevertError {
     }
 }
 
-export class InvalidStakeStatusError extends RevertError {
-    constructor(status?: BigNumber | number | string) {
-        super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint8 status)', { status });
-    }
-}
-
 export class InvalidProtocolFeePaymentError extends RevertError {
     constructor(
         errorCode?: ProtocolFeePaymentErrorCodes,
@@ -190,7 +184,6 @@ const types = [
     InitializationError,
     InsufficientBalanceError,
     InvalidProtocolFeePaymentError,
-    InvalidStakeStatusError,
     InvalidParamValueError,
     MakerPoolAssignmentError,
     OnlyCallableByExchangeError,
