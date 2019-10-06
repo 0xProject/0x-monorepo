@@ -40,7 +40,6 @@ contract UniswapBridge is
     // Struct to hold `withdrawTo()` local variables in memory and to avoid
     // stack overflows.
     struct WithdrawToState {
-        address exchangeTokenAddress;
         IUniswapExchange exchange;
         uint256 fromTokenBalance;
         IEtherToken weth;
@@ -82,15 +81,11 @@ contract UniswapBridge is
             return BRIDGE_SUCCESS;
         }
 
-        // Get the  exchange token for the token pair.
-        state.exchangeTokenAddress = _getUniswapExchangeTokenAddressForTokenPair(
+        // Get the exchange for the token pair.
+        state.exchange = _getUniswapExchangeForTokenPair(
             fromTokenAddress,
             toTokenAddress
         );
-        // Get the exchange.
-        state.exchange = _getUniswapExchangeForToken(state.exchangeTokenAddress);
-        // Grant an allowance to the exchange.
-        _grantExchangeAllowance(state.exchange, state.exchangeTokenAddress);
         // Get our balance of `fromTokenAddress` token.
         state.fromTokenBalance = IERC20Token(fromTokenAddress).balanceOf(address(this));
         // Get the weth contract.
@@ -113,6 +108,8 @@ contract UniswapBridge is
 
         // Convert from a token to WETH.
         } else if (toTokenAddress == address(state.weth)) {
+            // Grant the exchange an allowance.
+            _grantExchangeAllowance(state.exchange, fromTokenAddress);
             // Buy as much ETH with `fromTokenAddress` token as possible.
             uint256 ethBought = state.exchange.tokenToEthSwapInput(
                 // Sell all tokens we hold.
@@ -129,6 +126,8 @@ contract UniswapBridge is
 
         // Convert from one token to another.
         } else {
+            // Grant the exchange an allowance.
+            _grantExchangeAllowance(state.exchange, fromTokenAddress);
             // Buy as much `toTokenAddress` token with `fromTokenAddress` token
             // and transfer it to `to`.
             state.exchange.tokenToTokenTransferInput(
@@ -193,36 +192,26 @@ contract UniswapBridge is
         IERC20Token(tokenAddress).approve(address(exchange), uint256(-1));
     }
 
-    /// @dev Retrieves the uniswap exchange token address for a given token pair.
+    /// @dev Retrieves the uniswap exchange for a given token pair.
     ///      In the case of a WETH-token exchange, this will be the non-WETH token.
     ///      In th ecase of a token-token exchange, this will be the first token.
     /// @param fromTokenAddress The address of the token we are converting from.
     /// @param toTokenAddress The address of the token we are converting to.
-    /// @return exchangeTokenAddress The address of the token for the uniswap
-    ///         exchange.
-    function _getUniswapExchangeTokenAddressForTokenPair(
+    /// @return exchange The uniswap exchange.
+    function _getUniswapExchangeForTokenPair(
         address fromTokenAddress,
         address toTokenAddress
     )
         private
         view
-        returns (address exchangeTokenAddress)
-    {
-        // Whichever isn't WETH is the exchange token.
-        if (fromTokenAddress != address(getWethContract())) {
-            return fromTokenAddress;
-        }
-        return toTokenAddress;
-    }
-
-    /// @dev Retrieves the uniswap exchange contract for a given token.
-    /// @return exchange The exchange contract for the token.
-    function _getUniswapExchangeForToken(address tokenAddress)
-        private
-        view
         returns (IUniswapExchange exchange)
     {
-        exchange = getUniswapExchangeFactoryContract().getExchange(tokenAddress);
+        address exchangeTokenAddress = fromTokenAddress;
+        // Whichever isn't WETH is the exchange token.
+        if (fromTokenAddress == address(getWethContract())) {
+            exchangeTokenAddress = toTokenAddress;
+        }
+        exchange = getUniswapExchangeFactoryContract().getExchange(exchangeTokenAddress);
         require(address(exchange) != address(0), "NO_UNISWAP_EXCHANGE_FOR_TOKEN");
         return exchange;
     }

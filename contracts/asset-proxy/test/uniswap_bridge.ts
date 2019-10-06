@@ -29,7 +29,7 @@ import {
     TestUniswapBridgeWethWithdrawEventArgs as WethWithdrawArgs,
 } from '../src';
 
-blockchainTests.resets('UniswapBridge unit tests', env => {
+blockchainTests.resets.only('UniswapBridge unit tests', env => {
     const txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
     let testContract: TestUniswapBridgeContract;
     let wethTokenAddress: string;
@@ -324,27 +324,12 @@ blockchainTests.resets('UniswapBridge unit tests', env => {
                 expect(calls[0].args.recipient).to.eq(opts.toAddress);
             });
 
-            it('sets allowance for "to" token', async () => {
-                const { opts, logs } = await withdrawToAsync({
+            it('does not set any allowance', async () => {
+                const { logs } = await withdrawToAsync({
                     fromTokenAddress: wethTokenAddress,
                 });
                 const approvals = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
-                const exchangeAddress = await getExchangeForTokenAsync(opts.toTokenAddress);
-                expect(approvals.length).to.eq(1);
-                expect(approvals[0].spender).to.eq(exchangeAddress);
-                expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
-            });
-
-            it('sets allowance for "to" token on subsequent calls', async () => {
-                const { opts } = await withdrawToAsync({
-                    fromTokenAddress: wethTokenAddress,
-                });
-                const { logs } = await withdrawToAsync(opts);
-                const approvals = filterLogsToArguments<TokenApproveArgs>(logs, ContractEvents.TokenApprove);
-                const exchangeAddress = await getExchangeForTokenAsync(opts.toTokenAddress);
-                expect(approvals.length).to.eq(1);
-                expect(approvals[0].spender).to.eq(exchangeAddress);
-                expect(approvals[0].allowance).to.bignumber.eq(constants.MAX_UINT256);
+                expect(approvals).to.be.empty('');
             });
 
             it('fails if "to" token does not exist', async () => {
