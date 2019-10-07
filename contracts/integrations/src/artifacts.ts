@@ -11,7 +11,6 @@ import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
 import * as GeneralERC20 from '../generated-artifacts/GeneralERC20.json';
 import * as MathHelpers from '../generated-artifacts/MathHelpers.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
-import * as TestStakingPlaceholder from '../generated-artifacts/TestStakingPlaceholder.json';
 import * as TokenInteract from '../generated-artifacts/TokenInteract.json';
 import * as ZeroExV2ExchangeWrapper from '../generated-artifacts/ZeroExV2ExchangeWrapper.json';
 import * as ZeroExV2MultiOrderExchangeWrapper from '../generated-artifacts/ZeroExV2MultiOrderExchangeWrapper.json';
@@ -25,5 +24,4 @@ export const artifacts = {
     MathHelpers: MathHelpers as ContractArtifact,
     SafeMath: SafeMath as ContractArtifact,
     TokenInteract: TokenInteract as ContractArtifact,
-    TestStakingPlaceholder: TestStakingPlaceholder as ContractArtifact,
 };
