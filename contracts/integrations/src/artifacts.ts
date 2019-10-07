@@ -5,5 +5,25 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
+import * as AdvancedTokenInteract from '../generated-artifacts/AdvancedTokenInteract.json';
+import * as ExchangeReader from '../generated-artifacts/ExchangeReader.json';
+import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
+import * as GeneralERC20 from '../generated-artifacts/GeneralERC20.json';
+import * as MathHelpers from '../generated-artifacts/MathHelpers.json';
+import * as SafeMath from '../generated-artifacts/SafeMath.json';
 import * as TestStakingPlaceholder from '../generated-artifacts/TestStakingPlaceholder.json';
-export const artifacts = { TestStakingPlaceholder: TestStakingPlaceholder as ContractArtifact };
+import * as TokenInteract from '../generated-artifacts/TokenInteract.json';
+import * as ZeroExV2ExchangeWrapper from '../generated-artifacts/ZeroExV2ExchangeWrapper.json';
+import * as ZeroExV2MultiOrderExchangeWrapper from '../generated-artifacts/ZeroExV2MultiOrderExchangeWrapper.json';
+export const artifacts = {
+    ZeroExV2ExchangeWrapper: ZeroExV2ExchangeWrapper as ContractArtifact,
+    ZeroExV2MultiOrderExchangeWrapper: ZeroExV2MultiOrderExchangeWrapper as ContractArtifact,
+    ExchangeReader: ExchangeReader as ContractArtifact,
+    ExchangeWrapper: ExchangeWrapper as ContractArtifact,
+    AdvancedTokenInteract: AdvancedTokenInteract as ContractArtifact,
+    GeneralERC20: GeneralERC20 as ContractArtifact,
+    MathHelpers: MathHelpers as ContractArtifact,
+    SafeMath: SafeMath as ContractArtifact,
+    TokenInteract: TokenInteract as ContractArtifact,
+    TestStakingPlaceholder: TestStakingPlaceholder as ContractArtifact,
+};
