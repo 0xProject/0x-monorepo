@@ -48,13 +48,6 @@ contract TestProtocolFees is
         _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
-    function addMakerToPool(bytes32 poolId, address makerAddress)
-        external
-    {
-        _poolJoinedByMakerAddress[makerAddress].poolId = poolId;
-        _poolJoinedByMakerAddress[makerAddress].confirmed = true;
-    }
-
     function advanceEpoch()
         external
     {
@@ -76,6 +69,7 @@ contract TestProtocolFees is
         for (uint256 i = 0; i < makerAddresses.length; ++i) {
             pool.isMaker[makerAddresses[i]] = true;
             _makersToTestPoolIds[makerAddresses[i]] = poolId;
+            poolIdByMaker[makerAddresses[i]] = poolId;
         }
     }
 

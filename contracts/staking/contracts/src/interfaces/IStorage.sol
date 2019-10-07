@@ -90,11 +90,6 @@ interface IStorage {
         view
         returns (uint256);
 
-    function maximumMakersInPool()
-        external
-        view
-        returns(uint256);
-
     function cobbDouglasAlphaNumerator()
         external
         view

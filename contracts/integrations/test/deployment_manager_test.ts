@@ -171,7 +171,6 @@ blockchainTests('Deployment Manager', env => {
                 stakingConstants.DEFAULT_PARAMS.epochDurationInSeconds,
                 stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight,
                 stakingConstants.DEFAULT_PARAMS.minimumPoolStake,
-                stakingConstants.DEFAULT_PARAMS.maximumMakersInPool,
                 stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator,
                 stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator,
             ]);

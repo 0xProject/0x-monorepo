@@ -92,14 +92,12 @@ interface IStakingEvents {
     /// @param epochDurationInSeconds Minimum seconds between epochs.
     /// @param rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @param minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
-    /// @param maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     event ParamsSet(
         uint256 epochDurationInSeconds,
         uint32 rewardDelegatedStakeWeight,
         uint256 minimumPoolStake,
-        uint256 maximumMakersInPool,
         uint256 cobbDouglasAlphaNumerator,
         uint256 cobbDouglasAlphaDenominator
     );
@@ -114,28 +112,12 @@ interface IStakingEvents {
         uint32 operatorShare
     );
 
-    /// @dev Emitted by MixinStakingPool when a new maker requests to join a pool.
-    /// @param poolId Unique id of pool.
-    /// @param makerAddress Adress of maker joining the pool.
-    event PendingAddMakerToPool(
-        bytes32 indexed poolId,
-        address makerAddress
-    );
-
-    /// @dev Emitted by MixinStakingPool when a new maker is added to a pool.
-    /// @param poolId Unique id of pool.
+    /// @dev Emitted by MixinStakingPool when a maker sets their pool.
     /// @param makerAddress Adress of maker added to pool.
-    event MakerAddedToStakingPool(
-        bytes32 indexed poolId,
-        address makerAddress
-    );
-
-    /// @dev Emitted by MixinStakingPool when a maker is removed from a pool.
     /// @param poolId Unique id of pool.
-    /// @param makerAddress Adress of maker added to pool.
-    event MakerRemovedFromStakingPool(
-        bytes32 indexed poolId,
-        address makerAddress
+    event MakerStakingPoolSet(
+        address indexed makerAddress,
+        bytes32 indexed poolId
     );
 
     /// @dev Emitted when a staking pool's operator share is decreased.

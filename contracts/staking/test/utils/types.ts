@@ -8,7 +8,6 @@ export interface StakingParams {
     epochDurationInSeconds: Numberish;
     rewardDelegatedStakeWeight: Numberish;
     minimumPoolStake: Numberish;
-    maximumMakersInPool: Numberish;
     cobbDouglasAlphaNumerator: Numberish;
     cobbDouglasAlphaDenominator: Numberish;
 }

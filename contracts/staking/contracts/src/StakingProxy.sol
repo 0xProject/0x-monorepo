@@ -173,14 +173,6 @@ contract StakingProxy is
             ));
         }
 
-        // Pools must allow at least one maker
-        if (maximumMakersInPool == 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool
-            ));
-        }
-
         // Minimum stake must be > 1
         if (minimumPoolStake < 2) {
             LibRichErrors.rrevert(
