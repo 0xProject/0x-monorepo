@@ -42,7 +42,7 @@ blockchainTests.resets('Catastrophe Tests', env => {
             });
             const inactiveStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 actors[0],
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             );
             expect(inactiveStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
@@ -56,7 +56,7 @@ blockchainTests.resets('Catastrophe Tests', env => {
             });
             const inactiveStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 actors[0],
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             );
             expect(inactiveStakeBalance.currentEpochBalance).to.be.bignumber.equal(ZERO);
         });
@@ -71,7 +71,7 @@ blockchainTests.resets('Catastrophe Tests', env => {
             // read stake balance in read-only mode
             const inactiveStakeBalanceReadOnly = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 actors[0],
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             );
             expect(inactiveStakeBalanceReadOnly.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
@@ -86,7 +86,7 @@ blockchainTests.resets('Catastrophe Tests', env => {
             });
             const inactiveStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 actors[0],
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             );
             expect(inactiveStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });

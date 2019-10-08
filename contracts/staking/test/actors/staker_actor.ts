@@ -148,7 +148,7 @@ export class StakerActor extends BaseActor {
     public async stakeWithPoolAsync(poolId: string, amount: BigNumber): Promise<void> {
         await this.stakeAsync(amount);
         await this.moveStakeAsync(
-            new StakeInfo(StakeStatus.Inactive),
+            new StakeInfo(StakeStatus.Undelegated),
             new StakeInfo(StakeStatus.Delegated, poolId),
             amount,
         );
@@ -202,14 +202,14 @@ export class StakerActor extends BaseActor {
             stakeBalanceInVault: await this._stakingApiWrapper.zrxVaultContract.balanceOf.callAsync(this._owner),
             inactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 this._owner,
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             ),
             delegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 this._owner,
                 StakeStatus.Delegated,
             ),
             globalInactiveStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
-                StakeStatus.Inactive,
+                StakeStatus.Undelegated,
             ),
             globalDelegatedStakeBalance: await this._stakingApiWrapper.stakingContract.getGlobalStakeByStatus.callAsync(
                 StakeStatus.Delegated,
@@ -289,7 +289,7 @@ export class StakerActor extends BaseActor {
         // @TODO check receipt logs and return value via eth_call
         // check balances
         // from
-        if (from.status === StakeStatus.Inactive) {
+        if (from.status === StakeStatus.Undelegated) {
             StakerActor._decrementNextBalance(expectedBalances.inactiveStakeBalance, amount);
             StakerActor._decrementNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
         } else if (from.status === StakeStatus.Delegated && from.poolId !== undefined) {
@@ -299,7 +299,7 @@ export class StakerActor extends BaseActor {
             StakerActor._decrementNextBalance(expectedBalances.totalDelegatedStakeByPool[from.poolId], amount);
         }
         // to
-        if (to.status === StakeStatus.Inactive) {
+        if (to.status === StakeStatus.Undelegated) {
             StakerActor._incrementNextBalance(expectedBalances.inactiveStakeBalance, amount);
             StakerActor._incrementNextBalance(expectedBalances.globalInactiveStakeBalance, amount);
         } else if (to.status === StakeStatus.Delegated && to.poolId !== undefined) {

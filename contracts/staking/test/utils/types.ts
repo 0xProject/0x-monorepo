@@ -58,7 +58,7 @@ export interface EndOfEpochInfo {
 }
 
 export interface StoredBalance {
-    currentEpoch: number | BigNumber;
+    currentEpoch: BigNumber;
     currentEpochBalance: BigNumber;
     nextEpochBalance: BigNumber;
 }
@@ -68,7 +68,7 @@ export interface StakeBalanceByPool {
 }
 
 export enum StakeStatus {
-    Inactive,
+    Undelegated,
     Delegated,
 }
 
