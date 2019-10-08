@@ -10,7 +10,6 @@ async sendTransactionAsync(
 txData?: Partial<TxData> | undefined,
 opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
-    assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
@@ -53,7 +52,6 @@ awaitTransactionSuccessAsync(
     txData?: Partial<TxData>,
     opts: SendTransactionOpts = { shouldValidate: true },
 ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-    assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}

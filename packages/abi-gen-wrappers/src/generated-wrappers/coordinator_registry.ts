@@ -60,7 +60,6 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
@@ -96,7 +95,6 @@ export class CoordinatorRegistryContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData, opts);

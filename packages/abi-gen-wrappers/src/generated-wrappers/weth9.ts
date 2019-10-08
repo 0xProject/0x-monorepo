@@ -124,7 +124,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -161,7 +160,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -325,7 +323,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('src', src);
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -368,7 +365,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('src', src);
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -512,7 +508,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -547,7 +542,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
@@ -789,7 +783,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -826,7 +819,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -944,7 +936,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -977,7 +968,6 @@ export class WETH9Contract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as WETH9Contract;
             const txHashPromise = self.deposit.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(

@@ -82,7 +82,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -124,7 +123,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -320,7 +318,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -359,7 +356,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -604,7 +600,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -643,7 +638,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
@@ -921,7 +915,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -967,7 +960,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1136,7 +1128,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1186,7 +1177,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1357,7 +1347,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
@@ -1399,7 +1388,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
@@ -1593,7 +1581,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1639,7 +1626,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -1792,7 +1778,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1827,7 +1812,6 @@ export class DummyERC721TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);

@@ -222,8 +222,6 @@ export class CoordinatorContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('txOrigin', txOrigin);
             assert.isString('transactionSignature', transactionSignature);
             assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
@@ -290,8 +288,6 @@ export class CoordinatorContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('txOrigin', txOrigin);
             assert.isString('transactionSignature', transactionSignature);
             assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);

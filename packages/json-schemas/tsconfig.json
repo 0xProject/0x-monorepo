@@ -39,7 +39,6 @@
         "./schemas/relayer_api_orders_channel_update_response_schema.json",
         "./schemas/relayer_api_orders_response_schema.json",
         "./schemas/relayer_api_orders_schema.json",
-        "./schemas/send_transaction_opts_schema.json",
         "./schemas/signed_orders_schema.json",
         "./schemas/token_schema.json",
         "./schemas/js_number_schema.json",

@@ -291,7 +291,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -326,7 +325,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
@@ -1361,7 +1359,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1394,7 +1391,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -1764,7 +1760,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1797,7 +1792,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -2257,7 +2251,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2290,7 +2283,6 @@ export class AbiGenDummyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(

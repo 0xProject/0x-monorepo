@@ -176,7 +176,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
@@ -212,7 +211,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.addOwner.sendTransactionAsync(owner.toLowerCase(), txData, opts);
@@ -326,7 +324,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
@@ -362,7 +359,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.changeRequirement.sendTransactionAsync(_required, txData, opts);
@@ -481,7 +477,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
@@ -518,7 +513,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked, txData, opts);
@@ -641,7 +635,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
@@ -677,7 +670,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.confirmTransaction.sendTransactionAsync(transactionId, txData, opts);
@@ -901,7 +893,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
@@ -937,7 +928,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(transactionId, txData, opts);
@@ -1542,7 +1532,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
             assert.isString('functionSelector', functionSelector);
             assert.isString('destination', destination);
@@ -1599,7 +1588,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
             assert.isString('functionSelector', functionSelector);
             assert.isString('destination', destination);
@@ -1775,7 +1763,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
@@ -1811,7 +1798,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.removeOwner.sendTransactionAsync(owner.toLowerCase(), txData, opts);
@@ -1929,7 +1915,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1971,7 +1956,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2154,7 +2138,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
@@ -2190,7 +2173,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.revokeConfirmation.sendTransactionAsync(transactionId, txData, opts);
@@ -2357,7 +2339,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);
             assert.isString('data', data);
@@ -2403,7 +2384,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);
             assert.isString('data', data);

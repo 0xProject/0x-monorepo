@@ -61,8 +61,6 @@ export class DutchAuctionContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             const self = (this as any) as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments(
                 'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
@@ -113,8 +111,6 @@ export class DutchAuctionContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             const self = (this as any) as DutchAuctionContract;
             const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -344,8 +340,6 @@ export class DutchAuctionContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;
@@ -419,8 +413,6 @@ export class DutchAuctionContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;

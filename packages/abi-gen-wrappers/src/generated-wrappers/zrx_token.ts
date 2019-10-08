@@ -108,7 +108,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
@@ -148,7 +147,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
@@ -328,7 +326,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -374,7 +371,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -663,7 +659,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
@@ -700,7 +695,6 @@ export class ZRXTokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;

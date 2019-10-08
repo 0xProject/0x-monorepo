@@ -281,7 +281,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments(
@@ -335,7 +334,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders, txData, opts);
@@ -523,7 +521,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('transactions', transactions);
             assert.isArray('signatures', signatures);
             const self = (this as any) as ExchangeContract;
@@ -572,7 +569,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('transactions', transactions);
             assert.isArray('signatures', signatures);
             const self = (this as any) as ExchangeContract;
@@ -763,7 +759,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -829,7 +824,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1074,7 +1068,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1135,7 +1128,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1380,7 +1372,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1446,7 +1437,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1711,7 +1701,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
             assert.isArray('leftSignatures', leftSignatures);
@@ -1797,7 +1786,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
             assert.isArray('leftSignatures', leftSignatures);
@@ -2140,7 +2128,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
             assert.isArray('leftSignatures', leftSignatures);
@@ -2226,7 +2213,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
             assert.isArray('leftSignatures', leftSignatures);
@@ -2543,8 +2529,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments(
                 'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes))',
@@ -2597,8 +2581,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.cancelOrder.sendTransactionAsync(order, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -2773,7 +2755,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch]);
@@ -2810,7 +2791,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData, opts);
@@ -3032,8 +3012,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments(
@@ -3080,8 +3058,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(transaction, signature, txData, opts);
@@ -3259,8 +3235,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -3319,8 +3293,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -3552,8 +3524,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -3612,8 +3582,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -4228,7 +4196,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4293,7 +4260,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4532,7 +4498,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4597,7 +4562,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4835,7 +4799,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4900,7 +4863,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -5139,7 +5101,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -5204,7 +5165,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -5461,8 +5421,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             const self = (this as any) as ExchangeContract;
@@ -5544,8 +5502,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             const self = (this as any) as ExchangeContract;
@@ -5872,8 +5828,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             const self = (this as any) as ExchangeContract;
@@ -5955,8 +5909,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
-
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             const self = (this as any) as ExchangeContract;
@@ -6341,7 +6293,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('hash', hash);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32)', [hash]);
@@ -6377,7 +6328,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('hash', hash);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.preSign.sendTransactionAsync(hash, txData, opts);
@@ -6631,7 +6581,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
@@ -6667,7 +6616,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData, opts);
@@ -6788,7 +6736,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('updatedProtocolFeeCollector', updatedProtocolFeeCollector);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setProtocolFeeCollectorAddress(address)', [
@@ -6827,7 +6774,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('updatedProtocolFeeCollector', updatedProtocolFeeCollector);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.setProtocolFeeCollectorAddress.sendTransactionAsync(
@@ -6961,7 +6907,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('updatedProtocolFeeMultiplier', updatedProtocolFeeMultiplier);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setProtocolFeeMultiplier(uint256)', [
@@ -6999,7 +6944,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('updatedProtocolFeeMultiplier', updatedProtocolFeeMultiplier);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.setProtocolFeeMultiplier.sendTransactionAsync(
@@ -7133,7 +7077,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
             const self = (this as any) as ExchangeContract;
@@ -7175,7 +7118,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
             const self = (this as any) as ExchangeContract;
@@ -7329,7 +7271,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('assetData', assetData);
             assert.isArray('fromAddresses', fromAddresses);
             assert.isArray('toAddresses', toAddresses);
@@ -7387,7 +7328,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('assetData', assetData);
             assert.isArray('fromAddresses', fromAddresses);
             assert.isArray('toAddresses', toAddresses);
@@ -7615,7 +7555,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -7650,7 +7589,6 @@ export class ExchangeContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);

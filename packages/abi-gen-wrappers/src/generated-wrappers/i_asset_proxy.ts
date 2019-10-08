@@ -54,7 +54,6 @@ export class IAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isString('from', from);
             assert.isString('to', to);
@@ -104,7 +103,6 @@ export class IAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isString('from', from);
             assert.isString('to', to);

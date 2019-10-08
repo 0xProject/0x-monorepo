@@ -120,7 +120,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -156,7 +155,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
@@ -373,7 +371,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -409,7 +406,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
             const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
@@ -570,7 +566,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             assert.isBigNumber('index', index);
             const self = (this as any) as MultiAssetProxyContract;
@@ -612,7 +607,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             assert.isBigNumber('index', index);
             const self = (this as any) as MultiAssetProxyContract;
@@ -844,7 +838,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
@@ -880,7 +873,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
             const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData, opts);
@@ -1043,7 +1035,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1078,7 +1069,6 @@ export class MultiAssetProxyContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);

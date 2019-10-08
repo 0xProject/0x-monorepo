@@ -169,7 +169,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -211,7 +210,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -447,7 +445,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
             const encodedData = self._strictEncodeArguments('mint(uint256)', [_value]);
@@ -483,7 +480,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
             const txHashPromise = self.mint.sendTransactionAsync(_value, txData, opts);
@@ -685,7 +681,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_target', _target);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -727,7 +722,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_target', _target);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -958,7 +952,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -997,7 +990,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -1131,7 +1123,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -1177,7 +1168,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('_from', _from);
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -1331,7 +1321,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC20TokenContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -1366,7 +1355,6 @@ export class DummyERC20TokenContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC20TokenContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);

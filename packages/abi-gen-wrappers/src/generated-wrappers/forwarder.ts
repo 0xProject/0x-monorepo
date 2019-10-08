@@ -52,7 +52,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments('approveMakerAssetProxy(bytes)', [assetData]);
@@ -88,7 +87,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             const self = (this as any) as ForwarderContract;
             const txHashPromise = self.approveMakerAssetProxy.sendTransactionAsync(assetData, txData, opts);
@@ -230,7 +228,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
             assert.isArray('signatures', signatures);
@@ -305,7 +302,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
             assert.isArray('signatures', signatures);
@@ -563,7 +559,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('signatures', signatures);
             assert.isBigNumber('feePercentage', feePercentage);
@@ -634,7 +629,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isArray('orders', orders);
             assert.isArray('signatures', signatures);
             assert.isBigNumber('feePercentage', feePercentage);
@@ -896,7 +890,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -931,7 +924,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);
@@ -1048,7 +1040,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData> | undefined,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);
             const self = (this as any) as ForwarderContract;
@@ -1087,7 +1078,6 @@ export class ForwarderContract extends BaseContract {
             txData?: Partial<TxData>,
             opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);
             const self = (this as any) as ForwarderContract;
