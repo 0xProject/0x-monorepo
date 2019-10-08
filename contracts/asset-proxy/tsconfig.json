@@ -14,7 +14,8 @@
         "generated-artifacts/IAuthorizable.json",
         "generated-artifacts/IERC20Bridge.json",
         "generated-artifacts/IEth2Dai.json",
-        "generated-artifacts/IWallet.json",
+        "generated-artifacts/IUniswapExchange.json",
+        "generated-artifacts/IUniswapExchangeFactory.json",
         "generated-artifacts/MixinAssetProxyDispatcher.json",
         "generated-artifacts/MixinAuthorizable.json",
         "generated-artifacts/MultiAssetProxy.json",
@@ -22,7 +23,9 @@
         "generated-artifacts/StaticCallProxy.json",
         "generated-artifacts/TestERC20Bridge.json",
         "generated-artifacts/TestEth2DaiBridge.json",
-        "generated-artifacts/TestStaticCallTarget.json"
+        "generated-artifacts/TestStaticCallTarget.json",
+        "generated-artifacts/TestUniswapBridge.json",
+        "generated-artifacts/UniswapBridge.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

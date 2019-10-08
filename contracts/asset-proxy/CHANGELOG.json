@@ -25,6 +25,10 @@
             {
                 "note": "Add `Eth2DaiBridge`",
                 "pr": 2221
+            },
+            {
+                "note": "Add `UniswapBridge`",
+                "pr": 2233
             }
         ],
         "timestamp": 1570135330

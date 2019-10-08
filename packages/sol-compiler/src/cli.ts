@@ -40,6 +40,7 @@ const SEPARATOR = ',';
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,
         contracts,
+        isOfflineMode: process.env.SOLC_OFFLINE ? true : undefined,
     };
     const compiler = new Compiler(opts);
     if (argv.watch) {
