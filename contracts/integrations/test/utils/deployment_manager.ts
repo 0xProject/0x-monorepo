@@ -34,6 +34,11 @@ import { BigNumber } from '@0x/utils';
 import { TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
+<<<<<<< HEAD:contracts/integrations/test/deployment/deployment_mananger.ts
+=======
+import { artifacts, TestStakingPlaceholderContract } from '../../src';
+
+>>>>>>> `@0x/contracts-integrations` Created the FunctionAssertion class and examples:contracts/integrations/test/utils/deployment_mananger.ts
 /**
  * Adds a batch of authorities to a list of authorizable contracts.
  * @param owner The owner of the authorizable contracts.
@@ -106,9 +111,15 @@ interface StakingContracts {
 
 // Contract wrappers for tokens.
 interface TokenContracts {
+<<<<<<< HEAD:contracts/integrations/test/deployment/deployment_mananger.ts
     erc20: DummyERC20TokenContract[];
     erc721: DummyERC721TokenContract[];
     erc1155: ERC1155MintableContract[];
+=======
+    erc1155: ERC1155Contract;
+    erc20: ERC20TokenContract[];
+    erc721: ERC721TokenContract;
+>>>>>>> `@0x/contracts-integrations` Created the FunctionAssertion class and examples:contracts/integrations/test/utils/deployment_mananger.ts
     weth: WETH9Contract;
     zrx: ZRXTokenContract;
 }
@@ -407,6 +418,7 @@ export class DeploymentManager {
         txDefaults: Partial<TxData>,
         options: Partial<DeploymentOptions>,
     ): Promise<TokenContracts> {
+<<<<<<< HEAD:contracts/integrations/test/deployment/deployment_mananger.ts
         const numErc20TokensToDeploy =
             options.numErc20TokensToDeploy !== undefined
                 ? options.numErc20TokensToDeploy
@@ -435,6 +447,26 @@ export class DeploymentManager {
                         constants.DUMMY_TOKEN_TOTAL_SUPPLY,
                     ),
             ),
+=======
+        const erc20 = [];
+        erc20[0] = await ERC20TokenContract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.ERC20Token,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+        );
+        erc20[1] = await ERC20TokenContract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.ERC20Token,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+        );
+        erc20[2] = await ERC20TokenContract.deployFrom0xArtifactAsync(
+            ERC20Artifacts.ERC20Token,
+            environment.provider,
+            txDefaults,
+            ERC20Artifacts,
+>>>>>>> `@0x/contracts-integrations` Created the FunctionAssertion class and examples:contracts/integrations/test/utils/deployment_mananger.ts
         );
         const erc721 = await Promise.all(
             _.times(
