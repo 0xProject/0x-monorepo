@@ -28,7 +28,10 @@ import {
     createDirIfDoesNotExistAsync,
     getContractArtifactIfExistsAsync,
     getDependencyNameToPackagePath,
+    getSolcJSAsync,
+    getSolcJSFromPath,
     getSolcJSReleasesAsync,
+    getSolcJSVersionFromPath,
     getSourcesWithDependencies,
     getSourceTreeHash,
     makeContractPathsRelative,
@@ -106,7 +109,10 @@ export class Compiler {
             : {};
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
         this._contractsDir = path.resolve(passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR);
-        this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
+        this._solcVersionIfExists =
+            process.env.SOLCJS_PATH !== undefined
+                ? getSolcJSVersionFromPath(process.env.SOLCJS_PATH)
+                : passedOpts.solcVersion || config.solcVersion;
         this._compilerSettings = {
             ...DEFAULT_COMPILER_SETTINGS,
             ...config.compilerSettings,
@@ -292,7 +298,11 @@ export class Compiler {
                 compilerOutput = await compileDockerAsync(solcVersion, input.standardInput);
             } else {
                 fullSolcVersion = solcJSReleases[solcVersion];
-                compilerOutput = await compileSolcJSAsync(solcVersion, input.standardInput, this._isOfflineMode);
+                const solcInstance =
+                    process.env.SOLCJS_PATH !== undefined
+                        ? getSolcJSFromPath(process.env.SOLCJS_PATH)
+                        : await getSolcJSAsync(solcVersion, this._isOfflineMode);
+                compilerOutput = await compileSolcJSAsync(solcInstance, input.standardInput);
             }
             if (compilerOutput.errors !== undefined) {
                 printCompilationErrorsAndWarnings(compilerOutput.errors);
