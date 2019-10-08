@@ -104,7 +104,7 @@ contract TestProtocolFees is
         TestPool memory pool = _testPools[poolId];
         uint96 stake = pool.operatorStake + pool.membersStake;
         return IStructs.StoredBalance({
-            currentEpoch: currentEpoch.downcastToUint32(),
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: stake,
             nextEpochBalance: stake
         });
@@ -118,7 +118,7 @@ contract TestProtocolFees is
     {
         TestPool memory pool = _testPools[poolId];
         return IStructs.StoredBalance({
-            currentEpoch: currentEpoch.downcastToUint32(),
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: pool.operatorStake,
             nextEpochBalance: pool.operatorStake
         });

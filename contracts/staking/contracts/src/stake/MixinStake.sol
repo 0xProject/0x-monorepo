@@ -42,7 +42,7 @@ contract MixinStake is
 
         // mint stake
         _increaseCurrentAndNextBalance(
-            _ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker],
+            _ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker],
             amount
         );
 
@@ -63,7 +63,7 @@ contract MixinStake is
         address staker = msg.sender;
 
         IStructs.StoredBalance memory inactiveBalance =
-            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker]);
+            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker]);
 
         // stake must be inactive in current and next epoch to be withdrawn
         uint256 currentWithdrawableStake = LibSafeMath.min256(
@@ -82,7 +82,7 @@ contract MixinStake is
 
         // burn inactive stake
         _decreaseCurrentAndNextBalance(
-            _ownerStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)][staker],
+            _ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker],
             amount
         );
 
@@ -181,7 +181,7 @@ contract MixinStake is
 
         // Increase next balance of global delegated stake
         _increaseNextBalance(
-            _globalDelegatedStake,
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)],
             amount
         );
     }
@@ -219,7 +219,7 @@ contract MixinStake is
 
         // decrease next balance of global delegated stake
         _decreaseNextBalance(
-            _globalDelegatedStake,
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)],
             amount
         );
     }

@@ -41,9 +41,11 @@ contract MixinStorage is
     // address for read-only proxy to call
     address public readOnlyProxyCallee;
 
-    // amount of stake currently being delegated in the system
+    // mapping from StakeStatus to gloabl stored balance
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    IStructs.StoredBalance internal _globalDelegatedStake;
+    // NOTE: only Status.DELEGATED is used to access this mapping, but this format
+    // is used for extensibility
+    mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
 
     // mapping from StakeStatus to address of staker to stored balance
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)

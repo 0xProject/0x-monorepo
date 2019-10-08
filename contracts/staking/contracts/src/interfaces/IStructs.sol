@@ -57,7 +57,7 @@ interface IStructs {
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in `currentEpoch+1`.
     struct StoredBalance {
-        uint32 currentEpoch;
+        uint64 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
     }
@@ -66,7 +66,7 @@ interface IStructs {
     ///      Any stake can be (re)delegated effective at the next epoch
     ///      Inactive stake can be withdrawn if it is available in both the current and next epoch
     enum StakeStatus {
-        INACTIVE,
+        UNDELEGATED,
         DELEGATED
     }
 

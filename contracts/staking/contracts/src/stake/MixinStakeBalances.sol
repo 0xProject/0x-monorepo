@@ -30,18 +30,20 @@ contract MixinStakeBalances is
     using LibSafeMath for uint256;
 
     /// @dev Gets global stake for a given status.
-    /// @param stakeStatus INACTIVE or DELEGATED
+    /// @param stakeStatus UNDELEGATED or DELEGATED
     /// @return Global stake for given status.
     function getGlobalStakeByStatus(IStructs.StakeStatus stakeStatus)
         external
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        balance = _loadSyncedBalance(_globalDelegatedStake);
-        if (stakeStatus == IStructs.StakeStatus.INACTIVE) {
+        balance = _loadSyncedBalance(
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
+        );
+        if (stakeStatus == IStructs.StakeStatus.UNDELEGATED) {
             // Inactive stake is the difference between total stake and delegated stake
             // Note that any Zrx erroneously sent to the vault will be counted as inactive stake
-            uint256 totalStake = getZrxVault().balanceOfVault();
+            uint256 totalStake = getZrxVault().balanceOfZrxVault();
             balance.currentEpochBalance = totalStake.safeSub(balance.currentEpochBalance).downcastToUint96();
             balance.nextEpochBalance = totalStake.safeSub(balance.nextEpochBalance).downcastToUint96();
         }
@@ -50,7 +52,7 @@ contract MixinStakeBalances is
 
     /// @dev Gets an owner's stake balances by status.
     /// @param staker Owner of stake.
-    /// @param stakeStatus INACTIVE or DELEGATED
+    /// @param stakeStatus UNDELEGATED or DELEGATED
     /// @return Owner's stake balances for given status.
     function getOwnerStakeByStatus(
         address staker,
