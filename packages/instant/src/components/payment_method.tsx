@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import PhoneIconSvg from '../assets/icons/phone.svg';
 import { ColorOption } from '../style/theme';
 import { Account, AccountState, Network, ProviderType } from '../types';
 import { envUtil } from '../util/env';
@@ -11,7 +12,6 @@ import { SectionHeader } from './section_header';
 import { Circle } from './ui/circle';
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-import { Icon } from './ui/icon';
 import { Text } from './ui/text';
 import { WalletPrompt } from './wallet_prompt';
 
@@ -30,7 +30,6 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <SectionHeader>{this._renderTitleText()}</SectionHeader>
-                        {this._renderTitleLabel()}
                     </Flex>
                 </Container>
                 <Container>{this._renderMainContent()}</Container>
@@ -70,7 +69,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
         const { account, network } = this.props;
         const isMobile = envUtil.isMobileOperatingSystem();
         const logo = isMobile ? <CoinbaseWalletLogo width={22} /> : <MetaMaskLogo width={19} height={18} />;
-        const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.darkOrange;
+        const primaryColor = isMobile ? ColorOption.darkBlue : ColorOption.grey;
         const secondaryColor = isMobile ? ColorOption.lightBlue : ColorOption.lightOrange;
         const colors = { primaryColor, secondaryColor };
         const onUnlockGenericWallet = () => {
@@ -82,25 +81,32 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                 return null;
             case AccountState.Locked:
                 return (
-                    <Flex direction="column" justify="space-between" height="100%">
+                    <Flex direction="column">
                         <WalletPrompt
                             onClick={onUnlockGenericWallet}
+                            display="flex"
+                            alignText={'flex-start'}
                             image={
-                                <Container position="relative" top="2px">
-                                    <Icon width={13} icon="lock" color={ColorOption.black} />
+                                <Container position="relative" display="flex">
+                                    <MetaMaskLogo width={16} height={19} />
                                 </Container>
                             }
                             {...colors}
                         >
-                            Click to Connect Metamask
+                            Metamask
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
-                            primaryColor={ColorOption.fortmaticPrimary}
-                            secondaryColor={ColorOption.fortmaticSecondary}
                             marginTop="5px"
+                            image={
+                                <Container position="relative" display="flex">
+                                    <PhoneIconSvg />
+                                </Container>
+                            }
+                            display="flex"
+                            {...colors}
                         >
-                            Connect with Fortmatic
+                            Use phone number
                         </WalletPrompt>
                     </Flex>
                 );
@@ -112,11 +118,16 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
-                            primaryColor={ColorOption.fortmaticPrimary}
-                            secondaryColor={ColorOption.fortmaticSecondary}
                             marginTop="5px"
+                            image={
+                                <Container position="relative" display="flex">
+                                    <PhoneIconSvg />
+                                </Container>
+                            }
+                            display="flex"
+                            {...colors}
                         >
-                            Connect with Fortmatic
+                            Use phone number
                         </WalletPrompt>
                     </Flex>
                 );
