@@ -40,7 +40,7 @@ interface IStorage {
         view
         returns (address);
 
-    function nextPoolId()
+    function lastPoolId()
         external
         view
         returns (bytes32);
@@ -89,11 +89,6 @@ interface IStorage {
         external
         view
         returns (uint256);
-
-    function maximumMakersInPool()
-        external
-        view
-        returns(uint256);
 
     function cobbDouglasAlphaNumerator()
         external

@@ -114,7 +114,6 @@ export class StakingApiWrapper {
                 new BigNumber(_params.epochDurationInSeconds),
                 new BigNumber(_params.rewardDelegatedStakeWeight),
                 new BigNumber(_params.minimumPoolStake),
-                new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
             );
@@ -135,7 +134,6 @@ export class StakingApiWrapper {
                     'epochDurationInSeconds',
                     'rewardDelegatedStakeWeight',
                     'minimumPoolStake',
-                    'maximumMakersInPool',
                     'cobbDouglasAlphaNumerator',
                     'cobbDouglasAlphaDenominator',
                     'wethProxyAddress',

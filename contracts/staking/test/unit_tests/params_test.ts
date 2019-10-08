@@ -37,7 +37,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
                 new BigNumber(_params.epochDurationInSeconds),
                 new BigNumber(_params.rewardDelegatedStakeWeight),
                 new BigNumber(_params.minimumPoolStake),
-                new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
                 { from },
@@ -49,7 +48,6 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(event.epochDurationInSeconds).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(event.rewardDelegatedStakeWeight).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(event.minimumPoolStake).to.bignumber.eq(_params.minimumPoolStake);
-            expect(event.maximumMakersInPool).to.bignumber.eq(_params.maximumMakersInPool);
             expect(event.cobbDouglasAlphaNumerator).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
             expect(event.cobbDouglasAlphaDenominator).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             // Assert `getParams()`.
@@ -57,9 +55,8 @@ blockchainTests('Configurable Parameters unit tests', env => {
             expect(actual[0]).to.bignumber.eq(_params.epochDurationInSeconds);
             expect(actual[1]).to.bignumber.eq(_params.rewardDelegatedStakeWeight);
             expect(actual[2]).to.bignumber.eq(_params.minimumPoolStake);
-            expect(actual[3]).to.bignumber.eq(_params.maximumMakersInPool);
-            expect(actual[4]).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
-            expect(actual[5]).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
+            expect(actual[3]).to.bignumber.eq(_params.cobbDouglasAlphaNumerator);
+            expect(actual[4]).to.bignumber.eq(_params.cobbDouglasAlphaDenominator);
             return receipt;
         }
 

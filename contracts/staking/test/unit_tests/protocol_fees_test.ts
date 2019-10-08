@@ -183,6 +183,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                     DEFAULT_PROTOCOL_FEE_PAID,
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
+
                 assertNoWETHTransferLogs(receipt.logs);
                 const poolFees = await getProtocolFeesAsync(poolId);
                 expect(poolFees).to.bignumber.eq(DEFAULT_PROTOCOL_FEE_PAID);

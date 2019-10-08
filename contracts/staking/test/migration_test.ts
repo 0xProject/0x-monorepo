@@ -120,9 +120,8 @@ blockchainTests('Migration tests', env => {
                 expect(params[0]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.epochDurationInSeconds);
                 expect(params[1]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.rewardDelegatedStakeWeight);
                 expect(params[2]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.minimumPoolStake);
-                expect(params[3]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.maximumMakersInPool);
-                expect(params[4]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator);
-                expect(params[5]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator);
+                expect(params[3]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaNumerator);
+                expect(params[4]).to.bignumber.eq(stakingConstants.DEFAULT_PARAMS.cobbDouglasAlphaDenominator);
             });
         });
 
@@ -308,16 +307,6 @@ blockchainTests('Migration tests', env => {
                 rewardDelegatedStakeWeight: new BigNumber(stakingConstants.PPM),
             });
             expect(tx).to.be.fulfilled('');
-        });
-        it('reverts if max makers in pool is 0', async () => {
-            const tx = proxyContract.setAndAssertParams.awaitTransactionSuccessAsync({
-                ...stakingConstants.DEFAULT_PARAMS,
-                maximumMakersInPool: constants.ZERO_AMOUNT,
-            });
-            const expectedError = new StakingRevertErrors.InvalidParamValueError(
-                StakingRevertErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool,
-            );
-            expect(tx).to.revertWith(expectedError);
         });
     });
 });

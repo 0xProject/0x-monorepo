@@ -68,13 +68,11 @@ contract MixinStorage is
     // mapping from Owner to Amount of Withdrawable Stake
     mapping (address => uint256) internal _withdrawableStakeByOwner;
 
-    // tracking Pool Id
-    bytes32 public nextPoolId = INITIAL_POOL_ID;
+    // tracking Pool Id, a unique identifier for each staking pool.
+    bytes32 public lastPoolId;
 
-    // mapping from Maker Address to a struct representing the pool the maker has joined and
-    // whether the operator of that pool has subsequently added the maker.
-    // (access externally using `getStakingPoolIdOfMaker`)
-    mapping (address => IStructs.MakerPoolJoinStatus) internal _poolJoinedByMakerAddress;
+    // mapping from Maker Address to Pool Id of maker
+    mapping (address => bytes32) public poolIdByMaker;
 
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
@@ -83,7 +81,7 @@ contract MixinStorage is
     mapping (bytes32 => uint256) public rewardsByPoolId;
 
     // current epoch
-    uint256 public currentEpoch = INITIAL_EPOCH;
+    uint256 public currentEpoch;
 
     // current epoch start time
     uint256 public currentEpochStartTimeInSeconds;
@@ -107,9 +105,6 @@ contract MixinStorage is
 
     // Minimum amount of stake required in a pool to collect rewards.
     uint256 public minimumPoolStake;
-
-    // Maximum number of maker addresses allowed to be registered to a pool.
-    uint256 public maximumMakersInPool;
 
     // Numerator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaNumerator;

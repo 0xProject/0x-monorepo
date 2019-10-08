@@ -109,6 +109,10 @@
             {
                 "note": "Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`.",
                 "pr": 2155
+            },
+            {
+                "note": "Renamed `OnlyCallableByPoolOperatorOrMakerError` to `OnlyCallableByPoolOperatorError`.",
+                "pr": 2250
             }
         ],
         "timestamp": 1570135330

@@ -95,24 +95,13 @@ interface IStructs {
         uint256 denominator;
     }
 
-    /// @dev State for keeping track of which pool a maker has joined, and if the operator has
-    /// added them (see MixinStakingPool).
-    /// @param poolId Unique Id of staking pool.
-    /// @param confirmed Whether the operator has added the maker to the pool.
-    struct MakerPoolJoinStatus {
-        bytes32 poolId;
-        bool confirmed;
-    }
-
     /// @dev Holds the metadata for a staking pool.
     /// @param initialized True iff the balance struct is initialized.
     /// @param operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
-    /// @param numberOfMakers Number of makers in the pool.
     struct Pool {
         bool initialized;
         address payable operator;
         uint32 operatorShare;
-        uint32 numberOfMakers;
     }
 }
