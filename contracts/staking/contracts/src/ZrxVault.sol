@@ -188,7 +188,7 @@ contract ZrxVault is
     }
 
     /// @dev Returns the entire balance of Zrx tokens in the vault.
-    function balanceOfVault()
+    function balanceOfZrxVault()
         external
         view
         returns (uint256)
