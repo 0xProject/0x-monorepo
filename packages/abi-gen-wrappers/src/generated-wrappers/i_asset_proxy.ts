@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -52,8 +52,9 @@ export class IAssetProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isString('from', from);
             assert.isString('to', to);
@@ -78,7 +79,7 @@ export class IAssetProxyContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.transferFrom.callAsync(assetData, from, to, amount, txData);
+                await self.transferFrom.callAsync(assetData, from, to, amount, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -101,8 +102,9 @@ export class IAssetProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('assetData', assetData);
             assert.isString('from', from);
             assert.isString('to', to);

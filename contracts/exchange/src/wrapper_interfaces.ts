@@ -1,5 +1,5 @@
 import { PromiseWithTransactionHash } from '@0x/base-contract';
-import { TxOpts } from '@0x/types';
+import { SendTransactionOpts } from '@0x/types';
 import { BlockParam, CallData, TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 
 // Generated Wrapper Interfaces
@@ -8,7 +8,7 @@ export interface AssetProxyDispatcher {
         awaitTransactionSuccessAsync: (
             assetProxy: string,
             txData?: Partial<TxData>,
-            txOpts?: TxOpts,
+            txOpts?: SendTransactionOpts,
         ) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
     };
     getAssetProxy: {
@@ -21,14 +21,14 @@ export interface Authorizable extends Ownable {
         awaitTransactionSuccessAsync: (
             target: string,
             txData?: Partial<TxData>,
-            txOpts?: TxOpts,
+            txOpts?: SendTransactionOpts,
         ) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
     };
     removeAuthorizedAddress: {
         awaitTransactionSuccessAsync: (
             target: string,
             txData?: Partial<TxData>,
-            txOpts?: TxOpts,
+            txOpts?: SendTransactionOpts,
         ) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
     };
     authorized: {
@@ -41,7 +41,7 @@ export interface Ownable {
         awaitTransactionSuccessAsync: (
             newOwner: string,
             txData?: Partial<TxData>,
-            txOpts?: TxOpts,
+            txOpts?: SendTransactionOpts,
         ) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
     };
     owner: {

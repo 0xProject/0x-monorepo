@@ -46,7 +46,7 @@ const args = yargs
     })
     .option('debug', {
         describe: 'Enable debug functions',
-        type: 'count',
+        type: 'boolean',
     })
     .option('partials', {
         describe: 'Glob pattern for the partial template files',
@@ -420,15 +420,17 @@ for (const abiFileName of abiFileNames) {
         return eventData;
     });
 
+    const shouldIncludeBytecode = methodsData.find(methodData => methodData.stateMutability === 'pure') !== undefined;
+
     const contextData = {
         contractName: namedContent.name,
         ctor,
-        deployedBytecode,
+        deployedBytecode: shouldIncludeBytecode ? deployedBytecode : undefined,
         ABI: ABI as ContractAbi,
         ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
-        debug: args.debug > 0,
+        debug: args.debug,
     };
     const renderedCode = template(contextData);
     utils.writeOutputFile(outFilePath, renderedCode);

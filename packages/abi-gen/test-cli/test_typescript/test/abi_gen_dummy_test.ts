@@ -276,6 +276,13 @@ describe('AbiGenDummy Contract', () => {
             expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
         });
     });
+    describe('awaitTransactionSuccessAsync', async () => {
+        it('should successfully call the non pure function', async () => {
+            expect(
+                abiGenDummy.nonPureMethod.awaitTransactionSuccessAsync({}, { pollingIntervalMs: 300, timeoutMs: 10 }),
+            ).to.be.fulfilled('');
+        });
+    });
 });
 
 describe('Lib dummy contract', () => {

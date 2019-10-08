@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -67,8 +67,9 @@ export class ERC20ProxyContract extends BaseContract {
         async sendTransactionAsync(
             target: string,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as ERC20ProxyContract;
             const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -85,7 +86,7 @@ export class ERC20ProxyContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.addAuthorizedAddress.callAsync(target, txData);
+                await self.addAuthorizedAddress.callAsync(target, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -102,8 +103,9 @@ export class ERC20ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as ERC20ProxyContract;
             const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
@@ -265,8 +267,9 @@ export class ERC20ProxyContract extends BaseContract {
         async sendTransactionAsync(
             target: string,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as ERC20ProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
@@ -283,7 +286,7 @@ export class ERC20ProxyContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.removeAuthorizedAddress.callAsync(target, txData);
+                await self.removeAuthorizedAddress.callAsync(target, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -300,8 +303,9 @@ export class ERC20ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             const self = (this as any) as ERC20ProxyContract;
             const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData, opts);
@@ -460,8 +464,9 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             assert.isBigNumber('index', index);
             const self = (this as any) as ERC20ProxyContract;
@@ -482,7 +487,7 @@ export class ERC20ProxyContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
+                await self.removeAuthorizedAddressAtIndex.callAsync(target, index, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -501,8 +506,9 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('target', target);
             assert.isBigNumber('index', index);
             const self = (this as any) as ERC20ProxyContract;
@@ -774,8 +780,9 @@ export class ERC20ProxyContract extends BaseContract {
         async sendTransactionAsync(
             newOwner: string,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ERC20ProxyContract;
             const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
@@ -792,7 +799,7 @@ export class ERC20ProxyContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.transferOwnership.callAsync(newOwner, txData);
+                await self.transferOwnership.callAsync(newOwner, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -808,8 +815,9 @@ export class ERC20ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ERC20ProxyContract;
             const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData, opts);

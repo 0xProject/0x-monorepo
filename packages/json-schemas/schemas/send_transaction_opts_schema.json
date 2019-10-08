@@ -1,0 +1,15 @@
+{
+    "id": "/sendTransactionOptsSchema",
+    "properties": {
+        "shouldValidate": {
+            "type": "boolean"
+        },
+        "timeoutMs": {
+            "type": "number"
+        },
+        "pollingIntervalMs": {
+            "type": "number"
+        }
+    },
+    "type": "object"
+}

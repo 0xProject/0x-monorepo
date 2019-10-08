@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -32,7 +32,7 @@ export class TestLibDummyContract extends BaseContract {
      * @ignore
      */
     public static deployedBytecode =
-        '0x6080604052348015600f57600080fd5b506004361060325760003560e01c806322935e921460375780632b82fdf0146063575b600080fd5b605160048036036020811015604b57600080fd5b5035607d565b60408051918252519081900360200190f35b605160048036036020811015607757600080fd5b5035608c565b60006086826095565b92915050565b6000608682609c565b6104d20190565b6001019056fea265627a7a72315820e27a1e15a4d00b0a4f69dedd0dd86bd421688814d0cb18d3442efb8e48c07be564736f6c634300050c0032';
+        '0x6080604052348015600f57600080fd5b506004361060325760003560e01c806322935e921460375780632b82fdf0146063575b600080fd5b605160048036036020811015604b57600080fd5b5035607d565b60408051918252519081900360200190f35b605160048036036020811015607757600080fd5b5035608c565b60006086826095565b92915050565b6000608682609c565b6104d20190565b6001019056fea265627a7a72305820ddb720d14b34694daaefebcbd729af6ae04fa2232481812dd8fde63d6a4c32c164736f6c634300050a0032';
     public publicAddConstant = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an

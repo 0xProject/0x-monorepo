@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -31,8 +31,7 @@ export class LibDummyContract extends BaseContract {
     /**
      * @ignore
      */
-    public static deployedBytecode =
-        '0x73000000000000000000000000000000000000000030146080604052600080fdfea265627a7a7231582037c7442e7486017ed5720d9da5f4e361beac78b78c346709ebca457eec00558064736f6c634300050c0032';
+    public static deployedBytecode: string | undefined;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

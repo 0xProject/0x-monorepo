@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -59,8 +59,10 @@ export class DutchAuctionContract extends BaseContract {
                 takerAssetData: string;
             },
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             const self = (this as any) as DutchAuctionContract;
             const encodedData = self._strictEncodeArguments(
                 'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
@@ -79,7 +81,7 @@ export class DutchAuctionContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.getAuctionDetails.callAsync(order, txData);
+                await self.getAuctionDetails.callAsync(order, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -109,8 +111,10 @@ export class DutchAuctionContract extends BaseContract {
                 takerAssetData: string;
             },
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             const self = (this as any) as DutchAuctionContract;
             const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -338,8 +342,10 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;
@@ -360,7 +366,7 @@ export class DutchAuctionContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
+                await self.matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -411,8 +417,10 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             const self = (this as any) as DutchAuctionContract;

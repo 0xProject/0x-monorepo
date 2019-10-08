@@ -19,7 +19,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -58,8 +58,9 @@ export class CoordinatorRegistryContract extends BaseContract {
         async sendTransactionAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
@@ -76,7 +77,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             }
 
             if (opts.shouldValidate) {
-                await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
+                await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -93,8 +94,9 @@ export class CoordinatorRegistryContract extends BaseContract {
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData, opts);

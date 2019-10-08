@@ -18,7 +18,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact, TxOpts } from '@0x/types';
+import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -220,8 +220,10 @@ export class CoordinatorContract extends BaseContract {
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             txData?: Partial<TxData> | undefined,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             assert.isString('txOrigin', txOrigin);
             assert.isString('transactionSignature', transactionSignature);
             assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
@@ -256,7 +258,7 @@ export class CoordinatorContract extends BaseContract {
                     transactionSignature,
                     approvalExpirationTimeSeconds,
                     approvalSignatures,
-                    txData,
+                    txDataWithDefaults,
                 );
             }
 
@@ -286,8 +288,10 @@ export class CoordinatorContract extends BaseContract {
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             txData?: Partial<TxData>,
-            opts: TxOpts = { shouldValidate: true },
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.doesConformToSchema('opts', opts, schemas.sendTransactionOptsSchema);
+
             assert.isString('txOrigin', txOrigin);
             assert.isString('transactionSignature', transactionSignature);
             assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
