@@ -92,6 +92,7 @@ contract StakingProxy is
         external
         onlyAuthorized
     {
+        // solhint-disable-next-line not-rely-on-time
         uint96 timestamp = block.timestamp.downcastToUint96();
         if (shouldSetReadOnlyMode) {
             stakingContract = readOnlyProxy;

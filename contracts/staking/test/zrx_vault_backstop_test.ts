@@ -43,6 +43,7 @@ blockchainTests.resets('ZrxVaultBackstop', env => {
                 { from: notAuthorizedAddress },
             );
             expect(txReceipt.logs.length).to.equal(1);
+            // tslint:disable:no-unnecessary-type-assertion
             const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<ZrxVaultInCatastrophicFailureModeEventArgs>).args;
             expect(logArgs.sender).to.equal(stakingApiWrapper.zrxVaultBackstopContract.address);
         });

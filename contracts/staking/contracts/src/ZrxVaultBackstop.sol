@@ -36,7 +36,7 @@ contract ZrxVaultBackstop {
     /// @param _stakingProxyAddress Address of stakingProxy.
     /// @param _zrxVaultAddress Address of zrxVault.
     constructor(
-        address payable _stakingProxyAddress,
+        address _stakingProxyAddress,
         address _zrxVaultAddress
     )
         public
@@ -59,7 +59,9 @@ contract ZrxVaultBackstop {
         );
 
         // Ensure that the stakingProxy has been in read-only mode for a long enough time
+        // TODO: Ensure correct value is set in production
         require(
+            // solhint-disable-next-line not-rely-on-time
             block.timestamp.safeSub(readOnlyState.lastSetTimestamp) >= 40 days,
             "READ_ONLY_MODE_DURATION_TOO_SHORT"
         );

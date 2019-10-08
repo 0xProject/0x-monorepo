@@ -22,8 +22,7 @@ pragma experimental ABIEncoderV2;
 import "./IStructs.sol";
 
 
-contract IStakingProxy /* is IStaking */
-{
+contract IStakingProxy {
 
     /// @dev Emitted by StakingProxy when a staking contract is attached.
     /// @param newStakingContractAddress Address of newly attached staking contract.
@@ -39,12 +38,6 @@ contract IStakingProxy /* is IStaking */
         bool readOnlyMode,
         uint96 timestamp
     );
-
-    /// @dev Delegates calls to the staking contract, if it is set.
-    // solhint-disable no-complex-fallback
-    function ()
-        external
-        payable;
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// Note that this is callable only by an authorized address.
