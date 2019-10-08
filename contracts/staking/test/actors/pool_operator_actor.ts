@@ -10,8 +10,6 @@ export class PoolOperatorActor extends BaseActor {
         addOperatorAsMaker: boolean,
         revertError?: RevertError,
     ): Promise<string> {
-        // query next pool id
-        const nextPoolId = await this._stakingApiWrapper.stakingContract.nextPoolId.callAsync();
         // create pool
         const poolIdPromise = this._stakingApiWrapper.utils.createStakingPoolAsync(
             this._owner,
@@ -24,7 +22,8 @@ export class PoolOperatorActor extends BaseActor {
         }
         const poolId = await poolIdPromise;
         // validate pool id
-        expect(poolId, 'pool id').to.be.bignumber.equal(nextPoolId);
+        const lastPoolId = await this._stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+        expect(poolId, 'pool id').to.be.bignumber.equal(lastPoolId);
 
         if (addOperatorAsMaker) {
             // check the pool id of the operator

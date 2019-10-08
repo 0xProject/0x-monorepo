@@ -40,8 +40,8 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const nextPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
-            expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
+            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+            expect(lastPoolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
         });
         it('Should successfully create several staking pools, as long as the operator is only a maker in one', async () => {
             // test parameters
@@ -77,8 +77,8 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const nextPoolId = await stakingApiWrapper.stakingContract.nextPoolId.callAsync();
-            expect(nextPoolId).to.be.equal(stakingConstants.SECOND_POOL_ID);
+            const lastPoolId = await stakingApiWrapper.stakingContract.lastPoolId.callAsync();
+            expect(lastPoolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
         });
         it('Should throw if operatorShare is > PPM_DENOMINATOR', async () => {
             // test parameters
@@ -107,7 +107,7 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // maker joins pool
-            await maker.setMakerStakingPoolAsync(poolId);
+            await maker.joinStakingPoolAsMakerAsync(poolId);
         });
         it('Maker should successfully remove themselves from a pool', async () => {
             // test parameters
@@ -120,9 +120,9 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, true);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // maker joins pool
-            await maker.setMakerStakingPoolAsync(poolId);
+            await maker.joinStakingPoolAsMakerAsync(poolId);
             // maker removes themselves from pool
-            await maker.setMakerStakingPoolAsync(stakingConstants.NIL_POOL_ID);
+            await maker.joinStakingPoolAsMakerAsync(stakingConstants.NIL_POOL_ID);
         });
         it('Should successfully add/remove multiple makers to the same pool', async () => {
             // test parameters
@@ -135,9 +135,11 @@ blockchainTests('Staking Pool Management', env => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare, false);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add makers to pool
-            await Promise.all(makers.map(async maker => maker.setMakerStakingPoolAsync(poolId)));
+            await Promise.all(makers.map(async maker => maker.joinStakingPoolAsMakerAsync(poolId)));
             // remove makers to pool
-            await Promise.all(makers.map(async maker => maker.setMakerStakingPoolAsync(stakingConstants.NIL_POOL_ID)));
+            await Promise.all(
+                makers.map(async maker => maker.joinStakingPoolAsMakerAsync(stakingConstants.NIL_POOL_ID)),
+            );
         });
         it('Operator should successfully decrease their share of rewards', async () => {
             // test parameters

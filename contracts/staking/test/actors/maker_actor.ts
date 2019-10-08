@@ -5,9 +5,9 @@ import * as _ from 'lodash';
 import { PoolOperatorActor } from './pool_operator_actor';
 
 export class MakerActor extends PoolOperatorActor {
-    public async setMakerStakingPoolAsync(poolId: string, revertError?: RevertError): Promise<void> {
+    public async joinStakingPoolAsMakerAsync(poolId: string, revertError?: RevertError): Promise<void> {
         // add maker
-        const txReceiptPromise = this._stakingApiWrapper.stakingContract.setMakerStakingPool.awaitTransactionSuccessAsync(
+        const txReceiptPromise = this._stakingApiWrapper.stakingContract.joinStakingPoolAsMaker.awaitTransactionSuccessAsync(
             poolId,
             { from: this.getOwner() },
         );

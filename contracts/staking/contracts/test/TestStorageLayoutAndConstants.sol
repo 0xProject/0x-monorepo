@@ -175,8 +175,8 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                nextPoolId_slot,
-                nextPoolId_offset,
+                lastPoolId_slot,
+                lastPoolId_offset,
                 slot,
                 offset
             )

@@ -68,8 +68,8 @@ contract MixinStorage is
     // mapping from Owner to Amount of Withdrawable Stake
     mapping (address => uint256) internal _withdrawableStakeByOwner;
 
-    // tracking Pool Id
-    bytes32 public nextPoolId = bytes32(uint256(1));
+    // tracking Pool Id, a unique identifier for each staking pool.
+    bytes32 public lastPoolId;
 
     // mapping from Maker Address to Pool Id of maker
     mapping (address => bytes32) public poolIdByMaker;

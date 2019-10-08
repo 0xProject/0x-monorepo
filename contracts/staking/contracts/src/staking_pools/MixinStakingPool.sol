@@ -53,9 +53,8 @@ contract MixinStakingPool is
         // note that an operator must be payable
         address payable operator = msg.sender;
 
-        // assign pool id and generate next id
-        poolId = nextPoolId;
-        nextPoolId = _computeNextStakingPoolId(poolId);
+        // compute unique id for this pool
+        poolId = lastPoolId = bytes32(uint256(lastPoolId).safeAdd(1));
 
         // sanity check on operator share
         _assertNewOperatorShare(
@@ -80,7 +79,7 @@ contract MixinStakingPool is
         emit StakingPoolCreated(poolId, operator, operatorShare);
 
         if (addOperatorAsMaker) {
-            setMakerStakingPool(poolId);
+            joinStakingPoolAsMaker(poolId);
         }
 
         return poolId;
@@ -112,7 +111,7 @@ contract MixinStakingPool is
 
     /// @dev Allows caller to join a staking pool as a maker.
     /// @param poolId Unique id of pool.
-    function setMakerStakingPool(bytes32 poolId)
+    function joinStakingPoolAsMaker(bytes32 poolId)
         public
     {
         address maker = msg.sender;
@@ -131,17 +130,6 @@ contract MixinStakingPool is
         returns (IStructs.Pool memory)
     {
         return _poolById[poolId];
-    }
-
-    /// @dev Computes the unique id that comes after the input pool id.
-    /// @param poolId Unique id of pool.
-    /// @return Next pool id after input pool.
-    function _computeNextStakingPoolId(bytes32 poolId)
-        internal
-        pure
-        returns (bytes32)
-    {
-        return bytes32(uint256(poolId).safeAdd(1));
     }
 
     /// @dev Reverts iff a staking pool does not exist.

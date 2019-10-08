@@ -40,7 +40,7 @@ interface IStorage {
         view
         returns (address);
 
-    function nextPoolId()
+    function lastPoolId()
         external
         view
         returns (bytes32);
