@@ -366,29 +366,19 @@ contract MixinExchangeCore is
             }
         }
 
-        // Validate either on the first fill or if the signature type requires
-        // regular validation.
-        address makerAddress = order.makerAddress;
-        if (orderInfo.orderTakerAssetFilledAmount == 0 ||
-            _doesSignatureRequireRegularValidation(
+        // Validate signature
+        if (!_isValidOrderWithHashSignature(
+                order,
                 orderInfo.orderHash,
-                makerAddress,
                 signature
             )
         ) {
-            if (!_isValidOrderWithHashSignature(
-                    order,
-                    orderInfo.orderHash,
-                    signature
-                )
-            ) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
-                    orderInfo.orderHash,
-                    makerAddress,
-                    signature
-                ));
-            }
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
+                orderInfo.orderHash,
+                order.makerAddress,
+                signature
+            ));
         }
     }
 
