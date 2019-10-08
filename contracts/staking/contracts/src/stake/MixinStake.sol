@@ -54,21 +54,21 @@ contract MixinStake is
     }
 
     /// @dev Unstake. Tokens are withdrawn from the ZRX Vault and returned to
-    ///      the staker. Stake must be in the 'inactive' status for at least
-    ///      one full epoch to unstake.
+    ///      the staker. Stake must be in the 'undelegated' status in both the
+    ///      current and next epoch in order to be unstaked.
     /// @param amount of ZRX to unstake.
     function unstake(uint256 amount)
         external
     {
         address staker = msg.sender;
 
-        IStructs.StoredBalance memory inactiveBalance =
+        IStructs.StoredBalance memory undelegatedBalance =
             _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker]);
 
-        // stake must be inactive in current and next epoch to be withdrawn
+        // stake must be undelegated in current and next epoch to be withdrawn
         uint256 currentWithdrawableStake = LibSafeMath.min256(
-            inactiveBalance.currentEpochBalance,
-            inactiveBalance.nextEpochBalance
+            undelegatedBalance.currentEpochBalance,
+            undelegatedBalance.nextEpochBalance
         );
 
         if (amount > currentWithdrawableStake) {
@@ -80,7 +80,7 @@ contract MixinStake is
             );
         }
 
-        // burn inactive stake
+        // burn undelegated stake
         _decreaseCurrentAndNextBalance(
             _ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker],
             amount
@@ -96,7 +96,8 @@ contract MixinStake is
         );
     }
 
-    /// @dev Moves stake between statuses: 'active', 'inactive' or 'delegated'.
+    /// @dev Moves stake between statuses: 'undelegated' or 'delegated'.
+    ///      Delegated stake can also be moved between pools.
     ///      This change comes into effect next epoch.
     /// @param from status to move stake out of.
     /// @param to status to move stake into.

@@ -31,7 +31,7 @@ contract MixinStakeStorage is
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
-    /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
+    /// @dev Moves stake between states: 'undelegated' or 'delegated'.
     ///      This change comes into effect next epoch.
     /// @param fromPtr pointer to storage location of `from` stake.
     /// @param toPtr pointer to storage location of `to` stake.

@@ -87,9 +87,9 @@ export interface StakeBalances {
     zrxBalance: BigNumber;
     stakeBalance: BigNumber;
     stakeBalanceInVault: BigNumber;
-    inactiveStakeBalance: StoredBalance;
+    undelegatedStakeBalance: StoredBalance;
     delegatedStakeBalance: StoredBalance;
-    globalInactiveStakeBalance: StoredBalance;
+    globalUndelegatedStakeBalance: StoredBalance;
     globalDelegatedStakeBalance: StoredBalance;
     delegatedStakeByPool: StakeBalanceByPool;
     totalDelegatedStakeByPool: StakeBalanceByPool;
