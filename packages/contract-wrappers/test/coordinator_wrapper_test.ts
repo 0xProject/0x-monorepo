@@ -1,7 +1,6 @@
 import { constants, OrderFactory } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber, fetchAsync, logUtils, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
@@ -86,9 +85,9 @@ describe.skip('CoordinatorWrapper', () => {
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         feeTokenAddress = contractAddresses.zrxToken;
         [makerAssetData, takerAssetData, feeAssetData] = [
-            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(feeTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(feeTokenAddress),
         ];
 
         // Configure order defaults

@@ -1,4 +1,5 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
@@ -14,9 +15,10 @@ import {
     hexConcat,
     hexSlice,
     OrderFactory,
+    provider,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
+import { CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { ApprovalFactory, artifacts, CoordinatorContract, CoordinatorTestFactory } from '../src';
@@ -29,6 +31,7 @@ blockchainTests.resets('Coordinator tests', env => {
     let takerAddress: string;
     let feeRecipientAddress: string;
 
+    let devUtils: DevUtilsContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
@@ -54,6 +57,7 @@ blockchainTests.resets('Coordinator tests', env => {
         chainId = await env.getChainIdAsync();
         const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
 
         // Deploy Exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
@@ -128,10 +132,10 @@ blockchainTests.resets('Coordinator tests', env => {
             senderAddress: coordinatorContract.address,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(takerFeeToken.address),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(erc20TokenA.address),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(erc20TokenB.address),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(makerFeeToken.address),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(takerFeeToken.address),
             exchangeAddress: exchange.address,
             chainId,
         };

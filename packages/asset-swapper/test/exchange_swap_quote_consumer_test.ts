@@ -1,7 +1,6 @@
 import { ContractAddresses, ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
 import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -67,9 +66,9 @@ describe('ExchangeSwapQuoteConsumer', () => {
         [coinbaseAddress, takerAddress, makerAddress, feeRecipient] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
-            assetDataUtils.encodeERC20AssetData(makerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(takerTokenAddress),
-            assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress),
+            await contractWrappers.devUtils.encodeERC20AssetData.callAsync(contractAddresses.etherToken),
         ];
         erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
 
@@ -80,8 +79,12 @@ describe('ExchangeSwapQuoteConsumer', () => {
             takerAddress,
             makerAssetData,
             takerAssetData,
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
+            makerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                contractAddresses.zrxToken,
+            ),
+            takerFeeAssetData: await contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+                contractAddresses.zrxToken,
+            ),
             exchangeAddress: contractAddresses.exchange,
             chainId: networkId,
         };

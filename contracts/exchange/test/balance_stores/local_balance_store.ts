@@ -1,5 +1,5 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -12,8 +12,8 @@ export class LocalBalanceStore extends BalanceStore {
      * Creates a new balance store based on an existing one.
      * @param sourceBalanceStore Existing balance store whose values should be copied.
      */
-    public static create(sourceBalanceStore?: BalanceStore): LocalBalanceStore {
-        const localBalanceStore = new LocalBalanceStore();
+    public static create(devUtils: DevUtilsContract, sourceBalanceStore?: BalanceStore): LocalBalanceStore {
+        const localBalanceStore = new LocalBalanceStore(devUtils);
         if (sourceBalanceStore !== undefined) {
             localBalanceStore.cloneFrom(sourceBalanceStore);
         }
@@ -26,6 +26,7 @@ export class LocalBalanceStore extends BalanceStore {
      * be initialized via `create`.
      */
     public constructor(
+        private readonly _devUtils: DevUtilsContract,
         tokenOwnersByName: TokenOwnersByName = {},
         tokenContractsByName: Partial<TokenContractsByName> = {},
     ) {
@@ -46,27 +47,33 @@ export class LocalBalanceStore extends BalanceStore {
      * @param amount Amount of asset(s) to transfer
      * @param assetData Asset data of assets being transferred.
      */
-    public transferAsset(fromAddress: string, toAddress: string, amount: BigNumber, assetData: string): void {
+    public async transferAssetAsync(
+        fromAddress: string,
+        toAddress: string,
+        amount: BigNumber,
+        assetData: string,
+    ): Promise<void> {
         if (fromAddress === toAddress) {
             return;
         }
-        const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+        const assetProxyId = await this._devUtils.decodeAssetProxyId.callAsync(assetData);
         switch (assetProxyId) {
             case AssetProxyId.ERC20: {
-                const erc20AssetData = assetDataUtils.decodeERC20AssetData(assetData);
-                const assetAddress = erc20AssetData.tokenAddress;
-                _.update(this._balances.erc20, [fromAddress, assetAddress], balance => balance.minus(amount));
-                _.update(this._balances.erc20, [toAddress, assetAddress], balance =>
+                // tslint:disable-next-line:no-unused-variable
+                const [proxyId, tokenAddress] = await this._devUtils.decodeERC20AssetData.callAsync(assetData);
+                _.update(this._balances.erc20, [fromAddress, tokenAddress], balance => balance.minus(amount));
+                _.update(this._balances.erc20, [toAddress, tokenAddress], balance =>
                     (balance || constants.ZERO_AMOUNT).plus(amount),
                 );
                 break;
             }
             case AssetProxyId.ERC721: {
-                const erc721AssetData = assetDataUtils.decodeERC721AssetData(assetData);
-                const assetAddress = erc721AssetData.tokenAddress;
-                const tokenId = erc721AssetData.tokenId;
-                const fromTokens = _.get(this._balances.erc721, [fromAddress, assetAddress], []);
-                const toTokens = _.get(this._balances.erc721, [toAddress, assetAddress], []);
+                // tslint:disable-next-line:no-unused-variable
+                const [proxyId, tokenAddress, tokenId] = await this._devUtils.decodeERC721AssetData.callAsync(
+                    assetData,
+                );
+                const fromTokens = _.get(this._balances.erc721, [fromAddress, tokenAddress], []);
+                const toTokens = _.get(this._balances.erc721, [toAddress, tokenAddress], []);
                 if (amount.gte(1)) {
                     const tokenIndex = _.findIndex(fromTokens as BigNumber[], t => t.eq(tokenId));
                     if (tokenIndex !== -1) {
@@ -75,25 +82,29 @@ export class LocalBalanceStore extends BalanceStore {
                         toTokens.sort();
                     }
                 }
-                _.set(this._balances.erc721, [fromAddress, assetAddress], fromTokens);
-                _.set(this._balances.erc721, [toAddress, assetAddress], toTokens);
+                _.set(this._balances.erc721, [fromAddress, tokenAddress], fromTokens);
+                _.set(this._balances.erc721, [toAddress, tokenAddress], toTokens);
                 break;
             }
             case AssetProxyId.ERC1155: {
-                const erc1155AssetData = assetDataUtils.decodeERC1155AssetData(assetData);
-                const assetAddress = erc1155AssetData.tokenAddress;
+                const [
+                    proxyId, // tslint:disable-line:no-unused-variable
+                    tokenAddress,
+                    tokenIds,
+                    tokenValues,
+                ] = await this._devUtils.decodeERC1155AssetData.callAsync(assetData);
                 const fromBalances = {
                     // tslint:disable-next-line:no-inferred-empty-object-type
-                    fungible: _.get(this._balances.erc1155, [fromAddress, assetAddress, 'fungible'], {}),
-                    nonFungible: _.get(this._balances.erc1155, [fromAddress, assetAddress, 'nonFungible'], []),
+                    fungible: _.get(this._balances.erc1155, [fromAddress, tokenAddress, 'fungible'], {}),
+                    nonFungible: _.get(this._balances.erc1155, [fromAddress, tokenAddress, 'nonFungible'], []),
                 };
                 const toBalances = {
                     // tslint:disable-next-line:no-inferred-empty-object-type
-                    fungible: _.get(this._balances.erc1155, [toAddress, assetAddress, 'fungible'], {}),
-                    nonFungible: _.get(this._balances.erc1155, [toAddress, assetAddress, 'nonFungible'], []),
+                    fungible: _.get(this._balances.erc1155, [toAddress, tokenAddress, 'fungible'], {}),
+                    nonFungible: _.get(this._balances.erc1155, [toAddress, tokenAddress, 'nonFungible'], []),
                 };
-                for (const [i, tokenId] of erc1155AssetData.tokenIds.entries()) {
-                    const tokenValue = erc1155AssetData.tokenValues[i];
+                for (const [i, tokenId] of tokenIds.entries()) {
+                    const tokenValue = tokenValues[i];
                     const tokenAmount = amount.times(tokenValue);
                     if (tokenAmount.gt(0)) {
                         const tokenIndex = _.findIndex(fromBalances.nonFungible as BigNumber[], t => t.eq(tokenId));
@@ -113,16 +124,18 @@ export class LocalBalanceStore extends BalanceStore {
                         }
                     }
                 }
-                _.set(this._balances.erc1155, [fromAddress, assetAddress], fromBalances);
-                _.set(this._balances.erc1155, [toAddress, assetAddress], toBalances);
+                _.set(this._balances.erc1155, [fromAddress, tokenAddress], fromBalances);
+                _.set(this._balances.erc1155, [toAddress, tokenAddress], toBalances);
                 break;
             }
             case AssetProxyId.MultiAsset: {
-                const multiAssetData = assetDataUtils.decodeMultiAssetData(assetData);
-                for (const i of _.times(multiAssetData.amounts.length)) {
-                    const nestedAmount = amount.times(multiAssetData.amounts[i]);
-                    const nestedAssetData = multiAssetData.nestedAssetData[i];
-                    this.transferAsset(fromAddress, toAddress, nestedAmount, nestedAssetData);
+                // tslint:disable-next-line:no-unused-variable
+                const [proxyId, amounts, nestedAssetData] = await this._devUtils.decodeMultiAssetData.callAsync(
+                    assetData,
+                );
+                for (const [i, amt] of amounts.entries()) {
+                    const nestedAmount = amount.times(amt);
+                    await this.transferAssetAsync(fromAddress, toAddress, nestedAmount, nestedAssetData[i]);
                 }
                 break;
             }

@@ -1,11 +1,16 @@
 import {
+    AssetProxyId,
+    ERC20AssetData,
+    ERC721AssetData,
     ExchangeContractErrs,
+    MultiAssetData,
     ObjectMap,
     OrderRelevantState,
     OrderState,
     OrderStateInvalid,
     OrderStateValid,
     SignedOrder,
+    SingleAssetData,
 } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
@@ -309,13 +314,14 @@ export class OrderStateUtils {
     ): Promise<ObjectMap<BigNumber>> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         let balances: ObjectMap<BigNumber> = { ...initialBalances };
-        if (assetDataUtils.isERC20AssetData(decodedAssetData) || assetDataUtils.isERC721AssetData(decodedAssetData)) {
+        if (isERC20AssetData(decodedAssetData) || isERC721AssetData(decodedAssetData)) {
             const balance = await this._balanceAndProxyAllowanceFetcher.getBalanceAsync(assetData, traderAddress);
-            const tokenAddress = decodedAssetData.tokenAddress;
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const tokenAddress = (decodedAssetData as ERC20AssetData | ERC721AssetData).tokenAddress;
             balances[tokenAddress] =
                 initialBalances[tokenAddress] === undefined ? balance : balances[tokenAddress].plus(balance);
-        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
-            for (const assetDataElement of decodedAssetData.nestedAssetData) {
+        } else if (isMultiAssetData(decodedAssetData)) {
+            for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
                 balances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, balances);
             }
         }
@@ -328,19 +334,30 @@ export class OrderStateUtils {
     ): Promise<ObjectMap<BigNumber>> {
         const decodedAssetData = assetDataUtils.decodeAssetDataOrThrow(assetData);
         let allowances: ObjectMap<BigNumber> = { ...initialAllowances };
-        if (assetDataUtils.isERC20AssetData(decodedAssetData) || assetDataUtils.isERC721AssetData(decodedAssetData)) {
+        if (isERC20AssetData(decodedAssetData) || isERC721AssetData(decodedAssetData)) {
             const allowance = await this._balanceAndProxyAllowanceFetcher.getProxyAllowanceAsync(
                 assetData,
                 traderAddress,
             );
-            const tokenAddress = decodedAssetData.tokenAddress;
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            const tokenAddress = (decodedAssetData as ERC20AssetData | ERC721AssetData).tokenAddress;
             allowances[tokenAddress] =
                 initialAllowances[tokenAddress] === undefined ? allowance : allowances[tokenAddress].plus(allowance);
-        } else if (assetDataUtils.isMultiAssetData(decodedAssetData)) {
-            for (const assetDataElement of decodedAssetData.nestedAssetData) {
+        } else if (isMultiAssetData(decodedAssetData)) {
+            for (const assetDataElement of (decodedAssetData as MultiAssetData).nestedAssetData) {
                 allowances = await this._getAssetBalancesAsync(assetDataElement, traderAddress, allowances);
             }
         }
         return allowances;
     }
+}
+
+function isERC20AssetData(decodedAssetData: SingleAssetData | MultiAssetData): boolean {
+    return decodedAssetData.assetProxyId === AssetProxyId.ERC20;
+}
+function isERC721AssetData(decodedAssetData: SingleAssetData | MultiAssetData): boolean {
+    return decodedAssetData.assetProxyId === AssetProxyId.ERC721;
+}
+function isMultiAssetData(decodedAssetData: SingleAssetData | MultiAssetData): boolean {
+    return decodedAssetData.assetProxyId === AssetProxyId.MultiAsset;
 }

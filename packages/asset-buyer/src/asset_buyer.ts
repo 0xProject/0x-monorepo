@@ -137,7 +137,7 @@ export class AssetBuyer {
         assert.isValidPercentage('feePercentage', feePercentage);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
         const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset and fees
         // if the requested assetData is ZRX, don't get the fee info
@@ -177,7 +177,7 @@ export class AssetBuyer {
     ): Promise<BuyQuote> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('assetBuyAmount', assetBuyAmount);
-        const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
+        const assetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(tokenAddress);
         const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
         return buyQuote;
     }
@@ -200,7 +200,7 @@ export class AssetBuyer {
         assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
 
         const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        const etherTokenAssetData = await this._getEtherTokenAssetDataOrThrowAsync();
         if (!assetPairs.includes(etherTokenAssetData)) {
             return {
                 tokensAvailableInBaseUnits: new BigNumber(0),
@@ -298,7 +298,7 @@ export class AssetBuyer {
      * @return  An array of asset data strings that can be purchased using wETH.
      */
     public async getAvailableAssetDatasAsync(): Promise<string[]> {
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
+        const etherTokenAssetData = await this._getEtherTokenAssetDataOrThrowAsync();
         return this.orderProvider.getAvailableMakerAssetDatasAsync(etherTokenAssetData);
     }
     /**
@@ -325,8 +325,8 @@ export class AssetBuyer {
             const result = ordersEntryIfExists.ordersAndFillableAmounts;
             return result;
         }
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const etherTokenAssetData = await this._getEtherTokenAssetDataOrThrowAsync();
+        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
         // construct orderProvider request
         const orderProviderRequest = {
             makerAssetData: assetData,
@@ -359,14 +359,18 @@ export class AssetBuyer {
      * Get the assetData that represents the WETH token.
      * Will throw if WETH does not exist for the current network.
      */
-    private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken);
+    private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
+        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+            this._contractWrappers.contractAddresses.etherToken,
+        );
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
-    private _getZrxTokenAssetDataOrThrow(): string {
-        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);
+    private async _getZrxTokenAssetDataOrThrowAsync(): Promise<string> {
+        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+            this._contractWrappers.contractAddresses.zrxToken,
+        );
     }
 }

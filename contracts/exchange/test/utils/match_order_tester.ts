@@ -1,6 +1,7 @@
 import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { constants, ERC1155HoldingsByOwner, expect, OrderStatus } from '@0x/contracts-test-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, BatchMatchedFillResults, FillResults, MatchedFillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -111,14 +112,6 @@ export type MatchOrdersAsyncCall = (
 ) => Promise<TransactionReceiptWithDecodedLogs>;
 
 export class MatchOrderTester {
-    public exchangeWrapper: ExchangeWrapper;
-    public erc20Wrapper: ERC20Wrapper;
-    public erc721Wrapper: ERC721Wrapper;
-    public erc1155ProxyWrapper: ERC1155ProxyWrapper;
-    public batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall;
-    public batchMatchOrdersWithMaximalFillCallAsync?: BatchMatchOrdersAsyncCall;
-    public matchOrdersCallAsync?: MatchOrdersAsyncCall;
-    public matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall;
     private readonly _initialTokenBalancesPromise: Promise<TokenBalances>;
 
     /**
@@ -137,23 +130,16 @@ export class MatchOrderTester {
      *                             `ExchangeWrapper.matchOrdersAsync()`.
      */
     constructor(
-        exchangeWrapper: ExchangeWrapper,
-        erc20Wrapper: ERC20Wrapper,
-        erc721Wrapper: ERC721Wrapper,
-        erc1155ProxyWrapper: ERC1155ProxyWrapper,
-        batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall,
-        batchMatchOrdersWithMaximalFillCallAsync?: BatchMatchOrdersAsyncCall,
-        matchOrdersCallAsync?: MatchOrdersAsyncCall,
-        matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall,
+        public exchangeWrapper: ExchangeWrapper,
+        public erc20Wrapper: ERC20Wrapper,
+        public erc721Wrapper: ERC721Wrapper,
+        public erc1155ProxyWrapper: ERC1155ProxyWrapper,
+        protected _devUtils: DevUtilsContract,
+        public batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall,
+        public batchMatchOrdersWithMaximalFillCallAsync?: BatchMatchOrdersAsyncCall,
+        public matchOrdersCallAsync?: MatchOrdersAsyncCall,
+        public matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall,
     ) {
-        this.exchangeWrapper = exchangeWrapper;
-        this.erc20Wrapper = erc20Wrapper;
-        this.erc721Wrapper = erc721Wrapper;
-        this.erc1155ProxyWrapper = erc1155ProxyWrapper;
-        this.batchMatchOrdersCallAsync = batchMatchOrdersCallAsync;
-        this.batchMatchOrdersWithMaximalFillCallAsync = batchMatchOrdersWithMaximalFillCallAsync;
-        this.matchOrdersCallAsync = matchOrdersCallAsync;
-        this.matchOrdersWithMaximalFillCallAsync = matchOrdersWithMaximalFillCallAsync;
         this._initialTokenBalancesPromise = this.getBalancesAsync();
     }
 
@@ -215,12 +201,13 @@ export class MatchOrderTester {
             );
         }
         // Simulate the batch order match.
-        const expectedBatchMatchResults = simulateBatchMatchOrders(
+        const expectedBatchMatchResults = await simulateBatchMatchOrdersAsync(
             orders,
             takerAddress,
             _initialTokenBalances,
             matchPairs,
             expectedTransferAmounts,
+            this._devUtils,
         );
         const expectedResults = convertToBatchMatchResults(expectedBatchMatchResults);
         expect(actualBatchMatchResults).to.be.eql(expectedResults);
@@ -282,11 +269,12 @@ export class MatchOrderTester {
             transactionReceipt = await this._executeMatchOrdersAsync(orders.leftOrder, orders.rightOrder, takerAddress);
         }
         // Simulate the fill.
-        const expectedMatchResults = simulateMatchOrders(
+        const expectedMatchResults = await simulateMatchOrdersAsync(
             orders,
             takerAddress,
             _initialTokenBalances,
             toFullMatchTransferAmounts(expectedTransferAmounts),
+            this._devUtils,
         );
         const expectedResults = convertToMatchResults(expectedMatchResults);
         expect(actualMatchResults).to.be.eql(expectedResults);
@@ -403,13 +391,14 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
  * @param transferAmounts Amounts to transfer during the simulation.
  * @return The new account balances and fill events that occurred during the match.
  */
-function simulateBatchMatchOrders(
+async function simulateBatchMatchOrdersAsync(
     orders: BatchMatchedOrders,
     takerAddress: string,
     tokenBalances: TokenBalances,
     matchPairs: Array<[number, number]>,
     transferAmounts: Array<Partial<MatchTransferAmounts>>,
-): BatchMatchResults {
+    devUtils: DevUtilsContract,
+): Promise<BatchMatchResults> {
     // Initialize variables
     let leftIdx = 0;
     let rightIdx = 0;
@@ -465,11 +454,12 @@ function simulateBatchMatchOrders(
 
         // Add the latest match to the batch match results
         batchMatchResults.matches.push(
-            simulateMatchOrders(
+            await simulateMatchOrdersAsync(
                 matchedOrders,
                 takerAddress,
                 tokenBalances,
                 toFullMatchTransferAmounts(transferAmounts[i]),
+                devUtils,
             ),
         );
 
@@ -525,12 +515,13 @@ function simulateBatchMatchOrders(
  * @param transferAmounts Amounts to transfer during the simulation.
  * @return The new account balances and fill events that occurred during the match.
  */
-function simulateMatchOrders(
+async function simulateMatchOrdersAsync(
     orders: MatchedOrders,
     takerAddress: string,
     tokenBalances: TokenBalances,
     transferAmounts: MatchTransferAmounts,
-): MatchResults {
+    devUtils: DevUtilsContract,
+): Promise<MatchResults> {
     // prettier-ignore
     const matchResults = {
         orders: {
@@ -549,72 +540,80 @@ function simulateMatchOrders(
         balances: _.cloneDeep(tokenBalances),
     };
     // Right maker asset -> left maker
-    transferAsset(
+    await transferAssetAsync(
         orders.rightOrder.makerAddress,
         orders.leftOrder.makerAddress,
         transferAmounts.rightMakerAssetBoughtByLeftMakerAmount,
         orders.rightOrder.makerAssetData,
         matchResults,
+        devUtils,
     );
     if (orders.leftOrder.makerAddress !== orders.leftOrder.feeRecipientAddress) {
         // Left maker fees
-        transferAsset(
+        await transferAssetAsync(
             orders.leftOrder.makerAddress,
             orders.leftOrder.feeRecipientAddress,
             transferAmounts.leftMakerFeeAssetPaidByLeftMakerAmount,
             orders.leftOrder.makerFeeAssetData,
             matchResults,
+            devUtils,
         );
     }
     // Left maker asset -> right maker
-    transferAsset(
+    await transferAssetAsync(
         orders.leftOrder.makerAddress,
         orders.rightOrder.makerAddress,
         transferAmounts.leftMakerAssetBoughtByRightMakerAmount,
         orders.leftOrder.makerAssetData,
         matchResults,
+        devUtils,
     );
     if (orders.rightOrder.makerAddress !== orders.rightOrder.feeRecipientAddress) {
         // Right maker fees
-        transferAsset(
+        await transferAssetAsync(
             orders.rightOrder.makerAddress,
             orders.rightOrder.feeRecipientAddress,
             transferAmounts.rightMakerFeeAssetPaidByRightMakerAmount,
             orders.rightOrder.makerFeeAssetData,
             matchResults,
+            devUtils,
         );
     }
     // Left taker profit
-    transferAsset(
+    await transferAssetAsync(
         orders.leftOrder.makerAddress,
         takerAddress,
         transferAmounts.leftMakerAssetReceivedByTakerAmount,
         orders.leftOrder.makerAssetData,
         matchResults,
+        devUtils,
     );
     // Right taker profit
-    transferAsset(
+    await transferAssetAsync(
         orders.rightOrder.makerAddress,
         takerAddress,
         transferAmounts.rightMakerAssetReceivedByTakerAmount,
         orders.rightOrder.makerAssetData,
         matchResults,
+        devUtils,
     );
     // Left taker fees
-    transferAsset(
+    await transferAssetAsync(
         takerAddress,
         orders.leftOrder.feeRecipientAddress,
         transferAmounts.leftTakerFeeAssetPaidByTakerAmount,
         orders.leftOrder.takerFeeAssetData,
         matchResults,
+        devUtils,
     );
     // Right taker fees
-    transferAsset(
+    await transferAssetAsync(
         takerAddress,
         orders.rightOrder.feeRecipientAddress,
         transferAmounts.rightTakerFeeAssetPaidByTakerAmount,
         orders.rightOrder.takerFeeAssetData,
         matchResults,
+        devUtils,
     );
 
     return matchResults;
@@ -624,18 +623,19 @@ function simulateMatchOrders(
  * Simulates a transfer of assets from `fromAddress` to `toAddress`
  *       by updating `matchResults`.
  */
-function transferAsset(
+async function transferAssetAsync(
     fromAddress: string,
     toAddress: string,
     amount: BigNumber,
     assetData: string,
     matchResults: MatchResults,
-): void {
-    const assetProxyId = assetDataUtils.decodeAssetProxyId(assetData);
+    devUtils: DevUtilsContract,
+): Promise<void> {
+    const assetProxyId = await devUtils.decodeAssetProxyId.callAsync(assetData);
     switch (assetProxyId) {
         case AssetProxyId.ERC20: {
-            const erc20AssetData = assetDataUtils.decodeERC20AssetData(assetData);
-            const assetAddress = erc20AssetData.tokenAddress;
+            // tslint:disable-next-line:no-unused-variable
+            const [proxyId, assetAddress] = await devUtils.decodeERC20AssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
             const fromBalances = matchResults.balances.erc20[fromAddress];
             const toBalances = matchResults.balances.erc20[toAddress];
             fromBalances[assetAddress] = fromBalances[assetAddress].minus(amount);
@@ -643,9 +643,8 @@ function transferAsset(
             break;
         }
         case AssetProxyId.ERC721: {
-            const erc721AssetData = assetDataUtils.decodeERC721AssetData(assetData);
-            const assetAddress = erc721AssetData.tokenAddress;
-            const tokenId = erc721AssetData.tokenId;
+            // tslint:disable-next-line:no-unused-variable
+            const [proxyId, assetAddress, tokenId] = await devUtils.decodeERC721AssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
             const fromTokens = matchResults.balances.erc721[fromAddress][assetAddress];
             const toTokens = matchResults.balances.erc721[toAddress][assetAddress];
             if (amount.gte(1)) {
@@ -658,13 +657,15 @@ function transferAsset(
             break;
         }
         case AssetProxyId.ERC1155: {
-            const erc1155AssetData = assetDataUtils.decodeERC1155AssetData(assetData);
-            const assetAddress = erc1155AssetData.tokenAddress;
+            // tslint:disable-next-line:no-unused-variable
+            const [proxyId, assetAddress, tokenIds, tokenValues] = await devUtils.decodeERC1155AssetData.callAsync(
+                assetData,
+            );
             const fromBalances = matchResults.balances.erc1155[fromAddress][assetAddress];
             const toBalances = matchResults.balances.erc1155[toAddress][assetAddress];
-            for (const i of _.times(erc1155AssetData.tokenIds.length)) {
-                const tokenId = erc1155AssetData.tokenIds[i];
-                const tokenValue = erc1155AssetData.tokenValues[i];
+            for (const i of _.times(tokenIds.length)) {
+                const tokenId = tokenIds[i];
+                const tokenValue = tokenValues[i];
                 const tokenAmount = amount.times(tokenValue);
                 if (tokenAmount.gt(0)) {
                     const tokenIndex = _.findIndex(fromBalances.nonFungible, t => t.eq(tokenId));
@@ -683,11 +684,19 @@ function transferAsset(
             break;
         }
         case AssetProxyId.MultiAsset: {
-            const multiAssetData = assetDataUtils.decodeMultiAssetData(assetData);
-            for (const i of _.times(multiAssetData.amounts.length)) {
-                const nestedAmount = amount.times(multiAssetData.amounts[i]);
-                const nestedAssetData = multiAssetData.nestedAssetData[i];
-                transferAsset(fromAddress, toAddress, nestedAmount, nestedAssetData, matchResults);
+            // tslint:disable-next-line:no-unused-variable
+            const [proxyId, amounts, nestedAssetData] = await devUtils.decodeMultiAssetData.callAsync(assetData); // tslint:disable-line-no-unused-variable
+            for (const i of _.times(amounts.length)) {
+                const nestedAmount = amount.times(amounts[i]);
+                const _nestedAssetData = nestedAssetData[i];
+                await transferAssetAsync(
+                    fromAddress,
+                    toAddress,
+                    nestedAmount,
+                    _nestedAssetData,
+                    matchResults,
+                    devUtils,
+                );
             }
             break;
         }

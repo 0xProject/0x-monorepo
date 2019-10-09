@@ -1,5 +1,6 @@
 // tslint:disable: max-file-line-count
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
@@ -10,7 +11,7 @@ import {
     OrderFactory,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
@@ -66,6 +67,7 @@ blockchainTests.resets('Exchange transactions', env => {
     let takerPrivateKey: Buffer;
     let taker2PrivateKey: Buffer;
 
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
     before(async () => {
         chainId = await env.getChainIdAsync();
         const accounts = await env.getAccountAddressesAsync();
@@ -110,10 +112,10 @@ blockchainTests.resets('Exchange transactions', env => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerFeeTokenAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerFeeTokenAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerTokenAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerTokenAddress),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerFeeTokenAddress),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerFeeTokenAddress),
             exchangeAddress: exchangeInstance.address,
             chainId,
         };

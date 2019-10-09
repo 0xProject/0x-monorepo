@@ -4,6 +4,7 @@ import {
     ERC20Wrapper,
     ERC721ProxyContract,
 } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
@@ -20,7 +21,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
+import { ExchangeRevertErrors } from '@0x/order-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -62,6 +63,7 @@ describe('OrderMatcher', () => {
     let defaultERC20MakerAssetAddress: string;
     let defaultERC20TakerAssetAddress: string;
 
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider, txDefaults);
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -112,7 +114,7 @@ describe('OrderMatcher', () => {
             provider,
             txDefaults,
             artifacts,
-            assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            await devUtils.encodeERC20AssetData.callAsync(zrxToken.address),
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange);
@@ -136,8 +138,8 @@ describe('OrderMatcher', () => {
         // Set default addresses
         defaultERC20MakerAssetAddress = erc20TokenA.address;
         defaultERC20TakerAssetAddress = erc20TokenB.address;
-        leftMakerAssetData = assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress);
-        leftTakerAssetData = assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress);
+        leftMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress);
+        leftTakerAssetData = await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress);
         // Set OrderMatcher balances and allowances
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20TokenA.setBalance.sendTransactionAsync(orderMatcher.address, constants.INITIAL_ERC20_BALANCE, {
@@ -743,7 +745,7 @@ describe('OrderMatcher', () => {
                 await erc721Token.mint.sendTransactionAsync(orderMatcher.address, tokenId, { from: owner }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, tokenId);
+            const assetData = await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, tokenId);
             const withdrawAmount = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await orderMatcher.withdrawAsset.sendTransactionAsync(assetData, withdrawAmount, { from: owner }),
@@ -782,7 +784,10 @@ describe('OrderMatcher', () => {
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
-            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, constants.ZERO_AMOUNT);
+            const assetData = await devUtils.encodeERC721AssetData.callAsync(
+                erc721Token.address,
+                constants.ZERO_AMOUNT,
+            );
             const allowance = new BigNumber(1);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await orderMatcher.approveAssetProxy.sendTransactionAsync(assetData, allowance, { from: owner }),
@@ -800,7 +805,10 @@ describe('OrderMatcher', () => {
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
-            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, constants.ZERO_AMOUNT);
+            const assetData = await devUtils.encodeERC721AssetData.callAsync(
+                erc721Token.address,
+                constants.ZERO_AMOUNT,
+            );
             const allowance = new BigNumber(2);
             await web3Wrapper.awaitTransactionSuccessAsync(
                 await orderMatcher.approveAssetProxy.sendTransactionAsync(assetData, allowance, { from: owner }),

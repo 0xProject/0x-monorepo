@@ -1,9 +1,9 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { ExchangeWrapper } from '@0x/contracts-exchange';
 import { constants, ERC20BalancesByOwner, expect, OrderStatus, web3Wrapper } from '@0x/contracts-test-utils';
-import { assetDataUtils } from '@0x/order-utils';
 import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
@@ -42,6 +42,7 @@ export class ForwarderTestFactory {
         private readonly _exchangeWrapper: ExchangeWrapper,
         private readonly _forwarderWrapper: ForwarderWrapper,
         private readonly _erc20Wrapper: ERC20Wrapper,
+        private readonly _devUtils: DevUtilsContract,
         private readonly _forwarderAddress: string,
         private readonly _makerAddress: string,
         private readonly _takerAddress: string,
@@ -200,14 +201,14 @@ export class ForwarderTestFactory {
         }
     }
 
-    private _checkErc20Balances(
+    private async _checkErc20BalancesAsync(
         oldBalances: ERC20BalancesByOwner,
         newBalances: ERC20BalancesByOwner,
         expectedResults: ForwarderFillState,
         makerAssetContract: DummyERC20TokenContract,
-    ): void {
+    ): Promise<void> {
         const makerAssetAddress = makerAssetContract.address;
-        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerAssetAddress);
+        const makerAssetData = await this._devUtils.encodeERC20AssetData.callAsync(makerAssetAddress);
 
         const {
             maxOverboughtMakerAsset,
@@ -295,7 +296,7 @@ export class ForwarderTestFactory {
 
         for (const makerAssetContract of makerAssetContracts) {
             if (makerAssetContract instanceof DummyERC20TokenContract) {
-                this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
+                await this._checkErc20BalancesAsync(erc20Balances, newBalances, expectedResults, makerAssetContract);
             } else if (options.makerAssetId !== undefined) {
                 const newOwner = await makerAssetContract.ownerOf.callAsync(options.makerAssetId);
                 expect(newOwner, 'New ERC721 owner').to.be.bignumber.equal(this._takerAddress);

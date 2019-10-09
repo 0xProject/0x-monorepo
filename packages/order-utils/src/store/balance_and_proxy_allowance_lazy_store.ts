@@ -1,10 +1,8 @@
-import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { AbstractBalanceAndProxyAllowanceFetcher } from '../abstract/abstract_balance_and_proxy_allowance_fetcher';
 import { AbstractBalanceAndProxyAllowanceLazyStore } from '../abstract/abstract_balance_and_proxy_allowance_lazy_store';
-import { assetDataUtils } from '../asset_data_utils';
 
 /**
  * Copy on read store for balances/proxyAllowances of tokens/accounts
@@ -108,25 +106,6 @@ export class BalanceAndProxyAllowanceLazyStore implements AbstractBalanceAndProx
             delete this._proxyAllowance[assetData][userAddress];
             if (_.isEmpty(this._proxyAllowance[assetData])) {
                 delete this._proxyAllowance[assetData];
-            }
-        }
-    }
-    /**
-     * Clear all ERC721 0x proxy allowances a user has on all items of a specific ERC721 contract
-     * @param tokenAddress ERc721 token address
-     * @param userAddress Owner Ethereum address
-     */
-    public deleteAllERC721ProxyAllowance(tokenAddress: string, userAddress: string): void {
-        for (const assetData in this._proxyAllowance) {
-            if (this._proxyAllowance.hasOwnProperty(assetData)) {
-                const decodedAssetData = assetDataUtils.decodeERC721AssetData(assetData);
-                if (
-                    decodedAssetData.assetProxyId === AssetProxyId.ERC721 &&
-                    decodedAssetData.tokenAddress === tokenAddress &&
-                    this._proxyAllowance[assetData][userAddress] !== undefined
-                ) {
-                    delete this._proxyAllowance[assetData][userAddress];
-                }
             }
         }
     }

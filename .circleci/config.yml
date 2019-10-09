@@ -58,6 +58,16 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-exchange
+    test-integrations-ganache-3.0:
+        resource_class: medium+
+        docker:
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
+        working_directory: ~/repo
+        steps:
+            - restore_cache:
+                  keys:
+                      - repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run: yarn wsrun test:circleci @0x/contracts-integrations
     test-contracts-rest-ganache-3.0:
         resource_class: medium+
         docker:
@@ -390,6 +400,9 @@ workflows:
         jobs:
             - build
             - test-exchange-ganache-3.0:
+                  requires:
+                      - build
+            - test-integrations-ganache-3.0:
                   requires:
                       - build
             - test-contracts-rest-ganache-3.0:

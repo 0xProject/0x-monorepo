@@ -316,6 +316,29 @@ contract LibAssetData {
         return (balances, allowances);
     }
 
+    /// @dev Decode AssetProxy identifier 
+    /// @param assetData AssetProxy-compliant asset data describing an ERC-20, ERC-721, ERC1155, or MultiAsset asset.
+    /// @return The AssetProxy identifier
+    function decodeAssetProxyId(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 assetProxyId
+        )
+    {
+        assetProxyId = assetData.readBytes4(0);
+
+        require(
+            assetProxyId == IAssetData(address(0)).ERC20Token.selector ||
+            assetProxyId == IAssetData(address(0)).ERC721Token.selector ||
+            assetProxyId == IAssetData(address(0)).ERC1155Assets.selector ||
+            assetProxyId == IAssetData(address(0)).MultiAsset.selector ||
+            assetProxyId == IAssetData(address(0)).StaticCall.selector,
+            "WRONG_PROXY_ID"
+        );
+        return assetProxyId;
+    }
+
     /// @dev Encode ERC-20 asset data into the format described in the AssetProxy contract specification.
     /// @param tokenAddress The address of the ERC-20 contract hosting the asset to be traded.
     /// @return AssetProxy-compliant data describing the asset.
@@ -330,7 +353,7 @@ contract LibAssetData {
 
     /// @dev Decode ERC-20 asset data from the format described in the AssetProxy contract specification.
     /// @param assetData AssetProxy-compliant asset data describing an ERC-20 asset.
-    /// @return The ERC-20 AssetProxy identifier, and the address of the ERC-20 
+    /// @return The AssetProxy identifier, and the address of the ERC-20 
     /// contract hosting this asset.
     function decodeERC20AssetData(bytes memory assetData)
         public
@@ -514,5 +537,55 @@ contract LibAssetData {
             (uint256[], bytes[])
         );
         // solhint-enable indent
+    }
+
+    /// @dev Encode StaticCall asset data into the format described in the AssetProxy contract specification.
+    /// @param staticCallTargetAddress Target address of StaticCall.
+    /// @param staticCallData Data that will be passed to staticCallTargetAddress in the StaticCall.
+    /// @param expectedReturnDataHash Expected Keccak-256 hash of the StaticCall return data.
+    /// @return AssetProxy-compliant asset data describing the set of assets.
+    function encodeStaticCallAssetData(
+        address staticCallTargetAddress,
+        bytes memory staticCallData,
+        bytes32 expectedReturnDataHash
+    )
+        public
+        pure
+        returns (bytes memory assetData)
+    {
+        assetData = abi.encodeWithSelector(
+            IAssetData(address(0)).StaticCall.selector,
+            staticCallTargetAddress,
+            staticCallData,
+            expectedReturnDataHash
+        );
+        return assetData;
+    }
+
+    /// @dev Decode StaticCall asset data from the format described in the AssetProxy contract specification.
+    /// @param assetData AssetProxy-compliant asset data describing a StaticCall asset
+    /// @return The StaticCall AssetProxy identifier, the target address of the StaticCAll, the data to be
+    /// passed to the target address, and the expected Keccak-256 hash of the static call return data.
+    function decodeStaticCallAssetData(bytes memory assetData)
+        public
+        pure
+        returns (
+            bytes4 assetProxyId,
+            address staticCallTargetAddress,
+            bytes memory staticCallData,
+            bytes32 expectedReturnDataHash
+        )
+    {
+        assetProxyId = assetData.readBytes4(0);
+
+        require(
+            assetProxyId == IAssetData(address(0)).StaticCall.selector,
+            "WRONG_PROXY_ID"
+        );
+
+        (staticCallTargetAddress, staticCallData, expectedReturnDataHash) = abi.decode(
+            assetData.slice(4, assetData.length),
+            (address, bytes, bytes32)
+        );
     }
 }

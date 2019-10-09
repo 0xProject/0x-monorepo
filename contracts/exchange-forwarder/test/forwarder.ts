@@ -1,4 +1,5 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
@@ -16,7 +17,7 @@ import {
     OrderFactory,
     sendTransactionResult,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
+import { ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
@@ -32,6 +33,7 @@ blockchainTests(ContractName.Forwarder, env => {
     let forwarderFeeRecipientAddress: string;
     let defaultMakerAssetAddress: string;
 
+    let devUtils: DevUtilsContract;
     let weth: DummyERC20TokenContract;
     let erc20Token: DummyERC20TokenContract;
     let secondErc20Token: DummyERC20TokenContract;
@@ -67,6 +69,9 @@ blockchainTests(ContractName.Forwarder, env => {
             forwarderFeeRecipientAddress,
         ] = accounts);
 
+        // Set up DevUtils for encoding asset data
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider);
+
         // Set up Exchange
         chainId = await env.getChainIdAsync();
         exchangeContract = await ExchangeContract.deployFrom0xArtifactAsync(
@@ -95,7 +100,7 @@ blockchainTests(ContractName.Forwarder, env => {
             {},
         );
         weth = new DummyERC20TokenContract(wethContract.address, env.provider);
-        wethAssetData = assetDataUtils.encodeERC20AssetData(wethContract.address);
+        wethAssetData = await devUtils.encodeERC20AssetData.callAsync(wethContract.address);
         erc20Wrapper.addDummyTokenContract(weth);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
@@ -135,10 +140,10 @@ blockchainTests(ContractName.Forwarder, env => {
             takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, DECIMALS_DEFAULT),
             makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             exchangeAddress: exchangeContract.address,
             chainId,
         };
@@ -165,6 +170,7 @@ blockchainTests(ContractName.Forwarder, env => {
             exchangeWrapper,
             forwarderWrapper,
             erc20Wrapper,
+            devUtils,
             forwarderContract.address,
             makerAddress,
             takerAddress,
@@ -216,26 +222,26 @@ blockchainTests(ContractName.Forwarder, env => {
         it('should fill a single order with a percentage fee', async () => {
             const orderWithPercentageFee = await orderFactory.newSignedOrderAsync({
                 takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             });
             await forwarderTestFactory.marketSellTestAsync([orderWithPercentageFee], 0.58, [erc20Token]);
         });
         it('should fill multiple orders with percentage fees', async () => {
             const firstOrder = await orderFactory.newSignedOrderAsync({
                 takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             });
             const secondOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(190, DECIMALS_DEFAULT),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(31, DECIMALS_DEFAULT),
                 takerFee: Web3Wrapper.toBaseUnitAmount(2, DECIMALS_DEFAULT),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             });
             const orders = [firstOrder, secondOrder];
             await forwarderTestFactory.marketSellTestAsync(orders, 1.34, [erc20Token]);
         });
         it('should fail to fill an order with a percentage fee if the asset proxy is not yet approved', async () => {
-            const unapprovedAsset = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const unapprovedAsset = await devUtils.encodeERC20AssetData.callAsync(secondErc20Token.address);
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetData: unapprovedAsset,
                 takerFee: Web3Wrapper.toBaseUnitAmount(2, DECIMALS_DEFAULT),
@@ -310,12 +316,12 @@ blockchainTests(ContractName.Forwarder, env => {
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
         it('should fill orders with different makerAssetData', async () => {
-            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const firstOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20Token.address);
             const firstOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: firstOrderMakerAssetData,
             });
 
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(secondErc20Token.address);
             const secondOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -325,8 +331,8 @@ blockchainTests(ContractName.Forwarder, env => {
             await forwarderTestFactory.marketSellTestAsync(orders, 1.5, [erc20Token, secondErc20Token]);
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
-            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const makerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(secondErc20Token.address);
 
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -425,12 +431,12 @@ blockchainTests(ContractName.Forwarder, env => {
             await forwarderTestFactory.marketBuyTestAsync(orders, 1.96, [erc20Token]);
         });
         it('should buy exactly makerAssetBuyAmount in orders with different makerAssetData', async () => {
-            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const firstOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20Token.address);
             const firstOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: firstOrderMakerAssetData,
             });
 
-            const secondOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const secondOrderMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(secondErc20Token.address);
             const secondOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetData: secondOrderMakerAssetData,
             });
@@ -462,7 +468,7 @@ blockchainTests(ContractName.Forwarder, env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(80, DECIMALS_DEFAULT),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(17, DECIMALS_DEFAULT),
                 takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
-                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
             });
             await forwarderTestFactory.marketBuyTestAsync([order], 0.52, [erc20Token]);
         });
@@ -482,7 +488,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721Order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
                 takerFeeAssetData: wethAssetData,
             });
             await forwarderTestFactory.marketBuyTestAsync([erc721Order], 1, [erc721Token], {
@@ -493,7 +499,7 @@ blockchainTests(ContractName.Forwarder, env => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721orderWithWethFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: await devUtils.encodeERC721AssetData.callAsync(erc721Token.address, makerAssetId),
                 takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
                 takerFeeAssetData: wethAssetData,
             });
@@ -502,8 +508,8 @@ blockchainTests(ContractName.Forwarder, env => {
             });
         });
         it('should fail to fill an order with a fee denominated in an asset other than makerAsset or WETH', async () => {
-            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
-            const takerFeeAssetData = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
+            const makerAssetData = await devUtils.encodeERC20AssetData.callAsync(erc20Token.address);
+            const takerFeeAssetData = await devUtils.encodeERC20AssetData.callAsync(secondErc20Token.address);
 
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetData,
@@ -579,8 +585,8 @@ blockchainTests(ContractName.Forwarder, env => {
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber('30'),
                 takerAssetAmount: new BigNumber('20'),
-                makerAssetData: assetDataUtils.encodeERC20AssetData(erc20Token.address),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(erc20Token.address),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(weth.address),
                 makerFee: new BigNumber(0),
                 takerFee: new BigNumber(0),
             });
@@ -627,8 +633,8 @@ blockchainTests(ContractName.Forwarder, env => {
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber('268166666666666666666'),
                 takerAssetAmount: new BigNumber('219090625878836371'),
-                makerAssetData: assetDataUtils.encodeERC20AssetData(erc20Token.address),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(weth.address),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(erc20Token.address),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(weth.address),
                 makerFee: new BigNumber(0),
                 takerFee: new BigNumber(0),
             });

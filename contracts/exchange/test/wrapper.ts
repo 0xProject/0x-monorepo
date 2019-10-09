@@ -1,4 +1,5 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
@@ -9,7 +10,7 @@ import {
     getLatestBlockTimestampAsync,
     OrderFactory,
 } from '@0x/contracts-test-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -49,6 +50,8 @@ blockchainTests.resets('Exchange wrappers', env => {
         takerFeePaid: constants.ZERO_AMOUNT,
         protocolFeePaid: constants.ZERO_AMOUNT,
     };
+
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, env.provider, env.txDefaults);
 
     before(async () => {
         chainId = await env.getChainIdAsync();
@@ -93,10 +96,10 @@ blockchainTests.resets('Exchange wrappers', env => {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress,
             feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeAssetAddress),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeAssetAddress),
             exchangeAddress: exchange.address,
             chainId,
         };
@@ -612,7 +615,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress', async () => {
-                const differentTakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
+                const differentTakerAssetData = await devUtils.encodeERC20AssetData.callAsync(feeToken.address);
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),
@@ -804,7 +807,7 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress', async () => {
-                const differentMakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
+                const differentMakerAssetData = await devUtils.encodeERC20AssetData.callAsync(feeToken.address);
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync(),

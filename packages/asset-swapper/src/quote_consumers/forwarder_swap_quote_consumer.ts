@@ -1,5 +1,4 @@
 import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
-import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
@@ -50,7 +49,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
     ): Promise<CalldataInfo> {
-        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
+        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
         const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
@@ -82,7 +81,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
-        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
+        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
         const { ethAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
             {},
@@ -160,7 +159,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteExecutionOpts>,
     ): Promise<string> {
-        assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
+        assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
         const { ethAmount, takerAddress, gasLimit, gasPrice, feeRecipient, feePercentage } = _.merge(
             {},
@@ -236,7 +235,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         }
     }
 
-    private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken);
+    private async _getEtherTokenAssetDataOrThrowAsync(): Promise<string> {
+        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+            this._contractWrappers.contractAddresses.etherToken,
+        );
     }
 }

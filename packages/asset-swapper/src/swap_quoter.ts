@@ -216,8 +216,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
-        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -246,8 +246,8 @@ export class SwapQuoter {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
-        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        const makerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(makerTokenAddress);
+        const takerAssetData = await this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(takerTokenAddress);
         const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
@@ -346,7 +346,7 @@ export class SwapQuoter {
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
         // get orders
         const response = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const adaptedResponse = { orders: response.map(o => ({ ...o.order, ...o.metaData })) };
@@ -396,8 +396,10 @@ export class SwapQuoter {
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
-    private _getZrxTokenAssetDataOrThrow(): string {
-        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);
+    private async _getZrxTokenAssetDataOrThrowAsync(): Promise<string> {
+        return this._contractWrappers.devUtils.encodeERC20AssetData.callAsync(
+            this._contractWrappers.contractAddresses.zrxToken,
+        );
     }
 
     /**
@@ -418,7 +420,7 @@ export class SwapQuoter {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const zrxTokenAssetData = await this._getZrxTokenAssetDataOrThrowAsync();
         const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset
         const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData);

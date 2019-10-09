@@ -1,6 +1,7 @@
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
+import { ExchangeRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -52,6 +53,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
     let zrxToken: DummyERC20TokenContract;
     let exchangeInstance: ExchangeContract;
     let exchangeWrapper: ExchangeWrapper;
+    let devUtils: DevUtilsContract;
 
     let orderFactory: OrderFactory;
     let orderFactory2: OrderFactory;
@@ -105,6 +107,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(validMakerAddress)];
         const secondMakerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(validMakerAddress2)];
         const invalidAddressPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(invalidAddress)];
+        devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider);
         // Create wrappers
         erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         const validAddresses = _.cloneDeepWith(usedAddresses);
@@ -123,7 +126,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
         );
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
-        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+        zrxAssetData = await devUtils.encodeERC20AssetData.callAsync(zrxToken.address);
         // Create proxies
         const erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
@@ -170,8 +173,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
         // Default order parameters
         defaultOrderParams = {
             feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
             makerAssetAmount,
             takerAssetAmount,
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
@@ -1236,8 +1239,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 feeRecipientAddress,
             });
             const signedOrderRight = await orderFactory2.newSignedOrderAsync({
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultTakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultMakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(75), 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(13), 0),
                 makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),

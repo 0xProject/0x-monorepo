@@ -8,6 +8,7 @@ import {
     ERC721Wrapper,
     MultiAssetProxyContract,
 } from '@0x/contracts-asset-proxy';
+import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
@@ -22,7 +23,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -82,6 +83,7 @@ describe('matchOrders', () => {
 
     let matchOrderTester: MatchOrderTester;
 
+    const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider, txDefaults);
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -177,10 +179,10 @@ describe('matchOrders', () => {
         const defaultOrderParamsLeft = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressLeft,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeTokenAddress),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressLeft,
             exchangeAddress: exchange.address,
             chainId,
@@ -188,10 +190,10 @@ describe('matchOrders', () => {
         const defaultOrderParamsRight = {
             ...constants.STATIC_ORDER_PARAMS,
             makerAddress: makerAddressRight,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeTokenAddress),
+            makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+            takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
+            makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeTokenAddress),
+            takerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultFeeTokenAddress),
             feeRecipientAddress: feeRecipientAddressRight,
             exchangeAddress: exchange.address,
             chainId,
@@ -201,7 +203,13 @@ describe('matchOrders', () => {
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
         // Create match order tester
-        matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
+        matchOrderTester = new MatchOrderTester(
+            exchangeWrapper,
+            erc20Wrapper,
+            erc721Wrapper,
+            erc1155ProxyWrapper,
+            devUtils,
+        );
         tokenBalances = await matchOrderTester.getBalancesAsync();
     });
     beforeEach(async () => {
@@ -338,8 +346,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(83, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -392,8 +400,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -443,8 +451,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(83, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -492,8 +500,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -537,8 +545,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2126, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1063, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1162,7 +1170,7 @@ describe('matchOrders', () => {
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
                 feeRecipientAddress: makerAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
@@ -1259,7 +1267,7 @@ describe('matchOrders', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
@@ -1286,7 +1294,7 @@ describe('matchOrders', () => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             });
@@ -1440,8 +1448,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(87, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(48, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1528,8 +1536,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1579,8 +1587,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(87, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(48, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1625,8 +1633,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1670,8 +1678,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -1789,8 +1797,8 @@ describe('matchOrders', () => {
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAddress: makerAddressRight,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2126, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1063, 0),
                 feeRecipientAddress: feeRecipientAddressRight,
@@ -2243,7 +2251,7 @@ describe('matchOrders', () => {
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                makerFeeAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
                 feeRecipientAddress: makerAddressLeft,
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
@@ -2340,7 +2348,7 @@ describe('matchOrders', () => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             });
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20TakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
@@ -2367,7 +2375,7 @@ describe('matchOrders', () => {
         it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                takerAssetData: await devUtils.encodeERC20AssetData.callAsync(defaultERC20MakerAssetAddress),
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
             });
@@ -2675,11 +2683,11 @@ describe('matchOrders', () => {
         let nameToERC1155NonFungibleAsset: { [name: string]: [string, BigNumber] };
         let nameToMultiAssetAsset: { [name: string]: [BigNumber[], string[]] };
 
-        function getAssetData(assetType: AssetType): string {
-            const encodeERC20AssetData = assetDataUtils.encodeERC20AssetData;
-            const encodeERC721AssetData = assetDataUtils.encodeERC721AssetData;
-            const encodeERC1155AssetData = assetDataUtils.encodeERC1155AssetData;
-            const encodeMultiAssetData = assetDataUtils.encodeMultiAssetData;
+        async function getAssetDataAsync(assetType: AssetType): Promise<string> {
+            const encodeERC20AssetData = await devUtils.encodeERC20AssetData.callAsync;
+            const encodeERC721AssetData = await devUtils.encodeERC721AssetData.callAsync;
+            const encodeERC1155AssetData = await devUtils.encodeERC1155AssetData.callAsync;
+            const encodeMultiAssetData = await devUtils.encodeMultiAssetData.callAsync;
             if (nameToERC20Asset[assetType] !== undefined) {
                 const tokenAddress = nameToERC20Asset[assetType];
                 return encodeERC20AssetData(tokenAddress);
@@ -2744,8 +2752,8 @@ describe('matchOrders', () => {
                 MULTI_ASSET_A: [
                     [ONE, TWO],
                     [
-                        assetDataUtils.encodeERC20AssetData(erc20Tokens[0].address),
-                        assetDataUtils.encodeERC1155AssetData(
+                        await devUtils.encodeERC20AssetData.callAsync(erc20Tokens[0].address),
+                        await devUtils.encodeERC1155AssetData.callAsync(
                             defaultERC1155AssetAddress,
                             [erc1155FungibleTokens[0]],
                             [ONE],
@@ -2756,8 +2764,8 @@ describe('matchOrders', () => {
                 MULTI_ASSET_B: [
                     [ONE, TWO],
                     [
-                        assetDataUtils.encodeERC20AssetData(erc20Tokens[1].address),
-                        assetDataUtils.encodeERC1155AssetData(
+                        await devUtils.encodeERC20AssetData.callAsync(erc20Tokens[1].address),
+                        await devUtils.encodeERC1155AssetData.callAsync(
                             defaultERC1155AssetAddress,
                             [erc1155FungibleTokens[1]],
                             [ONE],
@@ -2768,8 +2776,8 @@ describe('matchOrders', () => {
                 MULTI_ASSET_C: [
                     [ONE, TWO],
                     [
-                        assetDataUtils.encodeERC20AssetData(erc20Tokens[2].address),
-                        assetDataUtils.encodeERC1155AssetData(
+                        await devUtils.encodeERC20AssetData.callAsync(erc20Tokens[2].address),
+                        await devUtils.encodeERC1155AssetData.callAsync(
                             defaultERC1155AssetAddress,
                             [erc1155FungibleTokens[2]],
                             [ONE],
@@ -2780,8 +2788,8 @@ describe('matchOrders', () => {
                 MULTI_ASSET_D: [
                     [ONE, TWO],
                     [
-                        assetDataUtils.encodeERC20AssetData(erc20Tokens[3].address),
-                        assetDataUtils.encodeERC1155AssetData(
+                        await devUtils.encodeERC20AssetData.callAsync(erc20Tokens[3].address),
+                        await devUtils.encodeERC1155AssetData.callAsync(
                             erc1155Token.address,
                             [erc1155FungibleTokens[3]],
                             [ONE],
@@ -2825,20 +2833,20 @@ describe('matchOrders', () => {
                     ? leftMakerAssetAmount.minus(rightTakerAssetAmount)
                     : Web3Wrapper.toBaseUnitAmount(0, 0);
                 const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                    makerAssetData: getAssetData(combo.leftMaker),
-                    takerAssetData: getAssetData(combo.rightMaker),
-                    makerFeeAssetData: getAssetData(combo.leftMakerFee),
-                    takerFeeAssetData: getAssetData(combo.leftTakerFee),
+                    makerAssetData: await getAssetDataAsync(combo.leftMaker),
+                    takerAssetData: await getAssetDataAsync(combo.rightMaker),
+                    makerFeeAssetData: await getAssetDataAsync(combo.leftMakerFee),
+                    takerFeeAssetData: await getAssetDataAsync(combo.leftTakerFee),
                     makerAssetAmount: leftMakerAssetAmount,
                     takerAssetAmount: leftTakerAssetAmount,
                     makerFee: leftMakerFeeAssetAmount,
                     takerFee: leftTakerFeeAssetAmount,
                 });
                 const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                    makerAssetData: getAssetData(combo.rightMaker),
-                    takerAssetData: getAssetData(combo.leftMaker),
-                    makerFeeAssetData: getAssetData(combo.rightMakerFee),
-                    takerFeeAssetData: getAssetData(combo.rightTakerFee),
+                    makerAssetData: await getAssetDataAsync(combo.rightMaker),
+                    takerAssetData: await getAssetDataAsync(combo.leftMaker),
+                    makerFeeAssetData: await getAssetDataAsync(combo.rightMakerFee),
+                    takerFeeAssetData: await getAssetDataAsync(combo.rightTakerFee),
                     makerAssetAmount: rightMakerAssetAmount,
                     takerAssetAmount: rightTakerAssetAmount,
                     makerFee: rightMakerFeeAssetAmount,
@@ -2911,20 +2919,20 @@ describe('matchOrders', () => {
                     ? rightMakerAssetAmount.minus(leftTakerAssetAmount)
                     : Web3Wrapper.toBaseUnitAmount(0, 0);
                 const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                    makerAssetData: getAssetData(combo.leftMaker),
-                    takerAssetData: getAssetData(combo.rightMaker),
-                    makerFeeAssetData: getAssetData(combo.leftMakerFee),
-                    takerFeeAssetData: getAssetData(combo.leftTakerFee),
+                    makerAssetData: await getAssetDataAsync(combo.leftMaker),
+                    takerAssetData: await getAssetDataAsync(combo.rightMaker),
+                    makerFeeAssetData: await getAssetDataAsync(combo.leftMakerFee),
+                    takerFeeAssetData: await getAssetDataAsync(combo.leftTakerFee),
                     makerAssetAmount: leftMakerAssetAmount,
                     takerAssetAmount: leftTakerAssetAmount,
                     makerFee: leftMakerFeeAssetAmount,
                     takerFee: leftTakerFeeAssetAmount,
                 });
                 const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                    makerAssetData: getAssetData(combo.rightMaker),
-                    takerAssetData: getAssetData(combo.leftMaker),
-                    makerFeeAssetData: getAssetData(combo.rightMakerFee),
-                    takerFeeAssetData: getAssetData(combo.rightTakerFee),
+                    makerAssetData: await getAssetDataAsync(combo.rightMaker),
+                    takerAssetData: await getAssetDataAsync(combo.leftMaker),
+                    makerFeeAssetData: await getAssetDataAsync(combo.rightMakerFee),
+                    takerFeeAssetData: await getAssetDataAsync(combo.rightTakerFee),
                     makerAssetAmount: rightMakerAssetAmount,
                     takerAssetAmount: rightTakerAssetAmount,
                     makerFee: rightMakerFeeAssetAmount,
