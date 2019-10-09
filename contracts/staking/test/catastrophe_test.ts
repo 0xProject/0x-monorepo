@@ -8,6 +8,7 @@ import { StakingProxyReadOnlyModeSetEventArgs } from '../src';
 
 import { deployAndConfigureContractsAsync, StakingApiWrapper } from './utils/api_wrapper';
 import { toBaseUnitAmount } from './utils/number_utils';
+import { StakeStatus } from './utils/types';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Catastrophe Tests', env => {
@@ -39,8 +40,11 @@ blockchainTests.resets('Catastrophe Tests', env => {
             await stakingApiWrapper.stakingContract.stake.awaitTransactionSuccessAsync(amountToStake, {
                 from: actors[0],
             });
-            const activeStakeBalance = await stakingApiWrapper.stakingContract.getActiveStake.callAsync(actors[0]);
-            expect(activeStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
+            const undelegatedStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
+                actors[0],
+                StakeStatus.Undelegated,
+            );
+            expect(undelegatedStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
         it('should not change state when in read-only mode', async () => {
             // set to read-only mode
@@ -50,8 +54,11 @@ blockchainTests.resets('Catastrophe Tests', env => {
             await stakingApiWrapper.stakingContract.stake.awaitTransactionSuccessAsync(amountToStake, {
                 from: actors[0],
             });
-            const activeStakeBalance = await stakingApiWrapper.stakingContract.getActiveStake.callAsync(actors[0]);
-            expect(activeStakeBalance.currentEpochBalance).to.be.bignumber.equal(ZERO);
+            const undelegatedStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
+                actors[0],
+                StakeStatus.Undelegated,
+            );
+            expect(undelegatedStakeBalance.currentEpochBalance).to.be.bignumber.equal(ZERO);
         });
         it('should read values correctly when in read-only mode', async () => {
             // stake some zrx
@@ -62,10 +69,11 @@ blockchainTests.resets('Catastrophe Tests', env => {
             // set to read-only mode
             await stakingApiWrapper.stakingProxyContract.setReadOnlyMode.awaitTransactionSuccessAsync(true);
             // read stake balance in read-only mode
-            const activeStakeBalanceReadOnly = await stakingApiWrapper.stakingContract.getActiveStake.callAsync(
+            const undelegatedStakeBalanceReadOnly = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
                 actors[0],
+                StakeStatus.Undelegated,
             );
-            expect(activeStakeBalanceReadOnly.currentEpochBalance).to.be.bignumber.equal(amountToStake);
+            expect(undelegatedStakeBalanceReadOnly.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
         it('should exit read-only mode', async () => {
             // set to read-only mode
@@ -76,8 +84,11 @@ blockchainTests.resets('Catastrophe Tests', env => {
             await stakingApiWrapper.stakingContract.stake.awaitTransactionSuccessAsync(amountToStake, {
                 from: actors[0],
             });
-            const activeStakeBalance = await stakingApiWrapper.stakingContract.getActiveStake.callAsync(actors[0]);
-            expect(activeStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
+            const undelegatedStakeBalance = await stakingApiWrapper.stakingContract.getOwnerStakeByStatus.callAsync(
+                actors[0],
+                StakeStatus.Undelegated,
+            );
+            expect(undelegatedStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
         it('should emit event when setting read-only mode', async () => {
             // set to read-only mode

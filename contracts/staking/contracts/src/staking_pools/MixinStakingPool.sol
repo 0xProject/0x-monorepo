@@ -137,7 +137,6 @@ contract MixinStakingPool is
     function _assertStakingPoolExists(bytes32 poolId)
         internal
         view
-        returns (bool)
     {
         if (_poolById[poolId].operator == NIL_ADDRESS) {
             // we use the pool's operator as a proxy for its existence

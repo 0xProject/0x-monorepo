@@ -53,29 +53,20 @@ interface IStructs {
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
     /// Always load this struct using _loadSyncedBalance or _loadUnsyncedBalance.
-    /// @param isInitialized
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in `currentEpoch+1`.
     struct StoredBalance {
-        bool isInitialized;
-        uint32 currentEpoch;
+        uint64 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
     }
 
-    /// @dev Balance struct for stake.
-    /// @param currentEpochBalance Balance in the current epoch.
-    /// @param nextEpochBalance Balance in the next epoch.
-    struct StakeBalance {
-        uint256 currentEpochBalance;
-        uint256 nextEpochBalance;
-    }
-
     /// @dev Statuses that stake can exist in.
+    ///      Any stake can be (re)delegated effective at the next epoch
+    ///      Undelegated stake can be withdrawn if it is available in both the current and next epoch
     enum StakeStatus {
-        ACTIVE,
-        INACTIVE,
+        UNDELEGATED,
         DELEGATED
     }
 

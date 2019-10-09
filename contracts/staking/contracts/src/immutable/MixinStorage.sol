@@ -41,21 +41,15 @@ contract MixinStorage is
     // address for read-only proxy to call
     address public readOnlyProxyCallee;
 
-    // mapping from StakeStatus to the total amount of stake in that status for the entire
-    // staking system.
-    mapping (uint8 => IStructs.StoredBalance) public globalStakeByStatus;
-
-    // mapping from Owner to Amount of Active Stake
+    // mapping from StakeStatus to gloabl stored balance
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
+    // NOTE: only Status.DELEGATED is used to access this mapping, but this format
+    // is used for extensibility
+    mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
 
-    // Mapping from Owner to Amount of Inactive Stake
+    // mapping from StakeStatus to address of staker to stored balance
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
-
-    // Mapping from Owner to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
+    mapping (uint8 => mapping (address => IStructs.StoredBalance)) internal _ownerStakeByStatus;
 
     // Mapping from Owner to Pool Id to Amount Delegated
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
@@ -64,9 +58,6 @@ contract MixinStorage is
     // Mapping from Pool Id to Amount Delegated
     // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
-
-    // mapping from Owner to Amount of Withdrawable Stake
-    mapping (address => uint256) internal _withdrawableStakeByOwner;
 
     // tracking Pool Id, a unique identifier for each staking pool.
     bytes32 public lastPoolId;

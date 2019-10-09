@@ -31,7 +31,7 @@ contract MixinStakeStorage is
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;
 
-    /// @dev Moves stake between states: 'active', 'inactive' or 'delegated'.
+    /// @dev Moves stake between states: 'undelegated' or 'delegated'.
     ///      This change comes into effect next epoch.
     /// @param fromPtr pointer to storage location of `from` stake.
     /// @param toPtr pointer to storage location of `to` stake.
@@ -87,7 +87,7 @@ contract MixinStakeStorage is
         // sync
         uint256 currentEpoch_ = currentEpoch;
         if (currentEpoch_ > balance.currentEpoch) {
-            balance.currentEpoch = currentEpoch_.downcastToUint32();
+            balance.currentEpoch = currentEpoch_.downcastToUint64();
             balance.currentEpochBalance = balance.nextEpochBalance;
         }
         return balance;
@@ -176,8 +176,7 @@ contract MixinStakeStorage is
         private
     {
         // note - this compresses into a single `sstore` when optimizations are enabled,
-        // since the StakeBalance struct occupies a single word of storage.
-        balancePtr.isInitialized = true;
+        // since the StoredBalance struct occupies a single word of storage.
         balancePtr.currentEpoch = balance.currentEpoch;
         balancePtr.nextEpochBalance = balance.nextEpochBalance;
         balancePtr.currentEpochBalance = balance.currentEpochBalance;

@@ -117,7 +117,6 @@ contract TestDelegatorRewards is
             delegator
         );
         IStructs.StoredBalance storage _stake = _delegatedStakeToPoolByOwner[delegator][poolId];
-        _stake.isInitialized = true;
         _stake.currentEpochBalance += uint96(stake);
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
@@ -146,7 +145,6 @@ contract TestDelegatorRewards is
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
-        _stake.isInitialized = true;
         _stake.nextEpochBalance += uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
     }
@@ -170,7 +168,6 @@ contract TestDelegatorRewards is
         if (_stake.currentEpoch < currentEpoch) {
             _stake.currentEpochBalance = _stake.nextEpochBalance;
         }
-        _stake.isInitialized = true;
         _stake.nextEpochBalance -= uint96(stake);
         _stake.currentEpoch = uint32(currentEpoch);
     }

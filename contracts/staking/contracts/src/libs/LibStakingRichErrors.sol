@@ -92,10 +92,6 @@ library LibStakingRichErrors {
     bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
         0x9ae94f01;
 
-    // bytes4(keccak256("InvalidStakeStatusError(uint8)"))
-    bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
-        0x7cf20260;
-
     // bytes4(keccak256("ProxyDestinationCannotBeNilError()"))
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL_ERROR =
         hex"6eff8285";
@@ -265,17 +261,6 @@ library LibStakingRichErrors {
             errorCodes,
             expectedProtocolFeePaid,
             actualProtocolFeePaid
-        );
-    }
-
-    function InvalidStakeStatusError(IStructs.StakeStatus status)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_STAKE_STATUS_ERROR_SELECTOR,
-            status
         );
     }
 

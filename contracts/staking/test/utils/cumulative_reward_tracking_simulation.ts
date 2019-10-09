@@ -120,7 +120,7 @@ export class CumulativeRewardTrackingSimulation {
                         from: this._staker,
                     });
                     receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
-                        new StakeInfo(StakeStatus.Active),
+                        new StakeInfo(StakeStatus.Undelegated),
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
                         this._amountToStake,
                         { from: this._staker },
@@ -130,7 +130,7 @@ export class CumulativeRewardTrackingSimulation {
                 case TestAction.Undelegate:
                     receipt = await this._stakingApiWrapper.stakingContract.moveStake.awaitTransactionSuccessAsync(
                         new StakeInfo(StakeStatus.Delegated, this._poolId),
-                        new StakeInfo(StakeStatus.Active),
+                        new StakeInfo(StakeStatus.Undelegated),
                         this._amountToStake,
                         { from: this._staker },
                     );

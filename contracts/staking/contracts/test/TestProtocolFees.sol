@@ -27,8 +27,8 @@ contract TestProtocolFees is
     TestStakingNoWETH
 {
     struct TestPool {
-        uint256 operatorStake;
-        uint256 membersStake;
+        uint96 operatorStake;
+        uint96 membersStake;
         mapping(address => bool) isMaker;
     }
 
@@ -57,8 +57,8 @@ contract TestProtocolFees is
     /// @dev Create a test pool.
     function createTestPool(
         bytes32 poolId,
-        uint256 operatorStake,
-        uint256 membersStake,
+        uint96 operatorStake,
+        uint96 membersStake,
         address[] calldata makerAddresses
     )
         external
@@ -99,11 +99,12 @@ contract TestProtocolFees is
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
         TestPool memory pool = _testPools[poolId];
-        uint256 stake = pool.operatorStake + pool.membersStake;
-        return IStructs.StakeBalance({
+        uint96 stake = pool.operatorStake + pool.membersStake;
+        return IStructs.StoredBalance({
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: stake,
             nextEpochBalance: stake
         });
@@ -113,10 +114,11 @@ contract TestProtocolFees is
     function getStakeDelegatedToPoolByOwner(address, bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
         TestPool memory pool = _testPools[poolId];
-        return IStructs.StakeBalance({
+        return IStructs.StoredBalance({
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: pool.operatorStake,
             nextEpochBalance: pool.operatorStake
         });
