@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MultiSigWallet.sol";
 
 
@@ -25,8 +26,10 @@ import "./MultiSigWallet.sol";
 /// @author Amir Bandeali - <amir@0xProject.com>
 // solhint-disable not-rely-on-time
 contract MultiSigWalletWithTimeLock is
-    MultiSigWallet
+    MultiSigWallet,
+    SafeMath
 {
+
     event ConfirmationTimeSet(uint256 indexed transactionId, uint256 confirmationTime);
     event TimeLockChange(uint256 secondsTimeLocked);
 
@@ -52,7 +55,7 @@ contract MultiSigWalletWithTimeLock is
 
     modifier pastTimeLock(uint256 transactionId) {
         require(
-            block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked,
+            block.timestamp >= _safeAdd(confirmationTimes[transactionId], secondsTimeLocked),
             "TIME_LOCK_INCOMPLETE"
         );
         _;
