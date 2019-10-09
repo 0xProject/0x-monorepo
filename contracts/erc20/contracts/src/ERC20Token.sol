@@ -87,13 +87,13 @@ contract ERC20Token is
         balances[_to] += _value;
         balances[_from] -= _value;
         allowed[_from][msg.sender] -= _value;
-    
+
         emit Transfer(
             _from,
             _to,
             _value
         );
-    
+
         return true;
     }
 
