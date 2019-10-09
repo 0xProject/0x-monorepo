@@ -7,7 +7,7 @@ import { BigNumber } from '@0x/utils';
 
 import { DeploymentManager, AddressManager } from '../../src';
 
-blockchainTests('Exchange & Staking', async env => {
+blockchainTests('Exchange & Staking', env => {
     let accounts: string[];
     let makerAddress: string;
     let takers: string[];
