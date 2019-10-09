@@ -10,5 +10,5 @@ export * from '../generated-wrappers/general_erc20';
 export * from '../generated-wrappers/math_helpers';
 export * from '../generated-wrappers/safe_math';
 export * from '../generated-wrappers/token_interact';
-export * from '../generated-wrappers/zero_ex_v2_exchange_wrapper';
 export * from '../generated-wrappers/zero_ex_v2_multi_order_exchange_wrapper';
+export * from '../generated-wrappers/zero_ex_v3_exchange_wrapper';
