@@ -1,49 +1,43 @@
-import {
-    artifacts as proxyArtifacts,
-    ERC1155ProxyWrapper,
-    ERC20Wrapper,
-    ERC721Wrapper,
-} from '@0x/contracts-asset-proxy';
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     constants,
     expect,
     FillEventArgs,
     filterLogsToArguments,
-    LogDecoder,
     OrderStatus,
     orderUtils,
-    Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
-import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract } from '../../src';
-import { BalanceStore } from '../balance_stores/balance_store';
-import { BlockchainBalanceStore } from '../balance_stores/blockchain_balance_store';
-import { LocalBalanceStore } from '../balance_stores/local_balance_store';
+import {
+    BalanceStore,
+    BlockchainBalanceStore,
+    ExchangeContract,
+    LocalBalanceStore,
+    TokenContractsByName,
+    TokenIds,
+    TokenOwnersByName,
+} from '../../src';
 
 export class FillOrderWrapper {
     private readonly _exchange: ExchangeContract;
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
-    private readonly _web3Wrapper: Web3Wrapper;
 
     /**
-     * Simulates matching two orders by transferring amounts defined in
-     * `transferAmounts` and returns the results.
-     * @param orders The orders being matched and their filled states.
+     * Locally simulates filling an order.
+     * @param txReceipt Transaction receipt from the actual fill, needed to update eth balance
+     * @param signedOrder The order being filled.
      * @param takerAddress Address of taker (the address who matched the two orders)
-     * @param tokenBalances Current token balances.
-     * @param transferAmounts Amounts to transfer during the simulation.
-     * @return The new account balances and fill events that occurred during the match.
+     * @param opts Optionally specifies the amount to fill.
+     * @param initBalanceStore Account balances prior to the fill.
+     * @return The expected account balances, fill results, and fill events.
      */
     public static simulateFillOrder(
+        txReceipt: TransactionReceiptWithDecodedLogs,
         signedOrder: SignedOrder,
         takerAddress: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
@@ -88,6 +82,7 @@ export class FillOrderWrapper {
             fillResults.makerFeePaid,
             signedOrder.makerFeeAssetData,
         );
+        balanceStore.burnGas(txReceipt.from, constants.DEFAULT_GAS_PRICE * txReceipt.gasUsed);
         return [fillResults, fillEvent, balanceStore];
     }
 
@@ -126,22 +121,19 @@ export class FillOrderWrapper {
 
     /**
      * Constructor.
-     * @param exchangeContract Insstance of the deployed exchange contract
-     * @param erc20Wrapper The ERC20 Wrapper used to interface with deployed erc20 tokens.
-     * @param erc721Wrapper The ERC721 Wrapper used to interface with deployed erc20 tokens.
-     * @param erc1155ProxyWrapper The ERC1155 Proxy Wrapper used to interface with deployed erc20 tokens.
-     * @param provider Web3 provider to be used by a `Web3Wrapper` instance
+     * @param exchangeContract Instance of the deployed exchange contract.
+     * @param tokenOwnersByName The addresses of token owners to assert the balances of.
+     * @param tokenContractsByName The contracts of tokens to assert the balances of.
+     * @param tokenIds The tokenIds of ERC721 and ERC1155 assets to assert the balances of.
      */
     public constructor(
         exchangeContract: ExchangeContract,
-        erc20Wrapper: ERC20Wrapper,
-        erc721Wrapper: ERC721Wrapper,
-        erc1155ProxyWrapper: ERC1155ProxyWrapper,
-        provider: Web3ProviderEngine | ZeroExProvider,
+        tokenOwnersByName: TokenOwnersByName,
+        tokenContractsByName: Partial<TokenContractsByName>,
+        tokenIds: Partial<TokenIds>,
     ) {
         this._exchange = exchangeContract;
-        this._blockchainBalanceStore = new BlockchainBalanceStore(erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
-        this._web3Wrapper = new Web3Wrapper(provider);
+        this._blockchainBalanceStore = new BlockchainBalanceStore(tokenOwnersByName, tokenContractsByName, tokenIds);
     }
 
     /**
@@ -171,31 +163,32 @@ export class FillOrderWrapper {
         // Assert init state of exchange
         await this._assertOrderStateAsync(signedOrder, initTakerAssetFilledAmount);
         // Simulate and execute fill then assert outputs
+        const [fillResults, fillEvent, txReceipt] = await this._fillOrderAsync(signedOrder, from, opts);
         const [
             simulatedFillResults,
             simulatedFillEvent,
             simulatedFinalBalanceStore,
-        ] = FillOrderWrapper.simulateFillOrder(signedOrder, from, opts, this._blockchainBalanceStore);
-        const [fillResults, fillEvent] = await this._fillOrderAsync(signedOrder, from, opts);
+        ] = FillOrderWrapper.simulateFillOrder(txReceipt, signedOrder, from, opts, this._blockchainBalanceStore);
         // Assert state transition
         expect(simulatedFillResults, 'Fill Results').to.be.deep.equal(fillResults);
         expect(simulatedFillEvent, 'Fill Events').to.be.deep.equal(fillEvent);
-        const areBalancesEqual = BalanceStore.isEqual(simulatedFinalBalanceStore, this._blockchainBalanceStore);
-        expect(areBalancesEqual, 'Balances After Fill').to.be.true();
+
+        await this._blockchainBalanceStore.updateBalancesAsync();
+        this._blockchainBalanceStore.assertEquals(simulatedFinalBalanceStore);
+
         // Assert end state of exchange
         const finalTakerAssetFilledAmount = initTakerAssetFilledAmount.plus(fillResults.takerAssetFilledAmount);
         await this._assertOrderStateAsync(signedOrder, finalTakerAssetFilledAmount);
     }
 
     /**
-     * Fills an order on-chain. As an optimization this function auto-updates the blockchain balance store
-     * used by this contract.
+     * Fills an order on-chain.
      */
     protected async _fillOrderAsync(
         signedOrder: SignedOrder,
         from: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
-    ): Promise<[FillResults, FillEventArgs]> {
+    ): Promise<[FillResults, FillEventArgs, TransactionReceiptWithDecodedLogs]> {
         const params = orderUtils.createFill(signedOrder, opts.takerAssetFillAmount);
         const fillResults = await this._exchange.fillOrder.callAsync(
             params.order,
@@ -203,33 +196,21 @@ export class FillOrderWrapper {
             params.signature,
             { from },
         );
-        // @TODO: Replace with `awaitTransactionAsync` once `development` is merged into `3.0` branch
-        const txHash = await this._exchange.fillOrder.sendTransactionAsync(
+        const txReceipt = await this._exchange.fillOrder.awaitTransactionSuccessAsync(
             params.order,
             params.takerAssetFillAmount,
             params.signature,
             { from },
         );
-        const logDecoder = new LogDecoder(this._web3Wrapper, {
-            ...artifacts,
-            ...proxyArtifacts,
-            ...erc20Artifacts,
-            ...erc721Artifacts,
-        });
-        const txReceipt = await logDecoder.getTxWithDecodedLogsAsync(txHash);
         const fillEvent = FillOrderWrapper._extractFillEventsfromReceipt(txReceipt)[0];
-        await this._blockchainBalanceStore.updateBalancesAsync();
-        return [fillResults, fillEvent];
+        return [fillResults, fillEvent, txReceipt];
     }
 
     /**
      * Asserts that the provided order's fill amount and order status
      * are the expected values.
      * @param order The order to verify for a correct state.
-     * @param expectedFilledAmount The amount that the order should
-     *                             have been filled.
-     * @param side The side that the provided order should be matched on.
-     * @param exchangeWrapper The ExchangeWrapper instance.
+     * @param expectedFilledAmount The amount that the order should have been filled.
      */
     private async _assertOrderStateAsync(
         order: SignedOrder,

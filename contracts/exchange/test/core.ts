@@ -222,7 +222,24 @@ blockchainTests.resets('Exchange core', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
-        fillOrderWrapper = new FillOrderWrapper(exchange, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper, provider);
+        fillOrderWrapper = new FillOrderWrapper(
+            exchange,
+            { makerAddress, takerAddress, feeRecipientAddress },
+            {
+                erc20: { erc20TokenA, erc20TokenB, feeToken, noReturnErc20Token },
+                erc721: { erc721Token },
+                erc1155: { erc1155Contract },
+            },
+            {
+                erc721: { [erc721Token.address]: [...erc721MakerAssetIds, ...erc721TakerAssetIds] },
+                erc1155: {
+                    [erc1155Contract.address]: {
+                        fungible: erc1155FungibleTokens,
+                        nonFungible: [...erc1155NonFungibleTokensOwnedByMaker, ...erc1155NonFungibleTokensOwnedByTaker],
+                    },
+                },
+            },
+        );
     });
     describe('fillOrder', () => {
         beforeEach(async () => {
