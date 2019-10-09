@@ -37,7 +37,10 @@ export class AddressManager {
     /**
      * Sets up a list of addresses to take orders.
      */
-    public async addTakersAsync(deploymentManager: DeploymentManager, configArgs: ConfigurationArgs[]): Promise<void> {
+    public async batchAddTakerAsync(
+        deploymentManager: DeploymentManager,
+        configArgs: ConfigurationArgs[],
+    ): Promise<void> {
         for (const args of configArgs) {
             await this.addTakerAsync(deploymentManager, args);
         }
@@ -85,7 +88,7 @@ export class AddressManager {
     /**
      * Sets up several market makers.
      */
-    public async addMakersAsync(
+    public async batchAddMakerAsync(
         deploymentManager: DeploymentManager,
         configArgs: ConfigurationArgs[],
         environment: BlockchainTestsEnvironment,
@@ -115,7 +118,7 @@ export class AddressManager {
         );
     }
 
-    constructor(makers?: MarketMaker[], takers?: string[]) {
+    constructor() {
         this.makerAddresses = [];
         this.takerAddresses = [];
     }

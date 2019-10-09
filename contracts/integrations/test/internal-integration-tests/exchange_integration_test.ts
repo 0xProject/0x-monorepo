@@ -55,7 +55,7 @@ blockchainTests('Exchange & Staking', env => {
         );
 
         // Set up two addresses for taking orders.
-        await addressManager.addTakersAsync(
+        await addressManager.batchAddTakerAsync(
             deploymentManager,
             takers.map(takerAddress => {
                 return {
