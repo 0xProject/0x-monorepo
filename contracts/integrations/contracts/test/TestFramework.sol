@@ -1,7 +1,9 @@
 pragma solidity ^0.5.9;
 
 
-contract TestCache {
+contract TestFramework {
+
+    event SomeEvent(uint256 someNumber);
 
     uint256 public counter;
 
@@ -11,12 +13,16 @@ contract TestCache {
         counter = newCounter;
     }
 
-    function numberSideEffect()
+    function revertSideEffect(uint256 returnValue)
         external
-        view
         returns (uint256)
     {
-        return counter;
+        if (counter != 0) {
+            revert("Revert");
+        }
+
+        emit SomeEvent(returnValue);
+        return returnValue;
     }
 
     function equalsSideEffect(uint256 possiblyZero)
@@ -29,6 +35,19 @@ contract TestCache {
         } else {
             return false;
         }
+    }
+
+    function noEffect(uint256)
+        external
+        pure
+    {} // solhint-disable-line no-empty-blocks
+
+    function numberSideEffect()
+        external
+        view
+        returns (uint256)
+    {
+        return counter;
     }
 
     function hashSideEffect(uint256 arg1, bytes32 arg2)

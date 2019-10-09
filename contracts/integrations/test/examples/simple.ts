@@ -2,16 +2,18 @@ import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { TxData, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, Condition, FunctionAssertion, GetterCache, TestCacheContract } from '../../src';
+import { artifacts, TestFrameworkContract } from '../../src';
+import { Condition, FunctionAssertion, Result } from '../utils/function_assertions';
+import { GetterCache } from '../utils/cache';
 
 // These tests provide examples for how to use the "FunctionAssertion" class to write
 // tests for "payable" and "nonpayable" Solidity functions as well as "pure" and "view" functions.
-blockchainTests('TestCache', env => {
-    let testCache: TestCacheContract;
+blockchainTests('TestFramework', env => {
+    let exampleContract: TestFrameworkContract;
 
     before(async () => {
-        testCache = await TestCacheContract.deployFrom0xArtifactAsync(
-            artifacts.TestCache,
+        exampleContract = await TestFrameworkContract.deployFrom0xArtifactAsync(
+            artifacts.TestFramework,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -24,12 +26,16 @@ blockchainTests('TestCache', env => {
         before(async () => {
             const condition = {
                 before: async () => {},
-                after: async (result: any, receipt: TransactionReceiptWithDecodedLogs | undefined) => {
-                    const counter = await testCache.counter.callAsync();
-                    expect(result).bignumber.to.be.eq(counter);
+                after: async (beforeInfo: any, result: Result) => {
+                    // Ensure that the call was successful.
+                    expect(result.success).to.be.true();
+
+                    // Ensure that the correct counter was returned.
+                    const counter = await exampleContract.counter.callAsync();
+                    expect(result.data).bignumber.to.be.eq(counter);
                 },
             };
-            assertion = new FunctionAssertion(testCache.numberSideEffect, condition);
+            assertion = new FunctionAssertion(exampleContract.numberSideEffect, condition);
         });
 
         it('should return the correct counter', async () => {
@@ -37,7 +43,7 @@ blockchainTests('TestCache', env => {
         });
 
         it('should return the correct counter', async () => {
-            await testCache.setCounter.awaitTransactionSuccessAsync(new BigNumber(2));
+            await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(2));
             await assertion.runAsync();
         });
     });
@@ -48,16 +54,16 @@ blockchainTests('TestCache', env => {
         before(async () => {
             const condition = {
                 before: async (expectedCounter: BigNumber) => {},
-                after: async (
-                    result: any,
-                    receipt: TransactionReceiptWithDecodedLogs | undefined,
-                    expectedCounter: BigNumber,
-                ) => {
-                    const counter = await testCache.counter.callAsync();
+                after: async (beforeInfo: any, result: Result, expectedCounter: BigNumber) => {
+                    // Ensure that the call was successful.
+                    expect(result.success).to.be.true();
+
+                    // Ensure that the counter was updated correctly.
+                    const counter = await exampleContract.counter.callAsync();
                     expect(counter).bignumber.to.be.eq(expectedCounter);
                 },
             };
-            assertion = new FunctionAssertion(testCache.setCounter, condition);
+            assertion = new FunctionAssertion(exampleContract.setCounter, condition);
         });
 
         it('should correctly set counter to 1', async () => {

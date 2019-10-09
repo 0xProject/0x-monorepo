@@ -5,7 +5,8 @@ import { IStakingEventsEvents, IStakingEventsStakingPoolActivatedEventArgs } fro
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { DeploymentManager, AddressManager } from '../../src';
+import { AddressManager } from '../utils/address_manager';
+import { DeploymentManager } from '../utils/deployment_manager';
 
 blockchainTests('Exchange & Staking', env => {
     let accounts: string[];

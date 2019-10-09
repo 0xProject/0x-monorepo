@@ -2,5 +2,5 @@
     "extends": "../../tsconfig",
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
-    "files": ["generated-artifacts/TestCache.json", "generated-artifacts/TestStakingPlaceholder.json"]
+    "files": ["generated-artifacts/TestFramework.json"]
 }

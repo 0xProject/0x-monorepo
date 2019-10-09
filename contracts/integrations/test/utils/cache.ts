@@ -1,4 +1,4 @@
-import { ContractGetterFunction } from './';
+import { ContractGetterFunction } from './function_assertions';
 import * as _ from 'lodash';
 
 export interface Cache {

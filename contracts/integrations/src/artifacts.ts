@@ -5,9 +5,5 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as TestCache from '../generated-artifacts/TestCache.json';
-import * as TestStakingPlaceholder from '../generated-artifacts/TestStakingPlaceholder.json';
-export const artifacts = {
-    TestCache: TestCache as ContractArtifact,
-    TestStakingPlaceholder: TestStakingPlaceholder as ContractArtifact,
-};
+import * as TestFramework from '../generated-artifacts/TestFramework.json';
+export const artifacts = { TestFramework: TestFramework as ContractArtifact };

@@ -3,14 +3,15 @@ import { BigNumber } from '@0x/utils';
 import { BlockParam, CallData } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 
-import { artifacts, GetterCache, TestCacheContract } from '../src';
+import { artifacts, TestFrameworkContract } from '../../src';
+import { GetterCache } from '../utils/cache';
 
 blockchainTests.resets('Cache Tests', env => {
-    let testCacheContract: TestCacheContract;
+    let exampleContract: TestFrameworkContract;
 
     before(async () => {
-        testCacheContract = await TestCacheContract.deployFrom0xArtifactAsync(
-            artifacts.TestCache,
+        exampleContract = await TestFrameworkContract.deployFrom0xArtifactAsync(
+            artifacts.TestFramework,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -22,7 +23,7 @@ blockchainTests.resets('Cache Tests', env => {
             let cache: GetterCache;
 
             beforeEach(async () => {
-                cache = new GetterCache(testCacheContract.numberSideEffect);
+                cache = new GetterCache(exampleContract.numberSideEffect);
             });
 
             it('should return 0 when "counter" == 0', async () => {
@@ -31,7 +32,7 @@ blockchainTests.resets('Cache Tests', env => {
 
             it('should return 1 when "counter" == 1', async () => {
                 // Update the counter to 1.
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // Ensure that the returned value is the updated counter.
                 expect(await cache.callAsync()).bignumber.to.be.eq(new BigNumber(1));
@@ -42,7 +43,7 @@ blockchainTests.resets('Cache Tests', env => {
                 expect(await cache.callAsync()).bignumber.to.be.eq(constants.ZERO_AMOUNT);
 
                 // Update the counter to 1.
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // Ensure that the returned value is the cached counter.
                 expect(await cache.callAsync()).bignumber.to.be.eq(constants.ZERO_AMOUNT);
@@ -53,7 +54,7 @@ blockchainTests.resets('Cache Tests', env => {
             let cache: GetterCache;
 
             beforeEach(async () => {
-                cache = new GetterCache(testCacheContract.equalsSideEffect);
+                cache = new GetterCache(exampleContract.equalsSideEffect);
             });
 
             it('should return true when "possiblyZero" == 0 && "counter" == 0', async () => {
@@ -62,7 +63,7 @@ blockchainTests.resets('Cache Tests', env => {
 
             it('should return false when "possiblyZero" == 0 && "counter" != 0', async () => {
                 // Update "counter" to "1", which will cause all calls to return false.
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
                 expect(await cache.callAsync(constants.ZERO_AMOUNT)).to.be.false();
             });
 
@@ -71,7 +72,7 @@ blockchainTests.resets('Cache Tests', env => {
                 expect(await cache.callAsync(constants.ZERO_AMOUNT)).to.be.true();
 
                 // Update "counter" to "1", which will cause all calls of "isZeroOrFalse" to return "false".
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // This should return "true" because a value was cached.
                 expect(await cache.callAsync(constants.ZERO_AMOUNT)).to.be.true();
@@ -82,12 +83,12 @@ blockchainTests.resets('Cache Tests', env => {
             let cache: GetterCache;
 
             beforeEach(async () => {
-                cache = new GetterCache(testCacheContract.hashSideEffect);
+                cache = new GetterCache(exampleContract.hashSideEffect);
             });
 
             it('should return correct hash when counter == 0', async () => {
                 // Get the calldata for the function call, which includes the abi-encoded data to hash.
-                const hashData = testCacheContract.hashSideEffect.getABIEncodedTransactionData(
+                const hashData = exampleContract.hashSideEffect.getABIEncodedTransactionData(
                     new BigNumber(1),
                     ethUtil.bufferToHex(ethUtil.sha3(0)),
                 );
@@ -100,7 +101,7 @@ blockchainTests.resets('Cache Tests', env => {
 
             it('should return the null hash when counter != 0', async () => {
                 // Update "counter" to "1", which will cause all calls to return the null hash.
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // Ensure that the cache returns the correct value.
                 expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(
@@ -110,7 +111,7 @@ blockchainTests.resets('Cache Tests', env => {
 
             it('should return the cached hash', async () => {
                 // Get the calldata for the function call, which includes the abi-encoded data to hash.
-                const hashData = testCacheContract.hashSideEffect.getABIEncodedTransactionData(
+                const hashData = exampleContract.hashSideEffect.getABIEncodedTransactionData(
                     new BigNumber(1),
                     ethUtil.bufferToHex(ethUtil.sha3(0)),
                 );
@@ -121,7 +122,7 @@ blockchainTests.resets('Cache Tests', env => {
                 );
 
                 // Update "counter" to "1", which will cause all calls to return the null hash.
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // Ensure that the cache returns the correct value.
                 expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(
@@ -136,7 +137,7 @@ blockchainTests.resets('Cache Tests', env => {
             let cache: GetterCache;
 
             beforeEach(async () => {
-                cache = new GetterCache(testCacheContract.equalsSideEffect);
+                cache = new GetterCache(exampleContract.equalsSideEffect);
             });
 
             it('should return false when the cache was flushed && "possiblyZero" == 0 && "counter" != 0', async () => {
@@ -144,7 +145,7 @@ blockchainTests.resets('Cache Tests', env => {
                 expect(await cache.callAsync(constants.ZERO_AMOUNT)).to.be.true();
 
                 // Update "counter" to "1", which will cause all calls of "isZeroOrFalse" to return "false".
-                await testCacheContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
+                await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
                 // Flush the entire cache.
                 cache.flush();
