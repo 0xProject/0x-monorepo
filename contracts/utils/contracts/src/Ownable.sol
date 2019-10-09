@@ -29,6 +29,7 @@ contract Ownable is
             LibRichErrors.rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
         } else {
             owner = newOwner;
+            emit OwnershipTransferred(newOwner);
         }
     }
 
