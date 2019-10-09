@@ -44,11 +44,11 @@ blockchainTests.resets('Ownable', env => {
 
             // Ensure that the correct logs were emitted.
             expect(receipt.logs.length).to.be.eq(1);
-            const args = filterLogsToArguments<IOwnableOwnershipTransferredEventArgs>(
+            const [event] = filterLogsToArguments<IOwnableOwnershipTransferredEventArgs>(
                 receipt.logs,
                 IOwnableEvents.OwnershipTransferred,
             );
-            expect(args).to.be.deep.eq([{ newOwner: nonOwner }]);
+            expect(event).to.be.deep.eq({ newOwner: nonOwner });
 
             // Ensure that the owner was actually updated
             const updatedOwner = await ownable.owner.callAsync();
