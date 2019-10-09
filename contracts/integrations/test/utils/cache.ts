@@ -1,12 +1,6 @@
 import { ContractGetterFunction } from './function_assertions';
 import * as _ from 'lodash';
 
-export interface Cache {
-    getter: ContractGetterFunction;
-    callAsync: (...args: any[]) => Promise<any>;
-    flush: () => void;
-}
-
 export class GetterCache {
     // The getter function whose values will be cached.
     public getter: ContractGetterFunction;
@@ -32,13 +26,14 @@ export class GetterCache {
      * @return Either a cached value or the queried value.
      */
     public async callAsync(...args: any[]): Promise<any> {
-        const cachedResult = this.cache[this.getter.getABIEncodedTransactionData(...args)];
+        const key = this.getter.getABIEncodedTransactionData(...args);
+        const cachedResult = this.cache[key];
 
         if (cachedResult !== undefined) {
             return cachedResult;
         } else {
             const result = await this.getter.callAsync(...args);
-            this.cache[this.getter.getABIEncodedTransactionData(...args)] = result;
+            this.cache[key] = result;
             return result;
         }
     }
@@ -82,5 +77,14 @@ export class GetterCacheCollection {
      */
     public registerGetter(getterName: string, getter: ContractGetterFunction): void {
         this.getters[getterName] = new GetterCache(getter);
+    }
+
+    /**
+     * Flushes all of the registered caches.
+     */
+    public flushAll(): void {
+        for (const getter of Object.keys(this.getters)) {
+            this.getters[getter].flush();
+        }
     }
 }
