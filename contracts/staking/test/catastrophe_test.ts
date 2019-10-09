@@ -90,7 +90,7 @@ blockchainTests.resets('Catastrophe Tests', env => {
             );
             expect(undelegatedStakeBalance.currentEpochBalance).to.be.bignumber.equal(amountToStake);
         });
-        it('should emit event when setting read-only mode', async () => {
+        it('should emit event and store correct configuration when setting read-only mode', async () => {
             // set to read-only mode
             const txReceipt = await stakingApiWrapper.stakingProxyContract.setReadOnlyMode.awaitTransactionSuccessAsync(
                 true,
@@ -98,6 +98,11 @@ blockchainTests.resets('Catastrophe Tests', env => {
             expect(txReceipt.logs.length).to.be.equal(1);
             const trueLog = txReceipt.logs[0] as LogWithDecodedArgs<StakingProxyReadOnlyModeSetEventArgs>;
             expect(trueLog.args.readOnlyMode).to.be.true();
+            const timestamp = await env.web3Wrapper.getBlockTimestampAsync(txReceipt.blockNumber);
+            expect(trueLog.args.timestamp).to.bignumber.equal(timestamp);
+            const readOnlyState = await stakingApiWrapper.stakingProxyContract.readOnlyState.callAsync();
+            expect(readOnlyState[0]).to.be.true();
+            expect(readOnlyState[1]).to.bignumber.equal(timestamp);
         });
     });
 });

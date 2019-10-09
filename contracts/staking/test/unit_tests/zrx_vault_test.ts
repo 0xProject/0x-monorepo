@@ -336,6 +336,17 @@ blockchainTests.resets('ZrxVault unit tests', env => {
                 expect(tx).to.revertWith(expectedError);
                 expect(await zrxVault.isInCatastrophicFailure.callAsync()).to.be.false();
             });
+            it('Catastrophic Failure Mode can only be turned on once', async () => {
+                const authorized = nonOwnerAddresses[0];
+                await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+                await zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync({
+                    from: authorized,
+                });
+                const expectedError = new StakingRevertErrors.OnlyCallableIfNotInCatastrophicFailureError();
+                return expect(zrxVault.enterCatastrophicFailure.awaitTransactionSuccessAsync()).to.revertWith(
+                    expectedError,
+                );
+            });
         });
 
         describe('Affected functionality', () => {

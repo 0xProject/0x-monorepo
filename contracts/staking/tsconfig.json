@@ -51,7 +51,8 @@
         "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
         "generated-artifacts/TestStorageLayoutAndConstants.json",
-        "generated-artifacts/ZrxVault.json"
+        "generated-artifacts/ZrxVault.json",
+        "generated-artifacts/ZrxVaultBackstop.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

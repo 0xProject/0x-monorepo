@@ -52,3 +52,4 @@ export * from '../generated-wrappers/test_staking_no_w_e_t_h';
 export * from '../generated-wrappers/test_staking_proxy';
 export * from '../generated-wrappers/test_storage_layout_and_constants';
 export * from '../generated-wrappers/zrx_vault';
+export * from '../generated-wrappers/zrx_vault_backstop';

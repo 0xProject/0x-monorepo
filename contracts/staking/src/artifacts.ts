@@ -54,11 +54,13 @@ import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.jso
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
 import * as TestStorageLayoutAndConstants from '../generated-artifacts/TestStorageLayoutAndConstants.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
+import * as ZrxVaultBackstop from '../generated-artifacts/ZrxVaultBackstop.json';
 export const artifacts = {
     ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
     Staking: Staking as ContractArtifact,
     StakingProxy: StakingProxy as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
+    ZrxVaultBackstop: ZrxVaultBackstop as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,

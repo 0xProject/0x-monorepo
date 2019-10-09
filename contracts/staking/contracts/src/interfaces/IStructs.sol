@@ -21,6 +21,14 @@ pragma solidity ^0.5.9;
 
 interface IStructs {
 
+    /// @dev State of stakingProxy read-only mode.
+    /// @param isReadOnlyModeSet True if in read-only mode.
+    /// @param lastSetTimestamp Timestamp at which read-only mode was last set.
+    struct ReadOnlyState {
+        bool isReadOnlyModeSet;
+        uint96 lastSetTimestamp;
+    }
+
     /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
     /// @param feesCollected Fees collected in ETH by this pool.
