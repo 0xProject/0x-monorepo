@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 
 import { DydxDeploymentManager } from './utils/dydx_deployment_manager';
 
-blockchainTests.only('dYdX <> 0x integration tests', env => {
+blockchainTests('dYdX <> 0x integration tests', env => {
     let owner: string;
     let solo: string;
     let untrustedSender: string;
