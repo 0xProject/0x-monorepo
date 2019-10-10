@@ -61,6 +61,10 @@
             {
                 "note": "Introduce automatic normalization and some zero-value shortcuts in `LibFractions`.",
                 "pr": 2155
+            },
+            {
+                "note": "Removed `deepCopyBytes`, `popLast20Bytes`, `readBytesWithLength`, and `writeBytesWithLength` in `LibBytes`",
+                "pr": 2258
             }
         ],
         "timestamp": 1570135330
