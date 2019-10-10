@@ -8,7 +8,7 @@ export interface DydxContracts {
     // multiOrderExchangeWrapper: ZeroExV2MultiOrderExchangeWrapperContract;
 }
 
-export interface DydxDeploymentOptions extends DeploymentOptions{
+export interface DydxDeploymentOptions extends DeploymentOptions {
     trustedMsgSenders: string[];
 }
 
