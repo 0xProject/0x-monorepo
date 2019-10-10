@@ -21,11 +21,13 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "./MixinStakeStorage.sol";
 
 
 contract MixinStakeBalances is
-    MixinStakeStorage
+    MixinStakeStorage,
+    MixinDeploymentConstants
 {
     using LibSafeMath for uint256;
 
