@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Add more overflow safeguards to `LibFixedMath`",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "1.1.0-beta.0",
         "changes": [
             {

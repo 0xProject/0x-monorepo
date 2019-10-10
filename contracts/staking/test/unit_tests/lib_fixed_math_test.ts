@@ -291,6 +291,12 @@ blockchainTests('LibFixedMath unit tests', env => {
             const r = await testContract.add.callAsync(a, b);
             expect(r).to.bignumber.eq(-1);
         });
+
+        it('MAX_FIXED + (MIN_FIXED + int(1)) == 0', async () => {
+            const [a, b] = [MAX_FIXED_VALUE, MIN_FIXED_VALUE.plus(1)];
+            const r = await testContract.add.callAsync(a, b);
+            expect(r).to.bignumber.eq(0);
+        });
     });
 
     describe('sub()', () => {
