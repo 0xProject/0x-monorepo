@@ -22,13 +22,15 @@ pragma experimental ABIEncoderV2;
 import "./libs/LibProxy.sol";
 import "./libs/LibSafeDowncast.sol";
 import "./immutable/MixinStorage.sol";
+import "./immutable/MixinConstants.sol";
 import "./interfaces/IStorageInit.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
 contract StakingProxy is
     IStakingProxy,
-    MixinStorage
+    MixinStorage,
+    MixinConstants
 {
     using LibProxy for address;
     using LibSafeDowncast for uint256;

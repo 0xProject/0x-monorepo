@@ -29,7 +29,6 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
-    MixinConstants,
     Authorizable
 {
     // address of staking contract
