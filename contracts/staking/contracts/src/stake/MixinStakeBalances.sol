@@ -39,7 +39,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        balance = _loadSyncedBalance(
+        balance = _loadCurrentBalance(
             _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
         );
         if (stakeStatus == IStructs.StakeStatus.UNDELEGATED) {
@@ -64,7 +64,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        balance = _loadSyncedBalance(
+        balance = _loadCurrentBalance(
             _ownerStakeByStatus[uint8(stakeStatus)][staker]
         );
         return balance;
@@ -90,7 +90,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        balance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
+        balance = _loadCurrentBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
         return balance;
     }
 
@@ -103,7 +103,7 @@ contract MixinStakeBalances is
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        balance = _loadSyncedBalance(_delegatedStakeByPoolId[poolId]);
+        balance = _loadCurrentBalance(_delegatedStakeByPoolId[poolId]);
         return balance;
     }
 }

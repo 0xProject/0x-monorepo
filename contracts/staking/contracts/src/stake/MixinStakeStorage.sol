@@ -48,9 +48,9 @@ contract MixinStakeStorage is
             return;
         }
 
-        // load balance from storage and synchronize it
-        IStructs.StoredBalance memory from = _loadSyncedBalance(fromPtr);
-        IStructs.StoredBalance memory to = _loadSyncedBalance(toPtr);
+        // load current balances from storage
+        IStructs.StoredBalance memory from = _loadCurrentBalance(fromPtr);
+        IStructs.StoredBalance memory to = _loadCurrentBalance(toPtr);
 
         // sanity check on balance
         if (amount > from.nextEpochBalance) {
@@ -71,40 +71,20 @@ contract MixinStakeStorage is
         _storeBalance(toPtr, to);
     }
 
-    /// @dev Loads a balance from storage and synchronizes its current/next fields.
-    ///      The structs `current` field is set to `next` if the
-    ///      current epoch is greater than the epoch in which the struct
-    ///      was stored.
-    /// @param balancePtr to load and sync.
-    /// @return synchronized balance.
-    function _loadSyncedBalance(IStructs.StoredBalance storage balancePtr)
+    /// @dev Loads a balance from storage and updates its fields to reflect values for the current epoch.
+    /// @param balancePtr to load.
+    /// @return current balance.
+    function _loadCurrentBalance(IStructs.StoredBalance storage balancePtr)
         internal
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        // load from storage
         balance = balancePtr;
-        // sync
         uint256 currentEpoch_ = currentEpoch;
         if (currentEpoch_ > balance.currentEpoch) {
             balance.currentEpoch = currentEpoch_.downcastToUint64();
             balance.currentEpochBalance = balance.nextEpochBalance;
         }
-        return balance;
-    }
-
-    /// @dev Loads a balance from storage without synchronizing its fields.
-    /// This function exists so that developers will have to explicitly
-    /// communicate that they're loading a synchronized or unsynchronized balance.
-    /// These balances should never be accessed directly.
-    /// @param balancePtr to load.
-    /// @return unsynchronized balance.
-    function _loadUnsyncedBalance(IStructs.StoredBalance storage balancePtr)
-        internal
-        pure
-        returns (IStructs.StoredBalance memory balance)
-    {
-        balance = balancePtr;
         return balance;
     }
 
@@ -115,7 +95,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadCurrentBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
         balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeAdd(amount).downcastToUint96();
 
@@ -130,7 +110,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadCurrentBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
         balance.currentEpochBalance = uint256(balance.currentEpochBalance).safeSub(amount).downcastToUint96();
 
@@ -145,7 +125,7 @@ contract MixinStakeStorage is
         internal
     {
         // Add stake to balance
-        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadCurrentBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeAdd(amount).downcastToUint96();
 
         // update state
@@ -159,7 +139,7 @@ contract MixinStakeStorage is
         internal
     {
         // Remove stake from balance
-        IStructs.StoredBalance memory balance = _loadSyncedBalance(balancePtr);
+        IStructs.StoredBalance memory balance = _loadCurrentBalance(balancePtr);
         balance.nextEpochBalance = uint256(balance.nextEpochBalance).safeSub(amount).downcastToUint96();
 
         // update state
