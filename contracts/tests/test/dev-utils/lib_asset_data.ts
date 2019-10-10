@@ -25,7 +25,7 @@ import { AssetProxyId } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
-import { artifacts, LibAssetDataContract } from '../src';
+import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
 
 chaiSetup.configure();
 const expect = chai.expect;

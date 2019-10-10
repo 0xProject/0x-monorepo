@@ -4,7 +4,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { artifacts, LibTransactionDecoderContract } from '../src';
+import { artifacts, LibTransactionDecoderContract } from '@0x/contracts-dev-utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
