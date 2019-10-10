@@ -9,6 +9,10 @@
             {
                 "note": "Added the deployment manager class",
                 "pr": "2240"
+            },
+            {
+                "note": "Added dYdX contracts, dYdX deployment manager, and tests",
+                "pr": "2259"
             }
         ]
     }
