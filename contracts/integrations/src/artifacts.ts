@@ -12,11 +12,11 @@ import * as GeneralERC20 from '../generated-artifacts/GeneralERC20.json';
 import * as MathHelpers from '../generated-artifacts/MathHelpers.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
 import * as TokenInteract from '../generated-artifacts/TokenInteract.json';
-import * as ZeroExV2MultiOrderExchangeWrapper from '../generated-artifacts/ZeroExV2MultiOrderExchangeWrapper.json';
 import * as ZeroExV3ExchangeWrapper from '../generated-artifacts/ZeroExV3ExchangeWrapper.json';
+import * as ZeroExV3MultiOrderExchangeWrapper from '../generated-artifacts/ZeroExV3MultiOrderExchangeWrapper.json';
 export const artifacts = {
-    ZeroExV2MultiOrderExchangeWrapper: ZeroExV2MultiOrderExchangeWrapper as ContractArtifact,
     ZeroExV3ExchangeWrapper: ZeroExV3ExchangeWrapper as ContractArtifact,
+    ZeroExV3MultiOrderExchangeWrapper: ZeroExV3MultiOrderExchangeWrapper as ContractArtifact,
     ExchangeReader: ExchangeReader as ContractArtifact,
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     AdvancedTokenInteract: AdvancedTokenInteract as ContractArtifact,

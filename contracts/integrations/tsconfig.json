@@ -10,7 +10,7 @@
         "generated-artifacts/MathHelpers.json",
         "generated-artifacts/SafeMath.json",
         "generated-artifacts/TokenInteract.json",
-        "generated-artifacts/ZeroExV2MultiOrderExchangeWrapper.json",
-        "generated-artifacts/ZeroExV3ExchangeWrapper.json"
+        "generated-artifacts/ZeroExV3ExchangeWrapper.json",
+        "generated-artifacts/ZeroExV3MultiOrderExchangeWrapper.json"
     ]
 }

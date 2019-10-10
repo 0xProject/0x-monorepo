@@ -30,13 +30,13 @@ import { TokenInteract } from "./libs/TokenInteract.sol";
 
 
 /**
- * @title ZeroExV2MultiOrderExchangeWrapper
- * @author dYdX
+ * @title ZeroExV3MultiOrderExchangeWrapper
+ * @author dYdX/0x
  *
- * dYdX ExchangeWrapper to interface with 0x Version 2. Sends multiple orders at once. Assumes no
- * ZRX fees.
+ * dYdX ExchangeWrapper to interface with 0x Version 3. Sends multiple orders at once. Assumes no
+ * maker/taker fees.
  */
-contract ZeroExV2MultiOrderExchangeWrapper is
+contract ZeroExV3MultiOrderExchangeWrapper is
     ExchangeWrapper
 {
     using SafeMath for uint256;
@@ -50,6 +50,9 @@ contract ZeroExV2MultiOrderExchangeWrapper is
 
     // number of bytes per (order + signature)
     uint256 constant ORDER_DATA_LENGTH = 322;
+
+    // maximum gas price, 30 Gwei (choose value for deployment)
+    uint256 constant MAX_GAS_PRICE = 30000000000 wei;
 
     // ============ Structs ============
 
@@ -65,22 +68,35 @@ contract ZeroExV2MultiOrderExchangeWrapper is
 
     // ============ State Variables ============
 
-    // address of the ZeroEx V2 Exchange
+    // msg.senders that will use this contract's WETH balance to pay protocol fees
+    mapping (address => bool) public TRUSTED_MSG_SENDER;
+
+    // address of the ZeroEx V3 Exchange
     address public ZERO_EX_EXCHANGE;
 
-    // address of the ZeroEx V2 ERC20Proxy
+    // address of the ZeroEx ERC20Proxy
     address public ZERO_EX_TOKEN_PROXY;
+
+    // address of the WETH token contract
+    address public WETH_TOKEN;
 
     // ============ Constructor ============
 
     constructor(
         address zeroExExchange,
-        address zeroExProxy
+        address zeroExProxy,
+        address weth,
+        address[] memory trustedMsgSenders
     )
         public
     {
         ZERO_EX_EXCHANGE = zeroExExchange;
         ZERO_EX_TOKEN_PROXY = zeroExProxy;
+        WETH_TOKEN = weth;
+
+        for (uint256 i = 0; i < trustedMsgSenders.length; i++) {
+            TRUSTED_MSG_SENDER[trustedMsgSenders[i]] = true;
+        }
     }
 
     // ============ Public Functions ============
@@ -112,11 +128,21 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         LibOrder.Order[] memory orders = parseOrders(orderData, makerToken, takerToken);
         bytes[] memory signatures = parseSignatures(orderData);
 
-        // ensure that the exchange can take the takerTokens from this contract
+        // ensure that the 0x exchange can take the takerTokens from this contract
         takerToken.ensureAllowance(ZERO_EX_TOKEN_PROXY, requestedFillAmount);
 
+        // make sure that the protocol fee collector can take WETH from this contract
+        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
+        address protocolFeeCollector = v3Exchange.protocolFeeCollector();
+        if (protocolFeeCollector != address(0)) {
+            WETH_TOKEN.ensureAllowance(
+                protocolFeeCollector,
+                MathHelpers.maxUint256()
+            );
+        }
+
         // do the exchange
-        LibFillResults.FillResults memory totalFillResults = IExchange(ZERO_EX_EXCHANGE).marketSellOrdersNoThrow(
+        LibFillResults.FillResults memory totalFillResults = v3Exchange.marketSellOrdersNoThrow(
             orders,
             requestedFillAmount,
             signatures
@@ -125,7 +151,7 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         // validate that all taker tokens were sold
         require(
             totalFillResults.takerAssetFilledAmount == requestedFillAmount,
-            "ZeroExV2MultiOrderExchangeWrapper#exchange: Cannot sell enough taker token"
+            "ZeroExV3MultiOrderExchangeWrapper#exchange: Cannot sell enough taker token"
         );
 
         // validate that max price is not violated
@@ -134,6 +160,9 @@ contract ZeroExV2MultiOrderExchangeWrapper is
             totalFillResults.takerAssetFilledAmount,
             totalFillResults.makerAssetFilledAmount
         );
+
+        // validate protocol fee
+        validateProtocolFee(totalFillResults.protocolFeePaid);
 
         // ensure that the caller can take the makerTokens from this contract
         makerToken.ensureAllowance(receiver, totalFillResults.makerAssetFilledAmount);
@@ -257,7 +286,7 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         // require that entire amount was bought
         require(
             total.makerAmount == 0,
-            "ZeroExV2MultiOrderExchangeWrapper#getExchangeCostInternal: Cannot buy enough maker token"
+            "ZeroExV3MultiOrderExchangeWrapper#getExchangeCostInternal: Cannot buy enough maker token"
         );
 
         return total.takerAmount;
@@ -320,6 +349,33 @@ contract ZeroExV2MultiOrderExchangeWrapper is
     }
 
     /**
+     * If the contract has paid a nonzero protocol fee, this function takes the sender's WETH if
+     * they are untrusted, and validates the gas price otherwise
+     */
+    function validateProtocolFee(
+        uint256 protocolFeePaid
+    )
+        private
+    {
+        if (protocolFeePaid != 0) {
+            if (TRUSTED_MSG_SENDER[msg.sender]) {
+                // Prevents a single exchange from using too much of the contract's WETH balance
+                require(
+                    tx.gasprice <= MAX_GAS_PRICE,
+                    "ZeroExV3MultiOrderExchangeWrapper#validateProtocolFee: Maximum gas price exceeded"
+                );
+            } else {
+                // If the sender is untrusted, use their own WETH
+                WETH_TOKEN.transferFrom(
+                    msg.sender,
+                    address(this),
+                    protocolFeePaid
+                );
+            }
+        }
+    }
+
+    /**
      * Validates that a certain takerAmount and makerAmount are within the maxPrice bounds
      */
     function validateTradePrice(
@@ -333,7 +389,7 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         require(
             priceRatio.makerAmount == 0 ||
             takerAmount.mul(priceRatio.makerAmount) <= makerAmount.mul(priceRatio.takerAmount),
-            "ZeroExV2MultiOrderExchangeWrapper#validateTradePrice: Price greater than maxPrice"
+            "ZeroExV3MultiOrderExchangeWrapper#validateTradePrice: Price greater than maxPrice"
         );
     }
 
@@ -349,7 +405,7 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         require(
             orderData.length >= PRICE_DATA_LENGTH + ORDER_DATA_LENGTH
             && orderData.length.sub(PRICE_DATA_LENGTH) % ORDER_DATA_LENGTH == 0,
-            "ZeroExV2MultiOrderExchangeWrapper#validateOrderData: Invalid orderData length"
+            "ZeroExV3MultiOrderExchangeWrapper#validateOrderData: Invalid orderData length"
         );
     }
 
@@ -401,11 +457,11 @@ contract ZeroExV2MultiOrderExchangeWrapper is
         // require numbers to fit within 128 bits to prevent overflow when checking bounds
         require(
             uint128(takerAmountRatio) == takerAmountRatio,
-            "ZeroExV2MultiOrderExchangeWrapper#parseMaxPriceRatio: takerAmountRatio > 128 bits"
+            "ZeroExV3MultiOrderExchangeWrapper#parseMaxPriceRatio: takerAmountRatio > 128 bits"
         );
         require(
             uint128(makerAmountRatio) == makerAmountRatio,
-            "ZeroExV2MultiOrderExchangeWrapper#parseMaxPriceRatio: makerAmountRatio > 128 bits"
+            "ZeroExV3MultiOrderExchangeWrapper#parseMaxPriceRatio: makerAmountRatio > 128 bits"
         );
 
         return TokenAmounts({
@@ -491,7 +547,7 @@ contract ZeroExV2MultiOrderExchangeWrapper is
     }
 
     /**
-     * Converts a token address to 0xV2 assetData
+     * Converts a token address to 0x assetData
      */
     function tokenAddressToAssetData(
         address tokenAddress

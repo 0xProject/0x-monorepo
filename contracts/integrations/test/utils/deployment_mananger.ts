@@ -134,6 +134,7 @@ export class DeploymentManager {
      * Fully deploy the 0x exchange and staking contracts and configure the system with the
      * asset proxy owner multisig.
      * @param environment A blockchain test environment to use for contracts deployment.
+     * @param options Specifies the owner address and number of tokens to deploy.
      */
     public static async deployAsync(
         environment: BlockchainTestsEnvironment,
@@ -403,6 +404,7 @@ export class DeploymentManager {
      * Deploy a set of token contracts.
      * @param environment The blockchain environment to use.
      * @param txDefaults Defaults to use when deploying the asset proxies.
+     * @param options Specifies how many tokens of each standard to deploy.
      */
     protected static async _deployTokenContractsAsync(
         environment: BlockchainTestsEnvironment,
