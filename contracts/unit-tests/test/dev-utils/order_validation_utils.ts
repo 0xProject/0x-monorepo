@@ -24,7 +24,7 @@ import { OrderTransferResults, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 
-import { artifacts, DevUtilsContract } from '../src';
+import { artifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
