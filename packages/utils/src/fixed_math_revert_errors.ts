@@ -12,6 +12,7 @@ export enum BinOpErrorCodes {
     AdditionOverflow,
     MultiplicationOverflow,
     DivisionByZero,
+    DivisionOverflow,
 }
 
 export class SignedValueError extends RevertError {
