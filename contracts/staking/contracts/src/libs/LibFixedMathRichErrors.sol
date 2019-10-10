@@ -31,7 +31,8 @@ library LibFixedMathRichErrors {
     enum BinOpErrorCodes {
         ADDITION_OVERFLOW,
         MULTIPLICATION_OVERFLOW,
-        DIVISION_BY_ZERO
+        DIVISION_BY_ZERO,
+        DIVISION_OVERFLOW
     }
 
     // bytes4(keccak256("SignedValueError(uint8,int256)"))

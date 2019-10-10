@@ -95,6 +95,12 @@ library LibFixedMath {
 
     /// @dev Returns the absolute value of a fixed point number.
     function abs(int256 f) internal pure returns (int256 c) {
+        if (f == MIN_FIXED_VAL) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_SMALL,
+                f
+            ));
+        }
         if (f >= 0) {
             c = f;
         } else {
@@ -357,6 +363,13 @@ library LibFixedMath {
         if (b == 0) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_BY_ZERO,
+                a,
+                b
+            ));
+        }
+        if (a == MIN_FIXED_VAL && b == -1) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
+                LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_OVERFLOW,
                 a,
                 b
             ));
