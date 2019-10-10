@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -209,7 +215,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -357,7 +363,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _required: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -511,7 +517,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -668,7 +674,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -926,7 +932,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1586,7 +1592,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             destination: string,
             newSecondsTimeLocked: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
             assert.isString('functionSelector', functionSelector);
@@ -1796,7 +1802,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1954,7 +1960,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             owner: string,
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
@@ -2171,7 +2177,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2382,7 +2388,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             value: BigNumber,
             data: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);

@@ -18,7 +18,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -85,7 +91,7 @@ export class ForwarderContract extends BaseContract {
         awaitTransactionSuccessAsync(
             assetData: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             const self = (this as any) as ForwarderContract;
@@ -300,7 +306,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
@@ -627,7 +633,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('signatures', signatures);
@@ -922,7 +928,7 @@ export class ForwarderContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -1076,7 +1082,7 @@ export class ForwarderContract extends BaseContract {
             assetData: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);

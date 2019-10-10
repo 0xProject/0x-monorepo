@@ -45,7 +45,7 @@ const args = yargs
         demandOption: true,
     })
     .option('debug', {
-        describe: 'Enable debug functions',
+        describe: 'Includes debug functions in the wrappers such as `getABIDecodedTransactionData`',
         type: 'boolean',
     })
     .option('partials', {

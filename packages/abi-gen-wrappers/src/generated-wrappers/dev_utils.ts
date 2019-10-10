@@ -18,7 +18,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -1877,7 +1883,7 @@ export class DevUtilsContract extends BaseContract {
             takerAddress: string,
             takerAssetFillAmount: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('takerAddress', takerAddress);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -2168,7 +2174,7 @@ export class DevUtilsContract extends BaseContract {
             takerAddresses: string[],
             takerAssetFillAmounts: BigNumber[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAddresses', takerAddresses);

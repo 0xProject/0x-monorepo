@@ -154,6 +154,7 @@ export {
     SignedZeroExTransaction,
     SimpleEvmOutput,
     SimpleEvmBytecodeOutput,
+    AwaitTransactionSuccessOpts,
     SendTransactionOpts,
     EIP712DomainWithDefaultSchema,
     EventCallback,

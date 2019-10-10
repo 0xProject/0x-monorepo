@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -158,7 +164,7 @@ export class WETH9Contract extends BaseContract {
             guy: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
@@ -363,7 +369,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -540,7 +546,7 @@ export class WETH9Contract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -817,7 +823,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -966,7 +972,7 @@ export class WETH9Contract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as WETH9Contract;
             const txHashPromise = self.deposit.sendTransactionAsync(txData, opts);

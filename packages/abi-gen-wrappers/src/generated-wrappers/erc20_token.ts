@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -109,7 +115,7 @@ export class ERC20TokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -344,7 +350,7 @@ export class ERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -594,7 +600,7 @@ export class ERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);

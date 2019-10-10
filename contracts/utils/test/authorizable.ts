@@ -63,11 +63,7 @@ describe('Authorizable', () => {
         });
 
         it('should revert if owner attempts to authorize a duplicate address', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const expectedError = new AuthorizableRevertErrors.TargetAlreadyAuthorizedError(address);
             const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
             return expect(tx).to.revertWith(expectedError);
@@ -76,27 +72,15 @@ describe('Authorizable', () => {
 
     describe('removeAuthorizedAddress', () => {
         it('should revert if not called by owner', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = authorizable.removeAuthorizedAddress.sendTransactionAsync(address, { from: notOwner });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
-            await authorizable.removeAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
+            await authorizable.removeAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const isAuthorized = await authorizable.authorized.callAsync(address);
             expect(isAuthorized).to.be.false();
         });
@@ -110,11 +94,7 @@ describe('Authorizable', () => {
 
     describe('removeAuthorizedAddressAtIndex', () => {
         it('should revert if not called by owner', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const index = new BigNumber(0);
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
@@ -124,11 +104,7 @@ describe('Authorizable', () => {
         });
 
         it('should revert if index is >= authorities.length', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const index = new BigNumber(1);
             const expectedError = new AuthorizableRevertErrors.IndexOutOfBoundsError(index, index);
             const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
@@ -149,16 +125,8 @@ describe('Authorizable', () => {
         it('should revert if address at index does not match target', async () => {
             const address1 = address;
             const address2 = notOwner;
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address1,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address2,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address1, { from: owner });
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address2, { from: owner });
             const address1Index = new BigNumber(0);
             const expectedError = new AuthorizableRevertErrors.AuthorizedAddressMismatchError(address1, address2);
             const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
@@ -168,18 +136,11 @@ describe('Authorizable', () => {
         });
 
         it('should allow owner to remove an authorized address', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const index = new BigNumber(0);
-            await authorizable.removeAuthorizedAddressAtIndex.awaitTransactionSuccessAsync(
-                address,
-                index,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.removeAuthorizedAddressAtIndex.awaitTransactionSuccessAsync(address, index, {
+                from: owner,
+            });
             const isAuthorized = await authorizable.authorized.callAsync(address);
             expect(isAuthorized).to.be.false();
         });
@@ -189,19 +150,11 @@ describe('Authorizable', () => {
         it('should return all authorized addresses', async () => {
             const initial = await authorizable.getAuthorizedAddresses.callAsync();
             expect(initial).to.have.length(0);
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const afterAdd = await authorizable.getAuthorizedAddresses.callAsync();
             expect(afterAdd).to.have.length(1);
             expect(afterAdd).to.include(address);
-            await authorizable.removeAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await authorizable.removeAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const afterRemove = await authorizable.getAuthorizedAddresses.callAsync();
             expect(afterRemove).to.have.length(0);
         });

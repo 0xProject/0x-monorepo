@@ -141,56 +141,30 @@ describe('matchOrders', () => {
         await exchangeWrapper.registerAssetProxyAsync(erc1155Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(multiAssetProxyContract.address, owner);
         // Authorize proxies.
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            exchange.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxyContract.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxyContract.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxyContract.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc721Proxy.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc1155Proxy.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await multiAssetProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxyContract.address, {
+            from: owner,
+        });
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxyContract.address, {
+            from: owner,
+        });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxyContract.address, {
+            from: owner,
+        });
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        });
+        await multiAssetProxyContract.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, {
+            from: owner,
+        });
 
         // Set default addresses
         defaultERC20MakerAssetAddress = erc20Tokens[0].address;

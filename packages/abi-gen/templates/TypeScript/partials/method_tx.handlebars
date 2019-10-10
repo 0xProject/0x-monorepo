@@ -50,7 +50,7 @@ opts: SendTransactionOpts = { shouldValidate: true },
 awaitTransactionSuccessAsync(
 {{> typed_params inputs=inputs}}
     txData?: Partial<TxData>,
-    opts: SendTransactionOpts = { shouldValidate: true },
+    opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
 ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}

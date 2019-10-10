@@ -41,7 +41,7 @@ describe('Ownable', () => {
         });
     });
 
-    describe('transferOwnership', () => {
+    describe.only('transferOwnership', () => {
         it('should revert if the specified new owner is the zero address', async () => {
             const expectedError = new OwnableRevertErrors.TransferOwnerToZeroError();
             const tx = ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner });

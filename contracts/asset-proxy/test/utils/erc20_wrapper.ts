@@ -70,13 +70,11 @@ export class ERC20Wrapper {
                     tokenOwnerAddress,
                     constants.INITIAL_ERC20_BALANCE,
                     { from: this._contractOwnerAddress },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
                 await dummyTokenContract.approve.awaitTransactionSuccessAsync(
                     (this._proxyContract as ERC20ProxyContract).address,
                     constants.INITIAL_ERC20_ALLOWANCE,
                     { from: tokenOwnerAddress },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
                 );
             }
         }
@@ -88,12 +86,9 @@ export class ERC20Wrapper {
     }
     public async setBalanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
-        await tokenContract.setBalance.awaitTransactionSuccessAsync(
-            userAddress,
-            amount,
-            { from: this._contractOwnerAddress },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
+        await tokenContract.setBalance.awaitTransactionSuccessAsync(userAddress, amount, {
+            from: this._contractOwnerAddress,
+        });
     }
     public async getProxyAllowanceAsync(userAddress: string, assetData: string): Promise<BigNumber> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
@@ -104,12 +99,7 @@ export class ERC20Wrapper {
     public async setAllowanceAsync(userAddress: string, assetData: string, amount: BigNumber): Promise<void> {
         const tokenContract = this._getTokenContractFromAssetData(assetData);
         const proxyAddress = (this._proxyContract as ERC20ProxyContract).address;
-        await tokenContract.approve.awaitTransactionSuccessAsync(
-            proxyAddress,
-            amount,
-            { from: userAddress },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
+        await tokenContract.approve.awaitTransactionSuccessAsync(proxyAddress, amount, { from: userAddress });
     }
     public async getBalancesAsync(): Promise<ERC20BalancesByOwner> {
         this._validateDummyTokenContractsExistOrThrow();

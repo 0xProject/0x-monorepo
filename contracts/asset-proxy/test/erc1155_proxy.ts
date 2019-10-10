@@ -72,16 +72,8 @@ describe('ERC1155Proxy', () => {
         const usedAddresses = ([owner, notAuthorized, authorized, spender, receiver] = _.slice(accounts, 0, 5));
         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            erc1155Proxy.address,
-            { from: owner },
-            { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(erc1155Proxy.address, { from: owner });
         // deploy & configure ERC1155 tokens and receiver
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
         erc1155Contract = erc1155Wrapper.getContract();
@@ -696,25 +688,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -805,25 +790,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -937,25 +915,18 @@ describe('ERC1155Proxy', () => {
             const tokenUri = '';
             for (const tokenToCreate of tokensToCreate) {
                 // create token
-                await erc1155Wrapper.getContract().createWithType.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    tokenUri,
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .createWithType.awaitTransactionSuccessAsync(tokenToCreate, tokenUri, {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
 
                 // mint balance for spender
-                await erc1155Wrapper.getContract().mintFungible.awaitTransactionSuccessAsync(
-                    tokenToCreate,
-                    [spender],
-                    [spenderInitialBalance],
-                    {
+                await erc1155Wrapper
+                    .getContract()
+                    .mintFungible.awaitTransactionSuccessAsync(tokenToCreate, [spender], [spenderInitialBalance], {
                         from: owner,
-                    },
-                    { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                );
+                    });
             }
             ///// Step 2/5 /////
             // Check balances before transfer
@@ -1667,13 +1638,9 @@ describe('ERC1155Proxy', () => {
         it('should propagate revert reason from erc1155 contract failure', async () => {
             // disable transfers
             const shouldRejectTransfer = true;
-            await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(
-                shouldRejectTransfer,
-                {
-                    from: owner,
-                },
-                { timeoutMs: constants.AWAIT_TRANSACTION_MINED_MS },
-            );
+            await erc1155Receiver.setRejectTransferFlag.awaitTransactionSuccessAsync(shouldRejectTransfer, {
+                from: owner,
+            });
             // setup test parameters
             const tokenHolders = [spender, receiverContract];
             const tokensToTransfer = fungibleTokens.slice(0, 1);

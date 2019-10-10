@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SendTransactionOpts, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -332,7 +338,7 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             }>,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             const self = (this as any) as ExchangeContract;
@@ -567,7 +573,7 @@ export class ExchangeContract extends BaseContract {
             }>,
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('transactions', transactions);
             assert.isArray('signatures', signatures);
@@ -822,7 +828,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1126,7 +1132,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1435,7 +1441,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
@@ -1784,7 +1790,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -2211,7 +2217,7 @@ export class ExchangeContract extends BaseContract {
             leftSignatures: string[],
             rightSignatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('leftOrders', leftOrders);
             assert.isArray('rightOrders', rightOrders);
@@ -2579,7 +2585,7 @@ export class ExchangeContract extends BaseContract {
                 takerFeeAssetData: string;
             },
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.cancelOrder.sendTransactionAsync(order, txData, opts);
@@ -2789,7 +2795,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
@@ -3056,7 +3062,7 @@ export class ExchangeContract extends BaseContract {
             },
             signature: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
@@ -3291,7 +3297,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
@@ -3580,7 +3586,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
@@ -4258,7 +4264,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4560,7 +4566,7 @@ export class ExchangeContract extends BaseContract {
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
@@ -4861,7 +4867,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5163,7 +5169,7 @@ export class ExchangeContract extends BaseContract {
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -5500,7 +5506,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -5907,7 +5913,7 @@ export class ExchangeContract extends BaseContract {
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
@@ -6326,7 +6332,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             hash: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('hash', hash);
             const self = (this as any) as ExchangeContract;
@@ -6614,7 +6620,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
@@ -6772,7 +6778,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             updatedProtocolFeeCollector: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('updatedProtocolFeeCollector', updatedProtocolFeeCollector);
             const self = (this as any) as ExchangeContract;
@@ -6942,7 +6948,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             updatedProtocolFeeMultiplier: BigNumber,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('updatedProtocolFeeMultiplier', updatedProtocolFeeMultiplier);
             const self = (this as any) as ExchangeContract;
@@ -7116,7 +7122,7 @@ export class ExchangeContract extends BaseContract {
             validatorAddress: string,
             approval: boolean,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
@@ -7326,7 +7332,7 @@ export class ExchangeContract extends BaseContract {
             toAddresses: string[],
             amounts: BigNumber[],
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('assetData', assetData);
             assert.isArray('fromAddresses', fromAddresses);
@@ -7587,7 +7593,7 @@ export class ExchangeContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: SendTransactionOpts = { shouldValidate: true },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
