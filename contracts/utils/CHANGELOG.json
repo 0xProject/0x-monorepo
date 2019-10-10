@@ -61,6 +61,10 @@
             {
                 "note": "Introduce automatic normalization and some zero-value shortcuts in `LibFractions`.",
                 "pr": 2155
+            },
+            {
+                "note": "Emit an event in `transferOwnership`",
+                "pr": 2253
             }
         ],
         "timestamp": 1570135330
