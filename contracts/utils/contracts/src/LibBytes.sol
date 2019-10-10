@@ -271,33 +271,6 @@ library LibBytes {
         return result;
     }
 
-    /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
-    /// @param b Byte array that will be modified.
-    /// @return The 20 byte address that was popped off.
-    function popLast20Bytes(bytes memory b)
-        internal
-        pure
-        returns (address result)
-    {
-        if (b.length < 20) {
-            LibRichErrors.rrevert(LibBytesRichErrors.InvalidByteOperationError(
-                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
-                b.length,
-                20 // 20 is length of address
-            ));
-        }
-
-        // Store last 20 bytes.
-        result = readAddress(b, b.length - 20);
-
-        assembly {
-            // Subtract 20 from byte array length.
-            let newLen := sub(mload(b), 20)
-            mstore(b, newLen)
-        }
-        return result;
-    }
-
     /// @dev Tests equality of two byte arrays.
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
@@ -521,100 +494,6 @@ library LibBytes {
             result := and(result, 0xFFFFFFFF00000000000000000000000000000000000000000000000000000000)
         }
         return result;
-    }
-
-    /// @dev Reads nested bytes from a specific position.
-    /// @dev NOTE: the returned value overlaps with the input value.
-    ///            Both should be treated as immutable.
-    /// @param b Byte array containing nested bytes.
-    /// @param index Index of nested bytes.
-    /// @return result Nested bytes.
-    function readBytesWithLength(
-        bytes memory b,
-        uint256 index
-    )
-        internal
-        pure
-        returns (bytes memory result)
-    {
-        // Read length of nested bytes
-        uint256 nestedBytesLength = readUint256(b, index);
-        index += 32;
-
-        // Assert length of <b> is valid, given
-        // length of nested bytes
-        if (b.length < index + nestedBytesLength) {
-            LibRichErrors.rrevert(LibBytesRichErrors.InvalidByteOperationError(
-                LibBytesRichErrors
-                    .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
-                b.length,
-                index + nestedBytesLength
-            ));
-        }
-
-        // Return a pointer to the byte array as it exists inside `b`
-        assembly {
-            result := add(b, index)
-        }
-        return result;
-    }
-
-    /// @dev Inserts bytes at a specific position in a byte array.
-    /// @param b Byte array to insert <input> into.
-    /// @param index Index in byte array of <input>.
-    /// @param input bytes to insert.
-    function writeBytesWithLength(
-        bytes memory b,
-        uint256 index,
-        bytes memory input
-    )
-        internal
-        pure
-    {
-        // Assert length of <b> is valid, given
-        // length of input
-        if (b.length < index + 32 + input.length) {
-            LibRichErrors.rrevert(LibBytesRichErrors.InvalidByteOperationError(
-                LibBytesRichErrors
-                    .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
-                b.length,
-                index + 32 + input.length  // 32 bytes to store length
-            ));
-        }
-
-        // Copy <input> into <b>
-        memCopy(
-            b.contentAddress() + index,
-            input.rawAddress(), // includes length of <input>
-            input.length + 32   // +32 bytes to store <input> length
-        );
-    }
-
-    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
-    /// @param dest Byte array that will be overwritten with source bytes.
-    /// @param source Byte array to copy onto dest bytes.
-    function deepCopyBytes(
-        bytes memory dest,
-        bytes memory source
-    )
-        internal
-        pure
-    {
-        uint256 sourceLen = source.length;
-        // Dest length must be >= source length, or some bytes would not be copied.
-        if (dest.length < sourceLen) {
-            LibRichErrors.rrevert(LibBytesRichErrors.InvalidByteOperationError(
-                LibBytesRichErrors
-                    .InvalidByteOperationErrorCodes.DestinationLengthGreaterThanOrEqualSourceLengthRequired,
-                dest.length,
-                sourceLen
-            ));
-        }
-        memCopy(
-            dest.contentAddress(),
-            source.contentAddress(),
-            sourceLen
-        );
     }
 
     /// @dev Writes a new length to a byte array.

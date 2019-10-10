@@ -37,18 +37,6 @@ contract TestLibBytes {
         return (b, result);
     }
 
-    /// @dev Pops the last 20 bytes off of a byte array by modifying its length.
-    /// @param b Byte array that will be modified.
-    /// @return The 20 byte address that was popped off.
-    function publicPopLast20Bytes(bytes memory b)
-        public
-        pure
-        returns (bytes memory, address result)
-    {
-        result = b.popLast20Bytes();
-        return (b, result);
-    }
-
     /// @dev Tests equality of two byte arrays.
     /// @param lhs First byte array to compare.
     /// @param rhs Second byte array to compare.
@@ -71,21 +59,6 @@ contract TestLibBytes {
         rhs.popLastByte();
         equal = lhs.equals(rhs);
         return equal;
-    }
-
-    /// @dev Performs a deep copy of a byte array onto another byte array of greater than or equal length.
-    /// @param dest Byte array that will be overwritten with source bytes.
-    /// @param source Byte array to copy onto dest bytes.
-    function publicDeepCopyBytes(
-        bytes memory dest,
-        bytes memory source
-    )
-        public
-        pure
-        returns (bytes memory)
-    {
-        LibBytes.deepCopyBytes(dest, source);
-        return dest;
     }
 
     /// @dev Reads an address from a position in a byte array.
@@ -203,40 +176,6 @@ contract TestLibBytes {
         return result;
     }
 
-    /// @dev Reads nested bytes from a specific position.
-    /// @param b Byte array containing nested bytes.
-    /// @param index Index of nested bytes.
-    /// @return result Nested bytes.
-    function publicReadBytesWithLength(
-        bytes memory b,
-        uint256 index
-    )
-        public
-        pure
-        returns (bytes memory result)
-    {
-        result = b.readBytesWithLength(index);
-        return result;
-    }
-
-    /// @dev Inserts bytes at a specific position in a byte array.
-    /// @param b Byte array to insert <input> into.
-    /// @param index Index in byte array of <input>.
-    /// @param input bytes to insert.
-    /// @return b Updated input byte array
-    function publicWriteBytesWithLength(
-        bytes memory b,
-        uint256 index,
-        bytes memory input
-    )
-        public
-        pure
-        returns (bytes memory)
-    {
-        b.writeBytesWithLength(index, input);
-        return b;
-    }
-
     /// @dev Copies a block of memory from one location to another.
     /// @param mem Memory contents we want to apply memCopy to
     /// @param dest Destination offset into <mem>.
@@ -305,7 +244,7 @@ contract TestLibBytes {
     }
 
     /// @dev Returns a byte array with an updated length.
-    /// @dev Writes a new length to a byte array. 
+    /// @dev Writes a new length to a byte array.
     ///      Decreasing length will lead to removing the corresponding lower order bytes from the byte array.
     ///      Increasing length may lead to appending adjacent in-memory bytes to the end of the byte array.
     /// @param b Bytes array to write new length to.
