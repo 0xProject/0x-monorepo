@@ -48,7 +48,7 @@ blockchainTests.resets('Ownable', env => {
                 receipt.logs,
                 IOwnableEvents.OwnershipTransferred,
             );
-            expect(event).to.be.deep.eq({ newOwner: nonOwner });
+            expect(event).to.be.deep.eq({ previousOwner: owner, newOwner: nonOwner });
 
             // Ensure that the owner was actually updated
             const updatedOwner = await ownable.owner.callAsync();
