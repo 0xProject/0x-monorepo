@@ -44,21 +44,17 @@ contract MixinStorage is
     IStructs.ReadOnlyState public readOnlyState;
 
     // mapping from StakeStatus to global stored balance
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     // NOTE: only Status.DELEGATED is used to access this mapping, but this format
     // is used for extensibility
     mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
 
     // mapping from StakeStatus to address of staker to stored balance
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (uint8 => mapping (address => IStructs.StoredBalance)) internal _ownerStakeByStatus;
 
     // Mapping from Owner to Pool Id to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
     // Mapping from Pool Id to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
     // tracking Pool Id, a unique identifier for each staking pool.

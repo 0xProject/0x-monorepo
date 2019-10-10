@@ -63,7 +63,7 @@ contract MixinStake is
         address staker = msg.sender;
 
         IStructs.StoredBalance memory undelegatedBalance =
-            _loadSyncedBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker]);
+            _loadCurrentBalance(_ownerStakeByStatus[uint8(IStructs.StakeStatus.UNDELEGATED)][staker]);
 
         // stake must be undelegated in current and next epoch to be withdrawn
         uint256 currentWithdrawableStake = LibSafeMath.min256(
@@ -111,8 +111,7 @@ contract MixinStake is
     {
         address payable staker = msg.sender;
 
-        // handle delegation; this must be done before moving stake as the
-        // current (out-of-sync) status is used during delegation.
+        // handle delegation
         if (from.status == IStructs.StakeStatus.DELEGATED) {
             _undelegateStake(
                 from.poolId,

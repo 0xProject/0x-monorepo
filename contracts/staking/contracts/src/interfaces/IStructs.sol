@@ -60,7 +60,6 @@ interface IStructs {
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
-    /// Always load this struct using _loadSyncedBalance or _loadUnsyncedBalance.
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in `currentEpoch+1`.
