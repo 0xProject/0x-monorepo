@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.6.0-beta.1",
+        "changes": [
+            {
+                "note": "Consolidated FixedMathRevertErrors",
+                "pr": 2255
+            }
+        ]
+    },
+    {
         "version": "4.6.0-beta.0",
         "changes": [
             {
