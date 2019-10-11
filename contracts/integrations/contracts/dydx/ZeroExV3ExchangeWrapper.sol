@@ -96,7 +96,6 @@ contract ZeroExV3ExchangeWrapper is
         returns (uint256)
     {
         // prepare the exchange
-        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
         (LibOrder.Order memory order, address takerFeeToken) = parseOrder(orderData, makerToken, takerToken);
         bytes memory signature = parseSignature(orderData);
 
@@ -108,8 +107,15 @@ contract ZeroExV3ExchangeWrapper is
             takerFeeToken
         );
 
-        // transfer protocol fee from sender if applicable
-        transferProtocolFee(v3Exchange);
+        // set protocol fee allowance
+        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
+        address protocolFeeCollector = v3Exchange.protocolFeeCollector();
+        if (protocolFeeCollector != address(0)) {
+            WETH_TOKEN.ensureAllowance(
+                protocolFeeCollector,
+                MathHelpers.maxUint256()
+            );
+        }
 
         // make sure that the exchange can take the tokens from this contract
         takerToken.ensureAllowance(
@@ -120,8 +126,11 @@ contract ZeroExV3ExchangeWrapper is
         // do the exchange
         LibFillResults.FillResults memory fill = v3Exchange.fillOrKillOrder(order, requestedFillAmount, signature);
 
-        // validate results
+        // validate fill amount
         assert(fill.takerAssetFilledAmount == requestedFillAmount);
+
+        // validate protocol fee
+        validateProtocolFee(fill.protocolFeePaid);
 
         // set allowance
         makerToken.ensureAllowance(
@@ -216,34 +225,26 @@ contract ZeroExV3ExchangeWrapper is
         );
     }
 
-    function transferProtocolFee(
-        IExchange zeroExExchange
+    function validateProtocolFee(
+        uint256 protocolFeePaid
     )
         private
     {
-        address protocolFeeCollector = zeroExExchange.protocolFeeCollector();
-        if (protocolFeeCollector != address(0)) {
-            // calculate protocol fee
-            uint256 protocolFee = tx.gasprice.mul(zeroExExchange.protocolFeeMultiplier());
-
+        if (protocolFeePaid != 0) {
             if (TRUSTED_MSG_SENDER[msg.sender]) {
+                // Prevents a single exchange from using too much of the contract's WETH balance
                 require(
                     tx.gasprice <= MAX_GAS_PRICE,
-                    "ZeroExV3ExchangeWrapper#transferProtocolFee: Maximum gas price exceeded"
+                    "ZeroExV3ExchangeWrapper#validateProtocolFee: Maximum gas price exceeded"
                 );
             } else {
+                // If the sender is untrusted, use their own WETH
                 WETH_TOKEN.transferFrom(
                     msg.sender,
                     address(this),
-                    protocolFee
+                    protocolFeePaid
                 );
             }
-
-            // make sure that the protocol fee collector can take WETH from this contract
-            WETH_TOKEN.ensureAllowance(
-                protocolFeeCollector,
-                protocolFee
-            );
         }
     }
 
