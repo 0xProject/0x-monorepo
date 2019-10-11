@@ -96,6 +96,7 @@ contract ZeroExV3ExchangeWrapper is
         returns (uint256)
     {
         // prepare the exchange
+        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
         (LibOrder.Order memory order, address takerFeeToken) = parseOrder(orderData, makerToken, takerToken);
         bytes memory signature = parseSignature(orderData);
 
@@ -108,7 +109,7 @@ contract ZeroExV3ExchangeWrapper is
         );
 
         // transfer protocol fee from sender if applicable
-        transferProtocolFee(tradeOriginator);
+        transferProtocolFee(v3Exchange);
 
         // make sure that the exchange can take the tokens from this contract
         takerToken.ensureAllowance(
@@ -117,7 +118,6 @@ contract ZeroExV3ExchangeWrapper is
         );
 
         // do the exchange
-        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
         LibFillResults.FillResults memory fill = v3Exchange.fillOrKillOrder(order, requestedFillAmount, signature);
 
         // validate results
@@ -216,15 +216,15 @@ contract ZeroExV3ExchangeWrapper is
         );
     }
 
-    function transferProtocolFee(address tradeOriginator)
+    function transferProtocolFee(
+        IExchange zeroExExchange
+    )
         private
     {
-        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
-        address protocolFeeCollector = v3Exchange.protocolFeeCollector();
-
+        address protocolFeeCollector = zeroExExchange.protocolFeeCollector();
         if (protocolFeeCollector != address(0)) {
             // calculate protocol fee
-            uint256 protocolFee = tx.gasprice.mul(v3Exchange.protocolFeeMultiplier());
+            uint256 protocolFee = tx.gasprice.mul(zeroExExchange.protocolFeeMultiplier());
 
             if (TRUSTED_MSG_SENDER[msg.sender]) {
                 require(
