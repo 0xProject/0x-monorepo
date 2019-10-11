@@ -350,7 +350,7 @@ blockchainTests('dYdX <> 0x integration tests', env => {
                     { from: solo, gasPrice: MAX_GAS_PRICE.plus(1) },
                 );
                 return expect(tx).to.revertWith(
-                    'ZeroExV3ExchangeWrapper#transferProtocolFee: Maximum gas price exceeded',
+                    'ZeroExV3ExchangeWrapper#validateProtocolFee: Maximum gas price exceeded',
                 );
             });
             it('succeeds if requestedFillAmount = order.takerAssetAmount', async () => {
