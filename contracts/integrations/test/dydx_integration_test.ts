@@ -97,7 +97,6 @@ blockchainTests('dYdX <> 0x integration tests', env => {
         await addBalanceAndAllowanceAsync(makerToken, maker, deploymentManager.assetProxies.erc20Proxy.address);
         await addBalanceAndAllowanceAsync(makerFeeToken, maker, deploymentManager.assetProxies.erc20Proxy.address);
         await addBalanceAndAllowanceAsync(weth, untrustedSender, deploymentManager.dydx.exchangeWrapper.address);
-        await addBalanceAndAllowanceAsync(weth, tradeOriginator, deploymentManager.dydx.exchangeWrapper.address);
 
         // The exchange wrapper needs a takerToken balance, but isn't an EOA
         await takerToken.setBalance.awaitTransactionSuccessAsync(owner, constants.INITIAL_ERC20_BALANCE, {
@@ -106,6 +105,17 @@ blockchainTests('dYdX <> 0x integration tests', env => {
         await takerToken.transfer.awaitTransactionSuccessAsync(
             deploymentManager.dydx.exchangeWrapper.address,
             constants.INITIAL_ERC20_BALANCE,
+            { from: owner },
+        );
+
+        // The exchange wrapper also needs a WETH balance
+        await weth.deposit.awaitTransactionSuccessAsync({
+            from: owner,
+            value: constants.ONE_ETHER,
+        });
+        await weth.transfer.awaitTransactionSuccessAsync(
+            deploymentManager.dydx.exchangeWrapper.address,
+            constants.ONE_ETHER,
             { from: owner },
         );
     });
@@ -169,8 +179,9 @@ blockchainTests('dYdX <> 0x integration tests', env => {
             order: SignedOrder,
             txReceipt: TransactionReceiptWithDecodedLogs,
             requestedFillAmount: BigNumber,
+            gasPrice?: BigNumber,
         ): TokenBalances {
-            const gasPrice = new BigNumber(env.txDefaults.gasPrice || 0);
+            gasPrice = new BigNumber(gasPrice || env.txDefaults.gasPrice || 0);
             const protocolFee = gasPrice.times(DydxDeploymentManager.protocolFeeMultiplier);
             const [makerAssetAmount, takerAssetAmount, makerFee, takerFee] = [
                 order.makerAssetAmount,
@@ -203,9 +214,9 @@ blockchainTests('dYdX <> 0x integration tests', env => {
             ].plus(takerFee);
 
             if (txReceipt.from === solo) {
-                erc20Balances[tradeOriginator][weth.address] = erc20Balances[tradeOriginator][weth.address].minus(
-                    protocolFee,
-                );
+                erc20Balances[deploymentManager.dydx.exchangeWrapper.address][weth.address] = erc20Balances[
+                    deploymentManager.dydx.exchangeWrapper.address
+                ][weth.address].minus(protocolFee);
             } else {
                 erc20Balances[txReceipt.from][weth.address] = erc20Balances[txReceipt.from][weth.address].minus(
                     protocolFee,
@@ -251,6 +262,7 @@ blockchainTests('dYdX <> 0x integration tests', env => {
         }
 
         blockchainTests.resets('exchange', () => {
+            const MAX_GAS_PRICE = new BigNumber(30000000000);
             let initialBalances: TokenBalances;
 
             before(async () => {
@@ -301,7 +313,44 @@ blockchainTests('dYdX <> 0x integration tests', env => {
                     { from: untrustedSender },
                 );
                 return expect(tx).to.revertWith(
-                    'ZeroExV3ExchangeWrapper#transferTakerFees: Only trusted senders can dictate the fee payer',
+                    'ZeroExV3ExchangeWrapper#transferTakerFee: Only trusted senders can dictate the fee payer',
+                );
+            });
+            it('succeeds if called via solo with a gas price = MAX_GAS_PRICE', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const requestedFillAmount = order.takerAssetAmount.dividedToIntegerBy(2);
+                const txReceipt = await deploymentManager.dydx.exchangeWrapper.exchange.awaitTransactionSuccessAsync(
+                    tradeOriginator,
+                    solo,
+                    makerToken.address,
+                    takerToken.address,
+                    requestedFillAmount,
+                    dydxOrderData(order),
+                    { from: solo, gasPrice: MAX_GAS_PRICE },
+                );
+                const expectedBalances = getExpectedBalances(
+                    initialBalances,
+                    order,
+                    txReceipt,
+                    requestedFillAmount,
+                    MAX_GAS_PRICE,
+                );
+                await verifyBalancesAsync(expectedBalances);
+            });
+            it('reverts if called via solo with a gas price > MAX_GAS_PRICE', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const requestedFillAmount = order.takerAssetAmount.dividedToIntegerBy(2);
+                const tx = deploymentManager.dydx.exchangeWrapper.exchange.awaitTransactionSuccessAsync(
+                    tradeOriginator,
+                    solo,
+                    makerToken.address,
+                    takerToken.address,
+                    requestedFillAmount,
+                    dydxOrderData(order),
+                    { from: solo, gasPrice: MAX_GAS_PRICE.plus(1) },
+                );
+                return expect(tx).to.revertWith(
+                    'ZeroExV3ExchangeWrapper#transferProtocolFee: Maximum gas price exceeded',
                 );
             });
             it('succeeds if requestedFillAmount = order.takerAssetAmount', async () => {
