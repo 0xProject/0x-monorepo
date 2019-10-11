@@ -25,6 +25,7 @@ import { LibFillResults } from "@0x/contracts-exchange-libs/contracts/src/LibFil
 import { LibOrder } from "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import { ExchangeReader } from "./interfaces/ExchangeReader.sol";
 import { ExchangeWrapper } from "./interfaces/ExchangeWrapper.sol";
+import { AdvancedTokenInteract } from "./libs/AdvancedTokenInteract.sol";
 import { MathHelpers } from "./libs/MathHelpers.sol";
 import { TokenInteract } from "./libs/TokenInteract.sol";
 
@@ -41,6 +42,12 @@ contract ZeroExV3ExchangeWrapper is
 {
     using SafeMath for uint256;
     using TokenInteract for address;
+    using AdvancedTokenInteract for address;
+
+    // ============ Constants ============
+
+    // maximum gas price, 30 Gwei (choose value for deployment)
+    uint256 constant MAX_GAS_PRICE = 30000000000 wei;
 
     // ============ State Variables ============
 
@@ -100,12 +107,11 @@ contract ZeroExV3ExchangeWrapper is
             takerFeeToken
         );
 
-        // transfer protocol fee from trader if applicable
+        // transfer protocol fee from sender if applicable
         transferProtocolFee(tradeOriginator);
 
         // make sure that the exchange can take the tokens from this contract
-        ensureAllowance(
-            takerToken,
+        takerToken.ensureAllowance(
             ZERO_EX_TOKEN_PROXY,
             requestedFillAmount
         );
@@ -118,7 +124,10 @@ contract ZeroExV3ExchangeWrapper is
         assert(fill.takerAssetFilledAmount == requestedFillAmount);
 
         // set allowance
-        ensureAllowance(makerToken, receiver, fill.makerAssetFilledAmount);
+        makerToken.ensureAllowance(
+            receiver,
+            fill.makerAssetFilledAmount
+        );
 
         return fill.makerAssetFilledAmount;
     }
@@ -171,23 +180,6 @@ contract ZeroExV3ExchangeWrapper is
 
     // ============ Private Functions ============
 
-    function ensureAllowance(
-        address token,
-        address spender,
-        uint256 requiredAmount
-    )
-        private
-    {
-        if (token.allowance(address(this), spender) >= requiredAmount) {
-            return;
-        }
-
-        token.approve(
-            spender,
-            MathHelpers.maxUint256()
-        );
-    }
-
     function transferTakerFee(
         LibOrder.Order memory order,
         address tradeOriginator,
@@ -208,7 +200,7 @@ contract ZeroExV3ExchangeWrapper is
 
         require(
             TRUSTED_MSG_SENDER[msg.sender],
-            "ZeroExV3ExchangeWrapper#transferTakerFees: Only trusted senders can dictate the fee payer"
+            "ZeroExV3ExchangeWrapper#transferTakerFee: Only trusted senders can dictate the fee payer"
         );
 
         takerFeeToken.transferFrom(
@@ -218,8 +210,7 @@ contract ZeroExV3ExchangeWrapper is
         );
 
         // make sure that the exchange can take the taker fee from this contract
-        ensureAllowance(
-            takerFeeToken,
+        takerFeeToken.ensureAllowance(
             ZERO_EX_TOKEN_PROXY,
             takerFee
         );
@@ -235,15 +226,21 @@ contract ZeroExV3ExchangeWrapper is
             // calculate protocol fee
             uint256 protocolFee = tx.gasprice.mul(v3Exchange.protocolFeeMultiplier());
 
-            WETH_TOKEN.transferFrom(
-                TRUSTED_MSG_SENDER[msg.sender] ? tradeOriginator : msg.sender,
-                address(this),
-                protocolFee
-            );
+            if (TRUSTED_MSG_SENDER[msg.sender]) {
+                require(
+                    tx.gasprice <= MAX_GAS_PRICE,
+                    "ZeroExV3ExchangeWrapper#transferProtocolFee: Maximum gas price exceeded"
+                );
+            } else {
+                WETH_TOKEN.transferFrom(
+                    msg.sender,
+                    address(this),
+                    protocolFee
+                );
+            }
 
             // make sure that the protocol fee collector can take WETH from this contract
-            ensureAllowance(
-                WETH_TOKEN,
+            WETH_TOKEN.ensureAllowance(
                 protocolFeeCollector,
                 protocolFee
             );
