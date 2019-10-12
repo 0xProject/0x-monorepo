@@ -139,12 +139,10 @@ contract MixinStakingPoolRewards is
         }
 
         // Add a cumulative reward entry for this epoch.
-        if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][currentEpoch])) {
-            _forceSetCumulativeReward(
-                poolId,
-                _getMostRecentCumulativeReward(poolId)
-            );
-        }
+        _forceSetCumulativeReward(
+            poolId,
+            _getMostRecentCumulativeReward(poolId)
+        );
     }
 
     /// @dev Handles a pool's reward at the current epoch.
