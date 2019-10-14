@@ -5,7 +5,6 @@ import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-
 export interface PriceRatio {
     makerAmount: BigNumber;
     takerAmount: BigNumber;

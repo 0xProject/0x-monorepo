@@ -1,12 +1,5 @@
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import {
-    blockchainTests,
-    constants,
-    expect,
-    OrderFactory,
-    orderUtils,
-    TokenBalances,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, OrderFactory, orderUtils, TokenBalances } from '@0x/contracts-test-utils';
 import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
