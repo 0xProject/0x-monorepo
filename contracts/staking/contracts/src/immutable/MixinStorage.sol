@@ -113,13 +113,13 @@ contract MixinStorage is
 
     /// @dev State information for each active pool in an epoch.
     ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping (uint256 => mapping (bytes32 => IStructs.ActivePool)) internal _activePoolsByEpoch;
+    mapping (uint256 => mapping (bytes32 => IStructs.PoolRewardStats)) internal _poolRewardStatsByEpoch;
 
     /// @dev Number of pools activated in the current epoch.
-    uint256 public numActivePoolsThisEpoch;
+    uint256 public numPoolRewardStatsThisEpoch;
 
     /// @dev State for unfinalized rewards.
-    IStructs.UnfinalizedState public unfinalizedState;
+    IStructs.TotalRewardStats public totalRewardStats;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
     uint256 public wethReservedForPoolRewards;

@@ -50,7 +50,7 @@ contract TestDelegatorRewards is
 
     /// @dev Expose the original finalizePool
     function originalFinalizePool(bytes32 poolId) external {
-        MixinFinalizer.finalizePool(poolId);
+        MixinStakingPoolRewards.settleStakingPoolRewards(poolId);
     }
 
     /// @dev Set unfinalized rewards for a pool in the current epoch.

@@ -24,15 +24,15 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
-import "../sys/MixinFinalizer.sol";
+import "./MixinExchangeFeeRewards.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
     MixinExchangeManager,
-    MixinStakingPool,
-    MixinFinalizer
+    MixinExchangeFeeRewards,
+    MixinStakingPool
 {
     using LibSafeMath for uint256;
 
@@ -83,21 +83,19 @@ contract MixinExchangeFees is
 
         // Look up the pool for this epoch.
         uint256 currentEpoch_ = currentEpoch;
-        mapping (bytes32 => IStructs.ActivePool) storage activePoolsThisEpoch =
-            _getActivePoolsFromEpoch(currentEpoch_);
-
-        IStructs.ActivePool memory pool = activePoolsThisEpoch[poolId];
+        mapping (bytes32 => IStructs.PoolRewardStats) storage poolStatsByPoolId = _getPoolRewardStatsFromEpoch(currentEpoch_);
+        IStructs.PoolRewardStats memory poolStats = poolStatsByPoolId[poolId];
 
         // If the pool was previously inactive in this epoch, initialize it.
-        if (pool.feesCollected == 0) {
+        if (poolStats.feesCollected == 0) {
             // Compute member and total weighted stake.
-            (pool.membersStake, pool.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
+            (poolStats.membersStake, poolStats.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
 
             // Increase the total weighted stake.
-            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(pool.weightedStake);
+            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(poolStats.weightedStake);
 
             // Increase the number of active pools.
-            numActivePoolsThisEpoch += 1;
+            numPoolRewardStatsThisEpoch += 1;
 
             // Emit an event so keepers know what pools to pass into
             // `finalize()`.
@@ -105,25 +103,24 @@ contract MixinExchangeFees is
         }
 
         // Credit the fees to the pool.
-        pool.feesCollected = pool.feesCollected.safeAdd(protocolFeePaid);
+        poolStats.feesCollected = poolStats.feesCollected.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
         totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(protocolFeePaid);
 
         // Store the pool.
-        activePoolsThisEpoch[poolId] = pool;
+        poolStatsByPoolId[poolId] = poolStats;
     }
 
     /// @dev Get information on an active staking pool in this epoch.
     /// @param poolId Pool Id to query.
-    /// @return pool ActivePool struct.
+    /// @return PoolRewardStats struct.
     function getActiveStakingPoolThisEpoch(bytes32 poolId)
         external
         view
-        returns (IStructs.ActivePool memory pool)
+        returns (IStructs.PoolRewardStats memory)
     {
-        pool = _getActivePoolFromEpoch(currentEpoch, poolId);
-        return pool;
+        return _getPoolRewardStatsFromEpoch(currentEpoch, poolId);
     }
 
     /// @dev Computes the members and weighted stake for a pool at the current

@@ -291,24 +291,24 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _activePoolsByEpoch_slot,
-                _activePoolsByEpoch_offset,
+                _poolRewardStatsByEpoch_slot,
+                _poolRewardStatsByEpoch_offset,
                 slot,
                 offset
             )
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                numActivePoolsThisEpoch_slot,
-                numActivePoolsThisEpoch_offset,
+                numPoolRewardStatsThisEpoch_slot,
+                numPoolRewardStatsThisEpoch_offset,
                 slot,
                 offset
             )
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                unfinalizedState_slot,
-                unfinalizedState_offset,
+                totalRewardStats_slot,
+                totalRewardStats_offset,
                 slot,
                 offset
             )

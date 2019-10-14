@@ -22,15 +22,50 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "../fees/MixinExchangeFeeRewards.sol";
 import "./MixinCumulativeRewards.sol";
-import "../sys/MixinAbstract.sol";
 
 
 contract MixinStakingPoolRewards is
-    MixinAbstract,
+    MixinExchangeFeeRewards,
     MixinCumulativeRewards
 {
     using LibSafeMath for uint256;
+
+
+    /// @dev Instantly finalizes a single pool that was active in the previous
+    ///      epoch, crediting it rewards for members and withdrawing operator's
+    ///      rewards as WETH. This can be called by internal functions that need
+    ///      to finalize a pool immediately. Does nothing if the pool is already
+    ///      finalized or was not active in the previous epoch.
+    /// @param poolId The pool ID to finalize.
+    function settleStakingPoolRewards(bytes32 poolId)
+        public
+        returns (uint256)
+    {
+        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+
+        // Pay the operator and update rewards for the pool.
+        // Note that we credit at the CURRENT epoch even though these rewards
+        // were earned in the previous epoch.
+        (uint256 operatorReward, uint256 membersReward) = _syncPoolRewards(
+            poolId,
+            unsettledRewards,
+            poolStats.membersStake
+        );
+
+        uint256 totalRewardsSettled = operatorReward.safeAdd(membersReward);
+
+        // Emit an event.
+        emit RewardsPaid(
+            currentEpoch,
+            poolId,
+            operatorReward,
+            membersReward
+        );
+
+        _recordFeeRewardSettlement(poolId, totalRewardsSettled);
+    }
 
     /// @dev Syncs rewards for a delegator. This includes transferring WETH
     ///      rewards to the delegator, and adding/removing
@@ -65,15 +100,15 @@ contract MixinStakingPoolRewards is
         // on finalization, the only factor in this function are unfinalized
         // rewards.
         IStructs.Pool memory pool = _poolById[poolId];
+
         // Get any unfinalized rewards.
-        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
-            _getUnfinalizedPoolRewards(poolId);
+        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
 
         // Get the operators' portion.
         (reward,) = _computePoolRewardsSplit(
             pool.operatorShare,
-            unfinalizedTotalRewards,
-            unfinalizedMembersStake
+            unsettledRewards,
+            poolStats.membersStake
         );
         return reward;
     }
@@ -88,21 +123,21 @@ contract MixinStakingPoolRewards is
         returns (uint256 reward)
     {
         IStructs.Pool memory pool = _poolById[poolId];
+
         // Get any unfinalized rewards.
-        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
-            _getUnfinalizedPoolRewards(poolId);
+        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
 
         // Get the members' portion.
         (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(
             pool.operatorShare,
-            unfinalizedTotalRewards,
-            unfinalizedMembersStake
+            unsettledRewards,
+            poolStats.membersStake
         );
         return _computeDelegatorReward(
             poolId,
             member,
             unfinalizedMembersReward,
-            unfinalizedMembersStake
+            poolStats.membersStake
         );
     }
 
@@ -117,7 +152,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         // Ensure the pool is finalized.
-        finalizePool(poolId);
+        settleStakingPoolRewards(poolId);
 
         // Compute balance owed to delegator
         uint256 balance = _computeDelegatorReward(

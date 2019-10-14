@@ -64,7 +64,7 @@ contract TestFinalizer is
     }
 
     /// @dev Activate a pool in the current epoch.
-    function addActivePool(
+    function addPoolRewardStats(
         bytes32 poolId,
         uint32 operatorShare,
         uint256 feesCollected,
@@ -74,20 +74,20 @@ contract TestFinalizer is
         external
     {
         require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
-        mapping (bytes32 => IStructs.ActivePool) storage activePools = _getActivePoolsFromEpoch(
+        mapping (bytes32 => IStructs.PoolRewardStats) storage rewardStatsByPoolId = _getPoolRewardStatsFromEpoch(
             currentEpoch
         );
-        IStructs.ActivePool memory pool = activePools[poolId];
-        require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
+        IStructs.PoolRewardStats memory poolStats = rewardStatsByPoolId[poolId];
+        require(poolStats.feesCollected == 0, "POOL_ALREADY_ADDED");
         _operatorSharesByPool[poolId] = operatorShare;
-        activePools[poolId] = IStructs.ActivePool({
+        rewardStatsByPoolId[poolId] = IStructs.PoolRewardStats({
             feesCollected: feesCollected,
             membersStake: membersStake,
             weightedStake: weightedStake
         });
         totalFeesCollectedThisEpoch += feesCollected;
         totalWeightedStakeThisEpoch += weightedStake;
-        numActivePoolsThisEpoch += 1;
+        numPoolRewardStatsThisEpoch += 1;
     }
 
     /// @dev Drain the balance of this contract.
@@ -126,18 +126,18 @@ contract TestFinalizer is
         view
         returns (UnfinalizedPoolReward memory reward)
     {
-        (reward.totalReward, reward.membersStake) = _getUnfinalizedPoolRewards(
-            poolId
-        );
+        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        reward.totalReward = unsettledRewards;
+        reward.membersStake = poolStats.membersStake;
     }
 
-    /// @dev Expose `_getActivePoolFromEpoch`.
-    function getActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
+    /// @dev Expose `_getPoolRewardStatsFromEpoch`.
+    function getPoolRewardStatsFromEpoch(uint256 epoch, bytes32 poolId)
         external
         view
-        returns (IStructs.ActivePool memory pool)
+        returns (IStructs.PoolRewardStats memory)
     {
-        pool = _getActivePoolFromEpoch(epoch, poolId);
+        return _getPoolRewardStatsFromEpoch(epoch, poolId);
     }
 
     /// @dev Overridden to log and transfer to receivers.

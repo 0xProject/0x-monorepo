@@ -23,13 +23,58 @@ import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
+import "../fees/MixinExchangeFeeRewards.sol";
 
 
-contract MixinScheduler is
+contract MixinEpoch is
     IStakingEvents,
-    MixinStorage
+    MixinStorage,
+    MixinExchangeFeeRewards
 {
     using LibSafeMath for uint256;
+
+    /// @dev Begins a new epoch, preparing the prior one for finalization.
+    ///      Throws if not enough time has passed between epochs or if the
+    ///      previous epoch was not fully finalized.
+    ///      If there were no active pools in the closing epoch, the epoch
+    ///      will be instantly finalized here. Otherwise, `finalizePool()`
+    ///      should be called on each active pool afterwards.
+    function endEpoch()
+        external
+    {
+        // Use the block's timestampe to assert that we can end the current epoch.
+        // solhint-disable-next-line not-rely-on-time
+        uint256 currentBlockTimestamp = block.timestamp;
+        uint256 epochEndTime = getCurrentEpochEarliestEndTimeInSeconds();
+        if (epochEndTime > currentBlockTimestamp) {
+            LibRichErrors.rrevert(LibStakingRichErrors.BlockTimestampTooLowError(
+                epochEndTime,
+                currentBlockTimestamp
+            ));
+        }
+
+        // Store stats on the rewards that have accumulated over the past epoch.
+        IStructs.TotalRewardStats memory totalRewardStats = _storeFeeRewardStats();
+
+        // incremment epoch
+        uint256 oldEpoch = currentEpoch;
+        uint256 newEpoch = oldEpoch.safeAdd(1);
+        currentEpoch = newEpoch;
+        currentEpochStartTimeInSeconds = currentBlockTimestamp;
+
+        // Notify that epoch has ended.
+        emit EpochEnded(
+            oldEpoch,
+            totalRewardStats.poolsRemaining,
+            totalRewardStats.rewardsAvailable,
+            totalRewardStats.totalFeesCollected,
+            totalRewardStats.totalWeightedStake
+        );
+
+        // If no rewards accumulated in the epoch that we just ended, then
+        // all rewards for the epoch have been implicitly settled.
+        _handleAllRewardsSettled(totalRewardStats);
+    }
 
     /// @dev Returns the earliest end time in seconds of this epoch.
     ///      The next epoch can begin once this time is reached.
@@ -53,31 +98,6 @@ contract MixinScheduler is
 
         // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
-    }
-
-    /// @dev Moves to the next epoch, given the current epoch period has ended.
-    ///      Time intervals that are measured in epochs (like timeLocks) are also incremented, given
-    ///      their periods have ended.
-    function _goToNextEpoch()
-        internal
-    {
-        // get current timestamp
-        // solhint-disable-next-line not-rely-on-time
-        uint256 currentBlockTimestamp = block.timestamp;
-
-        // validate that we can increment the current epoch
-        uint256 epochEndTime = getCurrentEpochEarliestEndTimeInSeconds();
-        if (epochEndTime > currentBlockTimestamp) {
-            LibRichErrors.rrevert(LibStakingRichErrors.BlockTimestampTooLowError(
-                epochEndTime,
-                currentBlockTimestamp
-            ));
-        }
-
-        // incremment epoch
-        uint256 nextEpoch = currentEpoch.safeAdd(1);
-        currentEpoch = nextEpoch;
-        currentEpochStartTimeInSeconds = currentBlockTimestamp;
     }
 
     /// @dev Assert scheduler state before initializing it.

@@ -34,7 +34,7 @@ interface IStructs {
     /// @param feesCollected Fees collected in ETH by this pool.
     /// @param weightedStake Amount of weighted stake in the pool.
     /// @param membersStake Amount of non-operator stake in the pool.
-    struct ActivePool {
+    struct PoolRewardStats {
         uint256 feesCollected;
         uint256 weightedStake;
         uint256 membersStake;
@@ -49,7 +49,7 @@ interface IStructs {
     /// @param totalFeesCollected The total fees collected for the epoch being finalized.
     /// @param totalWeightedStake The total fees collected for the epoch being finalized.
     /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
-    struct UnfinalizedState {
+    struct TotalRewardStats {
         uint256 rewardsAvailable;
         uint256 poolsRemaining;
         uint256 totalFeesCollected;

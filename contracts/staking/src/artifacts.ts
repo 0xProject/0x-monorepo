@@ -18,15 +18,14 @@ import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRich
 import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
-import * as MixinAbstract from '../generated-artifacts/MixinAbstract.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
+import * as MixinEpoch from '../generated-artifacts/MixinEpoch.json';
+import * as MixinExchangeFeeRewards from '../generated-artifacts/MixinExchangeFeeRewards.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
-import * as MixinFinalizer from '../generated-artifacts/MixinFinalizer.json';
 import * as MixinParams from '../generated-artifacts/MixinParams.json';
-import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as MixinStakeBalances from '../generated-artifacts/MixinStakeBalances.json';
 import * as MixinStakeStorage from '../generated-artifacts/MixinStakeStorage.json';
@@ -61,6 +60,7 @@ export const artifacts = {
     StakingProxy: StakingProxy as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     ZrxVaultBackstop: ZrxVaultBackstop as ContractArtifact,
+    MixinExchangeFeeRewards: MixinExchangeFeeRewards as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
@@ -85,10 +85,8 @@ export const artifacts = {
     MixinCumulativeRewards: MixinCumulativeRewards as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
-    MixinAbstract: MixinAbstract as ContractArtifact,
-    MixinFinalizer: MixinFinalizer as ContractArtifact,
+    MixinEpoch: MixinEpoch as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
-    MixinScheduler: MixinScheduler as ContractArtifact,
     TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,
     TestCobbDouglas: TestCobbDouglas as ContractArtifact,
     TestCumulativeRewardTracking: TestCumulativeRewardTracking as ContractArtifact,
