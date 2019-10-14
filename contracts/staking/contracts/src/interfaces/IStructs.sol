@@ -97,7 +97,7 @@ interface IStructs {
     /// @param operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
     struct Pool {
-        address payable operator;
+        address operator;
         uint32 operatorShare;
     }
 }
