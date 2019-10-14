@@ -35,7 +35,7 @@ contract ZrxVault is
     using LibSafeMath for uint256;
 
     // Address of staking proxy contract
-    address payable public stakingProxyAddress;
+    address public stakingProxyAddress;
 
     // True iff vault has been set to Catastrophic Failure Mode
     bool public isInCatastrophicFailure;
@@ -91,7 +91,7 @@ contract ZrxVault is
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract owner can call this function.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
-    function setStakingProxy(address payable _stakingProxyAddress)
+    function setStakingProxy(address _stakingProxyAddress)
         external
         onlyAuthorized
     {

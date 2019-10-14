@@ -80,7 +80,6 @@
         "@0x/contracts-exchange": "^2.2.0-beta.0",
         "@0x/contracts-exchange-forwarder": "^3.1.0-beta.0",
         "@0x/contracts-exchange-libs": "^3.1.0-beta.0",
-        "@0x/contracts-extensions": "^4.1.0-beta.0",
         "@0x/contracts-multisig": "^3.2.0-beta.0",
         "@0x/contracts-staking": "^1.1.0-beta.0",
         "@0x/contracts-test-utils": "^3.2.0-beta.0",

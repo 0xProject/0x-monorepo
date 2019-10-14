@@ -70,10 +70,7 @@ contract MixinCumulativeRewards is
     {
         uint256 currentEpoch_ = currentEpoch;
         _cumulativeRewardsByPool[poolId][currentEpoch_] = value;
-        
         // Update state to reflect the most recent cumulative reward
-        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-        assert(currentEpoch_ >= currentMostRecentEpoch);
         _cumulativeRewardsByPoolLastStored[poolId] = currentEpoch_;
     }
 

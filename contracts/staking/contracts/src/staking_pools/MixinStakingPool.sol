@@ -51,7 +51,7 @@ contract MixinStakingPool is
         returns (bytes32 poolId)
     {
         // note that an operator must be payable
-        address payable operator = msg.sender;
+        address operator = msg.sender;
 
         // compute unique id for this pool
         poolId = lastPoolId = bytes32(uint256(lastPoolId).safeAdd(1));
@@ -65,7 +65,6 @@ contract MixinStakingPool is
 
         // create and store pool
         IStructs.Pool memory pool = IStructs.Pool({
-            initialized: true,
             operator: operator,
             operatorShare: operatorShare
         });

@@ -177,11 +177,6 @@ contract TestDelegatorRewards is
     ///      the current epoch and emit a event,
     function finalizePool(bytes32 poolId)
         public
-        returns (
-            uint256 operatorReward,
-            uint256 membersReward,
-            uint256 membersStake
-        )
     {
         UnfinalizedPoolReward memory reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
@@ -189,8 +184,8 @@ contract TestDelegatorRewards is
         _setOperatorShare(poolId, reward.operatorReward, reward.membersReward);
 
         uint256 totalRewards = reward.operatorReward + reward.membersReward;
-        membersStake = reward.membersStake;
-        (operatorReward, membersReward) =
+        uint256 membersStake = reward.membersStake;
+        (uint256 operatorReward, uint256 membersReward) =
             _syncPoolRewards(poolId, totalRewards, membersStake);
         emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
     }
