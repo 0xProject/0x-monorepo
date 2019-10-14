@@ -71,7 +71,6 @@ contract TestDelegatorRewards is
         // Lazily initialize this pool.
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
-        _initGenesisCumulativeRewards(poolId);
     }
 
     /// @dev Expose/wrap `_syncPoolRewards`.
@@ -87,7 +86,6 @@ contract TestDelegatorRewards is
         // Lazily initialize this pool.
         _poolById[poolId].operator = operatorAddress;
         _setOperatorShare(poolId, operatorReward, membersReward);
-        _initGenesisCumulativeRewards(poolId);
 
         _syncPoolRewards(
             poolId,
@@ -111,7 +109,6 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _initGenesisCumulativeRewards(poolId);
         _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator
@@ -136,7 +133,6 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _initGenesisCumulativeRewards(poolId);
         _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator
@@ -159,7 +155,6 @@ contract TestDelegatorRewards is
     )
         external
     {
-        _initGenesisCumulativeRewards(poolId);
         _withdrawAndSyncDelegatorRewards(
             poolId,
             delegator
@@ -202,19 +197,6 @@ contract TestDelegatorRewards is
         UnfinalizedPoolReward storage reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         totalReward = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
-    }
-
-    /// @dev Create a cumulative rewards entry for a pool if one doesn't
-    ///      already exist to get around having to create pools in advance.
-    function _initGenesisCumulativeRewards(bytes32 poolId)
-        private
-    {
-        uint256 lastRewardEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-        IStructs.Fraction memory cumulativeReward  =
-            _cumulativeRewardsByPool[poolId][lastRewardEpoch];
-        if (!_isCumulativeRewardSet(cumulativeReward)) {
-            _initializeCumulativeRewards(poolId);
-        }
     }
 
     /// @dev Set the operator share of a pool based on reward ratios.

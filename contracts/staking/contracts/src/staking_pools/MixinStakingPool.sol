@@ -70,10 +70,6 @@ contract MixinStakingPool is
         });
         _poolById[poolId] = pool;
 
-        // initialize cumulative rewards for this pool;
-        // this is used to track rewards earned by delegators.
-        _initializeCumulativeRewards(poolId);
-
         // Staking pool has been created
         emit StakingPoolCreated(poolId, operator, operatorShare);
 
