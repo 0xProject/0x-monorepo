@@ -65,7 +65,6 @@ contract MixinStakingPool is
 
         // create and store pool
         IStructs.Pool memory pool = IStructs.Pool({
-            initialized: true,
             operator: operator,
             operatorShare: operatorShare
         });
