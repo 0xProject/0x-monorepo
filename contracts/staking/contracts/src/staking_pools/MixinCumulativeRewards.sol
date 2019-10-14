@@ -102,7 +102,7 @@ contract MixinCumulativeRewards is
     function _updateCumulativeReward(bytes32 poolId)
         internal
     {
-        // Just create add an empty CR for this epoch, which will be added to
+        // Just add empty rewards for this epoch, which will be added to
         // the previous CR, so we end up with the previous CR being set for
         // this epoch.
         _addCumulativeReward(poolId, 0, 1);
