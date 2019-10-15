@@ -6,6 +6,7 @@ declare module 'truffle-hdwallet-provider' {
             payload: JSONRPCRequestPayload,
             callback: (err: Error, result: JSONRPCResponsePayload) => void,
         ): void;
+        public getAddresses(): string[];
     }
     export = HDWalletProvider;
 }
