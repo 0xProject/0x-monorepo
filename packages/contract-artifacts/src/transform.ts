@@ -33,7 +33,7 @@ export const FORBIDDEN_PROPERTIES: string[] = [
 function removeForbiddenProperties(inputDir: string, outputDir: string): void {
     const filePaths = fs
         .readdirSync(inputDir)
-        .filter(filename => filename.indexOf('.json') !== -1)
+        .filter(filename => filename.indexOf('.json') === filename.length - '.json'.length)
         .map(filename => `./${inputDir}/${filename}`);
 
     for (const filePath of filePaths) {
