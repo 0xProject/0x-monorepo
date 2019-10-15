@@ -101,25 +101,15 @@ contract MixinStorage is
     // Denominator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaDenominator;
 
-    /* Finalization states */
+    /* Fees & rewards */
 
-    /// @dev The total fees collected in the current epoch, built up iteratively
-    ///      in `payProtocolFee()`.
-    uint256 public totalFeesCollectedThisEpoch;
+    /// @dev Stats for each pool that generated fees with sufficient stake to earn rewards.
+    ///      See `_minimumPoolStake` in MixinParams.
+    mapping (uint256 => mapping (bytes32 => IStructs.PoolStats)) internal _poolStatsByEpoch;
 
-    /// @dev The total weighted stake in the current epoch, built up iteratively
-    ///      in `payProtocolFee()`.
-    uint256 public totalWeightedStakeThisEpoch;
-
-    /// @dev State information for each active pool in an epoch.
-    ///      In practice, we only store state for `currentEpoch % 2`.
-    mapping (uint256 => mapping (bytes32 => IStructs.PoolRewardStats)) internal _poolRewardStatsByEpoch;
-
-    /// @dev Number of pools activated in the current epoch.
-    uint256 public numPoolRewardStatsThisEpoch;
-
-    /// @dev State for unfinalized rewards.
-    IStructs.TotalRewardStats public totalRewardStats;
+    /// @dev Combined stats across all pools that generated fees with sufficient stake to earn rewards.
+    ///      See `_minimumPoolStake` in MixinParams.
+    mapping (uint256 => IStructs.CombinedStats) internal _combinedStatsByEpoch;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
     uint256 public wethReservedForPoolRewards;

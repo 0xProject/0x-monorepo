@@ -81,10 +81,10 @@ contract MixinExchangeFees is
             return;
         }
 
-        // Look up the pool for this epoch.
+        // Look up the pool stats and combined stats for this epoch.
         uint256 currentEpoch_ = currentEpoch;
-        mapping (bytes32 => IStructs.PoolRewardStats) storage poolStatsByPoolId = _getPoolRewardStatsFromEpoch(currentEpoch_);
-        IStructs.PoolRewardStats memory poolStats = poolStatsByPoolId[poolId];
+        IStructs.PoolStats memory poolStats = _poolStatsByEpoch[currentEpoch_][poolId];
+        IStructs.CombinedStats memory combinedStats = _combinedStatsByEpoch[currentEpoch_];
 
         // If the pool was previously inactive in this epoch, initialize it.
         if (poolStats.feesCollected == 0) {
@@ -92,10 +92,10 @@ contract MixinExchangeFees is
             (poolStats.membersStake, poolStats.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
 
             // Increase the total weighted stake.
-            totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(poolStats.weightedStake);
+            combinedStats.totalWeightedStake = combinedStats.totalWeightedStake.safeAdd(poolStats.weightedStake);
 
             // Increase the number of active pools.
-            numPoolRewardStatsThisEpoch += 1;
+            combinedStats.poolsRemaining += 1;
 
             // Emit an event so keepers know what pools to pass into
             // `finalize()`.
@@ -106,21 +106,22 @@ contract MixinExchangeFees is
         poolStats.feesCollected = poolStats.feesCollected.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
-        totalFeesCollectedThisEpoch = totalFeesCollectedThisEpoch.safeAdd(protocolFeePaid);
+        combinedStats.totalFeesCollected = combinedStats.totalFeesCollected.safeAdd(protocolFeePaid);
 
-        // Store the pool.
-        poolStatsByPoolId[poolId] = poolStats;
+        // Store the updated stats.
+        _poolStatsByEpoch[currentEpoch_][poolId] = poolStats;
+        _combinedStatsByEpoch[currentEpoch_] = combinedStats;
     }
 
     /// @dev Get information on an active staking pool in this epoch.
     /// @param poolId Pool Id to query.
-    /// @return PoolRewardStats struct.
+    /// @return PoolStats struct.
     function getActiveStakingPoolThisEpoch(bytes32 poolId)
         external
         view
-        returns (IStructs.PoolRewardStats memory)
+        returns (IStructs.PoolStats memory)
     {
-        return _getPoolRewardStatsFromEpoch(currentEpoch, poolId);
+        return _poolStatsByEpoch[currentEpoch][poolId];
     }
 
     /// @dev Computes the members and weighted stake for a pool at the current

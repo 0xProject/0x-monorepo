@@ -43,7 +43,7 @@ contract MixinStakingPoolRewards is
         public
         returns (uint256)
     {
-        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
 
         // Pay the operator and update rewards for the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
@@ -102,7 +102,7 @@ contract MixinStakingPoolRewards is
         IStructs.Pool memory pool = _poolById[poolId];
 
         // Get any unfinalized rewards.
-        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
 
         // Get the operators' portion.
         (reward,) = _computePoolRewardsSplit(
@@ -125,7 +125,7 @@ contract MixinStakingPoolRewards is
         IStructs.Pool memory pool = _poolById[poolId];
 
         // Get any unfinalized rewards.
-        (IStructs.PoolRewardStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
 
         // Get the members' portion.
         (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(

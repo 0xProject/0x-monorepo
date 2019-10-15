@@ -54,7 +54,7 @@ contract MixinEpoch is
         }
 
         // Store stats on the rewards that have accumulated over the past epoch.
-        IStructs.TotalRewardStats memory totalRewardStats = _storeFeeRewardStats();
+        IStructs.CombinedStats memory combinedStats = _storeFeeRewardStats();
 
         // incremment epoch
         uint256 oldEpoch = currentEpoch;
@@ -65,15 +65,15 @@ contract MixinEpoch is
         // Notify that epoch has ended.
         emit EpochEnded(
             oldEpoch,
-            totalRewardStats.poolsRemaining,
-            totalRewardStats.rewardsAvailable,
-            totalRewardStats.totalFeesCollected,
-            totalRewardStats.totalWeightedStake
+            combinedStats.poolsRemaining,
+            combinedStats.rewardsAvailable,
+            combinedStats.totalFeesCollected,
+            combinedStats.totalWeightedStake
         );
 
-        // If no rewards accumulated in the epoch that we just ended, then
-        // all rewards for the epoch have been implicitly settled.
-        _handleAllRewardsSettled(totalRewardStats);
+        // If no fees were generated in the epoch that just ended, then there
+        // are no rewards to settle.
+        _handleAllRewardsSettled(combinedStats);
     }
 
     /// @dev Returns the earliest end time in seconds of this epoch.

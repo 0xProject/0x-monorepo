@@ -39,72 +39,75 @@ contract MixinExchangeFeeRewards is
 
     function _storeFeeRewardStats()
         internal
-        returns (IStructs.TotalRewardStats memory totalRewardStats_)
+        returns (IStructs.CombinedStats memory combinedStats)
     {
+        // Load combined stats for this epoch.
         uint256 currentEpoch_ = currentEpoch;
-        totalRewardStats_ = totalRewardStats;
+        combinedStats = _combinedStatsByEpoch[currentEpoch_];
 
-        // Make sure the previous epoch has been fully finalized.
-        if (totalRewardStats_.poolsRemaining != 0) {
+        // Convert all ETH to WETH and record the total rewards available.
+        _wrapEth();
+        combinedStats.rewardsAvailable = _getAvailableWethBalance();
+
+        // Reset combined stats from last epoch
+        if (currentEpoch_ == 0) {
+            return combinedStats;
+        }
+        uint256 lastEpoch = currentEpoch_ - 1;
+
+        // Make sure all pools that generated rewards last epoch have been paid out.
+        IStructs.CombinedStats memory combinedStatsLastEpoch = _combinedStatsByEpoch[lastEpoch];
+        if (combinedStatsLastEpoch.poolsRemaining != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                    currentEpoch_.safeSub(1),
-                    totalRewardStats_.poolsRemaining
+                    lastEpoch,
+                    combinedStatsLastEpoch.poolsRemaining
                 )
             );
         }
 
-        // Convert all ETH to WETH
-        _wrapEth();
-
-        // Set up unfinalized state.
-        totalRewardStats_.rewardsAvailable = _getAvailableWethBalance();
-        totalRewardStats_.poolsRemaining = numPoolRewardStatsThisEpoch;
-        totalRewardStats_.totalFeesCollected = totalFeesCollectedThisEpoch;
-        totalRewardStats_.totalWeightedStake = totalWeightedStakeThisEpoch;
-        totalRewardStats_.totalRewardsFinalized = 0;
-        totalRewardStats = totalRewardStats_;
-
-        // Reset current epoch state.
-        totalFeesCollectedThisEpoch = 0;
-        totalWeightedStakeThisEpoch = 0;
-        numPoolRewardStatsThisEpoch = 0;
+        // Reset stats from last epoch as they are no longer needed.
+        _combinedStatsByEpoch[lastEpoch] = IStructs.CombinedStats({
+            rewardsAvailable: 0,
+            poolsRemaining: 0,
+            totalFeesCollected: 0,
+            totalWeightedStake: 0,
+            totalRewardsFinalized: 0
+        });
     }
-
 
     function _computeUnsettledFeeReward(bytes32 poolId)
         internal
         view
         returns (
-            IStructs.PoolRewardStats memory poolStats,
+            IStructs.PoolStats memory poolStats,
             uint256 rewards
         ) {
 
         // Noop on epoch 0
         uint256 currentEpoch_ = currentEpoch;
-        uint256 prevEpoch = currentEpoch_.safeSub(1);
-        poolStats = _getPoolRewardStatsFromEpoch(prevEpoch, poolId);
-
         if (currentEpoch_ == 0) {
             return (poolStats, rewards);
         }
+
+        // Load pool stats for last epoch.
+        uint256 lastEpoch = currentEpoch_.safeSub(1);
+        poolStats = _poolStatsByEpoch[lastEpoch][poolId];
 
         // Noop if the pool was not active or already finalized (has no fees).
         if (poolStats.feesCollected == 0) {
             return (poolStats, rewards);
         }
 
-        // Load the finalization and pool state into memory.
-        IStructs.TotalRewardStats memory totalRewardStats_ = totalRewardStats;
-
         // Compute the rewards.
         // Use the cobb-douglas function to compute the total reward.
+        IStructs.CombinedStats memory combinedStats = _combinedStatsByEpoch[lastEpoch];
         rewards = LibCobbDouglas.cobbDouglas(
-            totalRewardStats_.rewardsAvailable,
+            combinedStats.rewardsAvailable,
             poolStats.feesCollected,
-            totalRewardStats_.totalFeesCollected,
+            combinedStats.totalFeesCollected,
             poolStats.weightedStake,
-            totalRewardStats_.totalWeightedStake,
+            combinedStats.totalWeightedStake,
             cobbDouglasAlphaNumerator,
             cobbDouglasAlphaDenominator
         );
@@ -112,57 +115,24 @@ contract MixinExchangeFeeRewards is
         // Clip the reward to always be under
         // `rewardsAvailable - totalRewardsPaid`,
         // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining = totalRewardStats_.rewardsAvailable.safeSub(totalRewardStats_.totalRewardsFinalized);
+        uint256 rewardsRemaining = combinedStats.rewardsAvailable.safeSub(combinedStats.totalRewardsFinalized);
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }
     }
 
     function _recordFeeRewardSettlement(bytes32 poolId, uint256 amountSettled) internal {
-        // Clear the pool state so we don't finalize it again, and to recoup
-        // some gas.
+        // Clear the pool stats so we don't finalize it again.
         uint256 currentEpoch_ = currentEpoch;
         uint256 lastEpoch = currentEpoch_.safeSub(1);
-        delete _getPoolRewardStatsFromEpoch(lastEpoch)[poolId];
+        delete _poolStatsByEpoch[lastEpoch][poolId];
 
-        // Increase `totalRewardsFinalized`.
-        totalRewardStats.totalRewardsFinalized = totalRewardStats.totalRewardsFinalized.safeAdd(amountSettled);
-
-        // Decrease the number of unfinalized pools left.
-        totalRewardStats.poolsRemaining = totalRewardStats.poolsRemaining.safeSub(1);
+        // Update the combined stats for last epoch.
+        _combinedStatsByEpoch[lastEpoch].totalRewardsFinalized = _combinedStatsByEpoch[lastEpoch].totalRewardsFinalized.safeAdd(amountSettled);
+        _combinedStatsByEpoch[lastEpoch].poolsRemaining = _combinedStatsByEpoch[lastEpoch].poolsRemaining.safeSub(1);
 
         // Handle the case where this was the final pool to be settled.
-        _handleAllRewardsSettled(totalRewardStats);
-    }
-
-    /// @dev Get an active pool from an epoch by its ID.
-    /// @param epoch The epoch the pool was/will be active in.
-    /// @param poolId The ID of the pool.
-    /// @return The pool reward stats with ID `poolId` that was active in `epoch`.
-    function _getPoolRewardStatsFromEpoch(
-        uint256 epoch,
-        bytes32 poolId
-    )
-        internal
-        view
-        returns (IStructs.PoolRewardStats memory)
-    {
-        return _getPoolRewardStatsFromEpoch(epoch)[poolId];
-    }
-
-    /// @dev Get a mapping of pool reward stats from an epoch.
-    ///      This uses the formula `epoch % 2` as the epoch index in order
-    ///      to reuse state, because we only need to remember, at most, two
-    ///      epochs at once.
-    /// @return The pool reward stats for `epoch`.
-    function _getPoolRewardStatsFromEpoch(
-        uint256 epoch
-    )
-        internal
-        view
-        returns (mapping (bytes32 => IStructs.PoolRewardStats) storage)
-    {
-        return _poolRewardStatsByEpoch[epoch % 2];
+        _handleAllRewardsSettled(_combinedStatsByEpoch[lastEpoch]);
     }
 
     /// @dev Returns the WETH balance of this contract, minus
@@ -188,19 +158,19 @@ contract MixinExchangeFeeRewards is
         }
     }
 
-    function _handleAllRewardsSettled(IStructs.TotalRewardStats memory totalRewardStats_)
+    function _handleAllRewardsSettled(IStructs.CombinedStats memory combinedStats)
         internal
     {
-        if (totalRewardStats_.poolsRemaining != 0) {
+        if (combinedStats.poolsRemaining != 0) {
             return;
         }
 
-        uint256 rewardsRemaining = totalRewardStats_.rewardsAvailable.safeSub(
-            totalRewardStats_.totalRewardsFinalized
+        uint256 rewardsRemaining = combinedStats.rewardsAvailable.safeSub(
+            combinedStats.totalRewardsFinalized
         );
         emit EpochFinalized(
             currentEpoch.safeSub(1),
-            totalRewardStats_.totalRewardsFinalized,
+            combinedStats.totalRewardsFinalized,
             rewardsRemaining
         );
     }
