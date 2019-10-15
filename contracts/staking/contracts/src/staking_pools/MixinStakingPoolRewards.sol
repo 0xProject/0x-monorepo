@@ -22,13 +22,13 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../fees/MixinExchangeFeeStats.sol";
+import "../fees/MixinExchangeFeeRewards.sol";
 import "./MixinCumulativeRewards.sol";
 
 
 contract MixinStakingPoolRewards is
     MixinCumulativeRewards,
-    MixinExchangeFeeStats
+    MixinExchangeFeeRewards
 {
     using LibSafeMath for uint256;
 
@@ -43,18 +43,19 @@ contract MixinStakingPoolRewards is
         public
         returns (uint256)
     {
-        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 rewardsOwed) = _computeFeeRewardForPool(poolId);
 
         // Pay the operator and update rewards for the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
         // were earned in the previous epoch.
         (uint256 operatorReward, uint256 membersReward) = _syncPoolRewards(
             poolId,
-            unsettledRewards,
+            rewardsOwed,
             poolStats.membersStake
         );
 
-        uint256 totalRewardsSettled = operatorReward.safeAdd(membersReward);
+        uint256 rewardsPaid = operatorReward.safeAdd(membersReward);
+        _handleRewardPaidToPool(poolId, rewardsPaid);
 
         // Emit an event.
         emit RewardsPaid(
@@ -63,8 +64,6 @@ contract MixinStakingPoolRewards is
             operatorReward,
             membersReward
         );
-
-        _recordFeeRewardSettlement(poolId, totalRewardsSettled);
     }
 
     /// @dev Syncs rewards for a delegator. This includes transferring WETH
@@ -102,7 +101,7 @@ contract MixinStakingPoolRewards is
         IStructs.Pool memory pool = _poolById[poolId];
 
         // Get any unfinalized rewards.
-        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
 
         // Get the operators' portion.
         (reward,) = _computePoolRewardsSplit(
@@ -125,7 +124,7 @@ contract MixinStakingPoolRewards is
         IStructs.Pool memory pool = _poolById[poolId];
 
         // Get any unfinalized rewards.
-        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
 
         // Get the members' portion.
         (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(

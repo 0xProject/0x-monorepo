@@ -22,8 +22,8 @@ import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinEpoch from '../generated-artifacts/MixinEpoch.json';
+import * as MixinExchangeFeeRewards from '../generated-artifacts/MixinExchangeFeeRewards.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
-import * as MixinExchangeFeeStats from '../generated-artifacts/MixinExchangeFeeStats.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
 import * as MixinParams from '../generated-artifacts/MixinParams.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
@@ -60,7 +60,7 @@ export const artifacts = {
     StakingProxy: StakingProxy as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
     ZrxVaultBackstop: ZrxVaultBackstop as ContractArtifact,
-    MixinExchangeFeeStats: MixinExchangeFeeStats as ContractArtifact,
+    MixinExchangeFeeRewards: MixinExchangeFeeRewards as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,

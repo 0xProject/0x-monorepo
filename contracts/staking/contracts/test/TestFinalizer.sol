@@ -124,7 +124,7 @@ contract TestFinalizer is
         view
         returns (UnfinalizedPoolReward memory reward)
     {
-        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeUnsettledFeeReward(poolId);
+        (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
         reward.totalReward = unsettledRewards;
         reward.membersStake = poolStats.membersStake;
     }

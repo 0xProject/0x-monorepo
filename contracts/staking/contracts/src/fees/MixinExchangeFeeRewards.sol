@@ -31,7 +31,7 @@ import "../interfaces/IStakingEvents.sol";
 import "../stake/MixinStakeBalances.sol";
 
 
-contract MixinExchangeFeeStats is
+contract MixinExchangeFeeRewards is
     IStakingEvents,
     MixinConstants,
     MixinDeploymentConstants,
@@ -123,7 +123,7 @@ contract MixinExchangeFeeStats is
         }
     }
 
-    function _computeUnsettledFeeReward(bytes32 poolId)
+    function _computeFeeRewardForPool(bytes32 poolId)
         internal
         view
         returns (
@@ -168,7 +168,9 @@ contract MixinExchangeFeeStats is
         }
     }
 
-    function _recordFeeRewardSettlement(bytes32 poolId, uint256 amountSettled) internal {
+    function _handleRewardPaidToPool(bytes32 poolId, uint256 amountSettled)
+        internal
+    {
         // Clear the pool stats so we don't finalize it again.
         uint256 currentEpoch_ = currentEpoch;
         uint256 lastEpoch = currentEpoch_.safeSub(1);
