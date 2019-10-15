@@ -1,10 +1,8 @@
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import { TxData, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { artifacts, TestFrameworkContract } from '../../src';
-import { Condition, FunctionAssertion, Result } from '../utils/function_assertions';
-import { GetterCache } from '../utils/cache';
+import { FunctionAssertion, Result } from '../utils/function_assertions';
 
 // These tests provide examples for how to use the "FunctionAssertion" class to write
 // tests for "payable" and "nonpayable" Solidity functions as well as "pure" and "view" functions.

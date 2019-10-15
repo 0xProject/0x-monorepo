@@ -46,12 +46,14 @@ export class GetterCache {
     }
 }
 
+export interface GetterCacheSet {
+    [getter: string]: GetterCache;
+}
+
 export class GetterCacheCollection {
     // A dictionary of getter cache's that allow the user of the collection to reference
     // the getter functions by name.
-    public getters: {
-        [getter: string]: GetterCache;
-    };
+    public getters: GetterCacheSet;
 
     /**
      * Constructs a getter collection with pre-seeded getter names and getters.

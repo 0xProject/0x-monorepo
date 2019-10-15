@@ -11,8 +11,8 @@ import { DeploymentManager } from '../utils/deployment_manager';
 blockchainTests('Exchange & Staking', env => {
     let accounts: string[];
     let makerAddress: string;
-    let takers: string[];
-    let delegators: string[];
+    let takers: string[] = [];
+    let delegators: string[] = [];
     let feeRecipientAddress: string;
     let addressManager: AddressManager;
     let deploymentManager: DeploymentManager;
@@ -21,15 +21,12 @@ blockchainTests('Exchange & Staking', env => {
     let takerAsset: DummyERC20TokenContract;
     let feeAsset: DummyERC20TokenContract;
 
-    const gasPrice = 1e9;
+    const GAS_PRICE = 1e9;
 
     before(async () => {
         const chainId = await env.getChainIdAsync();
         accounts = await env.getAccountAddressesAsync();
-        makerAddress = accounts[1];
-        feeRecipientAddress = accounts[2];
-        takers = [accounts[3], accounts[4]];
-        delegators = [accounts[5], accounts[6], accounts[7]];
+        [makerAddress, feeRecipientAddress, takers[0], takers[1], ...delegators] = accounts.slice(1);
         deploymentManager = await DeploymentManager.deployAsync(env);
 
         // Create a staking pool with the operator as a maker address.
@@ -55,21 +52,20 @@ blockchainTests('Exchange & Staking', env => {
         );
 
         // Set up two addresses for taking orders.
-        await addressManager.batchAddTakerAsync(
-            deploymentManager,
-            takers.map(takerAddress => {
-                return {
-                    address: takerAddress,
+        await Promise.all(
+            takers.map(taker =>
+                addressManager.addTakerAsync(deploymentManager, {
+                    address: taker,
                     mainToken: deploymentManager.tokens.erc20[1],
                     feeToken: deploymentManager.tokens.erc20[2],
-                };
-            }),
+                }),
+            ),
         );
     });
 
     describe('fillOrder', () => {
         it('should be able to fill an order', async () => {
-            const order = await addressManager.makerAddresses[0].orderFactory.newSignedOrderAsync({
+            const order = await addressManager.makers[0].orderFactory.newSignedOrderAsync({
                 makerAddress,
                 makerAssetAmount: new BigNumber(1),
                 takerAssetAmount: new BigNumber(1),
@@ -84,8 +80,8 @@ blockchainTests('Exchange & Staking', env => {
                 order.signature,
                 {
                     from: takers[0],
-                    gasPrice,
-                    value: DeploymentManager.protocolFeeMultiplier.times(gasPrice),
+                    gasPrice: GAS_PRICE,
+                    value: DeploymentManager.protocolFeeMultiplier.times(GAS_PRICE),
                 },
             );
 
@@ -112,7 +108,7 @@ blockchainTests('Exchange & Staking', env => {
                     takerAssetFilledAmount: order.takerAssetAmount,
                     makerFeePaid: constants.ZERO_AMOUNT,
                     takerFeePaid: constants.ZERO_AMOUNT,
-                    protocolFeePaid: DeploymentManager.protocolFeeMultiplier.times(gasPrice),
+                    protocolFeePaid: DeploymentManager.protocolFeeMultiplier.times(GAS_PRICE),
                 },
             ]);
 

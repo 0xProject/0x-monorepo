@@ -45,7 +45,7 @@ blockchainTests.resets('Cache Tests', env => {
                 // Update the counter to 1.
                 await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
-                // Ensure that the returned value is the cached counter.
+                // This should return "0" because a value was cached by the first call to "callAsync"
                 expect(await cache.callAsync()).bignumber.to.be.eq(constants.ZERO_AMOUNT);
             });
         });
@@ -74,7 +74,7 @@ blockchainTests.resets('Cache Tests', env => {
                 // Update "counter" to "1", which will cause all calls of "isZeroOrFalse" to return "false".
                 await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
-                // This should return "true" because a value was cached.
+                // This should return "true" because a value was by the first call to "callAsync"
                 expect(await cache.callAsync(constants.ZERO_AMOUNT)).to.be.true();
             });
         });
@@ -115,19 +115,16 @@ blockchainTests.resets('Cache Tests', env => {
                     new BigNumber(1),
                     ethUtil.bufferToHex(ethUtil.sha3(0)),
                 );
+                const hash = ethUtil.bufferToHex(ethUtil.sha3(hexSlice(hashData, 4)));
 
                 // Ensure that the cache returns the correct value.
-                expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(
-                    ethUtil.bufferToHex(ethUtil.sha3(hexSlice(hashData, 4))),
-                );
+                expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(hash);
 
                 // Update "counter" to "1", which will cause all calls to return the null hash.
                 await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
 
-                // Ensure that the cache returns the correct value.
-                expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(
-                    ethUtil.bufferToHex(ethUtil.sha3(hexSlice(hashData, 4))),
-                );
+                // The cache should return the same value as the first call to `callAsync` since a value was cached.
+                expect(await cache.callAsync(new BigNumber(1), ethUtil.bufferToHex(ethUtil.sha3(0)))).to.be.eq(hash);
             });
         });
     });

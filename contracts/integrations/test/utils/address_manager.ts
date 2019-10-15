@@ -17,10 +17,10 @@ interface ConfigurationArgs {
 
 export class AddressManager {
     // A set of addresses that have been configured for market making.
-    public makerAddresses: MarketMaker[];
+    public makers: MarketMaker[];
 
     // A set of addresses that have been configured to take orders.
-    public takerAddresses: string[];
+    public takers: string[];
 
     /**
      * Sets up an address to take orders.
@@ -31,19 +31,7 @@ export class AddressManager {
         await this._configureTokenForAddressAsync(deploymentManager, configArgs.address, configArgs.feeToken);
 
         // Add the taker to the list of configured taker addresses.
-        this.takerAddresses.push(configArgs.address);
-    }
-
-    /**
-     * Sets up a list of addresses to take orders.
-     */
-    public async batchAddTakerAsync(
-        deploymentManager: DeploymentManager,
-        configArgs: ConfigurationArgs[],
-    ): Promise<void> {
-        for (const args of configArgs) {
-            await this.addTakerAsync(deploymentManager, args);
-        }
+        this.takers.push(configArgs.address);
     }
 
     /**
@@ -79,26 +67,10 @@ export class AddressManager {
         await this._configureTokenForAddressAsync(deploymentManager, configArgs.address, configArgs.feeToken);
 
         // Add the maker to the list of configured maker addresses.
-        this.makerAddresses.push({
+        this.makers.push({
             address: configArgs.address,
             orderFactory,
         });
-    }
-
-    /**
-     * Sets up several market makers.
-     */
-    public async batchAddMakerAsync(
-        deploymentManager: DeploymentManager,
-        configArgs: ConfigurationArgs[],
-        environment: BlockchainTestsEnvironment,
-        takerToken: DummyERC20TokenContract,
-        feeRecipientAddress: string,
-        chainId: number,
-    ): Promise<void> {
-        for (const args of configArgs) {
-            await this.addMakerAsync(deploymentManager, args, environment, takerToken, feeRecipientAddress, chainId);
-        }
     }
 
     /**
@@ -106,8 +78,7 @@ export class AddressManager {
      * to transfer the token.
      */
     protected async _configureTokenForAddressAsync(
-        deploymentManager: DeploymentManager,
-        address: string,
+        deploymentManager: DeploymentManager, address: string,
         token: DummyERC20TokenContract,
     ): Promise<void> {
         await token.setBalance.awaitTransactionSuccessAsync(address, constants.INITIAL_ERC20_BALANCE);
@@ -119,7 +90,7 @@ export class AddressManager {
     }
 
     constructor() {
-        this.makerAddresses = [];
-        this.takerAddresses = [];
+        this.makers = [];
+        this.takers = [];
     }
 }

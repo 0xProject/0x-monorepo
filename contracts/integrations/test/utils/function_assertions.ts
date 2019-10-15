@@ -1,8 +1,5 @@
 import { PromiseWithTransactionHash } from '@0x/base-contract';
-import { BlockParam, CallData, TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
-import * as _ from 'lodash';
-
-import { DeploymentManager } from './';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 export interface ContractGetterFunction {
     callAsync: (...args: any[]) => Promise<any>;
