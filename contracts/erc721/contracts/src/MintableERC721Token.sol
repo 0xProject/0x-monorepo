@@ -18,16 +18,19 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./ERC721Token.sol";
 
 
 contract MintableERC721Token is
     ERC721Token
 {
+    using LibSafeMath for uint256;
+
     /// @dev Function to mint a new token
     ///      Reverts if the given token ID already exists
     /// @param _to Address of the beneficiary that will own the minted token
-    /// @param _tokenId ID of the token to be minted by the msg.sender    
+    /// @param _tokenId ID of the token to be minted by the msg.sender
     function _mint(address _to, uint256 _tokenId)
         internal
     {
@@ -43,7 +46,7 @@ contract MintableERC721Token is
         );
 
         owners[_tokenId] = _to;
-        balances[_to] = _safeAdd(balances[_to], 1);
+        balances[_to] = balances[_to].safeAdd(1);
 
         emit Transfer(
             address(0),
@@ -71,7 +74,7 @@ contract MintableERC721Token is
         );
 
         owners[_tokenId] = address(0);
-        balances[_owner] = _safeSub(balances[_owner], 1);
+        balances[_owner] = balances[_owner].safeSub(1);
 
         emit Transfer(
             _owner,
