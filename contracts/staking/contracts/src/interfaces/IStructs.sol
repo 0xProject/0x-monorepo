@@ -39,7 +39,7 @@ interface IStructs {
         uint256 membersStake;
     }
 
-    /// @dev Holds combined stats for a set of pools.
+    /// @dev Holds stats aggregated across a set of pools.
     /// @param rewardsAvailable Rewards (ETH) available to the epoch
     ///        being finalized (the previous epoch). This is simply the balance
     ///        of the contract at the end of the epoch.
@@ -48,7 +48,7 @@ interface IStructs {
     /// @param totalFeesCollected The total fees collected for the epoch being finalized.
     /// @param totalWeightedStake The total fees collected for the epoch being finalized.
     /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
-    struct CombinedStats {
+    struct AggregatedStats {
         uint256 rewardsAvailable;
         uint256 poolsRemaining;
         uint256 totalFeesCollected;

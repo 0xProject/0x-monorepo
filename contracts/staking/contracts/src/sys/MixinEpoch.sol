@@ -66,10 +66,10 @@ contract MixinEpoch is
         // Notify that epoch has ended. Include relevant stats.
         emit EpochEnded(
             oldEpoch,
-            _combinedStatsByEpoch[oldEpoch].poolsRemaining,
-            _combinedStatsByEpoch[oldEpoch].rewardsAvailable,
-            _combinedStatsByEpoch[oldEpoch].totalFeesCollected,
-            _combinedStatsByEpoch[oldEpoch].totalWeightedStake
+            _aggregatedStatsByEpoch[oldEpoch].poolsRemaining,
+            _aggregatedStatsByEpoch[oldEpoch].rewardsAvailable,
+            _aggregatedStatsByEpoch[oldEpoch].totalFeesCollected,
+            _aggregatedStatsByEpoch[oldEpoch].totalWeightedStake
         );
     }
 

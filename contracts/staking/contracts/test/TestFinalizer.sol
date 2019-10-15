@@ -83,9 +83,9 @@ contract TestFinalizer is
             membersStake: membersStake,
             weightedStake: weightedStake
         });
-        _combinedStatsByEpoch[currentEpoch].totalFeesCollected += feesCollected;
-        _combinedStatsByEpoch[currentEpoch].totalWeightedStake += weightedStake;
-        _combinedStatsByEpoch[currentEpoch].poolsRemaining += 1;
+        _aggregatedStatsByEpoch[currentEpoch].totalFeesCollected += feesCollected;
+        _aggregatedStatsByEpoch[currentEpoch].totalWeightedStake += weightedStake;
+        _aggregatedStatsByEpoch[currentEpoch].poolsRemaining += 1;
     }
 
     /// @dev Drain the balance of this contract.

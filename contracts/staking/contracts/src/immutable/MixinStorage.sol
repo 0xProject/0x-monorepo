@@ -107,9 +107,9 @@ contract MixinStorage is
     ///      See `_minimumPoolStake` in MixinParams.
     mapping (uint256 => mapping (bytes32 => IStructs.PoolStats)) internal _poolStatsByEpoch;
 
-    /// @dev Combined stats across all pools that generated fees with sufficient stake to earn rewards.
+    /// @dev Aggregated stats across all pools that generated fees with sufficient stake to earn rewards.
     ///      See `_minimumPoolStake` in MixinParams.
-    mapping (uint256 => IStructs.CombinedStats) internal _combinedStatsByEpoch;
+    mapping (uint256 => IStructs.AggregatedStats) internal _aggregatedStatsByEpoch;
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
     uint256 public wethReservedForPoolRewards;

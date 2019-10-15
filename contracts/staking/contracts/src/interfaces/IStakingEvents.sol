@@ -43,11 +43,11 @@ interface IStakingEvents {
         address exchangeAddress
     );
 
-    /// @dev Emitted by MixinExchangeFees when a pool pays protocol fees
-    ///      for the first time in an epoch.
-    /// @param epoch The epoch in which the pool was activated.
+    /// @dev Emitted by MixinExchangeFeeRewards when a pool pays protocol fees
+    ///      for the first time in an epoch; it will earn rewards this epoch.
+    /// @param epoch The epoch in which the pool earned rewards.
     /// @param poolId The ID of the pool.
-    event StakingPoolActivated(
+    event StakingPoolEarnedRewards(
         uint256 indexed epoch,
         bytes32 indexed poolId
     );

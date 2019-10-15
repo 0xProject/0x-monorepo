@@ -67,10 +67,10 @@ contract MixinExchangeFeeRewards is
             return;
         }
 
-        // Look up the pool stats and combined stats for this epoch.
+        // Look up the pool stats and aggregated stats for this epoch.
         uint256 currentEpoch_ = currentEpoch;
         IStructs.PoolStats memory poolStats = _poolStatsByEpoch[currentEpoch_][poolId];
-        IStructs.CombinedStats memory combinedStats = _combinedStatsByEpoch[currentEpoch_];
+        IStructs.AggregatedStats memory aggregatedStats = _aggregatedStatsByEpoch[currentEpoch_];
 
         // If the pool was previously inactive in this epoch, initialize it.
         if (poolStats.feesCollected == 0) {
@@ -78,32 +78,31 @@ contract MixinExchangeFeeRewards is
             (poolStats.membersStake, poolStats.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
 
             // Increase the total weighted stake.
-            combinedStats.totalWeightedStake = combinedStats.totalWeightedStake.safeAdd(poolStats.weightedStake);
+            aggregatedStats.totalWeightedStake = aggregatedStats.totalWeightedStake.safeAdd(poolStats.weightedStake);
 
             // Increase the number of active pools.
-            combinedStats.poolsRemaining += 1;
+            aggregatedStats.poolsRemaining += 1;
 
-            // Emit an event so keepers know what pools to pass into
-            // `finalize()`.
-            emit StakingPoolActivated(currentEpoch_, poolId);
+            // Emit an event so keepers know what pools earned rewards this epoch.
+            emit StakingPoolEarnedRewards(currentEpoch_, poolId);
         }
 
         // Credit the fees to the pool.
         poolStats.feesCollected = poolStats.feesCollected.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
-        combinedStats.totalFeesCollected = combinedStats.totalFeesCollected.safeAdd(protocolFeePaid);
+        aggregatedStats.totalFeesCollected = aggregatedStats.totalFeesCollected.safeAdd(protocolFeePaid);
 
         // Store the updated stats.
         _poolStatsByEpoch[currentEpoch_][poolId] = poolStats;
-        _combinedStatsByEpoch[currentEpoch_] = combinedStats;
+        _aggregatedStatsByEpoch[currentEpoch_] = aggregatedStats;
     }
 
     function _setRewardsAvailable(uint256 epoch, uint256 rewardsAvailable)
         internal
     {
         // Set rewards available for this epoch.
-        _combinedStatsByEpoch[epoch].rewardsAvailable = rewardsAvailable;
+        _aggregatedStatsByEpoch[epoch].rewardsAvailable = rewardsAvailable;
 
         // Nothing left to do if this is epoch 0.
         if (epoch == 0) {
@@ -113,11 +112,11 @@ contract MixinExchangeFeeRewards is
         // Ensure all rewards have been paid out for the previous epoch;
         // otherwise the available rewards may not be accurate.
         uint256 lastEpoch = epoch.safeSub(1);
-        if (_combinedStatsByEpoch[lastEpoch].poolsRemaining != 0) {
+        if (_aggregatedStatsByEpoch[lastEpoch].poolsRemaining != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
                     lastEpoch,
-                    _combinedStatsByEpoch[lastEpoch].poolsRemaining
+                    _aggregatedStatsByEpoch[lastEpoch].poolsRemaining
                 )
             );
         }
@@ -148,13 +147,13 @@ contract MixinExchangeFeeRewards is
 
         // Compute the rewards.
         // Use the cobb-douglas function to compute the total reward.
-        IStructs.CombinedStats memory combinedStats = _combinedStatsByEpoch[lastEpoch];
+        IStructs.AggregatedStats memory aggregatedStats = _aggregatedStatsByEpoch[lastEpoch];
         rewards = LibCobbDouglas.cobbDouglas(
-            combinedStats.rewardsAvailable,
+            aggregatedStats.rewardsAvailable,
             poolStats.feesCollected,
-            combinedStats.totalFeesCollected,
+            aggregatedStats.totalFeesCollected,
             poolStats.weightedStake,
-            combinedStats.totalWeightedStake,
+            aggregatedStats.totalWeightedStake,
             cobbDouglasAlphaNumerator,
             cobbDouglasAlphaDenominator
         );
@@ -162,7 +161,7 @@ contract MixinExchangeFeeRewards is
         // Clip the reward to always be under
         // `rewardsAvailable - totalRewardsPaid`,
         // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining = combinedStats.rewardsAvailable.safeSub(combinedStats.totalRewardsFinalized);
+        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized);
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }
@@ -176,9 +175,9 @@ contract MixinExchangeFeeRewards is
         uint256 lastEpoch = currentEpoch_.safeSub(1);
         delete _poolStatsByEpoch[lastEpoch][poolId];
 
-        // Update the combined stats for last epoch.
-        _combinedStatsByEpoch[lastEpoch].totalRewardsFinalized = _combinedStatsByEpoch[lastEpoch].totalRewardsFinalized.safeAdd(amountSettled);
-        _combinedStatsByEpoch[lastEpoch].poolsRemaining = _combinedStatsByEpoch[lastEpoch].poolsRemaining.safeSub(1);
+        // Update the aggregated stats for last epoch.
+        _aggregatedStatsByEpoch[lastEpoch].totalRewardsFinalized = _aggregatedStatsByEpoch[lastEpoch].totalRewardsFinalized.safeAdd(amountSettled);
+        _aggregatedStatsByEpoch[lastEpoch].poolsRemaining = _aggregatedStatsByEpoch[lastEpoch].poolsRemaining.safeSub(1);
 
         // Handle the case where this was the final pool to be settled.
         _handleAllRewardsPaid(lastEpoch);
@@ -217,12 +216,12 @@ contract MixinExchangeFeeRewards is
     function _handleAllRewardsPaid(uint256 epoch)
         internal
     {
-        if (_combinedStatsByEpoch[epoch].poolsRemaining != 0) {
+        if (_aggregatedStatsByEpoch[epoch].poolsRemaining != 0) {
             return;
         }
 
-        uint256 rewardsFinalized = _combinedStatsByEpoch[epoch].totalRewardsFinalized;
-        uint256 rewardsRemaining = _combinedStatsByEpoch[epoch].rewardsAvailable.safeSub(rewardsFinalized);
+        uint256 rewardsFinalized = _aggregatedStatsByEpoch[epoch].totalRewardsFinalized;
+        uint256 rewardsRemaining = _aggregatedStatsByEpoch[epoch].rewardsAvailable.safeSub(rewardsFinalized);
         emit EpochFinalized(
             epoch,
             rewardsFinalized,
@@ -230,7 +229,7 @@ contract MixinExchangeFeeRewards is
         );
 
         // Reset stats from last epoch as they are no longer needed.
-        _combinedStatsByEpoch[epoch] = IStructs.CombinedStats({
+        _aggregatedStatsByEpoch[epoch] = IStructs.AggregatedStats({
             rewardsAvailable: 0,
             poolsRemaining: 0,
             totalFeesCollected: 0,

@@ -283,8 +283,8 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _combinedStatsByEpoch_slot,
-                _combinedStatsByEpoch_offset,
+                _aggregatedStatsByEpoch_slot,
+                _aggregatedStatsByEpoch_offset,
                 slot,
                 offset
             )
