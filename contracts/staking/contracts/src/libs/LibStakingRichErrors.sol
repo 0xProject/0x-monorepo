@@ -35,7 +35,7 @@ library LibStakingRichErrors {
     }
 
     enum InitializationErrorCodes {
-        MixinSchedulerAlreadyInitialized,
+        MixinEpochAlreadyInitialized,
         MixinParamsAlreadyInitialized
     }
 

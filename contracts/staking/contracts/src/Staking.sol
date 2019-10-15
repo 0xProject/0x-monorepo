@@ -49,7 +49,7 @@ contract Staking is
     {
         // DANGER! When performing upgrades, take care to modify this logic
         // to prevent accidentally clearing prior state.
-        _initMixinScheduler();
+        _initMixinEpoch();
         _initMixinParams();
     }
 }

@@ -87,26 +87,26 @@ contract MixinEpoch is
 
     /// @dev Initializes state owned by this mixin.
     ///      Fails if state was already initialized.
-    function _initMixinScheduler()
+    function _initMixinEpoch()
         internal
     {
         // assert the current values before overwriting them.
-        _assertSchedulerNotInitialized();
+        _assertMixinEpochNotInitialized();
 
         // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
     }
 
-    /// @dev Assert scheduler state before initializing it.
+    /// @dev Assert MixinEpoch state before initializing it.
     /// This must be updated for each migration.
-    function _assertSchedulerNotInitialized()
+    function _assertMixinEpochNotInitialized()
         internal
         view
     {
         if (currentEpochStartTimeInSeconds != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InitializationError(
-                    LibStakingRichErrors.InitializationErrorCodes.MixinSchedulerAlreadyInitialized
+                    LibStakingRichErrors.InitializationErrorCodes.MixinEpochAlreadyInitialized
                 )
             );
         }
