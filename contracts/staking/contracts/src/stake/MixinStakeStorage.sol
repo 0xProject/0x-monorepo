@@ -21,12 +21,12 @@ pragma solidity ^0.5.9;
 import "../libs/LibSafeDowncast.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "../sys/MixinEpoch.sol";
+import "../immutable/MixinStorage.sol";
 
 
 /// @dev This mixin contains logic for managing stake storage.
 contract MixinStakeStorage is
-    MixinEpoch
+    MixinStorage
 {
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;

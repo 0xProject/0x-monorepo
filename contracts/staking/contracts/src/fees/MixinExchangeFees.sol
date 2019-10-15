@@ -24,15 +24,13 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
-import "./MixinExchangeFeeRewards.sol";
-import "../staking_pools/MixinStakingPool.sol";
+import "./MixinExchangeFeeStats.sol";
 import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
     MixinExchangeManager,
-    MixinExchangeFeeRewards,
-    MixinStakingPool
+    MixinExchangeFeeStats
 {
     using LibSafeMath for uint256;
 
@@ -51,10 +49,10 @@ contract MixinExchangeFees is
         payable
         onlyExchange
     {
+        // Sanity check on protocol fee.
         _assertValidProtocolFee(protocolFeePaid);
 
-        // Transfer the protocol fee to this address if it should be paid in
-        // WETH.
+        // If no value was sent then collect the fee in WETH.
         if (msg.value == 0) {
             require(
                 getWethContract().transferFrom(
@@ -66,92 +64,48 @@ contract MixinExchangeFees is
             );
         }
 
-        // Get the pool id of the maker address.
-        bytes32 poolId = poolIdByMaker[makerAddress];
-
-        // Only attribute the protocol fee payment to a pool if the maker is
-        // registered to a pool.
-        if (poolId == NIL_POOL_ID) {
-            return;
-        }
-
-        uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
-        // Ignore pools with dust stake.
-        if (poolStake < minimumPoolStake) {
-            return;
-        }
-
-        // Look up the pool stats and combined stats for this epoch.
-        uint256 currentEpoch_ = currentEpoch;
-        IStructs.PoolStats memory poolStats = _poolStatsByEpoch[currentEpoch_][poolId];
-        IStructs.CombinedStats memory combinedStats = _combinedStatsByEpoch[currentEpoch_];
-
-        // If the pool was previously inactive in this epoch, initialize it.
-        if (poolStats.feesCollected == 0) {
-            // Compute member and total weighted stake.
-            (poolStats.membersStake, poolStats.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
-
-            // Increase the total weighted stake.
-            combinedStats.totalWeightedStake = combinedStats.totalWeightedStake.safeAdd(poolStats.weightedStake);
-
-            // Increase the number of active pools.
-            combinedStats.poolsRemaining += 1;
-
-            // Emit an event so keepers know what pools to pass into
-            // `finalize()`.
-            emit StakingPoolActivated(currentEpoch_, poolId);
-        }
-
-        // Credit the fees to the pool.
-        poolStats.feesCollected = poolStats.feesCollected.safeAdd(protocolFeePaid);
-
-        // Increase the total fees collected this epoch.
-        combinedStats.totalFeesCollected = combinedStats.totalFeesCollected.safeAdd(protocolFeePaid);
-
-        // Store the updated stats.
-        _poolStatsByEpoch[currentEpoch_][poolId] = poolStats;
-        _combinedStatsByEpoch[currentEpoch_] = combinedStats;
-    }
-
-    /// @dev Get information on an active staking pool in this epoch.
-    /// @param poolId Pool Id to query.
-    /// @return PoolStats struct.
-    function getActiveStakingPoolThisEpoch(bytes32 poolId)
-        external
-        view
-        returns (IStructs.PoolStats memory)
-    {
-        return _poolStatsByEpoch[currentEpoch][poolId];
-    }
-
-    /// @dev Computes the members and weighted stake for a pool at the current
-    ///      epoch.
-    /// @param poolId ID of the pool.
-    /// @param totalStake Total (unweighted) stake in the pool.
-    /// @return membersStake Non-operator stake in the pool.
-    /// @return weightedStake Weighted stake of the pool.
-    function _computeMembersAndWeightedStake(
-        bytes32 poolId,
-        uint256 totalStake
-    )
-        private
-        view
-        returns (uint256 membersStake, uint256 weightedStake)
-    {
-        uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-            _poolById[poolId].operator,
-            poolId
-        ).currentEpochBalance;
-
-        membersStake = totalStake.safeSub(operatorStake);
-        weightedStake = operatorStake.safeAdd(
-            LibMath.getPartialAmountFloor(
-                rewardDelegatedStakeWeight,
-                PPM_DENOMINATOR,
-                membersStake
-            )
+        // Attribute protocol fee to maker's pool.
+        _attributeFeeToPool(
+            poolIdByMaker[makerAddress],
+            protocolFeePaid
         );
-        return (membersStake, weightedStake);
+    }
+
+    function _endProtocolFeePeriod(uint256 epoch)
+        internal
+    {
+        // Convert all ETH to WETH and record the total rewards available.
+        _wrapEth();
+
+        // Start new protocol fee period.
+        uint256 totalRewardsAvailable = _getAvailableWethBalance();
+        _setRewardsAvailable(epoch, totalRewardsAvailable);
+
+        // Handle the case where no pools are eligible to earn rewards.
+        _handleAllRewardsPaid(epoch);
+    }
+
+    /// @dev Returns the WETH balance of this contract, minus
+    ///      any WETH that has already been reserved for rewards.
+    function _getAvailableWethBalance()
+        internal
+        view
+        returns (uint256 wethBalance)
+    {
+        wethBalance = getWethContract().balanceOf(address(this))
+            .safeSub(wethReservedForPoolRewards);
+
+        return wethBalance;
+    }
+
+    /// @dev Converts the entire ETH balance of this contract into WETH.
+    function _wrapEth()
+        internal
+    {
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance != 0) {
+            getWethContract().deposit.value(ethBalance)();
+        }
     }
 
     /// @dev Checks that the protocol fee passed into `payProtocolFee()` is

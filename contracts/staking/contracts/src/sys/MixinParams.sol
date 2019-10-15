@@ -27,8 +27,8 @@ import "../libs/LibStakingRichErrors.sol";
 
 contract MixinParams is
     IStakingEvents,
-    MixinStorage,
-    MixinConstants
+    MixinConstants,
+    MixinStorage
 {
     /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.

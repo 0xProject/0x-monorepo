@@ -26,8 +26,8 @@ import "../immutable/MixinConstants.sol";
 
 
 contract MixinCumulativeRewards is
-    MixinStakeBalances,
-    MixinConstants
+    MixinConstants,
+    MixinStakeBalances
 {
     using LibSafeMath for uint256;
 

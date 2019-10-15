@@ -17,19 +17,20 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
-import "../fees/MixinExchangeFeeRewards.sol";
+import "../fees/MixinExchangeFees.sol";
 
 
 contract MixinEpoch is
     IStakingEvents,
     MixinStorage,
-    MixinExchangeFeeRewards
+    MixinExchangeFees
 {
     using LibSafeMath for uint256;
 
@@ -53,27 +54,23 @@ contract MixinEpoch is
             ));
         }
 
-        // Store stats on the rewards that have accumulated over the past epoch.
-        IStructs.CombinedStats memory combinedStats = _storeFeeRewardStats();
-
-        // incremment epoch
+        // Increment epoch.
         uint256 oldEpoch = currentEpoch;
         uint256 newEpoch = oldEpoch.safeAdd(1);
         currentEpoch = newEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
 
-        // Notify that epoch has ended.
+        // When an epoch ends, we also end the current protocol fee period.
+        _endProtocolFeePeriod(oldEpoch);
+
+        // Notify that epoch has ended. Include relevant stats.
         emit EpochEnded(
             oldEpoch,
-            combinedStats.poolsRemaining,
-            combinedStats.rewardsAvailable,
-            combinedStats.totalFeesCollected,
-            combinedStats.totalWeightedStake
+            _combinedStatsByEpoch[oldEpoch].poolsRemaining,
+            _combinedStatsByEpoch[oldEpoch].rewardsAvailable,
+            _combinedStatsByEpoch[oldEpoch].totalFeesCollected,
+            _combinedStatsByEpoch[oldEpoch].totalWeightedStake
         );
-
-        // If no fees were generated in the epoch that just ended, then there
-        // are no rewards to settle.
-        _handleAllRewardsSettled(combinedStats);
     }
 
     /// @dev Returns the earliest end time in seconds of this epoch.

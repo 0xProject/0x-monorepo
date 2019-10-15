@@ -20,7 +20,7 @@
         "generated-artifacts/MixinCumulativeRewards.json",
         "generated-artifacts/MixinDeploymentConstants.json",
         "generated-artifacts/MixinEpoch.json",
-        "generated-artifacts/MixinExchangeFeeRewards.json",
+        "generated-artifacts/MixinExchangeFeeStats.json",
         "generated-artifacts/MixinExchangeFees.json",
         "generated-artifacts/MixinExchangeManager.json",
         "generated-artifacts/MixinParams.json",
