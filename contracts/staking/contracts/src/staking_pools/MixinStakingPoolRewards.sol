@@ -33,15 +33,11 @@ contract MixinStakingPoolRewards is
     using LibSafeMath for uint256;
 
 
-    /// @dev Instantly finalizes a single pool that was active in the previous
-    ///      epoch, crediting it rewards for members and withdrawing operator's
-    ///      rewards as WETH. This can be called by internal functions that need
-    ///      to finalize a pool immediately. Does nothing if the pool is already
-    ///      finalized or was not active in the previous epoch.
-    /// @param poolId The pool ID to finalize.
+    /// @dev Pays any rewards that are owed to the pool.
+    ///      Credits the members share and withdraws the operator's share as WETH.
+    /// @param poolId The pool ID to settle rewards.
     function settleStakingPoolRewards(bytes32 poolId)
         public
-        returns (uint256)
     {
         (IStructs.PoolStats memory poolStats, uint256 rewardsOwed) = _computeFeeRewardForPool(poolId);
 
@@ -96,11 +92,11 @@ contract MixinStakingPoolRewards is
         returns (uint256 reward)
     {
         // Because operator rewards are immediately withdrawn as WETH
-        // on finalization, the only factor in this function are unfinalized
-        // rewards.
+        // on when rewards are paid to the pool, the only factor in
+        // this function are unpaid rewards.
         IStructs.Pool memory pool = _poolById[poolId];
 
-        // Get any unfinalized rewards.
+        // Get any unpaid rewards.
         (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
 
         // Get the operators' portion.
@@ -123,11 +119,11 @@ contract MixinStakingPoolRewards is
     {
         IStructs.Pool memory pool = _poolById[poolId];
 
-        // Get any unfinalized rewards.
+        // Get any unpaid rewards.
         (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
 
         // Get the members' portion.
-        (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(
+        (, uint256 unpaidMembersReward) = _computePoolRewardsSplit(
             pool.operatorShare,
             unsettledRewards,
             poolStats.membersStake
@@ -135,7 +131,7 @@ contract MixinStakingPoolRewards is
         return _computeDelegatorReward(
             poolId,
             member,
-            unfinalizedMembersReward,
+            unpaidMembersReward,
             poolStats.membersStake
         );
     }
@@ -150,15 +146,13 @@ contract MixinStakingPoolRewards is
     )
         internal
     {
-        // Ensure the pool is finalized.
+        // Ensure any rewards owed to the pool have been paid.
         settleStakingPoolRewards(poolId);
 
         // Compute balance owed to delegator
         uint256 balance = _computeDelegatorReward(
             poolId,
             member,
-            // No unfinalized values because we ensured the pool is already
-            // finalized.
             0,
             0
         );
@@ -278,8 +272,8 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
-    /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
-    /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
+    /// @param unfinalizedMembersReward Unpaid total members reward (if any).
+    /// @param unfinalizedMembersStake Unpaid total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
@@ -309,7 +303,7 @@ contract MixinStakingPoolRewards is
 
         // We account for rewards over 3 intervals, below.
 
-        // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
+        // 1/3 Unpaid rewards earned in `currentEpoch - 1`.
         reward = _computeUnfinalizedDelegatorReward(
             delegatedStake,
             _currentEpoch,
@@ -317,7 +311,7 @@ contract MixinStakingPoolRewards is
             unfinalizedMembersStake
         );
 
-        // 2/3 Finalized rewards earned in epochs [`delegatedStake.currentEpoch + 1` .. `currentEpoch - 1`]
+        // 2/3 Rewards earned in epochs [`delegatedStake.currentEpoch + 1` .. `currentEpoch - 1`]
         uint256 delegatedStakeNextEpoch = uint256(delegatedStake.currentEpoch).safeAdd(1);
         reward = reward.safeAdd(
             _computeMemberRewardOverInterval(
@@ -328,7 +322,7 @@ contract MixinStakingPoolRewards is
             )
         );
 
-        // 3/3 Finalized rewards earned in epoch `delegatedStake.currentEpoch`.
+        // 3/3 Rewards earned in epoch `delegatedStake.currentEpoch`.
         reward = reward.safeAdd(
             _computeMemberRewardOverInterval(
                 poolId,

@@ -40,20 +40,17 @@ interface IStructs {
     }
 
     /// @dev Holds stats aggregated across a set of pools.
-    /// @param rewardsAvailable Rewards (ETH) available to the epoch
-    ///        being finalized (the previous epoch). This is simply the balance
-    ///        of the contract at the end of the epoch.
-    /// @param poolsRemaining The number of active pools in the last
-    ///        epoch that have yet to be finalized through `finalizePools()`.
-    /// @param totalFeesCollected The total fees collected for the epoch being finalized.
-    /// @param totalWeightedStake The total fees collected for the epoch being finalized.
-    /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
+    /// @param rewardsAvailable Total WETH available for pools that earned rewards.
+    /// @param poolsRemaining The number of pools that earned rewards.
+    /// @param totalFeesCollected The total fees collected across all pools that earned rewards.
+    /// @param totalWeightedStake The total weighted stake across all pools that earned rewards.
+    /// @param totalRewardsPaid The total rewards that have been paid to pools.
     struct AggregatedStats {
         uint256 rewardsAvailable;
         uint256 poolsRemaining;
         uint256 totalFeesCollected;
         uint256 totalWeightedStake;
-        uint256 totalRewardsFinalized;
+        uint256 totalRewardsPaid;
     }
 
     /// @dev Encapsulates a balance for the current and next epochs.

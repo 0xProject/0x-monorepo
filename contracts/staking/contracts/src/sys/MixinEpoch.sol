@@ -34,12 +34,9 @@ contract MixinEpoch is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Begins a new epoch, preparing the prior one for finalization.
-    ///      Throws if not enough time has passed between epochs or if the
-    ///      previous epoch was not fully finalized.
-    ///      If there were no active pools in the closing epoch, the epoch
-    ///      will be instantly finalized here. Otherwise, `finalizePool()`
-    ///      should be called on each active pool afterwards.
+    /// @dev Ends the current epoch and starts a new one.
+    ///      Throws if not enough time has passed between epochs or if
+    ///      pools that earned rewards in the previous epoch have not been paid.
     function endEpoch()
         external
     {

@@ -26,14 +26,14 @@ import "./TestStakingNoWETH.sol";
 contract TestDelegatorRewards is
     TestStakingNoWETH
 {
-    event FinalizePool(
+    event RewardPaidToPool(
         bytes32 poolId,
         uint256 operatorReward,
         uint256 membersReward,
         uint256 membersStake
     );
 
-    struct UnfinalizedPoolReward {
+    struct UnpaidPoolReward {
         uint256 operatorReward;
         uint256 membersReward;
         uint256 membersStake;
@@ -45,16 +45,16 @@ contract TestDelegatorRewards is
         _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
-    mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
-        unfinalizedPoolRewardsByEpoch;
+    mapping (uint256 => mapping (bytes32 => UnpaidPoolReward)) private
+        unpaidPoolRewardsByEpoch;
 
-    /// @dev Expose the original finalizePool
-    function originalFinalizePool(bytes32 poolId) external {
+    /// @dev Expose the original `settleStakingPoolRewards`
+    function originalSettleStakingPoolRewards(bytes32 poolId) external {
         MixinStakingPoolRewards.settleStakingPoolRewards(poolId);
     }
 
-    /// @dev Set unfinalized rewards for a pool in the current epoch.
-    function setUnfinalizedPoolReward(
+    /// @dev Set unpaid rewards for a pool in the current epoch.
+    function setUnpaidPoolReward(
         bytes32 poolId,
         address payable operatorAddress,
         uint256 operatorReward,
@@ -63,7 +63,7 @@ contract TestDelegatorRewards is
     )
         external
     {
-        unfinalizedPoolRewardsByEpoch[currentEpoch][poolId] = UnfinalizedPoolReward({
+        unpaidPoolRewardsByEpoch[currentEpoch][poolId] = UnpaidPoolReward({
             operatorReward: operatorReward,
             membersReward: membersReward,
             membersStake: membersStake
@@ -173,13 +173,13 @@ contract TestDelegatorRewards is
     }
 
     // solhint-disable no-simple-event-func-name
-    /// @dev Overridden to realize `unfinalizedPoolRewardsByEpoch` in
+    /// @dev Overridden to realize `unpaidPoolRewardsByEpoch` in
     ///      the current epoch and emit a event,
-    function finalizePool(bytes32 poolId)
+    function settleStakingPoolRewards(bytes32 poolId)
         public
     {
-        UnfinalizedPoolReward memory reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
-        delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        UnpaidPoolReward memory reward = unpaidPoolRewardsByEpoch[currentEpoch][poolId];
+        delete unpaidPoolRewardsByEpoch[currentEpoch][poolId];
 
         _setOperatorShare(poolId, reward.operatorReward, reward.membersReward);
 
@@ -187,11 +187,11 @@ contract TestDelegatorRewards is
         uint256 membersStake = reward.membersStake;
         (uint256 operatorReward, uint256 membersReward) =
             _syncPoolRewards(poolId, totalRewards, membersStake);
-        emit FinalizePool(poolId, operatorReward, membersReward, membersStake);
+        emit RewardPaidToPool(poolId, operatorReward, membersReward, membersStake);
     }
 
-    /// @dev Overridden to use unfinalizedPoolRewardsByEpoch.
-    function _getUnfinalizedPoolRewards(bytes32 poolId)
+    /// @dev Overridden to use unpaidPoolRewardsByEpoch.
+    function _getUnpaidPoolRewards(bytes32 poolId)
         internal
         view
         returns (
@@ -199,7 +199,7 @@ contract TestDelegatorRewards is
             uint256 membersStake
         )
     {
-        UnfinalizedPoolReward storage reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
+        UnpaidPoolReward storage reward = unpaidPoolRewardsByEpoch[currentEpoch][poolId];
         totalReward = reward.operatorReward + reward.membersReward;
         membersStake = reward.membersStake;
     }

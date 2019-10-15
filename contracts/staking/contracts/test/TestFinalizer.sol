@@ -33,7 +33,7 @@ contract TestFinalizer is
         uint256 membersStake
     );
 
-    struct UnfinalizedPoolReward {
+    struct UnpaidPoolReward {
         uint256 totalReward;
         uint256 membersStake;
     }
@@ -49,7 +49,7 @@ contract TestFinalizer is
     mapping (bytes32 => uint32) private _operatorSharesByPool;
 
     /// @param operatorRewardsReceiver The address to transfer rewards into when
-    ///        a pool is finalized.
+    ///        a pool has been paid.
     constructor(
         address payable operatorRewardsReceiver,
         address payable membersRewardsReceiver
@@ -118,11 +118,11 @@ contract TestFinalizer is
         );
     }
 
-    /// @dev Expose `_getUnfinalizedPoolReward()`
-    function getUnfinalizedPoolRewards(bytes32 poolId)
+    /// @dev Expose `_computeFeeRewardForPool()`
+    function getUnpaidPoolRewards(bytes32 poolId)
         external
         view
-        returns (UnfinalizedPoolReward memory reward)
+        returns (UnpaidPoolReward memory reward)
     {
         (IStructs.PoolStats memory poolStats, uint256 unsettledRewards) = _computeFeeRewardForPool(poolId);
         reward.totalReward = unsettledRewards;

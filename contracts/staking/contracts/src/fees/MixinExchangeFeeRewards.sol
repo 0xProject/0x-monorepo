@@ -114,7 +114,7 @@ contract MixinExchangeFeeRewards is
         uint256 lastEpoch = epoch.safeSub(1);
         if (_aggregatedStatsByEpoch[lastEpoch].poolsRemaining != 0) {
             LibRichErrors.rrevert(
-                LibStakingRichErrors.PreviousEpochNotFinalizedError(
+                LibStakingRichErrors.UnpaidRewardsError(
                     lastEpoch,
                     _aggregatedStatsByEpoch[lastEpoch].poolsRemaining
                 )
@@ -140,7 +140,7 @@ contract MixinExchangeFeeRewards is
         uint256 lastEpoch = currentEpoch_.safeSub(1);
         poolStats = _poolStatsByEpoch[lastEpoch][poolId];
 
-        // Noop if the pool was not active or already finalized (has no fees).
+        // Noop if the pool was did not earn any rewards or has already been paid their reward.
         if (poolStats.feesCollected == 0) {
             return (poolStats, rewards);
         }
@@ -161,7 +161,7 @@ contract MixinExchangeFeeRewards is
         // Clip the reward to always be under
         // `rewardsAvailable - totalRewardsPaid`,
         // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized);
+        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsPaid);
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }
@@ -170,13 +170,13 @@ contract MixinExchangeFeeRewards is
     function _handleRewardPaidToPool(bytes32 poolId, uint256 amountSettled)
         internal
     {
-        // Clear the pool stats so we don't finalize it again.
+        // Clear the pool stats so we don't payout the reward again.
         uint256 currentEpoch_ = currentEpoch;
         uint256 lastEpoch = currentEpoch_.safeSub(1);
         delete _poolStatsByEpoch[lastEpoch][poolId];
 
         // Update the aggregated stats for last epoch.
-        _aggregatedStatsByEpoch[lastEpoch].totalRewardsFinalized = _aggregatedStatsByEpoch[lastEpoch].totalRewardsFinalized.safeAdd(amountSettled);
+        _aggregatedStatsByEpoch[lastEpoch].totalRewardsPaid = _aggregatedStatsByEpoch[lastEpoch].totalRewardsPaid.safeAdd(amountSettled);
         _aggregatedStatsByEpoch[lastEpoch].poolsRemaining = _aggregatedStatsByEpoch[lastEpoch].poolsRemaining.safeSub(1);
 
         // Handle the case where this was the final pool to be settled.
@@ -220,11 +220,11 @@ contract MixinExchangeFeeRewards is
             return;
         }
 
-        uint256 rewardsFinalized = _aggregatedStatsByEpoch[epoch].totalRewardsFinalized;
-        uint256 rewardsRemaining = _aggregatedStatsByEpoch[epoch].rewardsAvailable.safeSub(rewardsFinalized);
-        emit EpochFinalized(
+        uint256 rewardsPaid = _aggregatedStatsByEpoch[epoch].totalRewardsPaid;
+        uint256 rewardsRemaining = _aggregatedStatsByEpoch[epoch].rewardsAvailable.safeSub(rewardsPaid);
+        emit AllRewardsPaid(
             epoch,
-            rewardsFinalized,
+            rewardsPaid,
             rewardsRemaining
         );
 
@@ -234,7 +234,7 @@ contract MixinExchangeFeeRewards is
             poolsRemaining: 0,
             totalFeesCollected: 0,
             totalWeightedStake: 0,
-            totalRewardsFinalized: 0
+            totalRewardsPaid: 0
         });
     }
 }

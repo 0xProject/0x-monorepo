@@ -108,9 +108,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
         0xefd6cb33;
 
-    // bytes4(keccak256("PreviousEpochNotFinalizedError(uint256,uint256)"))
-    bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
-        0x614b800a;
+    // bytes4(keccak256("UnpaidRewardsError(uint256,uint256)"))
+    bytes4 internal constant UNPAID_REWARDS_ERROR_SELECTOR =
+        0xaafcf253;
 
     // solhint-disable func-name-mixedcase
     function OnlyCallableByExchangeError(
@@ -294,18 +294,18 @@ library LibStakingRichErrors {
         return PROXY_DESTINATION_CANNOT_BE_NIL_ERROR;
     }
 
-    function PreviousEpochNotFinalizedError(
-        uint256 unfinalizedEpoch,
-        uint256 unfinalizedPoolsRemaining
+    function UnpaidRewardsError(
+        uint256 epoch,
+        uint256 remainingPoolsToBePaid
     )
         internal
         pure
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR,
-            unfinalizedEpoch,
-            unfinalizedPoolsRemaining
+            UNPAID_REWARDS_ERROR_SELECTOR,
+            epoch,
+            remainingPoolsToBePaid
         );
     }
 }

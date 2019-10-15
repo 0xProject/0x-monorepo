@@ -52,7 +52,7 @@ interface IStakingEvents {
         bytes32 indexed poolId
     );
 
-    /// @dev Emitted by MixinFinalizer when an epoch has ended.
+    /// @dev Emitted by MixinEpoch when an epoch has ended.
     /// @param epoch The closing epoch.
     /// @param numPoolStats Number of active pools in the closing epoch.
     /// @param rewardsAvailable Rewards available to all active pools.
@@ -66,17 +66,17 @@ interface IStakingEvents {
         uint256 totalWeightedStake
     );
 
-    /// @dev Emitted by MixinFinalizer when an epoch is fully finalized.
-    /// @param epoch The epoch being finalized.
+    /// @dev Emitted by MixinExchangeFeeRewards when all rewards have been paid for a given epoch..
+    /// @param epoch The epoch being that rewards wre earned in.
     /// @param rewardsPaid Total amount of rewards paid out.
     /// @param rewardsRemaining Rewards left over.
-    event EpochFinalized(
+    event AllRewardsPaid(
         uint256 indexed epoch,
         uint256 rewardsPaid,
         uint256 rewardsRemaining
     );
 
-    /// @dev Emitted by MixinFinalizer when rewards are paid out to a pool.
+    /// @dev Emitted by MixinExchangeFeeRewards when rewards are paid out to a pool.
     /// @param epoch The epoch when the rewards were earned.
     /// @param poolId The pool's ID.
     /// @param operatorReward Amount of reward paid to pool operator.
