@@ -69,6 +69,10 @@
             {
                 "note": "Removed `deepCopyBytes`, `popLast20Bytes`, `readBytesWithLength`, and `writeBytesWithLength` in `LibBytes`.",
                 "pr": 2265
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
             }
         ],
         "timestamp": 1570135330

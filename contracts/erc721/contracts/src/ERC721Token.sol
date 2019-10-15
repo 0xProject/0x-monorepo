@@ -20,13 +20,14 @@ pragma solidity ^0.5.9;
 
 import "./interfaces/IERC721Token.sol";
 import "./interfaces/IERC721Receiver.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
 contract ERC721Token is
-    IERC721Token,
-    SafeMath
+    IERC721Token
 {
+    using LibSafeMath for uint256;
+
     // Function selector for ERC721Receiver.onERC721Received
     // 0x150b7a02
     bytes4 constant internal ERC721_RECEIVED = bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
@@ -163,7 +164,7 @@ contract ERC721Token is
             _approved
         );
     }
-    
+
     /// @notice Count all NFTs assigned to an owner
     /// @dev NFTs assigned to the zero address are considered invalid, and this
     ///      function throws for queries about the zero address.
@@ -223,9 +224,9 @@ contract ERC721Token is
         }
 
         owners[_tokenId] = _to;
-        balances[_from] = _safeSub(balances[_from], 1);
-        balances[_to] = _safeAdd(balances[_to], 1);
-    
+        balances[_from] = balances[_from].safeSub(1);
+        balances[_to] = balances[_to].safeAdd(1);
+
         emit Transfer(
             _from,
             _to,

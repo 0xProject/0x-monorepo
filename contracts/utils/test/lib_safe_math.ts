@@ -2,7 +2,7 @@ import { blockchainTests, constants, describe, expect } from '@0x/contracts-test
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { artifacts, TestSafeMathContract } from '../src';
+import { artifacts, TestLibSafeMathContract } from '../src';
 import * as ReferenceFunctions from '../src/reference_functions';
 
 function toBigNumber(a: number | string): BigNumber {
@@ -11,19 +11,19 @@ function toBigNumber(a: number | string): BigNumber {
 
 blockchainTests('SafeMath', env => {
     const { ONE_ETHER } = constants;
-    let safeMath: TestSafeMathContract;
+    let safeMath: TestLibSafeMathContract;
 
     before(async () => {
         // Deploy SafeMath
-        safeMath = await TestSafeMathContract.deployFrom0xArtifactAsync(
-            artifacts.TestSafeMath,
+        safeMath = await TestLibSafeMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibSafeMath,
             env.provider,
             env.txDefaults,
             {},
         );
     });
 
-    describe('_safeMul', () => {
+    describe('safeMul', () => {
         it('should match the output of the reference function', async () => {
             const a = ONE_ETHER;
             const b = ONE_ETHER.times(2);
@@ -59,7 +59,7 @@ blockchainTests('SafeMath', env => {
         });
     });
 
-    describe('_safeDiv', () => {
+    describe('safeDiv', () => {
         it('should match the output of the reference function', async () => {
             const a = ONE_ETHER;
             const b = ONE_ETHER.times(2);
@@ -100,7 +100,7 @@ blockchainTests('SafeMath', env => {
         });
     });
 
-    describe('_safeSub', () => {
+    describe('safeSub', () => {
         it('should match the output of the reference function', async () => {
             const a = ONE_ETHER;
             const b = ONE_ETHER.dividedToIntegerBy(2);
@@ -131,7 +131,7 @@ blockchainTests('SafeMath', env => {
         });
     });
 
-    describe('_safeAdd', () => {
+    describe('safeAdd', () => {
         it('should match the output of the reference function', async () => {
             const a = ONE_ETHER;
             const b = ONE_ETHER.dividedToIntegerBy(2);
@@ -167,7 +167,7 @@ blockchainTests('SafeMath', env => {
         });
     });
 
-    describe('_maxUint256', () => {
+    describe('maxUint256', () => {
         it('should return first argument if it is greater than the second', async () => {
             const result = await safeMath.externalMaxUint256.callAsync(toBigNumber(13), constants.ZERO_AMOUNT);
             expect(result).bignumber.to.be.eq(toBigNumber(13));
@@ -184,7 +184,7 @@ blockchainTests('SafeMath', env => {
         });
     });
 
-    describe('_minUint256', () => {
+    describe('minUint256', () => {
         it('should return first argument if it is less than the second', async () => {
             const result = await safeMath.externalMaxUint256.callAsync(constants.ZERO_AMOUNT, toBigNumber(13));
             expect(result).bignumber.to.be.eq(toBigNumber(13));

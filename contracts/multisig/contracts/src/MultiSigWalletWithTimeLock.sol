@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MultiSigWallet.sol";
 
 
@@ -27,6 +28,8 @@ import "./MultiSigWallet.sol";
 contract MultiSigWalletWithTimeLock is
     MultiSigWallet
 {
+    using LibSafeMath for uint256;
+
     event ConfirmationTimeSet(uint256 indexed transactionId, uint256 confirmationTime);
     event TimeLockChange(uint256 secondsTimeLocked);
 
@@ -52,7 +55,7 @@ contract MultiSigWalletWithTimeLock is
 
     modifier pastTimeLock(uint256 transactionId) {
         require(
-            block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked,
+            block.timestamp >= confirmationTimes[transactionId].safeAdd(secondsTimeLocked),
             "TIME_LOCK_INCOMPLETE"
         );
         _;

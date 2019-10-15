@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/LibAddress.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
@@ -26,11 +26,11 @@ import "./MixinNonFungibleToken.sol";
 
 
 contract ERC1155 is
-    SafeMath,
     IERC1155,
     MixinNonFungibleToken
 {
     using LibAddress for address;
+    using LibSafeMath for uint256;
 
     // selectors for receiver callbacks
     bytes4 constant public ERC1155_RECEIVED       = 0xf23a6e61;
@@ -88,11 +88,11 @@ contract ERC1155 is
             nfOwners[id] = to;
             // You could keep balance of NF type in base type id like so:
             // uint256 baseType = getNonFungibleBaseType(_id);
-            // balances[baseType][_from] = balances[baseType][_from]._safeSub(_value);
-            // balances[baseType][_to]   = balances[baseType][_to]._safeAdd(_value);
+            // balances[baseType][_from] = balances[baseType][_from].safeSub(_value);
+            // balances[baseType][_to]   = balances[baseType][_to].safeAdd(_value);
         } else {
-            balances[id][from] = _safeSub(balances[id][from], value);
-            balances[id][to] = _safeAdd(balances[id][to], value);
+            balances[id][from] = balances[id][from].safeSub(value);
+            balances[id][to] = balances[id][to].safeAdd(value);
         }
         emit TransferSingle(msg.sender, from, to, id, value);
 
@@ -170,8 +170,8 @@ contract ERC1155 is
                 );
                 nfOwners[id] = to;
             } else {
-                balances[id][from] = _safeSub(balances[id][from], value);
-                balances[id][to] = _safeAdd(balances[id][to], value);
+                balances[id][from] = balances[id][from].safeSub(value);
+                balances[id][to] = balances[id][to].safeAdd(value);
             }
         }
         emit TransferBatch(msg.sender, from, to, ids, values);

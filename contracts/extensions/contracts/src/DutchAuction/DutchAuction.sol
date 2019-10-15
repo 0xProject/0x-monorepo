@@ -23,13 +23,13 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
-contract DutchAuction is
-    SafeMath
-{
+contract DutchAuction {
+
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
@@ -120,8 +120,8 @@ contract DutchAuction is
             address token = assetData.readAddress(16);
             // Calculate the excess from the buy order. This can occur if the buyer sends in a higher
             // amount than the calculated current amount
-            uint256 buyerExcessAmount = _safeSub(buyOrder.makerAssetAmount, auctionDetails.currentAmount);
-            uint256 sellerExcessAmount = _safeSub(leftMakerAssetSpreadAmount, buyerExcessAmount);
+            uint256 buyerExcessAmount = buyOrder.makerAssetAmount.safeSub(auctionDetails.currentAmount);
+            uint256 sellerExcessAmount = leftMakerAssetSpreadAmount.safeSub(buyerExcessAmount);
             // Return the difference between auctionDetails.currentAmount and sellOrder.takerAssetAmount
             // to the seller
             if (sellerExcessAmount > 0) {
@@ -190,12 +190,8 @@ contract DutchAuction is
             // Auction end time is guaranteed by 0x Exchange due to the order expiration
             auctionDetails.currentAmount = minAmount;
         } else {
-            auctionDetails.currentAmount = _safeAdd(
-                minAmount,
-                _safeDiv(
-                    _safeMul(remainingDurationSeconds, amountDelta),
-                    auctionDurationSeconds
-                )
+            auctionDetails.currentAmount = minAmount.safeAdd(
+                remainingDurationSeconds.safeMul(amountDelta).safeDiv(auctionDurationSeconds)
             );
         }
         return auctionDetails;

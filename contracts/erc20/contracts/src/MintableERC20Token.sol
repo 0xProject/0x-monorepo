@@ -18,22 +18,23 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./UnlimitedAllowanceERC20Token.sol";
 
 
-contract MintableERC20Token is 
-    SafeMath,
+contract MintableERC20Token is
     UnlimitedAllowanceERC20Token
 {
+    using LibSafeMath for uint256;
+
     /// @dev Mints new tokens
     /// @param _to Address of the beneficiary that will own the minted token
     /// @param _value Amount of tokens to mint
     function _mint(address _to, uint256 _value)
         internal
     {
-        balances[_to] = _safeAdd(_value, balances[_to]);
-        _totalSupply = _safeAdd(_totalSupply, _value);
+        balances[_to] = _value.safeAdd(balances[_to]);
+        _totalSupply = _totalSupply.safeAdd(_value);
 
         emit Transfer(
             address(0),
@@ -48,8 +49,8 @@ contract MintableERC20Token is
     function _burn(address _owner, uint256 _value)
         internal
     {
-        balances[_owner] = _safeSub(balances[_owner], _value);
-        _totalSupply = _safeSub(_totalSupply, _value);
+        balances[_owner] = balances[_owner].safeSub(_value);
+        _totalSupply = _totalSupply.safeSub(_value);
 
         emit Transfer(
             _owner,
