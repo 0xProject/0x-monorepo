@@ -81,7 +81,7 @@ export class CoordinatorRegistryContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txDataWithDefaults);
             }
 
@@ -99,7 +99,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;

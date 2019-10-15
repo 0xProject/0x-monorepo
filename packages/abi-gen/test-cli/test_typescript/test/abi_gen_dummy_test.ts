@@ -279,7 +279,7 @@ describe('AbiGenDummy Contract', () => {
     describe('awaitTransactionSuccessAsync', async () => {
         it('should successfully call the non pure function', async () => {
             expect(
-                abiGenDummy.nonPureMethod.awaitTransactionSuccessAsync({}, { pollingIntervalMs: 300, timeoutMs: 10 }),
+                abiGenDummy.nonPureMethod.awaitTransactionSuccessAsync({}, { pollingIntervalMs: 10, timeoutMs: 100 }),
             ).to.be.fulfilled('');
         });
     });

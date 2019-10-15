@@ -312,7 +312,7 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.withdraw.callAsync(wad, txDataWithDefaults);
             }
 
@@ -329,7 +329,7 @@ export class AbiGenDummyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
@@ -1379,7 +1379,7 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.nonPureMethod.callAsync(txDataWithDefaults);
             }
 
@@ -1395,7 +1395,7 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData, opts);
@@ -1780,7 +1780,7 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.nonPureMethodThatReturnsNothing.callAsync(txDataWithDefaults);
             }
 
@@ -1796,7 +1796,7 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData, opts);
@@ -2271,7 +2271,7 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.emitSimpleEvent.callAsync(txDataWithDefaults);
             }
 
@@ -2287,7 +2287,7 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
             const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData, opts);

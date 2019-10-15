@@ -27,7 +27,7 @@ opts: SendTransactionOpts = { shouldValidate: true },
         txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
     }
 
-    if (opts.shouldValidate) {
+    if (opts.shouldValidate !== false) {
         await self.{{languageSpecificName}}.callAsync(
             {{#each inputs~}}
                 {{name}},
@@ -50,7 +50,7 @@ opts: SendTransactionOpts = { shouldValidate: true },
 awaitTransactionSuccessAsync(
 {{> typed_params inputs=inputs}}
     txData?: Partial<TxData>,
-    opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+    opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
 ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}

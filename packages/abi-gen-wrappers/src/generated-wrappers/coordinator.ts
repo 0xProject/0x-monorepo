@@ -255,7 +255,7 @@ export class CoordinatorContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.executeTransaction.callAsync(
                     transaction,
                     txOrigin,
@@ -292,7 +292,7 @@ export class CoordinatorContract extends BaseContract {
             approvalExpirationTimeSeconds: BigNumber[],
             approvalSignatures: string[],
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('txOrigin', txOrigin);
             assert.isString('transactionSignature', transactionSignature);

@@ -84,7 +84,7 @@ export class DutchAuctionContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.getAuctionDetails.callAsync(order, txDataWithDefaults);
             }
 
@@ -115,7 +115,7 @@ export class DutchAuctionContract extends BaseContract {
                 takerAssetData: string;
             },
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as DutchAuctionContract;
             const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order, txData, opts);
@@ -365,7 +365,7 @@ export class DutchAuctionContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txDataWithDefaults);
             }
 
@@ -417,7 +417,7 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);

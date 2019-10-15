@@ -194,7 +194,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.approve.callAsync(_spender, _value, txDataWithDefaults);
             }
 
@@ -214,7 +214,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -466,7 +466,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.mint.callAsync(_value, txDataWithDefaults);
             }
 
@@ -484,7 +484,7 @@ export class DummyERC20TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_value', _value);
             const self = (this as any) as DummyERC20TokenContract;
@@ -706,7 +706,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.setBalance.callAsync(_target, _value, txDataWithDefaults);
             }
 
@@ -726,7 +726,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _target: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_target', _target);
             assert.isBigNumber('_value', _value);
@@ -974,7 +974,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transfer.callAsync(_to, _value, txDataWithDefaults);
             }
 
@@ -994,7 +994,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -1150,7 +1150,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferFrom.callAsync(_from, _to, _value, txDataWithDefaults);
             }
 
@@ -1172,7 +1172,7 @@ export class DummyERC20TokenContract extends BaseContract {
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1342,7 +1342,7 @@ export class DummyERC20TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferOwnership.callAsync(newOwner, txDataWithDefaults);
             }
 
@@ -1359,7 +1359,7 @@ export class DummyERC20TokenContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC20TokenContract;

@@ -197,7 +197,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.addOwner.callAsync(owner, txDataWithDefaults);
             }
 
@@ -215,7 +215,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -345,7 +345,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.changeRequirement.callAsync(_required, txDataWithDefaults);
             }
 
@@ -363,7 +363,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _required: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -498,7 +498,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.changeTimeLock.callAsync(_secondsTimeLocked, txDataWithDefaults);
             }
 
@@ -517,7 +517,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -656,7 +656,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.confirmTransaction.callAsync(transactionId, txDataWithDefaults);
             }
 
@@ -674,7 +674,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -914,7 +914,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.executeTransaction.callAsync(transactionId, txDataWithDefaults);
             }
 
@@ -932,7 +932,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1561,7 +1561,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.registerFunctionCall.callAsync(
                     hasCustomTimeLock,
                     functionSelector,
@@ -1592,7 +1592,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             destination: string,
             newSecondsTimeLocked: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBoolean('hasCustomTimeLock', hasCustomTimeLock);
             assert.isString('functionSelector', functionSelector);
@@ -1784,7 +1784,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.removeOwner.callAsync(owner, txDataWithDefaults);
             }
 
@@ -1802,7 +1802,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1940,7 +1940,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.replaceOwner.callAsync(owner, newOwner, txDataWithDefaults);
             }
 
@@ -1960,7 +1960,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             owner: string,
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
@@ -2159,7 +2159,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.revokeConfirmation.callAsync(transactionId, txDataWithDefaults);
             }
 
@@ -2177,7 +2177,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2366,7 +2366,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.submitTransaction.callAsync(destination, value, data, txDataWithDefaults);
             }
 
@@ -2388,7 +2388,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             value: BigNumber,
             data: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);

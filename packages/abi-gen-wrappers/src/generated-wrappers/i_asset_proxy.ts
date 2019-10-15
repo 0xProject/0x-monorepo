@@ -83,7 +83,7 @@ export class IAssetProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferFrom.callAsync(assetData, from, to, amount, txDataWithDefaults);
             }
 
@@ -107,7 +107,7 @@ export class IAssetProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);

@@ -73,7 +73,7 @@ export class ForwarderContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.approveMakerAssetProxy.callAsync(assetData, txDataWithDefaults);
             }
 
@@ -91,7 +91,7 @@ export class ForwarderContract extends BaseContract {
         awaitTransactionSuccessAsync(
             assetData: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             const self = (this as any) as ForwarderContract;
@@ -256,7 +256,7 @@ export class ForwarderContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.marketBuyOrdersWithEth.callAsync(
                     orders,
                     makerAssetBuyAmount,
@@ -306,7 +306,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
@@ -586,7 +586,7 @@ export class ForwarderContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.marketSellOrdersWithEth.callAsync(
                     orders,
                     signatures,
@@ -633,7 +633,7 @@ export class ForwarderContract extends BaseContract {
             feePercentage: BigNumber,
             feeRecipient: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('signatures', signatures);
@@ -911,7 +911,7 @@ export class ForwarderContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferOwnership.callAsync(newOwner, txDataWithDefaults);
             }
 
@@ -928,7 +928,7 @@ export class ForwarderContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -1062,7 +1062,7 @@ export class ForwarderContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.withdrawAsset.callAsync(assetData, amount, txDataWithDefaults);
             }
 
@@ -1082,7 +1082,7 @@ export class ForwarderContract extends BaseContract {
             assetData: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);

@@ -90,7 +90,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.addAuthorizedAddress.callAsync(target, txDataWithDefaults);
             }
 
@@ -108,7 +108,7 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
@@ -465,7 +465,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.removeAuthorizedAddress.callAsync(target, txDataWithDefaults);
             }
 
@@ -483,7 +483,7 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as ERC1155ProxyContract;
@@ -621,7 +621,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.removeAuthorizedAddressAtIndex.callAsync(target, index, txDataWithDefaults);
             }
 
@@ -641,7 +641,7 @@ export class ERC1155ProxyContract extends BaseContract {
             target: string,
             index: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -817,7 +817,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferFrom.callAsync(assetData, from, to, amount, txDataWithDefaults);
             }
 
@@ -843,7 +843,7 @@ export class ERC1155ProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -1029,7 +1029,7 @@ export class ERC1155ProxyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.transferOwnership.callAsync(newOwner, txDataWithDefaults);
             }
 
@@ -1046,7 +1046,7 @@ export class ERC1155ProxyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ERC1155ProxyContract;

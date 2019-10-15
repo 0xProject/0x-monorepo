@@ -1840,7 +1840,7 @@ export class DevUtilsContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.getSimulatedOrderTransferResults.callAsync(
                     order,
                     takerAddress,
@@ -1883,7 +1883,7 @@ export class DevUtilsContract extends BaseContract {
             takerAddress: string,
             takerAssetFillAmount: BigNumber,
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('takerAddress', takerAddress);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
@@ -2130,7 +2130,7 @@ export class DevUtilsContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
-            if (opts.shouldValidate) {
+            if (opts.shouldValidate !== false) {
                 await self.getSimulatedOrdersTransferResults.callAsync(
                     orders,
                     takerAddresses,
@@ -2174,7 +2174,7 @@ export class DevUtilsContract extends BaseContract {
             takerAddresses: string[],
             takerAssetFillAmounts: BigNumber[],
             txData?: Partial<TxData>,
-            opts: AwaitTransactionSuccessOpts = { shouldValidate: true, timeoutMs: 0 },
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isArray('orders', orders);
             assert.isArray('takerAddresses', takerAddresses);
