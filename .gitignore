@@ -171,3 +171,6 @@ python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 packages/*/docs/README.md
 
 .DS_Store
+
+# the snapshot that gets built for migrations sure does have a ton of files
+packages/migrations/0x_ganache_snapshot*
