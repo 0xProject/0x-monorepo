@@ -27,7 +27,7 @@ export const exchangeDataEncoder = {
                 orders.map(order => order[fillAsset]).reduce((prev, curr) => prev.plus(curr)),
                 orders.map(order => order.signature),
             );
-        } else if (fnName === ExchangeFunctionName.MatchOrders) {
+        } else if (exchangeConstants.MATCH_ORDER_FN_NAMES.indexOf(fnName) !== -1) {
             data = exchangeInstance.matchOrders.getABIEncodedTransactionData(
                 orders[0],
                 orders[1],

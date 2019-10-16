@@ -1,3 +1,4 @@
+export import CoordinatorRevertErrors = require('./coordinator_revert_errors');
 export import ExchangeRevertErrors = require('./exchange_revert_errors');
 export import ForwarderRevertErrors = require('./forwarder_revert_errors');
 export import LibMathRevertErrors = require('./lib_math_revert_errors');

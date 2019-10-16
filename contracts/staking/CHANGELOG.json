@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Add more overflow safeguards to `LibFixedMath`",
+                "pr": 2255
+            }
+        ]
+    },
+    {
         "version": "1.1.0-beta.0",
         "changes": [
             {
@@ -72,5 +81,26 @@
             }
         ],
         "timestamp": 1570135330
+    },
+    {
+        "version": "1.1.0-beta.1",
+        "changes": [
+            {
+                "note": "Removed handshake when adding maker to pool.",
+                "pr": 2250
+            },
+            {
+                "note": "Removed upper limit on number of makers in a pool.",
+                "pr": 2250
+            },
+            {
+                "note": "Removed operator permissions from makers.",
+                "pr": 2250
+            },
+            {
+                "note": "Pool Id starts at 1 and increases by 1.",
+                "pr": 2250
+            }
+        ]
     }
 ]

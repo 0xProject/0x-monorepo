@@ -26,19 +26,16 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
         );
         await testContract.setCurrentEpoch.awaitTransactionSuccessAsync(CURRENT_EPOCH);
         defaultUninitializedBalance = {
-            isInitialized: false,
             currentEpoch: constants.INITIAL_EPOCH,
             currentEpochBalance: new BigNumber(0),
             nextEpochBalance: new BigNumber(0),
         };
         defaultSyncedBalance = {
-            isInitialized: true,
             currentEpoch: CURRENT_EPOCH,
             currentEpochBalance: new BigNumber(16),
             nextEpochBalance: new BigNumber(16),
         };
         defaultUnsyncedBalance = {
-            isInitialized: true,
             currentEpoch: CURRENT_EPOCH.minus(1),
             currentEpochBalance: new BigNumber(10),
             nextEpochBalance: new BigNumber(16),
@@ -48,7 +45,6 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
     async function getTestBalancesAsync(index: Numberish): Promise<StoredBalance> {
         const storedBalance: Partial<StoredBalance> = {};
         [
-            storedBalance.isInitialized,
             storedBalance.currentEpoch,
             storedBalance.currentEpochBalance,
             storedBalance.nextEpochBalance,
@@ -71,13 +67,11 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
                 getTestBalancesAsync(INDEX_ONE),
             ]);
             expect(actualBalances[0]).to.deep.equal({
-                isInitialized: true,
                 currentEpoch: CURRENT_EPOCH,
                 currentEpochBalance: fromBalance.currentEpochBalance,
                 nextEpochBalance: fromBalance.nextEpochBalance.minus(amount),
             });
             expect(actualBalances[1]).to.deep.equal({
-                isInitialized: true,
                 currentEpoch: CURRENT_EPOCH,
                 currentEpochBalance: toBalance.currentEpochBalance,
                 nextEpochBalance: toBalance.nextEpochBalance.plus(amount),
@@ -127,24 +121,24 @@ blockchainTests.resets('MixinStakeStorage unit tests', env => {
     });
 
     describe('Load balance', () => {
-        it('_loadSyncedBalance does not change state if balance was previously synced in the current epoch', async () => {
+        it('Balance does not change state if balance was previously synced in the current epoch', async () => {
             await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadSyncedBalance.callAsync(INDEX_ZERO);
+            const actualBalance = await testContract.loadCurrentBalance.callAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
-        it('_loadSyncedBalance updates current epoch fields if the balance has not yet been synced in the current epoch', async () => {
+        it('Balance updates current epoch fields if the balance has not yet been synced in the current epoch', async () => {
             await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadSyncedBalance.callAsync(INDEX_ZERO);
+            const actualBalance = await testContract.loadCurrentBalance.callAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
-        it('_loadUnsyncedBalance loads unsynced balance from storage without changing fields', async () => {
+        it('Balance loads unsynced balance from storage without changing fields', async () => {
             await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultUnsyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadUnsyncedBalance.callAsync(INDEX_ZERO);
+            const actualBalance = await testContract.loadStaleBalance.callAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultUnsyncedBalance);
         });
-        it('_loadUnsyncedBalance loads synced balance from storage without changing fields', async () => {
+        it('Balance loads synced balance from storage without changing fields', async () => {
             await testContract.setStoredBalance.awaitTransactionSuccessAsync(defaultSyncedBalance, INDEX_ZERO);
-            const actualBalance = await testContract.loadUnsyncedBalance.callAsync(INDEX_ZERO);
+            const actualBalance = await testContract.loadStaleBalance.callAsync(INDEX_ZERO);
             expect(actualBalance).to.deep.equal(defaultSyncedBalance);
         });
     });

@@ -29,7 +29,6 @@ contract TestAssertStorageParams is
         uint256 epochDurationInSeconds;
         uint32 rewardDelegatedStakeWeight;
         uint256 minimumPoolStake;
-        uint256 maximumMakersInPool;
         uint32 cobbDouglasAlphaNumerator;
         uint32 cobbDouglasAlphaDenominator;
     }
@@ -48,7 +47,6 @@ contract TestAssertStorageParams is
         epochDurationInSeconds = params.epochDurationInSeconds;
         rewardDelegatedStakeWeight = params.rewardDelegatedStakeWeight;
         minimumPoolStake = params.minimumPoolStake;
-        maximumMakersInPool = params.maximumMakersInPool;
         cobbDouglasAlphaNumerator = params.cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
         _assertValidStorageParams();

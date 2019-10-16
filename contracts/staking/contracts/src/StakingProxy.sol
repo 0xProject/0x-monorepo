@@ -20,16 +20,20 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibProxy.sol";
+import "./libs/LibSafeDowncast.sol";
 import "./immutable/MixinStorage.sol";
+import "./immutable/MixinConstants.sol";
 import "./interfaces/IStorageInit.sol";
 import "./interfaces/IStakingProxy.sol";
 
 
 contract StakingProxy is
     IStakingProxy,
-    MixinStorage
+    MixinStorage,
+    MixinConstants
 {
     using LibProxy for address;
+    using LibSafeDowncast for uint256;
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
@@ -86,16 +90,26 @@ contract StakingProxy is
     }
 
     /// @dev Set read-only mode (state cannot be changed).
-    function setReadOnlyMode(bool readOnlyMode)
+    function setReadOnlyMode(bool shouldSetReadOnlyMode)
         external
         onlyAuthorized
     {
-        if (readOnlyMode) {
+        // solhint-disable-next-line not-rely-on-time
+        uint96 timestamp = block.timestamp.downcastToUint96();
+        if (shouldSetReadOnlyMode) {
             stakingContract = readOnlyProxy;
+            readOnlyState = IStructs.ReadOnlyState({
+                isReadOnlyModeSet: true,
+                lastSetTimestamp: timestamp
+            });
         } else {
             stakingContract = readOnlyProxyCallee;
+            readOnlyState.isReadOnlyModeSet = false;
         }
-        emit ReadOnlyModeSet(readOnlyMode);
+        emit ReadOnlyModeSet(
+            shouldSetReadOnlyMode,
+            timestamp
+        );
     }
 
     /// @dev Batch executes a series of calls to the staking contract.
@@ -108,9 +122,9 @@ contract StakingProxy is
         // Initialize commonly used variables.
         bool success;
         bytes memory returnData;
-        batchReturnData = new bytes[](data.length);
-        address staking = stakingContract;
         uint256 dataLength = data.length;
+        batchReturnData = new bytes[](dataLength);
+        address staking = stakingContract;
 
         // Ensure that a staking contract has been attached to the proxy.
         if (staking == address(0)) {
@@ -170,14 +184,6 @@ contract StakingProxy is
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidParamValueError(
                     LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidRewardDelegatedStakeWeight
-            ));
-        }
-
-        // Pools must allow at least one maker
-        if (maximumMakersInPool == 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidParamValueError(
-                    LibStakingRichErrors.InvalidParamValueErrorCodes.InvalidMaximumMakersInPool
             ));
         }
 

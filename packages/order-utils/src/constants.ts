@@ -140,14 +140,13 @@ export const constants = {
         ],
     },
     COORDINATOR_DOMAIN_NAME: '0x Protocol Coordinator',
-    COORDINATOR_DOMAIN_VERSION: '2.0.0',
+    COORDINATOR_DOMAIN_VERSION: '3.0.0',
     COORDINATOR_APPROVAL_SCHEMA: {
         name: 'CoordinatorApproval',
         parameters: [
             { name: 'txOrigin', type: 'address' },
             { name: 'transactionHash', type: 'bytes32' },
             { name: 'transactionSignature', type: 'bytes' },
-            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
         ],
     },
     ERC20_METHOD_ABI,

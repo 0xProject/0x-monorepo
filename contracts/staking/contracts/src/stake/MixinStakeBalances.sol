@@ -21,143 +21,77 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "./MixinStakeStorage.sol";
 
 
 contract MixinStakeBalances is
-    MixinStakeStorage
+    MixinStakeStorage,
+    MixinDeploymentConstants
 {
     using LibSafeMath for uint256;
 
-    /// @dev Returns the total active stake across the entire staking system.
-    /// @return Global active stake.
-    function getGlobalActiveStake()
+    /// @dev Gets global stake for a given status.
+    /// @param stakeStatus UNDELEGATED or DELEGATED
+    /// @return Global stake for given status.
+    function getGlobalStakeByStatus(IStructs.StakeStatus stakeStatus)
         external
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.ACTIVE)]
+        balance = _loadCurrentBalance(
+            _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
         );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        if (stakeStatus == IStructs.StakeStatus.UNDELEGATED) {
+            // Undelegated stake is the difference between total stake and delegated stake
+            // Note that any ZRX erroneously sent to the vault will be counted as undelegated stake
+            uint256 totalStake = getZrxVault().balanceOfZrxVault();
+            balance.currentEpochBalance = totalStake.safeSub(balance.currentEpochBalance).downcastToUint96();
+            balance.nextEpochBalance = totalStake.safeSub(balance.nextEpochBalance).downcastToUint96();
+        }
+        return balance;
     }
 
-    /// @dev Returns the total inactive stake across the entire staking system.
-    /// @return Global inactive stake.
-    function getGlobalInactiveStake()
+    /// @dev Gets an owner's stake balances by status.
+    /// @param staker Owner of stake.
+    /// @param stakeStatus UNDELEGATED or DELEGATED
+    /// @return Owner's stake balances for given status.
+    function getOwnerStakeByStatus(
+        address staker,
+        IStructs.StakeStatus stakeStatus
+    )
         external
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.INACTIVE)]
+        balance = _loadCurrentBalance(
+            _ownerStakeByStatus[uint8(stakeStatus)][staker]
         );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the total stake delegated across the entire staking system.
-    /// @return Global delegated stake.
-    function getGlobalDelegatedStake()
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(
-            globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)]
-        );
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        return balance;
     }
 
     /// @dev Returns the total stake for a given staker.
     /// @param staker of stake.
     /// @return Total active stake for staker.
     function getTotalStake(address staker)
-        external
+        public
         view
         returns (uint256)
     {
         return getZrxVault().balanceOf(staker);
     }
 
-    /// @dev Returns the active stake for a given staker.
-    /// @param staker of stake.
-    /// @return Active stake for staker.
-    function getActiveStake(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_activeStakeByOwner[staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the inactive stake for a given staker.
-    /// @param staker of stake.
-    /// @return Inactive stake for staker.
-    function getInactiveStake(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_inactiveStakeByOwner[staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the stake delegated by a given staker.
-    /// @param staker of stake.
-    /// @return Delegated stake for staker.
-    function getStakeDelegatedByOwner(address staker)
-        external
-        view
-        returns (IStructs.StakeBalance memory balance)
-    {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByOwner[staker]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the amount stake that can be withdrawn for a given staker.
-    /// @param staker of stake.
-    /// @return Withdrawable stake for staker.
-    function getWithdrawableStake(address staker)
-        public
-        view
-        returns (uint256)
-    {
-        return _computeWithdrawableStake(staker, _withdrawableStakeByOwner[staker]);
-    }
-
     /// @dev Returns the stake delegated to a specific staking pool, by a given staker.
     /// @param staker of stake.
     /// @param poolId Unique Id of pool.
-    /// @return Stake delegaated to pool by staker.
+    /// @return Stake delegated to pool by staker.
     function getStakeDelegatedToPoolByOwner(address staker, bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
+        balance = _loadCurrentBalance(_delegatedStakeToPoolByOwner[staker][poolId]);
+        return balance;
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool,
@@ -167,43 +101,9 @@ contract MixinStakeBalances is
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
-        IStructs.StoredBalance memory storedBalance = _loadSyncedBalance(_delegatedStakeByPoolId[poolId]);
-        return IStructs.StakeBalance({
-            currentEpochBalance: storedBalance.currentEpochBalance,
-            nextEpochBalance: storedBalance.nextEpochBalance
-        });
-    }
-
-    /// @dev Returns the stake that can be withdrawn for a given staker.
-    /// @param staker to query.
-    /// @param lastStoredWithdrawableStake The amount of withdrawable stake
-    ///        that was last stored.
-    /// @return Withdrawable stake for staker.
-    function _computeWithdrawableStake(
-        address staker,
-        uint256 lastStoredWithdrawableStake
-    )
-        internal
-        view
-        returns (uint256)
-    {
-        // stake cannot be withdrawn if it has been reallocated for the `next` epoch;
-        // so the upper bound of withdrawable stake is always limited by the value of `next`.
-        IStructs.StoredBalance memory storedBalance = _loadUnsyncedBalance(_inactiveStakeByOwner[staker]);
-        if (storedBalance.currentEpoch == currentEpoch) {
-            return LibSafeMath.min256(
-                storedBalance.nextEpochBalance,
-                lastStoredWithdrawableStake
-            );
-        } else if (uint256(storedBalance.currentEpoch).safeAdd(1) == currentEpoch) {
-            return LibSafeMath.min256(
-                storedBalance.nextEpochBalance,
-                storedBalance.currentEpochBalance
-            );
-        } else {
-            return storedBalance.nextEpochBalance;
-        }
+        balance = _loadCurrentBalance(_delegatedStakeByPoolId[poolId]);
+        return balance;
     }
 }

@@ -2,7 +2,7 @@ import { constants, expect, getCodesizeFromArtifact } from '@0x/contracts-test-u
 
 import { artifacts } from '../src';
 
-describe.skip('Contract Size Checks', () => {
+describe('Contract Size Checks', () => {
     describe('Staking', () => {
         it('should have a codesize less than the maximum', async () => {
             const actualSize = getCodesizeFromArtifact(artifacts.Staking);

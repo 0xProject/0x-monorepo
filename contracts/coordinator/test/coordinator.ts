@@ -1,41 +1,28 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
     constants as exchangeConstants,
-    ExchangeCancelEventArgs,
-    ExchangeCancelUpToEventArgs,
     ExchangeContract,
     exchangeDataEncoder,
-    ExchangeFillEventArgs,
     ExchangeFunctionName,
+    TestProtocolFeeCollectorContract,
 } from '@0x/contracts-exchange';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
-    expectTransactionFailedAsync,
-    getLatestBlockTimestampAsync,
+    hexConcat,
+    hexSlice,
     OrderFactory,
-    provider,
     TransactionFactory,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
-import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
+import { assetDataUtils, CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
+import { BigNumber } from '@0x/utils';
 
-import { ApprovalFactory, artifacts, CoordinatorContract } from '../src';
+import { ApprovalFactory, artifacts, CoordinatorContract, CoordinatorTestFactory } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-web3Wrapper.abiDecoder.addABI(exchangeArtifacts.Exchange.compilerOutput.abi);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Coordinator tests', () => {
+blockchainTests.resets('Coordinator tests', env => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -46,60 +33,94 @@ describe('Coordinator tests', () => {
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
     let makerFeeToken: DummyERC20TokenContract;
+    let takerFeeToken: DummyERC20TokenContract;
     let coordinatorContract: CoordinatorContract;
     let exchange: ExchangeContract;
+    let protocolFeeCollector: TestProtocolFeeCollectorContract;
+    let wethContract: WETH9Contract;
 
     let erc20Wrapper: ERC20Wrapper;
     let orderFactory: OrderFactory;
     let takerTransactionFactory: TransactionFactory;
     let makerTransactionFactory: TransactionFactory;
     let approvalFactory: ApprovalFactory;
+    let testFactory: CoordinatorTestFactory;
+
+    const GAS_PRICE = new BigNumber(env.txDefaults.gasPrice || constants.DEFAULT_GAS_PRICE);
+    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150000);
+    const PROTOCOL_FEE = GAS_PRICE.times(PROTOCOL_FEE_MULTIPLIER);
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts.slice(0, 4));
+        chainId = await env.getChainIdAsync();
+        const accounts = await env.getAccountAddressesAsync();
+        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = accounts);
 
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        // Deploy Exchange
+        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            {},
+            new BigNumber(chainId),
+        );
+
+        // Set up ERC20
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
+        const numDummyErc20ToDeploy = 4;
+        [erc20TokenA, erc20TokenB, makerFeeToken, takerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, { from: owner });
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: owner });
+
+        // Set up WETH
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
+            erc20Artifacts.WETH9,
+            env.provider,
+            env.txDefaults,
+            {},
+        );
+        const weth = new DummyERC20TokenContract(wethContract.address, env.provider);
+        erc20Wrapper.addDummyTokenContract(weth);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            exchangeArtifacts.Exchange,
-            provider,
-            txDefaults,
-            new BigNumber(chainId),
+        // Set up Protocol Fee Collector
+        protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
+            exchangeArtifacts.TestProtocolFeeCollector,
+            env.provider,
+            env.txDefaults,
+            {},
+            weth.address,
         );
+        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER);
+        await exchange.setProtocolFeeCollectorAddress.awaitTransactionSuccessAsync(protocolFeeCollector.address);
+        for (const account of usedAddresses) {
+            await wethContract.deposit.awaitTransactionSuccessAsync({
+                from: account,
+                value: constants.ONE_ETHER,
+            });
+            await wethContract.approve.awaitTransactionSuccessAsync(
+                protocolFeeCollector.address,
+                constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
+                {
+                    from: account,
+                },
+            );
+        }
+        erc20Wrapper.addTokenOwnerAddress(protocolFeeCollector.address);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await exchange.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, { from: owner }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
+        // Deploy Coordinator
         coordinatorContract = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
-            provider,
-            txDefaults,
-            artifacts,
+            env.provider,
+            env.txDefaults,
+            { ...exchangeArtifacts, ...artifacts },
             exchange.address,
             new BigNumber(chainId),
         );
+        erc20Wrapper.addTokenOwnerAddress(coordinatorContract.address);
 
         // Configure order defaults
         const defaultOrderParams = {
@@ -110,7 +131,7 @@ describe('Coordinator tests', () => {
             makerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenA.address),
             takerAssetData: assetDataUtils.encodeERC20AssetData(erc20TokenB.address),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(takerFeeToken.address),
             exchangeAddress: exchange.address,
             chainId,
         };
@@ -121,174 +142,154 @@ describe('Coordinator tests', () => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address, chainId);
         approvalFactory = new ApprovalFactory(feeRecipientPrivateKey, coordinatorContract.address);
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
+        testFactory = new CoordinatorTestFactory(
+            coordinatorContract,
+            erc20Wrapper,
+            makerAddress,
+            takerAddress,
+            feeRecipientAddress,
+            protocolFeeCollector.address,
+            erc20TokenA.address,
+            erc20TokenB.address,
+            makerFeeToken.address,
+            takerFeeToken.address,
+            weth.address,
+            GAS_PRICE,
+            PROTOCOL_FEE_MULTIPLIER,
+        );
     });
 
     describe('single order fills', () => {
         for (const fnName of exchangeConstants.SINGLE_FILL_FN_NAMES) {
             it(`${fnName} should fill the order with a signed approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                const txData = { from: takerAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
+                    [approval.signature],
+                    txData,
                 );
-                const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: takerAddress },
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+            });
+            it(`${fnName} should fill the order if called by approver (eth protocol fee, no refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    txData,
                 );
-                const fillLogs = transactionReceipt.logs.filter(
-                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+            });
+            it(`${fnName} should fill the order if called by approver (eth protocol fee, refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE.plus(1) };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    txData,
                 );
-                expect(fillLogs.length).to.eq(1);
-                const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
-                expect(fillLogArgs.makerAddress).to.eq(makerAddress);
-                expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
-                expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-                expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
-                expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
-                expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(orders[0].makerAssetAmount);
-                expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(orders[0].takerAssetAmount);
-                expect(fillLogArgs.makerFeePaid).to.bignumber.eq(orders[0].makerFee);
-                expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
-                expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
+            });
+            it(`${fnName} should fill the order if called by approver (weth protocol fee, no refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    txData,
+                );
+            });
+            it(`${fnName} should fill the order if called by approver (weth protocol fee, refund)`, async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const txData = { from: feeRecipientAddress, value: new BigNumber(1) };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    txData,
+                );
             });
             it(`${fnName} should fill the order if called by approver`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const order = await orderFactory.newSignedOrderAsync();
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        feeRecipientAddress,
-                        transaction.signature,
-                        [],
-                        [],
-                        { from: feeRecipientAddress },
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+                const txData = { from: feeRecipientAddress, value: PROTOCOL_FEE };
+                await testFactory.executeFillTransactionTestAsync(
+                    [order],
+                    transaction,
+                    feeRecipientAddress,
+                    [],
+                    txData,
                 );
-                const fillLogs = transactionReceipt.logs.filter(
-                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
-                );
-                expect(fillLogs.length).to.eq(1);
-                const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
-                expect(fillLogArgs.makerAddress).to.eq(makerAddress);
-                expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
-                expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-                expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
-                expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
-                expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(orders[0].makerAssetAmount);
-                expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(orders[0].takerAssetAmount);
-                expect(fillLogArgs.makerFeePaid).to.bignumber.eq(orders[0].makerFee);
-                expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
-                expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
             });
             it(`${fnName} should revert with no approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [],
-                        [],
-                        {
-                            from: takerAddress,
-                            gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
-                        },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
+                    transaction,
+                    takerAddress,
+                    [],
+                    {
+                        from: takerAddress,
+                        gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                        value: PROTOCOL_FEE,
+                    },
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                const signature = hexConcat(
+                    hexSlice(approval.signature, 0, 2),
+                    '0xFFFFFFFF',
+                    hexSlice(approval.signature, 6),
+                );
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: takerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
-            });
-            it(`${fnName} should revert with an expired approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: takerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
+                    [signature],
+                    { from: takerAddress, value: PROTOCOL_FEE },
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: owner },
-                    ),
-                    RevertReason.InvalidOrigin,
+                    [approval.signature],
+                    { from: owner, value: PROTOCOL_FEE },
+                    new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
                 );
             });
         }
@@ -299,145 +300,71 @@ describe('Coordinator tests', () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
+                    [approval.signature],
+                    {
+                        from: takerAddress,
+                        gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                        value: PROTOCOL_FEE.times(orders.length),
+                    },
                 );
-                const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: takerAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
-                const fillLogs = transactionReceipt.logs.filter(
-                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
-                );
-                expect(fillLogs.length).to.eq(orders.length);
-                orders.forEach((order, index) => {
-                    const fillLogArgs = (fillLogs[index] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
-                    expect(fillLogArgs.makerAddress).to.eq(makerAddress);
-                    expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                    expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
-                    expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-                    expect(fillLogArgs.makerAssetData).to.eq(order.makerAssetData);
-                    expect(fillLogArgs.takerAssetData).to.eq(order.takerAssetData);
-                    expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(order.makerAssetAmount);
-                    expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(order.takerAssetAmount);
-                    expect(fillLogArgs.makerFeePaid).to.bignumber.eq(order.makerFee);
-                    expect(fillLogArgs.takerFeePaid).to.bignumber.eq(order.takerFee);
-                    expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order));
-                });
             });
-            it(`${fnName} should fill the orders if called by approver`, async () => {
+            it(`${fnName} should fill the orders if called by approver (eth fee, no refund)`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                    await coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        feeRecipientAddress,
-                        transaction.signature,
-                        [],
-                        [],
-                        { from: feeRecipientAddress, gas: constants.MAX_EXECUTE_TRANSACTION_GAS },
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
-                const fillLogs = transactionReceipt.logs.filter(
-                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
-                );
-                expect(fillLogs.length).to.eq(orders.length);
-                orders.forEach((order, index) => {
-                    const fillLogArgs = (fillLogs[index] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
-                    expect(fillLogArgs.makerAddress).to.eq(makerAddress);
-                    expect(fillLogArgs.takerAddress).to.eq(takerAddress);
-                    expect(fillLogArgs.senderAddress).to.eq(coordinatorContract.address);
-                    expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-                    expect(fillLogArgs.makerAssetData).to.eq(order.makerAssetData);
-                    expect(fillLogArgs.takerAssetData).to.eq(order.takerAssetData);
-                    expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(order.makerAssetAmount);
-                    expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(order.takerAssetAmount);
-                    expect(fillLogArgs.makerFeePaid).to.bignumber.eq(order.makerFee);
-                    expect(fillLogArgs.takerFeePaid).to.bignumber.eq(order.takerFee);
-                    expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order));
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], {
+                    from: feeRecipientAddress,
+                    gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                    value: PROTOCOL_FEE.times(orders.length),
+                });
+            });
+            it(`${fnName} should fill the orders if called by approver (mixed fees, refund)`, async () => {
+                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                await testFactory.executeFillTransactionTestAsync(orders, transaction, feeRecipientAddress, [], {
+                    from: feeRecipientAddress,
+                    gas: constants.MAX_EXECUTE_TRANSACTION_GAS,
+                    value: PROTOCOL_FEE.times(orders.length).plus(1),
                 });
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                const signature = hexConcat(
+                    hexSlice(approval.signature, 0, 2),
+                    '0xFFFFFFFF',
+                    hexSlice(approval.signature, 6),
+                );
+                const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                const signature = `${approval.signature.slice(0, 4)}FFFFFFFF${approval.signature.slice(12)}`;
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [signature],
-                        { from: takerAddress },
-                    ),
-                    RevertReason.InvalidApprovalSignature,
-                );
-            });
-            it(`${fnName} should revert with an expired approval`, async () => {
-                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
-                const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).minus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
-                    transaction,
-                    takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: takerAddress },
-                    ),
-                    RevertReason.ApprovalExpired,
+                    [signature],
+                    { from: takerAddress, value: PROTOCOL_FEE.times(orders.length) },
+                    new CoordinatorRevertErrors.InvalidApprovalSignatureError(transactionHash, feeRecipientAddress),
                 );
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
                 const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const currentTimestamp = await getLatestBlockTimestampAsync();
-                const approvalExpirationTimeSeconds = new BigNumber(currentTimestamp).plus(constants.TIME_BUFFER);
-                const approval = approvalFactory.newSignedApproval(
+                const approval = approvalFactory.newSignedApproval(transaction, takerAddress);
+                await testFactory.executeFillTransactionTestAsync(
+                    orders,
                     transaction,
                     takerAddress,
-                    approvalExpirationTimeSeconds,
-                );
-                await expectTransactionFailedAsync(
-                    coordinatorContract.executeTransaction.sendTransactionAsync(
-                        transaction,
-                        takerAddress,
-                        transaction.signature,
-                        [approvalExpirationTimeSeconds],
-                        [approval.signature],
-                        { from: owner },
-                    ),
-                    RevertReason.InvalidOrigin,
+                    [approval.signature],
+                    { from: owner, value: PROTOCOL_FEE.times(orders.length) },
+                    new CoordinatorRevertErrors.InvalidOriginError(takerAddress),
                 );
             });
         }
@@ -447,84 +374,45 @@ describe('Coordinator tests', () => {
             const orders = [await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(
-                    transaction,
-                    makerAddress,
-                    transaction.signature,
-                    [],
-                    [],
-                    {
-                        from: makerAddress,
-                    },
-                ),
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.CancelOrder,
+                orders,
+                transaction,
+                makerAddress,
+                [],
+                {
+                    from: makerAddress,
+                },
             );
-            const cancelLogs = transactionReceipt.logs.filter(
-                log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
-            );
-            expect(cancelLogs.length).to.eq(1);
-            const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
-            expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-            expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
-            expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-            expect(cancelLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
-            expect(cancelLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
-            expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
         });
         it('batchCancelOrders call should be successful without an approval', async () => {
             const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(
-                    transaction,
-                    makerAddress,
-                    transaction.signature,
-                    [],
-                    [],
-                    {
-                        from: makerAddress,
-                    },
-                ),
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.BatchCancelOrders,
+                orders,
+                transaction,
+                makerAddress,
+                [],
+                {
+                    from: makerAddress,
+                },
             );
-            const cancelLogs = transactionReceipt.logs.filter(
-                log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
-            );
-            expect(cancelLogs.length).to.eq(orders.length);
-            orders.forEach((order, index) => {
-                const cancelLogArgs = (cancelLogs[index] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
-                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-                expect(cancelLogArgs.senderAddress).to.eq(coordinatorContract.address);
-                expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
-                expect(cancelLogArgs.makerAssetData).to.eq(order.makerAssetData);
-                expect(cancelLogArgs.takerAssetData).to.eq(order.takerAssetData);
-                expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order));
-            });
         });
         it('cancelOrdersUpTo call should be successful without an approval', async () => {
-            const targetEpoch = constants.ZERO_AMOUNT;
-            const data = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+            const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, []);
             const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
-            const transactionReceipt = await web3Wrapper.awaitTransactionSuccessAsync(
-                await coordinatorContract.executeTransaction.sendTransactionAsync(
-                    transaction,
-                    makerAddress,
-                    transaction.signature,
-                    [],
-                    [],
-                    {
-                        from: makerAddress,
-                    },
-                ),
+            await testFactory.executeCancelTransactionTestAsync(
+                ExchangeFunctionName.CancelOrdersUpTo,
+                [],
+                transaction,
+                makerAddress,
+                [],
+                {
+                    from: makerAddress,
+                },
             );
-            const cancelLogs = transactionReceipt.logs.filter(
-                log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
-            );
-            expect(cancelLogs.length).to.eq(1);
-            const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
-            expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
-            expect(cancelLogArgs.orderSenderAddress).to.eq(coordinatorContract.address);
-            expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
         });
     });
 });

@@ -34,6 +34,9 @@ export interface Authorizable extends Ownable {
     authorized: {
         callAsync(authority: string, callData?: Partial<CallData>, defaultBlock?: BlockParam): Promise<boolean>;
     };
+    getAuthorizedAddresses: {
+        callAsync(callData?: Partial<CallData>, defaultBlock?: BlockParam): Promise<string[]>;
+    };
 }
 
 export interface Ownable {

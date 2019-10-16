@@ -1,32 +1,23 @@
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments } from '@0x/contracts-test-utils';
 import { OwnableRevertErrors } from '@0x/utils';
-import * as chai from 'chai';
-import * as _ from 'lodash';
 
-import { artifacts, TestOwnableContract } from '../src';
+import { artifacts, IOwnableEvents, IOwnableOwnershipTransferredEventArgs, TestOwnableContract } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('Ownable', () => {
+blockchainTests.resets('Ownable', env => {
     let ownable: TestOwnableContract;
     let owner: string;
     let nonOwner: string;
 
     before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         owner = await accounts[0];
         nonOwner = await accounts[1];
-        await blockchainLifecycle.startAsync();
-        // Deploy Ownable from the owner address
-        txDefaults.from = owner;
-        ownable = await TestOwnableContract.deployFrom0xArtifactAsync(artifacts.TestOwnable, provider, txDefaults, {});
-    });
-
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
+        ownable = await TestOwnableContract.deployFrom0xArtifactAsync(
+            artifacts.TestOwnable,
+            env.provider,
+            { ...env.txDefaults, from: owner },
+            artifacts,
+        );
     });
 
     describe('onlyOwner', () => {
@@ -49,16 +40,19 @@ describe('Ownable', () => {
         });
 
         it('should transfer ownership if the specified new owner is not the zero address', async () => {
-            ownable.transferOwnership
-                .awaitTransactionSuccessAsync(
-                    nonOwner,
-                    { from: owner },
-                    { pollingIntervalMs: constants.AWAIT_TRANSACTION_MINED_MS },
-                )
-                .then(async () => {
-                    const updatedOwner = await ownable.owner.callAsync();
-                    expect(updatedOwner).to.be.eq(nonOwner);
-                });
+            const receipt = await ownable.transferOwnership.awaitTransactionSuccessAsync(nonOwner, { from: owner });
+
+            // Ensure that the correct logs were emitted.
+            expect(receipt.logs.length).to.be.eq(1);
+            const [event] = filterLogsToArguments<IOwnableOwnershipTransferredEventArgs>(
+                receipt.logs,
+                IOwnableEvents.OwnershipTransferred,
+            );
+            expect(event).to.be.deep.eq({ previousOwner: owner, newOwner: nonOwner });
+
+            // Ensure that the owner was actually updated
+            const updatedOwner = await ownable.owner.callAsync();
+            expect(updatedOwner).to.be.eq(nonOwner);
         });
     });
 });

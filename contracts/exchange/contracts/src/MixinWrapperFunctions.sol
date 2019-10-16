@@ -47,8 +47,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrKillOrder(
@@ -71,8 +70,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -99,8 +97,7 @@ contract MixinWrapperFunctions is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
@@ -287,8 +284,7 @@ contract MixinWrapperFunctions is
     function batchCancelOrders(LibOrder.Order[] memory orders)
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {

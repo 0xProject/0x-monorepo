@@ -61,11 +61,11 @@ export class InsufficientBalanceError extends RevertError {
     }
 }
 
-export class OnlyCallableByPoolOperatorOrMakerError extends RevertError {
+export class OnlyCallableByPoolOperatorError extends RevertError {
     constructor(senderAddress?: string, poolId?: string) {
         super(
-            'OnlyCallableByPoolOperatorOrMakerError',
-            'OnlyCallableByPoolOperatorOrMakerError(address senderAddress, bytes32 poolId)',
+            'OnlyCallableByPoolOperatorError',
+            'OnlyCallableByPoolOperatorError(address senderAddress, bytes32 poolId)',
             { senderAddress, poolId },
         );
     }
@@ -142,12 +142,6 @@ export class InvalidParamValueError extends RevertError {
     }
 }
 
-export class InvalidStakeStatusError extends RevertError {
-    constructor(status?: BigNumber | number | string) {
-        super('InvalidStakeStatusError', 'InvalidStakeStatusError(uint8 status)', { status });
-    }
-}
-
 export class InvalidProtocolFeePaymentError extends RevertError {
     constructor(
         errorCode?: ProtocolFeePaymentErrorCodes,
@@ -190,11 +184,10 @@ const types = [
     InitializationError,
     InsufficientBalanceError,
     InvalidProtocolFeePaymentError,
-    InvalidStakeStatusError,
     InvalidParamValueError,
     MakerPoolAssignmentError,
     OnlyCallableByExchangeError,
-    OnlyCallableByPoolOperatorOrMakerError,
+    OnlyCallableByPoolOperatorError,
     OnlyCallableByStakingContractError,
     OnlyCallableIfInCatastrophicFailureError,
     OnlyCallableIfNotInCatastrophicFailureError,

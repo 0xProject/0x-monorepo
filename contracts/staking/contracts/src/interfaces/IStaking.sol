@@ -24,7 +24,8 @@ import "./IStructs.sol";
 
 interface IStaking {
 
-    /// @dev Moves stake between statuses: 'active', 'inactive' or 'delegated'.
+    /// @dev Moves stake between statuses: 'undelegated' or 'delegated'.
+    ///      Delegated stake can also be moved between pools.
     ///      This change comes into effect next epoch.
     /// @param from status to move stake out of.
     /// @param to status to move stake into.

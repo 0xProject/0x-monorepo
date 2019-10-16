@@ -230,7 +230,7 @@ blockchainTests.resets('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        describe('repeatable signature types', () => {
+        describe('callback signature types', () => {
             beforeEach(async () => {
                 // Approve the ERC20 proxy with the test validator wallet.
                 await validatorWallet.approveERC20.awaitTransactionSuccessAsync(

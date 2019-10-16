@@ -1,81 +1,77 @@
-import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
-import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 
-import { CoordinatorRegistryCoordinatorEndpointSetEventArgs } from '../src';
+import {
+    artifacts,
+    CoordinatorRegistryContract,
+    CoordinatorRegistryCoordinatorEndpointSetEventArgs,
+    CoordinatorTestFactory,
+} from '../src';
 
-import { CoordinatorRegistryWrapper } from './utils/coordinator_registry_wrapper';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-web3Wrapper.abiDecoder.addABI(exchangeArtifacts.Exchange.compilerOutput.abi);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Coordinator Registry tests', () => {
+blockchainTests.resets('Coordinator Registry tests', env => {
+    let coordinatorRegistry: CoordinatorRegistryContract;
     let coordinatorOperator: string;
     const coordinatorEndpoint = 'http://sometec.0x.org';
     const nilCoordinatorEndpoint = '';
-    let coordinatorRegistryWrapper: CoordinatorRegistryWrapper;
     // tests
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // setup accounts (skip owner)
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         [, coordinatorOperator] = accounts;
         // deploy coordinator registry
-        coordinatorRegistryWrapper = new CoordinatorRegistryWrapper(provider);
-        await coordinatorRegistryWrapper.deployCoordinatorRegistryAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
+        coordinatorRegistry = await CoordinatorRegistryContract.deployFrom0xArtifactAsync(
+            artifacts.CoordinatorRegistry,
+            env.provider,
+            env.txDefaults,
+            artifacts,
+        );
     });
     describe('core', () => {
         it('Should successfully set a Coordinator endpoint', async () => {
-            await coordinatorRegistryWrapper.setCoordinatorEndpointAsync(coordinatorOperator, coordinatorEndpoint);
-            const recordedCoordinatorEndpoint = await coordinatorRegistryWrapper.getCoordinatorEndpointAsync(
+            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(coordinatorEndpoint, {
+                from: coordinatorOperator,
+            });
+            const recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
                 coordinatorOperator,
             );
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
         });
         it('Should successfully unset a Coordinator endpoint', async () => {
             // set Coordinator endpoint
-            await coordinatorRegistryWrapper.setCoordinatorEndpointAsync(coordinatorOperator, coordinatorEndpoint);
-            let recordedCoordinatorEndpoint = await coordinatorRegistryWrapper.getCoordinatorEndpointAsync(
+            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(coordinatorEndpoint, {
+                from: coordinatorOperator,
+            });
+            let recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
                 coordinatorOperator,
             );
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
             // unset Coordinator endpoint
-            await coordinatorRegistryWrapper.setCoordinatorEndpointAsync(coordinatorOperator, nilCoordinatorEndpoint);
-            recordedCoordinatorEndpoint = await coordinatorRegistryWrapper.getCoordinatorEndpointAsync(
+            await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(nilCoordinatorEndpoint, {
+                from: coordinatorOperator,
+            });
+            recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
                 coordinatorOperator,
             );
             expect(recordedCoordinatorEndpoint).to.be.equal(nilCoordinatorEndpoint);
         });
         it('Should emit an event when setting Coordinator endpoint', async () => {
             // set Coordinator endpoint
-            const txReceipt = await coordinatorRegistryWrapper.setCoordinatorEndpointAsync(
-                coordinatorOperator,
+            const txReceipt = await coordinatorRegistry.setCoordinatorEndpoint.awaitTransactionSuccessAsync(
                 coordinatorEndpoint,
+                {
+                    from: coordinatorOperator,
+                },
             );
-            const recordedCoordinatorEndpoint = await coordinatorRegistryWrapper.getCoordinatorEndpointAsync(
+            const recordedCoordinatorEndpoint = await coordinatorRegistry.getCoordinatorEndpoint.callAsync(
                 coordinatorOperator,
             );
             expect(recordedCoordinatorEndpoint).to.be.equal(coordinatorEndpoint);
             // validate event
-            expect(txReceipt.logs.length).to.be.equal(1);
-            const log = txReceipt.logs[0] as LogWithDecodedArgs<CoordinatorRegistryCoordinatorEndpointSetEventArgs>;
-            expect(log.args.coordinatorOperator).to.be.equal(coordinatorOperator);
-            expect(log.args.coordinatorEndpoint).to.be.equal(coordinatorEndpoint);
+            const expectedEvent: CoordinatorRegistryCoordinatorEndpointSetEventArgs = {
+                coordinatorOperator,
+                coordinatorEndpoint,
+            };
+            CoordinatorTestFactory.verifyEvents(txReceipt, [expectedEvent], 'CoordinatorEndpointSet');
         });
     });
 });

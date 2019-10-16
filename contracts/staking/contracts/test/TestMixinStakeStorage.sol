@@ -72,19 +72,19 @@ contract TestMixinStakeStorage is
         _decreaseNextBalance(testBalances[index], amount);
     }
 
-    function loadSyncedBalance(uint256 index)
+    function loadCurrentBalance(uint256 index)
         external
         returns (IStructs.StoredBalance memory balance)
     {
-        return _loadSyncedBalance(testBalances[index]);
+        return _loadCurrentBalance(testBalances[index]);
     }
 
-    function loadUnsyncedBalance(uint256 index)
+    function loadStaleBalance(uint256 index)
         external
         view
         returns (IStructs.StoredBalance memory balance)
     {
-        return _loadUnsyncedBalance(testBalances[index]);
+        return testBalances[index];
     }
 
     function setStoredBalance(

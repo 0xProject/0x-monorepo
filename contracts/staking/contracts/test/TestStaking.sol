@@ -40,6 +40,22 @@ contract TestStaking is
         testZrxVaultAddress = zrxVaultAddress;
     }
 
+    /// @dev Sets the weth contract address.
+    /// @param wethAddress The address of the weth contract.
+    function setWethContract(address wethAddress)
+        external
+    {
+        testWethAddress = wethAddress;
+    }
+
+    /// @dev Sets the zrx vault address.
+    /// @param zrxVaultAddress The address of a zrx vault.
+    function setZrxVault(address zrxVaultAddress)
+        external
+    {
+        testZrxVaultAddress = zrxVaultAddress;
+    }
+
     /// @dev Overridden to use testWethAddress;
     function getWethContract()
         public

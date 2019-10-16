@@ -21,6 +21,14 @@ pragma solidity ^0.5.9;
 
 interface IStructs {
 
+    /// @dev State of stakingProxy read-only mode.
+    /// @param isReadOnlyModeSet True if in read-only mode.
+    /// @param lastSetTimestamp Timestamp at which read-only mode was last set.
+    struct ReadOnlyState {
+        bool isReadOnlyModeSet;
+        uint96 lastSetTimestamp;
+    }
+
     /// @dev Status for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
     /// @param feesCollected Fees collected in ETH by this pool.
@@ -52,30 +60,20 @@ interface IStructs {
     /// @dev Encapsulates a balance for the current and next epochs.
     /// Note that these balances may be stale if the current epoch
     /// is greater than `currentEpoch`.
-    /// Always load this struct using _loadSyncedBalance or _loadUnsyncedBalance.
-    /// @param isInitialized
     /// @param currentEpoch the current epoch
     /// @param currentEpochBalance balance in the current epoch.
     /// @param nextEpochBalance balance in `currentEpoch+1`.
     struct StoredBalance {
-        bool isInitialized;
-        uint32 currentEpoch;
+        uint64 currentEpoch;
         uint96 currentEpochBalance;
         uint96 nextEpochBalance;
     }
 
-    /// @dev Balance struct for stake.
-    /// @param currentEpochBalance Balance in the current epoch.
-    /// @param nextEpochBalance Balance in the next epoch.
-    struct StakeBalance {
-        uint256 currentEpochBalance;
-        uint256 nextEpochBalance;
-    }
-
     /// @dev Statuses that stake can exist in.
+    ///      Any stake can be (re)delegated effective at the next epoch
+    ///      Undelegated stake can be withdrawn if it is available in both the current and next epoch
     enum StakeStatus {
-        ACTIVE,
-        INACTIVE,
+        UNDELEGATED,
         DELEGATED
     }
 
@@ -95,24 +93,11 @@ interface IStructs {
         uint256 denominator;
     }
 
-    /// @dev State for keeping track of which pool a maker has joined, and if the operator has
-    /// added them (see MixinStakingPool).
-    /// @param poolId Unique Id of staking pool.
-    /// @param confirmed Whether the operator has added the maker to the pool.
-    struct MakerPoolJoinStatus {
-        bytes32 poolId;
-        bool confirmed;
-    }
-
     /// @dev Holds the metadata for a staking pool.
-    /// @param initialized True iff the balance struct is initialized.
     /// @param operator of the pool.
     /// @param operatorShare Fraction of the total balance owned by the operator, in ppm.
-    /// @param numberOfMakers Number of makers in the pool.
     struct Pool {
-        bool initialized;
-        address payable operator;
+        address operator;
         uint32 operatorShare;
-        uint32 numberOfMakers;
     }
 }

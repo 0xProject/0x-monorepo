@@ -35,12 +35,7 @@ contract MixinAbstract {
     /// @return membersStake The total stake for all non-operator members in
     ///         this pool.
     function finalizePool(bytes32 poolId)
-        public
-        returns (
-            uint256 operatorReward,
-            uint256 membersReward,
-            uint256 membersStake
-        );
+        public;
 
     /// @dev Computes the reward owed to a pool during finalization.
     ///      Does nothing if the pool is already finalized.

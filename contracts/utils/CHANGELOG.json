@@ -61,6 +61,18 @@
             {
                 "note": "Introduce automatic normalization and some zero-value shortcuts in `LibFractions`.",
                 "pr": 2155
+            },
+            {
+                "note": "Emit an event in `transferOwnership`",
+                "pr": 2253
+            },
+            {
+                "note": "Removed `deepCopyBytes`, `popLast20Bytes`, `readBytesWithLength`, and `writeBytesWithLength` in `LibBytes`.",
+                "pr": 2265
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
             }
         ],
         "timestamp": 1570135330

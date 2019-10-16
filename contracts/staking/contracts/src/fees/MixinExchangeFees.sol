@@ -67,7 +67,8 @@ contract MixinExchangeFees is
         }
 
         // Get the pool id of the maker address.
-        bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
+        bytes32 poolId = poolIdByMaker[makerAddress];
+
         // Only attribute the protocol fee payment to a pool if the maker is
         // registered to a pool.
         if (poolId == NIL_POOL_ID) {
