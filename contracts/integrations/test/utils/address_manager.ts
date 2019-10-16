@@ -78,7 +78,8 @@ export class AddressManager {
      * to transfer the token.
      */
     protected async _configureTokenForAddressAsync(
-        deploymentManager: DeploymentManager, address: string,
+        deploymentManager: DeploymentManager,
+        address: string,
         token: DummyERC20TokenContract,
     ): Promise<void> {
         await token.setBalance.awaitTransactionSuccessAsync(address, constants.INITIAL_ERC20_BALANCE);

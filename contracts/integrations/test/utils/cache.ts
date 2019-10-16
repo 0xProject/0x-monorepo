@@ -1,9 +1,9 @@
 import { ContractGetterFunction } from './function_assertions';
 import * as _ from 'lodash';
 
-export class GetterCache {
+export class GetterCache<TCallArgs extends any[]> {
     // The getter function whose values will be cached.
-    public getter: ContractGetterFunction;
+    public getter: ContractGetterFunction<TCallArgs>;
 
     // The cache that will be used to store values. This has to use a "string" for indexing
     // because the "Map" datastructure uses reference equality when the keys are objects,
@@ -12,7 +12,7 @@ export class GetterCache {
         [key: string]: any;
     };
 
-    constructor(getter: ContractGetterFunction) {
+    constructor(getter: ContractGetterFunction<TCallArgs>) {
         this.getter = getter;
         this.cache = {};
     }
@@ -25,7 +25,7 @@ export class GetterCache {
      *                arguments must be valid arguments to "getABIEncodedTransactionData".
      * @return Either a cached value or the queried value.
      */
-    public async callAsync(...args: any[]): Promise<any> {
+    public async callAsync(...args: TCallArgs): Promise<any> {
         const key = this.getter.getABIEncodedTransactionData(...args);
         const cachedResult = this.cache[key];
 
@@ -47,7 +47,7 @@ export class GetterCache {
 }
 
 export interface GetterCacheSet {
-    [getter: string]: GetterCache;
+    [getter: string]: GetterCache<any[]>;
 }
 
 export class GetterCacheCollection {
@@ -60,16 +60,8 @@ export class GetterCacheCollection {
      * @param getterNames The names of the getter functions to register.
      * @param getters The getter functions to register.
      */
-    constructor(getterNames: string[], getters: ContractGetterFunction[]) {
-        if (getterNames.length !== getters.length) {
-            throw new Error('Mismatched getter names and getters');
-        }
-
-        // Register all of the getters.
-        this.getters = {};
-        for (const getter of _.zip(getterNames, getters)) {
-            this.registerGetter(getter[0] as string, getter[1] as ContractGetterFunction);
-        }
+    constructor(getters: GetterCacheSet) {
+        this.getters = getters;
     }
 
     /**
@@ -77,7 +69,7 @@ export class GetterCacheCollection {
      * @param getterName The name of the contract getter function.
      * @param getter The actual contract getter function.
      */
-    public registerGetter(getterName: string, getter: ContractGetterFunction): void {
+    public registerGetter(getterName: string, getter: ContractGetterFunction<any[]>): void {
         this.getters[getterName] = new GetterCache(getter);
     }
 

@@ -1,4 +1,4 @@
-import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
+/*import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
 import { BigNumber, generatePseudoRandom256BitNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
@@ -123,3 +123,4 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         });
     });
 });
+*/

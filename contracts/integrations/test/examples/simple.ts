@@ -1,4 +1,4 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+/*import { blockchainTests, expect } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
 import { artifacts, TestFrameworkContract } from '../../src';
@@ -73,3 +73,4 @@ blockchainTests('TestFramework', env => {
         });
     });
 });
+*/
