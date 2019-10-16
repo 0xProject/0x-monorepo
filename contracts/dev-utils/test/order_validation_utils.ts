@@ -377,6 +377,21 @@ describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
             );
             expect(fillableTakerAssetAmount).to.bignumber.equal(signedOrder.takerAssetAmount);
         });
+        it('should return the correct fillabeTakerassetAmount when there are no maker fees', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFee: constants.ZERO_AMOUNT,
+                makerFeeAssetData: '0x',
+                takerFeeAssetData: '0x',
+            });
+
+            console.log(`order: ${JSON.stringify(signedOrder, null, '\t')}`);
+
+            const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
+                signedOrder,
+                signedOrder.signature,
+            );
+            expect(fillableTakerAssetAmount).to.bignumber.equal(0); // because no balance or allowance
+        });
         it('should return a fillableTakerAssetAmount when the remaining takerAssetAmount is less than the transferable amount', async () => {
             await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount);
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
