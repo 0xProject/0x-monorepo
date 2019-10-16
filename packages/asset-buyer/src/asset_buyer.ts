@@ -267,7 +267,7 @@ export class AssetBuyer {
             // if no ethAmount is provided, default to the worst ethAmount from buyQuote
             const value = ethAmount || worstCaseQuoteInfo.totalEthAmount;
 
-            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
+            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
                 orders,
                 assetBuyAmount,
                 orders.map(o => o.signature),

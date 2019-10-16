@@ -1,3 +1,27 @@
+{{!-- if ((NOT constant) AND (NOT debug)), to avoid repetition bbecause we use all 3 functions if (debug) --}}
+{{^if constant~}}
+{{^if debug~}}
+/**
+ * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+ * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+ * to create a 0x transaction (see protocol spec for more details).
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ * @returns The ABI encoded transaction data as a string
+ */
+getABIEncodedTransactionData(
+    {{> typed_params inputs=inputs}}
+    ): string {
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
+    return abiEncodedTransactionData;
+},
+{{/if~}}
+{{/if~}}
+
+{{#if debug~}}
 /**
  * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
  * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
@@ -43,3 +67,4 @@ getABIDecodedReturnData(
     const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(returnData);
     return abiDecodedReturnData;
 },
+{{/if}}

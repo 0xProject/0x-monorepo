@@ -144,7 +144,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             let txHash: string;
             if (quote.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrow.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
@@ -156,7 +156,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                 );
             } else {
                 const { takerAssetFillAmount } = quote;
-                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrow.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrow.sendTransactionAsync(
                     orders,
                     takerAssetFillAmount,
                     orders.map(o => o.signature),

@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -58,8 +64,10 @@ export interface ERC721TokenTransferEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ERC721TokenContract extends BaseContract {
-    public static deployedBytecode =
-        '0x608060405234801561001057600080fd5b50600436106100a35760003560e01c80636352211e11610076578063a22cb4651161005b578063a22cb46514610211578063b88d4fde1461024c578063e985e9c5146102e9576100a3565b80636352211e146101af57806370a08231146101cc576100a3565b8063081812fc146100a8578063095ea7b3146100ee57806323b872dd1461012957806342842e0e1461016c575b600080fd5b6100c5600480360360208110156100be57600080fd5b5035610338565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b6101276004803603604081101561010457600080fd5b5073ffffffffffffffffffffffffffffffffffffffff8135169060200135610360565b005b6101276004803603606081101561013f57600080fd5b5073ffffffffffffffffffffffffffffffffffffffff813581169160208101359091169060400135610482565b6101276004803603606081101561018257600080fd5b5073ffffffffffffffffffffffffffffffffffffffff8135811691602081013590911690604001356107ef565b6100c5600480360360208110156101c557600080fd5b5035610989565b6101ff600480360360208110156101e257600080fd5b503573ffffffffffffffffffffffffffffffffffffffff16610a20565b60408051918252519081900360200190f35b6101276004803603604081101561022757600080fd5b5073ffffffffffffffffffffffffffffffffffffffff81351690602001351515610acd565b6101276004803603608081101561026257600080fd5b73ffffffffffffffffffffffffffffffffffffffff8235811692602081013590911691604082013591908101906080810160608201356401000000008111156102aa57600080fd5b8201836020820111156102bc57600080fd5b803590602001918460018302840111640100000000831117156102de57600080fd5b509092509050610b66565b610324600480360360408110156102ff57600080fd5b5073ffffffffffffffffffffffffffffffffffffffff81358116916020013516610d31565b604080519115158252519081900360200190f35b60009081526001602052604090205473ffffffffffffffffffffffffffffffffffffffff1690565b600061036b82610989565b90503373ffffffffffffffffffffffffffffffffffffffff8216148061039657506103968133610d31565b61040157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601560248201527f4552433732315f494e56414c49445f53454e4445520000000000000000000000604482015290519081900360640190fd5b60008281526001602052604080822080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff87811691821790925591518593918516917f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92591a4505050565b73ffffffffffffffffffffffffffffffffffffffff821661050457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601660248201527f4552433732315f5a45524f5f544f5f4144445245535300000000000000000000604482015290519081900360640190fd5b600061050f82610989565b90508073ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff16146105ab57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601560248201527f4552433732315f4f574e45525f4d49534d415443480000000000000000000000604482015290519081900360640190fd5b3360006105b784610338565b90508273ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1614806105f857506105f88383610d31565b8061062e57508173ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16145b61069957604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601660248201527f4552433732315f494e56414c49445f5350454e44455200000000000000000000604482015290519081900360640190fd5b73ffffffffffffffffffffffffffffffffffffffff8116156106ea57600084815260016020526040902080547fffffffffffffffffffffffff00000000000000000000000000000000000000001690555b60008481526020818152604080832080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff8a811691909117909155891683526002909152902054610753906001610d6c565b73ffffffffffffffffffffffffffffffffffffffff8088166000908152600260205260408082209390935590871681522054610790906001610d90565b73ffffffffffffffffffffffffffffffffffffffff808716600081815260026020526040808220949094559251879391928a16917fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef91a4505050505050565b6107fa838383610482565b813b801561098357604080517f150b7a0200000000000000000000000000000000000000000000000000000000815233600482015273ffffffffffffffffffffffffffffffffffffffff8681166024830152604482018590526080606483015260006084830181905292519086169163150b7a029160c480830192602092919082900301818787803b15801561088f57600080fd5b505af11580156108a3573d6000803e3d6000fd5b505050506040513d60208110156108b957600080fd5b505160405190915080602f610e5b8239602f01905060405180910390207bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916817bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19161461098157604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601760248201527f4552433732315f494e56414c49445f53454c4543544f52000000000000000000604482015290519081900360640190fd5b505b50505050565b60008181526020819052604081205473ffffffffffffffffffffffffffffffffffffffff1680610a1a57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601160248201527f4552433732315f5a45524f5f4f574e4552000000000000000000000000000000604482015290519081900360640190fd5b92915050565b600073ffffffffffffffffffffffffffffffffffffffff8216610aa457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601160248201527f4552433732315f5a45524f5f4f574e4552000000000000000000000000000000604482015290519081900360640190fd5b5073ffffffffffffffffffffffffffffffffffffffff1660009081526002602052604090205490565b33600081815260036020908152604080832073ffffffffffffffffffffffffffffffffffffffff87168085529083529281902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016861515908117909155815190815290519293927f17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31929181900390910190a35050565b610b71858585610482565b833b8015610d29576040517f150b7a02000000000000000000000000000000000000000000000000000000008152336004820181815273ffffffffffffffffffffffffffffffffffffffff89811660248501526044840188905260806064850190815260848501879052600094918a169363150b7a029390928c928b928b928b929060a401848480828437600081840152601f19601f8201169050808301925050509650505050505050602060405180830381600087803b158015610c3557600080fd5b505af1158015610c49573d6000803e3d6000fd5b505050506040513d6020811015610c5f57600080fd5b505160405190915080602f610e5b8239602f01905060405180910390207bffffffffffffffffffffffffffffffffffffffffffffffffffffffff1916817bffffffffffffffffffffffffffffffffffffffffffffffffffffffff191614610d2757604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601760248201527f4552433732315f494e56414c49445f53454c4543544f52000000000000000000604482015290519081900360640190fd5b505b505050505050565b73ffffffffffffffffffffffffffffffffffffffff918216600090815260036020908152604080832093909416825291909152205460ff1690565b600082821115610d8a57610d8a610d8560028585610db3565b610e52565b50900390565b600082820183811015610dac57610dac610d8560008686610db3565b9392505050565b606063e946c1bb60e01b84848460405160240180846003811115610dd357fe5b60ff1681526020018381526020018281526020019350505050604051602081830303815290604052907bffffffffffffffffffffffffffffffffffffffffffffffffffffffff19166020820180517bffffffffffffffffffffffffffffffffffffffffffffffffffffffff838183161783525050505090509392505050565b805160208201fdfe6f6e455243373231526563656976656428616464726573732c616464726573732c75696e743235362c627974657329a265627a7a723158204bc74831490bca4fbe1805808d58d6b0e12f618a37565e744e91d8dc73dc18b164736f6c634300050c0032';
+    /**
+     * @ignore
+     */
+    public static deployedBytecode: string | undefined;
     /**
      * The zero address indicates there is no approved address.
      * Throws unless `msg.sender` is the current NFT owner, or an authorized
@@ -78,6 +86,7 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -98,6 +107,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.approve.callAsync(_approved, _tokenId, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -114,21 +127,20 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -166,15 +178,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _approved: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_approved, _tokenId, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -247,30 +250,6 @@ export class ERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * NFTs assigned to the zero address are considered invalid, and this
@@ -325,43 +304,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _owner An address for whom to query the balance
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_owner: string): string {
-            assert.isString('_owner', _owner);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * Throws if `_tokenId` is not a valid NFT.
@@ -414,43 +356,6 @@ export class ERC721TokenContract extends BaseContract {
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId The NFT to find the approved address for
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_tokenId: BigNumber): string {
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public isApprovedForAll = {
@@ -508,48 +413,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _owner The address that owns the NFTs
-         * @param _operator The address that acts on behalf of the owner
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_owner: string, _operator: string): string {
-            assert.isString('_owner', _owner);
-            assert.isString('_operator', _operator);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isApprovedForAll(address,address)', [
-                _owner.toLowerCase(),
-                _operator.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): boolean {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * NFTs assigned to zero address are considered invalid, and queries
@@ -604,43 +467,6 @@ export class ERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId The identifier for an NFT
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_tokenId: BigNumber): string {
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * This works identically to the other function with an extra data parameter,
@@ -661,6 +487,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -683,6 +510,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.safeTransferFrom1.callAsync(_from, _to, _tokenId, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -701,8 +532,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -713,6 +543,7 @@ export class ERC721TokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _tokenId,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -720,8 +551,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -763,16 +594,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -852,30 +673,6 @@ export class ERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * Throws unless `msg.sender` is the current owner, an authorized
@@ -903,6 +700,7 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             _data: string,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -927,6 +725,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -947,8 +749,7 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             _data: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -961,6 +762,7 @@ export class ERC721TokenContract extends BaseContract {
                 _tokenId,
                 _data,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -968,8 +770,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1015,23 +817,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
-            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
-                _from,
-                _to,
-                _tokenId,
-                _data,
-                txData,
-            );
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1116,30 +901,6 @@ export class ERC721TokenContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber, string] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber, string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * Emits the ApprovalForAll event. The contract MUST allow
@@ -1158,6 +919,7 @@ export class ERC721TokenContract extends BaseContract {
             _operator: string,
             _approved: boolean,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
@@ -1178,6 +940,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.setApprovalForAll.callAsync(_operator, _approved, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1194,8 +960,7 @@ export class ERC721TokenContract extends BaseContract {
             _operator: string,
             _approved: boolean,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
@@ -1204,6 +969,7 @@ export class ERC721TokenContract extends BaseContract {
                 _operator.toLowerCase(),
                 _approved,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1211,8 +977,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1250,15 +1016,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
-            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1331,30 +1088,6 @@ export class ERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, boolean] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, boolean]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
      * Throws unless `msg.sender` is the current owner, an authorized
@@ -1377,6 +1110,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1399,6 +1133,10 @@ export class ERC721TokenContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.transferFrom.callAsync(_from, _to, _tokenId, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1417,8 +1155,7 @@ export class ERC721TokenContract extends BaseContract {
             _to: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -1429,6 +1166,7 @@ export class ERC721TokenContract extends BaseContract {
                 _to.toLowerCase(),
                 _tokenId,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -1436,8 +1174,8 @@ export class ERC721TokenContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1479,16 +1217,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1567,30 +1295,6 @@ export class ERC721TokenContract extends BaseContract {
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;

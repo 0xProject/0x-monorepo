@@ -1,5 +1,26 @@
 [
     {
+        "version": "5.4.0-beta.1",
+        "changes": [
+            {
+                "note": "Remove debug functions `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
+                "pr": 2243
+            },
+            {
+                "note": "Remove `getABIEncodedTransactionData` for constant functions (pure and view)",
+                "pr": 2243
+            },
+            {
+                "note": "Introduce TxOpts object for `sendTransactionAsync` and `awaitTransactionSuccessAsync`. Replaces `timeoutMs` and `pollingIntervalMs` arguments for `awaitTransactionSuccessAsync`",
+                "pr": 2243
+            },
+            {
+                "note": "Remove `validateAndSendTransactionAsync`. Replaced with `shouldValidate` key in TxOpts. Defaults to true",
+                "pr": 2243
+            }
+        ]
+    },
+    {
         "version": "5.4.0-beta.0",
         "changes": [
             {

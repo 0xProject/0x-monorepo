@@ -44,6 +44,10 @@ const args = yargs
         normalize: true,
         demandOption: true,
     })
+    .option('debug', {
+        describe: 'Includes debug functions in the wrappers such as `getABIDecodedTransactionData`',
+        type: 'boolean',
+    })
     .option('partials', {
         describe: 'Glob pattern for the partial template files',
         type: 'string',
@@ -73,12 +77,11 @@ const args = yargs
         default: 'TypeScript',
     })
     .example(
-        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
+        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --debug --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
         'Full usage example',
     ).argv;
 
 const templateFilename = args.template || `${__dirname}/../../templates/${args.language}/contract.handlebars`;
-
 const mainTemplate = utils.getNamedContent(templateFilename);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
@@ -417,14 +420,17 @@ for (const abiFileName of abiFileNames) {
         return eventData;
     });
 
+    const shouldIncludeBytecode = methodsData.find(methodData => methodData.stateMutability === 'pure') !== undefined;
+
     const contextData = {
         contractName: namedContent.name,
         ctor,
-        deployedBytecode,
+        deployedBytecode: shouldIncludeBytecode ? deployedBytecode : undefined,
         ABI: ABI as ContractAbi,
         ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
+        debug: args.debug,
     };
     const renderedCode = template(contextData);
     utils.writeOutputFile(outFilePath, renderedCode);

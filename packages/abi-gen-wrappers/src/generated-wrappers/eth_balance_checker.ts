@@ -18,7 +18,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, EventCallback, IndexedFilterValues } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -28,8 +34,10 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class EthBalanceCheckerContract extends BaseContract {
-    public static deployedBytecode =
-        '0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063a0901e5114610030575b600080fd5b6100d36004803603602081101561004657600080fd5b81019060208101813564010000000081111561006157600080fd5b82018360208201111561007357600080fd5b8035906020019184602083028401116401000000008311171561009557600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550610123945050505050565b60408051602080825283518183015283519192839290830191858101910280838360005b8381101561010f5781810151838201526020016100f7565b505050509050019250505060405180910390f35b6060808251604051908082528060200260200182016040528015610151578160200160208202803883390190505b50905060005b835181146101a95783818151811061016b57fe5b602002602001015173ffffffffffffffffffffffffffffffffffffffff163182828151811061019657fe5b6020908102919091010152600101610157565b509291505056fea265627a7a7231582094309783f0b63086d85d9cb4f6e5be253699056ac1580a863367c5076ecb5c1864736f6c634300050b0032';
+    /**
+     * @ignore
+     */
+    public static deployedBytecode: string | undefined;
     /**
      * Batch fetches ETH balances
      */
@@ -81,43 +89,6 @@ export class EthBalanceCheckerContract extends BaseContract {
             const result = abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param addresses Array of addresses.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(addresses: string[]): string {
-            assert.isArray('addresses', addresses);
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string[] {
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber[] {
-            const self = (this as any) as EthBalanceCheckerContract;
-            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(
