@@ -1,16 +1,13 @@
 import { PromiseWithTransactionHash } from '@0x/base-contract';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-export interface ContractGetterFunction<TCallArgs extends any[]> {
-    callAsync: (...args: TCallArgs) => Promise<any>;
-    getABIEncodedTransactionData: (...args: TCallArgs) => string;
+export interface ContractGetterFunction {
+    callAsync: (...args: any[]) => Promise<any>;
+    getABIEncodedTransactionData: (...args: any[]) => string;
 }
 
-export interface ContractWrapperFunction<TAwaitArgs extends any[], TCallArgs extends any[]>
-    extends ContractGetterFunction<TCallArgs> {
-    awaitTransactionSuccessAsync?: (
-        ...args: TAwaitArgs
-    ) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
+export interface ContractWrapperFunction extends ContractGetterFunction {
+    awaitTransactionSuccessAsync?: (...args: any[]) => PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>;
 }
 
 export interface Condition {
@@ -18,14 +15,14 @@ export interface Condition {
     after: (beforeInfo: any, result: Result, ...args: any[]) => Promise<any>;
 }
 
-export class FunctionAssertion<TAwaitArgs extends any[], TCallArgs extends any[]> {
+export class FunctionAssertion {
     // A before and an after assertion that will be called around the wrapper function.
     public condition: Condition;
 
     // The wrapper function that will be wrapped in assertions.
-    public wrapperFunction: ContractWrapperFunction<TAwaitArgs, TCallArgs>;
+    public wrapperFunction: ContractWrapperFunction;
 
-    constructor(wrapperFunction: ContractWrapperFunction<TAwaitArgs, TCallArgs>, condition: Condition) {
+    constructor(wrapperFunction: ContractWrapperFunction, condition: Condition) {
         this.condition = condition;
         this.wrapperFunction = wrapperFunction;
     }
@@ -34,7 +31,7 @@ export class FunctionAssertion<TAwaitArgs extends any[], TCallArgs extends any[]
      * Runs the wrapped function and fails if the before or after assertions fail.
      * @param ...args The args to the contract wrapper function.
      */
-    public async runAsync(args: TAwaitArgs & TCallArgs): Promise<{ beforeInfo: any; afterInfo: any }> {
+    public async runAsync(...args: any[]): Promise<{ beforeInfo: any; afterInfo: any }> {
         // Call the before condition.
         const beforeInfo = await this.condition.before(...args);
 

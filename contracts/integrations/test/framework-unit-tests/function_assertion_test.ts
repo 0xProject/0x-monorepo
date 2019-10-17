@@ -1,9 +1,19 @@
-/*import { blockchainTests, constants, expect, filterLogsToArguments, hexRandom } from '@0x/contracts-test-utils';
-import { BigNumber, generatePseudoRandom256BitNumber } from '@0x/utils';
+import {
+    blockchainTests,
+    constants,
+    expect,
+    filterLogsToArguments,
+    getRandomInteger,
+    hexRandom,
+} from '@0x/contracts-test-utils';
+import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { artifacts, TestFrameworkContract, TestFrameworkSomeEventEventArgs, TestFrameworkEvents } from '../../src';
 import { FunctionAssertion, Result } from '../utils/function_assertions';
+
+const ZERO = constants.ZERO_AMOUNT;
+const MAX_UINT256 = constants.MAX_UINT256;
 
 blockchainTests.resets('FunctionAssertion Unit Tests', env => {
     let exampleContract: TestFrameworkContract;
@@ -19,7 +29,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
     describe('runAsync', () => {
         it('should call the before function with the provided arguments', async () => {
-            let sideEffectTarget = constants.ZERO_AMOUNT;
+            let sideEffectTarget = ZERO;
             const assertion = new FunctionAssertion(exampleContract.noEffect, {
                 before: async (inputValue: BigNumber) => {
                     sideEffectTarget = inputValue;
@@ -27,13 +37,13 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {},
             });
 
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
         it('should call the after function with the provided arguments', async () => {
-            let sideEffectTarget = constants.ZERO_AMOUNT;
+            let sideEffectTarget = ZERO;
             const assertion = new FunctionAssertion(exampleContract.noEffect, {
                 before: async (inputValue: BigNumber) => {},
                 after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
@@ -41,7 +51,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 },
             });
 
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
@@ -52,12 +62,12 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 before: async (inputValue: BigNumber) => {},
                 after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {},
             });
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
         });
 
         it('should pass the return value from "before" to "after"', async () => {
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             let sideEffectTarget = constants.ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.noEffect, {
                 before: async (inputValue: BigNumber) => {
@@ -79,13 +89,13 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                     sideEffectTarget = result.data;
                 },
             });
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
         it('should pass the receipt from the function call to "after"', async () => {
-            let sideEffectTarget: TransactionReceiptWithDecodedLogs = {} as TransactionReceiptWithDecodedLogs;
+            let sideEffectTarget = {} as TransactionReceiptWithDecodedLogs;
             const assertion = new FunctionAssertion(exampleContract.revertSideEffect, {
                 before: async (inputValue: BigNumber) => {},
                 after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
@@ -96,7 +106,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                     }
                 },
             });
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
 
             // Ensure that the correct events were emitted.
@@ -116,11 +126,10 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                     sideEffectTarget = result.data;
                 },
             });
-            const randomInput = generatePseudoRandom256BitNumber();
+            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             const errorMessage = 'VM Exception while processing transaction: revert Revert';
             expect(sideEffectTarget.message).to.be.eq(errorMessage);
         });
     });
 });
-*/
