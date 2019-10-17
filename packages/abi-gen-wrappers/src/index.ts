@@ -30,6 +30,13 @@ export {
     DummyERC721TokenApprovalForAllEventArgs,
     DummyERC721TokenContract,
 } from './generated-wrappers/dummy_erc721_token';
+export {
+    ERC1155MintableContract,
+    ERC1155MintableApprovalForAllEventArgs,
+    ERC1155MintableTransferBatchEventArgs,
+    ERC1155MintableTransferSingleEventArgs,
+    ERC1155MintableURIEventArgs,
+} from './generated-wrappers/erc1155_mintable';
 export { DutchAuctionContract } from './generated-wrappers/dutch_auction';
 export {
     ERC1155ProxyEventArgs,
