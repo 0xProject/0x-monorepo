@@ -1,6 +1,7 @@
 import {
     blockchainTests,
     expect,
+    filterLogs,
     filterLogsToArguments,
     getRandomInteger,
     hexLeftPad,
@@ -11,6 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { StakeStatus } from '../utils/types';
 
@@ -303,18 +305,18 @@ blockchainTests.resets('MixinStake unit tests', env => {
             }
         });
 
-        it('both decreases and increases pool and global delegated stake counters when both stakes are delegated', async () => {
+        it('decreases then increases pool and global delegated stake counters when both stakes are delegated', async () => {
             const amount = getRandomInteger(0, 100e18);
             const { logs } = await testContract.moveStake.awaitTransactionSuccessAsync(
                 { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[0] },
                 { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[1] },
                 amount,
             );
-            const decreaseNextBalanceEvents = filterLogsToArguments<DecreaseNextBalanceEventArgs>(
+            const decreaseNextBalanceEvents = filterLogs<DecreaseNextBalanceEventArgs>(
                 logs,
                 StakeEvents.DecreaseNextBalance,
             );
-            const increaseNextBalanceEvents = filterLogsToArguments<IncreaseNextBalanceEventArgs>(
+            const increaseNextBalanceEvents = filterLogs<IncreaseNextBalanceEventArgs>(
                 logs,
                 StakeEvents.IncreaseNextBalance,
             );
@@ -325,8 +327,8 @@ blockchainTests.resets('MixinStake unit tests', env => {
             ];
             expect(decreaseNextBalanceEvents).to.be.length(3);
             for (const [event, slot] of shortZip(decreaseNextBalanceEvents, decreaseCounters)) {
-                expect(event.balanceSlot).to.eq(slot);
-                expect(event.amount).to.bignumber.eq(amount);
+                expect(event.args.balanceSlot).to.eq(slot);
+                expect(event.args.amount).to.bignumber.eq(amount);
             }
             const increaseCounters = [
                 delegatedStakeToPoolByOwnerSlots[1],
@@ -335,9 +337,13 @@ blockchainTests.resets('MixinStake unit tests', env => {
             ];
             expect(increaseNextBalanceEvents).to.be.length(3);
             for (const [event, slot] of shortZip(increaseNextBalanceEvents, increaseCounters)) {
-                expect(event.balanceSlot).to.eq(slot);
-                expect(event.amount).to.bignumber.eq(amount);
+                expect(event.args.balanceSlot).to.eq(slot);
+                expect(event.args.amount).to.bignumber.eq(amount);
             }
+            // Check that all decreases occur before the increases.
+            const maxDecreaseIndex = _.max(decreaseNextBalanceEvents.map(e => e.logIndex)) as number;
+            const maxIncreaseIndex = _.max(increaseNextBalanceEvents.map(e => e.logIndex)) as number;
+            expect(maxDecreaseIndex).to.be.lt(maxIncreaseIndex);
         });
 
         it('does not change pool and global delegated stake counters when both stakes are undelegated', async () => {
