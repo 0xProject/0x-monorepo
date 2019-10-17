@@ -111,7 +111,7 @@ export const providerUtils = {
                 {
                     jsonrpc: '2.0',
                     id: _.random(1, RPC_ID_MAX),
-                    method: 'net_version',
+                    method: 'eth_chainId',
                     params: [],
                 },
                 (err: Error | null, result?: JSONRPCResponsePayload) => {
@@ -119,7 +119,7 @@ export const providerUtils = {
                         reject(err);
                     }
                     if (!result) {
-                        throw new Error("Invalid 'net_version' response");
+                        throw new Error("Invalid 'eth_chainId' response");
                     }
                     accept(_.toNumber(result.result));
                 },
