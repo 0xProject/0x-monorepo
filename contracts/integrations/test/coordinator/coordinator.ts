@@ -1,4 +1,5 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { ApprovalFactory, artifacts, CoordinatorContract } from '@0x/contracts-coordinator';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import {
     artifacts as exchangeArtifacts,
@@ -19,7 +20,7 @@ import {
 import { assetDataUtils, CoordinatorRevertErrors, transactionHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
-import { ApprovalFactory, artifacts, CoordinatorContract, CoordinatorTestFactory } from '../src';
+import { CoordinatorTestFactory } from './coordinator_test_factory';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator tests', env => {

@@ -1,10 +1,9 @@
-import { blockchainTests, expect } from '@0x/contracts-test-utils';
+import { blockchainTests, expect, verifyEvents } from '@0x/contracts-test-utils';
 
 import {
     artifacts,
     CoordinatorRegistryContract,
     CoordinatorRegistryCoordinatorEndpointSetEventArgs,
-    CoordinatorTestFactory,
 } from '../src';
 
 // tslint:disable:no-unnecessary-type-assertion
@@ -71,7 +70,7 @@ blockchainTests.resets('Coordinator Registry tests', env => {
                 coordinatorOperator,
                 coordinatorEndpoint,
             };
-            CoordinatorTestFactory.verifyEvents(txReceipt, [expectedEvent], 'CoordinatorEndpointSet');
+            verifyEvents(txReceipt, [expectedEvent], 'CoordinatorEndpointSet');
         });
     });
 });

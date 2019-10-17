@@ -106,9 +106,9 @@ interface StakingContracts {
 
 // Contract wrappers for tokens.
 interface TokenContracts {
-    erc1155: ERC1155MintableContract[];
     erc20: DummyERC20TokenContract[];
     erc721: DummyERC721TokenContract[];
+    erc1155: ERC1155MintableContract[];
     weth: WETH9Contract;
     zrx: ZRXTokenContract;
 }
@@ -411,23 +411,22 @@ export class DeploymentManager {
         txDefaults: Partial<TxData>,
         options: Partial<DeploymentOptions>,
     ): Promise<TokenContracts> {
-        const numErc1155TokensToDeploy =
-            options.numErc1155TokensToDeploy || constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY;
-        const numErc20TokensToDeploy = options.numErc20TokensToDeploy || constants.NUM_DUMMY_ERC20_TO_DEPLOY;
-        const numErc721TokensToDeploy = options.numErc721TokensToDeploy || constants.NUM_DUMMY_ERC721_TO_DEPLOY;
-
-        const erc1155 = await Promise.all(
-            _.times(
-                numErc1155TokensToDeploy,
-                async () =>
-                    await ERC1155MintableContract.deployFrom0xArtifactAsync(
-                        ERC1155Artifacts.ERC1155Mintable,
-                        environment.provider,
-                        txDefaults,
-                        ERC1155Artifacts,
-                    ),
-            ),
+        const numErc20TokensToDeploy = _.get(
+            options,
+            ['numErc20TokensToDeploy'],
+            constants.NUM_DUMMY_ERC20_CONTRACTS_TO_DEPLOY,
         );
+        const numErc721TokensToDeploy = _.get(
+            options,
+            ['numErc721TokensToDeploy'],
+            constants.NUM_DUMMY_ERC721_CONTRACTS_TO_DEPLOY,
+        );
+        const numErc1155TokensToDeploy = _.get(
+            options,
+            ['numErc1155TokensToDeploy'],
+            constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY,
+        );
+
         const erc20 = await Promise.all(
             _.times(
                 numErc20TokensToDeploy,
@@ -458,6 +457,18 @@ export class DeploymentManager {
                     ),
             ),
         );
+        const erc1155 = await Promise.all(
+            _.times(
+                numErc1155TokensToDeploy,
+                async () =>
+                    await ERC1155MintableContract.deployFrom0xArtifactAsync(
+                        ERC1155Artifacts.ERC1155Mintable,
+                        environment.provider,
+                        txDefaults,
+                        ERC1155Artifacts,
+                    ),
+            ),
+        );
 
         const weth = await WETH9Contract.deployFrom0xArtifactAsync(
             ERC20Artifacts.WETH9,
@@ -473,9 +484,9 @@ export class DeploymentManager {
         );
 
         return {
-            erc1155,
             erc20,
             erc721,
+            erc1155,
             weth,
             zrx,
         };
