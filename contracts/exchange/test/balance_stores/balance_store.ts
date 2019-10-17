@@ -58,10 +58,13 @@ export class BalanceStore {
         this._addressNames = _.cloneDeep(balanceStore._addressNames);
     }
 
+    /**
+     * Returns the human-readable name for the given address, if it exists.
+     * @param address The address to get the name for.
+     */
     private _readableAddressName(address: string): string {
         return this._addressNames[address] || address;
     }
-
 
     /**
      * Throws iff balance stores do not have the same ETH balances.
@@ -76,7 +79,6 @@ export class BalanceStore {
             );
         }
     }
-
 
     /**
      * Throws iff balance stores do not have the same ERC20 balances.
