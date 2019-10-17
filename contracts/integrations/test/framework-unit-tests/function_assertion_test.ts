@@ -6,10 +6,10 @@ import {
     getRandomInteger,
     hexRandom,
 } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StringRevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { artifacts, TestFrameworkContract, TestFrameworkSomeEventEventArgs, TestFrameworkEvents } from '../../src';
+import { artifacts, TestFrameworkContract, TestFrameworkEventEventArgs, TestFrameworkEvents } from '../../src';
 import { FunctionAssertion, Result } from '../utils/function_assertions';
 
 const ZERO = constants.ZERO_AMOUNT;
@@ -30,13 +30,12 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
     describe('runAsync', () => {
         it('should call the before function with the provided arguments', async () => {
             let sideEffectTarget = ZERO;
-            const assertion = new FunctionAssertion(exampleContract.noEffect, {
-                before: async (inputValue: BigNumber) => {
-                    sideEffectTarget = inputValue;
+            const assertion = new FunctionAssertion(exampleContract.returnInteger, {
+                before: async (input: BigNumber) => {
+                    sideEffectTarget = randomInput;
                 },
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {},
+                after: async (beforeInfo: any, result: Result, input: BigNumber) => {},
             });
-
             const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
@@ -44,36 +43,33 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should call the after function with the provided arguments', async () => {
             let sideEffectTarget = ZERO;
-            const assertion = new FunctionAssertion(exampleContract.noEffect, {
-                before: async (inputValue: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
-                    sideEffectTarget = returnValue;
+            const assertion = new FunctionAssertion(exampleContract.returnInteger, {
+                before: async (input: BigNumber) => {},
+                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
+                    sideEffectTarget = input;
                 },
             });
-
             const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             await assertion.runAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
         it('should not fail immediately if the wrapped function fails', async () => {
-            await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
-            const assertion = new FunctionAssertion(exampleContract.revertSideEffect, {
-                before: async (inputValue: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {},
+            const assertion = new FunctionAssertion(exampleContract.emptyRevert, {
+                before: async () => {},
+                after: async (beforeInfo: any, result: Result) => {},
             });
-            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
-            await assertion.runAsync(randomInput);
+            await assertion.runAsync();
         });
 
-        it('should pass the return value from "before" to "after"', async () => {
+        it('should pass the return value of "before" to "after"', async () => {
             const randomInput = getRandomInteger(ZERO, MAX_UINT256);
             let sideEffectTarget = constants.ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.noEffect, {
-                before: async (inputValue: BigNumber) => {
+            const assertion = new FunctionAssertion(exampleContract.returnInteger, {
+                before: async (input: BigNumber) => {
                     return randomInput;
                 },
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
+                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
                     sideEffectTarget = beforeInfo;
                 },
             });
@@ -83,9 +79,9 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should pass the result from the function call to "after"', async () => {
             let sideEffectTarget = constants.ZERO_AMOUNT;
-            const assertion = new FunctionAssertion(exampleContract.revertSideEffect, {
-                before: async (inputValue: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
+            const assertion = new FunctionAssertion(exampleContract.returnInteger, {
+                before: async (input: BigNumber) => {},
+                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
                     sideEffectTarget = result.data;
                 },
             });
@@ -96,40 +92,43 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should pass the receipt from the function call to "after"', async () => {
             let sideEffectTarget = {} as TransactionReceiptWithDecodedLogs;
-            const assertion = new FunctionAssertion(exampleContract.revertSideEffect, {
-                before: async (inputValue: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
+            const assertion = new FunctionAssertion(exampleContract.emitEvent, {
+                before: async (input: string) => {},
+                after: async (beforeInfo: any, result: Result, input: string) => {
                     if (result.receipt) {
                         sideEffectTarget = result.receipt;
-                    } else {
-                        throw new Error('No receipt received.');
                     }
                 },
             });
-            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
-            await assertion.runAsync(randomInput);
+
+            const input = 'emitted data';
+            await assertion.runAsync(input);
 
             // Ensure that the correct events were emitted.
-            const [event] = filterLogsToArguments<TestFrameworkSomeEventEventArgs>(
+            const [event] = filterLogsToArguments<TestFrameworkEventEventArgs>(
                 sideEffectTarget.logs,
-                TestFrameworkEvents.SomeEvent,
+                TestFrameworkEvents.Event,
             );
-            expect(event).to.be.deep.eq({ someNumber: randomInput });
+            expect(event).to.be.deep.eq({ input });
         });
 
         it('should pass the error to "after" if the function call fails', async () => {
-            let sideEffectTarget: Error = new Error('');
-            await exampleContract.setCounter.awaitTransactionSuccessAsync(new BigNumber(1));
-            const assertion = new FunctionAssertion(exampleContract.revertSideEffect, {
-                before: async (inputValue: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, returnValue: BigNumber) => {
+            let sideEffectTarget: Error;
+            const assertion = new FunctionAssertion(exampleContract.stringRevert, {
+                before: async string => {},
+                after: async (any, result: Result, string) => {
                     sideEffectTarget = result.data;
                 },
             });
-            const randomInput = getRandomInteger(ZERO, MAX_UINT256);
-            await assertion.runAsync(randomInput);
-            const errorMessage = 'VM Exception while processing transaction: revert Revert';
-            expect(sideEffectTarget.message).to.be.eq(errorMessage);
+            const message = 'error message';
+            await assertion.runAsync(message);
+
+            const expectedError = new StringRevertError(message);
+            return expect(
+                new Promise((resolve, reject) => {
+                    reject(sideEffectTarget);
+                }),
+            ).to.revertWith(expectedError);
         });
     });
 });

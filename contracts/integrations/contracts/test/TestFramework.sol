@@ -1,64 +1,45 @@
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 
+
+// This contract is intended to be used in the unit tests that test the typescript
+// test framework found in `test/utils/`
 contract TestFramework {
 
-    event SomeEvent(uint256 someNumber);
+    event Event(string input);
 
-    uint256 public counter;
+    // bytes4(keccak256("RichRevertErrorSelector(string)"))
+    bytes4 internal constant RICH_REVERT_ERROR_SELECTOR = 0x49a7e246;
 
-    function setCounter(uint256 newCounter)
+    function emitEvent(string calldata input)
         external
     {
-        counter = newCounter;
+        emit Event(input);
     }
 
-    function revertSideEffect(uint256 returnValue)
+    function emptyRevert()
         external
-        returns (uint256)
     {
-        if (counter != 0) {
-            revert("Revert");
-        }
-
-        emit SomeEvent(returnValue);
-        return returnValue;
+        revert();
     }
 
-    function equalsSideEffect(uint256 possiblyZero)
+    function stringRevert(string calldata message)
         external
-        view
-        returns (bool)
     {
-        if (counter == 0) {
-            return possiblyZero == 0;
-        } else {
-            return false;
-        }
+        revert(message);
     }
 
-    function noEffect(uint256)
+    function doNothing()
         external
         pure
     {} // solhint-disable-line no-empty-blocks
 
-    function numberSideEffect()
+    function returnInteger(uint256 integer)
         external
-        view
+        pure
         returns (uint256)
     {
-        return counter;
-    }
-
-    function hashSideEffect(uint256 arg1, bytes32 arg2)
-        external
-        view
-        returns (bytes32)
-    {
-        if (counter == 0) {
-            return keccak256(abi.encode(arg1, arg2));
-        } else {
-            return keccak256(hex"");
-        }
+        return integer;
     }
 }

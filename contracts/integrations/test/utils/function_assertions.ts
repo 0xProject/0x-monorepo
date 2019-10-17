@@ -3,7 +3,6 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 export interface ContractGetterFunction {
     callAsync: (...args: any[]) => Promise<any>;
-    getABIEncodedTransactionData: (...args: any[]) => string;
 }
 
 export interface ContractWrapperFunction extends ContractGetterFunction {
