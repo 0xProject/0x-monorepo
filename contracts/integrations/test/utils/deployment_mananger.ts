@@ -479,7 +479,7 @@ export class DeploymentManager {
         };
     }
 
-    constructor(
+    protected constructor(
         assetProxies: AssetProxyContracts,
         assetProxyOwner: AssetProxyOwnerContract,
         exchange: ExchangeContract,

@@ -44,11 +44,6 @@ contract ZeroExV3ExchangeWrapper is
     using TokenInteract for address;
     using AdvancedTokenInteract for address;
 
-    // ============ Constants ============
-
-    // maximum gas price, 30 Gwei (choose value for deployment)
-    uint256 constant MAX_GAS_PRICE = 30000000000 wei;
-
     // ============ State Variables ============
 
     // msg.senders that will put the correct tradeOriginator in callerData when doing an exchange
@@ -62,6 +57,9 @@ contract ZeroExV3ExchangeWrapper is
 
     // address of the WETH token contract
     address public WETH_TOKEN;
+
+    // maximum gas price, choose initial value for deployment
+    uint256 public MAX_GAS_PRICE = 30000000000 wei; // 30 Gwei
 
     // ============ Constructor ============
 
@@ -85,7 +83,7 @@ contract ZeroExV3ExchangeWrapper is
     // ============ Public Functions ============
 
     function exchange(
-        address tradeOriginator,
+        address /* tradeOriginator */,
         address receiver,
         address makerToken,
         address takerToken,
@@ -96,31 +94,13 @@ contract ZeroExV3ExchangeWrapper is
         returns (uint256)
     {
         // prepare the exchange
-        (LibOrder.Order memory order, address takerFeeToken) = parseOrder(orderData, makerToken, takerToken);
+        LibOrder.Order memory order = parseOrder(orderData, makerToken, takerToken);
         bytes memory signature = parseSignature(orderData);
-
-        // transfer taker fee from trader if applicable
-        transferTakerFee(
-            order,
-            tradeOriginator,
-            requestedFillAmount,
-            takerFeeToken
-        );
-
-        // set protocol fee allowance
-        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
-        address protocolFeeCollector = v3Exchange.protocolFeeCollector();
-        if (protocolFeeCollector != address(0)) {
-            WETH_TOKEN.ensureAllowance(
-                protocolFeeCollector,
-                MathHelpers.maxUint256()
-            );
-        }
 
         // make sure that the exchange can take the tokens from this contract
         takerToken.ensureAllowance(
             ZERO_EX_TOKEN_PROXY,
-            requestedFillAmount
+            requestedFillAmount.add(order.takerFee)
         );
 
         // do the exchange
@@ -151,7 +131,7 @@ contract ZeroExV3ExchangeWrapper is
         view
         returns (uint256)
     {
-        (LibOrder.Order memory order, ) = parseOrder(orderData, makerToken, takerToken);
+        LibOrder.Order memory order = parseOrder(orderData, makerToken, takerToken);
 
         return MathHelpers.getPartialAmountRoundedUp(
             order.takerAssetAmount,
@@ -169,7 +149,7 @@ contract ZeroExV3ExchangeWrapper is
         view
         returns (uint256)
     {
-        (LibOrder.Order memory order, ) = parseOrder(orderData, makerToken, takerToken);
+        LibOrder.Order memory order = parseOrder(orderData, makerToken, takerToken);
         IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
         LibOrder.OrderInfo memory orderInfo = v3Exchange.getOrderInfo(order);
 
@@ -187,43 +167,42 @@ contract ZeroExV3ExchangeWrapper is
         );
     }
 
-    // ============ Private Functions ============
-
-    function transferTakerFee(
-        LibOrder.Order memory order,
-        address tradeOriginator,
-        uint256 requestedFillAmount,
-        address takerFeeToken
-    )
-        private
+    function setMaxGasPrice(uint256 newMaxGasPrice)
+        external
+        onlyOwner
     {
-        uint256 takerFee = MathHelpers.getPartialAmount(
-            requestedFillAmount,
-            order.takerAssetAmount,
-            order.takerFee
-        );
-
-        if (takerFee == 0) {
-            return;
-        }
-
-        require(
-            TRUSTED_MSG_SENDER[msg.sender],
-            "ZeroExV3ExchangeWrapper#transferTakerFee: Only trusted senders can dictate the fee payer"
-        );
-
-        takerFeeToken.transferFrom(
-            tradeOriginator,
-            address(this),
-            takerFee
-        );
-
-        // make sure that the exchange can take the taker fee from this contract
-        takerFeeToken.ensureAllowance(
-            ZERO_EX_TOKEN_PROXY,
-            takerFee
-        );
+        MAX_GAS_PRICE = newMaxGasPrice;
     }
+
+    function addTrustedSender(address trustedSender)
+        external
+        onlyOwner
+    {
+        TRUSTED_MSG_SENDER[trustedSender] = true;
+    }
+
+    function removeTrustedSender(address trustedSender)
+        external
+        onlyOwner
+    {
+        TRUSTED_MSG_SENDER[trustedSender] = false;
+    }
+
+    function approveProtocolFeeCollector()
+        external
+    {
+        // set protocol fee allowance
+        IExchange v3Exchange = IExchange(ZERO_EX_EXCHANGE);
+        address protocolFeeCollector = v3Exchange.protocolFeeCollector();
+        if (protocolFeeCollector != address(0)) {
+            WETH_TOKEN.ensureAllowance(
+                protocolFeeCollector,
+                MathHelpers.maxUint256()
+            );
+        }
+    }
+
+    // ============ Private Functions ============
 
     function validateProtocolFee(
         uint256 protocolFeePaid
@@ -259,9 +238,9 @@ contract ZeroExV3ExchangeWrapper is
 
         /* solium-disable-next-line security/no-inline-assembly */
         assembly {
-            mstore(add(signature, 32), mload(add(orderData, 416)))  // first 32 bytes
-            mstore(add(signature, 64), mload(add(orderData, 448)))  // next 32 bytes
-            mstore(add(signature, 66), mload(add(orderData, 450)))  // last 2 bytes
+            mstore(add(signature, 32), mload(add(orderData, 352)))  // first 32 bytes
+            mstore(add(signature, 64), mload(add(orderData, 384)))  // next 32 bytes
+            mstore(add(signature, 66), mload(add(orderData, 386)))  // last 2 bytes
         }
 
         return signature;
@@ -274,11 +253,9 @@ contract ZeroExV3ExchangeWrapper is
     )
         private
         pure
-        returns (LibOrder.Order memory, address)
+        returns (LibOrder.Order memory)
     {
         LibOrder.Order memory order;
-        address makerFeeToken;
-        address takerFeeToken;
 
         /* solium-disable-next-line security/no-inline-assembly */
         assembly {
@@ -292,16 +269,14 @@ contract ZeroExV3ExchangeWrapper is
             mstore(add(order, 224), mload(add(orderData, 256))) // takerFee
             mstore(add(order, 256), mload(add(orderData, 288))) // expirationTimeSeconds
             mstore(add(order, 288), mload(add(orderData, 320))) // salt
-            makerFeeToken := mload(add(orderData, 352))
-            takerFeeToken := mload(add(orderData, 384))
         }
 
         order.makerAssetData = tokenAddressToAssetData(makerToken);
         order.takerAssetData = tokenAddressToAssetData(takerToken);
-        order.makerFeeAssetData = tokenAddressToAssetData(makerFeeToken);
-        order.takerFeeAssetData = tokenAddressToAssetData(takerFeeToken);
+        order.makerFeeAssetData = order.makerAssetData;
+        order.takerFeeAssetData = order.takerAssetData;
 
-        return (order, takerFeeToken);
+        return order;
     }
 
     function tokenAddressToAssetData(
