@@ -8,7 +8,6 @@ import {
     hexRandom,
     Numberish,
     shortZip,
-    toHex,
 } from '@0x/contracts-test-utils';
 import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
@@ -158,7 +157,7 @@ blockchainTests.resets('MixinStake unit tests', env => {
 
     describe('moveStake()', () => {
         const INVALID_POOL_ERROR = 'INVALID_POOL';
-        const INVALID_POOL_ID = hexLeftPad(toHex(0));
+        const INVALID_POOL_ID = hexLeftPad(0);
         const VALID_POOL_IDS = [hexRandom(), hexRandom()];
         let delegatedStakeToPoolByOwnerSlots: string[];
         let delegatedStakeByPoolIdSlots: string[];
@@ -193,6 +192,15 @@ blockchainTests.resets('MixinStake unit tests', env => {
         it('throws if the "to" pool is invalid', async () => {
             const tx = testContract.moveStake.awaitTransactionSuccessAsync(
                 { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[0] },
+                { status: StakeStatus.Delegated, poolId: INVALID_POOL_ID },
+                getRandomInteger(0, 100e18),
+            );
+            return expect(tx).to.revertWith(INVALID_POOL_ERROR);
+        });
+
+        it('throws if the "from" and "to" pools are invalid', async () => {
+            const tx = testContract.moveStake.awaitTransactionSuccessAsync(
+                { status: StakeStatus.Delegated, poolId: INVALID_POOL_ID },
                 { status: StakeStatus.Delegated, poolId: INVALID_POOL_ID },
                 getRandomInteger(0, 100e18),
             );
