@@ -40,8 +40,8 @@ export class FillOrderWrapper {
         txReceipt: TransactionReceiptWithDecodedLogs,
         signedOrder: SignedOrder,
         takerAddress: string,
-        opts: { takerAssetFillAmount?: BigNumber } = {},
         initBalanceStore: BalanceStore,
+        opts: { takerAssetFillAmount?: BigNumber } = {},
     ): [FillResults, FillEventArgs, BalanceStore] {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
@@ -168,7 +168,7 @@ export class FillOrderWrapper {
             simulatedFillResults,
             simulatedFillEvent,
             simulatedFinalBalanceStore,
-        ] = FillOrderWrapper.simulateFillOrder(txReceipt, signedOrder, from, opts, this._blockchainBalanceStore);
+        ] = FillOrderWrapper.simulateFillOrder(txReceipt, signedOrder, from, this._blockchainBalanceStore, opts);
         // Assert state transition
         expect(simulatedFillResults, 'Fill Results').to.be.deep.equal(fillResults);
         expect(simulatedFillEvent, 'Fill Events').to.be.deep.equal(fillEvent);
