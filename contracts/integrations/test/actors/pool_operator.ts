@@ -14,8 +14,8 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
 
         /**
          * The mixin pattern requires that this constructor uses `...args: any[]`, but this class
-         * really expects a single `PoolOperatorConfig` parameter (assuming `Actor` is used ) as
-         * the base class.
+         * really expects a single `PoolOperatorConfig` parameter (assuming `Actor` is used as the
+         * base class).
          */
         constructor(...args: any[]) {
             super(...args);
