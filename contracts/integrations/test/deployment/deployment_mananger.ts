@@ -124,12 +124,6 @@ export interface DeploymentOptions {
 export class DeploymentManager {
     public static protocolFeeMultiplier = new BigNumber(150000);
 
-    public assetProxies: AssetProxyContracts;
-    public governor: ZeroExGovernorContract;
-    public exchange: ExchangeContract;
-    public staking: StakingContracts;
-    public tokens: TokenContracts;
-
     /**
      * Fully deploy the 0x exchange and staking contracts and configure the system with the
      * asset proxy owner multisig.
@@ -141,6 +135,8 @@ export class DeploymentManager {
         options: Partial<DeploymentOptions> = {},
     ): Promise<DeploymentManager> {
         const chainId = await environment.getChainIdAsync();
+        const accounts = await environment.getAccountAddressesAsync();
+
         const owner = options.owner || (await environment.getAccountAddressesAsync())[0];
         const txDefaults = {
             ...environment.txDefaults,
@@ -204,7 +200,7 @@ export class DeploymentManager {
             staking.stakingProxy,
         ]);
 
-        return new DeploymentManager(assetProxies, governor, exchange, staking, tokens);
+        return new DeploymentManager(assetProxies, governor, exchange, staking, tokens, chainId, accounts);
     }
 
     /**
@@ -411,21 +407,18 @@ export class DeploymentManager {
         txDefaults: Partial<TxData>,
         options: Partial<DeploymentOptions>,
     ): Promise<TokenContracts> {
-        const numErc20TokensToDeploy = _.get(
-            options,
-            ['numErc20TokensToDeploy'],
-            constants.NUM_DUMMY_ERC20_CONTRACTS_TO_DEPLOY,
-        );
-        const numErc721TokensToDeploy = _.get(
-            options,
-            ['numErc721TokensToDeploy'],
-            constants.NUM_DUMMY_ERC721_CONTRACTS_TO_DEPLOY,
-        );
-        const numErc1155TokensToDeploy = _.get(
-            options,
-            ['numErc1155TokensToDeploy'],
-            constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY,
-        );
+        const numErc20TokensToDeploy =
+            options.numErc20TokensToDeploy !== undefined
+                ? options.numErc20TokensToDeploy
+                : constants.NUM_DUMMY_ERC20_TO_DEPLOY;
+        const numErc721TokensToDeploy =
+            options.numErc721TokensToDeploy !== undefined
+                ? options.numErc721TokensToDeploy
+                : constants.NUM_DUMMY_ERC721_TO_DEPLOY;
+        const numErc1155TokensToDeploy =
+            options.numErc1155TokensToDeploy !== undefined
+                ? options.numErc1155TokensToDeploy
+                : constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY;
 
         const erc20 = await Promise.all(
             _.times(
@@ -493,16 +486,12 @@ export class DeploymentManager {
     }
 
     constructor(
-        assetProxies: AssetProxyContracts,
-        governor: ZeroExGovernorContract,
-        exchange: ExchangeContract,
-        staking: StakingContracts,
-        tokens: TokenContracts,
-    ) {
-        this.assetProxies = assetProxies;
-        this.governor = governor;
-        this.exchange = exchange;
-        this.staking = staking;
-        this.tokens = tokens;
-    }
+        public assetProxies: AssetProxyContracts,
+        public governor: ZeroExGovernorContract,
+        public exchange: ExchangeContract,
+        public staking: StakingContracts,
+        public tokens: TokenContracts,
+        public chainId: number,
+        public accounts: string[],
+    ) {}
 }
