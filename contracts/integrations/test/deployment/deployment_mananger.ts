@@ -485,7 +485,7 @@ export class DeploymentManager {
         };
     }
 
-    constructor(
+    protected constructor(
         public assetProxies: AssetProxyContracts,
         public governor: ZeroExGovernorContract,
         public exchange: ExchangeContract,

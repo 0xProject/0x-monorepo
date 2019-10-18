@@ -8,7 +8,7 @@ export interface PoolOperatorConfig extends ActorConfig {
 
 export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
-        public readonly operatorShare: number;
+        public operatorShare: number;
         public readonly poolIds: string[] = [];
         public readonly actor: Actor;
 
@@ -41,13 +41,14 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
         }
 
         /**
-         * Joins the staking pool specified by the given ID.
+         * Decreases the operator share of a specified staking pool.
          */
         public async decreaseOperatorShareAsync(
             poolId: string,
             newOperatorShare: number,
         ): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
+            this.operatorShare = newOperatorShare;
             return stakingContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
                 poolId,
                 newOperatorShare,
