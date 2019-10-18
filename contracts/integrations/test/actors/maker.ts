@@ -56,4 +56,4 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase) {
     };
 }
 
-export const Maker = MakerMixin(Actor);
+export class Maker extends MakerMixin(Actor) {}

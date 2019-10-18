@@ -63,4 +63,4 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
     };
 }
 
-export const PoolOperator = PoolOperatorMixin(Actor);
+export class PoolOperator extends PoolOperatorMixin(Actor) {}
