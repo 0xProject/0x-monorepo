@@ -1,6 +1,6 @@
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
-import { artifacts, AssetProxyOwnerContract, AssetProxyOwnerSubmissionEventArgs } from '@0x/contracts-multisig';
+import { artifacts, ZeroExGovernorContract, ZeroExGovernorSubmissionEventArgs } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
     ReadOnlyProxyContract,
@@ -17,19 +17,19 @@ import { constants } from './utils/constants';
 import { providerFactory } from './utils/provider_factory';
 
 async function submitAndExecuteTransactionAsync(
-    assetProxyOwner: AssetProxyOwnerContract,
+    governor: ZeroExGovernorContract,
     destination: string,
     data: string,
 ): Promise<void> {
-    const txReceipt = await assetProxyOwner.submitTransaction.awaitTransactionSuccessAsync(
+    const txReceipt = await governor.submitTransaction.awaitTransactionSuccessAsync(
         destination,
         constants.ZERO_AMOUNT,
         data,
     );
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    const txId = (txReceipt.logs[0] as LogWithDecodedArgs<AssetProxyOwnerSubmissionEventArgs>).args.transactionId;
+    const txId = (txReceipt.logs[0] as LogWithDecodedArgs<ZeroExGovernorSubmissionEventArgs>).args.transactionId;
     logUtils.log(`${txId} submitted`);
-    await assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(txId);
+    await governor.executeTransaction.awaitTransactionSuccessAsync(txId);
     logUtils.log(`${txId} executed`);
 }
 
@@ -148,8 +148,8 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         },
     ];
 
-    const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-        artifacts.AssetProxyOwner,
+    const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
+        artifacts.ZeroExGovernor,
         provider,
         txDefaults,
         artifacts,
@@ -169,43 +169,43 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
     await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.erc1155Proxy);
     await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.multiAssetProxy);
     await exchange.registerAssetProxy.awaitTransactionSuccessAsync(deployedAddresses.staticCallProxy);
-    await exchange.transferOwnership.awaitTransactionSuccessAsync(assetProxyOwner.address);
+    await exchange.transferOwnership.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('Exchange configured!');
 
     logUtils.log('Configuring ZrxVault...');
-    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address);
+    await zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('ZrxVault configured!');
 
     logUtils.log('Configuring StakingProxy...');
-    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address);
+    await stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address);
     logUtils.log('StakingProxy configured!');
 
     logUtils.log('Transfering ownership of 2.0 contracts...');
-    const oldAssetProxyOwner = new AssetProxyOwnerContract(deployedAddresses.assetProxyOwner, provider, txDefaults);
+    const oldAssetProxyOwner = new ZeroExGovernorContract(deployedAddresses.assetProxyOwner, provider, txDefaults);
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.exchangeV2, // Exchange 2.1 address
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
+        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc20Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
+        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc721Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
+        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.erc1155Proxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
+        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
     );
     await submitAndExecuteTransactionAsync(
         oldAssetProxyOwner,
         deployedAddresses.multiAssetProxy,
-        ownableInterface.transferOwnership.getABIEncodedTransactionData(assetProxyOwner.address),
+        ownableInterface.transferOwnership.getABIEncodedTransactionData(governor.address),
     );
     logUtils.log('Ownership transferred!');
 
@@ -245,7 +245,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         functionCalls.map(item => item.destination),
         functionCalls.map(() => constants.ZERO_AMOUNT),
     ]);
-    await submitAndExecuteTransactionAsync(assetProxyOwner, assetProxyOwner.address, batchTransactionData);
+    await submitAndExecuteTransactionAsync(governor, governor.address, batchTransactionData);
 }
 
 (async () => {
