@@ -33,14 +33,10 @@ blockchainTests.resets('Cumulative Reward Tracking', env => {
 
     describe('Tracking Cumulative Rewards (CR)', () => {
         it('pool created at epoch 0', async () => {
-            await simulation.runTestAsync([], [TestAction.CreatePool], [{ event: 'SetCumulativeReward', epoch: 0 }]);
+            await simulation.runTestAsync([], [TestAction.CreatePool], []);
         });
         it('pool created in epoch >0', async () => {
-            await simulation.runTestAsync(
-                [TestAction.Finalize],
-                [TestAction.CreatePool],
-                [{ event: 'SetCumulativeReward', epoch: 1 }],
-            );
+            await simulation.runTestAsync([TestAction.Finalize], [TestAction.CreatePool], []);
         });
         it('delegating in the same epoch pool is created', async () => {
             await simulation.runTestAsync(

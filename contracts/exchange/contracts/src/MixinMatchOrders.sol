@@ -51,8 +51,7 @@ contract MixinMatchOrders is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -81,8 +80,7 @@ contract MixinMatchOrders is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(
@@ -111,8 +109,7 @@ contract MixinMatchOrders is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(
@@ -141,8 +138,7 @@ contract MixinMatchOrders is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         return _matchOrders(

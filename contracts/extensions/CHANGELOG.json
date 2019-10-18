@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Dependencies updated"
+            },
+            {
+                "note": "Replaced the use of `SafeMath` with `LibSafeMath`",
+                "pr": 2254
             }
         ],
         "timestamp": 1570135330

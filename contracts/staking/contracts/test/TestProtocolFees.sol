@@ -27,8 +27,8 @@ contract TestProtocolFees is
     TestStakingNoWETH
 {
     struct TestPool {
-        uint256 operatorStake;
-        uint256 membersStake;
+        uint96 operatorStake;
+        uint96 membersStake;
         mapping(address => bool) isMaker;
     }
 
@@ -48,13 +48,6 @@ contract TestProtocolFees is
         _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
-    function addMakerToPool(bytes32 poolId, address makerAddress)
-        external
-    {
-        _poolJoinedByMakerAddress[makerAddress].poolId = poolId;
-        _poolJoinedByMakerAddress[makerAddress].confirmed = true;
-    }
-
     function advanceEpoch()
         external
     {
@@ -64,8 +57,8 @@ contract TestProtocolFees is
     /// @dev Create a test pool.
     function createTestPool(
         bytes32 poolId,
-        uint256 operatorStake,
-        uint256 membersStake,
+        uint96 operatorStake,
+        uint96 membersStake,
         address[] calldata makerAddresses
     )
         external
@@ -76,6 +69,7 @@ contract TestProtocolFees is
         for (uint256 i = 0; i < makerAddresses.length; ++i) {
             pool.isMaker[makerAddresses[i]] = true;
             _makersToTestPoolIds[makerAddresses[i]] = poolId;
+            poolIdByMaker[makerAddresses[i]] = poolId;
         }
     }
 
@@ -105,11 +99,12 @@ contract TestProtocolFees is
     function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
         TestPool memory pool = _testPools[poolId];
-        uint256 stake = pool.operatorStake + pool.membersStake;
-        return IStructs.StakeBalance({
+        uint96 stake = pool.operatorStake + pool.membersStake;
+        return IStructs.StoredBalance({
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: stake,
             nextEpochBalance: stake
         });
@@ -119,10 +114,11 @@ contract TestProtocolFees is
     function getStakeDelegatedToPoolByOwner(address, bytes32 poolId)
         public
         view
-        returns (IStructs.StakeBalance memory balance)
+        returns (IStructs.StoredBalance memory balance)
     {
         TestPool memory pool = _testPools[poolId];
-        return IStructs.StakeBalance({
+        return IStructs.StoredBalance({
+            currentEpoch: currentEpoch.downcastToUint64(),
             currentEpochBalance: pool.operatorStake,
             nextEpochBalance: pool.operatorStake
         });

@@ -29,7 +29,6 @@ import "../libs/LibStakingRichErrors.sol";
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
-    MixinConstants,
     Authorizable
 {
     // address of staking contract
@@ -41,40 +40,28 @@ contract MixinStorage is
     // address for read-only proxy to call
     address public readOnlyProxyCallee;
 
-    // mapping from StakeStatus to the total amount of stake in that status for the entire
-    // staking system.
-    mapping (uint8 => IStructs.StoredBalance) public globalStakeByStatus;
+    // state of read-only mode in stakingProxy
+    IStructs.ReadOnlyState public readOnlyState;
 
-    // mapping from Owner to Amount of Active Stake
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _activeStakeByOwner;
+    // mapping from StakeStatus to global stored balance
+    // NOTE: only Status.DELEGATED is used to access this mapping, but this format
+    // is used for extensibility
+    mapping (uint8 => IStructs.StoredBalance) internal _globalStakeByStatus;
 
-    // Mapping from Owner to Amount of Inactive Stake
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _inactiveStakeByOwner;
-
-    // Mapping from Owner to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
-    mapping (address => IStructs.StoredBalance) internal _delegatedStakeByOwner;
+    // mapping from StakeStatus to address of staker to stored balance
+    mapping (uint8 => mapping (address => IStructs.StoredBalance)) internal _ownerStakeByStatus;
 
     // Mapping from Owner to Pool Id to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (address => mapping (bytes32 => IStructs.StoredBalance)) internal _delegatedStakeToPoolByOwner;
 
     // Mapping from Pool Id to Amount Delegated
-    // (access using _loadSyncedBalance or _loadUnsyncedBalance)
     mapping (bytes32 => IStructs.StoredBalance) internal _delegatedStakeByPoolId;
 
-    // mapping from Owner to Amount of Withdrawable Stake
-    mapping (address => uint256) internal _withdrawableStakeByOwner;
+    // tracking Pool Id, a unique identifier for each staking pool.
+    bytes32 public lastPoolId;
 
-    // tracking Pool Id
-    bytes32 public nextPoolId = INITIAL_POOL_ID;
-
-    // mapping from Maker Address to a struct representing the pool the maker has joined and
-    // whether the operator of that pool has subsequently added the maker.
-    // (access externally using `getStakingPoolIdOfMaker`)
-    mapping (address => IStructs.MakerPoolJoinStatus) internal _poolJoinedByMakerAddress;
+    // mapping from Maker Address to Pool Id of maker
+    mapping (address => bytes32) public poolIdByMaker;
 
     // mapping from Pool Id to Pool
     mapping (bytes32 => IStructs.Pool) internal _poolById;
@@ -83,7 +70,7 @@ contract MixinStorage is
     mapping (bytes32 => uint256) public rewardsByPoolId;
 
     // current epoch
-    uint256 public currentEpoch = INITIAL_EPOCH;
+    uint256 public currentEpoch;
 
     // current epoch start time
     uint256 public currentEpochStartTimeInSeconds;
@@ -107,9 +94,6 @@ contract MixinStorage is
 
     // Minimum amount of stake required in a pool to collect rewards.
     uint256 public minimumPoolStake;
-
-    // Maximum number of maker addresses allowed to be registered to a pool.
-    uint256 public maximumMakersInPool;
 
     // Numerator for cobb douglas alpha factor.
     uint32 public cobbDouglasAlphaNumerator;

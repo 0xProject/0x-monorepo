@@ -119,32 +119,24 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                globalStakeByStatus_slot,
-                globalStakeByStatus_offset,
+                readOnlyState_slot,
+                readOnlyState_offset,
                 slot,
                 offset
             )
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _activeStakeByOwner_slot,
-                _activeStakeByOwner_offset,
+                _globalStakeByStatus_slot,
+                _globalStakeByStatus_offset,
                 slot,
                 offset
             )
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _inactiveStakeByOwner_slot,
-                _inactiveStakeByOwner_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                _delegatedStakeByOwner_slot,
-                _delegatedStakeByOwner_offset,
+                _ownerStakeByStatus_slot,
+                _ownerStakeByStatus_offset,
                 slot,
                 offset
             )
@@ -167,24 +159,16 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                _withdrawableStakeByOwner_slot,
-                _withdrawableStakeByOwner_offset,
+                lastPoolId_slot,
+                lastPoolId_offset,
                 slot,
                 offset
             )
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                nextPoolId_slot,
-                nextPoolId_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                _poolJoinedByMakerAddress_slot,
-                _poolJoinedByMakerAddress_offset,
+                poolIdByMaker_slot,
+                poolIdByMaker_offset,
                 slot,
                 offset
             )
@@ -265,14 +249,6 @@ contract TestStorageLayoutAndConstants is
             assertSlotAndOffset(
                 minimumPoolStake_slot,
                 minimumPoolStake_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                maximumMakersInPool_slot,
-                maximumMakersInPool_offset,
                 slot,
                 offset
             )

@@ -1,7 +1,12 @@
 import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import {
+    artifacts as exchangeArtifacts,
+    ExchangeContract,
+    ExchangeWrapper,
+    TestProtocolFeeCollectorContract,
+} from '@0x/contracts-exchange';
 import {
     blockchainTests,
     constants,
@@ -15,13 +20,7 @@ import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 
-import {
-    artifacts,
-    ForwarderContract,
-    ForwarderTestFactory,
-    ForwarderWrapper,
-    TestProtocolFeeCollectorContract,
-} from '../src';
+import { artifacts, ForwarderContract, ForwarderTestFactory, ForwarderWrapper } from '../src';
 
 const DECIMALS_DEFAULT = 18;
 
@@ -114,7 +113,7 @@ blockchainTests(ContractName.Forwarder, env => {
 
         // Set up Protocol Fee Collector
         protocolFeeCollector = await TestProtocolFeeCollectorContract.deployFrom0xArtifactAsync(
-            artifacts.TestProtocolFeeCollector,
+            exchangeArtifacts.TestProtocolFeeCollector,
             env.provider,
             env.txDefaults,
             {},

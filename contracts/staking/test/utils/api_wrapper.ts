@@ -15,6 +15,7 @@ import {
     TestCobbDouglasContract,
     TestStakingContract,
     TestStakingEvents,
+    ZrxVaultBackstopContract,
     ZrxVaultContract,
 } from '../../src';
 
@@ -32,6 +33,7 @@ export class StakingApiWrapper {
     public zrxTokenContract: DummyERC20TokenContract;
     public wethContract: WETH9Contract;
     public cobbDouglasContract: TestCobbDouglasContract;
+    public zrxVaultBackstopContract: ZrxVaultBackstopContract;
     public utils = {
         // Epoch Utils
         fastForwardToNextEpochAsync: async (): Promise<void> => {
@@ -114,7 +116,6 @@ export class StakingApiWrapper {
                 new BigNumber(_params.epochDurationInSeconds),
                 new BigNumber(_params.rewardDelegatedStakeWeight),
                 new BigNumber(_params.minimumPoolStake),
-                new BigNumber(_params.maximumMakersInPool),
                 new BigNumber(_params.cobbDouglasAlphaNumerator),
                 new BigNumber(_params.cobbDouglasAlphaDenominator),
             );
@@ -135,7 +136,6 @@ export class StakingApiWrapper {
                     'epochDurationInSeconds',
                     'rewardDelegatedStakeWeight',
                     'minimumPoolStake',
-                    'maximumMakersInPool',
                     'cobbDouglasAlphaNumerator',
                     'cobbDouglasAlphaDenominator',
                     'wethProxyAddress',
@@ -176,13 +176,14 @@ export class StakingApiWrapper {
         zrxTokenContract: DummyERC20TokenContract,
         wethContract: WETH9Contract,
         cobbDouglasContract: TestCobbDouglasContract,
+        zrxVaultBackstopContract: ZrxVaultBackstopContract,
     ) {
         this._web3Wrapper = env.web3Wrapper;
         this.zrxVaultContract = zrxVaultContract;
         this.zrxTokenContract = zrxTokenContract;
         this.wethContract = wethContract;
         this.cobbDouglasContract = cobbDouglasContract;
-
+        this.zrxVaultBackstopContract = zrxVaultBackstopContract;
         this.stakingContractAddress = stakingContract.address;
         this.stakingProxyContract = stakingProxyContract;
         // disguise the staking proxy as a StakingContract
@@ -276,10 +277,23 @@ export async function deployAndConfigureContractsAsync(
         artifacts,
     );
 
+    const zrxVaultBackstopContract = await ZrxVaultBackstopContract.deployFrom0xArtifactAsync(
+        artifacts.ZrxVaultBackstop,
+        env.provider,
+        env.txDefaults,
+        artifacts,
+        stakingProxyContract.address,
+        zrxVaultContract.address,
+    );
+
     // configure erc20 proxy to accept calls from zrx vault
     await erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultContract.address);
     // set staking proxy contract in zrx vault
     await zrxVaultContract.setStakingProxy.awaitTransactionSuccessAsync(stakingProxyContract.address);
+    // add zrxVaultBackstop as an authorized address
+    await zrxVaultContract.addAuthorizedAddress.awaitTransactionSuccessAsync(zrxVaultBackstopContract.address, {
+        from: ownerAddress,
+    });
     return new StakingApiWrapper(
         env,
         ownerAddress,
@@ -289,5 +303,6 @@ export async function deployAndConfigureContractsAsync(
         zrxTokenContract,
         wethContract,
         cobbDouglasContract,
+        zrxVaultBackstopContract,
     );
 }

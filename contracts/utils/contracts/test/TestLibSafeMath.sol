@@ -18,18 +18,19 @@
 
 pragma solidity ^0.5.9;
 
-import "../src/SafeMath.sol";
+import "../src/LibSafeMath.sol";
 
 
-contract TestSafeMath is
-    SafeMath
-{
+contract TestLibSafeMath {
+
+    using LibSafeMath for uint256;
+
     function externalSafeMul(uint256 a, uint256 b)
         external
         pure
         returns (uint256)
     {
-        return _safeMul(a, b);
+        return a.safeMul(b);
     }
 
     function externalSafeDiv(uint256 a, uint256 b)
@@ -37,7 +38,7 @@ contract TestSafeMath is
         pure
         returns (uint256)
     {
-        return _safeDiv(a, b);
+        return a.safeDiv(b);
     }
 
     function externalSafeSub(uint256 a, uint256 b)
@@ -45,7 +46,7 @@ contract TestSafeMath is
         pure
         returns (uint256)
     {
-        return _safeSub(a, b);
+        return a.safeSub(b);
     }
 
     function externalSafeAdd(uint256 a, uint256 b)
@@ -53,7 +54,7 @@ contract TestSafeMath is
         pure
         returns (uint256)
     {
-        return _safeAdd(a, b);
+        return a.safeAdd(b);
     }
 
     function externalMaxUint256(uint256 a, uint256 b)
@@ -61,7 +62,7 @@ contract TestSafeMath is
         pure
         returns (uint256)
     {
-        return _max256(a, b);
+        return a.max256(b);
     }
 
     function externalMinUint256(uint256 a, uint256 b)
@@ -69,6 +70,6 @@ contract TestSafeMath is
         pure
         returns (uint256)
     {
-        return _min256(a, b);
+        return a.min256(b);
     }
 }

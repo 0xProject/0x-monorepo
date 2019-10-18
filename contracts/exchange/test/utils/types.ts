@@ -14,7 +14,7 @@ export enum ExchangeFunctionName {
     BatchFillOrders = 'batchFillOrders',
     BatchFillOrdersNoThrow = 'batchFillOrdersNoThrow',
     BatchMatchOrders = 'batchMatchOrders',
-    BatchMatchordersWithMaximalFill = 'batchMatchOrdersWithMaximalFill',
+    BatchMatchOrdersWithMaximalFill = 'batchMatchOrdersWithMaximalFill',
     CancelOrder = 'cancelOrder',
     CancelOrdersUpTo = 'cancelOrdersUpTo',
     ExecuteTransaction = 'executeTransaction',

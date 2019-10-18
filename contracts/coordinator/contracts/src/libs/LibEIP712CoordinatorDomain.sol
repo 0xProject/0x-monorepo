@@ -21,15 +21,13 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-contract LibEIP712CoordinatorDomain is
-    LibEIP712
-{
+contract LibEIP712CoordinatorDomain {
 
     // EIP712 Domain Name value for the Coordinator
     string constant public EIP712_COORDINATOR_DOMAIN_NAME = "0x Protocol Coordinator";
 
     // EIP712 Domain Version value for the Coordinator
-    string constant public EIP712_COORDINATOR_DOMAIN_VERSION = "2.0.0";
+    string constant public EIP712_COORDINATOR_DOMAIN_VERSION = "3.0.0";
 
     // Hash of the EIP712 Domain Separator data for the Coordinator
     // solhint-disable-next-line var-name-mixedcase
@@ -43,7 +41,9 @@ contract LibEIP712CoordinatorDomain is
     )
         public
     {
-        address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
+        address verifyingContractAddress = verifyingContractAddressIfExists == address(0)
+            ? address(this)
+            : verifyingContractAddressIfExists;
         EIP712_COORDINATOR_DOMAIN_HASH = LibEIP712.hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
@@ -55,7 +55,7 @@ contract LibEIP712CoordinatorDomain is
     /// @dev Calculates EIP712 encoding for a hash struct in the EIP712 domain
     ///      of this contract.
     /// @param hashStruct The EIP712 hash struct.
-    /// @return EIP712 hash applied to this EIP712 Domain.
+    /// @return result EIP712 hash applied to this EIP712 Domain.
     function _hashEIP712CoordinatorMessage(bytes32 hashStruct)
         internal
         view

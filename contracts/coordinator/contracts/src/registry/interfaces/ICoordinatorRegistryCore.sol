@@ -29,11 +29,12 @@ contract ICoordinatorRegistryCore
     );
 
     /// @dev Called by a Coordinator operator to set the endpoint of their Coordinator.
-    /// @param coordinatorEndpoint endpoint of the Coordinator.
+    /// @param coordinatorEndpoint Endpoint of the Coordinator as a string.
     function setCoordinatorEndpoint(string calldata coordinatorEndpoint) external;
 
     /// @dev Gets the endpoint for a Coordinator.
-    /// @param coordinatorOperator operator of the Coordinator endpoint.
+    /// @param coordinatorOperator Operator of the Coordinator endpoint.
+    /// @return coordinatorEndpoint Endpoint of the Coordinator as a string.
     function getCoordinatorEndpoint(address coordinatorOperator)
         external
         view

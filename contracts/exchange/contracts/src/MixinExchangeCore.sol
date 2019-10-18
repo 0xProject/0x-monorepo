@@ -61,8 +61,7 @@ contract MixinExchangeCore is
     function cancelOrdersUpTo(uint256 targetOrderEpoch)
         external
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
     {
         address makerAddress = _getCurrentContextAddress();
         // If this function is called via `executeTransaction`, we only update the orderEpoch for the makerAddress/msg.sender combination.
@@ -103,8 +102,7 @@ contract MixinExchangeCore is
     )
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
         returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
@@ -120,8 +118,7 @@ contract MixinExchangeCore is
     function cancelOrder(LibOrder.Order memory order)
         public
         payable
-        nonReentrant
-        refundFinalBalance
+        refundFinalBalanceNoReentry
     {
         _cancelOrder(order);
     }
@@ -369,29 +366,19 @@ contract MixinExchangeCore is
             }
         }
 
-        // Validate either on the first fill or if the signature type requires
-        // regular validation.
-        address makerAddress = order.makerAddress;
-        if (orderInfo.orderTakerAssetFilledAmount == 0 ||
-            _doesSignatureRequireRegularValidation(
+        // Validate signature
+        if (!_isValidOrderWithHashSignature(
+                order,
                 orderInfo.orderHash,
-                makerAddress,
                 signature
             )
         ) {
-            if (!_isValidOrderWithHashSignature(
-                    order,
-                    orderInfo.orderHash,
-                    signature
-                )
-            ) {
-                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
-                    orderInfo.orderHash,
-                    makerAddress,
-                    signature
-                ));
-            }
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.BAD_ORDER_SIGNATURE,
+                orderInfo.orderHash,
+                order.makerAddress,
+                signature
+            ));
         }
     }
 

@@ -22,27 +22,14 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../stake/MixinStakeBalances.sol";
+import "../immutable/MixinConstants.sol";
 
 
 contract MixinCumulativeRewards is
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinConstants
 {
     using LibSafeMath for uint256;
-
-    /// @dev Initializes Cumulative Rewards for a given pool.
-    /// @param poolId Unique id of pool.
-    function _initializeCumulativeRewards(bytes32 poolId)
-        internal
-    {
-        // Sets the default cumulative reward
-        _forceSetCumulativeReward(
-            poolId,
-            IStructs.Fraction({
-                numerator: 0,
-                denominator: MIN_TOKEN_VALUE
-            })
-        );
-    }
 
     /// @dev returns true iff Cumulative Rewards are set
     function _isCumulativeRewardSet(IStructs.Fraction memory cumulativeReward)
@@ -56,23 +43,69 @@ contract MixinCumulativeRewards is
         return cumulativeReward.denominator != 0;
     }
 
-    /// @dev Sets a cumulative reward for `poolId` at `epoch`.
-    /// This can be used to overwrite an existing value.
-    /// @param poolId Unique Id of pool.
-    /// @param value Value of cumulative reward.
-    function _forceSetCumulativeReward(
+    /// @dev Sets a pool's cumulative delegator rewards for the current epoch,
+    ///      given the rewards earned and stake from the last epoch, which will
+    ///      be summed with the previous cumulative rewards for this pool.
+    ///      If the last cumulative reward epoch is the current epoch, this is a
+    ///      no-op.
+    /// @param poolId The pool ID.
+    /// @param reward The total reward earned by pool delegators from the last epoch.
+    /// @param stake The total delegated stake in the pool in the last epoch.
+    function _addCumulativeReward(
         bytes32 poolId,
-        IStructs.Fraction memory value
+        uint256 reward,
+        uint256 stake
     )
         internal
     {
+        // Fetch the last epoch at which we stored an entry for this pool;
+        // this is the most up-to-date cumulative rewards for this pool.
+        uint256 lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
         uint256 currentEpoch_ = currentEpoch;
-        _cumulativeRewardsByPool[poolId][currentEpoch_] = value;
-        
-        // Update state to reflect the most recent cumulative reward
-        uint256 currentMostRecentEpoch = _cumulativeRewardsByPoolLastStored[poolId];
-        assert(currentEpoch_ >= currentMostRecentEpoch);
+
+        // If we already have a record for this epoch, don't overwrite it.
+        if (lastStoredEpoch == currentEpoch_) {
+            return;
+        }
+
+        IStructs.Fraction memory mostRecentCumulativeReward =
+            _cumulativeRewardsByPool[poolId][lastStoredEpoch];
+
+        // Compute new cumulative reward
+        IStructs.Fraction memory cumulativeReward;
+        if (_isCumulativeRewardSet(mostRecentCumulativeReward)) {
+            // If we have a prior cumulative reward entry, we sum them as fractions.
+            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
+                mostRecentCumulativeReward.numerator,
+                mostRecentCumulativeReward.denominator,
+                reward,
+                stake
+            );
+            // Normalize to prevent overflows in future operations.
+            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
+                cumulativeReward.numerator,
+                cumulativeReward.denominator
+            );
+        } else {
+            (cumulativeReward.numerator, cumulativeReward.denominator) = (reward, stake);
+        }
+
+        // Store cumulative rewards for this epoch.
+        _cumulativeRewardsByPool[poolId][currentEpoch_] = cumulativeReward;
         _cumulativeRewardsByPoolLastStored[poolId] = currentEpoch_;
+    }
+
+    /// @dev Sets a pool's cumulative delegator rewards for the current epoch,
+    ///      using the last stored cumulative rewards. If we've already set
+    ///      a CR for this epoch, this is a no-op.
+    /// @param poolId The pool ID.
+    function _updateCumulativeReward(bytes32 poolId)
+        internal
+    {
+        // Just add empty rewards for this epoch, which will be added to
+        // the previous CR, so we end up with the previous CR being set for
+        // this epoch.
+        _addCumulativeReward(poolId, 0, 1);
     }
 
     /// @dev Computes a member's reward over a given epoch interval.
@@ -101,13 +134,8 @@ contract MixinCumulativeRewards is
         require(beginEpoch < endEpoch, "CR_INTERVAL_INVALID");
 
         // Sanity check begin reward
-        (IStructs.Fraction memory beginReward, uint256 beginRewardStoredAt) = _getCumulativeRewardAtEpoch(poolId, beginEpoch);
-        (IStructs.Fraction memory endReward, uint256 endRewardStoredAt) = _getCumulativeRewardAtEpoch(poolId, endEpoch);
-
-        // If the rewards were stored at the same epoch then the computation will result in zero.
-        if (beginRewardStoredAt == endRewardStoredAt) {
-            return 0;
-        }
+        IStructs.Fraction memory beginReward = _getCumulativeRewardAtEpoch(poolId, beginEpoch);
+        IStructs.Fraction memory endReward = _getCumulativeRewardAtEpoch(poolId, endEpoch);
 
         // Compute reward
         reward = LibFractions.scaleDifference(
@@ -123,7 +151,7 @@ contract MixinCumulativeRewards is
     /// @param poolId Unique ID of pool.
     /// @return cumulativeReward The most recent cumulative reward `poolId`.
     function _getMostRecentCumulativeReward(bytes32 poolId)
-        internal
+        private
         view
         returns (IStructs.Fraction memory cumulativeReward)
     {
@@ -139,24 +167,21 @@ contract MixinCumulativeRewards is
     /// @return cumulativeReward The cumulative reward for `poolId` at `epoch`.
     /// @return cumulativeRewardStoredAt Epoch that the `cumulativeReward` is stored at.
     function _getCumulativeRewardAtEpoch(bytes32 poolId, uint256 epoch)
-        internal
+        private
         view
-        returns (
-            IStructs.Fraction memory cumulativeReward,
-            uint256 cumulativeRewardStoredAt
-        )
+        returns (IStructs.Fraction memory cumulativeReward)
     {
         // Return CR at `epoch`, given it's set.
         cumulativeReward = _cumulativeRewardsByPool[poolId][epoch];
         if (_isCumulativeRewardSet(cumulativeReward)) {
-            return (cumulativeReward, epoch);
+            return cumulativeReward;
         }
 
         // Return CR at `epoch-1`, given it's set.
         uint256 lastEpoch = epoch.safeSub(1);
         cumulativeReward = _cumulativeRewardsByPool[poolId][lastEpoch];
         if (_isCumulativeRewardSet(cumulativeReward)) {
-            return (cumulativeReward, lastEpoch);
+            return cumulativeReward;
         }
 
         // Return the most recent CR, given it's less than `epoch`.
@@ -164,11 +189,11 @@ contract MixinCumulativeRewards is
         if (mostRecentEpoch < epoch) {
             cumulativeReward = _cumulativeRewardsByPool[poolId][mostRecentEpoch];
             if (_isCumulativeRewardSet(cumulativeReward)) {
-                return (cumulativeReward, mostRecentEpoch);
+                return cumulativeReward;
             }
         }
 
-        // Could not find a CR for `epoch`
-        revert("CR_INVALID_EPOCH");
+        // Otherwise return an empty CR.
+        return IStructs.Fraction(0, 1);
     }
 }

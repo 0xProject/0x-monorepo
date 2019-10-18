@@ -105,6 +105,10 @@
             {
                 "note": "Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields.",
                 "pr": 2075
+            },
+            {
+                "note": "Move `IWallet.sol` from `asset-proxy` and `exchange` packages to here.",
+                "pr": 2233
             }
         ],
         "timestamp": 1570135330

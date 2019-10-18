@@ -50,7 +50,7 @@ interface IZrxVault {
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract staker can call this function.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
-    function setStakingProxy(address payable _stakingProxyAddress)
+    function setStakingProxy(address _stakingProxyAddress)
         external;
 
     /// @dev Vault enters into Catastrophic Failure Mode.
@@ -92,6 +92,12 @@ interface IZrxVault {
     /// @dev Returns the balance in Zrx Tokens of the `staker`
     /// @return Balance in Zrx.
     function balanceOf(address staker)
+        external
+        view
+        returns (uint256);
+
+    /// @dev Returns the entire balance of Zrx tokens in the vault.
+    function balanceOfZrxVault()
         external
         view
         returns (uint256);

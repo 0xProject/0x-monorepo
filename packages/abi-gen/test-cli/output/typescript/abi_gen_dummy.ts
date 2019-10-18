@@ -1,4 +1,4 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
 import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
@@ -19,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { EventCallback, IndexedFilterValues, SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -46,6 +52,9 @@ export interface AbiGenDummySimpleEventEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class AbiGenDummyContract extends BaseContract {
+    /**
+     * @ignore
+     */
     public static deployedBytecode =
         '0x608060405234801561001057600080fd5b50600436106101d95760003560e01c806376f15d5b11610104578063bb607362116100a2578063d88be12f11610071578063d88be12f1461039b578063ee8b86fb146103a3578063f408fb3114610279578063fa315f9d146103b6576101d9565b8063bb60736214610353578063bdab168814610369578063cd3c0b971461037e578063d6d7618c14610386576101d9565b80638ee52b4e116100de5780638ee52b4e146103225780639a3b618514610335578063a3c2f6b61461033d578063ae2dae1714610345576101d9565b806376f15d5b146102f25780637833bec0146102fa5780637a791e6e1461031a576101d9565b80634303a5421161017c57806359c28add1161014b57806359c28add146102b45780635ba3c7c0146102c957806363d69c88146102d1578063647341eb146102e4576101d9565b80634303a542146102875780634582eab21461028f57806345fdbdb714610297578063586f84b21461029f576101d9565b80632e1a7d4d116101b85780632e1a7d4d146102245780633687617d1461023757806336b32396146102595780633e9ef66a14610279576101d9565b806209e437146101de5780630527c28f146101e85780631310e444146101fb575b600080fd5b6101e66103c4565b005b6101e66101f6366004610c7f565b610401565b61020e610209366004610d34565b610404565b60405161021b919061139a565b60405180910390f35b6101e6610232366004610d34565b61040b565b61024a610245366004610eac565b61045c565b60405161021b93929190611103565b61026c610267366004610cbc565b6104fc565b60405161021b9190611045565b6101e66101f6366004610cff565b61020e6105de565b6101e66105e5565b6101e661064a565b6102a761067c565b60405161021b9190611325565b6102bc610684565b60405161021b9190611330565b6101e661068c565b61026c6102df366004610c2d565b6106f1565b6101e66101f6366004610e77565b61020e6106fa565b61030d610308366004610d4d565b610708565b60405161021b9190611239565b6101e66107c5565b61020e610330366004610d34565b6107ca565b6101e66107d0565b61020e6107db565b6101e66101f6366004610de7565b61035b6107e0565b60405161021b9291906113a3565b610371610819565b60405161021b9190611066565b6101e661081e565b61038e610855565b60405161021b9190611387565b61020e6109ae565b6101e66103b1366004610d34565b6101f6565b6101e66101f6366004610d34565b6040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103f690611202565b60405180910390fd5b565b50565b506107c790565b3373ffffffffffffffffffffffffffffffffffffffff167f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b6582604051610451919061139a565b60405180910390a250565b505060408051808201825260048082527f1234567800000000000000000000000000000000000000000000000000000000602080840191909152835180850185528281527f87654321000000000000000000000000000000000000000000000000000000008183015284518086019095529184527f616d657400000000000000000000000000000000000000000000000000000000908401529093909250565b600060606040518060400160405280601c81526020017f19457468657265756d205369676e6564204d6573736167653a0a33320000000081525090506000818760405160200161054d929190611023565b6040516020818303038152906040528051906020012090506001818787876040516000815260200160405260405161058894939291906110e5565b6020604051602081039080840390855afa1580156105aa573d6000803e3d6000fd5b50506040517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0015198975050505050505050565b6107c75b90565b604080518082018252601481527f5245564552545f574954485f434f4e5354414e54000000000000000000000000602082015290517f08c379a00000000000000000000000000000000000000000000000000000000081526103f69190600401611145565b6040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016103f6906111cb565b6105e26109b4565b6105e26109cc565b604080518082018252601581527f524551554952455f574954485f434f4e5354414e540000000000000000000000602082015290517f08c379a00000000000000000000000000000000000000000000000000000000081526103f69190600401611145565b50929392505050565b600080546001019081905590565b6107106109ec565b50604080516080810182529182528051808201825260048082527f123456780000000000000000000000000000000000000000000000000000000060208381019190915280850192909252825180840184528181527f87654321000000000000000000000000000000000000000000000000000000008184015284840152825180840190935282527f616d65740000000000000000000000000000000000000000000000000000000090820152606082015290565b6103ff565b60010190565b600080546001019055565b600190565b60408051808201909152600581527f68656c6c6f0000000000000000000000000000000000000000000000000000006020820152600191565b606090565b7f61a6029a4c7ddee5824d171331eecbd015d26a271310a223718b837facb5b77160405161084b9061115f565b60405180910390a1565b61085d610a1a565b6040805160028082526060828101909352816020015b60608152602001906001900390816108735790505090506040518060400160405280600581526020017f3078313233000000000000000000000000000000000000000000000000000000815250816000815181106108cd57fe5b60200260200101819052506040518060400160405280600581526020017f30783332310000000000000000000000000000000000000000000000000000008152508160018151811061091b57fe5b6020908102919091018101919091526040805160c0810182526005608082018181527f307831323300000000000000000000000000000000000000000000000000000060a0840152825281840152808201939093528051808201909152600381527f6162630000000000000000000000000000000000000000000000000000000000918101919091526060820152905090565b6104d290565b60405180602001604052806109c7610a48565b905290565b60405180604001604052806109df610a1a565b8152602001606081525090565b60405180608001604052806109ff610a5b565b81526020016060815260200160608152602001606081525090565b604051806080016040528060608152602001600063ffffffff16815260200160608152602001606081525090565b6040518060200160405280600081525090565b60405180606001604052806000815260200160608152602001606081525090565b600082601f830112610a8c578081fd5b813567ffffffffffffffff811115610aa2578182fd5b6020610ab181828402016113bc565b828152925080830184820160005b84811015610ae857610ad6888584358a0101610af3565b83529183019190830190600101610abf565b505050505092915050565b600082601f830112610b03578081fd5b813567ffffffffffffffff811115610b19578182fd5b610b4a60207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f840116016113bc565b9150808252836020828501011115610b6157600080fd5b8060208401602084013760009082016020015292915050565b600060808284031215610b8b578081fd5b610b9560806113bc565b90506000823567ffffffffffffffff80821115610bb0578283fd5b610bbc86838701610af3565b84526020850135915063ffffffff82168214610bd6578283fd5b8160208501526040850135915080821115610bef578283fd5b610bfb86838701610a7c565b60408501526060850135915080821115610c13578283fd5b50610c2085828601610af3565b6060840152505092915050565b600080600080600060a08688031215610c4557600080fd5b8535610c5081611413565b945060208601359350604086013592506060860135610c6e81611413565b949793965091946080013592915050565b600060208284031215610c9157600080fd5b813567ffffffffffffffff811115610ca857600080fd5b610cb484828501610a7c565b949350505050565b60008060008060808587031215610cd257600080fd5b84359350602085013560ff81168114610cea57600080fd5b93969395505050506040820135916060013590565b600060208284031215610d1157600080fd5b813567ffffffffffffffff811115610d2857600080fd5b610cb484828501610af3565b600060208284031215610d4657600080fd5b5035919050565b600060208284031215610d5e578081fd5b813567ffffffffffffffff80821115610d75578283fd5b81840160608187031215610d87578384fd5b610d9160606113bc565b925080358352602081013582811115610da8578485fd5b610db487828401610af3565b602085015250604081013582811115610dcb578485fd5b610dd787828401610af3565b6040850152509195945050505050565b600060208284031215610df8578081fd5b813567ffffffffffffffff80821115610e0f578283fd5b81840160408187031215610e21578384fd5b610e2b60406113bc565b9250803582811115610e3b578485fd5b610e4787828401610b7a565b845250602081013582811115610e5b578485fd5b610e6787828401610af3565b6020850152509195945050505050565b600060208284031215610e8957600080fd5b813567ffffffffffffffff811115610ea057600080fd5b610cb484828501610b7a565b600080600060608486031215610ec0578081fd5b83359250602084013567ffffffffffffffff80821115610ede578283fd5b610eea87838801610af3565b93506040860135915080821115610eff578283fd5b50610f0c86828701610af3565b9150509250925092565b60008151808452610f2e8160208601602086016113e3565b601f017fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0169290920160200192915050565b6000815160808452610f756080850182610f16565b6020915063ffffffff82850151168286015260408401518582036040870152818151808452848401915084858202850101858401600094505b82851015610ffc577fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0868303018452610fe8828251610f16565b600195909501949387019391508601610fae565b506060880151955088810360608a01526110168187610f16565b9998505050505050505050565b600083516110358184602088016113e3565b9190910191825250602001919050565b73ffffffffffffffffffffffffffffffffffffffff91909116815260200190565b600060208083018184528085518083526040860191506040848202870101925083870160005b828110156110d8577fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc08886030184526110c6858351610f60565b9450928501929085019060010161108c565b5092979650505050505050565b93845260ff9290921660208401526040830152606082015260800190565b6000606082526111166060830186610f16565b82810360208401526111288186610f16565b838103604085015261113a8186610f16565b979650505050505050565b6000602082526111586020830184610f16565b9392505050565b60408082526004908201527f123456780000000000000000000000000000000000000000000000000000000060608201526080602082018190526005908201527f6c6f72656d00000000000000000000000000000000000000000000000000000060a082015260c00190565b6020808252600d908201527f53494d504c455f52455645525400000000000000000000000000000000000000604082015260600190565b6020808252600e908201527f53494d504c455f52455155495245000000000000000000000000000000000000604082015260600190565b600060208252825160806020840152805160a08401526020810151606060c0850152611269610100850182610f16565b604083015191507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff608582030160e08601526112a48183610f16565b9250505060208401517fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0808584030160408601526112e28383610f16565b60408701519350818682030160608701526112fd8185610f16565b92505060608601519250808583030160808601525061131c8183610f16565b95945050505050565b905151815260200190565b60006020825282516040602084015261134c6060840182610f60565b602085015191507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe084820301604085015261131c8183610f16565b6000602082526111586020830184610f60565b90815260200190565b600083825260406020830152610cb46040830184610f16565b60405181810167ffffffffffffffff811182821017156113db57600080fd5b604052919050565b60005b838110156113fe5781810151838201526020016113e6565b8381111561140d576000848401525b50505050565b73ffffffffffffffffffffffffffffffffffffffff8116811461040157600080fdfea365627a7a723158207f0854b76fc684de0be1f1a5db2d486bc187ff28d1e99d27ca0f61b452a1942f6c6578706572696d656e74616cf564736f6c634300050b0040';
     public simpleRequire = {
@@ -69,7 +78,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -152,7 +161,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -240,7 +249,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -307,7 +316,11 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -323,6 +336,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.withdraw.callAsync(wad, txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -336,20 +353,19 @@ export class AbiGenDummyContract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData);
+            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -377,11 +393,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).withdraw.callAsync(wad, txData);
-            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -507,7 +518,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -618,7 +629,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -710,7 +721,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -792,7 +803,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -870,7 +881,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -948,7 +959,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1032,7 +1043,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1121,7 +1132,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1210,7 +1221,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1304,7 +1315,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1394,7 +1405,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1470,7 +1481,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1485,6 +1499,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.nonPureMethod.callAsync(txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1497,19 +1515,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData);
+            const txHashPromise = self.nonPureMethod.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1536,11 +1553,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethod.callAsync(txData);
-            const txHash = await (this as any).nonPureMethod.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1662,7 +1674,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1758,7 +1770,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1837,7 +1849,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -1902,7 +1914,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1917,6 +1932,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.nonPureMethodThatReturnsNothing.callAsync(txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1929,19 +1948,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
+            const txHashPromise = self.nonPureMethodThatReturnsNothing.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1968,11 +1986,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).nonPureMethodThatReturnsNothing.callAsync(txData);
-            const txHash = await (this as any).nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2080,7 +2093,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2173,7 +2186,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2281,7 +2294,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2362,7 +2375,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2432,7 +2445,10 @@ export class AbiGenDummyContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('emitSimpleEvent()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2447,6 +2463,10 @@ export class AbiGenDummyContract extends BaseContract {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
 
+            if (opts.shouldValidate !== false) {
+                await self.emitSimpleEvent.callAsync(txDataWithDefaults);
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2459,19 +2479,18 @@ export class AbiGenDummyContract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as AbiGenDummyContract;
-            const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData);
+            const txHashPromise = self.emitSimpleEvent.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -2498,11 +2517,6 @@ export class AbiGenDummyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).emitSimpleEvent.callAsync(txData);
-            const txHash = await (this as any).emitSimpleEvent.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -2617,7 +2631,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2707,7 +2721,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2793,7 +2807,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2873,7 +2887,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;
@@ -2953,7 +2967,7 @@ export class AbiGenDummyContract extends BaseContract {
 
             let rawCallResult;
             try {
-                rawCallResult = await self.evmExecAsync(encodedDataBytes);
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
             } catch (err) {
                 BaseContract._throwIfThrownErrorIsRevertError(err);
                 throw err;

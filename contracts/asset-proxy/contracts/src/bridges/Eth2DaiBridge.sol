@@ -20,9 +20,9 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
+import "@0x/contracts-exchange-libs/contracts/src/IWallet.sol";
 import "../interfaces/IERC20Bridge.sol";
 import "../interfaces/IEth2Dai.sol";
-import "../interfaces/IWallet.sol";
 
 
 // solhint-disable space-after-comma

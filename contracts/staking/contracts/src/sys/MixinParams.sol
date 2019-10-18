@@ -20,26 +20,26 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../immutable/MixinStorage.sol";
+import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
 contract MixinParams is
     IStakingEvents,
-    MixinStorage
+    MixinStorage,
+    MixinConstants
 {
     /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
     /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @param _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
-    /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     function setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
-        uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
         uint32 _cobbDouglasAlphaDenominator
     )
@@ -50,7 +50,6 @@ contract MixinParams is
             _epochDurationInSeconds,
             _rewardDelegatedStakeWeight,
             _minimumPoolStake,
-            _maximumMakersInPool,
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator
         );
@@ -60,7 +59,6 @@ contract MixinParams is
     /// @return _epochDurationInSeconds Minimum seconds between epochs.
     /// @return _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @return _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
-    /// @return _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @return _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @return _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     function getParams()
@@ -70,7 +68,6 @@ contract MixinParams is
             uint256 _epochDurationInSeconds,
             uint32 _rewardDelegatedStakeWeight,
             uint256 _minimumPoolStake,
-            uint256 _maximumMakersInPool,
             uint32 _cobbDouglasAlphaNumerator,
             uint32 _cobbDouglasAlphaDenominator
         )
@@ -78,7 +75,6 @@ contract MixinParams is
         _epochDurationInSeconds = epochDurationInSeconds;
         _rewardDelegatedStakeWeight = rewardDelegatedStakeWeight;
         _minimumPoolStake = minimumPoolStake;
-        _maximumMakersInPool = maximumMakersInPool;
         _cobbDouglasAlphaNumerator = cobbDouglasAlphaNumerator;
         _cobbDouglasAlphaDenominator = cobbDouglasAlphaDenominator;
     }
@@ -96,7 +92,6 @@ contract MixinParams is
             10 days,                       // epochDurationInSeconds
             (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
             100 * MIN_TOKEN_VALUE,         // minimumPoolStake
-            10,                            // maximumMakersInPool
             1,                             // cobbDouglasAlphaNumerator
             2                              // cobbDouglasAlphaDenominator
         );
@@ -110,7 +105,6 @@ contract MixinParams is
         if (epochDurationInSeconds != 0 &&
             rewardDelegatedStakeWeight != 0 &&
             minimumPoolStake != 0 &&
-            maximumMakersInPool != 0 &&
             cobbDouglasAlphaNumerator != 0 &&
             cobbDouglasAlphaDenominator != 0
         ) {
@@ -126,14 +120,12 @@ contract MixinParams is
     /// @param _epochDurationInSeconds Minimum seconds between epochs.
     /// @param _rewardDelegatedStakeWeight How much delegated stake is weighted vs operator stake, in ppm.
     /// @param _minimumPoolStake Minimum amount of stake required in a pool to collect rewards.
-    /// @param _maximumMakersInPool Maximum number of maker addresses allowed to be registered to a pool.
     /// @param _cobbDouglasAlphaNumerator Numerator for cobb douglas alpha factor.
     /// @param _cobbDouglasAlphaDenominator Denominator for cobb douglas alpha factor.
     function _setParams(
         uint256 _epochDurationInSeconds,
         uint32 _rewardDelegatedStakeWeight,
         uint256 _minimumPoolStake,
-        uint256 _maximumMakersInPool,
         uint32 _cobbDouglasAlphaNumerator,
         uint32 _cobbDouglasAlphaDenominator
     )
@@ -142,7 +134,6 @@ contract MixinParams is
         epochDurationInSeconds = _epochDurationInSeconds;
         rewardDelegatedStakeWeight = _rewardDelegatedStakeWeight;
         minimumPoolStake = _minimumPoolStake;
-        maximumMakersInPool = _maximumMakersInPool;
         cobbDouglasAlphaNumerator = _cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = _cobbDouglasAlphaDenominator;
 
@@ -150,7 +141,6 @@ contract MixinParams is
             _epochDurationInSeconds,
             _rewardDelegatedStakeWeight,
             _minimumPoolStake,
-            _maximumMakersInPool,
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator
         );

@@ -670,6 +670,18 @@ export interface Type {
     tupleElements?: Type[];
 }
 
+/**
+ * * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+ * * pollingIntervalMs: Used with `awaitTransactionSuccessAsync` to determine polling interval in milliseconds
+ * * timeoutMs: Used with `awaitTransactionSuccessAsync` to determine timeout in milliseconds
+ */
+export interface SendTransactionOpts {
+    shouldValidate?: boolean;
+    pollingIntervalMs?: number;
+    timeoutMs?: number;
+}
+
 export interface ElementType {
     name: string;
     typeDocType: TypeDocTypes;
@@ -740,27 +752,6 @@ export interface EIP712TypedData {
 
 export interface Stats {
     orderCount: number;
-}
-
-export interface SimpleContractArtifact {
-    schemaVersion: string;
-    contractName: string;
-    compilerOutput: SimpleStandardContractOutput;
-    networks: ContractNetworks;
-}
-
-export interface SimpleStandardContractOutput {
-    abi: ContractAbi;
-    evm: SimpleEvmOutput;
-    devdoc?: DevdocOutput;
-}
-
-export interface SimpleEvmOutput {
-    bytecode: SimpleEvmBytecodeOutput;
-}
-
-export interface SimpleEvmBytecodeOutput {
-    object: string;
 }
 
 export interface DutchAuctionDetails {
@@ -861,4 +852,49 @@ export type EventCallback<ArgsType extends DecodedLogArgs> = (
 
 export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
+}
+
+/* Begin types for @0x/abi-gen-wrappers
+ * Allow these types to be imported when needed instead of having to import
+ * the whole package,  which is large
+ */
+
+/**
+ * Used with `sendTransactionAsync`
+ * * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+ */
+export interface SendTransactionOpts {
+    shouldValidate?: boolean;
+}
+
+/**
+ * Used with `awaitTransactionSuccessAsync`
+ * * pollingIntervalMs: Determine polling intervals in milliseconds
+ * * timeoutMs: Determines timeout in milliseconds
+ */
+export interface AwaitTransactionSuccessOpts extends SendTransactionOpts {
+    pollingIntervalMs?: number;
+    timeoutMs?: number;
+}
+
+export interface SimpleContractArtifact {
+    schemaVersion: string;
+    contractName: string;
+    compilerOutput: SimpleStandardContractOutput;
+    networks: ContractNetworks;
+}
+
+export interface SimpleStandardContractOutput {
+    abi: ContractAbi;
+    evm: SimpleEvmOutput;
+    devdoc?: DevdocOutput;
+}
+
+export interface SimpleEvmOutput {
+    bytecode: SimpleEvmBytecodeOutput;
+}
+
+export interface SimpleEvmBytecodeOutput {
+    object: string;
 }

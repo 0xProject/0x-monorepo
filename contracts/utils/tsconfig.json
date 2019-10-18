@@ -23,19 +23,18 @@
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/Refundable.json",
-        "generated-artifacts/SafeMath.json",
         "generated-artifacts/TestLibAddress.json",
         "generated-artifacts/TestLibAddressArray.json",
         "generated-artifacts/TestLibBytes.json",
         "generated-artifacts/TestLibEIP712.json",
         "generated-artifacts/TestLibRichErrors.json",
+        "generated-artifacts/TestLibSafeMath.json",
         "generated-artifacts/TestLogDecoding.json",
         "generated-artifacts/TestLogDecodingDownstream.json",
         "generated-artifacts/TestOwnable.json",
         "generated-artifacts/TestReentrancyGuard.json",
         "generated-artifacts/TestRefundable.json",
-        "generated-artifacts/TestRefundableReceiver.json",
-        "generated-artifacts/TestSafeMath.json"
+        "generated-artifacts/TestRefundableReceiver.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

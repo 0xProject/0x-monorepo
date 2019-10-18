@@ -105,64 +105,24 @@ describe('Asset Transfer Proxies', () => {
         );
 
         // Configure ERC20Proxy
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
 
         // Configure ERC721Proxy
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
 
         // Configure ERC115Proxy
         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            multiAssetProxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, { from: owner });
 
         // Configure MultiAssetProxy
-        await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            authorized,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc20Proxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc721Proxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
-            erc1155Proxy.address,
-            { from: owner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(authorized, { from: owner });
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, { from: owner });
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, { from: owner });
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address, { from: owner });
 
         // Deploy and configure ERC20 tokens
         const numDummyErc20ToDeploy = 2;
@@ -192,19 +152,13 @@ describe('Asset Transfer Proxies', () => {
         );
 
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
-            fromAddress,
-            constants.INITIAL_ERC20_BALANCE,
-            {
-                from: owner,
-            },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(fromAddress, constants.INITIAL_ERC20_BALANCE, {
+            from: owner,
+        });
         await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             constants.INITIAL_ERC20_ALLOWANCE,
             { from: fromAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await multipleReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
             fromAddress,
@@ -212,13 +166,11 @@ describe('Asset Transfer Proxies', () => {
             {
                 from: owner,
             },
-            constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await multipleReturnErc20Token.approve.awaitTransactionSuccessAsync(
             erc20Proxy.address,
             constants.INITIAL_ERC20_ALLOWANCE,
             { from: fromAddress },
-            constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         // Deploy and configure ERC721 tokens and receiver
@@ -407,12 +359,9 @@ describe('Asset Transfer Proxies', () => {
                     toAddress,
                     amount,
                 );
-                await erc20TokenA.approve.awaitTransactionSuccessAsync(
-                    erc20Proxy.address,
-                    allowance,
-                    { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                await erc20TokenA.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                    from: fromAddress,
+                });
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
                 // Perform a transfer; expect this to fail.
                 await expectTransactionFailedAsync(
@@ -439,12 +388,9 @@ describe('Asset Transfer Proxies', () => {
                     toAddress,
                     amount,
                 );
-                await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
-                    erc20Proxy.address,
-                    allowance,
-                    { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                await noReturnErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                    from: fromAddress,
+                });
                 const initialFromBalance = await noReturnErc20Token.balanceOf.callAsync(fromAddress);
                 const initialToBalance = await noReturnErc20Token.balanceOf.callAsync(toAddress);
                 // Perform a transfer; expect this to fail.
@@ -680,19 +626,13 @@ describe('Asset Transfer Proxies', () => {
                 const ownerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
                 expect(ownerFromAsset).to.be.equal(fromAddress);
                 // Remove blanket transfer approval for fromAddress.
-                await erc721TokenA.setApprovalForAll.awaitTransactionSuccessAsync(
-                    erc721Proxy.address,
-                    false,
-                    { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                await erc721TokenA.setApprovalForAll.awaitTransactionSuccessAsync(erc721Proxy.address, false, {
+                    from: fromAddress,
+                });
                 // Remove token transfer approval for fromAddress.
-                await erc721TokenA.approve.awaitTransactionSuccessAsync(
-                    constants.NULL_ADDRESS,
-                    erc721AFromTokenId,
-                    { from: fromAddress },
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+                await erc721TokenA.approve.awaitTransactionSuccessAsync(constants.NULL_ADDRESS, erc721AFromTokenId, {
+                    from: fromAddress,
+                });
                 // Perform a transfer; expect this to fail.
                 const amount = new BigNumber(1);
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(

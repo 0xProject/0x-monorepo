@@ -1,4 +1,4 @@
-import { constants, LogDecoder } from '@0x/contracts-test-utils';
+import { LogDecoder } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -100,7 +100,6 @@ export class Erc1155Wrapper {
             beneficiaries,
             tokenAmountsAsArray,
             { from: this._contractOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
         );
     }
     public async mintNonFungibleTokensAsync(beneficiaries: string[]): Promise<[BigNumber, BigNumber[]]> {
@@ -114,12 +113,9 @@ export class Erc1155Wrapper {
         // tslint:disable-next-line no-unnecessary-type-assertion
         const createFungibleTokenLog = tx.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>;
         const token = createFungibleTokenLog.args.id;
-        await this._erc1155Contract.mintNonFungible.awaitTransactionSuccessAsync(
-            token,
-            beneficiaries,
-            { from: this._contractOwner },
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await this._erc1155Contract.mintNonFungible.awaitTransactionSuccessAsync(token, beneficiaries, {
+            from: this._contractOwner,
+        });
         const encodedNftIds: BigNumber[] = [];
         const nftIdBegin = 1;
         const nftIdEnd = beneficiaries.length + 1;

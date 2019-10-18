@@ -35,7 +35,7 @@ contract ZrxVault is
     using LibSafeMath for uint256;
 
     // Address of staking proxy contract
-    address payable public stakingProxyAddress;
+    address public stakingProxyAddress;
 
     // True iff vault has been set to Catastrophic Failure Mode
     bool public isInCatastrophicFailure;
@@ -51,6 +51,24 @@ contract ZrxVault is
 
     // Asset data for the ERC20 Proxy
     bytes internal _zrxAssetData;
+
+    /// @dev Only stakingProxy can call this function.
+    modifier onlyStakingProxy() {
+        _assertSenderIsStakingProxy();
+        _;
+    }
+
+    /// @dev Function can only be called in catastrophic failure mode.
+    modifier onlyInCatastrophicFailure() {
+        _assertInCatastrophicFailure();
+        _;
+    }
+
+    /// @dev Function can only be called not in catastropic failure mode
+    modifier onlyNotInCatastrophicFailure() {
+        _assertNotInCatastrophicFailure();
+        _;
+    }
 
     /// @dev Constructor.
     /// @param _zrxProxyAddress Address of the 0x Zrx Proxy.
@@ -73,7 +91,7 @@ contract ZrxVault is
     /// @dev Sets the address of the StakingProxy contract.
     /// Note that only the contract owner can call this function.
     /// @param _stakingProxyAddress Address of Staking proxy contract.
-    function setStakingProxy(address payable _stakingProxyAddress)
+    function setStakingProxy(address _stakingProxyAddress)
         external
         onlyAuthorized
     {
@@ -87,6 +105,7 @@ contract ZrxVault is
     function enterCatastrophicFailure()
         external
         onlyAuthorized
+        onlyNotInCatastrophicFailure
     {
         isInCatastrophicFailure = true;
         emit InCatastrophicFailureMode(msg.sender);
@@ -169,6 +188,15 @@ contract ZrxVault is
         return _balances[staker];
     }
 
+    /// @dev Returns the entire balance of Zrx tokens in the vault.
+    function balanceOfZrxVault()
+        external
+        view
+        returns (uint256)
+    {
+        return _zrxToken.balanceOf(address(this));
+    }
+
     /// @dev Withdraw an `amount` of Zrx Tokens to `staker` from the vault.
     /// @param staker of Zrx Tokens.
     /// @param amount of Zrx Tokens to withdraw.
@@ -190,21 +218,7 @@ contract ZrxVault is
         );
     }
 
-    modifier onlyStakingProxy() {
-        _assertSenderIsStakingProxy();
-        _;
-    }
-
-    modifier onlyInCatastrophicFailure() {
-        _assertInCatastrophicFailure();
-        _;
-    }
-
-    modifier onlyNotInCatastrophicFailure() {
-        _assertNotInCatastrophicFailure();
-        _;
-    }
-
+    /// @dev Asserts that sender is stakingProxy contract.
     function _assertSenderIsStakingProxy()
         private
         view
@@ -216,6 +230,7 @@ contract ZrxVault is
         }
     }
 
+    /// @dev Asserts that vault is in catastrophic failure mode.
     function _assertInCatastrophicFailure()
         private
         view
@@ -225,6 +240,7 @@ contract ZrxVault is
         }
     }
 
+    /// @dev Asserts that vault is not in catastrophic failure mode.
     function _assertNotInCatastrophicFailure()
         private
         view

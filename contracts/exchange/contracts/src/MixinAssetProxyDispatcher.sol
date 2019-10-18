@@ -88,8 +88,9 @@ contract MixinAssetProxyDispatcher is
     {
         // Do nothing if no amount should be transferred.
         if (amount > 0) {
-            // Ensure assetData length is valid
-            if (assetData.length <= 3) {
+
+            // Ensure assetData is padded to 32 bytes (excluding the id) and is at least 4 bytes long
+            if (assetData.length % 32 != 4) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
                     LibExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,

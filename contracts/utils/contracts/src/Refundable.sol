@@ -18,8 +18,12 @@
 
 pragma solidity ^0.5.9;
 
+import "./ReentrancyGuard.sol";
 
-contract Refundable {
+
+contract Refundable is
+    ReentrancyGuard
+{
 
     // This bool is used by the refund modifier to allow for lazily evaluated refunds.
     bool internal _shouldNotRefund;
@@ -27,6 +31,13 @@ contract Refundable {
     modifier refundFinalBalance {
         _;
         _refundNonZeroBalanceIfEnabled();
+    }
+
+    modifier refundFinalBalanceNoReentry {
+        _lockMutexOrThrowIfAlreadyLocked();
+        _;
+        _refundNonZeroBalanceIfEnabled();
+        _unlockMutex();
     }
 
     modifier disableRefundUntilEnd {

@@ -47,13 +47,6 @@ library LibStakingRichErrors {
         InvalidEpochDuration
     }
 
-    enum MakerPoolAssignmentErrorCodes {
-        MakerAddressAlreadyRegistered,
-        MakerAddressNotRegistered,
-        MakerAddressNotPendingAdd,
-        PoolIsFull
-    }
-
     enum ExchangeManagerErrorCodes {
         ExchangeAlreadyRegistered,
         ExchangeNotRegistered
@@ -71,13 +64,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INSUFFICIENT_BALANCE_ERROR_SELECTOR =
         0x84c8b7c9;
 
-    // bytes4(keccak256("OnlyCallableByPoolOperatorOrMakerError(address,bytes32)"))
-    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR =
-        0x7677eb13;
-
-    // bytes4(keccak256("MakerPoolAssignmentError(uint8,address,bytes32)"))
-    bytes4 internal constant MAKER_POOL_ASSIGNMENT_ERROR_SELECTOR =
-        0x69945e3f;
+    // bytes4(keccak256("OnlyCallableByPoolOperatorError(address,bytes32)"))
+    bytes4 internal constant ONLY_CALLABLE_BY_POOL_OPERATOR_ERROR_SELECTOR =
+        0x82ded785;
 
     // bytes4(keccak256("BlockTimestampTooLowError(uint256,uint256)"))
     bytes4 internal constant BLOCK_TIMESTAMP_TOO_LOW_ERROR_SELECTOR =
@@ -102,10 +91,6 @@ library LibStakingRichErrors {
     // bytes4(keccak256("PoolExistenceError(bytes32,bool)"))
     bytes4 internal constant POOL_EXISTENCE_ERROR_SELECTOR =
         0x9ae94f01;
-
-    // bytes4(keccak256("InvalidStakeStatusError(uint8)"))
-    bytes4 internal constant INVALID_STAKE_STATUS_ERROR_SELECTOR =
-        0x7cf20260;
 
     // bytes4(keccak256("ProxyDestinationCannotBeNilError()"))
     bytes internal constant PROXY_DESTINATION_CANNOT_BE_NIL_ERROR =
@@ -171,7 +156,7 @@ library LibStakingRichErrors {
         );
     }
 
-    function OnlyCallableByPoolOperatorOrMakerError(
+    function OnlyCallableByPoolOperatorError(
         address senderAddress,
         bytes32 poolId
     )
@@ -180,25 +165,8 @@ library LibStakingRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER_ERROR_SELECTOR,
+            ONLY_CALLABLE_BY_POOL_OPERATOR_ERROR_SELECTOR,
             senderAddress,
-            poolId
-        );
-    }
-
-    function MakerPoolAssignmentError(
-        MakerPoolAssignmentErrorCodes errorCodes,
-        address makerAddress,
-        bytes32 poolId
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            MAKER_POOL_ASSIGNMENT_ERROR_SELECTOR,
-            errorCodes,
-            makerAddress,
             poolId
         );
     }
@@ -293,17 +261,6 @@ library LibStakingRichErrors {
             errorCodes,
             expectedProtocolFeePaid,
             actualProtocolFeePaid
-        );
-    }
-
-    function InvalidStakeStatusError(IStructs.StakeStatus status)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            INVALID_STAKE_STATUS_ERROR_SELECTOR,
-            status
         );
     }
 

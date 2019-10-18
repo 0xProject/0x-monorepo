@@ -136,16 +136,14 @@ export async function getSolcJSReleasesAsync(isOfflineMode: boolean): Promise<Bi
 
 /**
  * Compiles the contracts and prints errors/warnings
- * @param solcVersion Version of a solc compiler
+ * @param solcInstance Instance of a solc compiler
  * @param standardInput Solidity standard JSON input
  * @param isOfflineMode Offline mode flag
  */
 export async function compileSolcJSAsync(
-    solcVersion: string,
+    solcInstance: solc.SolcInstance,
     standardInput: solc.StandardInput,
-    isOfflineMode: boolean,
 ): Promise<solc.StandardOutput> {
-    const solcInstance = await getSolcJSAsync(solcVersion, isOfflineMode);
     const standardInputStr = JSON.stringify(standardInput);
     const standardOutputStr = solcInstance.compileStandardWrapper(standardInputStr);
     const compiled: solc.StandardOutput = JSON.parse(standardOutputStr);
@@ -362,6 +360,22 @@ export async function getSolcJSAsync(solcVersion: string, isOfflineMode: boolean
     }
     const solcInstance = solc.setupMethods(requireFromString(solcjs, compilerBinFilename));
     return solcInstance;
+}
+
+/**
+ * Gets the solidity compiler instance from a module path.
+ * @param path The path to the solc module.
+ */
+export function getSolcJSFromPath(modulePath: string): solc.SolcInstance {
+    return require(modulePath);
+}
+
+/**
+ * Gets the solidity compiler version from a module path.
+ * @param path The path to the solc module.
+ */
+export function getSolcJSVersionFromPath(modulePath: string): string {
+    return require(modulePath).version();
 }
 
 /**

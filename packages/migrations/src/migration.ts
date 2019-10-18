@@ -267,6 +267,14 @@ export async function runMigrationsAsync(
         exchange.address,
     );
 
+    // tslint:disable-next-line:no-unused-variable
+    const erc1155DummyToken = await wrappers.ERC1155MintableContract.deployFrom0xArtifactAsync(
+        artifacts.ERC1155Mintable,
+        provider,
+        txDefaults,
+        artifacts,
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,

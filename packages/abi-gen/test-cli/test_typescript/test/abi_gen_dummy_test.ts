@@ -138,14 +138,6 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
-    describe('validate and send transaction', () => {
-        it('should call validateAndSendTransactionAsync', async () => {
-            const txHash = await abiGenDummy.nonPureMethod.validateAndSendTransactionAsync();
-            const hexRegex = /^0x[a-fA-F0-9]+$/;
-            expect(txHash.match(hexRegex)).to.deep.equal([txHash]);
-        });
-    });
-
     describe('event subscription', () => {
         const indexFilterValues = {};
         const emptyCallback = () => {}; // tslint:disable-line:no-empty
@@ -282,6 +274,13 @@ describe('AbiGenDummy Contract', () => {
             // try decoding output
             const decodedOutput = abiGenDummy.multiInputMultiOutput.getABIDecodedReturnData(rawOutput);
             expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
+        });
+    });
+    describe('awaitTransactionSuccessAsync', async () => {
+        it('should successfully call the non pure function', async () => {
+            expect(
+                abiGenDummy.nonPureMethod.awaitTransactionSuccessAsync({}, { pollingIntervalMs: 10, timeoutMs: 100 }),
+            ).to.be.fulfilled('');
         });
     });
 });

@@ -5,3 +5,15 @@
  */
 export * from '../generated-wrappers/coordinator';
 export * from '../generated-wrappers/coordinator_registry';
+export * from '../generated-wrappers/i_coordinator_approval_verifier';
+export * from '../generated-wrappers/i_coordinator_core';
+export * from '../generated-wrappers/i_coordinator_registry_core';
+export * from '../generated-wrappers/i_coordinator_signature_validator';
+export * from '../generated-wrappers/lib_constants';
+export * from '../generated-wrappers/lib_coordinator_approval';
+export * from '../generated-wrappers/lib_coordinator_rich_errors';
+export * from '../generated-wrappers/lib_e_i_p712_coordinator_domain';
+export * from '../generated-wrappers/mixin_coordinator_approval_verifier';
+export * from '../generated-wrappers/mixin_coordinator_core';
+export * from '../generated-wrappers/mixin_coordinator_registry_core';
+export * from '../generated-wrappers/mixin_signature_validator';

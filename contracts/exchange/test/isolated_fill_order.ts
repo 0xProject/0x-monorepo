@@ -587,13 +587,21 @@ blockchainTests('Isolated fillOrder() tests', env => {
             return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount);
         });
 
-        it('can complementary fill an order with a bad signature that is checked only once', async () => {
+        it('cannot fill an order with a bad signature that has already been partially filled', async () => {
             const order = createOrder();
             const takerAssetFillAmounts = splitAmount(order.takerAssetAmount);
             const goodSignature = createGoodSignature(SignatureType.EthSign);
             const badSignature = createBadSignature(SignatureType.EthSign);
             await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[0], goodSignature);
-            await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.BadOrderSignature,
+                exchange.getOrderHash(order),
+                order.makerAddress,
+                badSignature,
+            );
+            return expect(fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature)).to.revertWith(
+                expectedError,
+            );
         });
     });
 });

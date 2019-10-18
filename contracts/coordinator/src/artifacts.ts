@@ -7,7 +7,31 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Coordinator from '../generated-artifacts/Coordinator.json';
 import * as CoordinatorRegistry from '../generated-artifacts/CoordinatorRegistry.json';
+import * as ICoordinatorApprovalVerifier from '../generated-artifacts/ICoordinatorApprovalVerifier.json';
+import * as ICoordinatorCore from '../generated-artifacts/ICoordinatorCore.json';
+import * as ICoordinatorRegistryCore from '../generated-artifacts/ICoordinatorRegistryCore.json';
+import * as ICoordinatorSignatureValidator from '../generated-artifacts/ICoordinatorSignatureValidator.json';
+import * as LibConstants from '../generated-artifacts/LibConstants.json';
+import * as LibCoordinatorApproval from '../generated-artifacts/LibCoordinatorApproval.json';
+import * as LibCoordinatorRichErrors from '../generated-artifacts/LibCoordinatorRichErrors.json';
+import * as LibEIP712CoordinatorDomain from '../generated-artifacts/LibEIP712CoordinatorDomain.json';
+import * as MixinCoordinatorApprovalVerifier from '../generated-artifacts/MixinCoordinatorApprovalVerifier.json';
+import * as MixinCoordinatorCore from '../generated-artifacts/MixinCoordinatorCore.json';
+import * as MixinCoordinatorRegistryCore from '../generated-artifacts/MixinCoordinatorRegistryCore.json';
+import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
 export const artifacts = {
     Coordinator: Coordinator as ContractArtifact,
+    MixinCoordinatorApprovalVerifier: MixinCoordinatorApprovalVerifier as ContractArtifact,
+    MixinCoordinatorCore: MixinCoordinatorCore as ContractArtifact,
+    MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
+    ICoordinatorApprovalVerifier: ICoordinatorApprovalVerifier as ContractArtifact,
+    ICoordinatorCore: ICoordinatorCore as ContractArtifact,
+    ICoordinatorSignatureValidator: ICoordinatorSignatureValidator as ContractArtifact,
+    LibConstants: LibConstants as ContractArtifact,
+    LibCoordinatorApproval: LibCoordinatorApproval as ContractArtifact,
+    LibCoordinatorRichErrors: LibCoordinatorRichErrors as ContractArtifact,
+    LibEIP712CoordinatorDomain: LibEIP712CoordinatorDomain as ContractArtifact,
     CoordinatorRegistry: CoordinatorRegistry as ContractArtifact,
+    MixinCoordinatorRegistryCore: MixinCoordinatorRegistryCore as ContractArtifact,
+    ICoordinatorRegistryCore: ICoordinatorRegistryCore as ContractArtifact,
 };
