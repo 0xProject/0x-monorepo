@@ -1,0 +1,10 @@
+{
+    "extends": ["@0x/tslint-config"],
+    "rules": {
+        "custom-no-magic-numbers": false,
+        "max-file-line-count": false
+    },
+    "linterOptions": {
+        "exclude": ["src/artifacts.ts"]
+    }
+}

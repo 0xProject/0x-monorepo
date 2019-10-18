@@ -69,4 +69,16 @@ contract TestLibERC20Token {
         target.setBehavior(shouldRevert, revertData, returnData);
         LibERC20Token.transferFrom(address(target), from, to, amount);
     }
+
+    function testDecimals(
+        bool shouldRevert,
+        bytes calldata revertData,
+        bytes calldata returnData
+    )
+        external
+        returns (uint8)
+    {
+        target.setBehavior(shouldRevert, revertData, returnData);
+        return LibERC20Token.decimals(address(target));
+    }
 }

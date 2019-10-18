@@ -1,30 +1,7 @@
-/*
-
-  Copyright 2019 ZeroEx Intl.
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-
-*/
-
-pragma solidity ^0.5.9;
-
-import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../src/interfaces/IERC20Token.sol";
+pragma solidity ^0.5;
 
 
 library LibERC20Token {
-    bytes constant private DECIMALS_CALL_DATA = hex"313ce567";
 
     /// @dev Calls `IERC20Token(token).approve()`.
     ///      Reverts if `false` is returned or if the return
@@ -40,7 +17,7 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            IERC20Token(0).approve.selector,
+            0x095ea7b3,
             spender,
             allowance
         );
@@ -61,7 +38,7 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            IERC20Token(0).transfer.selector,
+            0xa9059cbb,
             to,
             amount
         );
@@ -84,27 +61,12 @@ library LibERC20Token {
         internal
     {
         bytes memory callData = abi.encodeWithSelector(
-            IERC20Token(0).transferFrom.selector,
+            0x23b872dd,
             from,
             to,
             amount
         );
         _callWithOptionalBooleanResult(token, callData);
-    }
-
-    /// @dev Retrieves the number of decimals for a token.
-    ///      Returns `18` if the call reverts.
-    /// @return The number of decimals places for the token.
-    function decimals(address token)
-        internal
-        view
-        returns (uint8 tokenDecimals)
-    {
-        tokenDecimals = 18;
-        (bool didSucceed, bytes memory resultData) = token.staticcall(DECIMALS_CALL_DATA);
-        if (didSucceed && resultData.length == 32) {
-            tokenDecimals = uint8(LibBytes.readUint256(resultData, 0));
-        }
     }
 
     /// @dev Executes a call on address `target` with calldata `callData`
@@ -124,12 +86,13 @@ library LibERC20Token {
                 return;
             }
             if (resultData.length == 32) {
-                uint256 result = LibBytes.readUint256(resultData, 0);
+                uint256 result;
+                assembly { result := mload(add(resultData, 0x20)) }
                 if (result == 1) {
                     return;
                 }
             }
         }
-        LibRichErrors.rrevert(resultData);
+        assembly { revert(add(resultData, 0x20), mload(resultData)) }
     }
 }
