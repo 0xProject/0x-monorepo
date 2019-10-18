@@ -31,7 +31,7 @@ from web3.contract import Contract
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 import zero_ex.contract_artifacts
-from zero_ex.contract_wrappers.exchange.types import Order, order_to_jsdict
+from zero_ex.contract_wrappers.order_conversions import order_to_jsdict
 from zero_ex.dev_utils.type_assertions import (
     assert_is_address,
     assert_is_hex_string,

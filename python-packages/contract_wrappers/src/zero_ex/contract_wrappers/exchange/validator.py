@@ -5,9 +5,9 @@ from typing import Any
 from web3.providers.base import BaseProvider
 
 from zero_ex import json_schemas
+from zero_ex.contract_wrappers.order_conversions import order_to_jsdict
 
 from ..bases import Validator
-from .types import order_to_jsdict
 
 
 class ExchangeValidator(Validator):
