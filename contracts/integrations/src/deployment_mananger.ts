@@ -16,7 +16,7 @@ import {
     ExchangeContract,
     Ownable,
 } from '@0x/contracts-exchange';
-import { artifacts as multisigArtifacts, AssetProxyOwnerContract } from '@0x/contracts-multisig';
+import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
     ReadOnlyProxyContract,
@@ -76,7 +76,7 @@ async function batchRegisterAssetProxyAsync(
  */
 async function batchTransferOwnershipAsync(
     owner: string,
-    newOwner: AssetProxyOwnerContract,
+    newOwner: ZeroExGovernorContract,
     ownedContracts: Ownable[],
 ): Promise<void> {
     for (const ownedContract of ownedContracts) {
@@ -115,7 +115,7 @@ export class DeploymentManager {
     public static protocolFeeMultiplier = new BigNumber(150000);
 
     public assetProxies: AssetProxyContracts;
-    public assetProxyOwner: AssetProxyOwnerContract;
+    public governor: ZeroExGovernorContract;
     public exchange: ExchangeContract;
     public staking: StakingContracts;
     public tokens: TokenContracts;
@@ -142,8 +142,8 @@ export class DeploymentManager {
             exchangeArtifacts,
             new BigNumber(chainId),
         );
-        const assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-            multisigArtifacts.AssetProxyOwner,
+        const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
+            multisigArtifacts.ZeroExGovernor,
             environment.provider,
             txDefaults,
             multisigArtifacts,
@@ -168,10 +168,10 @@ export class DeploymentManager {
         await DeploymentManager._configureExchangeWithStakingAsync(exchange, staking, owner);
 
         // Authorize the asset-proxy owner in the staking proxy and in the zrx vault.
-        await staking.stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
+        await staking.stakingProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
             from: owner,
         });
-        await staking.zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
+        await staking.zrxVault.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
             from: owner,
         });
 
@@ -180,7 +180,7 @@ export class DeploymentManager {
         await staking.zrxVault.removeAuthorizedAddress.awaitTransactionSuccessAsync(owner, { from: owner });
 
         // Transfer complete ownership of the system to the asset proxy owner.
-        await batchTransferOwnershipAsync(owner, assetProxyOwner, [
+        await batchTransferOwnershipAsync(owner, governor, [
             assetProxies.erc20Proxy,
             assetProxies.erc721Proxy,
             assetProxies.erc1155Proxy,
@@ -190,7 +190,7 @@ export class DeploymentManager {
             staking.stakingProxy,
         ]);
 
-        return new DeploymentManager(assetProxies, assetProxyOwner, exchange, staking, tokens);
+        return new DeploymentManager(assetProxies, governor, exchange, staking, tokens);
     }
 
     /**
@@ -443,13 +443,13 @@ export class DeploymentManager {
 
     private constructor(
         assetProxies: AssetProxyContracts,
-        assetProxyOwner: AssetProxyOwnerContract,
+        governor: ZeroExGovernorContract,
         exchange: ExchangeContract,
         staking: StakingContracts,
         tokens: TokenContracts,
     ) {
         this.assetProxies = assetProxies;
-        this.assetProxyOwner = assetProxyOwner;
+        this.governor = governor;
         this.exchange = exchange;
         this.staking = staking;
         this.tokens = tokens;
