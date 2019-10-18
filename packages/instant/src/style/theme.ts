@@ -27,8 +27,7 @@ export enum ColorOption {
     red = 'red',
     darkBlue = 'darkBlue',
     lightBlue = 'lightBlue',
-    fortmaticPrimary = 'fortmaticPrimary',
-    fortmaticSecondary = 'fortmaticSecondary',
+    whiteBackground = 'whiteBackground',
 }
 
 export const theme: Theme = {
@@ -46,8 +45,7 @@ export const theme: Theme = {
     red: '#D00000',
     darkBlue: '#135df6',
     lightBlue: '#F2F7FF',
-    fortmaticPrimary: '#6851FF',
-    fortmaticSecondary: '#E2DCFF',
+    whiteBackground: '#FFFFFF',
 };
 
 export const transparentWhite = 'rgba(255,255,255,0.3)';
