@@ -10,7 +10,7 @@ export interface ActorConfig {
     address: string;
     name?: string;
     deployment: DeploymentManager;
-    [subclassProperty: string]: any;
+    [mixinProperty: string]: any;
 }
 
 export class Actor {

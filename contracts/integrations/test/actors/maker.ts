@@ -8,7 +8,7 @@ export interface MakerConfig extends ActorConfig {
     orderConfig: Partial<Order>;
 }
 
-export function Maker<TBase extends Constructor>(Base: TBase) {
+export function MakerMixin<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         public readonly actor: Actor;
         public readonly orderFactory: OrderFactory;
@@ -49,4 +49,4 @@ export function Maker<TBase extends Constructor>(Base: TBase) {
     };
 }
 
-export const MakerActor = Maker(Actor);
+export const Maker = MakerMixin(Actor);

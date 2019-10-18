@@ -1,3 +1,3 @@
-export { MakerActor } from './maker';
-export { PoolOperatorActor } from './pool_operator';
+export { Maker } from './maker';
+export { PoolOperator } from './pool_operator';
 export * from './hybrids';

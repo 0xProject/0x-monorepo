@@ -6,7 +6,7 @@ export interface PoolOperatorConfig extends ActorConfig {
     operatorShare: number;
 }
 
-export function PoolOperator<TBase extends Constructor>(Base: TBase) {
+export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
         public readonly operatorShare: number;
         public readonly poolIds: string[] = [];
@@ -57,4 +57,4 @@ export function PoolOperator<TBase extends Constructor>(Base: TBase) {
     };
 }
 
-export const PoolOperatorActor = PoolOperator(Actor);
+export const PoolOperator = PoolOperatorMixin(Actor);
