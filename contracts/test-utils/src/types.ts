@@ -37,6 +37,10 @@ export interface ERC1155HoldingsByOwner {
     nonFungible: ERC1155NonFungibleHoldingsByOwner;
 }
 
+export interface EthBalancesByOwner {
+    [owner: string]: BigNumber;
+}
+
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
@@ -150,20 +154,10 @@ export interface ERC1155Holdings {
 }
 
 export interface TokenBalances {
-    erc20: {
-        [owner: string]: {
-            [contract: string]: BigNumber;
-        };
-    };
-    erc721: {
-        [owner: string]: {
-            [contract: string]: BigNumber[];
-        };
-    };
+    erc20: ERC20BalancesByOwner;
+    erc721: ERC721TokenIdsByOwner;
     erc1155: ERC1155Holdings;
-    eth: {
-        [owner: string]: BigNumber;
-    };
+    eth: EthBalancesByOwner;
 }
 
 export interface FillEventArgs {

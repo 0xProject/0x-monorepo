@@ -48,6 +48,7 @@ export {
     ERC1155Holdings,
     ERC1155NonFungibleHoldingsByOwner,
     ERC721TokenIdsByOwner,
+    EthBalancesByOwner,
     FillEventArgs,
     MarketBuyOrders,
     MarketSellOrders,
