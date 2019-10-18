@@ -484,6 +484,16 @@ export class CoordinatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         /**

@@ -268,6 +268,14 @@ export class ZRXTokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ZRXTokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public totalSupply = {
         /**
@@ -516,6 +524,14 @@ export class ZRXTokenContract extends BaseContract {
                 _value,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ZRXTokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public decimals = {
@@ -805,6 +821,14 @@ export class ZRXTokenContract extends BaseContract {
                 _value,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ZRXTokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public allowance = {

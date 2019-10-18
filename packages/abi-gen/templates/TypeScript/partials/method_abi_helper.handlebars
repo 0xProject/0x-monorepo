@@ -1,4 +1,4 @@
-{{!-- if ((NOT constant) AND (NOT debug)), to avoid repetition bbecause we use all 3 functions if (debug) --}}
+{{!-- if ((NOT constant) AND (NOT debug)), to avoid repetition bbecause we use all 4 functions if (debug) --}}
 {{^if constant~}}
 {{^if debug~}}
 /**
@@ -18,6 +18,14 @@ getABIEncodedTransactionData(
     const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     return abiEncodedTransactionData;
 },
+/**
+ * Returns the 4 byte function selector as a hex string.
+ */
+getSelector(): string {
+    const self = this as any as {{contractName}}Contract;
+    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    return abiEncoder.getSelector();
+}
 {{/if~}}
 {{/if~}}
 
@@ -67,4 +75,12 @@ getABIDecodedReturnData(
     const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{{> return_type outputs=outputs}}>(returnData);
     return abiDecodedReturnData;
 },
+/**
+ * Returns the 4 byte function selector as a hex string.
+ */
+getSelector(): string {
+    const self = this as any as {{contractName}}Contract;
+    const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
+    return abiEncoder.getSelector();
+}
 {{/if}}

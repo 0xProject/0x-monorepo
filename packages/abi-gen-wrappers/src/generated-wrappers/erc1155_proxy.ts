@@ -208,6 +208,14 @@ export class ERC1155ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     public authorities = {
         /**
@@ -583,6 +591,14 @@ export class ERC1155ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Removes authorizion of an address.
@@ -768,6 +784,14 @@ export class ERC1155ProxyContract extends BaseContract {
                 [target.toLowerCase(), index],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1001,6 +1025,14 @@ export class ERC1155ProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public transferOwnership = {
         /**
@@ -1142,6 +1174,14 @@ export class ERC1155ProxyContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC1155ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC1155ProxyEventArgs, ERC1155ProxyEvents>;

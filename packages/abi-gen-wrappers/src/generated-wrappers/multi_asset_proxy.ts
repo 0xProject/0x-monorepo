@@ -259,6 +259,14 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     public authorities = {
         /**
@@ -510,6 +518,14 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     public owner = {
         /**
@@ -738,6 +754,14 @@ export class MultiAssetProxyContract extends BaseContract {
                 [target.toLowerCase(), index],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -981,6 +1005,14 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets all authorized addresses.
@@ -1169,6 +1201,14 @@ export class MultiAssetProxyContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>;

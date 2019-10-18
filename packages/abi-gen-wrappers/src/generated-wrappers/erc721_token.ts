@@ -250,6 +250,14 @@ export class ERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * NFTs assigned to the zero address are considered invalid, and this
@@ -673,6 +681,14 @@ export class ERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Throws unless `msg.sender` is the current owner, an authorized
@@ -901,6 +917,14 @@ export class ERC721TokenContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Emits the ApprovalForAll event. The contract MUST allow
@@ -1087,6 +1111,14 @@ export class ERC721TokenContract extends BaseContract {
                 _approved,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1295,6 +1327,14 @@ export class ERC721TokenContract extends BaseContract {
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;

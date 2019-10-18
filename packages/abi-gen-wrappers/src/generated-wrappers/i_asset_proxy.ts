@@ -259,6 +259,14 @@ export class IAssetProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as IAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets the proxy id associated with the proxy address.

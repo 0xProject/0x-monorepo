@@ -281,6 +281,16 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -676,6 +686,16 @@ export class DutchAuctionContract extends BaseContract {
                 [buyOrder, sellOrder, buySignature, sellSignature],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+            );
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

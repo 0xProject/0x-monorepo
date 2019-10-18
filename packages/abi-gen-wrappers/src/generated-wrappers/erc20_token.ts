@@ -239,6 +239,14 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Query total supply of token
@@ -492,6 +500,14 @@ export class ERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Query the balance of owner
@@ -713,6 +729,14 @@ export class ERC20TokenContract extends BaseContract {
                 _value,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public allowance = {

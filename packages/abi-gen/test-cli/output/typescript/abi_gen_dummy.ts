@@ -126,6 +126,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * a method that accepts an array of bytes
@@ -202,6 +210,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -283,6 +299,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleInputSimpleOutput(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public withdraw = {
@@ -448,6 +472,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Tests decoding when the input and output are complex and have more than one argument.
@@ -539,6 +571,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[string, string, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('multiInputMultiOutput(uint256,bytes,string)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -650,6 +690,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
+            return abiEncoder.getSelector();
+        },
     };
     public acceptsBytes = {
         /**
@@ -721,6 +769,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -795,6 +851,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('noInputSimpleOutput()');
+            return abiEncoder.getSelector();
+        },
     };
     public revertWithConstant = {
         /**
@@ -865,6 +929,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
+            return abiEncoder.getSelector();
+        },
     };
     public simpleRevert = {
         /**
@@ -934,6 +1006,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
+            return abiEncoder.getSelector();
         },
     };
     public methodUsingNestedStructWithInnerStructNotUsedElsewhere = {
@@ -1015,6 +1095,14 @@ export class AbiGenDummyContract extends BaseContract {
                 returnData,
             );
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
+            return abiEncoder.getSelector();
         },
     };
     public nestedStructOutput = {
@@ -1103,6 +1191,14 @@ export class AbiGenDummyContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
+            return abiEncoder.getSelector();
+        },
     };
     public requireWithConstant = {
         /**
@@ -1172,6 +1268,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
+            return abiEncoder.getSelector();
         },
     };
     public withAddressInput = {
@@ -1267,6 +1371,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public structInput = {
         /**
@@ -1352,6 +1464,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
+            return abiEncoder.getSelector();
         },
     };
     public nonPureMethod = {
@@ -1510,6 +1630,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethod()');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Tests decoding when the input and output are complex.
@@ -1609,6 +1737,14 @@ export class AbiGenDummyContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('complexInputComplexOutput((uint256,bytes,string))');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Tests decoding when both input and output are empty.
@@ -1682,6 +1818,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('noInputNoOutput()');
+            return abiEncoder.getSelector();
+        },
     };
     public simplePureFunctionWithInput = {
         /**
@@ -1753,6 +1897,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public nonPureMethodThatReturnsNothing = {
@@ -1911,6 +2063,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethodThatReturnsNothing()');
+            return abiEncoder.getSelector();
+        },
     };
     public simplePureFunction = {
         /**
@@ -1980,6 +2140,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
+            return abiEncoder.getSelector();
         },
     };
     public nestedStructInput = {
@@ -2096,6 +2264,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
+            return abiEncoder.getSelector();
+        },
     };
     public methodReturningMultipleValues = {
         /**
@@ -2165,6 +2341,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
+            return abiEncoder.getSelector();
         },
     };
     public methodReturningArrayOfStructs = {
@@ -2244,6 +2428,14 @@ export class AbiGenDummyContract extends BaseContract {
                 Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
             >(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
+            return abiEncoder.getSelector();
         },
     };
     public emitSimpleEvent = {
@@ -2402,6 +2594,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('emitSimpleEvent()');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * a method that returns a struct
@@ -2491,6 +2691,14 @@ export class AbiGenDummyContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structOutput()');
+            return abiEncoder.getSelector();
+        },
     };
     public pureFunctionWithConstant = {
         /**
@@ -2560,6 +2768,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2640,6 +2856,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleInputNoOutput(uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public overloadedMethod2 = {
         /**
@@ -2712,6 +2936,14 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
+            return abiEncoder.getSelector();
+        },
     };
     public overloadedMethod1 = {
         /**
@@ -2783,6 +3015,14 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<AbiGenDummyEventArgs, AbiGenDummyEvents>;

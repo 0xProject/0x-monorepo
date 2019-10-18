@@ -501,6 +501,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Executes a batch of Exchange method calls in the context of signer(s).
@@ -727,6 +737,16 @@ export class ExchangeContract extends BaseContract {
                 [transactions, signatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchExecuteTransactions((uint256,uint256,uint256,address,bytes)[],bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1037,6 +1057,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Executes multiple calls of fillOrder.
@@ -1340,6 +1370,16 @@ export class ExchangeContract extends BaseContract {
                 [orders, takerAssetFillAmounts, signatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -1649,6 +1689,16 @@ export class ExchangeContract extends BaseContract {
                 [orders, takerAssetFillAmounts, signatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2075,6 +2125,16 @@ export class ExchangeContract extends BaseContract {
                 [leftOrders, rightOrders, leftSignatures, rightSignatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchMatchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -2503,6 +2563,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'batchMatchOrdersWithMaximalFill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * After calling, the order can not be filled anymore.
@@ -2742,6 +2812,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes))',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
@@ -2901,6 +2981,14 @@ export class ExchangeContract extends BaseContract {
                 targetOrderEpoch,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('cancelOrdersUpTo(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public cancelled = {
@@ -3205,6 +3293,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'executeTransaction((uint256,uint256,uint256,address,bytes),bytes)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -3493,6 +3591,16 @@ export class ExchangeContract extends BaseContract {
                 [order, takerAssetFillAmount, signature],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -3783,6 +3891,16 @@ export class ExchangeContract extends BaseContract {
                 [order, takerAssetFillAmount, signature],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)',
+            );
+            return abiEncoder.getSelector();
         },
     };
     public filled = {
@@ -4466,6 +4584,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersFillOrKill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
@@ -4768,6 +4896,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
@@ -5068,6 +5206,16 @@ export class ExchangeContract extends BaseContract {
                 [orders, takerAssetFillAmount, signatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersFillOrKill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -5370,6 +5518,16 @@ export class ExchangeContract extends BaseContract {
                 [orders, takerAssetFillAmount, signatures],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -5778,6 +5936,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Match two complementary orders that have a profitable spread.
@@ -6185,6 +6353,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'matchOrdersWithMaximalFill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public orderEpoch = {
         /**
@@ -6429,6 +6607,14 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32)', [hash]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('preSign(bytes32)');
+            return abiEncoder.getSelector();
         },
     };
     public preSigned = {
@@ -6724,6 +6910,14 @@ export class ExchangeContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Allows the owner to update the protocolFeeCollector address.
@@ -6896,6 +7090,14 @@ export class ExchangeContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('setProtocolFeeCollectorAddress(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Allows the owner to update the protocol fee multiplier.
@@ -7062,6 +7264,14 @@ export class ExchangeContract extends BaseContract {
                 updatedProtocolFeeMultiplier,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('setProtocolFeeMultiplier(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -7249,6 +7459,14 @@ export class ExchangeContract extends BaseContract {
                 [validatorAddress.toLowerCase(), approval],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('setSignatureValidatorApproval(address,bool)');
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -7500,6 +7718,16 @@ export class ExchangeContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'simulateDispatchTransferFromCalls(bytes[],address[],address[],uint256[])',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public transactionsExecuted = {
         /**
@@ -7689,6 +7917,14 @@ export class ExchangeContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ExchangeContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ExchangeEventArgs, ExchangeEvents>;

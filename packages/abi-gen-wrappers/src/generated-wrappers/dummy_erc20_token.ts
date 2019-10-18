@@ -338,6 +338,14 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Query the balance of owner
@@ -581,6 +589,14 @@ export class DummyERC20TokenContract extends BaseContract {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('mint(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public name = {
@@ -849,6 +865,14 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('setBalance(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public symbol = {
         /**
@@ -1108,6 +1132,14 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * ERC20 transferFrom, modified such that an allowance of MAX_UINT represents an unlimited allowance. See https://github.com/ethereum/EIPs/issues/717
@@ -1314,6 +1346,14 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public transferOwnership = {
         /**
@@ -1455,6 +1495,14 @@ export class DummyERC20TokenContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DummyERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<DummyERC20TokenEventArgs, DummyERC20TokenEvents>;

@@ -2072,6 +2072,16 @@ export class DevUtilsContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrderTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,uint256)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Simulates all of the transfers for each given order and returns the indices of each first failed transfer.
@@ -2369,6 +2379,16 @@ export class DevUtilsContract extends BaseContract {
                 [orders, takerAddresses, takerAssetFillAmounts],
             );
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as DevUtilsContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getSimulatedOrdersTransferResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],address[],uint256[])',
+            );
+            return abiEncoder.getSelector();
         },
     };
     /**

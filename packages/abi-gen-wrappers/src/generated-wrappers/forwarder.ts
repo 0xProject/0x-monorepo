@@ -189,6 +189,14 @@ export class ForwarderContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('approveMakerAssetProxy(bytes)', [assetData]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('approveMakerAssetProxy(bytes)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
@@ -524,6 +532,16 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[],uint256,address)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
@@ -840,6 +858,16 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            return abiEncoder.getSelector();
+        },
     };
     public owner = {
         /**
@@ -1025,6 +1053,14 @@ export class ForwarderContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Withdraws assets from this contract. The contract formerly required a ZRX balance in order
@@ -1198,6 +1234,14 @@ export class ForwarderContract extends BaseContract {
                 amount,
             ]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public static async deployFrom0xArtifactAsync(

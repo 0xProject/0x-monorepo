@@ -271,6 +271,14 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public totalSupply = {
         /**
@@ -501,6 +509,14 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public withdraw = {
         /**
@@ -640,6 +656,14 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            return abiEncoder.getSelector();
         },
     };
     public decimals = {
@@ -930,6 +954,14 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            return abiEncoder.getSelector();
+        },
     };
     public deposit = {
         /**
@@ -1062,6 +1094,14 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
             return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            return abiEncoder.getSelector();
         },
     };
     public allowance = {

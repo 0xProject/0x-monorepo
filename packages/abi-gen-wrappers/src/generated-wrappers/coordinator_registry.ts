@@ -203,6 +203,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            return abiEncoder.getSelector();
+        },
     };
     /**
      * Gets the endpoint for a Coordinator.
