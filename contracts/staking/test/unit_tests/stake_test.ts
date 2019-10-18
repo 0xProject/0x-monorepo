@@ -415,7 +415,7 @@ blockchainTests.resets('MixinStake unit tests', env => {
             expect(events[0].amount).to.bignumber.eq(amount);
         });
 
-        it('moves the owner stake between different pointers when "to" is undelegated and "to" is delegated', async () => {
+        it('moves the owner stake between different pointers when "from" is delegated and "to" is undelegated', async () => {
             const amount = getRandomInteger(0, 100e18);
             const { logs } = await testContract.moveStake.awaitTransactionSuccessAsync(
                 { status: StakeStatus.Delegated, poolId: VALID_POOL_IDS[0] },
