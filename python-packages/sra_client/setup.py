@@ -46,6 +46,12 @@ class CleanCommandExtension(clean):
         rmtree("0x_sra_client.egg-info", ignore_errors=True)
         rmtree("build", ignore_errors=True)
         rmtree("dist", ignore_errors=True)
+        subprocess.check_call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml down").split()
+        )
+        subprocess.check_call(  # nosec
+            ("docker-compose -f test/relayer/docker-compose.yml rm").split()
+        )
 
 
 class TestCommandExtension(TestCommand):
