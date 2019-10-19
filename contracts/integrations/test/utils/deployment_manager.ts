@@ -122,7 +122,9 @@ export interface DeploymentOptions {
 }
 
 export class DeploymentManager {
-    public static protocolFeeMultiplier = new BigNumber(150000);
+    public static readonly protocolFeeMultiplier = new BigNumber(150000);
+    public static readonly gasPrice = new BigNumber(1000000000); // 1 Gwei
+    public static readonly protocolFee = DeploymentManager.gasPrice.times(DeploymentManager.protocolFeeMultiplier);
 
     /**
      * Fully deploy the 0x exchange and staking contracts and configure the system with the
@@ -141,6 +143,7 @@ export class DeploymentManager {
         const txDefaults = {
             ...environment.txDefaults,
             from: owner,
+            gasPrice: DeploymentManager.gasPrice,
         };
 
         // Deploy the contracts using the same owner and environment.
@@ -148,7 +151,7 @@ export class DeploymentManager {
         const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             environment.provider,
-            environment.txDefaults,
+            txDefaults,
             { ...ERC20Artifacts, ...exchangeArtifacts },
             new BigNumber(chainId),
         );
@@ -200,7 +203,7 @@ export class DeploymentManager {
             staking.stakingProxy,
         ]);
 
-        return new DeploymentManager(assetProxies, governor, exchange, staking, tokens, chainId, accounts);
+        return new DeploymentManager(assetProxies, governor, exchange, staking, tokens, chainId, accounts, txDefaults);
     }
 
     /**
@@ -493,5 +496,6 @@ export class DeploymentManager {
         public tokens: TokenContracts,
         public chainId: number,
         public accounts: string[],
+        public txDefaults: Partial<TxData>,
     ) {}
 }

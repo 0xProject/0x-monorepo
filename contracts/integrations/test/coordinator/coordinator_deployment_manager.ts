@@ -17,7 +17,7 @@ export class CoordinatorDeploymentManager extends DeploymentManager {
         const coordinator = await CoordinatorContract.deployFrom0xArtifactAsync(
             artifacts.Coordinator,
             environment.provider,
-            environment.txDefaults,
+            baseDeploymentManager.txDefaults,
             { ...exchangeArtifacts, ...artifacts },
             baseDeploymentManager.exchange.address,
             new BigNumber(baseDeploymentManager.chainId),
@@ -27,8 +27,17 @@ export class CoordinatorDeploymentManager extends DeploymentManager {
     }
 
     private constructor(baseDeploymentManager: DeploymentManager, coordinator: CoordinatorContract) {
-        const { assetProxies, assetProxyOwner, exchange, staking, tokens, chainId, accounts } = baseDeploymentManager;
-        super(assetProxies, assetProxyOwner, exchange, staking, tokens, chainId, accounts);
+        const {
+            assetProxies,
+            assetProxyOwner,
+            exchange,
+            staking,
+            tokens,
+            chainId,
+            accounts,
+            txDefaults,
+        } = baseDeploymentManager;
+        super(assetProxies, assetProxyOwner, exchange, staking, tokens, chainId, accounts, txDefaults);
         this.coordinator = coordinator;
     }
 }

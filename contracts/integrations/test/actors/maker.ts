@@ -31,9 +31,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase) {
                 chainId: this.actor.deployment.chainId,
                 ...orderConfig,
             };
-            const privateKey =
-                constants.TESTRPC_PRIVATE_KEYS[this.actor.deployment.accounts.indexOf(this.actor.address)];
-            this.orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+            this.orderFactory = new OrderFactory(this.actor.privateKey, defaultOrderParams);
         }
 
         /**

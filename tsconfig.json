@@ -17,7 +17,7 @@
         "sourceMap": true
     },
     // These are not working right now
-    "exclude": ["./contracts/extensions/**/*", "./contracts/coordinator/**/*"],
+    "exclude": ["./contracts/extensions/**/*"],
     // The root of the project is just a list of references and does not contain
     // any top-level TypeScript code.
     "include": [],
@@ -26,6 +26,7 @@
         { "path": "./contracts/erc20" },
         { "path": "./contracts/erc721" },
         { "path": "./contracts/exchange" },
+        { "path": "./contracts/coordinator" },
         { "path": "./contracts/exchange-forwarder" },
         { "path": "./contracts/exchange-libs" },
         // { "path": "./contracts/extensions" },
@@ -33,6 +34,7 @@
         { "path": "./contracts/test-utils" },
         { "path": "./contracts/utils" },
         { "path": "./contracts/dev-utils" },
+        { "path": "./contracts/integrations" },
         { "path": "./packages/0x.js" },
         { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/abi-gen" },
