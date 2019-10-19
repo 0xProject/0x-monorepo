@@ -136,8 +136,8 @@ Constructing an order
 ...     expirationTimeSeconds=round(
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     ),
-...     makerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
-...     takerFeeAssetData=asset_data_utils.encode_erc20('0x' + '00'*20),
+...     makerFeeAssetData='0x',
+...     takerFeeAssetData='0x',
 ...     chain_id=Web3(ganache).eth.chainId,
 ... )
 

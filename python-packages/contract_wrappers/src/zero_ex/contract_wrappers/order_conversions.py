@@ -1,7 +1,7 @@
 """Utilities to convert between JSON and Python-native objects."""
 
 from copy import copy
-from typing import cast, Dict
+from typing import cast, Dict, Union
 
 from eth_utils import remove_0x_prefix
 
@@ -60,11 +60,22 @@ def order_to_jsdict(
     """
     jsdict = cast(Dict, copy(order))
 
-    # encode bytes fields
-    jsdict["makerAssetData"] = "0x" + order["makerAssetData"].hex()
-    jsdict["makerFeeAssetData"] = "0x" + order["makerFeeAssetData"].hex()
-    jsdict["takerAssetData"] = "0x" + order["takerAssetData"].hex()
-    jsdict["takerFeeAssetData"] = "0x" + order["takerFeeAssetData"].hex()
+    def encode_bytes(bytes_or_str: Union[bytes, str]) -> bytes:
+        def ensure_hex_prefix(hex_str: str):
+            if hex_str[0:2] != "0x":
+                hex_str = "0x" + hex_str
+            return hex_str
+
+        return ensure_hex_prefix(
+            cast(bytes, bytes_or_str).hex()
+            if isinstance(bytes_or_str, bytes)
+            else bytes_or_str
+        )
+
+    jsdict["makerAssetData"] = encode_bytes(order["makerAssetData"])
+    jsdict["takerAssetData"] = encode_bytes(order["takerAssetData"])
+    jsdict["makerFeeAssetData"] = encode_bytes(order["makerFeeAssetData"])
+    jsdict["takerFeeAssetData"] = encode_bytes(order["takerFeeAssetData"])
 
     jsdict["exchangeAddress"] = exchange_address
 

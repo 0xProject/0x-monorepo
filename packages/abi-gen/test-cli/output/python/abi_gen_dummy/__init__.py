@@ -100,11 +100,11 @@ class Tuple0xcf8ad995(TypedDict):
     accomplished via `str.encode("utf_8")`:code:
     """
 
-    someBytes: bytes
+    someBytes: Union[bytes, str]
 
     anInteger: int
 
-    aDynamicArrayOfBytes: List[bytes]
+    aDynamicArrayOfBytes: List[Union[bytes, str]]
 
     aString: str
 
@@ -148,7 +148,7 @@ class Tuple0xf95128ef(TypedDict):
 
     foo: int
 
-    bar: bytes
+    bar: Union[bytes, str]
 
     car: str
 
@@ -171,9 +171,9 @@ class Tuple0xa057bf41(TypedDict):
 
     input: Tuple0xf95128ef
 
-    lorem: bytes
+    lorem: Union[bytes, str]
 
-    ipsum: bytes
+    ipsum: Union[bytes, str]
 
     dolor: str
 
@@ -232,7 +232,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def validate_and_normalize_inputs(self, a: List[bytes]):
+    def validate_and_normalize_inputs(self, a: List[Union[bytes, str]]):
         """Validate the inputs to the acceptsAnArrayOfBytes method."""
         self.validator.assert_valid(
             method_name="acceptsAnArrayOfBytes",
@@ -242,7 +242,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return a
 
     def call(
-        self, a: List[bytes], tx_params: Optional[TxParams] = None
+        self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
     ) -> None:
         """Execute underlying contract method via eth_call.
 
@@ -257,7 +257,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return self.underlying_method(a).call(tx_params.as_dict())
 
     def send_transaction(
-        self, a: List[bytes], tx_params: Optional[TxParams] = None
+        self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
     ) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
@@ -272,7 +272,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return self.underlying_method(a).transact(tx_params.as_dict())
 
     def estimate_gas(
-        self, a: List[bytes], tx_params: Optional[TxParams] = None
+        self, a: List[Union[bytes, str]], tx_params: Optional[TxParams] = None
     ) -> int:
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)
@@ -410,7 +410,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(
-        self, index_0: int, index_1: bytes, index_2: str
+        self, index_0: int, index_1: Union[bytes, str], index_2: str
     ):
         """Validate the inputs to the multiInputMultiOutput method."""
         self.validator.assert_valid(
@@ -435,10 +435,10 @@ class MultiInputMultiOutputMethod(ContractMethod):
     def call(
         self,
         index_0: int,
-        index_1: bytes,
+        index_1: Union[bytes, str],
         index_2: str,
         tx_params: Optional[TxParams] = None,
-    ) -> Tuple[bytes, bytes, str]:
+    ) -> Tuple[Union[bytes, str], Union[bytes, str], str]:
         """Execute underlying contract method via eth_call.
 
         Tests decoding when the input and output are complex and have more than
@@ -458,7 +458,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
     def send_transaction(
         self,
         index_0: int,
-        index_1: bytes,
+        index_1: Union[bytes, str],
         index_2: str,
         tx_params: Optional[TxParams] = None,
     ) -> Union[HexBytes, bytes]:
@@ -481,7 +481,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
     def estimate_gas(
         self,
         index_0: int,
-        index_1: bytes,
+        index_1: Union[bytes, str],
         index_2: str,
         tx_params: Optional[TxParams] = None,
     ) -> int:
@@ -510,7 +510,11 @@ class EcrecoverFnMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(
-        self, _hash: bytes, v: int, r: bytes, s: bytes
+        self,
+        _hash: Union[bytes, str],
+        v: int,
+        r: Union[bytes, str],
+        s: Union[bytes, str],
     ):
         """Validate the inputs to the ecrecoverFn method."""
         self.validator.assert_valid(
@@ -531,10 +535,10 @@ class EcrecoverFnMethod(ContractMethod):
 
     def call(
         self,
-        _hash: bytes,
+        _hash: Union[bytes, str],
         v: int,
-        r: bytes,
-        s: bytes,
+        r: Union[bytes, str],
+        s: Union[bytes, str],
         tx_params: Optional[TxParams] = None,
     ) -> str:
         """Execute underlying contract method via eth_call.
@@ -559,10 +563,10 @@ class EcrecoverFnMethod(ContractMethod):
 
     def send_transaction(
         self,
-        _hash: bytes,
+        _hash: Union[bytes, str],
         v: int,
-        r: bytes,
-        s: bytes,
+        r: Union[bytes, str],
+        s: Union[bytes, str],
         tx_params: Optional[TxParams] = None,
     ) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
@@ -589,10 +593,10 @@ class EcrecoverFnMethod(ContractMethod):
 
     def estimate_gas(
         self,
-        _hash: bytes,
+        _hash: Union[bytes, str],
         v: int,
-        r: bytes,
-        s: bytes,
+        r: Union[bytes, str],
+        s: Union[bytes, str],
         tx_params: Optional[TxParams] = None,
     ) -> int:
         """Estimate gas consumption of method call."""
@@ -617,14 +621,16 @@ class AcceptsBytesMethod(ContractMethod):
         super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
-    def validate_and_normalize_inputs(self, a: bytes):
+    def validate_and_normalize_inputs(self, a: Union[bytes, str]):
         """Validate the inputs to the acceptsBytes method."""
         self.validator.assert_valid(
             method_name="acceptsBytes", parameter_name="a", argument_value=a
         )
         return a
 
-    def call(self, a: bytes, tx_params: Optional[TxParams] = None) -> None:
+    def call(
+        self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
+    ) -> None:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -635,7 +641,7 @@ class AcceptsBytesMethod(ContractMethod):
         return self.underlying_method(a).call(tx_params.as_dict())
 
     def send_transaction(
-        self, a: bytes, tx_params: Optional[TxParams] = None
+        self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
     ) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
@@ -647,7 +653,7 @@ class AcceptsBytesMethod(ContractMethod):
         return self.underlying_method(a).transact(tx_params.as_dict())
 
     def estimate_gas(
-        self, a: bytes, tx_params: Optional[TxParams] = None
+        self, a: Union[bytes, str], tx_params: Optional[TxParams] = None
     ) -> int:
         """Estimate gas consumption of method call."""
         (a) = self.validate_and_normalize_inputs(a)

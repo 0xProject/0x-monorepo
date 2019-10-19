@@ -18,9 +18,9 @@ just this purpose.  To start it:
 
 from enum import auto, Enum
 import json
-from typing import Tuple
-from pkg_resources import resource_string
+from typing import cast, Tuple, Union
 
+from pkg_resources import resource_string
 from mypy_extensions import TypedDict
 
 from eth_utils import keccak, remove_0x_prefix, to_bytes, to_checksum_address
@@ -148,6 +148,13 @@ def generate_order_hash_hex(
         + pad_20_bytes_to_32(to_bytes(hexstr=exchange_address))
     )
 
+    def ensure_bytes(str_or_bytes: Union[str, bytes]) -> bytes:
+        return (
+            to_bytes(hexstr=cast(bytes, str_or_bytes))
+            if isinstance(str_or_bytes, str)
+            else str_or_bytes
+        )
+
     eip712_order_struct_hash = keccak(
         _Constants.eip712_order_schema_hash
         + pad_20_bytes_to_32(to_bytes(hexstr=order["makerAddress"]))
@@ -160,10 +167,10 @@ def generate_order_hash_hex(
         + int_to_32_big_endian_bytes(int(order["takerFee"]))
         + int_to_32_big_endian_bytes(int(order["expirationTimeSeconds"]))
         + int_to_32_big_endian_bytes(int(order["salt"]))
-        + keccak(to_bytes(hexstr=order["makerAssetData"].hex()))
-        + keccak(to_bytes(hexstr=order["takerAssetData"].hex()))
-        + keccak(to_bytes(hexstr=order["makerFeeAssetData"].hex()))
-        + keccak(to_bytes(hexstr=order["takerFeeAssetData"].hex()))
+        + keccak(ensure_bytes(order["makerAssetData"]))
+        + keccak(ensure_bytes(order["takerAssetData"]))
+        + keccak(ensure_bytes(order["makerFeeAssetData"]))
+        + keccak(ensure_bytes(order["takerFeeAssetData"]))
     )
 
     return keccak(
