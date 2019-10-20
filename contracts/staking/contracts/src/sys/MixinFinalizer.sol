@@ -97,7 +97,7 @@ contract MixinFinalizer is
     ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.
     function finalizePool(bytes32 poolId)
-        public
+        external
     {
         // Load the finalization and pool state into memory.
         IStructs.UnfinalizedState memory state = unfinalizedState;

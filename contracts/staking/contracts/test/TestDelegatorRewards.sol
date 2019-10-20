@@ -48,11 +48,6 @@ contract TestDelegatorRewards is
     mapping (uint256 => mapping (bytes32 => UnfinalizedPoolReward)) private
         unfinalizedPoolRewardsByEpoch;
 
-    /// @dev Expose the original finalizePool
-    function originalFinalizePool(bytes32 poolId) external {
-        MixinFinalizer.finalizePool(poolId);
-    }
-
     /// @dev Set unfinalized rewards for a pool in the current epoch.
     function setUnfinalizedPoolReward(
         bytes32 poolId,
@@ -171,7 +166,7 @@ contract TestDelegatorRewards is
     /// @dev Overridden to realize `unfinalizedPoolRewardsByEpoch` in
     ///      the current epoch and emit a event,
     function finalizePool(bytes32 poolId)
-        public
+        external
     {
         UnfinalizedPoolReward memory reward = unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];
         delete unfinalizedPoolRewardsByEpoch[currentEpoch][poolId];

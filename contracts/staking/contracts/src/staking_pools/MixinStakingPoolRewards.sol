@@ -116,7 +116,7 @@ contract MixinStakingPoolRewards is
         internal
     {
         // Ensure the pool is finalized.
-        finalizePool(poolId);
+        _assertPoolFinalizedLastEpoch(poolId);
 
         // Compute balance owed to delegator
         uint256 balance = _computeDelegatorReward(
