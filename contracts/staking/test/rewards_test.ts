@@ -1,5 +1,6 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { blockchainTests, constants, describe, expect, shortZip } from '@0x/contracts-test-utils';
+import { StakingRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -583,6 +584,31 @@ blockchainTests.resets('Testing Rewards', env => {
                 operatorWethBalance: constants.ZERO_AMOUNT,
                 poolRewardBalance: constants.ZERO_AMOUNT,
             });
+        });
+        it('should fail to withdraw delegator rewards if the pool has not been finalized for the previous epoch', async () => {
+            const rewardForDelegator = toBaseUnitAmount(10);
+            const stakeAmount = toBaseUnitAmount(4);
+            await stakers[0].stakeAsync(stakeAmount);
+            await stakers[0].moveStakeAsync(
+                new StakeInfo(StakeStatus.Undelegated),
+                new StakeInfo(StakeStatus.Delegated, poolId),
+                stakeAmount,
+            );
+            await stakingApiWrapper.stakingContract.payProtocolFee.awaitTransactionSuccessAsync(
+                poolOperator.getOwner(),
+                takerAddress,
+                rewardForDelegator,
+                { from: exchangeAddress, value: rewardForDelegator },
+            );
+            const currentEpoch = await stakingApiWrapper.stakingContract.currentEpoch.callAsync();
+            await stakingApiWrapper.utils.fastForwardToNextEpochAsync();
+            await stakingApiWrapper.utils.endEpochAsync();
+            const expectedError = new StakingRevertErrors.PoolNotFinalizedError(poolId, currentEpoch);
+            expect(
+                stakingApiWrapper.stakingContract.withdrawDelegatorRewards.awaitTransactionSuccessAsync(poolId, {
+                    from: stakers[0].getOwner(),
+                }),
+            ).to.revertWith(expectedError);
         });
         it(`payout should be based on stake at the time of rewards`, async () => {
             const staker = stakers[0];
