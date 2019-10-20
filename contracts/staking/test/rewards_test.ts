@@ -242,7 +242,7 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should split pool reward between delegators, when they join in different epochs', async () => {
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
 
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStakeAmount = toBaseUnitAmount(10);
@@ -256,7 +256,7 @@ blockchainTests.resets('Testing Rewards', env => {
             // skip epoch, so staker can start earning rewards
             await payProtocolFeeAndFinalize();
 
-            // second staker delegates (epoch 1)
+            // second staker delegates (epoch 2)
             await stakers[1].stakeAsync(stakeAmounts[1]);
             await stakers[1].moveStakeAsync(
                 new StakeInfo(StakeStatus.Undelegated),
@@ -281,11 +281,11 @@ blockchainTests.resets('Testing Rewards', env => {
         it('Should give pool reward to delegators only for the epoch during which they delegated', async () => {
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStakeAmount = toBaseUnitAmount(10);
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmounts[0]);
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
-            // second staker delegates (epoch 1)
+            // second staker delegates (epoch 2)
             await stakers[1].stakeWithPoolAsync(poolId, stakeAmounts[1]);
             // only the first staker will get this reward
             const rewardForOnlyFirstDelegator = toBaseUnitAmount(10);
@@ -321,11 +321,11 @@ blockchainTests.resets('Testing Rewards', env => {
             const totalSharedRewards = new BigNumber(totalSharedRewardsAsNumber);
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStakeAmount = toBaseUnitAmount(10);
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmounts[0]);
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
-            // second staker delegates (epoch 1)
+            // second staker delegates (epoch 2)
             await stakers[1].stakeWithPoolAsync(poolId, stakeAmounts[1]);
             // only the first staker will get this reward
             await payProtocolFeeAndFinalize(rewardForOnlyFirstDelegator);
@@ -345,7 +345,7 @@ blockchainTests.resets('Testing Rewards', env => {
         });
         it('Should withdraw existing rewards when undelegating stake', async () => {
             const stakeAmount = toBaseUnitAmount(4);
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmount);
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
@@ -366,7 +366,7 @@ blockchainTests.resets('Testing Rewards', env => {
         });
         it('Should withdraw existing rewards correctly when delegating more stake', async () => {
             const stakeAmount = toBaseUnitAmount(4);
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmount);
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
@@ -394,11 +394,11 @@ blockchainTests.resets('Testing Rewards', env => {
             const totalRewardsAfterAddingMoreStake = BigNumber.sum(...rewardsAfterAddingMoreStake);
             const stakeAmounts = [toBaseUnitAmount(4), toBaseUnitAmount(6)];
             const totalStake = BigNumber.sum(...stakeAmounts);
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             await stakers[0].stakeWithPoolAsync(poolId, stakeAmounts[0]);
             // skip epoch, so first staker can start earning rewards
             await payProtocolFeeAndFinalize();
-            // second staker delegates (epoch 1)
+            // second staker delegates (epoch 2)
             await stakers[1].stakeWithPoolAsync(poolId, stakeAmounts[1]);
             // only the first staker will get this reward
             await payProtocolFeeAndFinalize(rewardBeforeAddingMoreStake);
@@ -423,7 +423,7 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should stop collecting rewards after undelegating', async () => {
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             const rewardForDelegator = toBaseUnitAmount(10);
             const rewardNotForDelegator = toBaseUnitAmount(7);
             const stakeAmount = toBaseUnitAmount(4);
@@ -452,7 +452,7 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should stop collecting rewards after undelegating, after several epochs', async () => {
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             const rewardForDelegator = toBaseUnitAmount(10);
             const rewardsNotForDelegator = [
                 toBaseUnitAmount(20),
@@ -487,7 +487,7 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should collect fees correctly when leaving and returning to a pool', async () => {
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             const rewardsForDelegator = [toBaseUnitAmount(10), toBaseUnitAmount(15)];
             const rewardNotForDelegator = toBaseUnitAmount(7);
             const stakeAmount = toBaseUnitAmount(4);
@@ -525,7 +525,7 @@ blockchainTests.resets('Testing Rewards', env => {
         it('Should collect fees correctly when re-delegating after un-delegating', async () => {
             // Note - there are two ranges over which payouts are computed (see _computeRewardBalanceOfDelegator).
             // This triggers the first range (rewards for `delegatedStake.currentEpoch`), but not the second.
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);
@@ -560,7 +560,7 @@ blockchainTests.resets('Testing Rewards', env => {
             });
         });
         it('Should withdraw delegator rewards when calling `withdrawDelegatorRewards`', async () => {
-            // first staker delegates (epoch 0)
+            // first staker delegates (epoch 1)
             const rewardForDelegator = toBaseUnitAmount(10);
             const stakeAmount = toBaseUnitAmount(4);
             await stakers[0].stakeAsync(stakeAmount);

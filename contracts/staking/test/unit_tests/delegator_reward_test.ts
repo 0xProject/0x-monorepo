@@ -226,13 +226,13 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     }
 
     describe('computeRewardBalanceOfOperator()', () => {
-        it('nothing in epoch 0', async () => {
+        it('nothing in epoch 1', async () => {
             const { poolId } = await rewardPoolAsync();
             const operatorReward = await getOperatorRewardBalanceAsync(poolId);
             expect(operatorReward).to.bignumber.eq(0);
         });
 
-        it('nothing in epoch 1', async () => {
+        it('nothing in epoch 2', async () => {
             await advanceEpochAsync();
             const { poolId } = await rewardPoolAsync();
             const operatorReward = await getOperatorRewardBalanceAsync(poolId);
@@ -282,77 +282,77 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     });
 
     describe('computeRewardBalanceOfDelegator()', () => {
-        it('nothing in epoch 0 for delegator with no stake', async () => {
-            const { poolId } = await rewardPoolAsync();
-            const delegator = randomAddress();
-            const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-            expect(delegatorReward).to.bignumber.eq(0);
-        });
-
         it('nothing in epoch 1 for delegator with no stake', async () => {
-            await advanceEpochAsync(); // epoch 1
             const { poolId } = await rewardPoolAsync();
             const delegator = randomAddress();
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('nothing in epoch 0 for delegator staked in epoch 0', async () => {
+        it('nothing in epoch 2 for delegator with no stake', async () => {
+            await advanceEpochAsync(); // epoch 2
             const { poolId } = await rewardPoolAsync();
-            // Assign active stake to pool in epoch 0, which is usuaslly not
+            const delegator = randomAddress();
+            const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
+            expect(delegatorReward).to.bignumber.eq(0);
+        });
+
+        it('nothing in epoch 1 for delegator staked in epoch 1', async () => {
+            const { poolId } = await rewardPoolAsync();
+            // Assign active stake to pool in epoch 1, which is usuaslly not
             // possible due to delegating delays.
             const { delegator } = await delegateStakeNowAsync(poolId);
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('nothing in epoch 1 for delegator delegating in epoch 1', async () => {
-            await advanceEpochAsync(); // epoch 1
+        it('nothing in epoch 2 for delegator delegating in epoch 2', async () => {
+            await advanceEpochAsync(); // epoch 2
             const { poolId } = await rewardPoolAsync();
             const { delegator } = await delegateStakeAsync(poolId);
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('nothing in epoch 1 for delegator delegating in epoch 0', async () => {
+        it('nothing in epoch 2 for delegator delegating in epoch 1', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            // rewards paid for stake in epoch 0.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            // rewards paid for stake in epoch 1.
             await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(0);
         });
 
-        it('all rewards from epoch 2 for delegator delegating in epoch 0', async () => {
+        it('all rewards from epoch 3 for delegator delegating in epoch 1', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(reward);
         });
 
-        it('all rewards from epoch 2 and 3 for delegator delegating in epoch 0', async () => {
+        it('all rewards from epoch 3 and 3 for delegator delegating in epoch 1', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: stake });
+            await advanceEpochAsync(); // epoch 2 (stake now active)
             await advanceEpochAsync(); // epoch 3
+            const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: stake });
+            await advanceEpochAsync(); // epoch 4
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             assertRoughlyEquals(delegatorReward, BigNumber.sum(reward1, reward2));
         });
 
-        it('partial rewards from epoch 2 and 3 for delegator partially delegating in epoch 0', async () => {
+        it('partial rewards from epoch 3 and 3 for delegator partially delegating in epoch 1', async () => {
             const poolId = hexRandom();
             const { delegator, stake: delegatorStake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             const { membersReward: reward, membersStake: rewardStake } = await rewardPoolAsync({
                 poolId,
                 membersStake: new BigNumber(delegatorStake).times(2),
@@ -365,9 +365,9 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('has correct reward immediately after undelegating', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const { delegatorTransfers: withdrawal } = await undelegateStakeAsync(poolId, delegator);
             assertRoughlyEquals(withdrawal, reward);
@@ -378,9 +378,9 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('has correct reward immediately after undelegating and redelegating', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const { delegatorTransfers: withdrawal } = await undelegateStakeAsync(poolId, delegator);
             assertRoughlyEquals(withdrawal, reward);
@@ -392,15 +392,15 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('has correct reward immediately after undelegating, redelegating, and rewarding fees', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             await rewardPoolAsync({ poolId, membersStake: stake });
             await undelegateStakeAsync(poolId, delegator);
             await delegateStakeAsync(poolId, { delegator, stake });
-            await advanceEpochAsync(); // epoch 3
             await advanceEpochAsync(); // epoch 4
-            // rewards paid for stake in epoch 3.
+            await advanceEpochAsync(); // epoch 5
+            // rewards paid for stake in epoch 4.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             assertRoughlyEquals(delegatorReward, reward);
@@ -410,10 +410,10 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const poolId = hexRandom();
             // stake at 0
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            // Pay rewards for epoch 0.
-            await advanceEpochAsync(); // epoch 2
+            await advanceEpochAsync(); // epoch 2 (stake now active)
             // Pay rewards for epoch 1.
+            await advanceEpochAsync(); // epoch 3
+            // Pay rewards for epoch 2.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             expect(delegatorReward).to.bignumber.eq(reward);
@@ -423,21 +423,21 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const poolId = hexRandom();
             // stake at 0
             const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake1 now active)
-            await advanceEpochAsync(); // epoch 2
+            await advanceEpochAsync(); // epoch 2 (stake1 now active)
+            await advanceEpochAsync(); // epoch 3
             const stake2 = getRandomInteger(0, stake1);
             const totalStake = BigNumber.sum(stake1, stake2);
             // Make the total stake in rewards > totalStake so delegator never
             // receives 100% of rewards.
             const rewardStake = totalStake.times(2);
-            // Pay rewards for epoch 1.
+            // Pay rewards for epoch 2.
             const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // add extra stake
             const { delegatorTransfers: withdrawal } = await delegateStakeAsync(poolId, { delegator, stake: stake2 });
-            await advanceEpochAsync(); // epoch 3 (stake2 now active)
-            // Pay rewards for epoch 2.
-            await advanceEpochAsync(); // epoch 4
+            await advanceEpochAsync(); // epoch 4 (stake2 now active)
             // Pay rewards for epoch 3.
+            await advanceEpochAsync(); // epoch 5
+            // Pay rewards for epoch 4.
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             const expectedDelegatorReward = BigNumber.sum(
@@ -451,18 +451,18 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const poolId = hexRandom();
             // stake at 0
             const { delegator, stake: stake1 } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake1 now active)
+            await advanceEpochAsync(); // epoch 2 (stake1 now active)
             // add extra stake
             const { stake: stake2 } = await delegateStakeAsync(poolId, { delegator });
             const totalStake = BigNumber.sum(stake1, stake2);
-            await advanceEpochAsync(); // epoch 2 (stake2 now active)
+            await advanceEpochAsync(); // epoch 3 (stake2 now active)
             // Make the total stake in rewards > totalStake so delegator never
             // receives 100% of rewards.
             const rewardStake = totalStake.times(2);
-            // Pay rewards for epoch 1.
-            const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
-            await advanceEpochAsync(); // epoch 3
             // Pay rewards for epoch 2.
+            const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
+            await advanceEpochAsync(); // epoch 4
+            // Pay rewards for epoch 3.
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             const delegatorReward = await getDelegatorRewardBalanceAsync(poolId, delegator);
             const expectedDelegatorReward = BigNumber.sum(
@@ -475,14 +475,14 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('computes correct rewards for 2 staggered delegators', async () => {
             const poolId = hexRandom();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake A now active)
+            await advanceEpochAsync(); // epoch 2 (stake A now active)
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
-            await advanceEpochAsync(); // epoch 2 (stake B now active)
-            // rewards paid for stake in epoch 1 (delegator A only)
+            await advanceEpochAsync(); // epoch 3 (stake B now active)
+            // rewards paid for stake in epoch 2 (delegator A only)
             const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: stakeA });
-            await advanceEpochAsync(); // epoch 3
-            // rewards paid for stake in epoch 2 (delegator A and B)
+            await advanceEpochAsync(); // epoch 4
+            // rewards paid for stake in epoch 3 (delegator A and B)
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: totalStake });
             const delegatorRewardA = await getDelegatorRewardBalanceAsync(poolId, delegatorA);
             const expectedDelegatorRewardA = BigNumber.sum(
@@ -498,15 +498,15 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('computes correct rewards for 2 staggered delegators with a 2 epoch gap between payments', async () => {
             const poolId = hexRandom();
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake A now active)
+            await advanceEpochAsync(); // epoch 2 (stake A now active)
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
-            await advanceEpochAsync(); // epoch 2 (stake B now active)
-            // rewards paid for stake in epoch 1 (delegator A only)
+            await advanceEpochAsync(); // epoch 3 (stake B now active)
+            // rewards paid for stake in epoch 2 (delegator A only)
             const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: stakeA });
-            await advanceEpochAsync(); // epoch 3
             await advanceEpochAsync(); // epoch 4
-            // rewards paid for stake in epoch 3 (delegator A and B)
+            await advanceEpochAsync(); // epoch 5
+            // rewards paid for stake in epoch 4 (delegator A and B)
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: totalStake });
             const delegatorRewardA = await getDelegatorRewardBalanceAsync(poolId, delegatorA);
             const expectedDelegatorRewardA = BigNumber.sum(
@@ -522,15 +522,15 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('correct rewards for rewards with different stakes', async () => {
             const poolId = hexRandom();
             const { delegator, stake: delegatorStake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1.
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2.
             const { membersReward: reward1, membersStake: rewardStake1 } = await rewardPoolAsync({
                 poolId,
                 membersStake: new BigNumber(delegatorStake).times(2),
             });
-            await advanceEpochAsync(); // epoch 3
-            // rewards paid for stake in epoch 2
+            await advanceEpochAsync(); // epoch 4
+            // rewards paid for stake in epoch 3
             const { membersReward: reward2, membersStake: rewardStake2 } = await rewardPoolAsync({
                 poolId,
                 membersStake: new BigNumber(delegatorStake).times(3),
@@ -544,41 +544,27 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         });
 
         describe('with unfinalized rewards', async () => {
-            it('nothing with only unfinalized rewards from epoch 1 for delegator with nothing delegated', async () => {
+            it('nothing with only unfinalized rewards from epoch 2 for delegator with nothing delegated', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId, { stake: 0 });
-                await advanceEpochAsync(); // epoch 1
-                await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
-                const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-                expect(reward).to.bignumber.eq(0);
-            });
-
-            it('nothing with only unfinalized rewards from epoch 1 for delegator delegating in epoch 0', async () => {
-                const poolId = hexRandom();
-                const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
-                await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
-                const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-                expect(reward).to.bignumber.eq(0);
-            });
-
-            it('returns unfinalized rewards from epoch 2 for delegator delegating in epoch 0', async () => {
-                const poolId = hexRandom();
-                const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
-                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
-                    poolId,
-                    membersStake: stake,
-                });
+                await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
                 const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
-                assertRoughlyEquals(reward, unfinalizedReward);
+                expect(reward).to.bignumber.eq(0);
             });
 
-            it('returns unfinalized rewards from epoch 3 for delegator delegating in epoch 0', async () => {
+            it('nothing with only unfinalized rewards from epoch 2 for delegator delegating in epoch 1', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
+                await advanceEpochAsync(); // epoch 2
+                await setUnfinalizedPoolRewardAsync({ poolId, membersStake: stake });
+                const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
+                expect(reward).to.bignumber.eq(0);
+            });
+
+            it('returns unfinalized rewards from epoch 3 for delegator delegating in epoch 1', async () => {
+                const poolId = hexRandom();
+                const { delegator, stake } = await delegateStakeAsync(poolId);
                 await advanceEpochAsync(); // epoch 2
                 await advanceEpochAsync(); // epoch 3
                 const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
@@ -589,13 +575,27 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
                 assertRoughlyEquals(reward, unfinalizedReward);
             });
 
-            it('returns unfinalized rewards from epoch 3 + rewards from epoch 2 for delegator delegating in epoch 0', async () => {
+            it('returns unfinalized rewards from epoch 4 for delegator delegating in epoch 1', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
+                await advanceEpochAsync(); // epoch 3
+                await advanceEpochAsync(); // epoch 4
+                const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
+                    poolId,
+                    membersStake: stake,
+                });
+                const reward = await getDelegatorRewardBalanceAsync(poolId, delegator);
+                assertRoughlyEquals(reward, unfinalizedReward);
+            });
+
+            it('returns unfinalized rewards from epoch 4 + rewards from epoch 3 for delegator delegating in epoch 1', async () => {
+                const poolId = hexRandom();
+                const { delegator, stake } = await delegateStakeAsync(poolId);
+                await advanceEpochAsync(); // epoch 2
+                await advanceEpochAsync(); // epoch 3
                 const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: stake });
-                await advanceEpochAsync(); // epoch 3
+                await advanceEpochAsync(); // epoch 4
                 const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
                     poolId,
                     membersStake: stake,
@@ -605,14 +605,14 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
                 assertRoughlyEquals(reward, expectedReward);
             });
 
-            it('returns unfinalized rewards from epoch 4 + rewards from epoch 2 for delegator delegating in epoch 1', async () => {
+            it('returns unfinalized rewards from epoch 5 + rewards from epoch 3 for delegator delegating in epoch 2', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
-                const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: stake });
                 await advanceEpochAsync(); // epoch 3
+                const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: stake });
                 await advanceEpochAsync(); // epoch 4
+                await advanceEpochAsync(); // epoch 5
                 const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
                     poolId,
                     membersStake: stake,
@@ -625,14 +625,14 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             it('returns correct rewards if unfinalized stake is different from previous rewards', async () => {
                 const poolId = hexRandom();
                 const { delegator, stake } = await delegateStakeAsync(poolId);
-                await advanceEpochAsync(); // epoch 1
                 await advanceEpochAsync(); // epoch 2
+                await advanceEpochAsync(); // epoch 3
                 const { membersReward: prevReward, membersStake: prevStake } = await rewardPoolAsync({
                     poolId,
                     membersStake: new BigNumber(stake).times(2),
                 });
-                await advanceEpochAsync(); // epoch 3
                 await advanceEpochAsync(); // epoch 4
+                await advanceEpochAsync(); // epoch 5
                 const {
                     membersReward: unfinalizedReward,
                     membersStake: unfinalizedStake,
@@ -654,9 +654,9 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
         it('transfers all rewards to delegator when touching stake', async () => {
             const poolId = hexRandom();
             const { delegator, stake } = await delegateStakeAsync(poolId);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1
+            await advanceEpochAsync(); // epoch 2 (stake now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: stake });
             const { delegatorTransfers: withdrawal } = await touchStakeAsync(poolId, delegator);
             const finalRewardBalance = await getDelegatorRewardBalanceAsync(poolId, delegator);
@@ -671,17 +671,17 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             stakeResults.push(await delegateStakeAsync(poolId));
             const { delegator, stake } = stakeResults[0];
             const rewardStake = new BigNumber(stake).times(2);
-            await advanceEpochAsync(); // epoch 1 (stake now active)
+            await advanceEpochAsync(); // epoch 2 (stake now active)
             // add more stake.
             stakeResults.push(await delegateStakeAsync(poolId, { delegator, stake }));
-            await advanceEpochAsync(); // epoch 1 (2 * stake now active)
-            // reward for epoch 1, using 2 * stake so delegator should
+            await advanceEpochAsync(); // epoch 2 (2 * stake now active)
+            // reward for epoch 2, using 2 * stake so delegator should
             // only be entitled to a fraction of the rewards.
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
-            await advanceEpochAsync(); // epoch 2
+            await advanceEpochAsync(); // epoch 3
             // touch the stake one last time
             stakeResults.push(await touchStakeAsync(poolId, delegator));
-            // Should only see deposits for epoch 2.
+            // Should only see deposits for epoch 3.
             const allDeposits = stakeResults.map(r => r.delegatorTransfers);
             const expectedReward = computeDelegatorRewards(reward, stake, rewardStake);
             assertRoughlyEquals(BigNumber.sum(...allDeposits), expectedReward);
@@ -694,19 +694,19 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             stakeResults.push(await delegateStakeAsync(poolId));
             const { delegator, stake } = stakeResults[0];
             const rewardStake = new BigNumber(stake).times(2);
-            await advanceEpochAsync(); // epoch 1 (full stake now active)
-            // reward for epoch 0
+            await advanceEpochAsync(); // epoch 2 (full stake now active)
+            // reward for epoch 1
             await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // unstake some
             const unstake = new BigNumber(stake).dividedToIntegerBy(2);
             stakeResults.push(await undelegateStakeAsync(poolId, delegator, unstake));
-            await advanceEpochAsync(); // epoch 2 (half active stake)
-            // reward for epoch 1
+            await advanceEpochAsync(); // epoch 3 (half active stake)
+            // reward for epoch 2
             const { membersReward: reward1 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // re-stake
             stakeResults.push(await delegateStakeAsync(poolId, { delegator, stake: unstake }));
-            await advanceEpochAsync(); // epoch 3 (full stake now active)
-            // reward for epoch 2
+            await advanceEpochAsync(); // epoch 4 (full stake now active)
+            // reward for epoch 3
             const { membersReward: reward2 } = await rewardPoolAsync({ poolId, membersStake: rewardStake });
             // touch the stake to claim rewards
             stakeResults.push(await touchStakeAsync(poolId, delegator));
@@ -723,9 +723,9 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
-            await advanceEpochAsync(); // epoch 1 (stakes now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1
+            await advanceEpochAsync(); // epoch 2 (stakes now active)
+            await advanceEpochAsync(); // epoch 3
+            // rewards paid for stake in epoch 2
             const { membersReward: reward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
             // delegator A will finalize and collect rewards by touching stake.
             const { delegatorTransfers: withdrawalA } = await touchStakeAsync(poolId, delegatorA);
@@ -740,12 +740,12 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
-            await advanceEpochAsync(); // epoch 1 (stakes now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1
-            const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
+            await advanceEpochAsync(); // epoch 2 (stakes now active)
             await advanceEpochAsync(); // epoch 3
-            // unfinalized rewards for stake in epoch 2
+            // rewards paid for stake in epoch 2
+            const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
+            await advanceEpochAsync(); // epoch 4
+            // unfinalized rewards for stake in epoch 3
             const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
                 poolId,
                 membersStake: totalStake,
@@ -764,12 +764,12 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
             const { delegator: delegatorA, stake: stakeA } = await delegateStakeAsync(poolId);
             const { delegator: delegatorB, stake: stakeB } = await delegateStakeAsync(poolId);
             const totalStake = BigNumber.sum(stakeA, stakeB);
-            await advanceEpochAsync(); // epoch 1 (stakes now active)
-            await advanceEpochAsync(); // epoch 2
-            // rewards paid for stake in epoch 1
-            const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
+            await advanceEpochAsync(); // epoch 2 (stakes now active)
             await advanceEpochAsync(); // epoch 3
-            // unfinalized rewards for stake in epoch 2
+            // rewards paid for stake in epoch 2
+            const { membersReward: prevReward } = await rewardPoolAsync({ poolId, membersStake: totalStake });
+            await advanceEpochAsync(); // epoch 4
+            // unfinalized rewards for stake in epoch 3
             const { membersReward: unfinalizedReward } = await setUnfinalizedPoolRewardAsync({
                 poolId,
                 membersStake: totalStake,
