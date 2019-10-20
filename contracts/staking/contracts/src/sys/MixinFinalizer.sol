@@ -247,6 +247,26 @@ contract MixinFinalizer is
         return wethBalance;
     }
 
+    /// @dev Asserts that a pool has been finalized last epoch.
+    /// @param poolId The id of the pool that should have been finalized.
+    function _assertPoolFinalizedLastEpoch(bytes32 poolId)
+        internal
+        view
+    {
+        uint256 prevEpoch = currentEpoch.safeSub(1);
+        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
+
+        // A pool that has any fees remaining has not been finalized
+        if (pool.feesCollected != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolNotFinalizedError(
+                    poolId,
+                    prevEpoch
+                )
+            );
+        }
+    }
+
     /// @dev Computes the reward owed to a pool during finalization.
     /// @param pool The active pool.
     /// @param state The current state of finalization.
