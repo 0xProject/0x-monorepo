@@ -50,7 +50,7 @@ contract MixinFinalizer is
         if (state.poolsRemaining != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                    closingEpoch - 1,
+                    closingEpoch.safeSub(1),
                     state.poolsRemaining
                 )
             );

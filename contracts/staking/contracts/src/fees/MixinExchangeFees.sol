@@ -97,7 +97,7 @@ contract MixinExchangeFees is
             totalWeightedStakeThisEpoch = totalWeightedStakeThisEpoch.safeAdd(pool.weightedStake);
 
             // Increase the number of active pools.
-            numActivePoolsThisEpoch += 1;
+            numActivePoolsThisEpoch = numActivePoolsThisEpoch.safeAdd(1);
 
             // Emit an event so keepers know what pools to pass into
             // `finalize()`.

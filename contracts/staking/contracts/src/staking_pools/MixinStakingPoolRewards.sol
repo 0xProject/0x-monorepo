@@ -211,7 +211,7 @@ contract MixinStakingPoolRewards is
                 PPM_DENOMINATOR,
                 totalReward
             );
-            membersReward = totalReward - operatorReward;
+            membersReward = totalReward.safeSub(operatorReward);
         }
         return (operatorReward, membersReward);
     }
