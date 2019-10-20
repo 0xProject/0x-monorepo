@@ -232,19 +232,13 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256 reward)
     {
-        // There can be no rewards in epoch 0 because there is no delegated
-        // stake.
-        uint256 _currentEpoch = currentEpoch;
-        if (_currentEpoch == 0) {
-            return 0;
-        }
-
+        uint256 currentEpoch_ = currentEpoch;
         IStructs.StoredBalance memory delegatedStake = _delegatedStakeToPoolByOwner[member][poolId];
 
         // There can be no rewards if the last epoch when stake was stored is
         // equal to the current epoch, because all prior rewards, including
         // rewards finalized this epoch have been claimed.
-        if (delegatedStake.currentEpoch == _currentEpoch) {
+        if (delegatedStake.currentEpoch == currentEpoch_) {
             return 0;
         }
 
@@ -253,7 +247,7 @@ contract MixinStakingPoolRewards is
         // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
         reward = _computeUnfinalizedDelegatorReward(
             delegatedStake,
-            _currentEpoch,
+            currentEpoch_,
             unfinalizedMembersReward,
             unfinalizedMembersStake
         );
@@ -275,7 +269,7 @@ contract MixinStakingPoolRewards is
                 poolId,
                 delegatedStake.nextEpochBalance,
                 delegatedStakeNextEpoch,
-                _currentEpoch
+                currentEpoch_
             )
         );
 

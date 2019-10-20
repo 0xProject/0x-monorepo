@@ -99,12 +99,6 @@ contract MixinFinalizer is
     function finalizePool(bytes32 poolId)
         public
     {
-        // Noop on epoch 0
-        uint256 currentEpoch_ = currentEpoch;
-        if (currentEpoch_ == 0) {
-            return;
-        }
-
         // Load the finalization and pool state into memory.
         IStructs.UnfinalizedState memory state = unfinalizedState;
 
@@ -113,6 +107,7 @@ contract MixinFinalizer is
             return;
         }
 
+        uint256 currentEpoch_ = currentEpoch;
         uint256 prevEpoch = currentEpoch_.safeSub(1);
         IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
 
@@ -182,12 +177,10 @@ contract MixinFinalizer is
             uint256 membersStake
         )
     {
-        uint256 epoch = currentEpoch;
-        // There are no pools to finalize at epoch 0.
-        if (epoch == 0) {
-            return (0, 0);
-        }
-        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(epoch - 1, poolId);
+        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(
+            currentEpoch.safeSub(1),
+            poolId
+        );
         reward = _getUnfinalizedPoolRewardsFromState(pool, unfinalizedState);
         membersStake = pool.membersStake;
     }
