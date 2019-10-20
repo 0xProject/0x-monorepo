@@ -207,7 +207,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
     }
 
     async function finalizePoolAsync(poolId: string): Promise<ResultWithTransfers<{}>> {
-        const receipt = await testContract.originalFinalizePool.awaitTransactionSuccessAsync(poolId);
+        const receipt = await testContract.finalizePool.awaitTransactionSuccessAsync(poolId);
         const delegatorTransfers = getTransfersFromLogs(receipt.logs, poolId);
         return {
             delegatorTransfers,
@@ -273,8 +273,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
 
             it('nothing once rewards are finalized', async () => {
                 const { poolId } = await setUnfinalizedPoolRewardAsync();
-                // Delegate some stake to trigger finalization.
-                await delegateStakeAsync(poolId);
+                await finalizePoolAsync(poolId);
                 const operatorReward = await getOperatorRewardBalanceAsync(poolId);
                 expect(operatorReward).to.bignumber.eq(0);
             });
@@ -751,7 +750,7 @@ blockchainTests.resets('Delegator rewards unit tests', env => {
                 membersStake: totalStake,
             });
             const totalRewards = BigNumber.sum(prevReward, unfinalizedReward);
-            // delegator A will finalize and collect rewards by touching stake.
+            await finalizePoolAsync(poolId);
             const { delegatorTransfers: withdrawalA } = await touchStakeAsync(poolId, delegatorA);
             assertRoughlyEquals(withdrawalA, computeDelegatorRewards(totalRewards, stakeA, totalStake));
             // delegator B will collect rewards by touching stake
