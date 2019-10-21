@@ -5,6 +5,14 @@
             {
                 "note": "Removed `getNetworkIdByExchangeAddressOrThrow`. It's not needed with V3 tooling.",
                 "pr": 2170
+            },
+            {
+                "note": "Add `zrxVault`, `readOnlyProxy`, `staking`, and `stakingProxy` schema with addresses for each tesnet",
+                "pr": 2224
+            },
+            {
+                "note": "Update `assetProxyOwner` address for each testnet",
+                "pr": 2224
             }
         ],
         "timestamp": 1570135330

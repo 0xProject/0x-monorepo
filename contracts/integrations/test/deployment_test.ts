@@ -17,7 +17,7 @@ import {
     ExchangeProtocolFeeMultiplierEventArgs,
     Ownable,
 } from '@0x/contracts-exchange';
-import { artifacts as multisigArtifacts, AssetProxyOwnerContract } from '@0x/contracts-multisig';
+import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
     constants as stakingConstants,
@@ -43,7 +43,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
     let owner: string;
 
     // Contract Instances
-    let assetProxyOwner: AssetProxyOwnerContract;
+    let governor: ZeroExGovernorContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
     let erc1155Proxy: ERC1155ProxyContract;
@@ -75,11 +75,11 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             from: owner,
         };
 
-        // Deploy AssetProxyOwner. For the purposes of this test, we will assume that
-        // the AssetProxyOwner does not know what destinations will be needed during
+        // Deploy ZeroExGovernor. For the purposes of this test, we will assume that
+        // the ZeroExGovernor does not know what destinations will be needed during
         // construction.
-        assetProxyOwner = await AssetProxyOwnerContract.deployFrom0xArtifactAsync(
-            multisigArtifacts.AssetProxyOwner,
+        governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
+            multisigArtifacts.ZeroExGovernor,
             env.provider,
             txDefaults,
             multisigArtifacts,
@@ -387,7 +387,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             expect(isAuthorized).to.be.false();
 
             // Authorize the asset-proxy owner.
-            receipt = await contract.addAuthorizedAddress.awaitTransactionSuccessAsync(assetProxyOwner.address, {
+            receipt = await contract.addAuthorizedAddress.awaitTransactionSuccessAsync(governor.address, {
                 from: owner,
             });
 
@@ -396,21 +396,21 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
                 receipt.logs,
                 AuthorizableEvents.AuthorizedAddressAdded,
             );
-            expect(logs).to.be.deep.eq([{ target: assetProxyOwner.address, caller: owner }]);
+            expect(logs).to.be.deep.eq([{ target: governor.address, caller: owner }]);
 
             // Ensure that the asset-proxy owner was actually authorized.
-            isAuthorized = await contract.authorized.callAsync(assetProxyOwner.address);
+            isAuthorized = await contract.authorized.callAsync(governor.address);
             expect(isAuthorized).to.be.true();
         }
 
         // Transfers ownership of a contract to the asset-proxy owner, and ensures that the change was actually made.
         async function transferOwnershipAndAssertSuccessAsync(contract: Ownable): Promise<void> {
             // Transfer ownership to the new owner.
-            await contract.transferOwnership.awaitTransactionSuccessAsync(assetProxyOwner.address, { from: owner });
+            await contract.transferOwnership.awaitTransactionSuccessAsync(governor.address, { from: owner });
 
             // Ensure that the owner address has been updated.
             const ownerAddress = await contract.owner.callAsync();
-            expect(ownerAddress).to.be.eq(assetProxyOwner.address);
+            expect(ownerAddress).to.be.eq(governor.address);
         }
 
         it('should transfer authorization of the owner to the asset-proxy owner in the staking contracts', async () => {

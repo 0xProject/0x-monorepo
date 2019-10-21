@@ -96,54 +96,61 @@ contract MixinFinalizer is
     ///      to finalize a pool immediately. Does nothing if the pool is already
     ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.
-    /// @return operatorReward The reward credited to the pool operator.
-    /// @return membersReward The reward credited to the pool members.
-    /// @return membersStake The total stake for all non-operator members in
-    ///         this pool.
     function finalizePool(bytes32 poolId)
         public
-        returns (
-            uint256 operatorReward,
-            uint256 membersReward,
-            uint256 membersStake
-        )
     {
-        uint256 epoch = currentEpoch;
-        // There are no pools to finalize at epoch 0.
-        if (epoch == 0) {
-            return (0, 0, 0);
+        // Noop on epoch 0
+        uint256 currentEpoch_ = currentEpoch;
+        if (currentEpoch_ == 0) {
+            return;
         }
-        uint256 prevEpoch = epoch - 1;
 
-        // Load the finalization state into memory.
+        // Load the finalization and pool state into memory.
         IStructs.UnfinalizedState memory state = unfinalizedState;
 
-        // If there are no more unfinalized pools remaining, there's nothing
-        // to do.
+        // Noop if all active pools have been finalized.
         if (state.poolsRemaining == 0) {
-            return (0, 0, 0);
+            return;
         }
 
+        uint256 prevEpoch = currentEpoch_.safeSub(1);
         IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
-        // Do nothing if the pool was not active or already finalized (has no fees).
+
+        // Noop if the pool was not active or already finalized (has no fees).
         if (pool.feesCollected == 0) {
-            return (operatorReward, membersReward, membersStake);
+            return;
         }
 
-        (operatorReward, membersReward) = _creditRewardsToPool(
-            epoch,
+        // Clear the pool state so we don't finalize it again, and to recoup
+        // some gas.
+        delete _getActivePoolsFromEpoch(prevEpoch)[poolId];
+
+        // Compute the rewards.
+        uint256 rewards = _getUnfinalizedPoolRewardsFromState(pool, state);
+
+        // Pay the operator and update rewards for the pool.
+        // Note that we credit at the CURRENT epoch even though these rewards
+        // were earned in the previous epoch.
+        (uint256 operatorReward, uint256 membersReward) = _syncPoolRewards(
             poolId,
-            pool,
-            state
+            rewards,
+            pool.membersStake
         );
+
+        // Emit an event.
+        emit RewardsPaid(
+            currentEpoch_,
+            poolId,
+            operatorReward,
+            membersReward
+        );
+
         uint256 totalReward = operatorReward.safeAdd(membersReward);
 
-        if (totalReward > 0) {
-            // Increase `totalRewardsFinalized`.
-            unfinalizedState.totalRewardsFinalized =
-                state.totalRewardsFinalized =
-                state.totalRewardsFinalized.safeAdd(totalReward);
-        }
+        // Increase `totalRewardsFinalized`.
+        unfinalizedState.totalRewardsFinalized =
+            state.totalRewardsFinalized =
+            state.totalRewardsFinalized.safeAdd(totalReward);
 
         // Decrease the number of unfinalized pools left.
         unfinalizedState.poolsRemaining =
@@ -159,8 +166,6 @@ contract MixinFinalizer is
                 state.rewardsAvailable.safeSub(state.totalRewardsFinalized)
             );
         }
-        membersStake = pool.membersStake;
-        return (operatorReward, membersReward, membersStake);
     }
 
     /// @dev Computes the reward owed to a pool during finalization.
@@ -278,47 +283,5 @@ contract MixinFinalizer is
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }
-    }
-
-    /// @dev Credits finalization rewards to a pool that was active in the
-    ///      last epoch.
-    /// @param epoch The current epoch.
-    /// @param poolId The pool ID to finalize.
-    /// @param pool The active pool to finalize.
-    /// @param state The current state of finalization.
-    /// @return operatorReward The reward credited to the pool operator.
-    /// @return membersReward The reward credited to the pool members.
-    function _creditRewardsToPool(
-        uint256 epoch,
-        bytes32 poolId,
-        IStructs.ActivePool memory pool,
-        IStructs.UnfinalizedState memory state
-    )
-        private
-        returns (uint256 operatorReward, uint256 membersReward)
-    {
-        // Clear the pool state so we don't finalize it again, and to recoup
-        // some gas.
-        delete _getActivePoolsFromEpoch(epoch.safeSub(1))[poolId];
-
-        // Compute the rewards.
-        uint256 rewards = _getUnfinalizedPoolRewardsFromState(pool, state);
-
-        // Pay the pool.
-        // Note that we credit at the CURRENT epoch even though these rewards
-        // were earned in the previous epoch.
-        (operatorReward, membersReward) = _syncPoolRewards(
-            poolId,
-            rewards,
-            pool.membersStake
-        );
-
-        // Emit an event.
-        emit RewardsPaid(
-            epoch,
-            poolId,
-            operatorReward,
-            membersReward
-        );
     }
 }

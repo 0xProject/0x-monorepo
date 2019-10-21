@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MixinCumulativeRewards.sol";
 import "../sys/MixinAbstract.sol";
@@ -138,13 +137,9 @@ contract MixinStakingPoolRewards is
             getWethContract().transfer(member, balance);
         }
 
-        // Add a cumulative reward entry for this epoch.
-        if (!_isCumulativeRewardSet(_cumulativeRewardsByPool[poolId][currentEpoch])) {
-            _forceSetCumulativeReward(
-                poolId,
-                _getMostRecentCumulativeReward(poolId)
-            );
-        }
+        // Ensure a cumulative reward entry exists for this epoch,
+        // copying the previous epoch's CR if one doesn't exist already.
+        _updateCumulativeReward(poolId);
     }
 
     /// @dev Handles a pool's reward at the current epoch.
@@ -183,30 +178,8 @@ contract MixinStakingPoolRewards is
         if (membersReward > 0) {
             // Increase the balance of the pool
             _increasePoolRewards(poolId, membersReward);
-
-            // Fetch the last epoch at which we stored an entry for this pool;
-            // this is the most up-to-date cumulative rewards for this pool.
-            IStructs.Fraction memory mostRecentCumulativeReward = _getMostRecentCumulativeReward(poolId);
-
-            // Compute new cumulative reward
-            IStructs.Fraction memory cumulativeReward;
-            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.add(
-                mostRecentCumulativeReward.numerator,
-                mostRecentCumulativeReward.denominator,
-                membersReward,
-                membersStake
-            );
-            // Normalize to prevent overflows.
-            (cumulativeReward.numerator, cumulativeReward.denominator) = LibFractions.normalize(
-                cumulativeReward.numerator,
-                cumulativeReward.denominator
-            );
-
-            // Store cumulative rewards for this epoch.
-            _forceSetCumulativeReward(
-                poolId,
-                cumulativeReward
-            );
+            // Create a cumulative reward entry at the current epoch.
+            _addCumulativeReward(poolId, membersReward, membersStake);
         }
 
         return (operatorReward, membersReward);

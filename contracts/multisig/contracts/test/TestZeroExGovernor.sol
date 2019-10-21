@@ -19,12 +19,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/AssetProxyOwner.sol";
+import "../src/ZeroExGovernor.sol";
 
 
 // solhint-disable no-empty-blocks
-contract TestAssetProxyOwner is
-    AssetProxyOwner
+contract TestZeroExGovernor is
+    ZeroExGovernor
 {
     constructor (
         bytes4[] memory _functionSelectors,
@@ -35,7 +35,7 @@ contract TestAssetProxyOwner is
         uint256 _defaultSecondsTimeLocked
     )
         public
-        AssetProxyOwner(
+        ZeroExGovernor(
             _functionSelectors,
             _destinations,
             _functionCallTimeLockSeconds,

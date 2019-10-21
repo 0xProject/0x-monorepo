@@ -13,7 +13,9 @@ import {
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
-import { EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
+import { EventCallback, IndexedFilterValues } from '@0x/types';
+
+import { SubscriptionErrors } from './types';
 import { filterUtils } from './utils/filter_utils';
 
 const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;
@@ -80,7 +82,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
-        this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
+        this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>; // tslint:disable-line:no-unnecessary-type-assertion
         return filterToken;
     }
     public async getLogsAsync<ArgsType extends ContractEventArgs>(

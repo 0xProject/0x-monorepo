@@ -29,6 +29,10 @@
             {
                 "note": "Add `UniswapBridge`",
                 "pr": 2233
+            },
+            {
+                "note": "Replaced `SafeMath` with `LibSafeMath`",
+                "pr": 2254
             }
         ],
         "timestamp": 1570135330

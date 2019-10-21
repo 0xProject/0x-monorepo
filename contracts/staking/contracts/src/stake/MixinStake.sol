@@ -35,7 +35,7 @@ contract MixinStake is
     function stake(uint256 amount)
         external
     {
-        address payable staker = msg.sender;
+        address staker = msg.sender;
 
         // deposit equivalent amount of ZRX into vault
         getZrxVault().depositFrom(staker, amount);
@@ -109,7 +109,7 @@ contract MixinStake is
     )
         external
     {
-        address payable staker = msg.sender;
+        address staker = msg.sender;
 
         // handle delegation
         if (from.status == IStructs.StakeStatus.DELEGATED) {
@@ -154,7 +154,7 @@ contract MixinStake is
     /// @param amount Amount of stake to delegate.
     function _delegateStake(
         bytes32 poolId,
-        address payable staker,
+        address staker,
         uint256 amount
     )
         private
@@ -192,7 +192,7 @@ contract MixinStake is
     /// @param amount Amount of stake to un-delegate.
     function _undelegateStake(
         bytes32 poolId,
-        address payable staker,
+        address staker,
         uint256 amount
     )
         private

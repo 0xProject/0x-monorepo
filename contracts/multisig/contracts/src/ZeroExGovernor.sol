@@ -24,7 +24,7 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 
 
-contract AssetProxyOwner is
+contract ZeroExGovernor is
     MultiSigWalletWithTimeLock
 {
     using LibBytes for bytes;

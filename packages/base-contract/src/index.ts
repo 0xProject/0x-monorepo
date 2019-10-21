@@ -184,7 +184,7 @@ export class BaseContract {
         }
         return rawEncoded;
     }
-    public async evmExecAsync(input: Buffer): Promise<string> {
+    protected async _evmExecAsync(input: Buffer): Promise<string> {
         const addressBuf = Buffer.from(this.address.substr(2), 'hex');
         // should only run once, the first time it is called
         if (this._evmIfExists === undefined) {

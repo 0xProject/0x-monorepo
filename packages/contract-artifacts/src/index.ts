@@ -5,6 +5,7 @@ import * as DevUtils from '../artifacts/DevUtils.json';
 import * as DummyERC20Token from '../artifacts/DummyERC20Token.json';
 import * as DummyERC721Token from '../artifacts/DummyERC721Token.json';
 import * as DutchAuction from '../artifacts/DutchAuction.json';
+import * as ERC1155Mintable from '../artifacts/ERC1155Mintable.json';
 import * as ERC1155Proxy from '../artifacts/ERC1155Proxy.json';
 import * as ERC20Proxy from '../artifacts/ERC20Proxy.json';
 import * as ERC20Token from '../artifacts/ERC20Token.json';
@@ -28,6 +29,7 @@ export {
     DevUtils,
     DummyERC20Token,
     DummyERC721Token,
+    ERC1155Mintable,
     ERC1155Proxy,
     ERC20Proxy,
     ERC20Token,

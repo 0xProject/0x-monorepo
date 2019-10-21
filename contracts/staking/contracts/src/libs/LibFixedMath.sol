@@ -27,6 +27,8 @@ library LibFixedMath {
 
     // 1
     int256 private constant FIXED_1 = int256(0x0000000000000000000000000000000080000000000000000000000000000000);
+    // 2**255
+    int256 private constant MIN_FIXED_VAL = int256(0x8000000000000000000000000000000000000000000000000000000000000000);
     // 1^2 (in fixed-point)
     int256 private constant FIXED_1_SQUARED = int256(0x4000000000000000000000000000000000000000000000000000000000000000);
     // 1
@@ -50,6 +52,12 @@ library LibFixedMath {
 
     /// @dev Returns the addition of two fixed point numbers, reverting on overflow.
     function sub(int256 a, int256 b) internal pure returns (int256 c) {
+        if (b == MIN_FIXED_VAL) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_SMALL,
+                b
+            ));
+        }
         c = _add(a, -b);
     }
 
@@ -87,6 +95,12 @@ library LibFixedMath {
 
     /// @dev Returns the absolute value of a fixed point number.
     function abs(int256 f) internal pure returns (int256 c) {
+        if (f == MIN_FIXED_VAL) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.SignedValueError(
+                LibFixedMathRichErrors.ValueErrorCodes.TOO_SMALL,
+                f
+            ));
+        }
         if (f >= 0) {
             c = f;
         } else {
@@ -353,20 +367,20 @@ library LibFixedMath {
                 b
             ));
         }
+        if (a == MIN_FIXED_VAL && b == -1) {
+            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
+                LibFixedMathRichErrors.BinOpErrorCodes.DIVISION_OVERFLOW,
+                a,
+                b
+            ));
+        }
         c = a / b;
     }
 
     /// @dev Adds two numbers, reverting on overflow.
     function _add(int256 a, int256 b) private pure returns (int256 c) {
         c = a + b;
-        if (c > 0 && a < 0 && b < 0) {
-            LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
-                LibFixedMathRichErrors.BinOpErrorCodes.SUBTRACTION_OVERFLOW,
-                a,
-                b
-            ));
-        }
-        if (c < 0 && a > 0 && b > 0) {
+        if ((a < 0 && b < 0 && c > a) || (a > 0 && b > 0 && c < a)) {
             LibRichErrors.rrevert(LibFixedMathRichErrors.BinOpError(
                 LibFixedMathRichErrors.BinOpErrorCodes.ADDITION_OVERFLOW,
                 a,

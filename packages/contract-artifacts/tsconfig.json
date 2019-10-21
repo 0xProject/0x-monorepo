@@ -12,6 +12,7 @@
         "./artifacts/DutchAuction.json",
         "./artifacts/DummyERC20Token.json",
         "./artifacts/DummyERC721Token.json",
+        "./artifacts/ERC1155Mintable.json",
         "./artifacts/ERC20Proxy.json",
         "./artifacts/ERC20Token.json",
         "./artifacts/ERC721Proxy.json",

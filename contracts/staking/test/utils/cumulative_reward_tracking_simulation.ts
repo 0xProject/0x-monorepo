@@ -36,7 +36,8 @@ export class CumulativeRewardTrackingSimulation {
     private static _extractTestLogs(txReceiptLogs: DecodedLogs): TestLog[] {
         const logs = [];
         for (const log of txReceiptLogs) {
-            if (log.event === TestCumulativeRewardTrackingEvents.SetCumulativeReward) {
+            const wantedEvents = [TestCumulativeRewardTrackingEvents.SetCumulativeReward] as string[];
+            if (wantedEvents.indexOf(log.event) !== -1) {
                 logs.push({
                     event: log.event,
                     epoch: log.args.epoch.toNumber(),
@@ -53,10 +54,10 @@ export class CumulativeRewardTrackingSimulation {
             const expectedLog = expectedSequence[i];
             const actualLog = logs[i];
             expect(expectedLog.event).to.exist('');
-            expect(expectedLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(
-                actualLog.event,
+            expect(actualLog.event, `testing event name of ${JSON.stringify(expectedLog)}`).to.be.equal(
+                expectedLog.event,
             );
-            expect(expectedLog.epoch, `testing epoch of ${JSON.stringify(expectedLog)}`).to.be.equal(actualLog.epoch);
+            expect(actualLog.epoch, `testing epoch of ${JSON.stringify(expectedLog)}`).to.be.equal(expectedLog.epoch);
         }
     }
 

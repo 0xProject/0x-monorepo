@@ -15,4 +15,5 @@ export const constants = {
     KOVAN_NETWORK_ID: 42,
     MAINNET_RPC_URL: 'https://mainnet.infura.io/',
     MAINNET_NETWORK_ID: 1,
+    ZERO_AMOUNT: new BigNumber(0),
 };

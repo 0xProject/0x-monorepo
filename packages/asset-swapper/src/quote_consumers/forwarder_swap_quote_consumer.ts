@@ -197,7 +197,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             let txHash: string;
             if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
-                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.sendTransactionAsync(
                     orders,
                     makerAssetFillAmount,
                     orders.map(o => o.signature),
@@ -211,7 +211,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     },
                 );
             } else {
-                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.validateAndSendTransactionAsync(
+                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.sendTransactionAsync(
                     orders,
                     orders.map(o => o.signature),
                     formattedFeePercentage,

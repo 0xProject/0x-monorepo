@@ -43,16 +43,22 @@ contract TestCumulativeRewardTracking is
 
     function init() public {}
 
-    function _forceSetCumulativeReward(
+    function _addCumulativeReward(
         bytes32 poolId,
-        IStructs.Fraction memory value
+        uint256 reward,
+        uint256 stake
     )
         internal
     {
-        emit SetCumulativeReward(poolId, currentEpoch);
-        MixinCumulativeRewards._forceSetCumulativeReward(
+        uint256 lastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        MixinCumulativeRewards._addCumulativeReward(
             poolId,
-            value
+            reward,
+            stake
         );
+        uint256 newLastStoredEpoch = _cumulativeRewardsByPoolLastStored[poolId];
+        if (newLastStoredEpoch != lastStoredEpoch) {
+            emit SetCumulativeReward(poolId, currentEpoch);
+        }
     }
 }

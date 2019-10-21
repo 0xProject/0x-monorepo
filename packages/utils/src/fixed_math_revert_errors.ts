@@ -10,9 +10,9 @@ export enum ValueErrorCodes {
 
 export enum BinOpErrorCodes {
     AdditionOverflow,
-    SubtractionUnderflow,
     MultiplicationOverflow,
     DivisionByZero,
+    DivisionOverflow,
 }
 
 export class SignedValueError extends RevertError {

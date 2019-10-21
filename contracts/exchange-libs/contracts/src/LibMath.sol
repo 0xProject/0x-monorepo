@@ -85,9 +85,9 @@ library LibMath {
             ));
         }
 
-        // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
-        // To implement `ceil(a / b)` using _safeDiv.
+        // To implement `ceil(a / b)` using safeDiv.
         partialAmount = numerator.safeMul(target)
             .safeAdd(denominator.safeSub(1))
             .safeDiv(denominator);
@@ -127,9 +127,9 @@ library LibMath {
         pure
         returns (uint256 partialAmount)
     {
-        // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
+        // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
-        // To implement `ceil(a / b)` using _safeDiv.
+        // To implement `ceil(a / b)` using safeDiv.
         partialAmount = numerator.safeMul(target)
             .safeAdd(denominator.safeSub(1))
             .safeDiv(denominator);
