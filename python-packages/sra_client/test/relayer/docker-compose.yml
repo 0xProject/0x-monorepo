@@ -1,14 +1,36 @@
-# Run Launch Kit with Ganache as the backing node
+# Run Launch Kit Backend with Ganache and Mesh instances backing it.
 version: '3'
 services:
     ganache:
-        image: "0xorg/ganache-cli:2.2.2"
+        image: "0xorg/ganache-cli:4.4.0-beta.1"
         ports:
             - "8545:8545"
-    launchkit:
-        image: "0xorg/launch-kit-backend:74bcc39"
+        environment:
+            - VERSION=4.4.0-beta.1
+            - SNAPSHOT_NAME=0x_ganache_snapshot-v3-beta
+    mesh:
+        image: 0xorg/mesh:6.0.0-beta-0xv3
         depends_on:
             - ganache
+        environment:
+            ETHEREUM_RPC_URL: 'http://localhost:8545'
+            ETHEREUM_NETWORK_ID: '50'
+            ETHEREUM_CHAIN_ID: '1337'
+            USE_BOOTSTRAP_LIST: 'true'
+            VERBOSITY: 3
+            PRIVATE_KEY_PATH: ''
+            BLOCK_POLLING_INTERVAL: '5s'
+            P2P_LISTEN_PORT: '60557'
+        ports:
+            - '60557:60557'
+        network_mode: "host" # to connect to ganache
+        command: |
+            sh -c "waitForGanache () { until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done }; waitForGanache && ./mesh"
+    launch-kit-backend:
+        image: "0xorg/launch-kit-backend:v3"
+        depends_on:
+            - ganache
+            - mesh
         ports:
             - "3000:3000"
         network_mode: "host" # to connect to ganache
@@ -16,5 +38,9 @@ services:
             - NETWORK_ID=50
             - RPC_URL=http://localhost:8545
             - WHITELIST_ALL_TOKENS=True
+            - FEE_RECIPIENT=0x0000000000000000000000000000000000000001
+            - MAKER_FEE_UNIT_AMOUNT=0
+            - TAKER_FEE_UNIT_AMOUNT=0
+            - MESH_ENDPOINT=ws://localhost:60557
         command: |
-            sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
+            sh -c "waitForMesh () { sleep 3; }; waitForMesh && sleep 5 && node_modules/.bin/forever ts/lib/index.js"

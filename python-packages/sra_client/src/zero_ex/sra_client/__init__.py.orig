@@ -156,14 +156,15 @@ Post an order for our Maker to trade ZRX for WETH:
 Get Order
 ---------
 
-(But first sleep for a moment, to give the test relayer a chance to start up.
+Retrieve the order we just posted:
+
+(But first sleep for a moment first, to give the test relayer a chance to keep
+up.
 
 >>> from time import sleep
 >>> sleep(0.2)
 
-This is necessary for automated verification of these examples.)
-
-Retrieve the order we just posted:
+)
 
 >>> relayer.get_order("0x" + order_hash_hex)
 {'meta_data': {'orderHash': '0x...',
@@ -345,8 +346,13 @@ book.  Now let's have the taker fill it:
 >>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> from zero_ex.order_utils import Order
 >>> exchange = Exchange(
-...     web3_or_provider=eth_node,
+<<<<<<< HEAD
+...     provider=eth_node,
 ...     contract_address=network_to_addresses(NetworkId.GANACHE).exchange
+=======
+...     web3_or_provider=eth_node,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange
+>>>>>>> sra_client.py: Migrate to protocol v3 [WiP]
 ... )
 
 (Due to `an Issue with the Launch Kit Backend
