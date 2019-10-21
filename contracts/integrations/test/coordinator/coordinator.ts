@@ -1,4 +1,4 @@
-import { SignedCoordinatorApproval } from '@0x/contracts-coordinator';
+import { CoordinatorContract, SignedCoordinatorApproval } from '@0x/contracts-coordinator';
 import {
     BlockchainBalanceStore,
     LocalBalanceStore,
@@ -17,11 +17,13 @@ import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
-import { CoordinatorDeploymentManager } from './coordinator_deployment_manager';
+import { deployCoordinatorAsync } from './deploy_coordinator';
+import { DeploymentManager } from '../deployment/deployment_mananger';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator tests', env => {
-    let deployment: CoordinatorDeploymentManager;
+    let deployment: DeploymentManager;
+    let coordinator: CoordinatorContract;
     let balanceStore: BlockchainBalanceStore;
 
     let maker: Maker;
@@ -29,20 +31,26 @@ blockchainTests.resets('Coordinator tests', env => {
     let feeRecipient: FeeRecipient;
 
     before(async () => {
-        deployment = await CoordinatorDeploymentManager.deployAsync(env);
+        deployment = await DeploymentManager.deployAsync(env, {
+            numErc20TokensToDeploy: 4,
+            numErc721TokensToDeploy: 0,
+            numErc1155TokensToDeploy: 0,
+        });
+        coordinator = await deployCoordinatorAsync(deployment, env);
+
         const [makerToken, takerToken, makerFeeToken, takerFeeToken] = deployment.tokens.erc20;
 
         taker = new Actor({ name: 'Taker', deployment });
         feeRecipient = new FeeRecipient({
             name: 'Fee recipient',
             deployment,
-            verifyingContract: deployment.coordinator,
+            verifyingContract: coordinator,
         });
         maker = new Maker({
             name: 'Maker',
             deployment,
             orderConfig: {
-                senderAddress: deployment.coordinator.address,
+                senderAddress: coordinator.address,
                 feeRecipientAddress: feeRecipient.address,
                 makerAssetData: assetDataUtils.encodeERC20AssetData(makerToken.address),
                 takerAssetData: assetDataUtils.encodeERC20AssetData(takerToken.address),
@@ -60,7 +68,7 @@ blockchainTests.resets('Coordinator tests', env => {
         balanceStore = new BlockchainBalanceStore(
             {
                 ...actorAddressesByName([maker, taker, feeRecipient]),
-                Coordinator: deployment.coordinator.address,
+                Coordinator: coordinator.address,
                 StakingProxy: deployment.staking.stakingProxy.address,
             },
             { erc20: { makerToken, takerToken, makerFeeToken, takerFeeToken, wETH: deployment.tokens.weth } },
@@ -75,7 +83,7 @@ blockchainTests.resets('Coordinator tests', env => {
     ): LocalBalanceStore {
         const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
-        localBalanceStore.burnGas(txReceipt.from, CoordinatorDeploymentManager.gasPrice.times(txReceipt.gasUsed));
+        localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
 
         for (const order of orders) {
             // Taker -> Maker
@@ -98,18 +106,18 @@ blockchainTests.resets('Coordinator tests', env => {
             );
 
             // Protocol fee
-            if (msgValue.isGreaterThanOrEqualTo(CoordinatorDeploymentManager.protocolFee)) {
+            if (msgValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
                 localBalanceStore.sendEth(
                     txReceipt.from,
                     deployment.staking.stakingProxy.address,
-                    CoordinatorDeploymentManager.protocolFee,
+                    DeploymentManager.protocolFee,
                 );
-                msgValue = msgValue.minus(CoordinatorDeploymentManager.protocolFee);
+                msgValue = msgValue.minus(DeploymentManager.protocolFee);
             } else {
                 localBalanceStore.transferAsset(
                     taker.address,
                     deployment.staking.stakingProxy.address,
-                    CoordinatorDeploymentManager.protocolFee,
+                    DeploymentManager.protocolFee,
                     assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address),
                 );
             }
@@ -132,7 +140,7 @@ blockchainTests.resets('Coordinator tests', env => {
             takerAssetFilledAmount: order.takerAssetAmount,
             makerFeePaid: order.makerFee,
             takerFeePaid: order.takerFee,
-            protocolFeePaid: CoordinatorDeploymentManager.protocolFee,
+            protocolFeePaid: DeploymentManager.protocolFee,
             orderHash: orderHashUtils.getOrderHashHex(order),
         };
     }
@@ -149,63 +157,59 @@ blockchainTests.resets('Coordinator tests', env => {
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, [order]);
                 transaction = await taker.signTransactionAsync({
                     data,
-                    gasPrice: CoordinatorDeploymentManager.gasPrice,
+                    gasPrice: DeploymentManager.gasPrice,
                 });
                 approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the order with a signed approval`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [approval.signature],
-                    { from: taker.address, value: CoordinatorDeploymentManager.protocolFee },
+                    { from: taker.address, value: DeploymentManager.protocolFee },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, CoordinatorDeploymentManager.protocolFee);
+                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
             });
             it(`${fnName} should fill the order if called by approver (eth protocol fee, no refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
                     [],
-                    { from: feeRecipient.address, value: CoordinatorDeploymentManager.protocolFee },
+                    { from: feeRecipient.address, value: DeploymentManager.protocolFee },
                 );
 
-                const expectedBalances = simulateFills([order], txReceipt, CoordinatorDeploymentManager.protocolFee);
+                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee);
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
             });
             it(`${fnName} should fill the order if called by approver (eth protocol fee, refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
                     [],
-                    { from: feeRecipient.address, value: CoordinatorDeploymentManager.protocolFee.plus(1) },
+                    { from: feeRecipient.address, value: DeploymentManager.protocolFee.plus(1) },
                 );
 
-                const expectedBalances = simulateFills(
-                    [order],
-                    txReceipt,
-                    CoordinatorDeploymentManager.protocolFee.plus(1),
-                );
+                const expectedBalances = simulateFills([order], txReceipt, DeploymentManager.protocolFee.plus(1));
                 await balanceStore.updateBalancesAsync();
                 balanceStore.assertEquals(expectedBalances);
                 verifyEvents(txReceipt, [expectedFillEvent(order)], ExchangeEvents.Fill);
             });
             it(`${fnName} should fill the order if called by approver (weth protocol fee, no refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
@@ -220,7 +224,7 @@ blockchainTests.resets('Coordinator tests', env => {
             });
             it(`${fnName} should fill the order if called by approver (weth protocol fee, refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
@@ -235,12 +239,12 @@ blockchainTests.resets('Coordinator tests', env => {
             });
             it(`${fnName} should revert with no approval signature`, async () => {
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                const tx = deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [],
-                    { from: taker.address, value: CoordinatorDeploymentManager.protocolFee },
+                    { from: taker.address, value: DeploymentManager.protocolFee },
                 );
 
                 const expectedError = new CoordinatorRevertErrors.InvalidApprovalSignatureError(
@@ -256,12 +260,12 @@ blockchainTests.resets('Coordinator tests', env => {
                     hexSlice(approval.signature, 6),
                 );
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                const tx = deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [approvalSignature],
-                    { from: taker.address, value: CoordinatorDeploymentManager.protocolFee },
+                    { from: taker.address, value: DeploymentManager.protocolFee },
                 );
 
                 const expectedError = new CoordinatorRevertErrors.InvalidApprovalSignatureError(
@@ -271,12 +275,12 @@ blockchainTests.resets('Coordinator tests', env => {
                 expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
-                const tx = deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [approval.signature],
-                    { from: maker.address, value: CoordinatorDeploymentManager.protocolFee },
+                    { from: maker.address, value: DeploymentManager.protocolFee },
                 );
 
                 const expectedError = new CoordinatorRevertErrors.InvalidOriginError(taker.address);
@@ -296,15 +300,15 @@ blockchainTests.resets('Coordinator tests', env => {
                 data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
                 transaction = await taker.signTransactionAsync({
                     data,
-                    gasPrice: CoordinatorDeploymentManager.gasPrice,
+                    gasPrice: DeploymentManager.gasPrice,
                 });
                 approval = feeRecipient.signCoordinatorApproval(transaction, taker.address);
             });
 
             it(`${fnName} should fill the orders with a signed approval`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const value = CoordinatorDeploymentManager.protocolFee.times(orders.length);
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const value = DeploymentManager.protocolFee.times(orders.length);
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
@@ -319,8 +323,8 @@ blockchainTests.resets('Coordinator tests', env => {
             });
             it(`${fnName} should fill the orders if called by approver (eth fee, no refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const value = CoordinatorDeploymentManager.protocolFee.times(orders.length);
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const value = DeploymentManager.protocolFee.times(orders.length);
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
@@ -335,8 +339,8 @@ blockchainTests.resets('Coordinator tests', env => {
             });
             it(`${fnName} should fill the orders if called by approver (mixed fees, refund)`, async () => {
                 await balanceStore.updateBalancesAsync();
-                const value = CoordinatorDeploymentManager.protocolFee.plus(1);
-                const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const value = DeploymentManager.protocolFee.plus(1);
+                const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     feeRecipient.address,
                     transaction.signature,
@@ -356,12 +360,12 @@ blockchainTests.resets('Coordinator tests', env => {
                     hexSlice(approval.signature, 6),
                 );
                 const transactionHash = transactionHashUtils.getTransactionHashHex(transaction);
-                const tx = deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [approvalSignature],
-                    { from: taker.address, value: CoordinatorDeploymentManager.protocolFee.times(orders.length) },
+                    { from: taker.address, value: DeploymentManager.protocolFee.times(orders.length) },
                 );
                 const expectedError = new CoordinatorRevertErrors.InvalidApprovalSignatureError(
                     transactionHash,
@@ -370,12 +374,12 @@ blockchainTests.resets('Coordinator tests', env => {
                 expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
-                const tx = deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+                const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
                     transaction,
                     taker.address,
                     transaction.signature,
                     [approval.signature],
-                    { from: maker.address, value: CoordinatorDeploymentManager.protocolFee.times(orders.length) },
+                    { from: maker.address, value: DeploymentManager.protocolFee.times(orders.length) },
                 );
                 const expectedError = new CoordinatorRevertErrors.InvalidOriginError(taker.address);
                 expect(tx).to.revertWith(expectedError);
@@ -399,9 +403,9 @@ blockchainTests.resets('Coordinator tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: CoordinatorDeploymentManager.gasPrice,
+                gasPrice: DeploymentManager.gasPrice,
             });
-            const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+            const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                 transaction,
                 maker.address,
                 transaction.signature,
@@ -416,9 +420,9 @@ blockchainTests.resets('Coordinator tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.BatchCancelOrders, orders);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: CoordinatorDeploymentManager.gasPrice,
+                gasPrice: DeploymentManager.gasPrice,
             });
-            const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+            const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                 transaction,
                 maker.address,
                 transaction.signature,
@@ -432,9 +436,9 @@ blockchainTests.resets('Coordinator tests', env => {
             const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrdersUpTo, []);
             const transaction = await maker.signTransactionAsync({
                 data,
-                gasPrice: CoordinatorDeploymentManager.gasPrice,
+                gasPrice: DeploymentManager.gasPrice,
             });
-            const txReceipt = await deployment.coordinator.executeTransaction.awaitTransactionSuccessAsync(
+            const txReceipt = await coordinator.executeTransaction.awaitTransactionSuccessAsync(
                 transaction,
                 maker.address,
                 transaction.signature,
@@ -444,7 +448,7 @@ blockchainTests.resets('Coordinator tests', env => {
 
             const expectedEvent: ExchangeCancelUpToEventArgs = {
                 makerAddress: maker.address,
-                orderSenderAddress: deployment.coordinator.address,
+                orderSenderAddress: coordinator.address,
                 orderEpoch: new BigNumber(1),
             };
             verifyEvents(txReceipt, [expectedEvent], ExchangeEvents.CancelUpTo);
