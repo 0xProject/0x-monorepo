@@ -96,12 +96,15 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
             ("docker-compose -f test/relayer/docker-compose.yml up -d").split()
         )
         launch_kit_ready = False
-        print("Waiting for relayer to start accepting connections...", end="")
+        print(
+            "Waiting for Launch Kit Backend to start accepting connections...",
+            flush=True,
+        )
         while not launch_kit_ready:
             try:
                 launch_kit_ready = (
                     urlopen(  # nosec
-                        "http://localhost:3000/v2/asset_pairs"
+                        "http://localhost:3000/v3/asset_pairs"
                     ).getcode()
                     == 200
                 )
