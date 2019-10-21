@@ -29,29 +29,27 @@ interface IStructs {
         uint96 lastSetTimestamp;
     }
 
-    /// @dev Status for a pool that actively traded during the current epoch.
-    /// (see MixinExchangeFees).
+    /// @dev Stats for a pool that actively traded.
     /// @param feesCollected Fees collected in ETH by this pool.
     /// @param weightedStake Amount of weighted stake in the pool.
     /// @param membersStake Amount of non-operator stake in the pool.
-    struct ActivePool {
+    struct PoolStats {
         uint256 feesCollected;
         uint256 weightedStake;
         uint256 membersStake;
     }
 
-    /// @dev Holds state for unfinalized epoch rewards.
+    /// @dev Holds stats aggregated across a set of pools.
     /// @param rewardsAvailable Rewards (ETH) available to the epoch
     ///        being finalized (the previous epoch). This is simply the balance
     ///        of the contract at the end of the epoch.
-    /// @param poolsRemaining The number of active pools in the last
-    ///        epoch that have yet to be finalized through `finalizePools()`.
+    /// @param poolsToFinalize The number of pools that have yet to be finalized through `finalizePools()`.
     /// @param totalFeesCollected The total fees collected for the epoch being finalized.
     /// @param totalWeightedStake The total fees collected for the epoch being finalized.
     /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
-    struct UnfinalizedState {
+    struct AggregatedStats {
         uint256 rewardsAvailable;
-        uint256 poolsRemaining;
+        uint256 poolsToFinalize;
         uint256 totalFeesCollected;
         uint256 totalWeightedStake;
         uint256 totalRewardsFinalized;

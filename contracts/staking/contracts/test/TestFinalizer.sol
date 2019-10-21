@@ -74,20 +74,19 @@ contract TestFinalizer is
         external
     {
         require(feesCollected > 0, "FEES_MUST_BE_NONZERO");
-        mapping (bytes32 => IStructs.ActivePool) storage activePools = _getActivePoolsFromEpoch(
-            currentEpoch
-        );
-        IStructs.ActivePool memory pool = activePools[poolId];
-        require(pool.feesCollected == 0, "POOL_ALREADY_ADDED");
+        uint256 currentEpoch_ = currentEpoch;
+        IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][currentEpoch_];
+        require(poolStats.feesCollected == 0, "POOL_ALREADY_ADDED");
         _operatorSharesByPool[poolId] = operatorShare;
-        activePools[poolId] = IStructs.ActivePool({
+        poolStatsByEpoch[poolId][currentEpoch_] = IStructs.PoolStats({
             feesCollected: feesCollected,
             membersStake: membersStake,
             weightedStake: weightedStake
         });
-        totalFeesCollectedThisEpoch += feesCollected;
-        totalWeightedStakeThisEpoch += weightedStake;
-        numActivePoolsThisEpoch += 1;
+
+        aggregatedStatsByEpoch[currentEpoch_].totalFeesCollected += feesCollected;
+        aggregatedStatsByEpoch[currentEpoch_].totalWeightedStake += weightedStake;
+        aggregatedStatsByEpoch[currentEpoch_].poolsToFinalize += 1;
     }
 
     /// @dev Drain the balance of this contract.
@@ -131,13 +130,21 @@ contract TestFinalizer is
         );
     }
 
-    /// @dev Expose `_getActivePoolFromEpoch`.
-    function getActivePoolFromEpoch(uint256 epoch, bytes32 poolId)
+    /// @dev Expose pool stats for the input epoch.
+    function getPoolStatsFromEpoch(uint256 epoch, bytes32 poolId)
         external
         view
-        returns (IStructs.ActivePool memory pool)
+        returns (IStructs.PoolStats memory)
     {
-        pool = _getActivePoolFromEpoch(epoch, poolId);
+        return poolStatsByEpoch[poolId][epoch];
+    }
+
+    function getAggregatedStatsForPreviousEpoch()
+        external
+        view
+        returns (IStructs.AggregatedStats memory)
+    {
+        return aggregatedStatsByEpoch[currentEpoch - 1];
     }
 
     /// @dev Overridden to log and transfer to receivers.
