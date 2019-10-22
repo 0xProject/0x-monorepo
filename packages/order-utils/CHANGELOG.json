@@ -113,10 +113,6 @@
             {
                 "note": "Renamed `OnlyCallableByPoolOperatorOrMakerError` to `OnlyCallableByPoolOperatorError`.",
                 "pr": 2250
-            },
-            {
-                "note": "Removed protocol fee != 0 error.",
-                "pr": 2278
             }
         ],
         "timestamp": 1570135330

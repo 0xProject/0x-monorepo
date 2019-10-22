@@ -161,11 +161,19 @@ contract MixinExchangeFees is
         private
         view
     {
-        // The protocol fee must equal the value passed to the contract; unless
-        // the value is zero, in which case the fee is taken in WETH.
+        if (protocolFeePaid == 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid,
+                    protocolFeePaid,
+                    msg.value
+                )
+            );
+        }
         if (msg.value != protocolFeePaid && msg.value != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidProtocolFeePaymentError(
+                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
                     protocolFeePaid,
                     msg.value
                 )
