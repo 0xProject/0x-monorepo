@@ -3,20 +3,20 @@ import { AuthorizableRevertErrors, BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, IStakingEventsParamsSetEventArgs, MixinParamsContract } from '../../src/';
+import { artifacts, IStakingEventsParamsSetEventArgs, TestMixinParamsContract } from '../../src/';
 
 import { constants as stakingConstants } from '../utils/constants';
 import { StakingParams } from '../utils/types';
 
 blockchainTests('Configurable Parameters unit tests', env => {
-    let testContract: MixinParamsContract;
+    let testContract: TestMixinParamsContract;
     let authorizedAddress: string;
     let notAuthorizedAddress: string;
 
     before(async () => {
         [authorizedAddress, notAuthorizedAddress] = await env.getAccountAddressesAsync();
-        testContract = await MixinParamsContract.deployFrom0xArtifactAsync(
-            artifacts.MixinParams,
+        testContract = await TestMixinParamsContract.deployFrom0xArtifactAsync(
+            artifacts.TestMixinParams,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -64,6 +64,12 @@ blockchainTests('Configurable Parameters unit tests', env => {
             const tx = setParamsAndAssertAsync({}, notAuthorizedAddress);
             const expectedError = new AuthorizableRevertErrors.SenderNotAuthorizedError(notAuthorizedAddress);
             return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('throws if `assertValidStorageParams()` throws`', async () => {
+            await testContract.setShouldFailAssertValidStorageParams.awaitTransactionSuccessAsync(true);
+            const tx = setParamsAndAssertAsync({});
+            return expect(tx).to.revertWith('ASSERT_VALID_STORAGE_PARAMS_FAILED');
         });
 
         it('works if called by owner', async () => {

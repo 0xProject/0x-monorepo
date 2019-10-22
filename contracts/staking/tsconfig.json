@@ -45,6 +45,7 @@
         "generated-artifacts/TestLibProxy.json",
         "generated-artifacts/TestLibProxyReceiver.json",
         "generated-artifacts/TestLibSafeDowncast.json",
+        "generated-artifacts/TestMixinParams.json",
         "generated-artifacts/TestMixinStake.json",
         "generated-artifacts/TestMixinStakeStorage.json",
         "generated-artifacts/TestProtocolFees.json",

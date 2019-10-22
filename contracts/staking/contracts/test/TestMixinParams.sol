@@ -15,33 +15,33 @@
   limitations under the License.
 
 */
+
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/StakingProxy.sol";
+import "../src/sys/MixinParams.sol";
 
 
-contract TestStakingProxy is
-    StakingProxy
+contract TestMixinParams is
+    MixinParams
 {
-    address public constant SHOULD_REVERT_STAKING_ADDRESS = 0x5ed6A38c6bEcEd15b0AB58566b6fD7A00463d2F7;
+    bool public shouldFailAssertValidStorageParams;
 
-    // solhint-disable no-empty-blocks
-    constructor(address _stakingContract)
-        public
-        StakingProxy(
-            _stakingContract,
-            NIL_ADDRESS
-        )
-    {}
+    /// @dev Set `shouldFailAssertValidStorageParams`
+    function setShouldFailAssertValidStorageParams(bool shouldFail)
+        external
+    {
+        shouldFailAssertValidStorageParams = shouldFail;
+    }
 
+    /// @dev `IStakingProxy.assertValidStorageParams()` that reverts if
+    ///      `shouldFailAssertValidStorageParams` is true.
     function assertValidStorageParams()
         public
         view
     {
-        require(
-            stakingContract != SHOULD_REVERT_STAKING_ADDRESS,
-            "FORCED_STORAGE_PARAMS_REVERT"
-        );
+        if (shouldFailAssertValidStorageParams) {
+            revert("ASSERT_VALID_STORAGE_PARAMS_FAILED");
+        }
     }
 }

@@ -13,6 +13,10 @@
             {
                 "note": "Removed protocol fee != 0 assertion.",
                 "pr": 2278
+            },
+            {
+                "note": "Call `StakingProxy.assertValidStorageParams()` in `MixinParams.setParams()`",
+                "pr": "TODO"
             }
         ]
     },

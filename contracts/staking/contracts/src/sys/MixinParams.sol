@@ -22,6 +22,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
+import "../interfaces/IStakingProxy.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
@@ -53,6 +54,10 @@ contract MixinParams is
             _cobbDouglasAlphaNumerator,
             _cobbDouglasAlphaDenominator
         );
+
+        // Let the staking proxy enforce that these parameters are within
+        // acceptable ranges.
+        IStakingProxy(address(this)).assertValidStorageParams();
     }
 
     /// @dev Retrieves all configurable parameter values.
