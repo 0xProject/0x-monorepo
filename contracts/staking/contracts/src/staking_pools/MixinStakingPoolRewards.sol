@@ -31,25 +31,13 @@ contract MixinStakingPoolRewards is
 {
     using LibSafeMath for uint256;
 
-    /// @dev Syncs rewards for a delegator. This includes transferring WETH
-    ///      rewards to the delegator, and adding/removing
-    ///      dependencies on cumulative rewards.
-    ///      This is used by a delegator when they want to sync their rewards
-    ///      without delegating/undelegating. It's effectively the same as
-    ///      delegating zero stake.
+    /// @dev Withdraws the caller's WETH rewards that have accumulated
+    ///      until the last epoch.
     /// @param poolId Unique id of pool.
     function withdrawDelegatorRewards(bytes32 poolId)
         external
     {
-        address member = msg.sender;
-
-        _withdrawAndSyncDelegatorRewards(
-            poolId,
-            member
-        );
-
-        _delegatedStakeToPoolByOwner[member][poolId] =
-            _loadCurrentBalance(_delegatedStakeToPoolByOwner[member][poolId]);
+        _withdrawAndSyncDelegatorRewards(poolId, msg.sender);
     }
 
     /// @dev Computes the reward balance in ETH of the operator of a pool.
@@ -105,8 +93,8 @@ contract MixinStakingPoolRewards is
         );
     }
 
-    /// @dev Syncs rewards for a delegator. This includes transferring rewards
-    ///      withdrawing rewards and adding/removing dependencies on cumulative rewards.
+    /// @dev Syncs rewards for a delegator. This includes withdrawing rewards
+    ///      rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
     function _withdrawAndSyncDelegatorRewards(
@@ -127,6 +115,12 @@ contract MixinStakingPoolRewards is
             0,
             0
         );
+
+        // Sync the delegated stake balance. This will ensure future calls of
+        // `_computeDelegatorReward` during this epoch will return 0, 
+        // preventing a delegator from withdrawing more than once an epoch.
+        _delegatedStakeToPoolByOwner[member][poolId] =
+            _loadCurrentBalance(_delegatedStakeToPoolByOwner[member][poolId]);
 
         // Withdraw non-0 balance
         if (balance != 0) {
