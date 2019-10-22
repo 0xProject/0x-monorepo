@@ -63,6 +63,13 @@ contract TestFinalizer is
         _removeAuthorizedAddressAtIndex(msg.sender, 0);
     }
 
+    // this contract can receive ETH
+    // solhint-disable no-empty-blocks
+    function ()
+        external
+        payable
+    {}
+
     /// @dev Activate a pool in the current epoch.
     function addActivePool(
         bytes32 poolId,
