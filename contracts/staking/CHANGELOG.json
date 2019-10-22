@@ -16,7 +16,7 @@
             },
             {
                 "note": "Call `StakingProxy.assertValidStorageParams()` in `MixinParams.setParams()`",
-                "pr": "TODO"
+                "pr": 2279
             }
         ]
     },
