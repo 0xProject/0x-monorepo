@@ -30,7 +30,6 @@ library LibStakingRichErrors {
     }
 
     enum ProtocolFeePaymentErrorCodes {
-        ZeroProtocolFeePaid,
         MismatchedFeeAndPayment
     }
 
