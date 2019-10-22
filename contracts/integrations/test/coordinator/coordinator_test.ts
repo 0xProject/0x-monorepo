@@ -21,7 +21,7 @@ import { deployCoordinatorAsync } from './deploy_coordinator';
 import { DeploymentManager } from '../utils/deployment_manager';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Coordinator tests', env => {
+blockchainTests.resets('Coordinator integration tests', env => {
     let deployment: DeploymentManager;
     let coordinator: CoordinatorContract;
     let balanceStore: BlockchainBalanceStore;

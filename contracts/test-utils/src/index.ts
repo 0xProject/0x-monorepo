@@ -69,5 +69,6 @@ export {
     getRandomInteger,
     getRandomPortion,
     getNumericalDivergence,
+    getPercentageOfValue,
     toBaseUnitAmount,
 } from './number_utils';
