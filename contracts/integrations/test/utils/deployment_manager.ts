@@ -149,7 +149,7 @@ export class DeploymentManager {
             exchangeArtifacts.Exchange,
             environment.provider,
             environment.txDefaults,
-            exchangeArtifacts,
+            { ...ERC20Artifacts, ...exchangeArtifacts },
             new BigNumber(chainId),
         );
         const governor = await ZeroExGovernorContract.deployFrom0xArtifactAsync(
