@@ -1,7 +1,7 @@
 import { blockchainTests, constants, expect, filterLogsToArguments, OrderFactory } from '@0x/contracts-test-utils';
 import { DummyERC20TokenContract, IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import { IExchangeEvents, IExchangeFillEventArgs } from '@0x/contracts-exchange';
-import { IStakingEventsEvents, IStakingEventsStakingPoolActivatedEventArgs } from '@0x/contracts-staking';
+import { IStakingEventsEvents } from '@0x/contracts-staking';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
