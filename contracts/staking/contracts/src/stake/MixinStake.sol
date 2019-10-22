@@ -111,6 +111,17 @@ contract MixinStake is
     {
         address staker = msg.sender;
 
+        // Sanity check: no-op if no stake is being moved.
+        if (amount == 0) {
+            return;
+        }
+
+        // Sanity check: no-op if moving stake from undelegated to undelegated.
+        if (from.status == IStructs.StakeStatus.UNDELEGATED &&
+            to.status == IStructs.StakeStatus.UNDELEGATED) {
+            return;
+        }
+
         // handle delegation
         if (from.status == IStructs.StakeStatus.DELEGATED) {
             _undelegateStake(
