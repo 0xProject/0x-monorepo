@@ -112,6 +112,10 @@ library LibStakingRichErrors {
     bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
         0x614b800a;
 
+    // bytes4(keccak256("PoolNotFinalizedError(bytes32,uint256)"))
+    bytes4 internal constant POOL_NOT_FINALIZED_ERROR_SELECTOR =
+        0x5caa0b05;
+
     // solhint-disable func-name-mixedcase
     function OnlyCallableByExchangeError(
         address senderAddress
@@ -306,6 +310,21 @@ library LibStakingRichErrors {
             PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR,
             unfinalizedEpoch,
             unfinalizedPoolsRemaining
+        );
+    }
+
+    function PoolNotFinalizedError(
+        bytes32 poolId,
+        uint256 epoch
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            POOL_NOT_FINALIZED_ERROR_SELECTOR,
+            poolId,
+            epoch
         );
     }
 }

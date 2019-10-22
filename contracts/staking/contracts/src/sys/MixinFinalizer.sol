@@ -50,7 +50,7 @@ contract MixinFinalizer is
         if (state.poolsRemaining != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                    closingEpoch - 1,
+                    closingEpoch.safeSub(1),
                     state.poolsRemaining
                 )
             );
@@ -97,14 +97,8 @@ contract MixinFinalizer is
     ///      finalized or was not active in the previous epoch.
     /// @param poolId The pool ID to finalize.
     function finalizePool(bytes32 poolId)
-        public
+        external
     {
-        // Noop on epoch 0
-        uint256 currentEpoch_ = currentEpoch;
-        if (currentEpoch_ == 0) {
-            return;
-        }
-
         // Load the finalization and pool state into memory.
         IStructs.UnfinalizedState memory state = unfinalizedState;
 
@@ -113,6 +107,7 @@ contract MixinFinalizer is
             return;
         }
 
+        uint256 currentEpoch_ = currentEpoch;
         uint256 prevEpoch = currentEpoch_.safeSub(1);
         IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
 
@@ -182,12 +177,10 @@ contract MixinFinalizer is
             uint256 membersStake
         )
     {
-        uint256 epoch = currentEpoch;
-        // There are no pools to finalize at epoch 0.
-        if (epoch == 0) {
-            return (0, 0);
-        }
-        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(epoch - 1, poolId);
+        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(
+            currentEpoch.safeSub(1),
+            poolId
+        );
         reward = _getUnfinalizedPoolRewardsFromState(pool, unfinalizedState);
         membersStake = pool.membersStake;
     }
@@ -245,6 +238,26 @@ contract MixinFinalizer is
             .safeSub(wethReservedForPoolRewards);
 
         return wethBalance;
+    }
+
+    /// @dev Asserts that a pool has been finalized last epoch.
+    /// @param poolId The id of the pool that should have been finalized.
+    function _assertPoolFinalizedLastEpoch(bytes32 poolId)
+        internal
+        view
+    {
+        uint256 prevEpoch = currentEpoch.safeSub(1);
+        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
+
+        // A pool that has any fees remaining has not been finalized
+        if (pool.feesCollected != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolNotFinalizedError(
+                    poolId,
+                    prevEpoch
+                )
+            );
+        }
     }
 
     /// @dev Computes the reward owed to a pool during finalization.
