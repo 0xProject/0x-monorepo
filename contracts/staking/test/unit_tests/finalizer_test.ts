@@ -87,7 +87,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
 
     interface UnfinalizedState {
         rewardsAvailable: Numberish;
-        poolsToFinalize: Numberish;
+        numPoolsToFinalize: Numberish;
         totalFeesCollected: Numberish;
         totalWeightedStake: Numberish;
         totalRewardsFinalized: Numberish;
@@ -135,16 +135,16 @@ blockchainTests.resets('Finalizer unit tests', env => {
 
     async function assertFinalizationLogsAndBalancesAsync(
         rewardsAvailable: Numberish,
-        poolsToFinalize: ActivePoolOpts[],
+        numPoolsToFinalize: ActivePoolOpts[],
         finalizationLogs: LogEntry[],
     ): Promise<void> {
         const currentEpoch = await getCurrentEpochAsync();
         // Compute the expected rewards for each pool.
-        const poolsWithStake = poolsToFinalize.filter(p => !new BigNumber(p.weightedStake).isZero());
+        const poolsWithStake = numPoolsToFinalize.filter(p => !new BigNumber(p.weightedStake).isZero());
         const poolRewards = await calculatePoolRewardsAsync(rewardsAvailable, poolsWithStake);
         const totalRewards = BigNumber.sum(...poolRewards);
         const rewardsRemaining = new BigNumber(rewardsAvailable).minus(totalRewards);
-        const [totalOperatorRewards, totalMembersRewards] = getTotalSplitRewards(poolsToFinalize, poolRewards);
+        const [totalOperatorRewards, totalMembersRewards] = getTotalSplitRewards(numPoolsToFinalize, poolRewards);
 
         // Assert the `RewardsPaid` logs.
         const rewardsPaidEvents = getRewardsPaidEvents(finalizationLogs);
@@ -196,13 +196,13 @@ blockchainTests.resets('Finalizer unit tests', env => {
 
     async function calculatePoolRewardsAsync(
         rewardsAvailable: Numberish,
-        poolsToFinalize: ActivePoolOpts[],
+        numPoolsToFinalize: ActivePoolOpts[],
     ): Promise<BigNumber[]> {
-        const totalFees = BigNumber.sum(...poolsToFinalize.map(p => p.feesCollected));
-        const totalStake = BigNumber.sum(...poolsToFinalize.map(p => p.weightedStake));
-        const poolRewards = _.times(poolsToFinalize.length, () => constants.ZERO_AMOUNT);
-        for (const i of _.times(poolsToFinalize.length)) {
-            const pool = poolsToFinalize[i];
+        const totalFees = BigNumber.sum(...numPoolsToFinalize.map(p => p.feesCollected));
+        const totalStake = BigNumber.sum(...numPoolsToFinalize.map(p => p.weightedStake));
+        const poolRewards = _.times(numPoolsToFinalize.length, () => constants.ZERO_AMOUNT);
+        for (const i of _.times(numPoolsToFinalize.length)) {
+            const pool = numPoolsToFinalize[i];
             const feesCollected = new BigNumber(pool.feesCollected);
             if (feesCollected.isZero()) {
                 continue;
@@ -305,7 +305,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
             const pool = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             return assertUnfinalizedStateAsync({
-                poolsToFinalize: 1,
+                numPoolsToFinalize: 1,
                 rewardsAvailable: INITIAL_BALANCE,
                 totalFeesCollected: pool.feesCollected,
                 totalWeightedStake: pool.weightedStake,
@@ -323,22 +323,6 @@ blockchainTests.resets('Finalizer unit tests', env => {
                 pool.feesCollected,
                 pool.weightedStake,
                 new BigNumber(0), // rewards finalized
-            ]);
-        });
-
-        it("correctly clear an epoch's aggregated stats after it is finalized", async () => {
-            const pool = await addActivePoolAsync();
-            const epoch = await testContract.currentEpoch.callAsync();
-            await testContract.endEpoch.awaitTransactionSuccessAsync();
-            await testContract.finalizePool.awaitTransactionSuccessAsync(pool.poolId);
-            await testContract.endEpoch.awaitTransactionSuccessAsync();
-            const aggregatedStats = await testContract.aggregatedStatsByEpoch.callAsync(epoch);
-            expect(aggregatedStats).to.be.deep.equal([
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
-                new BigNumber(0),
             ]);
         });
 

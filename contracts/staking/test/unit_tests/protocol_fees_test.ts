@@ -369,7 +369,7 @@ blockchainTests('Protocol Fees unit tests', env => {
             });
 
             interface FinalizationState {
-                poolsToFinalize: BigNumber;
+                numPoolsToFinalize: BigNumber;
                 totalFeesCollected: BigNumber;
                 totalWeightedStake: BigNumber;
             }
@@ -377,7 +377,7 @@ blockchainTests('Protocol Fees unit tests', env => {
             async function getFinalizationStateAsync(): Promise<FinalizationState> {
                 const aggregatedStats = await testContract.getAggregatedStatsForCurrentEpoch.callAsync();
                 return {
-                    poolsToFinalize: aggregatedStats.poolsToFinalize,
+                    numPoolsToFinalize: aggregatedStats.numPoolsToFinalize,
                     totalFeesCollected: aggregatedStats.totalFeesCollected,
                     totalWeightedStake: aggregatedStats.totalWeightedStake,
                 };
@@ -415,7 +415,7 @@ blockchainTests('Protocol Fees unit tests', env => {
 
             it('no pools to finalize to start', async () => {
                 const state = await getFinalizationStateAsync();
-                expect(state.poolsToFinalize).to.bignumber.eq(0);
+                expect(state.numPoolsToFinalize).to.bignumber.eq(0);
                 expect(state.totalFeesCollected).to.bignumber.eq(0);
                 expect(state.totalWeightedStake).to.bignumber.eq(0);
             });
@@ -443,7 +443,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 expect(actualPoolStats.membersStake).to.bignumber.eq(pool.membersStake);
                 expect(actualPoolStats.weightedStake).to.bignumber.eq(expectedWeightedStake);
                 const state = await getFinalizationStateAsync();
-                expect(state.poolsToFinalize).to.bignumber.eq(1);
+                expect(state.numPoolsToFinalize).to.bignumber.eq(1);
                 expect(state.totalFeesCollected).to.bignumber.eq(fee);
                 expect(state.totalWeightedStake).to.bignumber.eq(expectedWeightedStake);
             });
@@ -464,7 +464,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 expect(actualPoolStats.membersStake).to.bignumber.eq(pool.membersStake);
                 expect(actualPoolStats.weightedStake).to.bignumber.eq(expectedWeightedStake);
                 const state = await getFinalizationStateAsync();
-                expect(state.poolsToFinalize).to.bignumber.eq(1);
+                expect(state.numPoolsToFinalize).to.bignumber.eq(1);
                 expect(state.totalFeesCollected).to.bignumber.eq(fees);
                 expect(state.totalWeightedStake).to.bignumber.eq(expectedWeightedStake);
             });
@@ -490,7 +490,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                     totalWeightedStake = totalWeightedStake.plus(expectedWeightedStake);
                 }
                 const state = await getFinalizationStateAsync();
-                expect(state.poolsToFinalize).to.bignumber.eq(pools.length);
+                expect(state.numPoolsToFinalize).to.bignumber.eq(pools.length);
                 expect(state.totalFeesCollected).to.bignumber.eq(totalFees);
                 expect(state.totalWeightedStake).to.bignumber.eq(totalWeightedStake);
             });

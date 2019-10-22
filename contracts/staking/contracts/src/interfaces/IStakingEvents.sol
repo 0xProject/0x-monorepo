@@ -52,14 +52,14 @@ interface IStakingEvents {
     );
 
     /// @dev Emitted by MixinFinalizer when an epoch has ended.
-    /// @param epoch The closing epoch.
-    /// @param poolsToFinalize Number of pools that earned rewards during `epoch` and must be finalized.
+    /// @param epoch The epoch that ended.
+    /// @param numPoolsToFinalize Number of pools that earned rewards during `epoch` and must be finalized.
     /// @param rewardsAvailable Rewards available to all pools that earned rewards during `epoch`.
     /// @param totalWeightedStake Total weighted stake across all pools that earned rewards during `epoch`.
     /// @param totalFeesCollected Total fees collected across all pools that earned rewards during `epoch`.
     event EpochEnded(
         uint256 indexed epoch,
-        uint256 poolsToFinalize,
+        uint256 numPoolsToFinalize,
         uint256 rewardsAvailable,
         uint256 totalFeesCollected,
         uint256 totalWeightedStake

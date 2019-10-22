@@ -35,43 +35,36 @@ contract MixinFinalizer is
     /// @dev Begins a new epoch, preparing the prior one for finalization.
     ///      Throws if not enough time has passed between epochs or if the
     ///      previous epoch was not fully finalized.
-    ///      If no pools earned rewards in the closing epoch, the epoch
-    ///      will be instantly finalized here. Otherwise, `finalizePool()`
-    ///      should be called on these pools afterward calling this function.
-    /// @return poolsToFinalize The number of unfinalized pools.
+    /// @return numPoolsToFinalize The number of unfinalized pools.
     function endEpoch()
         external
         returns (uint256)
     {
-        uint256 closingEpoch = currentEpoch;
-        uint256 prevEpoch = closingEpoch.safeSub(1);
+        uint256 currentEpoch_ = currentEpoch;
+        uint256 prevEpoch = currentEpoch_.safeSub(1);
 
         // Make sure the previous epoch has been fully finalized.
-        uint256 poolsToFinalizeFromPrevEpoch = aggregatedStatsByEpoch[prevEpoch].poolsToFinalize;
-        if (poolsToFinalizeFromPrevEpoch != 0) {
+        uint256 numPoolsToFinalizeFromPrevEpoch = aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize;
+        if (numPoolsToFinalizeFromPrevEpoch != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
                     prevEpoch,
-                    poolsToFinalizeFromPrevEpoch
+                    numPoolsToFinalizeFromPrevEpoch
                 )
             );
         }
-
-        // Since it is finalized, we no longer need stats for the previous epoch.
-        delete aggregatedStatsByEpoch[prevEpoch];
 
         // Convert all ETH to WETH; the WETH balance of this contract is the total rewards.
         _wrapEth();
 
         // Load aggregated stats for the epoch we're ending.
-        IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[closingEpoch];
-        aggregatedStatsByEpoch[closingEpoch].rewardsAvailable =
-            aggregatedStats.rewardsAvailable = _getAvailableWethBalance();
+        aggregatedStatsByEpoch[currentEpoch_].rewardsAvailable = _getAvailableWethBalance();
+        IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[currentEpoch_];
 
         // Emit an event.
         emit EpochEnded(
-            closingEpoch,
-            aggregatedStats.poolsToFinalize,
+            currentEpoch_,
+            aggregatedStats.numPoolsToFinalize,
             aggregatedStats.rewardsAvailable,
             aggregatedStats.totalFeesCollected,
             aggregatedStats.totalWeightedStake
@@ -81,11 +74,11 @@ contract MixinFinalizer is
         _goToNextEpoch();
 
         // If there are no pools to finalize then the epoch is finalized.
-        if (aggregatedStats.poolsToFinalize == 0) {
-            emit EpochFinalized(closingEpoch, 0, aggregatedStats.rewardsAvailable);
+        if (aggregatedStats.numPoolsToFinalize == 0) {
+            emit EpochFinalized(currentEpoch_, 0, aggregatedStats.rewardsAvailable);
         }
 
-        return aggregatedStats.poolsToFinalize;
+        return aggregatedStats.numPoolsToFinalize;
     }
 
     /// @dev Instantly finalizes a single pool that earned rewards in the previous
@@ -103,7 +96,7 @@ contract MixinFinalizer is
 
         // Load the aggregated stats into memory; noop if no pools to finalize.
         IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[prevEpoch];
-        if (aggregatedStats.poolsToFinalize == 0) {
+        if (aggregatedStats.numPoolsToFinalize == 0) {
             return;
         }
 
@@ -145,13 +138,13 @@ contract MixinFinalizer is
             aggregatedStats.totalRewardsFinalized.safeAdd(totalReward);
 
         // Decrease the number of unfinalized pools left.
-        aggregatedStatsByEpoch[prevEpoch].poolsToFinalize =
-            aggregatedStats.poolsToFinalize =
-            aggregatedStats.poolsToFinalize.safeSub(1);
+        aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize =
+            aggregatedStats.numPoolsToFinalize =
+            aggregatedStats.numPoolsToFinalize.safeSub(1);
 
         // If there are no more unfinalized pools remaining, the epoch is
         // finalized.
-        if (aggregatedStats.poolsToFinalize == 0) {
+        if (aggregatedStats.numPoolsToFinalize == 0) {
             emit EpochFinalized(
                 prevEpoch,
                 aggregatedStats.totalRewardsFinalized,

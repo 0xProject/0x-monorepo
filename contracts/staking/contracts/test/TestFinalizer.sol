@@ -86,7 +86,7 @@ contract TestFinalizer is
 
         aggregatedStatsByEpoch[currentEpoch_].totalFeesCollected += feesCollected;
         aggregatedStatsByEpoch[currentEpoch_].totalWeightedStake += weightedStake;
-        aggregatedStatsByEpoch[currentEpoch_].poolsToFinalize += 1;
+        aggregatedStatsByEpoch[currentEpoch_].numPoolsToFinalize += 1;
     }
 
     /// @dev Drain the balance of this contract.

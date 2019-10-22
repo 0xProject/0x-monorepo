@@ -43,13 +43,13 @@ interface IStructs {
     /// @param rewardsAvailable Rewards (ETH) available to the epoch
     ///        being finalized (the previous epoch). This is simply the balance
     ///        of the contract at the end of the epoch.
-    /// @param poolsToFinalize The number of pools that have yet to be finalized through `finalizePools()`.
+    /// @param numPoolsToFinalize The number of pools that have yet to be finalized through `finalizePools()`.
     /// @param totalFeesCollected The total fees collected for the epoch being finalized.
     /// @param totalWeightedStake The total fees collected for the epoch being finalized.
     /// @param totalRewardsFinalized Amount of rewards that have been paid during finalization.
     struct AggregatedStats {
         uint256 rewardsAvailable;
-        uint256 poolsToFinalize;
+        uint256 numPoolsToFinalize;
         uint256 totalFeesCollected;
         uint256 totalWeightedStake;
         uint256 totalRewardsFinalized;

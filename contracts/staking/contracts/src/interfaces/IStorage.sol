@@ -65,7 +65,7 @@ interface IStorage {
         view
         returns (uint256);
 
-    function poolsToFinalizeThisEpoch()
+    function numPoolsToFinalizeThisEpoch()
         external
         view
         returns (bytes32[] memory);
