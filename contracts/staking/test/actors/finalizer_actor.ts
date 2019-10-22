@@ -238,7 +238,7 @@ export class FinalizerActor extends BaseActor {
     private async _getRewardByPoolIdAsync(poolIds: string[]): Promise<RewardByPoolId> {
         const activePools = await Promise.all(
             poolIds.map(async poolId =>
-                this._stakingApiWrapper.stakingContract.getActiveStakingPoolThisEpoch.callAsync(poolId),
+                this._stakingApiWrapper.stakingContract.getStakingPoolStatsThisEpoch.callAsync(poolId),
             ),
         );
         const totalRewards = await this._stakingApiWrapper.utils.getAvailableRewardsBalanceAsync();

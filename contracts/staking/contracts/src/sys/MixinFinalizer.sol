@@ -35,98 +35,83 @@ contract MixinFinalizer is
     /// @dev Begins a new epoch, preparing the prior one for finalization.
     ///      Throws if not enough time has passed between epochs or if the
     ///      previous epoch was not fully finalized.
-    ///      If there were no active pools in the closing epoch, the epoch
-    ///      will be instantly finalized here. Otherwise, `finalizePool()`
-    ///      should be called on each active pool afterwards.
-    /// @return poolsRemaining The number of unfinalized pools.
+    /// @return numPoolsToFinalize The number of unfinalized pools.
     function endEpoch()
         external
-        returns (uint256 poolsRemaining)
+        returns (uint256)
     {
-        uint256 closingEpoch = currentEpoch;
-        IStructs.UnfinalizedState memory state = unfinalizedState;
+        uint256 currentEpoch_ = currentEpoch;
+        uint256 prevEpoch = currentEpoch_.safeSub(1);
 
         // Make sure the previous epoch has been fully finalized.
-        if (state.poolsRemaining != 0) {
+        uint256 numPoolsToFinalizeFromPrevEpoch = aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize;
+        if (numPoolsToFinalizeFromPrevEpoch != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.PreviousEpochNotFinalizedError(
-                    closingEpoch - 1,
-                    state.poolsRemaining
+                    prevEpoch,
+                    numPoolsToFinalizeFromPrevEpoch
                 )
             );
         }
 
-        // Convert all ETH to WETH
+        // Convert all ETH to WETH; the WETH balance of this contract is the total rewards.
         _wrapEth();
 
-        // Set up unfinalized state.
-        state.rewardsAvailable = _getAvailableWethBalance();
-        state.poolsRemaining = poolsRemaining = numActivePoolsThisEpoch;
-        state.totalFeesCollected = totalFeesCollectedThisEpoch;
-        state.totalWeightedStake = totalWeightedStakeThisEpoch;
-        state.totalRewardsFinalized = 0;
-        unfinalizedState = state;
+        // Load aggregated stats for the epoch we're ending.
+        aggregatedStatsByEpoch[currentEpoch_].rewardsAvailable = _getAvailableWethBalance();
+        IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[currentEpoch_];
 
         // Emit an event.
         emit EpochEnded(
-            closingEpoch,
-            state.poolsRemaining,
-            state.rewardsAvailable,
-            state.totalFeesCollected,
-            state.totalWeightedStake
+            currentEpoch_,
+            aggregatedStats.numPoolsToFinalize,
+            aggregatedStats.rewardsAvailable,
+            aggregatedStats.totalFeesCollected,
+            aggregatedStats.totalWeightedStake
         );
-
-        // Reset current epoch state.
-        totalFeesCollectedThisEpoch = 0;
-        totalWeightedStakeThisEpoch = 0;
-        numActivePoolsThisEpoch = 0;
 
         // Advance the epoch. This will revert if not enough time has passed.
         _goToNextEpoch();
 
-        // If there were no active pools, the epoch is already finalized.
-        if (poolsRemaining == 0) {
-            emit EpochFinalized(closingEpoch, 0, state.rewardsAvailable);
+        // If there are no pools to finalize then the epoch is finalized.
+        if (aggregatedStats.numPoolsToFinalize == 0) {
+            emit EpochFinalized(currentEpoch_, 0, aggregatedStats.rewardsAvailable);
         }
+
+        return aggregatedStats.numPoolsToFinalize;
     }
 
-    /// @dev Instantly finalizes a single pool that was active in the previous
+    /// @dev Instantly finalizes a single pool that earned rewards in the previous
     ///      epoch, crediting it rewards for members and withdrawing operator's
     ///      rewards as WETH. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
-    ///      finalized or was not active in the previous epoch.
+    ///      finalized or did not earn rewards in the previous epoch.
     /// @param poolId The pool ID to finalize.
     function finalizePool(bytes32 poolId)
-        public
+        external
     {
-        // Noop on epoch 0
+        // Compute relevant epochs
         uint256 currentEpoch_ = currentEpoch;
-        if (currentEpoch_ == 0) {
-            return;
-        }
-
-        // Load the finalization and pool state into memory.
-        IStructs.UnfinalizedState memory state = unfinalizedState;
-
-        // Noop if all active pools have been finalized.
-        if (state.poolsRemaining == 0) {
-            return;
-        }
-
         uint256 prevEpoch = currentEpoch_.safeSub(1);
-        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(prevEpoch, poolId);
 
-        // Noop if the pool was not active or already finalized (has no fees).
-        if (pool.feesCollected == 0) {
+        // Load the aggregated stats into memory; noop if no pools to finalize.
+        IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[prevEpoch];
+        if (aggregatedStats.numPoolsToFinalize == 0) {
             return;
         }
 
-        // Clear the pool state so we don't finalize it again, and to recoup
+        // Noop if the pool did not earn rewards or already finalized (has no fees).
+        IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
+        if (poolStats.feesCollected == 0) {
+            return;
+        }
+
+        // Clear the pool stats so we don't finalize it again, and to recoup
         // some gas.
-        delete _getActivePoolsFromEpoch(prevEpoch)[poolId];
+        delete poolStatsByEpoch[poolId][prevEpoch];
 
         // Compute the rewards.
-        uint256 rewards = _getUnfinalizedPoolRewardsFromState(pool, state);
+        uint256 rewards = _getUnfinalizedPoolRewardsFromPoolStats(poolStats, aggregatedStats);
 
         // Pay the operator and update rewards for the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
@@ -134,7 +119,7 @@ contract MixinFinalizer is
         (uint256 operatorReward, uint256 membersReward) = _syncPoolRewards(
             poolId,
             rewards,
-            pool.membersStake
+            poolStats.membersStake
         );
 
         // Emit an event.
@@ -148,22 +133,22 @@ contract MixinFinalizer is
         uint256 totalReward = operatorReward.safeAdd(membersReward);
 
         // Increase `totalRewardsFinalized`.
-        unfinalizedState.totalRewardsFinalized =
-            state.totalRewardsFinalized =
-            state.totalRewardsFinalized.safeAdd(totalReward);
+        aggregatedStatsByEpoch[prevEpoch].totalRewardsFinalized =
+            aggregatedStats.totalRewardsFinalized =
+            aggregatedStats.totalRewardsFinalized.safeAdd(totalReward);
 
         // Decrease the number of unfinalized pools left.
-        unfinalizedState.poolsRemaining =
-            state.poolsRemaining =
-            state.poolsRemaining.safeSub(1);
+        aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize =
+            aggregatedStats.numPoolsToFinalize =
+            aggregatedStats.numPoolsToFinalize.safeSub(1);
 
         // If there are no more unfinalized pools remaining, the epoch is
         // finalized.
-        if (state.poolsRemaining == 0) {
+        if (aggregatedStats.numPoolsToFinalize == 0) {
             emit EpochFinalized(
                 prevEpoch,
-                state.totalRewardsFinalized,
-                state.rewardsAvailable.safeSub(state.totalRewardsFinalized)
+                aggregatedStats.totalRewardsFinalized,
+                aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized)
             );
         }
     }
@@ -182,46 +167,10 @@ contract MixinFinalizer is
             uint256 membersStake
         )
     {
-        uint256 epoch = currentEpoch;
-        // There are no pools to finalize at epoch 0.
-        if (epoch == 0) {
-            return (0, 0);
-        }
-        IStructs.ActivePool memory pool = _getActivePoolFromEpoch(epoch - 1, poolId);
-        reward = _getUnfinalizedPoolRewardsFromState(pool, unfinalizedState);
-        membersStake = pool.membersStake;
-    }
-
-    /// @dev Get an active pool from an epoch by its ID.
-    /// @param epoch The epoch the pool was/will be active in.
-    /// @param poolId The ID of the pool.
-    /// @return pool The pool with ID `poolId` that was active in `epoch`.
-    function _getActivePoolFromEpoch(
-        uint256 epoch,
-        bytes32 poolId
-    )
-        internal
-        view
-        returns (IStructs.ActivePool memory pool)
-    {
-        pool = _getActivePoolsFromEpoch(epoch)[poolId];
-        return pool;
-    }
-
-    /// @dev Get a mapping of active pools from an epoch.
-    ///      This uses the formula `epoch % 2` as the epoch index in order
-    ///      to reuse state, because we only need to remember, at most, two
-    ///      epochs at once.
-    /// @return activePools The pools that were active in `epoch`.
-    function _getActivePoolsFromEpoch(
-        uint256 epoch
-    )
-        internal
-        view
-        returns (mapping (bytes32 => IStructs.ActivePool) storage activePools)
-    {
-        activePools = _activePoolsByEpoch[epoch % 2];
-        return activePools;
+        uint256 prevEpoch = currentEpoch.safeSub(1);
+        IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
+        reward = _getUnfinalizedPoolRewardsFromPoolStats(poolStats, aggregatedStatsByEpoch[prevEpoch]);
+        membersStake = poolStats.membersStake;
     }
 
     /// @dev Converts the entire ETH balance of this contract into WETH.
@@ -247,31 +196,50 @@ contract MixinFinalizer is
         return wethBalance;
     }
 
+    /// @dev Asserts that a pool has been finalized last epoch.
+    /// @param poolId The id of the pool that should have been finalized.
+    function _assertPoolFinalizedLastEpoch(bytes32 poolId)
+        internal
+        view
+    {
+        uint256 prevEpoch = currentEpoch.safeSub(1);
+        IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
+
+        // A pool that has any fees remaining has not been finalized
+        if (poolStats.feesCollected != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PoolNotFinalizedError(
+                    poolId,
+                    prevEpoch
+                )
+            );
+        }
+    }
+
     /// @dev Computes the reward owed to a pool during finalization.
-    /// @param pool The active pool.
-    /// @param state The current state of finalization.
-    /// @return rewards Unfinalized rewards for this pool.
-    function _getUnfinalizedPoolRewardsFromState(
-        IStructs.ActivePool memory pool,
-        IStructs.UnfinalizedState memory state
+    /// @param poolStats Stats for a specific pool.
+    /// @param aggregatedStats Stats aggregated across all pools.
+    /// @return rewards Unfinalized rewards for the input pool.
+    function _getUnfinalizedPoolRewardsFromPoolStats(
+        IStructs.PoolStats memory poolStats,
+        IStructs.AggregatedStats memory aggregatedStats
     )
         private
         view
         returns (uint256 rewards)
     {
-        // There can't be any rewards if the pool was active or if it has
-        // no stake.
-        if (pool.feesCollected == 0) {
+        // There can't be any rewards if the pool did not collect any fees.
+        if (poolStats.feesCollected == 0) {
             return rewards;
         }
 
         // Use the cobb-douglas function to compute the total reward.
         rewards = LibCobbDouglas.cobbDouglas(
-            state.rewardsAvailable,
-            pool.feesCollected,
-            state.totalFeesCollected,
-            pool.weightedStake,
-            state.totalWeightedStake,
+            aggregatedStats.rewardsAvailable,
+            poolStats.feesCollected,
+            aggregatedStats.totalFeesCollected,
+            poolStats.weightedStake,
+            aggregatedStats.totalWeightedStake,
             cobbDouglasAlphaNumerator,
             cobbDouglasAlphaDenominator
         );
@@ -279,7 +247,7 @@ contract MixinFinalizer is
         // Clip the reward to always be under
         // `rewardsAvailable - totalRewardsPaid`,
         // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining = state.rewardsAvailable.safeSub(state.totalRewardsFinalized);
+        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized);
         if (rewardsRemaining < rewards) {
             rewards = rewardsRemaining;
         }

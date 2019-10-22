@@ -33,11 +33,9 @@ library LibCobbDouglas {
     ///         0 <= alphaNumerator / alphaDenominator <= 1
     /// @param totalRewards collected over an epoch.
     /// @param fees Fees attributed to the the staking pool.
-    /// @param totalFees Total fees collected across all active staking pools in
-    ///        the epoch.
+    /// @param totalFees Total fees collected across all pools that earned rewards.
     /// @param stake Stake attributed to the staking pool.
-    /// @param totalStake Total stake across all active staking pools in the
-    ///        epoch.
+    /// @param totalStake Total stake across all pools that earned rewards.
     /// @param alphaNumerator Numerator of `alpha` in the cobb-douglas function.
     /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas
     ///        function.

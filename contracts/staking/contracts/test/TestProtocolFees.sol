@@ -86,6 +86,14 @@ contract TestProtocolFees is
         return true;
     }
 
+    function getAggregatedStatsForCurrentEpoch()
+        external
+        view
+        returns (IStructs.AggregatedStats memory)
+    {
+        return aggregatedStatsByEpoch[currentEpoch];
+    }
+
     /// @dev Overridden to use test pools.
     function getStakingPoolIdOfMaker(address makerAddress)
         public

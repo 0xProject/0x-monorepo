@@ -6,18 +6,18 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    AssetProxyOwnerExecutionEventArgs,
-    AssetProxyOwnerFunctionCallTimeLockRegistrationEventArgs,
-    AssetProxyOwnerWrapper,
     ContractCallReceiverContract,
     ContractCallReceiverEventArgs,
-    TestAssetProxyOwnerContract,
+    TestZeroExGovernorContract,
+    ZeroExGovernorExecutionEventArgs,
+    ZeroExGovernorFunctionCallTimeLockRegistrationEventArgs,
+    ZeroExGovernorWrapper,
 } from '../src';
 
 // tslint:disable: no-unnecessary-type-assertion
-blockchainTests.resets('AssetProxyOwner', env => {
-    let assetProxyOwner: TestAssetProxyOwnerContract;
-    let assetProxyOwnerWrapper: AssetProxyOwnerWrapper;
+blockchainTests.resets('ZeroExGovernor', env => {
+    let governor: TestZeroExGovernorContract;
+    let governorWrapper: ZeroExGovernorWrapper;
     let receiver: ContractCallReceiverContract;
     let signerAddresses: string[];
     let notSignerAddress: string;
@@ -31,8 +31,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         const accounts = await env.web3Wrapper.getAvailableAddressesAsync();
         signerAddresses = accounts.slice(0, TOTAL_SIGNERS);
         notSignerAddress = accounts[TOTAL_SIGNERS];
-        assetProxyOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-            artifacts.TestAssetProxyOwner,
+        governor = await TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+            artifacts.TestZeroExGovernor,
             env.provider,
             env.txDefaults,
             artifacts,
@@ -46,11 +46,11 @@ blockchainTests.resets('AssetProxyOwner', env => {
         await env.web3Wrapper.awaitTransactionMinedAsync(
             await env.web3Wrapper.sendTransactionAsync({
                 from: signerAddresses[0],
-                to: assetProxyOwner.address,
+                to: governor.address,
                 value: INITIAL_BALANCE,
             }),
         );
-        assetProxyOwnerWrapper = new AssetProxyOwnerWrapper(assetProxyOwner);
+        governorWrapper = new ZeroExGovernorWrapper(governor);
         receiver = await ContractCallReceiverContract.deployFrom0xArtifactAsync(
             artifacts.ContractCallReceiver,
             env.provider,
@@ -82,8 +82,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
     blockchainTests.resets('constructor', () => {
         it('should fail if destinations.length != functionSelectors.length', async () => {
             const reg = createFunctionRegistration(1, 2, 1);
-            const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const tx = TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -98,8 +98,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should fail if functionCallTimeLockSeconds.length != functionSelectors.length', async () => {
             const reg = createFunctionRegistration(1, 1, 2);
-            const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const tx = TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -114,8 +114,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should fail if functionCallTimeLockSeconds.length != destinations.length', async () => {
             const reg = createFunctionRegistration(2, 1, 1);
-            const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const tx = TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -129,8 +129,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
             await expect(tx).to.revertWith(RevertReason.EqualLengthsRequired);
         });
         it('should allow no function calls to be registered', async () => {
-            const tx = TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const tx = TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -145,8 +145,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should register a single functon call', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const apOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const governorContract = await TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -157,7 +157,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
                 new BigNumber(REQUIRED_SIGNERS),
                 new BigNumber(DEFAULT_TIME_LOCK),
             );
-            const timelock = await apOwner.functionCallTimeLocks.callAsync(
+            const timelock = await governorContract.functionCallTimeLocks.callAsync(
                 reg.functionSelectors[0],
                 reg.destinations[0],
             );
@@ -166,8 +166,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should register multiple function calls', async () => {
             const reg = createFunctionRegistration(2, 2, 2);
-            const apOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
-                artifacts.TestAssetProxyOwner,
+            const governorContract = await TestZeroExGovernorContract.deployFrom0xArtifactAsync(
+                artifacts.TestZeroExGovernor,
                 env.provider,
                 env.txDefaults,
                 artifacts,
@@ -179,7 +179,10 @@ blockchainTests.resets('AssetProxyOwner', env => {
                 new BigNumber(DEFAULT_TIME_LOCK),
             );
             for (const [index, selector] of reg.functionSelectors.entries()) {
-                const timelock = await apOwner.functionCallTimeLocks.callAsync(selector, reg.destinations[index]);
+                const timelock = await governorContract.functionCallTimeLocks.callAsync(
+                    selector,
+                    reg.destinations[index],
+                );
                 expect(timelock[0]).to.equal(true);
                 expect(timelock[1]).to.bignumber.equal(reg.functionCallTimeLockSeconds[index]);
             }
@@ -189,7 +192,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
     blockchainTests.resets('registerFunctionCall', () => {
         it('should revert if not called by wallet', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const tx = assetProxyOwner.registerFunctionCall.awaitTransactionSuccessAsync(
+            const tx = governor.registerFunctionCall.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -200,7 +203,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should register a function call', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            const txReceipt = await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            const txReceipt = await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -208,13 +211,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             expect(txReceipt.logs.length).to.eq(1);
             const logArgs = (txReceipt.logs[0] as LogWithDecodedArgs<
-                AssetProxyOwnerFunctionCallTimeLockRegistrationEventArgs
+                ZeroExGovernorFunctionCallTimeLockRegistrationEventArgs
             >).args;
             expect(logArgs.functionSelector).to.eq(reg.functionSelectors[0]);
             expect(logArgs.destination).to.eq(reg.destinations[0]);
             expect(logArgs.hasCustomTimeLock).to.eq(true);
             expect(logArgs.newSecondsTimeLocked).to.bignumber.eq(reg.functionCallTimeLockSeconds[0]);
-            const timelock = await assetProxyOwner.functionCallTimeLocks.callAsync(
+            const timelock = await governor.functionCallTimeLocks.callAsync(
                 reg.functionSelectors[0],
                 reg.destinations[0],
             );
@@ -223,20 +226,20 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should be able to overwrite existing function calls', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
             );
             const newTimeLock = reg.functionCallTimeLockSeconds[0].plus(1000);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 newTimeLock,
             );
-            const timelock = await assetProxyOwner.functionCallTimeLocks.callAsync(
+            const timelock = await governor.functionCallTimeLocks.callAsync(
                 reg.functionSelectors[0],
                 reg.destinations[0],
             );
@@ -245,19 +248,19 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should clear the function timelock if hasCustomTimeLock is set to false', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
             );
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 false,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 reg.functionCallTimeLockSeconds[0],
             );
-            const timelock = await assetProxyOwner.functionCallTimeLocks.callAsync(
+            const timelock = await governor.functionCallTimeLocks.callAsync(
                 reg.functionSelectors[0],
                 reg.destinations[0],
             );
@@ -268,7 +271,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
 
     describe('assertValidFunctionCall', () => {
         it('should revert if the data is less than 4 bytes long', async () => {
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 constants.ZERO_AMOUNT,
                 constants.NULL_BYTES,
                 constants.NULL_ADDRESS,
@@ -284,7 +287,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp);
             const reg = createFunctionRegistration(1, 1, 1);
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 transactionConfirmationTime,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -293,7 +296,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should revert if a registered function is called before the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -301,7 +304,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp);
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 transactionConfirmationTime,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -310,7 +313,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should revert if a registered function is called before the custom timelock and after the default timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -318,7 +321,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 transactionConfirmationTime,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -329,7 +332,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const latestTimestamp = await getLatestBlockTimestampAsync();
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(DEFAULT_TIME_LOCK);
             const reg = createFunctionRegistration(1, 1, 1);
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 transactionConfirmationTime,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -338,7 +341,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should be successful if a registered function is called after the custom timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -348,7 +351,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const transactionConfirmationTime = new BigNumber(latestTimestamp).minus(
                 reg.functionCallTimeLockSeconds[0],
             );
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 transactionConfirmationTime,
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -357,14 +360,14 @@ blockchainTests.resets('AssetProxyOwner', env => {
         });
         it('should allow a custom timelock to be set to 0', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 reg.functionSelectors[0],
                 reg.destinations[0],
                 constants.ZERO_AMOUNT,
             );
             const latestTimestamp = await getLatestBlockTimestampAsync();
-            const result = assetProxyOwner.assertValidFunctionCall.callAsync(
+            const result = governor.assertValidFunctionCall.callAsync(
                 new BigNumber(latestTimestamp),
                 reg.functionSelectors[0],
                 reg.destinations[0],
@@ -390,15 +393,15 @@ blockchainTests.resets('AssetProxyOwner', env => {
                 const value = values === undefined ? constants.ZERO_AMOUNT : values[i];
                 expect(contractCallLogArgs.value).to.bignumber.eq(value);
             });
-            const executionLog = logs[data.length] as LogWithDecodedArgs<AssetProxyOwnerExecutionEventArgs>;
+            const executionLog = logs[data.length] as LogWithDecodedArgs<ZeroExGovernorExecutionEventArgs>;
             expect(executionLog.event).to.eq('Execution');
             expect(executionLog.args.transactionId).to.bignumber.eq(txId);
         }
         it('should revert if the transaction is not confirmed by the required amount of signers', async () => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
-            const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
+            const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
+            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
                 from: signerAddresses[1],
             });
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
@@ -406,8 +409,8 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should revert if the transaction is not confirmed by the required amount of signers and called by the submitter', async () => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
-            const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
+            const results = await governorWrapper.submitTransactionAsync(data, destinations, signerAddresses[0]);
+            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId, {
                 from: signerAddresses[0],
             });
             expect(tx).to.revertWith(RevertReason.TxNotFullyConfirmed);
@@ -415,7 +418,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should be able to execute an unregistered function after the default timelock with no value', async () => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -427,7 +430,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const values = [INITIAL_BALANCE];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -440,13 +443,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
                 newTimeLock,
             );
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -458,13 +461,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = constants.ZERO_AMOUNT;
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
                 newTimeLock,
             );
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -476,14 +479,14 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
                 newTimeLock,
             );
             const values = [INITIAL_BALANCE];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -495,7 +498,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should be able to call multiple functions with a single destination and no values', async () => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -513,7 +516,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver2.address];
             const values = [INITIAL_BALANCE.dividedToIntegerBy(4), INITIAL_BALANCE.dividedToIntegerBy(3)];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -526,13 +529,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
                 newTimeLock,
             );
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -544,13 +547,13 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address, receiver.address];
             const newTimeLock = new BigNumber(DEFAULT_TIME_LOCK).dividedToIntegerBy(2);
-            await assetProxyOwner.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
+            await governor.registerFunctionCallBypassWallet.awaitTransactionSuccessAsync(
                 true,
                 data[0].slice(0, 10),
                 receiver.address,
                 newTimeLock,
             );
-            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -561,7 +564,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should be able to execute a transaction if called by any address', async () => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -574,7 +577,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             // NOTE: elements of `data` must be at least 4 bytes long
             const data = [constants.NULL_BYTES4];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -585,7 +588,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should not call a function if the input array lengths are 0', async () => {
             const data: string[] = [];
             const destinations: string[] = [];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -596,7 +599,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should revert if destinations.length != data.length', async () => {
             const data = [hexRandom(), hexRandom()];
             const destinations = [receiver.address];
-            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -608,7 +611,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
             const values = [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
-            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -620,20 +623,20 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should revert if the transaction is already executed', async () => {
             const data = [hexRandom()];
             const destinations = [receiver.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
                 DEFAULT_TIME_LOCK,
             );
-            const tx = assetProxyOwner.executeTransaction.awaitTransactionSuccessAsync(results.txId);
+            const tx = governor.executeTransaction.awaitTransactionSuccessAsync(results.txId);
             expect(tx).to.revertWith(RevertReason.TxAlreadyExecuted);
         });
         it('should revert if the only call is unsuccessful', async () => {
             const alwaysRevertSelector = '0xF1F2F3F4';
             const data = [alwaysRevertSelector];
             const destinations = [receiver.address];
-            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -645,7 +648,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             const alwaysRevertSelector = '0xF1F2F3F4';
             const data = [hexRandom(), alwaysRevertSelector];
             const destinations = [receiver.address, receiver.address];
-            const tx = assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const tx = governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -656,15 +659,15 @@ blockchainTests.resets('AssetProxyOwner', env => {
         it('should be able to call registerFunctionCall after the default timelock', async () => {
             const reg = createFunctionRegistration(1, 1, 1);
             const data = [
-                assetProxyOwner.registerFunctionCall.getABIEncodedTransactionData(
+                governor.registerFunctionCall.getABIEncodedTransactionData(
                     true,
                     reg.functionSelectors[0],
                     reg.destinations[0],
                     reg.functionCallTimeLockSeconds[0],
                 ),
             ];
-            const destinations = [assetProxyOwner.address];
-            const results = await assetProxyOwnerWrapper.submitConfirmAndExecuteTransactionAsync(
+            const destinations = [governor.address];
+            const results = await governorWrapper.submitConfirmAndExecuteTransactionAsync(
                 data,
                 destinations,
                 signerAddresses,
@@ -672,7 +675,7 @@ blockchainTests.resets('AssetProxyOwner', env => {
             );
             expect(results.executionTxReceipt.logs.length).to.eq(2);
             const registrationLogArgs = (results.executionTxReceipt.logs[0] as LogWithDecodedArgs<
-                AssetProxyOwnerFunctionCallTimeLockRegistrationEventArgs
+                ZeroExGovernorFunctionCallTimeLockRegistrationEventArgs
             >).args;
             expect(registrationLogArgs.destination).to.eq(reg.destinations[0]);
             expect(registrationLogArgs.functionSelector).to.eq(reg.functionSelectors[0]);

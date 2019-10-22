@@ -73,7 +73,7 @@ blockchainTests.resets('Stake Statuses', env => {
     });
     describe('Move Stake', () => {
         it("should be able to rebalance next epoch's stake", async () => {
-            // epoch 1
+            // epoch 2
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(
@@ -81,7 +81,7 @@ blockchainTests.resets('Stake Statuses', env => {
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 amount,
             );
-            // still epoch 1 ~ should be able to move stake again
+            // still epoch 2 ~ should be able to move stake again
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 new StakeInfo(StakeStatus.Undelegated),
@@ -89,7 +89,7 @@ blockchainTests.resets('Stake Statuses', env => {
             );
         });
         it("should be able to reassign next epoch's stake", async () => {
-            // epoch 1
+            // epoch 2
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(
@@ -97,7 +97,7 @@ blockchainTests.resets('Stake Statuses', env => {
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 amount,
             );
-            // still epoch 1 ~ should be able to move stake again
+            // still epoch 2 ~ should be able to move stake again
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 new StakeInfo(StakeStatus.Delegated, poolIds[1]),
@@ -105,7 +105,7 @@ blockchainTests.resets('Stake Statuses', env => {
             );
         });
         it('should fail to move the same stake more than once', async () => {
-            // epoch 1
+            // epoch 2
             const amount = toBaseUnitAmount(10);
             await staker.stakeAsync(amount);
             await staker.moveStakeAsync(
@@ -124,14 +124,14 @@ blockchainTests.resets('Stake Statuses', env => {
     });
     describe('Stake and Move', () => {
         it("should be able to rebalance next epoch's stake", async () => {
-            // epoch 1
+            // epoch 2
             const amount = toBaseUnitAmount(10);
             await staker.stakeAndMoveAsync(
                 new StakeInfo(StakeStatus.Undelegated),
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 amount,
             );
-            // still epoch 1 ~ should be able to move stake again
+            // still epoch 2 ~ should be able to move stake again
             await staker.moveStakeAsync(
                 new StakeInfo(StakeStatus.Delegated, poolIds[0]),
                 new StakeInfo(StakeStatus.Undelegated),
@@ -139,7 +139,7 @@ blockchainTests.resets('Stake Statuses', env => {
             );
         });
         it('should fail to move the same stake more than once', async () => {
-            // epoch 1
+            // epoch 2
             const amount = toBaseUnitAmount(10);
             await staker.stakeAndMoveAsync(
                 new StakeInfo(StakeStatus.Undelegated),

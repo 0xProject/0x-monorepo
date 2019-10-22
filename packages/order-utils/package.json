@@ -40,7 +40,6 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/order-utils/README.md",
     "devDependencies": {
         "@0x/dev-utils": "^2.4.0-beta.0",
-        "@0x/migrations": "^4.4.0-beta.0",
         "@0x/subproviders": "^5.1.0-beta.0",
         "@0x/ts-doc-gen": "^0.0.22",
         "@0x/tslint-config": "^3.0.1",

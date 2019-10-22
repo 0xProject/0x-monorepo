@@ -53,6 +53,7 @@ contract MixinScheduler is
 
         // solhint-disable-next-line
         currentEpochStartTimeInSeconds = block.timestamp;
+        currentEpoch = 1;
     }
 
     /// @dev Moves to the next epoch, given the current epoch period has ended.

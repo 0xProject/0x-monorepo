@@ -1,9 +1,8 @@
 import { Authorizable, Ownable } from '@0x/contracts-exchange';
 import { constants as stakingConstants } from '@0x/contracts-staking';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 
-import { DeploymentManager } from '../src';
+import { DeploymentManager } from './deployment_mananger';
 
 blockchainTests('Deployment Manager', env => {
     let owner: string;
@@ -11,7 +10,6 @@ blockchainTests('Deployment Manager', env => {
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-
         deploymentManager = await DeploymentManager.deployAsync(env);
     });
 
@@ -42,14 +40,14 @@ blockchainTests('Deployment Manager', env => {
     describe('asset proxy owner', () => {
         it('should be owned by `owner`', async () => {
             // Ensure that the owners of the asset proxy only contain the owner.
-            const owners = await deploymentManager.assetProxyOwner.getOwners.callAsync();
+            const owners = await deploymentManager.governor.getOwners.callAsync();
             expect(owners).to.be.deep.eq([owner]);
         });
     });
 
     describe('asset proxies', () => {
         it('should be owned be the asset proxy owner', async () => {
-            await batchAssertOwnerAsync(deploymentManager.assetProxyOwner.address, [
+            await batchAssertOwnerAsync(deploymentManager.governor.address, [
                 deploymentManager.assetProxies.erc1155Proxy,
                 deploymentManager.assetProxies.erc20Proxy,
                 deploymentManager.assetProxies.erc721Proxy,
@@ -95,7 +93,7 @@ blockchainTests('Deployment Manager', env => {
     describe('exchange', () => {
         it('should be owned by the asset proxy owner', async () => {
             const exchangeOwner = await deploymentManager.exchange.owner.callAsync();
-            expect(exchangeOwner).to.be.eq(deploymentManager.assetProxyOwner.address);
+            expect(exchangeOwner).to.be.eq(deploymentManager.governor.address);
         });
 
         /*
@@ -103,7 +101,7 @@ blockchainTests('Deployment Manager', env => {
             made an Authorizable contract.
             it('should have authorized the asset proxy owner', async () => {
                 const isAuthorized = await deploymentManager.exchange.owner.callAsync(
-                    deploymentManager.assetProxyOwner.address,
+                    deploymentManager.governor.address,
                 );
                 expect(isAuthorized).to.be.true();
             });
@@ -123,12 +121,12 @@ blockchainTests('Deployment Manager', env => {
     describe('staking', () => {
         it('should be owned by the asset proxy owner', async () => {
             const stakingOwner = await deploymentManager.staking.stakingProxy.owner.callAsync();
-            expect(stakingOwner).to.be.eq(deploymentManager.assetProxyOwner.address);
+            expect(stakingOwner).to.be.eq(deploymentManager.governor.address);
         });
 
         it('should have authorized the asset proxy owner in the staking proxy', async () => {
             const isAuthorized = await deploymentManager.staking.stakingProxy.authorized.callAsync(
-                deploymentManager.assetProxyOwner.address,
+                deploymentManager.governor.address,
             );
             expect(isAuthorized).to.be.true();
         });

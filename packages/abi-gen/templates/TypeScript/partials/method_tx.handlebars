@@ -8,6 +8,7 @@
 async sendTransactionAsync(
 {{> typed_params inputs=inputs}}
 txData?: Partial<TxData> | undefined,
+opts: SendTransactionOpts = { shouldValidate: true },
 ): Promise<string> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
@@ -26,6 +27,15 @@ txData?: Partial<TxData> | undefined,
         txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
     }
 
+    if (opts.shouldValidate !== false) {
+        await self.{{languageSpecificName}}.callAsync(
+            {{#each inputs~}}
+                {{name}},
+            {{/each~}}
+            txDataWithDefaults,
+        );
+    }
+
     const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
     return txHash;
 },
@@ -40,17 +50,16 @@ txData?: Partial<TxData> | undefined,
 awaitTransactionSuccessAsync(
 {{> typed_params inputs=inputs}}
     txData?: Partial<TxData>,
-    pollingIntervalMs?: number,
-    timeoutMs?: number,
+    opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
 ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
     {{#each inputs}}
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
     const self = this as any as {{contractName}}Contract;
     {{#if inputs}}
-    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync({{> normalized_params input=inputs}}, txData);
+    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync({{> normalized_params input=inputs}}, txData, opts);
     {{else}}
-    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync(txData);
+    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync(txData, opts);
     {{/if}}
     return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
         txHashPromise,
@@ -58,8 +67,8 @@ awaitTransactionSuccessAsync(
             // When the transaction hash resolves, wait for it to be mined.
             return self._web3Wrapper.awaitTransactionSuccessAsync(
                 await txHashPromise,
-                pollingIntervalMs,
-                timeoutMs,
+                opts.pollingIntervalMs,
+                opts.timeoutMs,
             );
         })(),
     );
@@ -93,22 +102,4 @@ async estimateGasAsync(
 
     const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
     return gas;
-},
-async validateAndSendTransactionAsync(
-    {{> typed_params inputs=inputs}}
-    txData?: Partial<TxData> | undefined,
-    ): Promise<string> {
-    await (this as any).{{languageSpecificName}}.callAsync(
-    {{#each inputs~}}
-        {{name}},
-    {{/each~}}
-        txData,
-    );
-    const txHash =  await (this as any).{{languageSpecificName}}.sendTransactionAsync(
-    {{#each inputs~}}
-        {{name}},
-    {{/each~}}
-        txData,
-    ); 
-    return txHash;
 },

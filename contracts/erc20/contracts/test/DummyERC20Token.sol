@@ -18,14 +18,17 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "../src/MintableERC20Token.sol";
 
 
-contract DummyERC20Token is 
+contract DummyERC20Token is
     Ownable,
     MintableERC20Token
 {
+    using LibSafeMath for uint256;
+
     string public name;
     string public symbol;
     uint256 public decimals;
@@ -55,9 +58,9 @@ contract DummyERC20Token is
     {
         uint256 currBalance = balances[_target];
         if (_value < currBalance) {
-            _totalSupply = _safeSub(_totalSupply, _safeSub(currBalance, _value));
+            _totalSupply = _totalSupply.safeSub(currBalance.safeSub(_value));
         } else {
-            _totalSupply = _safeAdd(_totalSupply, _safeSub(_value, currBalance));
+            _totalSupply = _totalSupply.safeAdd(_value.safeSub(currBalance));
         }
         balances[_target] = _value;
     }

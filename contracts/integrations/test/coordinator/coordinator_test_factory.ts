@@ -1,4 +1,5 @@
 import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { CoordinatorContract } from '@0x/contracts-coordinator';
 import {
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -6,30 +7,16 @@ import {
     ExchangeFillEventArgs,
     ExchangeFunctionName,
 } from '@0x/contracts-exchange';
-import { expect, filterLogsToArguments, Numberish, TokenBalances, web3Wrapper } from '@0x/contracts-test-utils';
+import { expect, Numberish, TokenBalances, verifyEvents, web3Wrapper } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { CoordinatorContract } from '../../src';
-
 export class CoordinatorTestFactory {
     private readonly _addresses: string[];
     private readonly _protocolFee: BigNumber;
-
-    public static verifyEvents<TEventArgs>(
-        txReceipt: TransactionReceiptWithDecodedLogs,
-        expectedEvents: TEventArgs[],
-        eventName: string,
-    ): void {
-        const logs = filterLogsToArguments<TEventArgs>(txReceipt.logs, eventName);
-        expect(logs.length).to.eq(expectedEvents.length);
-        logs.forEach((log, index) => {
-            expect(log).to.deep.equal(expectedEvents[index]);
-        });
-    }
 
     private static _expectedCancelEvent(order: SignedOrder): ExchangeCancelEventArgs {
         return {
@@ -89,11 +76,7 @@ export class CoordinatorTestFactory {
         }
 
         const transactionReceipt = await tx;
-        CoordinatorTestFactory.verifyEvents(
-            transactionReceipt,
-            orders.map(order => this._expectedFillEvent(order)),
-            ExchangeEvents.Fill,
-        );
+        verifyEvents(transactionReceipt, orders.map(order => this._expectedFillEvent(order)), ExchangeEvents.Fill);
 
         const expectedBalances = this._getExpectedBalances(initBalances, orders, transactionReceipt, txData.value);
         await this._verifyBalancesAsync(expectedBalances);
@@ -121,9 +104,9 @@ export class CoordinatorTestFactory {
                 orderSenderAddress: this._coordinatorContract.address,
                 orderEpoch: new BigNumber(1),
             };
-            CoordinatorTestFactory.verifyEvents(transactionReceipt, [expectedEvent], ExchangeEvents.CancelUpTo);
+            verifyEvents(transactionReceipt, [expectedEvent], ExchangeEvents.CancelUpTo);
         } else {
-            CoordinatorTestFactory.verifyEvents(
+            verifyEvents(
                 transactionReceipt,
                 orders.map(order => CoordinatorTestFactory._expectedCancelEvent(order)),
                 ExchangeEvents.Cancel,

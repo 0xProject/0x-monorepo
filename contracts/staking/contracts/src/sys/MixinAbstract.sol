@@ -24,19 +24,6 @@ pragma experimental ABIEncoderV2;
 ///      cyclical dependencies.
 contract MixinAbstract {
 
-    /// @dev Instantly finalizes a single pool that was active in the previous
-    ///      epoch, crediting it rewards for members and withdrawing operator's 
-    ///      rewards as WETH. This can be called by internal functions that need
-    ///      to finalize a pool immediately. Does nothing if the pool is already
-    ///      finalized or was not active in the previous epoch.
-    /// @param poolId The pool ID to finalize.
-    /// @return operatorReward The reward credited to the pool operator.
-    /// @return membersReward The reward credited to the pool members.
-    /// @return membersStake The total stake for all non-operator members in
-    ///         this pool.
-    function finalizePool(bytes32 poolId)
-        public;
-
     /// @dev Computes the reward owed to a pool during finalization.
     ///      Does nothing if the pool is already finalized.
     /// @param poolId The pool's ID.
@@ -50,4 +37,10 @@ contract MixinAbstract {
             uint256 totalReward,
             uint256 membersStake
         );
+
+    /// @dev Asserts that a pool has been finalized last epoch.
+    /// @param poolId The id of the pool that should have been finalized.
+    function _assertPoolFinalizedLastEpoch(bytes32 poolId)
+        internal
+        view;
 }
