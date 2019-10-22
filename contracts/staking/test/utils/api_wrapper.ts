@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import {
     artifacts,
     IStakingEventsEpochEndedEventArgs,
-    IStakingEventsStakingPoolActivatedEventArgs,
+    IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
     ReadOnlyProxyContract,
     StakingProxyContract,
     TestCobbDouglasContract,
@@ -76,13 +76,13 @@ export class StakingApiWrapper {
 
         findActivePoolIdsAsync: async (epoch?: number): Promise<string[]> => {
             const _epoch = epoch !== undefined ? epoch : await this.stakingContract.currentEpoch.callAsync();
-            const events = filterLogsToArguments<IStakingEventsStakingPoolActivatedEventArgs>(
+            const events = filterLogsToArguments<IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs>(
                 await this.stakingContract.getLogsAsync(
-                    TestStakingEvents.StakingPoolActivated,
+                    TestStakingEvents.StakingPoolEarnedRewardsInEpoch,
                     { fromBlock: BlockParamLiteral.Earliest, toBlock: BlockParamLiteral.Latest },
                     { epoch: new BigNumber(_epoch) },
                 ),
-                TestStakingEvents.StakingPoolActivated,
+                TestStakingEvents.StakingPoolEarnedRewardsInEpoch,
             );
             return events.map(e => e.poolId);
         },

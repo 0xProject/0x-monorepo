@@ -94,7 +94,7 @@ contract TestDelegatorRewards is
         currentEpoch += 1;
     }
 
-    /// @dev Create and delegate stake that is active in the current epoch.
+    /// @dev Create and delegate stake to the current epoch.
     ///      Only used to test purportedly unreachable states.
     ///      Also withdraws pending rewards.
     function delegateStakeNow(
