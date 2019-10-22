@@ -281,7 +281,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
             });
         });
 
-        it('immediately finalizes if there are no active pools', async () => {
+        it('immediately finalizes if there are no pools to finalize', async () => {
             const receipt = await testContract.endEpoch.awaitTransactionSuccessAsync();
             assertEpochFinalizedEvent(receipt.logs, {
                 epoch: stakingConstants.INITIAL_EPOCH,
@@ -290,7 +290,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
             });
         });
 
-        it('does not immediately finalize if there is an active pool', async () => {
+        it('does not immediately finalize if there is a pool to finalize', async () => {
             await addActivePoolAsync();
             const receipt = await testContract.endEpoch.awaitTransactionSuccessAsync();
             const events = filterLogsToArguments<IStakingEventsEpochFinalizedEventArgs>(
@@ -355,7 +355,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
     });
 
     describe('_finalizePool()', () => {
-        it('does nothing if there were no active pools', async () => {
+        it('does nothing if there were no pools to finalize', async () => {
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             const poolId = hexRandom();
             const logs = await finalizePoolsAsync([poolId]);
@@ -445,7 +445,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
             return expect(getCurrentEpochAsync()).to.become(stakingConstants.INITIAL_EPOCH.plus(2));
         });
 
-        it('does not reward a pool that was only active 2 epochs ago', async () => {
+        it('does not reward a pool that only earned rewards 2 epochs ago', async () => {
             const pool1 = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             await finalizePoolsAsync([pool1.poolId]);
@@ -457,7 +457,7 @@ blockchainTests.resets('Finalizer unit tests', env => {
             expect(rewardsPaidEvents).to.deep.eq([]);
         });
 
-        it('does not reward a pool that was only active 3 epochs ago', async () => {
+        it('does not reward a pool that only earned rewards 3 epochs ago', async () => {
             const pool1 = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             await finalizePoolsAsync([pool1.poolId]);
@@ -512,18 +512,18 @@ blockchainTests.resets('Finalizer unit tests', env => {
             return assertUnfinalizedPoolRewardsAsync(poolId, ZERO_REWARDS);
         });
 
-        it('returns empty if pool was not active', async () => {
+        it('returns empty if pool did not earn rewards', async () => {
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             const poolId = hexRandom();
             return assertUnfinalizedPoolRewardsAsync(poolId, ZERO_REWARDS);
         });
 
-        it('returns empty if pool is active only in the current epoch', async () => {
+        it('returns empty if pool is earned rewards only in the current epoch', async () => {
             const pool = await addActivePoolAsync();
             return assertUnfinalizedPoolRewardsAsync(pool.poolId, ZERO_REWARDS);
         });
 
-        it('returns empty if pool was only active in the 2 epochs ago', async () => {
+        it('returns empty if pool only earned rewards in the 2 epochs ago', async () => {
             const pool = await addActivePoolAsync();
             await testContract.endEpoch.awaitTransactionSuccessAsync();
             await finalizePoolsAsync([pool.poolId]);

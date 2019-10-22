@@ -35,9 +35,9 @@ contract MixinFinalizer is
     /// @dev Begins a new epoch, preparing the prior one for finalization.
     ///      Throws if not enough time has passed between epochs or if the
     ///      previous epoch was not fully finalized.
-    ///      If there were no active pools in the closing epoch, the epoch
+    ///      If no pools earned rewards in the closing epoch, the epoch
     ///      will be instantly finalized here. Otherwise, `finalizePool()`
-    ///      should be called on each active pool afterwards.
+    ///      should be called on these pools afterward calling this function.
     /// @return poolsToFinalize The number of unfinalized pools.
     function endEpoch()
         external
@@ -80,7 +80,7 @@ contract MixinFinalizer is
         // Advance the epoch. This will revert if not enough time has passed.
         _goToNextEpoch();
 
-        // If there were no active pools, the epoch is already finalized.
+        // If there are no pools to finalize then the epoch is finalized.
         if (aggregatedStats.poolsToFinalize == 0) {
             emit EpochFinalized(closingEpoch, 0, aggregatedStats.rewardsAvailable);
         }
@@ -88,11 +88,11 @@ contract MixinFinalizer is
         return aggregatedStats.poolsToFinalize;
     }
 
-    /// @dev Instantly finalizes a single pool that was active in the previous
+    /// @dev Instantly finalizes a single pool that earned rewards in the previous
     ///      epoch, crediting it rewards for members and withdrawing operator's
     ///      rewards as WETH. This can be called by internal functions that need
     ///      to finalize a pool immediately. Does nothing if the pool is already
-    ///      finalized or was not active in the previous epoch.
+    ///      finalized or did not earn rewards in the previous epoch.
     /// @param poolId The pool ID to finalize.
     function finalizePool(bytes32 poolId)
         external
@@ -107,7 +107,7 @@ contract MixinFinalizer is
             return;
         }
 
-        // Noop if the pool was not active or already finalized (has no fees).
+        // Noop if the pool did not earn rewards or already finalized (has no fees).
         IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
         if (poolStats.feesCollected == 0) {
             return;
@@ -235,8 +235,7 @@ contract MixinFinalizer is
         view
         returns (uint256 rewards)
     {
-        // There can't be any rewards if the pool was active or if it has
-        // no stake.
+        // There can't be any rewards if the pool did not collect any fees.
         if (poolStats.feesCollected == 0) {
             return rewards;
         }

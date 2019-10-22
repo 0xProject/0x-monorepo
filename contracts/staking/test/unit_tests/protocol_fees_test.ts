@@ -413,7 +413,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                     .plus(operatorStake);
             }
 
-            it('no active pools to start', async () => {
+            it('no pools to finalize to start', async () => {
                 const state = await getFinalizationStateAsync();
                 expect(state.poolsToFinalize).to.bignumber.eq(0);
                 expect(state.totalFeesCollected).to.bignumber.eq(0);
@@ -428,7 +428,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 expect(pool.weightedStake).to.bignumber.eq(0);
             });
 
-            it('activates a active pool the first time it earns a fee', async () => {
+            it('correctly emits event for pool the first time it earns a fee', async () => {
                 const pool = await createTestPoolAsync();
                 const {
                     poolId,

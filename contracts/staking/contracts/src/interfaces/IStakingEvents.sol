@@ -43,7 +43,7 @@ interface IStakingEvents {
         address exchangeAddress
     );
 
-    /// @dev Emitted by MixinExchangeFees when a pool will earn rewards.
+    /// @dev Emitted by MixinExchangeFees when a pool starts earning rewards in an epoch.
     /// @param epoch The epoch in which the pool earned rewards.
     /// @param poolId The ID of the pool.
     event StakingPoolEarnedRewardsInEpoch(
@@ -53,10 +53,10 @@ interface IStakingEvents {
 
     /// @dev Emitted by MixinFinalizer when an epoch has ended.
     /// @param epoch The closing epoch.
-    /// @param poolsToFinalize Number of pools to finalize in the closing epoch.
-    /// @param rewardsAvailable Rewards available to all active pools.
-    /// @param totalWeightedStake Total weighted stake across all active pools.
-    /// @param totalFeesCollected Total fees collected across all active pools.
+    /// @param poolsToFinalize Number of pools that earned rewards during `epoch` and must be finalized.
+    /// @param rewardsAvailable Rewards available to all pools that earned rewards during `epoch`.
+    /// @param totalWeightedStake Total weighted stake across all pools that earned rewards during `epoch`.
+    /// @param totalFeesCollected Total fees collected across all pools that earned rewards during `epoch`.
     event EpochEnded(
         uint256 indexed epoch,
         uint256 poolsToFinalize,

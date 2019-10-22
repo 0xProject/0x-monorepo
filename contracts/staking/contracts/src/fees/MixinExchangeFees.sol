@@ -86,7 +86,7 @@ contract MixinExchangeFees is
         IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][currentEpoch_];
         IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[currentEpoch_];
 
-        // If the pool was previously inactive in this epoch, initialize it.
+        // Perform some initialization if this is the first protocol fee collected in this epoch.
         if (poolStats.feesCollected == 0) {
             // Compute member and total weighted stake.
             (poolStats.membersStake, poolStats.weightedStake) = _computeMembersAndWeightedStake(poolId, poolStake);
@@ -94,7 +94,7 @@ contract MixinExchangeFees is
             // Increase the total weighted stake.
             aggregatedStats.totalWeightedStake = aggregatedStats.totalWeightedStake.safeAdd(poolStats.weightedStake);
 
-            // Increase the number of active pools.
+            // Increase the number of pools to finalize.
             aggregatedStats.poolsToFinalize = aggregatedStats.poolsToFinalize.safeAdd(1);
 
             // Emit an event so keepers know what pools earned rewards this epoch.
@@ -112,7 +112,7 @@ contract MixinExchangeFees is
         aggregatedStatsByEpoch[currentEpoch_] = aggregatedStats;
     }
 
-    /// @dev Get information on an active staking pool in this epoch.
+    /// @dev Get stats on a staking pool in this epoch.
     /// @param poolId Pool Id to query.
     /// @return PoolStats struct for pool id.
     function getStakingPoolStatsThisEpoch(bytes32 poolId)

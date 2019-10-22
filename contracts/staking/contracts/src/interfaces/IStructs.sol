@@ -29,7 +29,7 @@ interface IStructs {
         uint96 lastSetTimestamp;
     }
 
-    /// @dev Stats for a pool that actively traded.
+    /// @dev Stats for a pool that earned rewards.
     /// @param feesCollected Fees collected in ETH by this pool.
     /// @param weightedStake Amount of weighted stake in the pool.
     /// @param membersStake Amount of non-operator stake in the pool.

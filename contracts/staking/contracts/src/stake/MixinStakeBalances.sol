@@ -72,7 +72,7 @@ contract MixinStakeBalances is
 
     /// @dev Returns the total stake for a given staker.
     /// @param staker of stake.
-    /// @return Total active stake for staker.
+    /// @return Total ZRX staked by `staker`.
     function getTotalStake(address staker)
         public
         view
