@@ -81,35 +81,35 @@ contract MixinExchangeFees is
             return;
         }
 
-        // Cache current epoch to reduce sloads.
+        // Look up the pool stats and aggregated stats for this epoch.
+
         uint256 currentEpoch_ = currentEpoch;
+        IStructs.PoolStats storage poolStatsPtr = poolStatsByEpoch[poolId][currentEpoch_];
+        IStructs.AggregatedStats storage aggregatedStatsPtr = aggregatedStatsByEpoch[currentEpoch_];
 
         // Perform some initialization if this is the pool's first protocol fee in this epoch.
-        uint256 feesCollectedByPool = poolStatsByEpoch[poolId][currentEpoch_].feesCollected;
+        uint256 feesCollectedByPool = poolStatsPtr.feesCollected;
         if (feesCollectedByPool == 0) {
             // Compute member and total weighted stake.
             (uint256 membersStakeInPool, uint256 weightedStakeInPool) = _computeMembersAndWeightedStake(poolId, poolStake);
-            poolStatsByEpoch[poolId][currentEpoch_].membersStake = membersStakeInPool;
-            poolStatsByEpoch[poolId][currentEpoch_].weightedStake = weightedStakeInPool;
+            poolStatsPtr.membersStake = membersStakeInPool;
+            poolStatsPtr.weightedStake = weightedStakeInPool;
 
             // Increase the total weighted stake.
-            aggregatedStatsByEpoch[currentEpoch_].totalWeightedStake =
-                aggregatedStatsByEpoch[currentEpoch_].totalWeightedStake.safeAdd(weightedStakeInPool);
+            aggregatedStatsPtr.totalWeightedStake = aggregatedStatsPtr.totalWeightedStake.safeAdd(weightedStakeInPool);
 
             // Increase the number of pools to finalize.
-            aggregatedStatsByEpoch[currentEpoch_].numPoolsToFinalize =
-                aggregatedStatsByEpoch[currentEpoch_].numPoolsToFinalize.safeAdd(1);
+            aggregatedStatsPtr.numPoolsToFinalize = aggregatedStatsPtr.numPoolsToFinalize.safeAdd(1);
 
             // Emit an event so keepers know what pools earned rewards this epoch.
             emit StakingPoolEarnedRewardsInEpoch(currentEpoch_, poolId);
         }
 
         // Credit the fees to the pool.
-        poolStatsByEpoch[poolId][currentEpoch_].feesCollected = feesCollectedByPool.safeAdd(protocolFeePaid);
+        poolStatsPtr.feesCollected = feesCollectedByPool.safeAdd(protocolFeePaid);
 
         // Increase the total fees collected this epoch.
-        aggregatedStatsByEpoch[currentEpoch_].totalFeesCollected =
-            aggregatedStatsByEpoch[currentEpoch_].totalFeesCollected.safeAdd(protocolFeePaid);
+        aggregatedStatsPtr.totalFeesCollected = aggregatedStatsPtr.totalFeesCollected.safeAdd(protocolFeePaid);
     }
 
     /// @dev Get stats on a staking pool in this epoch.

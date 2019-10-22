@@ -65,11 +65,6 @@ interface IStorage {
         view
         returns (uint256);
 
-    function numPoolsToFinalizeThisEpoch()
-        external
-        view
-        returns (bytes32[] memory);
-
     function validExchanges(address exchangeAddress)
         external
         view

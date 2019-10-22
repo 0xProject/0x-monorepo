@@ -135,16 +135,16 @@ blockchainTests.resets('Finalizer unit tests', env => {
 
     async function assertFinalizationLogsAndBalancesAsync(
         rewardsAvailable: Numberish,
-        numPoolsToFinalize: ActivePoolOpts[],
+        poolsToFinalize: ActivePoolOpts[],
         finalizationLogs: LogEntry[],
     ): Promise<void> {
         const currentEpoch = await getCurrentEpochAsync();
         // Compute the expected rewards for each pool.
-        const poolsWithStake = numPoolsToFinalize.filter(p => !new BigNumber(p.weightedStake).isZero());
+        const poolsWithStake = poolsToFinalize.filter(p => !new BigNumber(p.weightedStake).isZero());
         const poolRewards = await calculatePoolRewardsAsync(rewardsAvailable, poolsWithStake);
         const totalRewards = BigNumber.sum(...poolRewards);
         const rewardsRemaining = new BigNumber(rewardsAvailable).minus(totalRewards);
-        const [totalOperatorRewards, totalMembersRewards] = getTotalSplitRewards(numPoolsToFinalize, poolRewards);
+        const [totalOperatorRewards, totalMembersRewards] = getTotalSplitRewards(poolsToFinalize, poolRewards);
 
         // Assert the `RewardsPaid` logs.
         const rewardsPaidEvents = getRewardsPaidEvents(finalizationLogs);
@@ -196,13 +196,13 @@ blockchainTests.resets('Finalizer unit tests', env => {
 
     async function calculatePoolRewardsAsync(
         rewardsAvailable: Numberish,
-        numPoolsToFinalize: ActivePoolOpts[],
+        poolsToFinalize: ActivePoolOpts[],
     ): Promise<BigNumber[]> {
-        const totalFees = BigNumber.sum(...numPoolsToFinalize.map(p => p.feesCollected));
-        const totalStake = BigNumber.sum(...numPoolsToFinalize.map(p => p.weightedStake));
-        const poolRewards = _.times(numPoolsToFinalize.length, () => constants.ZERO_AMOUNT);
-        for (const i of _.times(numPoolsToFinalize.length)) {
-            const pool = numPoolsToFinalize[i];
+        const totalFees = BigNumber.sum(...poolsToFinalize.map(p => p.feesCollected));
+        const totalStake = BigNumber.sum(...poolsToFinalize.map(p => p.weightedStake));
+        const poolRewards = _.times(poolsToFinalize.length, () => constants.ZERO_AMOUNT);
+        for (const i of _.times(poolsToFinalize.length)) {
+            const pool = poolsToFinalize[i];
             const feesCollected = new BigNumber(pool.feesCollected);
             if (feesCollected.isZero()) {
                 continue;
