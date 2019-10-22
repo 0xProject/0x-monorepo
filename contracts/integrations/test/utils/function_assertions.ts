@@ -14,6 +14,12 @@ export interface Condition {
     after: (beforeInfo: any, result: Result, ...args: any[]) => Promise<any>;
 }
 
+export interface Result {
+    data?: any;
+    receipt?: TransactionReceiptWithDecodedLogs;
+    success: boolean;
+}
+
 export class FunctionAssertion {
     // A before and an after assertion that will be called around the wrapper function.
     public condition: Condition;

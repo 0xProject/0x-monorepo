@@ -2,7 +2,7 @@ import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
 import { constants } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { DeploymentManager } from '../deployment/deployment_mananger';
+import { DeploymentManager } from '../utils/deployment_manager';
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
 

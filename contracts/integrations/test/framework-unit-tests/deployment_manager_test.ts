@@ -2,11 +2,7 @@ import { Authorizable, Ownable } from '@0x/contracts-exchange';
 import { constants as stakingConstants } from '@0x/contracts-staking';
 import { blockchainTests, expect } from '@0x/contracts-test-utils';
 
-<<<<<<< HEAD:contracts/integrations/test/utils/deployment_manager_test.ts
-import { DeploymentManager } from './deployment_mananger';
-=======
 import { DeploymentManager } from '../utils/deployment_manager';
->>>>>>> `@0x:contracts-integrations` Added unit tests for FunctionAssertion:contracts/integrations/test/framework-unit-tests/deployment_manager_test.ts
 
 blockchainTests('Deployment Manager', env => {
     let owner: string;
