@@ -90,21 +90,6 @@ blockchainTests('Protocol Fees unit tests', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `protocolFeePaid` is zero with zero value sent', async () => {
-                const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
-                    makerAddress,
-                    payerAddress,
-                    ZERO_AMOUNT,
-                    { from: exchangeAddress, value: ZERO_AMOUNT },
-                );
-                const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
-                    StakingRevertErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid,
-                    ZERO_AMOUNT,
-                    ZERO_AMOUNT,
-                );
-                return expect(tx).to.revertWith(expectedError);
-            });
-
             it('should revert if `protocolFeePaid` is zero with non-zero value sent', async () => {
                 const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
@@ -113,7 +98,6 @@ blockchainTests('Protocol Fees unit tests', env => {
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID },
                 );
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
-                    StakingRevertErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid,
                     ZERO_AMOUNT,
                     DEFAULT_PROTOCOL_FEE_PAID,
                 );
@@ -128,7 +112,6 @@ blockchainTests('Protocol Fees unit tests', env => {
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.minus(1) },
                 );
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
-                    StakingRevertErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
                     DEFAULT_PROTOCOL_FEE_PAID,
                     DEFAULT_PROTOCOL_FEE_PAID.minus(1),
                 );
@@ -143,7 +126,6 @@ blockchainTests('Protocol Fees unit tests', env => {
                     { from: exchangeAddress, value: DEFAULT_PROTOCOL_FEE_PAID.plus(1) },
                 );
                 const expectedError = new StakingRevertErrors.InvalidProtocolFeePaymentError(
-                    StakingRevertErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
                     DEFAULT_PROTOCOL_FEE_PAID,
                     DEFAULT_PROTOCOL_FEE_PAID.plus(1),
                 );

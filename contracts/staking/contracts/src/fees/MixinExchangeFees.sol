@@ -166,7 +166,6 @@ contract MixinExchangeFees is
         if (msg.value != protocolFeePaid && msg.value != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
                     protocolFeePaid,
                     msg.value
                 )
