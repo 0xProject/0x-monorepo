@@ -1,9 +1,8 @@
 import { Authorizable, Ownable } from '@0x/contracts-exchange';
 import { constants as stakingConstants } from '@0x/contracts-staking';
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber } from '@0x/utils';
+import { blockchainTests, expect } from '@0x/contracts-test-utils';
 
-import { DeploymentManager } from '../src';
+import { DeploymentManager } from './deployment_mananger';
 
 blockchainTests('Deployment Manager', env => {
     let owner: string;
@@ -11,7 +10,6 @@ blockchainTests('Deployment Manager', env => {
 
     before(async () => {
         [owner] = await env.getAccountAddressesAsync();
-
         deploymentManager = await DeploymentManager.deployAsync(env);
     });
 
