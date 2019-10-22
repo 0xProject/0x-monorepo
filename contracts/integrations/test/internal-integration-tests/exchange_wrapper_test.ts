@@ -1,6 +1,14 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
+    artifacts,
+    BalanceStore,
+    BlockchainBalanceStore,
+    ExchangeContract,
+    ExchangeWrapper,
+    LocalBalanceStore,
+} from '@0x/contracts-exchange';
+import {
     blockchainTests,
     constants,
     describe,
@@ -15,32 +23,17 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
+import { AddressManager } from '../utils/address_manager';
+import { DeploymentManager } from '../utils/deployment_manager';
 
 // tslint:disable:no-unnecessary-type-assertion
-blockchainTests.resets('Exchange wrappers', env => {
+blockchainTests.resets.only('Exchange wrappers', env => {
     let chainId: number;
     let makerAddress: string;
-    let owner: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
 
-    let erc20TokenA: DummyERC20TokenContract;
-    let erc20TokenB: DummyERC20TokenContract;
-    let feeToken: DummyERC20TokenContract;
-    let exchange: ExchangeContract;
-    let erc20Proxy: ERC20ProxyContract;
-
-    let exchangeWrapper: ExchangeWrapper;
-    let erc20Wrapper: ERC20Wrapper;
-    let erc20Balances: ERC20BalancesByOwner;
-    let orderFactory: OrderFactory;
-
-    let defaultMakerAssetAddress: string;
-    let defaultTakerAssetAddress: string;
-    let defaultFeeAssetAddress: string;
-
-    const PROTOCOL_FEE_MULTIPLIER = new BigNumber(150);
+    let maker: OrderFactory;
 
     const nullFillResults: FillResults = {
         makerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -50,82 +43,100 @@ blockchainTests.resets('Exchange wrappers', env => {
         protocolFeePaid: constants.ZERO_AMOUNT,
     };
 
+    let deployment: DeploymentManager;
+    let blockchainBalances: BlockchainBalanceStore;
+    let emptyLocalBalances: LocalBalanceStore;
+    let localBalances: LocalBalanceStore;
+
     before(async () => {
         chainId = await env.getChainIdAsync();
         const accounts = await env.getAccountAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
+        const usedAddresses = ([makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 1, 4));
 
-        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
-
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
-            numDummyErc20ToDeploy,
-            constants.DUMMY_TOKEN_DECIMALS,
-        );
-        erc20Proxy = await erc20Wrapper.deployProxyAsync();
-        await erc20Wrapper.setBalancesAndAllowancesAsync();
-
-        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
-            env.provider,
-            { ...env.txDefaults, from: owner },
-            {},
-            new BigNumber(chainId),
-        );
-
-        // Set the protocol fee multiplier of the exchange
-        await exchange.setProtocolFeeMultiplier.awaitTransactionSuccessAsync(PROTOCOL_FEE_MULTIPLIER, {
-            from: owner,
+        deployment = await DeploymentManager.deployAsync(env, {
+            numErc20TokensToDeploy: 3,
+            numErc721TokensToDeploy: 0,
+            numErc1155TokensToDeploy: 0,
         });
 
-        exchangeWrapper = new ExchangeWrapper(exchange);
-        await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
+        const addressManager = new AddressManager();
 
-        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
-            from: owner,
-        });
-
-        defaultMakerAssetAddress = erc20TokenA.address;
-        defaultTakerAssetAddress = erc20TokenB.address;
-        defaultFeeAssetAddress = feeToken.address;
-
-        const defaultOrderParams = {
-            ...constants.STATIC_ORDER_PARAMS,
-            makerAddress,
+        await addressManager.addMakerAsync(
+            deployment,
+            { address: makerAddress, mainToken: deployment.tokens.erc20[0], feeToken: deployment.tokens.erc20[2] },
+            env,
+            deployment.tokens.erc20[1],
             feeRecipientAddress,
-            makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultFeeAssetAddress),
-            exchangeAddress: exchange.address,
             chainId,
-        };
-        const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        );
+        await addressManager.addTakerAsync(deployment, {
+            address: takerAddress,
+            mainToken: deployment.tokens.erc20[1],
+            feeToken: deployment.tokens.erc20[2],
+        });
+
+        // This will likely need to be updated to include WETH and ZRX
+        emptyLocalBalances = new LocalBalanceStore(
+            {
+                makerAddress,
+                takerAddress,
+                feeRecipientAddress,
+            },
+            {
+                erc20: {
+                    makerAsset: deployment.tokens.erc20[0],
+                    takerAsset: deployment.tokens.erc20[1],
+                    feeAsset: deployment.tokens.erc20[1],
+                },
+            },
+        );
+
+        blockchainBalances = new BlockchainBalanceStore(
+            {
+                makerAddress,
+                takerAddress,
+                feeRecipientAddress,
+            },
+            {
+                erc20: {
+                    makerAsset: deployment.tokens.erc20[0],
+                    takerAsset: deployment.tokens.erc20[1],
+                    feeAsset: deployment.tokens.erc20[1],
+                },
+            },
+            {},
+        );
+
+        maker = addressManager.makers[0].orderFactory;
     });
 
     beforeEach(async () => {
-        erc20Balances = await erc20Wrapper.getBalancesAsync();
+        localBalances = LocalBalanceStore.create(emptyLocalBalances);
     });
 
     describe('fillOrKillOrder', () => {
         it('should transfer the correct amounts', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync({
+            const signedOrder = await maker.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
 
-            const fillResults = await exchange.fillOrKillOrder.callAsync(
+            const fillResults = await deployment.exchange.fillOrKillOrder.callAsync(
                 signedOrder,
                 takerAssetFillAmount,
                 signedOrder.signature,
                 { from: takerAddress },
             );
-            await exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress, {
+            await deployment.exchange.fillOrKillOrder.awaitTransactionSuccessAsync(
+                signedOrder,
                 takerAssetFillAmount,
-            });
-            const newBalances = await erc20Wrapper.getBalancesAsync();
+                signedOrder.signature,
+                {
+                    from: takerAddress,
+                },
+            );
+            await blockchainBalances.updateBalancesAsync();
 
             const makerAssetFilledAmount = takerAssetFillAmount
                 .times(signedOrder.makerAssetAmount)
@@ -141,6 +152,26 @@ blockchainTests.resets('Exchange wrappers', env => {
             expect(fillResults.takerAssetFilledAmount).to.bignumber.equal(takerAssetFillAmount);
             expect(fillResults.makerFeePaid).to.bignumber.equal(makerFee);
             expect(fillResults.takerFeePaid).to.bignumber.equal(takerFee);
+
+            // taker -> maker
+            localBalances.transferAsset(takerAddress, makerAddress, takerAssetFillAmount, signedOrder.takerAssetData);
+
+            // maker -> taker
+            localBalances.transferAsset(makerAddress, takerAddress, makerAssetFillAmount, signedOrder.makerAssetData);
+
+            // maker -> feeRecipient
+            localBalances.transferAsset(makerAddress, feeRecipientAddress, makerFee, signedOrder.makerFeeAssetData);
+
+            // taker -> feeRecipient
+            localBalances.transferAsset(takerAddress, feeRecipientAddress, takerFee, signedOrder.takerFeeAssetData);
+
+            // taker -> protocol fees
+            localBalances.transferAsset(
+                takerAddress,
+                deployment.staking.stakingProxy.address,
+                takerFee,
+                signedOrder.takerFeeAssetData,
+            );
 
             expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
                 erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
@@ -194,6 +225,7 @@ blockchainTests.resets('Exchange wrappers', env => {
         });
     });
 
+    /*
     describe('batch functions', () => {
         let signedOrders: SignedOrder[];
         beforeEach(async () => {
@@ -905,4 +937,5 @@ blockchainTests.resets('Exchange wrappers', env => {
             });
         });
     });
+    */
 }); // tslint:disable-line:max-file-line-count
