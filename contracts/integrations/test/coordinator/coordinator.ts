@@ -251,7 +251,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transactionHash,
                     feeRecipient.address,
                 );
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert with an invalid approval signature`, async () => {
                 const approvalSignature = hexConcat(
@@ -272,7 +272,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transactionHash,
                     feeRecipient.address,
                 );
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
@@ -284,7 +284,7 @@ blockchainTests.resets('Coordinator tests', env => {
                 );
 
                 const expectedError = new CoordinatorRevertErrors.InvalidOriginError(taker.address);
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
         }
     });
@@ -371,7 +371,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     transactionHash,
                     feeRecipient.address,
                 );
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
             it(`${fnName} should revert if not called by tx signer or approver`, async () => {
                 const tx = coordinator.executeTransaction.awaitTransactionSuccessAsync(
@@ -382,7 +382,7 @@ blockchainTests.resets('Coordinator tests', env => {
                     { from: maker.address, value: DeploymentManager.protocolFee.times(orders.length) },
                 );
                 const expectedError = new CoordinatorRevertErrors.InvalidOriginError(taker.address);
-                expect(tx).to.revertWith(expectedError);
+                return expect(tx).to.revertWith(expectedError);
             });
         }
     });

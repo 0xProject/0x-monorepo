@@ -123,7 +123,7 @@ export interface DeploymentOptions {
 
 export class DeploymentManager {
     public static readonly protocolFeeMultiplier = new BigNumber(150000);
-    public static readonly gasPrice = new BigNumber(1000000000); // 1 Gwei
+    public static readonly gasPrice = new BigNumber(1e9); // 1 Gwei
     public static readonly protocolFee = DeploymentManager.gasPrice.times(DeploymentManager.protocolFeeMultiplier);
 
     /**
