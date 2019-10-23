@@ -96,6 +96,15 @@ contract MixinStake is
         );
     }
 
+    /// @dev Withdraws the caller's WETH rewards that have accumulated
+    ///      until the last epoch.
+    /// @param poolId Unique id of pool.
+    function withdrawDelegatorRewards(bytes32 poolId)
+        external
+    {
+        _withdrawAndSyncDelegatorRewards(poolId, msg.sender);
+    }
+
     /// @dev Moves stake between statuses: 'undelegated' or 'delegated'.
     ///      Delegated stake can also be moved between pools.
     ///      This change comes into effect next epoch.
