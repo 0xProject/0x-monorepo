@@ -31,7 +31,7 @@ contract IERC20Bridge {
     /// @param amount Amount of asset to transfer.
     /// @param bridgeData Arbitrary asset data needed by the bridge contract.
     /// @return success The magic bytes `0x37708e9b` if successful.
-    function withdrawTo(
+    function bridgeTransferFrom(
         address tokenAddress,
         address from,
         address to,
