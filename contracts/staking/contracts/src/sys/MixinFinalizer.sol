@@ -110,8 +110,24 @@ contract MixinFinalizer is
         // some gas.
         delete poolStatsByEpoch[poolId][prevEpoch];
 
-        // Compute the rewards.
-        uint256 rewards = _getUnfinalizedPoolRewardsFromPoolStats(poolStats, aggregatedStats);
+        // Use the cobb-douglas function to compute the total reward.
+        uint256 rewards = LibCobbDouglas.cobbDouglas(
+            aggregatedStats.rewardsAvailable,
+            poolStats.feesCollected,
+            aggregatedStats.totalFeesCollected,
+            poolStats.weightedStake,
+            aggregatedStats.totalWeightedStake,
+            cobbDouglasAlphaNumerator,
+            cobbDouglasAlphaDenominator
+        );
+
+        // Clip the reward to always be under
+        // `rewardsAvailable - totalRewardsPaid`,
+        // in case cobb-douglas overflows, which should be unlikely.
+        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized);
+        if (rewardsRemaining < rewards) {
+            rewards = rewardsRemaining;
+        }
 
         // Pay the operator and update rewards for the pool.
         // Note that we credit at the CURRENT epoch even though these rewards
@@ -193,43 +209,6 @@ contract MixinFinalizer is
                     prevEpoch
                 )
             );
-        }
-    }
-
-    /// @dev Computes the reward owed to a pool during finalization.
-    /// @param poolStats Stats for a specific pool.
-    /// @param aggregatedStats Stats aggregated across all pools.
-    /// @return rewards Unfinalized rewards for the input pool.
-    function _getUnfinalizedPoolRewardsFromPoolStats(
-        IStructs.PoolStats memory poolStats,
-        IStructs.AggregatedStats memory aggregatedStats
-    )
-        private
-        view
-        returns (uint256 rewards)
-    {
-        // There can't be any rewards if the pool did not collect any fees.
-        if (poolStats.feesCollected == 0) {
-            return rewards;
-        }
-
-        // Use the cobb-douglas function to compute the total reward.
-        rewards = LibCobbDouglas.cobbDouglas(
-            aggregatedStats.rewardsAvailable,
-            poolStats.feesCollected,
-            aggregatedStats.totalFeesCollected,
-            poolStats.weightedStake,
-            aggregatedStats.totalWeightedStake,
-            cobbDouglasAlphaNumerator,
-            cobbDouglasAlphaDenominator
-        );
-
-        // Clip the reward to always be under
-        // `rewardsAvailable - totalRewardsPaid`,
-        // in case cobb-douglas overflows, which should be unlikely.
-        uint256 rewardsRemaining = aggregatedStats.rewardsAvailable.safeSub(aggregatedStats.totalRewardsFinalized);
-        if (rewardsRemaining < rewards) {
-            rewards = rewardsRemaining;
         }
     }
 }
