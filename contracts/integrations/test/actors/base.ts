@@ -1,5 +1,6 @@
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import { constants } from '@0x/contracts-test-utils';
+import { constants, TransactionFactory } from '@0x/contracts-test-utils';
+import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { DeploymentManager } from '../utils/deployment_manager';
@@ -7,21 +8,30 @@ import { DeploymentManager } from '../utils/deployment_manager';
 export type Constructor<T = {}> = new (...args: any[]) => T;
 
 export interface ActorConfig {
-    address: string;
     name?: string;
     deployment: DeploymentManager;
     [mixinProperty: string]: any;
 }
 
 export class Actor {
+    public static count: number = 0;
     public readonly address: string;
     public readonly name: string;
+    public readonly privateKey: Buffer;
     public readonly deployment: DeploymentManager;
+    protected readonly transactionFactory: TransactionFactory;
 
     constructor(config: ActorConfig) {
-        this.address = config.address;
-        this.name = config.name || config.address;
+        Actor.count++;
+        this.address = config.deployment.accounts[Actor.count];
+        this.name = config.name || this.address;
         this.deployment = config.deployment;
+        this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
+        this.transactionFactory = new TransactionFactory(
+            this.privateKey,
+            config.deployment.exchange.address,
+            config.deployment.chainId,
+        );
     }
 
     /**
@@ -50,5 +60,15 @@ export class Actor {
             constants.MAX_UINT256,
             { from: this.address },
         );
+    }
+
+    /**
+     * Signs a transaction.
+     */
+    public async signTransactionAsync(
+        customTransactionParams: Partial<ZeroExTransaction>,
+        signatureType: SignatureType = SignatureType.EthSign,
+    ): Promise<SignedZeroExTransaction> {
+        return this.transactionFactory.newSignedTransactionAsync(customTransactionParams, signatureType);
     }
 }
