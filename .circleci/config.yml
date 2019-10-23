@@ -226,6 +226,12 @@ jobs:
                       cd python-packages
                       ./parallel_without_sra_client coverage run setup.py test
                       ./build_docs
+            - run:
+                  command: |
+                      # copy generated wrappers into contract_wrappers/build,
+                      # JUST so CircleCI will persist them as build artifacts.
+                      cd python-packages/contract_wrappers/src/zero_ex
+                      for i in contract_wrappers/[^__]*/; do mkdir -p ../../build/$i; cp $i/__init__.py ../../build/$i; done
             - save_cache:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -250,8 +256,6 @@ jobs:
                   key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/*/__init__.py
             - store_artifacts:
                   path: ~/repo/python-packages/contract_addresses/build
             - store_artifacts:
