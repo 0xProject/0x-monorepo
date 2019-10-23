@@ -153,26 +153,6 @@ contract MixinFinalizer is
         }
     }
 
-    /// @dev Computes the reward owed to a pool during finalization.
-    ///      Does nothing if the pool is already finalized.
-    /// @param poolId The pool's ID.
-    /// @return totalReward The total reward owed to a pool.
-    /// @return membersStake The total stake for all non-operator members in
-    ///         this pool.
-    function _getUnfinalizedPoolRewards(bytes32 poolId)
-        internal
-        view
-        returns (
-            uint256 reward,
-            uint256 membersStake
-        )
-    {
-        uint256 prevEpoch = currentEpoch.safeSub(1);
-        IStructs.PoolStats memory poolStats = poolStatsByEpoch[poolId][prevEpoch];
-        reward = _getUnfinalizedPoolRewardsFromPoolStats(poolStats, aggregatedStatsByEpoch[prevEpoch]);
-        membersStake = poolStats.membersStake;
-    }
-
     /// @dev Converts the entire ETH balance of this contract into WETH.
     function _wrapEth()
         internal

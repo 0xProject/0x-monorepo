@@ -40,59 +40,6 @@ contract MixinStakingPoolRewards is
         _withdrawAndSyncDelegatorRewards(poolId, msg.sender);
     }
 
-    /// @dev Computes the reward balance in ETH of the operator of a pool.
-    /// @param poolId Unique id of pool.
-    /// @return totalReward Balance in ETH.
-    function computeRewardBalanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256 reward)
-    {
-        // Because operator rewards are immediately withdrawn as WETH
-        // on finalization, the only factor in this function are unfinalized
-        // rewards.
-        IStructs.Pool memory pool = _poolById[poolId];
-        // Get any unfinalized rewards.
-        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
-            _getUnfinalizedPoolRewards(poolId);
-
-        // Get the operators' portion.
-        (reward,) = _computePoolRewardsSplit(
-            pool.operatorShare,
-            unfinalizedTotalRewards,
-            unfinalizedMembersStake
-        );
-        return reward;
-    }
-
-    /// @dev Computes the reward balance in ETH of a specific member of a pool.
-    /// @param poolId Unique id of pool.
-    /// @param member The member of the pool.
-    /// @return totalReward Balance in ETH.
-    function computeRewardBalanceOfDelegator(bytes32 poolId, address member)
-        external
-        view
-        returns (uint256 reward)
-    {
-        IStructs.Pool memory pool = _poolById[poolId];
-        // Get any unfinalized rewards.
-        (uint256 unfinalizedTotalRewards, uint256 unfinalizedMembersStake) =
-            _getUnfinalizedPoolRewards(poolId);
-
-        // Get the members' portion.
-        (, uint256 unfinalizedMembersReward) = _computePoolRewardsSplit(
-            pool.operatorShare,
-            unfinalizedTotalRewards,
-            unfinalizedMembersStake
-        );
-        return _computeDelegatorReward(
-            poolId,
-            member,
-            unfinalizedMembersReward,
-            unfinalizedMembersStake
-        );
-    }
-
     /// @dev Syncs rewards for a delegator. This includes withdrawing rewards
     ///      rewards and adding/removing dependencies on cumulative rewards.
     /// @param poolId Unique id of pool.
@@ -109,11 +56,7 @@ contract MixinStakingPoolRewards is
         // Compute balance owed to delegator
         uint256 balance = _computeDelegatorReward(
             poolId,
-            member,
-            // No unfinalized values because we ensured the pool is already
-            // finalized.
-            0,
-            0
+            member
         );
 
         // Sync the delegated stake balance. This will ensure future calls of
@@ -213,14 +156,10 @@ contract MixinStakingPoolRewards is
     /// @dev Computes the reward balance in ETH of a specific member of a pool.
     /// @param poolId Unique id of pool.
     /// @param member of the pool.
-    /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
-    /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
     /// @return reward Balance in WETH.
     function _computeDelegatorReward(
         bytes32 poolId,
-        address member,
-        uint256 unfinalizedMembersReward,
-        uint256 unfinalizedMembersStake
+        address member
     )
         private
         view
@@ -236,17 +175,9 @@ contract MixinStakingPoolRewards is
             return 0;
         }
 
-        // We account for rewards over 3 intervals, below.
+        // We account for rewards over 2 intervals, below.
 
-        // 1/3 Unfinalized rewards earned in `currentEpoch - 1`.
-        reward = _computeUnfinalizedDelegatorReward(
-            delegatedStake,
-            currentEpoch_,
-            unfinalizedMembersReward,
-            unfinalizedMembersStake
-        );
-
-        // 2/3 Finalized rewards earned in epochs [`delegatedStake.currentEpoch + 1` .. `currentEpoch - 1`]
+        // 1/2 Finalized rewards earned in epochs [`delegatedStake.currentEpoch + 1` .. `currentEpoch - 1`]
         uint256 delegatedStakeNextEpoch = uint256(delegatedStake.currentEpoch).safeAdd(1);
         reward = reward.safeAdd(
             _computeMemberRewardOverInterval(
@@ -257,7 +188,7 @@ contract MixinStakingPoolRewards is
             )
         );
 
-        // 3/3 Finalized rewards earned in epoch `delegatedStake.currentEpoch`.
+        // 2/2 Finalized rewards earned in epoch `delegatedStake.currentEpoch`.
         reward = reward.safeAdd(
             _computeMemberRewardOverInterval(
                 poolId,
@@ -268,47 +199,6 @@ contract MixinStakingPoolRewards is
         );
 
         return reward;
-    }
-
-    /// @dev Computes the unfinalized rewards earned by a delegator in the last epoch.
-    /// @param delegatedStake Amount of stake delegated to pool by a specific staker
-    /// @param currentEpoch_ The epoch in which this call is executing
-    /// @param unfinalizedMembersReward Unfinalized total members reward (if any).
-    /// @param unfinalizedMembersStake Unfinalized total members stake (if any).
-    /// @return reward Balance in WETH.
-    function _computeUnfinalizedDelegatorReward(
-        IStructs.StoredBalance memory delegatedStake,
-        uint256 currentEpoch_,
-        uint256 unfinalizedMembersReward,
-        uint256 unfinalizedMembersStake
-    )
-        private
-        pure
-        returns (uint256)
-    {
-        // If there are unfinalized rewards this epoch, compute the member's
-        // share.
-        if (unfinalizedMembersReward == 0 || unfinalizedMembersStake == 0) {
-            return 0;
-        }
-
-        // Unfinalized rewards are always earned from stake in
-        // the prior epoch so we want the stake at `currentEpoch_-1`.
-        uint256 unfinalizedStakeBalance = delegatedStake.currentEpoch >= currentEpoch_.safeSub(1) ?
-            delegatedStake.currentEpochBalance :
-            delegatedStake.nextEpochBalance;
-
-        // Sanity check to save gas on computation
-        if (unfinalizedStakeBalance == 0) {
-            return 0;
-        }
-
-        // Compute unfinalized reward
-        return LibMath.getPartialAmountFloor(
-            unfinalizedMembersReward,
-            unfinalizedMembersStake,
-            unfinalizedStakeBalance
-        );
     }
 
     /// @dev Increases rewards for a pool.
