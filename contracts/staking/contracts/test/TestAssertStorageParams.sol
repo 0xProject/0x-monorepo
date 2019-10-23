@@ -49,7 +49,7 @@ contract TestAssertStorageParams is
         minimumPoolStake = params.minimumPoolStake;
         cobbDouglasAlphaNumerator = params.cobbDouglasAlphaNumerator;
         cobbDouglasAlphaDenominator = params.cobbDouglasAlphaDenominator;
-        _assertValidStorageParams();
+        assertValidStorageParams();
     }
 
     function _attachStakingContract(address)

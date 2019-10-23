@@ -157,8 +157,8 @@ contract StakingProxy is
     //       Asserts that a stake weight is <= 100%.
     //       Asserts that pools allow >= 1 maker.
     //       Asserts that all addresses are initialized.
-    function _assertValidStorageParams()
-        internal
+    function assertValidStorageParams()
+        public
         view
     {
         // Epoch length must be between 5 and 30 days long
@@ -216,6 +216,6 @@ contract StakingProxy is
         }
 
         // Assert initialized storage values are valid
-        _assertValidStorageParams();
+        assertValidStorageParams();
     }
 }

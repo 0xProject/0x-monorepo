@@ -55,4 +55,13 @@ contract IStakingProxy {
         external
         view
         returns (IStructs.ReadOnlyState memory);
+
+    /// @dev Asserts that an epoch is between 5 and 30 days long.
+    //       Asserts that 0 < cobb douglas alpha value <= 1.
+    //       Asserts that a stake weight is <= 100%.
+    //       Asserts that pools allow >= 1 maker.
+    //       Asserts that all addresses are initialized.
+    function assertValidStorageParams()
+        external
+        view;
 }

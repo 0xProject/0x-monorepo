@@ -47,6 +47,7 @@ import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json'
 import * as TestLibProxy from '../generated-artifacts/TestLibProxy.json';
 import * as TestLibProxyReceiver from '../generated-artifacts/TestLibProxyReceiver.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
+import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
@@ -101,6 +102,7 @@ export const artifacts = {
     TestLibProxy: TestLibProxy as ContractArtifact,
     TestLibProxyReceiver: TestLibProxyReceiver as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
+    TestMixinParams: TestMixinParams as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
