@@ -23,13 +23,11 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
-import "../sys/MixinAbstract.sol";
-import "./MixinStakingPoolRewards.sol";
+import "../sys/MixinFinalizer.sol";
 
 
 contract MixinStakingPool is
-    MixinAbstract,
-    MixinStakingPoolRewards
+    MixinFinalizer
 {
     using LibSafeMath for uint256;
     using LibSafeDowncast for uint256;

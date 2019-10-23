@@ -24,15 +24,13 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../interfaces/IStructs.sol";
-import "../sys/MixinFinalizer.sol";
 import "../staking_pools/MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
     MixinExchangeManager,
-    MixinStakingPool,
-    MixinFinalizer
+    MixinStakingPool
 {
     using LibSafeMath for uint256;
 
