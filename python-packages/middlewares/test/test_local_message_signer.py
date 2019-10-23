@@ -7,11 +7,7 @@ from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.middlewares.local_message_signer import (
     construct_local_message_signer,
 )
-from zero_ex.order_utils import (
-    generate_order_hash_hex,
-    is_valid_signature,
-    sign_hash,
-)
+from zero_ex.order_utils import generate_order_hash_hex, sign_hash
 
 
 def test_local_message_signer__sign_order():
@@ -46,7 +42,11 @@ def test_local_message_signer__sign_order():
         "takerAssetAmount": 0,
         "expirationTimeSeconds": 0,
     }
-    order_hash = generate_order_hash_hex(order, exchange, chain_id=1337)
-    signature = sign_hash(ganache, to_checksum_address(address), order_hash)
-    assert signature == expected_signature
-    assert is_valid_signature(ganache, order_hash, signature, address)
+    assert (
+        sign_hash(
+            web3_instance,
+            to_checksum_address(address),
+            generate_order_hash_hex(order, exchange, chain_id=1337),
+        )
+        == expected_signature
+    )

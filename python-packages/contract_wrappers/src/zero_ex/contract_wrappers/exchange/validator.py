@@ -1,6 +1,6 @@
 """Validate inputs to the Exchange contract."""
 
-from typing import Any
+from typing import Any, Union
 
 from web3 import Web3
 from web3.providers.base import BaseProvider
@@ -14,13 +14,29 @@ from ..bases import Validator
 class ExchangeValidator(Validator):
     """Validate inputs to Exchange methods."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str):
+    def __init__(
+        self,
+        web3_or_provider: Union[Web3, BaseProvider],
+        contract_address: str,
+    ):
         """Initialize the class."""
-        super().__init__(provider, contract_address)
+        super().__init__(web3_or_provider, contract_address)
+
+        web3 = None
+        if isinstance(web3_or_provider, BaseProvider):
+            web3 = Web3(web3_or_provider)
+        elif isinstance(web3_or_provider, Web3):
+            web3 = web3_or_provider
+        if web3 is None:
+            raise TypeError(
+                "Expected parameter 'web3_or_provider' to be an instance of either"
+                + " Web3 or BaseProvider"
+            )
+
         self.contract_address = contract_address
-        self.chain_id = Web3(  # type: ignore # pylint: disable=no-member
-            provider
-        ).eth.chainId
+        self.chain_id = (
+            web3.eth.chainId  # type: ignore # pylint: disable=no-member
+        )
 
     def assert_valid(
         self, method_name: str, parameter_name: str, argument_value: Any

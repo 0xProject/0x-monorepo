@@ -51,13 +51,13 @@ class PublicAddConstantMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -107,13 +107,13 @@ class PublicAddOneMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -172,13 +172,14 @@ class TestLibDummy:
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         validator: TestLibDummyValidator = None,
     ):
         """Get an instance of wrapper for smart contract.
 
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param web3_or_provider: Either an instance of `web3.Web3`:code: or
+            `web3.providers.base.BaseProvider`:code:
         :param contract_address: where the contract has been deployed
         :param validator: for validation of method inputs.
         """
@@ -187,9 +188,20 @@ class TestLibDummy:
         self.contract_address = contract_address
 
         if not validator:
-            validator = TestLibDummyValidator(provider, contract_address)
+            validator = TestLibDummyValidator(
+                web3_or_provider, contract_address
+            )
 
-        web3 = Web3(provider)
+        web3 = None
+        if isinstance(web3_or_provider, BaseProvider):
+            web3 = Web3(web3_or_provider)
+        elif isinstance(web3_or_provider, Web3):
+            web3 = web3_or_provider
+        if web3 is None:
+            raise TypeError(
+                "Expected parameter 'web3_or_provider' to be an instance of either"
+                + " Web3 or BaseProvider"
+            )
 
         # if any middleware was imported, inject it
         try:
@@ -197,10 +209,16 @@ class TestLibDummy:
         except NameError:
             pass
         else:
-            for middleware in MIDDLEWARE:
-                web3.middleware_onion.inject(  # type: ignore
-                    middleware["function"], layer=middleware["layer"]
-                )
+            try:
+                for middleware in MIDDLEWARE:
+                    web3.middleware_onion.inject(  # type: ignore
+                        middleware["function"], layer=middleware["layer"]
+                    )
+            except ValueError as value_error:
+                if value_error.args == (
+                    "You can't add the same un-named instance twice",
+                ):
+                    pass
 
         self._web3_eth = (
             web3.eth  # type: ignore # pylint: disable=no-member
@@ -212,11 +230,17 @@ class TestLibDummy:
         ).functions
 
         self.public_add_constant = PublicAddConstantMethod(
-            provider, contract_address, functions.publicAddConstant, validator
+            web3_or_provider,
+            contract_address,
+            functions.publicAddConstant,
+            validator,
         )
 
         self.public_add_one = PublicAddOneMethod(
-            provider, contract_address, functions.publicAddOne, validator
+            web3_or_provider,
+            contract_address,
+            functions.publicAddOne,
+            validator,
         )
 
     @staticmethod

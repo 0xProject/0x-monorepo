@@ -92,11 +92,11 @@ balance:
 
 >>> from zero_ex.contract_wrappers.erc20_token import ERC20Token
 >>> zrx_token = ERC20Token(
-...     provider=ganache,
+...     web3_or_provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
 ... )
 >>> weth_token = ERC20Token(
-...     provider=ganache,
+...     web3_or_provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
 ... )
 
@@ -165,7 +165,7 @@ Now we'll have our Taker fill the order.
 
 >>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> exchange = Exchange(
-...     provider=ganache,
+...     web3_or_provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
 ... )
 

@@ -183,13 +183,13 @@ class SimpleRequireMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -223,13 +223,13 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: List[Union[bytes, str]]):
@@ -285,13 +285,13 @@ class SimpleInputSimpleOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, index_0: int):
@@ -345,13 +345,13 @@ class WithdrawMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, wad: int):
@@ -400,13 +400,13 @@ class MultiInputMultiOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(
@@ -500,13 +500,13 @@ class EcrecoverFnMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(
@@ -612,13 +612,13 @@ class AcceptsBytesMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: Union[bytes, str]):
@@ -666,13 +666,13 @@ class NoInputSimpleOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
@@ -710,13 +710,13 @@ class RevertWithConstantMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -750,13 +750,13 @@ class SimpleRevertMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -792,13 +792,13 @@ class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0x1b9da225:
@@ -832,13 +832,13 @@ class NestedStructOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
@@ -872,13 +872,13 @@ class RequireWithConstantMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -912,13 +912,13 @@ class WithAddressInputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(
@@ -1020,13 +1020,13 @@ class StructInputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
@@ -1074,13 +1074,13 @@ class NonPureMethodMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(
@@ -1115,13 +1115,13 @@ class ComplexInputComplexOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, complex_input: Tuple0xf95128ef):
@@ -1185,13 +1185,13 @@ class NoInputNoOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -1229,13 +1229,13 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -1285,13 +1285,13 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(
@@ -1326,13 +1326,13 @@ class SimplePureFunctionMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
@@ -1366,13 +1366,13 @@ class NestedStructInputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
@@ -1422,13 +1422,13 @@ class MethodReturningMultipleValuesMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple[int, str]:
@@ -1462,13 +1462,13 @@ class MethodReturningArrayOfStructsMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(
@@ -1504,13 +1504,13 @@ class EmitSimpleEventMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(
@@ -1545,13 +1545,13 @@ class StructOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
@@ -1589,13 +1589,13 @@ class PureFunctionWithConstantMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
@@ -1629,13 +1629,13 @@ class SimpleInputNoOutputMethod(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, index_0: int):
@@ -1689,13 +1689,13 @@ class OverloadedMethod2Method(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: str):
@@ -1743,13 +1743,13 @@ class OverloadedMethod1Method(ContractMethod):
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         contract_function: ContractFunction,
         validator: Validator = None,
     ):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
+        super().__init__(web3_or_provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: int):
@@ -1952,13 +1952,14 @@ class AbiGenDummy:
 
     def __init__(
         self,
-        provider: BaseProvider,
+        web3_or_provider: Union[Web3, BaseProvider],
         contract_address: str,
         validator: AbiGenDummyValidator = None,
     ):
         """Get an instance of wrapper for smart contract.
 
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param web3_or_provider: Either an instance of `web3.Web3`:code: or
+            `web3.providers.base.BaseProvider`:code:
         :param contract_address: where the contract has been deployed
         :param validator: for validation of method inputs.
         """
@@ -1967,9 +1968,20 @@ class AbiGenDummy:
         self.contract_address = contract_address
 
         if not validator:
-            validator = AbiGenDummyValidator(provider, contract_address)
+            validator = AbiGenDummyValidator(
+                web3_or_provider, contract_address
+            )
 
-        web3 = Web3(provider)
+        web3 = None
+        if isinstance(web3_or_provider, BaseProvider):
+            web3 = Web3(web3_or_provider)
+        elif isinstance(web3_or_provider, Web3):
+            web3 = web3_or_provider
+        if web3 is None:
+            raise TypeError(
+                "Expected parameter 'web3_or_provider' to be an instance of either"
+                + " Web3 or BaseProvider"
+            )
 
         # if any middleware was imported, inject it
         try:
@@ -1977,10 +1989,16 @@ class AbiGenDummy:
         except NameError:
             pass
         else:
-            for middleware in MIDDLEWARE:
-                web3.middleware_onion.inject(  # type: ignore
-                    middleware["function"], layer=middleware["layer"]
-                )
+            try:
+                for middleware in MIDDLEWARE:
+                    web3.middleware_onion.inject(  # type: ignore
+                        middleware["function"], layer=middleware["layer"]
+                    )
+            except ValueError as value_error:
+                if value_error.args == (
+                    "You can't add the same un-named instance twice",
+                ):
+                    pass
 
         self._web3_eth = (
             web3.eth  # type: ignore # pylint: disable=no-member
@@ -1992,162 +2010,210 @@ class AbiGenDummy:
         ).functions
 
         self.simple_require = SimpleRequireMethod(
-            provider, contract_address, functions.simpleRequire, validator
+            web3_or_provider,
+            contract_address,
+            functions.simpleRequire,
+            validator,
         )
 
         self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.acceptsAnArrayOfBytes,
             validator,
         )
 
         self.simple_input_simple_output = SimpleInputSimpleOutputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.simpleInputSimpleOutput,
             validator,
         )
 
         self.withdraw = WithdrawMethod(
-            provider, contract_address, functions.withdraw, validator
+            web3_or_provider, contract_address, functions.withdraw, validator
         )
 
         self.multi_input_multi_output = MultiInputMultiOutputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.multiInputMultiOutput,
             validator,
         )
 
         self.ecrecover_fn = EcrecoverFnMethod(
-            provider, contract_address, functions.ecrecoverFn, validator
+            web3_or_provider,
+            contract_address,
+            functions.ecrecoverFn,
+            validator,
         )
 
         self.accepts_bytes = AcceptsBytesMethod(
-            provider, contract_address, functions.acceptsBytes, validator
+            web3_or_provider,
+            contract_address,
+            functions.acceptsBytes,
+            validator,
         )
 
         self.no_input_simple_output = NoInputSimpleOutputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.noInputSimpleOutput,
             validator,
         )
 
         self.revert_with_constant = RevertWithConstantMethod(
-            provider, contract_address, functions.revertWithConstant, validator
+            web3_or_provider,
+            contract_address,
+            functions.revertWithConstant,
+            validator,
         )
 
         self.simple_revert = SimpleRevertMethod(
-            provider, contract_address, functions.simpleRevert, validator
+            web3_or_provider,
+            contract_address,
+            functions.simpleRevert,
+            validator,
         )
 
         self.method_using_nested_struct_with_inner_struct_not_used_elsewhere = MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.methodUsingNestedStructWithInnerStructNotUsedElsewhere,
             validator,
         )
 
         self.nested_struct_output = NestedStructOutputMethod(
-            provider, contract_address, functions.nestedStructOutput, validator
+            web3_or_provider,
+            contract_address,
+            functions.nestedStructOutput,
+            validator,
         )
 
         self.require_with_constant = RequireWithConstantMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.requireWithConstant,
             validator,
         )
 
         self.with_address_input = WithAddressInputMethod(
-            provider, contract_address, functions.withAddressInput, validator
+            web3_or_provider,
+            contract_address,
+            functions.withAddressInput,
+            validator,
         )
 
         self.struct_input = StructInputMethod(
-            provider, contract_address, functions.structInput, validator
+            web3_or_provider,
+            contract_address,
+            functions.structInput,
+            validator,
         )
 
         self.non_pure_method = NonPureMethodMethod(
-            provider, contract_address, functions.nonPureMethod, validator
+            web3_or_provider,
+            contract_address,
+            functions.nonPureMethod,
+            validator,
         )
 
         self.complex_input_complex_output = ComplexInputComplexOutputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.complexInputComplexOutput,
             validator,
         )
 
         self.no_input_no_output = NoInputNoOutputMethod(
-            provider, contract_address, functions.noInputNoOutput, validator
+            web3_or_provider,
+            contract_address,
+            functions.noInputNoOutput,
+            validator,
         )
 
         self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.simplePureFunctionWithInput,
             validator,
         )
 
         self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.nonPureMethodThatReturnsNothing,
             validator,
         )
 
         self.simple_pure_function = SimplePureFunctionMethod(
-            provider, contract_address, functions.simplePureFunction, validator
+            web3_or_provider,
+            contract_address,
+            functions.simplePureFunction,
+            validator,
         )
 
         self.nested_struct_input = NestedStructInputMethod(
-            provider, contract_address, functions.nestedStructInput, validator
+            web3_or_provider,
+            contract_address,
+            functions.nestedStructInput,
+            validator,
         )
 
         self.method_returning_multiple_values = MethodReturningMultipleValuesMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.methodReturningMultipleValues,
             validator,
         )
 
         self.method_returning_array_of_structs = MethodReturningArrayOfStructsMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.methodReturningArrayOfStructs,
             validator,
         )
 
         self.emit_simple_event = EmitSimpleEventMethod(
-            provider, contract_address, functions.emitSimpleEvent, validator
+            web3_or_provider,
+            contract_address,
+            functions.emitSimpleEvent,
+            validator,
         )
 
         self.struct_output = StructOutputMethod(
-            provider, contract_address, functions.structOutput, validator
+            web3_or_provider,
+            contract_address,
+            functions.structOutput,
+            validator,
         )
 
         self.pure_function_with_constant = PureFunctionWithConstantMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.pureFunctionWithConstant,
             validator,
         )
 
         self.simple_input_no_output = SimpleInputNoOutputMethod(
-            provider,
+            web3_or_provider,
             contract_address,
             functions.simpleInputNoOutput,
             validator,
         )
 
         self.overloaded_method2 = OverloadedMethod2Method(
-            provider, contract_address, functions.overloadedMethod, validator
+            web3_or_provider,
+            contract_address,
+            functions.overloadedMethod,
+            validator,
         )
 
         self.overloaded_method1 = OverloadedMethod1Method(
-            provider, contract_address, functions.overloadedMethod, validator
+            web3_or_provider,
+            contract_address,
+            functions.overloadedMethod,
+            validator,
         )
 
     def get_withdrawal_event(

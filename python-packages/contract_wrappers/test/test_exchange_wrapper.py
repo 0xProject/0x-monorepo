@@ -21,7 +21,7 @@ from zero_ex.order_utils import (
 def exchange_wrapper(ganache_provider):
     """Get an Exchange wrapper instance."""
     return Exchange(
-        provider=ganache_provider,
+        web3_or_provider=ganache_provider,
         contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
     )
 
@@ -149,3 +149,20 @@ def test_exchange_wrapper__batch_fill_orders(
         assert_fill_log(
             fill_events[index].args, maker, taker, order, order_hashes[index]
         )
+
+
+def test_two_instantiations_with_web3_objects(web3_instance):
+    """Test that instantiating two Exchange objects doesn't raise.
+
+    When instantiating an Exchange object with a web3 client (rather than a
+    provider) there was a bug encountered where web3.py was giving an error
+    when trying to install the rich-revert-handling middleware on the web3
+    client, an error saying "can't install this same middleware instance
+    again."  Test that that bug isn't occurring.
+    """
+    exchange = Exchange(  # pylint: disable=unused-variable
+        web3_instance, NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+    )
+    exchange2 = Exchange(  # pylint: disable=unused-variable
+        web3_instance, NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+    )

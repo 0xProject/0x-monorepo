@@ -284,11 +284,14 @@ def _convert_ec_signature_to_vrs_hex(signature: ECSignature) -> str:
 
 
 def sign_hash(
-    provider: BaseProvider, signer_address: str, hash_hex: str
+    web3_or_provider: Union[Web3, BaseProvider],
+    signer_address: str,
+    hash_hex: str,
 ) -> str:
     """Sign a message with the given hash, and return the signature.
 
-    :param provider: A Web3 provider.
+    :param web3_or_provider: Either an instance of `web3.Web3`:code: or
+        `web3.providers.base.BaseProvider`:code:
     :param signer_address: The address of the signing account.
     :param hash_hex: A hex string representing the hash, like that returned
         from `generate_order_hash_hex()`:code:.
@@ -302,11 +305,20 @@ def sign_hash(
     ... )
     '0x1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
     """  # noqa: E501 (line too long)
-    assert_is_provider(provider, "provider")
+    web3_instance = None
+    if isinstance(web3_or_provider, BaseProvider):
+        web3_instance = Web3(web3_or_provider)
+    elif isinstance(web3_or_provider, Web3):
+        web3_instance = web3_or_provider
+    else:
+        raise TypeError(
+            "Expected parameter 'web3_or_provider' to be an instance of either"
+            + " Web3 or BaseProvider"
+        )
+
     assert_is_address(signer_address, "signer_address")
     assert_is_hex_string(hash_hex, "hash_hex")
 
-    web3_instance = Web3(provider)
     # false positive from pylint: disable=no-member
     signature = web3_instance.eth.sign(  # type: ignore
         signer_address, hexstr=hash_hex.replace("0x", "")
@@ -332,7 +344,10 @@ def sign_hash(
         )
 
         valid = is_valid_signature(
-            provider, hash_hex, signature_as_vrst_hex, signer_address
+            web3_instance.provider,
+            hash_hex,
+            signature_as_vrst_hex,
+            signer_address,
         )
 
         if valid is True:
@@ -347,7 +362,10 @@ def sign_hash(
             ).hex()
         )
         valid = is_valid_signature(
-            provider, hash_hex, signature_as_vrst_hex, signer_address
+            web3_instance.provider,
+            hash_hex,
+            signature_as_vrst_hex,
+            signer_address,
         )
 
         if valid is True:
@@ -360,7 +378,9 @@ def sign_hash(
 
 
 def sign_hash_to_bytes(
-    provider: BaseProvider, signer_address: str, hash_hex: str
+    web3_or_provider: Union[Web3, BaseProvider],
+    signer_address: str,
+    hash_hex: str,
 ) -> bytes:
     """Sign a message with the given hash, and return the signature.
 
@@ -373,5 +393,5 @@ def sign_hash_to_bytes(
     '1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
     """  # noqa: E501 (line too long)
     return remove_0x_prefix(
-        sign_hash(provider, signer_address, hash_hex)
+        sign_hash(web3_or_provider, signer_address, hash_hex)
     ).encode(encoding="utf_8")
