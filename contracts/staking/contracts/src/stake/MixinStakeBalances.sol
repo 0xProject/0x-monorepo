@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "../immutable/MixinDeploymentConstants.sol";
+import "../immutable/MixinConstants.sol";
 import "./MixinStakeStorage.sol";
 
 
 contract MixinStakeBalances is
     MixinStakeStorage,
-    MixinDeploymentConstants
+    MixinConstants
 {
     using LibSafeMath for uint256;
 
@@ -74,7 +74,7 @@ contract MixinStakeBalances is
     /// @param staker of stake.
     /// @return Total ZRX staked by `staker`.
     function getTotalStake(address staker)
-        public
+        external
         view
         returns (uint256)
     {
@@ -86,7 +86,7 @@ contract MixinStakeBalances is
     /// @param poolId Unique Id of pool.
     /// @return Stake delegated to pool by staker.
     function getStakeDelegatedToPoolByOwner(address staker, bytes32 poolId)
-        public
+        external
         view
         returns (IStructs.StoredBalance memory balance)
     {
@@ -99,7 +99,7 @@ contract MixinStakeBalances is
     /// @param poolId Unique Id of pool.
     /// @return Total stake delegated to pool.
     function getTotalStakeDelegatedToPool(bytes32 poolId)
-        public
+        external
         view
         returns (IStructs.StoredBalance memory balance)
     {

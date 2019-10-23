@@ -75,7 +75,7 @@ contract MixinExchangeFees is
             return;
         }
 
-        uint256 poolStake = getTotalStakeDelegatedToPool(poolId).currentEpochBalance;
+        uint256 poolStake = _loadCurrentBalance(_delegatedStakeByPoolId[poolId]).currentEpochBalance;
         // Ignore pools with dust stake.
         if (poolStake < minimumPoolStake) {
             return;
@@ -137,9 +137,9 @@ contract MixinExchangeFees is
         view
         returns (uint256 membersStake, uint256 weightedStake)
     {
-        uint256 operatorStake = getStakeDelegatedToPoolByOwner(
-            _poolById[poolId].operator,
-            poolId
+        address operator = _poolById[poolId].operator;
+        uint256 operatorStake = _loadCurrentBalance(
+            _delegatedStakeToPoolByOwner[operator][poolId]
         ).currentEpochBalance;
 
         membersStake = totalStake.safeSub(operatorStake);

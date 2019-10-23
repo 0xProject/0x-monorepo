@@ -21,12 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibFractions.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
-import "../stake/MixinStakeBalances.sol";
+import "../stake/MixinStakeStorage.sol";
 import "../immutable/MixinConstants.sol";
 
 
 contract MixinCumulativeRewards is
-    MixinStakeBalances,
+    MixinStakeStorage,
     MixinConstants
 {
     using LibSafeMath for uint256;

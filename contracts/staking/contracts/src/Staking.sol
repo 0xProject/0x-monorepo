@@ -22,11 +22,13 @@ pragma experimental ABIEncoderV2;
 import "./interfaces/IStaking.sol";
 import "./sys/MixinParams.sol";
 import "./stake/MixinStake.sol";
+import "./stake/MixinStakeBalances.sol";
 import "./fees/MixinExchangeFees.sol";
 
 
 contract Staking is
     IStaking,
+    MixinStakeBalances,
     MixinParams,
     MixinStake,
     MixinExchangeFees
