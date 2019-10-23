@@ -5,6 +5,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { BalanceStore } from './balance_store';
+import { BlockchainBalanceStore } from './blockchain_balance_store';
 import { TokenContractsByName, TokenOwnersByName } from './types';
 
 export class LocalBalanceStore extends BalanceStore {
@@ -25,7 +26,7 @@ export class LocalBalanceStore extends BalanceStore {
      * Note that parameters are given {} defaults because `LocalBalanceStore`s will typically
      * be initialized via `create`.
      */
-    public constructor(
+    protected constructor(
         tokenOwnersByName: TokenOwnersByName = {},
         tokenContractsByName: Partial<TokenContractsByName> = {},
     ) {
