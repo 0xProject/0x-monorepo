@@ -18,7 +18,7 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
 import { deployCoordinatorAsync } from './deploy_coordinator';
-import { DeploymentManager } from '../deployment/deployment_mananger';
+import { DeploymentManager } from '../utils/deployment_manager';
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Coordinator tests', env => {

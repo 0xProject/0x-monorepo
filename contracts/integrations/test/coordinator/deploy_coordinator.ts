@@ -3,7 +3,7 @@ import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
 import { BlockchainTestsEnvironment } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 
-import { DeploymentManager } from '../deployment/deployment_mananger';
+import { DeploymentManager } from '../utils/deployment_manager';
 
 export async function deployCoordinatorAsync(
     deployment: DeploymentManager,
