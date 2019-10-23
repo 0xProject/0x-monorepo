@@ -2,12 +2,16 @@
 
 """setuptools module for json_schemas package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import distutils.command.build_py
 from distutils.command.clean import clean
 import subprocess  # nosec
 from shutil import copytree, rmtree
 from os import environ, path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand

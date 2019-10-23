@@ -2,11 +2,15 @@
 
 """setuptools module for order_utils package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import subprocess  # nosec
 from shutil import rmtree
 from os import environ, path
 from pathlib import Path
-from sys import argv
+from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
 import distutils.command.build_py

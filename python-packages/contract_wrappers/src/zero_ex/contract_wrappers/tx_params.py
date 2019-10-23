@@ -23,7 +23,7 @@ class TxParams:
     gas: Optional[int] = attr.ib(
         default=None, converter=attr.converters.optional(int)
     )
-    gasPrice: Optional[int] = attr.ib(
+    gas_price: Optional[int] = attr.ib(
         default=None, converter=attr.converters.optional(int)
     )
     nonce: Optional[int] = attr.ib(
@@ -36,4 +36,7 @@ class TxParams:
         if "from_" in res:
             res["from"] = res["from_"]
             del res["from_"]
+        if "gas_price" in res:
+            res["gasPrice"] = res["gas_price"]
+            del res["gas_price"]
         return res

@@ -3,10 +3,15 @@
 
 """setuptools module for sra_client package."""
 
+# pylint: disable=import-outside-toplevel
+# we import things outside of top-level because 3rd party libs may not yet be
+# installed when you invoke this script
+
 import subprocess  # nosec
 import distutils.command.build_py
 from distutils.command.clean import clean
 from shutil import rmtree
+from sys import exit  # pylint: disable=redefined-builtin
 from urllib.request import urlopen
 from urllib.error import URLError
 
