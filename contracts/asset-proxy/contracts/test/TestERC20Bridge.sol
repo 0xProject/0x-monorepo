@@ -72,7 +72,7 @@ contract TestERC20Bridge is
         testToken.setBalance(owner, balance);
     }
 
-    function withdrawTo(
+    function bridgeTransferFrom(
         address tokenAddress,
         address from,
         address to,

@@ -37,7 +37,7 @@ contract UniswapBridge is
     address constant private UNISWAP_EXCHANGE_FACTORY_ADDRESS = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address constant private WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
-    // Struct to hold `withdrawTo()` local variables in memory and to avoid
+    // Struct to hold `bridgeTransferFrom()` local variables in memory and to avoid
     // stack overflows.
     struct WithdrawToState {
         IUniswapExchange exchange;
@@ -60,7 +60,7 @@ contract UniswapBridge is
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoded "from" token address.
     /// @return success The magic bytes if successful.
-    function withdrawTo(
+    function bridgeTransferFrom(
         address toTokenAddress,
         address /* from */,
         address to,
