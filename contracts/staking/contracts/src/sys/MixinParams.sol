@@ -20,16 +20,12 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStakingProxy.sol";
 import "../libs/LibStakingRichErrors.sol";
 
 
 contract MixinParams is
-    IStakingEvents,
-    MixinStorage,
-    MixinConstants
+    MixinStorage
 {
     /// @dev Set all configurable parameters at once.
     /// @param _epochDurationInSeconds Minimum seconds between epochs.

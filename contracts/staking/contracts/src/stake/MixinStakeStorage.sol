@@ -71,23 +71,6 @@ contract MixinStakeStorage is
         _storeBalance(toPtr, to);
     }
 
-    /// @dev Loads a balance from storage and updates its fields to reflect values for the current epoch.
-    /// @param balancePtr to load.
-    /// @return current balance.
-    function _loadCurrentBalance(IStructs.StoredBalance storage balancePtr)
-        internal
-        view
-        returns (IStructs.StoredBalance memory balance)
-    {
-        balance = balancePtr;
-        uint256 currentEpoch_ = currentEpoch;
-        if (currentEpoch_ > balance.currentEpoch) {
-            balance.currentEpoch = currentEpoch_.downcastToUint64();
-            balance.currentEpochBalance = balance.nextEpochBalance;
-        }
-        return balance;
-    }
-
     /// @dev Increments both the `current` and `next` fields.
     /// @param balancePtr storage pointer to balance.
     /// @param amount to mint.

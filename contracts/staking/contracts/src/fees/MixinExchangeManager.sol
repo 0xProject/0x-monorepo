@@ -20,12 +20,10 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "../libs/LibStakingRichErrors.sol";
-import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinStorage.sol";
 
 
 contract MixinExchangeManager is
-    IStakingEvents,
     MixinStorage
 {
     /// @dev Asserts that the call is coming from a valid exchange.

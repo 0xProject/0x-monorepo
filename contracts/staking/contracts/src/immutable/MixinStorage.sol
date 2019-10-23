@@ -24,13 +24,20 @@ import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IStructs.sol";
+import "../interfaces/IStakingEvents.sol";
 import "../libs/LibStakingRichErrors.sol";
+import "../libs/LibSafeDowncast.sol";
 
 
 // solhint-disable max-states-count, no-empty-blocks
 contract MixinStorage is
+    IStakingEvents,
+    MixinConstants,
     Authorizable
 {
+
+    using LibSafeDowncast for uint256;
+
     // address of staking contract
     address public stakingContract;
 
@@ -113,4 +120,21 @@ contract MixinStorage is
 
     /// @dev The WETH balance of this contract that is reserved for pool reward payouts.
     uint256 public wethReservedForPoolRewards;
+
+    /// @dev Loads a balance from storage and updates its fields to reflect values for the current epoch.
+    /// @param balancePtr to load.
+    /// @return current balance.
+    function _loadCurrentBalance(IStructs.StoredBalance storage balancePtr)
+        internal
+        view
+        returns (IStructs.StoredBalance memory balance)
+    {
+        balance = balancePtr;
+        uint256 currentEpoch_ = currentEpoch;
+        if (currentEpoch_ > balance.currentEpoch) {
+            balance.currentEpoch = currentEpoch_.downcastToUint64();
+            balance.currentEpochBalance = balance.nextEpochBalance;
+        }
+        return balance;
+    }
 }

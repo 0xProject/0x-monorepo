@@ -22,11 +22,9 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
-import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinScheduler is
-    IStakingEvents,
     MixinStorage
 {
     using LibSafeMath for uint256;
