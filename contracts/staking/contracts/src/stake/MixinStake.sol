@@ -178,19 +178,19 @@ contract MixinStake is
             staker
         );
 
-        // Increment how much stake the staker has delegated to the input pool.
+        // Increase how much stake the staker has delegated to the input pool.
         _increaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
-        // Increment how much stake has been delegated to pool.
+        // Increase how much stake has been delegated to pool.
         _increaseNextBalance(
             _delegatedStakeByPoolId[poolId],
             amount
         );
 
-        // Increase next balance of global delegated stake
+        // Increase next balance of global delegated stake.
         _increaseNextBalance(
             _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)],
             amount
@@ -216,19 +216,19 @@ contract MixinStake is
             staker
         );
 
-        // decrement how much stake the staker has delegated to the input pool
+        // Decrease how much stake the staker has delegated to the input pool.
         _decreaseNextBalance(
             _delegatedStakeToPoolByOwner[staker][poolId],
             amount
         );
 
-        // decrement how much stake has been delegated to pool
+        // Decrease how much stake has been delegated to pool.
         _decreaseNextBalance(
             _delegatedStakeByPoolId[poolId],
             amount
         );
 
-        // decrease next balance of global delegated stake
+        // Decrease next balance of global delegated stake (aggregated across all stakers).
         _decreaseNextBalance(
             _globalStakeByStatus[uint8(IStructs.StakeStatus.DELEGATED)],
             amount
