@@ -32,3 +32,18 @@ export function verifyEvents<TEventArgs>(
         expect(log).to.deep.equal(expectedEvents[index]);
     });
 }
+
+/**
+ * Given a collection of logs, verifies that matching events are identical.
+ */
+export function verifyEventsFromLogs<TEventArgs>(
+    logs: LogEntry[],
+    expectedEvents: TEventArgs[],
+    eventName: string,
+): void {
+    const _logs = filterLogsToArguments<TEventArgs>(logs, eventName);
+    expect(_logs.length).to.eq(expectedEvents.length);
+    _logs.forEach((log, index) => {
+        expect(log).to.deep.equal(expectedEvents[index]);
+    });
+}
