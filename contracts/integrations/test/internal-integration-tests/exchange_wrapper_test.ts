@@ -6,6 +6,8 @@ import {
     BlockchainBalanceStore,
     ExchangeContract,
     ExchangeWrapper,
+    IExchangeEvents,
+    IExchangeFillEventArgs,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
 import {
@@ -22,9 +24,11 @@ import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { AddressManager } from '../utils/address_manager';
+import { Actor } from '../actors/base';
+import { Maker } from '../actors/maker';
 import { DeploymentManager } from '../utils/deployment_manager';
 
 // tslint:disable:no-unnecessary-type-assertion
@@ -34,7 +38,8 @@ blockchainTests.resets.only('Exchange wrappers', env => {
     let takerAddress: string;
     let feeRecipientAddress: string;
 
-    let maker: OrderFactory;
+    let maker: Maker;
+    let taker: Actor;
 
     const nullFillResults: FillResults = {
         makerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -60,23 +65,35 @@ blockchainTests.resets.only('Exchange wrappers', env => {
             numErc1155TokensToDeploy: 0,
         });
 
-        const addressManager = new AddressManager();
-
-        await addressManager.addMakerAsync(
+        maker = new Maker({
+            name: 'market maker',
             deployment,
-            { address: makerAddress, mainToken: deployment.tokens.erc20[0], feeToken: deployment.tokens.erc20[2] },
-            env,
-            deployment.tokens.erc20[1],
-            feeRecipientAddress,
-            chainId,
-        );
-        await addressManager.addTakerAsync(deployment, {
-            address: takerAddress,
-            mainToken: deployment.tokens.erc20[1],
-            feeToken: deployment.tokens.erc20[2],
+            orderConfig: {
+                ...constants.STATIC_ORDER_PARAMS,
+                makerAddress,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[0].address),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[1].address),
+                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address),
+                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(deployment.tokens.erc20[2].address),
+                feeRecipientAddress,
+                exchangeAddress: deployment.exchange.address,
+                chainId,
+            },
         });
+        makerAddress = maker.address;
+        taker = new Actor({
+            name: 'taker',
+            deployment,
+        });
+        takerAddress = taker.address;
 
-        // FIXME: This will likely need to be updated to include WETH and ZRX
+        await Promise.all([
+            maker.configureERC20TokenAsync(deployment.tokens.weth),
+            ...deployment.tokens.erc20.map(token => maker.configureERC20TokenAsync(token)),
+            taker.configureERC20TokenAsync(deployment.tokens.weth),
+            ...deployment.tokens.erc20.map(token => taker.configureERC20TokenAsync(token)),
+        ]);
+
         blockchainBalances = new BlockchainBalanceStore(
             {
                 makerAddress,
@@ -89,29 +106,20 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     makerAsset: deployment.tokens.erc20[0],
                     takerAsset: deployment.tokens.erc20[1],
                     feeAsset: deployment.tokens.erc20[2],
+                    weth: deployment.tokens.weth,
                 },
             },
             {},
         );
         await blockchainBalances.updateBalancesAsync();
         initialLocalBalances = LocalBalanceStore.create(blockchainBalances);
-
-        maker = addressManager.makers[0].orderFactory;
     });
 
     beforeEach(async () => {
         localBalances = LocalBalanceStore.create(initialLocalBalances);
     });
 
-    // FIXME - Refactor to use an interface for the arguments
-    function simulateFill(
-        makerAddress: string,
-        takerAddress: string,
-        feeRecipientAddress: string,
-        signedOrder: SignedOrder,
-        expectedFillResults: FillResults,
-        gasUsed?: number,
-    ): void {
+    function simulateFill(signedOrder: SignedOrder, expectedFillResults: FillResults, gasUsed?: number): void {
         // taker -> maker
         localBalances.transferAsset(
             takerAddress,
@@ -157,9 +165,94 @@ blockchainTests.resets.only('Exchange wrappers', env => {
         }
     }
 
+    function maximumBatchFillResults(signedOrders: SignedOrder[]): FillResults {
+        return signedOrders
+            .map(signedOrder => ({
+                makerAssetFilledAmount: signedOrder.makerAssetAmount,
+                takerAssetFilledAmount: signedOrder.takerAssetAmount,
+                makerFeePaid: signedOrder.makerFee,
+                takerFeePaid: signedOrder.takerFee,
+                protocolFeePaid: DeploymentManager.protocolFee,
+            }))
+            .reduce(
+                (totalFillResults, currentFillResults) => ({
+                    makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
+                        currentFillResults.makerAssetFilledAmount,
+                    ),
+                    takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
+                        currentFillResults.takerAssetFilledAmount,
+                    ),
+                    makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
+                    takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
+                    protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
+                }),
+                nullFillResults,
+            );
+    }
+
+    interface FillTestInfo {
+        signedOrder: SignedOrder;
+        expectedFillResults: FillResults;
+    }
+
+    function verifyFillEvents(receipt: TransactionReceiptWithDecodedLogs, fillTestInfo: FillTestInfo[]) {
+        // 5 events should be emitted per fill - 4 transfer events and 1 fill event
+        expect(receipt.logs.length).to.be.eq(fillTestInfo.length * 5);
+
+        const expectedFillEvents: IExchangeFillEventArgs[] = [];
+
+        let expectedTransferEvents: IERC20TokenTransferEventArgs[] = [];
+
+        _.forEach(fillTestInfo, ({ signedOrder, expectedFillResults }) => {
+            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
+
+            expectedFillEvents.push({
+                makerAddress,
+                feeRecipientAddress,
+                makerAssetData: signedOrder.makerAssetData,
+                takerAssetData: signedOrder.takerAssetData,
+                makerFeeAssetData: signedOrder.makerFeeAssetData,
+                takerFeeAssetData: signedOrder.takerFeeAssetData,
+                orderHash,
+                takerAddress,
+                senderAddress: takerAddress,
+                makerAssetFilledAmount: expectedFillResults.makerAssetFilledAmount,
+                takerAssetFilledAmount: expectedFillResults.takerAssetFilledAmount,
+                makerFeePaid: expectedFillResults.makerFeePaid,
+                takerFeePaid: expectedFillResults.takerFeePaid,
+                protocolFeePaid: expectedFillResults.protocolFeePaid,
+            });
+
+            expectedTransferEvents = expectedTransferEvents.concat([
+                {
+                    _from: takerAddress,
+                    _to: makerAddress,
+                    _value: expectedFillResults.takerAssetFilledAmount,
+                },
+                {
+                    _from: makerAddress,
+                    _to: takerAddress,
+                    _value: expectedFillResults.makerAssetFilledAmount,
+                },
+                {
+                    _from: takerAddress,
+                    _to: feeRecipientAddress,
+                    _value: expectedFillResults.takerFeePaid,
+                },
+                {
+                    _from: makerAddress,
+                    _to: feeRecipientAddress,
+                    _value: expectedFillResults.makerFeePaid,
+                },
+            ]);
+        });
+        verifyEvents<IExchangeFillEventArgs>(receipt, expectedFillEvents, IExchangeEvents.Fill);
+        verifyEvents<IERC20TokenTransferEventArgs>(receipt, expectedTransferEvents, IERC20TokenEvents.Transfer);
+    }
+
     describe('fillOrKillOrder', () => {
         it('should transfer the correct amounts', async () => {
-            const signedOrder = await maker.newSignedOrderAsync({
+            const signedOrder = await maker.signOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
@@ -189,29 +282,18 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                 .dividedToIntegerBy(signedOrder.makerAssetAmount);
             const protocolFeePaid = DeploymentManager.protocolFee;
 
-            expect(fillResults).to.be.deep.eq({
+            const expectedFillResults = {
                 makerAssetFilledAmount,
                 takerAssetFilledAmount,
                 makerFeePaid,
                 takerFeePaid,
                 protocolFeePaid,
-            });
+            };
+
+            expect(fillResults).to.be.deep.eq(expectedFillResults);
 
             // Simulate filling the order
-            simulateFill(
-                makerAddress,
-                takerAddress,
-                feeRecipientAddress,
-                signedOrder,
-                {
-                    makerAssetFilledAmount,
-                    takerAssetFilledAmount,
-                    makerFeePaid,
-                    takerFeePaid,
-                    protocolFeePaid,
-                },
-                receipt.gasUsed,
-            );
+            simulateFill(signedOrder, expectedFillResults, receipt.gasUsed);
 
             // Update the blockchain balances balance store.
             await blockchainBalances.updateBalancesAsync();
@@ -219,41 +301,13 @@ blockchainTests.resets.only('Exchange wrappers', env => {
             // Ensure that the blockchain and the local balance stores are ewqual.
             blockchainBalances.assertEquals(localBalances);
 
-            expect(receipt.logs.length).to.be.eq(5);
-
-            // FIXME - Expect that the fill event was emitted.
-
-            verifyEvents<IERC20TokenTransferEventArgs>(
-                receipt,
-                [
-                    {
-                        _from: takerAddress,
-                        _to: makerAddress,
-                        _value: takerAssetFilledAmount,
-                    },
-                    {
-                        _from: makerAddress,
-                        _to: takerAddress,
-                        _value: makerAssetFilledAmount,
-                    },
-                    {
-                        _from: takerAddress,
-                        _to: feeRecipientAddress,
-                        _value: takerFeePaid,
-                    },
-                    {
-                        _from: makerAddress,
-                        _to: feeRecipientAddress,
-                        _value: makerFeePaid,
-                    },
-                ],
-                IERC20TokenEvents.Transfer,
-            );
+            // Verify that the correct fill and transfer events were emitted.
+            verifyFillEvents(receipt, [{ signedOrder, expectedFillResults }]);
         });
 
         it('should revert if a signedOrder is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
-            const signedOrder = await maker.newSignedOrderAsync({
+            const signedOrder = await maker.signOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
@@ -268,7 +322,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
         });
 
         it('should revert if entire takerAssetFillAmount not filled', async () => {
-            const signedOrder = await maker.newSignedOrderAsync();
+            const signedOrder = await maker.signOrderAsync();
             const takerAssetFillAmount = signedOrder.takerAssetAmount;
 
             await deployment.exchange.fillOrder.awaitTransactionSuccessAsync(
@@ -295,17 +349,13 @@ blockchainTests.resets.only('Exchange wrappers', env => {
     describe('batch functions', () => {
         let signedOrders: SignedOrder[];
         beforeEach(async () => {
-            signedOrders = [
-                await maker.newSignedOrderAsync(),
-                await maker.newSignedOrderAsync(),
-                await maker.newSignedOrderAsync(),
-            ];
+            signedOrders = [await maker.signOrderAsync(), await maker.signOrderAsync(), await maker.signOrderAsync()];
         });
 
         describe('batchFillOrders', () => {
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
-                const expectedFillResults: FillResults[] = [];
+                const fillTestInfo: FillTestInfo[] = [];
 
                 _.forEach(signedOrders, signedOrder => {
                     const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
@@ -319,23 +369,17 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                         .times(makerAssetFilledAmount)
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
                     const protocolFeePaid = DeploymentManager.protocolFee;
-
                     takerAssetFillAmounts.push(takerAssetFilledAmount);
-                    expectedFillResults.push({
-                        takerAssetFilledAmount,
-                        makerAssetFilledAmount,
-                        makerFeePaid,
-                        takerFeePaid,
-                        protocolFeePaid,
-                    });
 
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         takerAssetFilledAmount,
                         makerAssetFilledAmount,
                         makerFeePaid,
                         takerFeePaid,
                         protocolFeePaid,
-                    });
+                    };
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
+                    simulateFill(signedOrder, expectedFillResults);
                 });
 
                 const fillResults = await deployment.exchange.batchFillOrders.callAsync(
@@ -365,14 +409,14 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                expect(receipt.logs.length).to.be.eq(5 * signedOrders.length);
+                verifyFillEvents(receipt, fillTestInfo);
             });
         });
 
         describe('batchFillOrKillOrders', () => {
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
-                const expectedFillResults: FillResults[] = [];
+                const fillTestInfo: FillTestInfo[] = [];
 
                 _.forEach(signedOrders, signedOrder => {
                     const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
@@ -386,23 +430,17 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                         .times(makerAssetFilledAmount)
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
                     const protocolFeePaid = DeploymentManager.protocolFee;
-
                     takerAssetFillAmounts.push(takerAssetFilledAmount);
-                    expectedFillResults.push({
+                    const expectedFillResults = {
                         takerAssetFilledAmount,
                         makerAssetFilledAmount,
                         makerFeePaid,
                         takerFeePaid,
                         protocolFeePaid,
-                    });
+                    };
 
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
-                        takerAssetFilledAmount,
-                        makerAssetFilledAmount,
-                        makerFeePaid,
-                        takerFeePaid,
-                        protocolFeePaid,
-                    });
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
+                    simulateFill(signedOrder, expectedFillResults);
                 });
 
                 const fillResults = await deployment.exchange.batchFillOrKillOrders.callAsync(
@@ -432,7 +470,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should revert if a single signedOrder does not fill the expected amount', async () => {
@@ -468,7 +506,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
         describe('batchFillOrdersNoThrow', async () => {
             it('should transfer the correct amounts', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
-                const expectedFillResults: FillResults[] = [];
+                const fillTestInfo: FillTestInfo[] = [];
 
                 _.forEach(signedOrders, signedOrder => {
                     const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
@@ -482,23 +520,19 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                         .times(makerAssetFilledAmount)
                         .dividedToIntegerBy(signedOrder.makerAssetAmount);
                     const protocolFeePaid = DeploymentManager.protocolFee;
-
                     takerAssetFillAmounts.push(takerAssetFilledAmount);
-                    expectedFillResults.push({
-                        takerAssetFilledAmount,
-                        makerAssetFilledAmount,
-                        makerFeePaid,
-                        takerFeePaid,
-                        protocolFeePaid,
-                    });
 
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         takerAssetFilledAmount,
                         makerAssetFilledAmount,
                         makerFeePaid,
                         takerFeePaid,
                         protocolFeePaid,
-                    });
+                    };
+
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
+
+                    simulateFill(signedOrder, expectedFillResults);
                 });
 
                 const fillResults = await deployment.exchange.batchFillOrdersNoThrow.callAsync(
@@ -528,7 +562,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should not revert if an order is invalid and fill the remaining orders with the bare minimum protocol fee', async () => {
@@ -538,7 +572,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                 };
                 const validOrders = signedOrders.slice(1);
                 const takerAssetFillAmounts: BigNumber[] = [invalidOrder.takerAssetAmount.div(2)];
-                const expectedFillResults = [nullFillResults];
+                const fillTestInfo: FillTestInfo[] = [];
 
                 _.forEach(validOrders, signedOrder => {
                     const takerAssetFilledAmount = signedOrder.takerAssetAmount.div(2);
@@ -554,21 +588,17 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     const protocolFeePaid = DeploymentManager.protocolFee;
 
                     takerAssetFillAmounts.push(takerAssetFilledAmount);
-                    expectedFillResults.push({
-                        takerAssetFilledAmount,
-                        makerAssetFilledAmount,
-                        makerFeePaid,
-                        takerFeePaid,
-                        protocolFeePaid,
-                    });
 
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         takerAssetFilledAmount,
                         makerAssetFilledAmount,
                         makerFeePaid,
                         takerFeePaid,
                         protocolFeePaid,
-                    });
+                    };
+
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
+                    simulateFill(signedOrder, expectedFillResults);
                 });
 
                 const newOrders = [invalidOrder, ...validOrders];
@@ -599,7 +629,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
         });
 
@@ -636,7 +666,6 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     },
                 );
 
-                // FIXME - Refactor this.
                 expect(fillResults).to.be.deep.eq({
                     makerAssetFilledAmount,
                     takerAssetFilledAmount,
@@ -645,45 +674,55 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     protocolFeePaid,
                 });
 
-                simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrders[0], {
-                    makerAssetFilledAmount: signedOrders[0].makerAssetAmount,
-                    takerAssetFilledAmount: signedOrders[0].takerAssetAmount,
-                    makerFeePaid: signedOrders[0].makerFee,
-                    takerFeePaid: signedOrders[0].takerFee,
-                    protocolFeePaid: DeploymentManager.protocolFee,
-                });
-                simulateFill(
-                    makerAddress,
-                    takerAddress,
-                    feeRecipientAddress,
-                    signedOrders[1],
+                const fillTestInfo = [
                     {
-                        makerAssetFilledAmount: signedOrders[1].makerAssetAmount.div(2),
-                        takerAssetFilledAmount: signedOrders[1].takerAssetAmount.div(2),
-                        makerFeePaid: signedOrders[1].makerFee.div(2),
-                        takerFeePaid: signedOrders[1].takerFee.div(2),
-                        protocolFeePaid: DeploymentManager.protocolFee,
+                        signedOrder: signedOrders[0],
+                        expectedFillResults: {
+                            makerAssetFilledAmount: signedOrders[0].makerAssetAmount,
+                            takerAssetFilledAmount: signedOrders[0].takerAssetAmount,
+                            makerFeePaid: signedOrders[0].makerFee,
+                            takerFeePaid: signedOrders[0].takerFee,
+                            protocolFeePaid: DeploymentManager.protocolFee,
+                        },
                     },
-                    receipt.gasUsed,
-                );
+                    {
+                        signedOrder: signedOrders[1],
+                        expectedFillResults: {
+                            makerAssetFilledAmount: signedOrders[1].makerAssetAmount.div(2),
+                            takerAssetFilledAmount: signedOrders[1].takerAssetAmount.div(2),
+                            makerFeePaid: signedOrders[1].makerFee.div(2),
+                            takerFeePaid: signedOrders[1].takerFee.div(2),
+                            protocolFeePaid: DeploymentManager.protocolFee,
+                        },
+                    },
+                ];
+
+                simulateFill(fillTestInfo[0].signedOrder, fillTestInfo[0].expectedFillResults);
+                simulateFill(fillTestInfo[1].signedOrder, fillTestInfo[1].expectedFillResults);
+
+                localBalances.burnGas(takerAddress, DeploymentManager.gasPrice.times(receipt.gasUsed));
 
                 await blockchainBalances.updateBalancesAsync();
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const fillTestInfo: FillTestInfo[] = [];
                 _.forEach(signedOrders, signedOrder => {
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
                         protocolFeePaid: DeploymentManager.protocolFee,
-                    });
+                    };
+
+                    simulateFill(signedOrder, expectedFillResults);
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
                 });
 
                 const fillResults = await deployment.exchange.marketSellOrdersNoThrow.callAsync(
@@ -707,28 +746,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     },
                 );
 
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: DeploymentManager.protocolFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
-                        }),
-                        nullFillResults,
-                    );
+                const expectedFillResults = maximumBatchFillResults(signedOrders);
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
 
@@ -738,29 +756,34 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should fill a signedOrder that does not use the same takerAssetAddress', async () => {
                 const defaultTakerAssetAddress = deployment.tokens.erc20[1];
                 const feeToken = deployment.tokens.erc20[2];
                 const differentTakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
+                const fillTestInfo: FillTestInfo[] = [];
+
                 signedOrders = [
-                    await maker.newSignedOrderAsync(),
-                    await maker.newSignedOrderAsync(),
-                    await maker.newSignedOrderAsync({
+                    await maker.signOrderAsync(),
+                    await maker.signOrderAsync(),
+                    await maker.signOrderAsync({
                         takerAssetData: differentTakerAssetData,
                     }),
                 ];
                 const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
                         protocolFeePaid: DeploymentManager.protocolFee,
-                    });
+                    };
+
+                    simulateFill(signedOrder, expectedFillResults);
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
                 });
 
                 const fillResults = await deployment.exchange.marketSellOrdersNoThrow.callAsync(
@@ -784,28 +807,8 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     },
                 );
 
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: DeploymentManager.protocolFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
-                        }),
-                        nullFillResults,
-                    );
+                const expectedFillResults = maximumBatchFillResults(signedOrders);
+
                 expect(fillResults).to.deep.equal(expectedFillResults);
 
                 localBalances.burnGas(takerAddress, DeploymentManager.gasPrice.times(receipt.gasUsed));
@@ -814,7 +817,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
         });
 
@@ -859,20 +862,31 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     protocolFeePaid: DeploymentManager.protocolFee.times(2),
                 });
 
-                simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrders[0], {
-                    makerAssetFilledAmount: signedOrders[0].makerAssetAmount,
-                    takerAssetFilledAmount: signedOrders[0].takerAssetAmount,
-                    makerFeePaid: signedOrders[0].makerFee,
-                    takerFeePaid: signedOrders[0].takerFee,
-                    protocolFeePaid: DeploymentManager.protocolFee,
-                });
-                simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrders[1], {
-                    makerAssetFilledAmount: signedOrders[1].makerAssetAmount.div(2),
-                    takerAssetFilledAmount: signedOrders[1].takerAssetAmount.div(2),
-                    makerFeePaid: signedOrders[1].makerFee.div(2),
-                    takerFeePaid: signedOrders[1].takerFee.div(2),
-                    protocolFeePaid: DeploymentManager.protocolFee,
-                });
+                const fillTestInfo = [
+                    {
+                        signedOrder: signedOrders[0],
+                        expectedFillResults: {
+                            makerAssetFilledAmount: signedOrders[0].makerAssetAmount,
+                            takerAssetFilledAmount: signedOrders[0].takerAssetAmount,
+                            makerFeePaid: signedOrders[0].makerFee,
+                            takerFeePaid: signedOrders[0].takerFee,
+                            protocolFeePaid: DeploymentManager.protocolFee,
+                        },
+                    },
+                    {
+                        signedOrder: signedOrders[1],
+                        expectedFillResults: {
+                            makerAssetFilledAmount: signedOrders[1].makerAssetAmount.div(2),
+                            takerAssetFilledAmount: signedOrders[1].takerAssetAmount.div(2),
+                            makerFeePaid: signedOrders[1].makerFee.div(2),
+                            takerFeePaid: signedOrders[1].takerFee.div(2),
+                            protocolFeePaid: DeploymentManager.protocolFee,
+                        },
+                    },
+                ];
+
+                simulateFill(fillTestInfo[0].signedOrder, fillTestInfo[0].expectedFillResults);
+                simulateFill(fillTestInfo[1].signedOrder, fillTestInfo[1].expectedFillResults);
 
                 localBalances.burnGas(takerAddress, DeploymentManager.gasPrice.times(receipt.gasUsed));
 
@@ -880,19 +894,24 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
                 const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
+                const fillTestInfo: FillTestInfo[] = [];
+
                 _.forEach(signedOrders, signedOrder => {
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
                         protocolFeePaid: DeploymentManager.protocolFee,
-                    });
+                    };
+
+                    simulateFill(signedOrder, expectedFillResults);
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
                 });
 
                 const fillResults = await deployment.exchange.marketBuyOrdersNoThrow.callAsync(
@@ -916,28 +935,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     },
                 );
 
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: DeploymentManager.protocolFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
-                        }),
-                        nullFillResults,
-                    );
+                const expectedFillResults = maximumBatchFillResults(signedOrders);
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
 
@@ -947,29 +945,33 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
 
             it('should fill a signedOrder that does not use the same makerAssetAddress', async () => {
+                const fillTestInfo: FillTestInfo[] = [];
                 const feeToken = deployment.tokens.erc20[2];
                 const differentMakerAssetData = assetDataUtils.encodeERC20AssetData(feeToken.address);
                 signedOrders = [
-                    await maker.newSignedOrderAsync(),
-                    await maker.newSignedOrderAsync(),
-                    await maker.newSignedOrderAsync({
+                    await maker.signOrderAsync(),
+                    await maker.signOrderAsync(),
+                    await maker.signOrderAsync({
                         makerAssetData: differentMakerAssetData,
                     }),
                 ];
 
                 const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
                 _.forEach(signedOrders, signedOrder => {
-                    simulateFill(makerAddress, takerAddress, feeRecipientAddress, signedOrder, {
+                    const expectedFillResults = {
                         makerAssetFilledAmount: signedOrder.makerAssetAmount,
                         takerAssetFilledAmount: signedOrder.takerAssetAmount,
                         makerFeePaid: signedOrder.makerFee,
                         takerFeePaid: signedOrder.takerFee,
                         protocolFeePaid: DeploymentManager.protocolFee,
-                    });
+                    };
+
+                    fillTestInfo.push({ signedOrder, expectedFillResults });
+                    simulateFill(signedOrder, expectedFillResults);
                 });
 
                 const fillResults = await deployment.exchange.marketBuyOrdersNoThrow.callAsync(
@@ -993,28 +995,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                     },
                 );
 
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                        protocolFeePaid: DeploymentManager.protocolFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                            protocolFeePaid: totalFillResults.protocolFeePaid.plus(currentFillResults.protocolFeePaid),
-                        }),
-                        nullFillResults,
-                    );
+                const expectedFillResults = maximumBatchFillResults(signedOrders);
 
                 expect(fillResults).to.deep.equal(expectedFillResults);
 
@@ -1024,7 +1005,7 @@ blockchainTests.resets.only('Exchange wrappers', env => {
 
                 blockchainBalances.assertEquals(localBalances);
 
-                // FIXME - Verify events
+                verifyFillEvents(receipt, fillTestInfo);
             });
         });
 
@@ -1041,7 +1022,6 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                 });
             });
 
-            // FIXME - This test can be improved a lot
             it('should not revert if a single cancel noops', async () => {
                 await deployment.exchange.cancelOrder.awaitTransactionSuccessAsync(signedOrders[1], {
                     from: makerAddress,
@@ -1057,8 +1037,6 @@ blockchainTests.resets.only('Exchange wrappers', env => {
                 receipt.logs.forEach((log, index) => {
                     expect((log as any).args.orderHash).to.equal(expectedOrderHashes[index]);
                 });
-
-                // FIXME - Verify events in a better way
             });
         });
     });
