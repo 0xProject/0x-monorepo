@@ -100,7 +100,7 @@
             },
             {
                 "note": "Add `verifyEventsFromLogs()`",
-                "pr": "TODO"
+                "pr": 2287
             }
         ],
         "timestamp": 1570135330
