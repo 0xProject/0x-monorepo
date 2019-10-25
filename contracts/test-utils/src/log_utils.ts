@@ -26,11 +26,7 @@ export function verifyEvents<TEventArgs>(
     expectedEvents: TEventArgs[],
     eventName: string,
 ): void {
-    return verifyEventsFromLogs(
-        txReceipt.logs,
-        expectedEvents,
-        eventName,
-    );
+    return verifyEventsFromLogs(txReceipt.logs, expectedEvents, eventName);
 }
 
 /**
