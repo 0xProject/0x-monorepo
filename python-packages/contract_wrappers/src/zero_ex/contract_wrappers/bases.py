@@ -74,8 +74,13 @@ class ContractMethod:
         if not tx_params:
             tx_params = TxParams()
         if not tx_params.from_:
-            tx_params.from_ = (
-                self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
+            tx_params.from_ = self._web3_eth.defaultAccount or (
+                self._web3_eth.accounts[0]
+                if len(self._web3_eth.accounts) > 0
+                else None
             )
-        tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
+        if tx_params.from_:
+            tx_params.from_ = self.validate_and_checksum_address(
+                tx_params.from_
+            )
         return tx_params
