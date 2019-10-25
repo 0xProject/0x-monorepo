@@ -7,13 +7,12 @@ import {
     randomAddress,
 } from '@0x/contracts-test-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { artifacts, TestMixinStakeBalancesContract } from '../../src';
 import { constants as stakingConstants } from '../utils/constants';
 import { StakeStatus, StoredBalance } from '../utils/types';
 
-blockchainTests.resets.only('MixinStakeBalances unit tests', env => {
+blockchainTests.resets('MixinStakeBalances unit tests', env => {
     let testContract: TestMixinStakeBalancesContract;
     const { INITIAL_EPOCH } = stakingConstants;
     const CURRENT_EPOCH = INITIAL_EPOCH.plus(1);
