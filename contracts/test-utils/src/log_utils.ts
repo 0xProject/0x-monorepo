@@ -26,11 +26,11 @@ export function verifyEvents<TEventArgs>(
     expectedEvents: TEventArgs[],
     eventName: string,
 ): void {
-    const logs = filterLogsToArguments<TEventArgs>(txReceipt.logs, eventName);
-    expect(logs.length).to.eq(expectedEvents.length);
-    logs.forEach((log, index) => {
-        expect(log).to.deep.equal(expectedEvents[index]);
-    });
+    return verifyEventsFromLogs(
+        txReceipt.logs,
+        expectedEvents,
+        eventName,
+    );
 }
 
 /**
