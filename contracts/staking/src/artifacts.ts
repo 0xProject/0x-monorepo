@@ -51,6 +51,7 @@ import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast
 import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
+import * as TestMixinStakingPool from '../generated-artifacts/TestMixinStakingPool.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.json';
@@ -107,6 +108,7 @@ export const artifacts = {
     TestMixinParams: TestMixinParams as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
+    TestMixinStakingPool: TestMixinStakingPool as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingNoWETH: TestStakingNoWETH as ContractArtifact,
