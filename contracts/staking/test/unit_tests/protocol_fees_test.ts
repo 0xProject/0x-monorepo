@@ -90,7 +90,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `protocolFeePaid` is zero with non-zero value sent', async () => {
+            it('should revert if `protocolFee` is zero with non-zero value sent', async () => {
                 const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -104,7 +104,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `protocolFeePaid` is < than the provided message value', async () => {
+            it('should revert if `protocolFee` is < than the provided message value', async () => {
                 const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
@@ -118,7 +118,7 @@ blockchainTests('Protocol Fees unit tests', env => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `protocolFeePaid` is > than the provided message value', async () => {
+            it('should revert if `protocolFee` is > than the provided message value', async () => {
                 const tx = testContract.payProtocolFee.awaitTransactionSuccessAsync(
                     makerAddress,
                     payerAddress,
