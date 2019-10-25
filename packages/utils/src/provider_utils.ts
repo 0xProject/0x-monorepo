@@ -70,7 +70,7 @@ export const providerUtils = {
             // HACK(fabio): Detect if the `send` method has the old interface `send(payload, cb)` such
             // as in versions < Web3.js@1.0.0-beta.37. If so, do a simple re-mapping
             if (_.includes((supportedProvider as any).send.toString(), 'function (payload, callback)') ||
-                _.includes((supportedProvider as any).send.toString(), 'function(payload,callback)') {
+                _.includes((supportedProvider as any).send.toString(), 'function(payload,callback)')) {
                 provider.sendAsync = (supportedProvider as any).send.bind(supportedProvider);
                 return provider;
             } else {
