@@ -10,6 +10,7 @@ export * from '../generated-wrappers/i_storage';
 export * from '../generated-wrappers/i_storage_init';
 export * from '../generated-wrappers/i_structs';
 export * from '../generated-wrappers/i_zrx_vault';
+export * from '../generated-wrappers/i_zrx_vault_backstop';
 export * from '../generated-wrappers/lib_cobb_douglas';
 export * from '../generated-wrappers/lib_fixed_math';
 export * from '../generated-wrappers/lib_fixed_math_rich_errors';

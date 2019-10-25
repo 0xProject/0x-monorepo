@@ -10,6 +10,7 @@
         "generated-artifacts/IStorageInit.json",
         "generated-artifacts/IStructs.json",
         "generated-artifacts/IZrxVault.json",
+        "generated-artifacts/IZrxVaultBackstop.json",
         "generated-artifacts/LibCobbDouglas.json",
         "generated-artifacts/LibFixedMath.json",
         "generated-artifacts/LibFixedMathRichErrors.json",
