@@ -138,11 +138,6 @@ blockchainTests.resets('MixinStakeBalances unit tests', env => {
             expect(balance).to.deep.eq(EMPTY_BALANCE);
         });
 
-        it('returns empty undelegated stake for an unstaked owner', async () => {
-            const balance = await testContract.getOwnerStakeByStatus.callAsync(notStaker, StakeStatus.Undelegated);
-            expect(balance).to.deep.eq(EMPTY_BALANCE);
-        });
-
         it('returns undelegated stake for a staked owner', async () => {
             const balance = await testContract.getOwnerStakeByStatus.callAsync(staker, StakeStatus.Undelegated);
             expect(balance).to.deep.eq(toCurrentBalance(undelegatedStake));
