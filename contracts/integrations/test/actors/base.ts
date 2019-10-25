@@ -71,10 +71,10 @@ export class Actor {
     public async configureERC721TokenAsync(
         token: DummyERC721TokenContract,
         spender?: string,
-        numToMint?: number,
+        numToMint: number = 1,
     ): Promise<BigNumber[]> {
         const tokenIds: BigNumber[] = [];
-        _.times(numToMint || 1, async () => {
+        _.times(numToMint, async () => {
             const tokenId = getRandomInteger(constants.ZERO_AMOUNT, constants.MAX_UINT256);
             await token.mint.awaitTransactionSuccessAsync(this.address, tokenId, {
                 from: this.address,

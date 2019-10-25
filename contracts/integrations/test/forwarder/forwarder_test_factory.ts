@@ -3,7 +3,6 @@ import { ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import { constants, expect, getPercentageOfValue, OrderStatus } from '@0x/contracts-test-utils';
 import { OrderInfo, SignedOrder } from '@0x/types';
 import { BigNumber, RevertError } from '@0x/utils';
-import * as _ from 'lodash';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, FeeRecipient, Maker } from '../actors';
