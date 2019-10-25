@@ -12,6 +12,7 @@ import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
+import * as IZrxVaultBackstop from '../generated-artifacts/IZrxVaultBackstop.json';
 import * as LibCobbDouglas from '../generated-artifacts/LibCobbDouglas.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
@@ -75,6 +76,7 @@ export const artifacts = {
     IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
+    IZrxVaultBackstop: IZrxVaultBackstop as ContractArtifact,
     LibCobbDouglas: LibCobbDouglas as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
