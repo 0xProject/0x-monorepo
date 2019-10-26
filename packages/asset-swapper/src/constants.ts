@@ -2,8 +2,10 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import {
-    ForwarderSwapQuoteExecutionOpts,
-    ForwarderSwapQuoteGetOutputOpts,
+    ForwarderExtensionContractOpts,
+    OrderPrunerPermittedFeeTypes,
+    SwapQuoteExecutionOpts,
+    SwapQuoteGetOutputOpts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
 } from './types';
@@ -13,19 +15,21 @@ const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_CHAIN_ID = 1;
 const ONE_SECOND_MS = 1000;
 const DEFAULT_PER_PAGE = 1000;
+const PROTOCOL_FEE_MULTIPLIER = 150000;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     chainId: MAINNET_CHAIN_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
     expiryBufferMs: 120000, // 2 minutes
+    permittedOrderFeeTypes: new Set<OrderPrunerPermittedFeeTypes>([OrderPrunerPermittedFeeTypes.NoFees, OrderPrunerPermittedFeeTypes.MakerDenominatedTakerFee]), // Default asset-swapper for CFL oriented fee types
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: ForwarderSwapQuoteGetOutputOpts = {
+const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: SwapQuoteGetOutputOpts & ForwarderExtensionContractOpts = {
     feePercentage: 0,
     feeRecipient: NULL_ADDRESS,
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
+const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: SwapQuoteExecutionOpts & ForwarderExtensionContractOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     slippagePercentage: 0.2, // 20% slippage protection,
@@ -44,4 +48,5 @@ export const constants = {
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     DEFAULT_PER_PAGE,
+    PROTOCOL_FEE_MULTIPLIER,
 };

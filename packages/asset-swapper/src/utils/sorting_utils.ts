@@ -4,6 +4,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { assert } from './assert';
+import { utils } from './utils';
 
 export const sortingUtils = {
     /**
@@ -15,7 +16,7 @@ export const sortingUtils = {
      */
     sortOrders<T extends Order>(orders: T[]): T[] {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
-        assert.isValidOrdersForSwaquoter('orders', orders);
+        assert.isValidOrdersForSwapQuoter('orders', orders);
         const copiedOrders = _.cloneDeep(orders);
         copiedOrders.sort((firstOrder, secondOrder) => {
             const firstOrderRate = getTakerFeeAdjustedRateOfOrder(firstOrder);
@@ -27,7 +28,7 @@ export const sortingUtils = {
 };
 
 function getTakerFeeAdjustedRateOfOrder(order: Order): BigNumber {
-    const makerAmountAfterFees = order.makerAssetAmount.minus(order.takerFee);
-    const rate = order.takerAssetAmount.div(makerAmountAfterFees);
+    const [adjustedMakerAssetAmount, adjustedTakerAssetAmount] = utils.getAdjustedMakerAndTakerAmountsFromTakerFees(order);
+    const rate = adjustedTakerAssetAmount.div(adjustedMakerAssetAmount);
     return rate;
 }

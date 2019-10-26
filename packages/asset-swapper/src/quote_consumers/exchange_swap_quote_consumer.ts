@@ -14,8 +14,8 @@ import {
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
-    SwapQuoteExecutionOptsBase,
-    SwapQuoteGetOutputOptsBase,
+    SwapQuoteExecutionOpts,
+    SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
@@ -38,7 +38,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOptsBase>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
@@ -66,7 +66,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        _opts: Partial<SwapQuoteGetOutputOptsBase>,
+        _opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<ExchangeSmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
@@ -110,16 +110,17 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             params,
             toAddress: this._contractWrappers.exchange.address,
             methodAbi,
+            ethAmount: quote.worstCaseQuoteInfo.protocolFeeInEthAmount,
         };
     }
 
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOptsBase>,
+        opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { takerAddress, gasLimit, gasPrice } = opts;
+        const { takerAddress, gasLimit, gasPrice, ethAmount } = opts;
 
         if (takerAddress !== undefined) {
             assert.isETHAddressHex('takerAddress', takerAddress);
@@ -130,11 +131,13 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         if (gasPrice !== undefined) {
             assert.isBigNumber('gasPrice', gasPrice);
         }
-
+        if (ethAmount !== undefined) {
+            assert.isBigNumber('ethAmount', ethAmount);
+        }
         const { orders } = quote;
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-
+        const value = ethAmount || quote.worstCaseQuoteInfo.protocolFeeInEthAmount;
         try {
             let txHash: string;
             if (quote.type === MarketOperation.Buy) {
@@ -147,6 +150,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                         from: finalTakerAddress,
                         gas: gasLimit,
                         gasPrice,
+                        value,
                     },
                 );
             } else {
@@ -159,6 +163,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
                         from: finalTakerAddress,
                         gas: gasLimit,
                         gasPrice,
+                        value,
                     },
                 );
             }

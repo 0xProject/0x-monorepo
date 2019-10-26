@@ -49,7 +49,7 @@ export const assert = {
             );
         });
     },
-    isValidOrdersForSwaquoter<T extends Order>(
+    isValidOrdersForSwapQuoter<T extends Order>(
         variableName: string,
         orders: T[],
     ): void {
@@ -78,10 +78,10 @@ export const assert = {
         );
     },
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, swapQuoteInfo.feeTakerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, swapQuoteInfo.totalTakerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.feeTakerAssetAmount`, swapQuoteInfo.feeTakerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.totalTakerAssetAmount`, swapQuoteInfo.totalTakerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.takerAssetAmount`, swapQuoteInfo.takerAssetAmount);
+        sharedAssert.isBigNumber(`${variableName}.makerAssetAmount`, swapQuoteInfo.makerAssetAmount);
     },
     isValidOrderbook(variableName: string, orderFetcher: Orderbook): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);

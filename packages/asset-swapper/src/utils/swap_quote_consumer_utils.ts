@@ -9,7 +9,6 @@ import { constants } from '../constants';
 import {
     ExtensionContractType,
     GetExtensionContractTypeOpts,
-    MarketOperation,
     SwapQuote,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
@@ -80,7 +79,7 @@ export const swapQuoteConsumerUtils = {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
             }
-            const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.totalTakerTokenAmount;
+            const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.takerAssetAmount;
             const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
             const takerEthAndWethBalance =
                 takerAddress !== undefined

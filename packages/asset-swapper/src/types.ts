@@ -4,6 +4,7 @@ import { MethodAbi } from 'ethereum-types';
 
 export interface OrderPrunerOpts {
     expiryBufferMs: number;
+    permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
 }
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -15,13 +16,11 @@ export interface OrderProviderRequest {
 }
 
 /**
- * A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
- * remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled
  */
 export interface PrunedSignedOrder extends SignedOrder {
-    remainingMakerAssetAmount: BigNumber;
-    remainingTakerAssetAmount: BigNumber;
-    remainingTakerFee: BigNumber;
+    fillableMakerAssetAmount: BigNumber;
+    fillableTakerAssetAmount: BigNumber;
+    fillableTakerFeeAmount: BigNumber;
 }
 
 /**
@@ -29,13 +28,13 @@ export interface PrunedSignedOrder extends SignedOrder {
  * calldataHexString: The hexstring of the calldata.
  * methodAbi: The ABI of the smart contract method to call.
  * toAddress: The contract address to call.
- * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
+ * ethAmount: The eth amount in wei to send with the smart contract call.
  */
 export interface CalldataInfo {
     calldataHexString: string;
     methodAbi: MethodAbi;
     toAddress: string;
-    ethAmount?: BigNumber;
+    ethAmount: BigNumber;
 }
 
 /**
@@ -48,7 +47,7 @@ export interface CalldataInfo {
 export interface SmartContractParamsInfo<T> {
     params: T;
     toAddress: string;
-    ethAmount?: BigNumber;
+    ethAmount: BigNumber;
     methodAbi: MethodAbi;
 }
 
@@ -131,12 +130,12 @@ export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartCo
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
 export interface SwapQuoteConsumerBase<T> {
-    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOptsBase>): Promise<CalldataInfo>;
+    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOptsBase>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SmartContractParamsInfo<T>>;
-    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOptsBase>): Promise<string>;
+    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
 /**
@@ -149,17 +148,19 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOptsBase {}
+export interface SwapQuoteGetOutputOpts {
+}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
  */
-export interface SwapQuoteExecutionOptsBase extends SwapQuoteGetOutputOptsBase {
+export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
     takerAddress?: string;
     gasLimit?: number;
     gasPrice?: BigNumber;
+    ethAmount?: BigNumber;
 }
 
 /**
@@ -167,10 +168,14 @@ export interface SwapQuoteExecutionOptsBase extends SwapQuoteGetOutputOptsBase {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
-export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOptsBase {
+export interface ForwarderExtensionContractOpts {
+    ethAmount?: BigNumber;
     feePercentage: number;
     feeRecipient: string;
-    ethAmount?: BigNumber;
+}
+
+export interface SwapQuoteConsumingOpts {
+    useExtensionContract: ExtensionContractType;
 }
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
@@ -179,21 +184,6 @@ export interface GetExtensionContractTypeOpts {
     takerAddress?: string;
     ethAmount?: BigNumber;
 }
-
-/**
- * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
- * useConsumerType: If provided, defaults the SwapQuoteConsumer to create output consumed by ConsumerType.
- */
-export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
-    useExtensionContract: ExtensionContractType;
-}
-
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
-
-/**
- * Represents the options for executing a swap quote with SwapQuoteConsumer
- */
-export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -228,16 +218,6 @@ export interface MarketBuySwapQuote extends SwapQuoteBase {
     type: MarketOperation.Buy;
 }
 
-export interface SwapQuoteWithAffiliateFeeBase {
-    feePercentage: number;
-}
-
-export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote {}
-
-export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
-
-export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
-
 /**
  * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
  * takerTokenAmount: The amount of takerToken required to conduct the swap.
@@ -245,10 +225,11 @@ export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | Mar
  * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
  */
 export interface SwapQuoteInfo {
-    feeTakerTokenAmount: BigNumber;
-    totalTakerTokenAmount: BigNumber;
-    takerTokenAmount: BigNumber;
-    makerTokenAmount: BigNumber;
+    feeTakerAssetAmount: BigNumber;
+    takerAssetAmount: BigNumber;
+    totalTakerAssetAmount: BigNumber;
+    makerAssetAmount: BigNumber;
+    protocolFeeInEthAmount: BigNumber;
 }
 
 /**
@@ -256,6 +237,7 @@ export interface SwapQuoteInfo {
  */
 export interface SwapQuoteRequestOpts {
     slippagePercentage: number;
+    gasPrice?: BigNumber;
 }
 
 /**
@@ -263,16 +245,8 @@ export interface SwapQuoteRequestOpts {
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
  * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
-export interface SwapQuoterOpts {
-<<<<<<< HEAD
-<<<<<<< HEAD
+export interface SwapQuoterOpts extends OrderPrunerOpts {
     chainId: number;
-=======
-    networkId?: number;
->>>>>>> edac3aa26... upgraded SwapQuoter for v3
-=======
-    networkId: number;
->>>>>>> fd8323e29... minor updates
     orderRefreshIntervalMs: number;
     expiryBufferMs: number;
 }
@@ -296,14 +270,15 @@ export enum SwapQuoterError {
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
+    NoGasPriceProvidedOrEstimated = 'NO_GAS_PRICE_PROVIDED_OR_ESTIMATED',
 }
 
 /**
  * Represents available liquidity for a given assetData
  */
 export interface LiquidityForTakerMakerAssetDataPair {
-    makerTokensAvailableInBaseUnits: BigNumber;
-    takerTokensAvailableInBaseUnits: BigNumber;
+    makerAssetAvailableInBaseUnits: BigNumber;
+    takerAssetAvailableInBaseUnits: BigNumber;
 }
 
 export enum MarketOperation {
@@ -311,7 +286,8 @@ export enum MarketOperation {
     Buy = 'Buy',
 }
 
-export interface OrdersAndRemainingFillAmount {
-    resultOrders: PrunedSignedOrder[];
-    remainingFillAmount: BigNumber;
+export enum OrderPrunerPermittedFeeTypes {
+    NoFees = 'NO_FEES',
+    MakerDenominatedTakerFee = 'MAKER_DENOMINATED_TAKER_FEE',
+    TakerDenominatedTakerFee = 'TAKER_DENOMINATED_TAKER_FEE',
 }

@@ -9,16 +9,17 @@ import {
 } from '../types';
 
 import { assert } from './assert';
+import { utils } from './utils';
 
 export const marketUtils = {
     findOrdersThatCoverTakerAssetSellAmount(
-        orders: PrunedSignedOrder[],
-        takerAssetSellAmount: BigNumber,
+        sortedOrders: PrunedSignedOrder[],
+        takerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
     ): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
-            orders,
-            takerAssetSellAmount,
+            sortedOrders,
+            takerAssetFillAmount,
             MarketOperation.Sell,
             slippageBufferAmount,
         );
@@ -34,13 +35,13 @@ export const marketUtils = {
      * @return  Resulting orders and remaining fill amount that could not be covered by the input.
      */
     findOrdersThatCoverMakerAssetBuyAmount(
-        orders: PrunedSignedOrder[],
-        makerAssetBuyAmount: BigNumber,
+        sortedOrders: PrunedSignedOrder[],
+        makerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
     ): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
         return findOrdersThatCoverAssetFillAmount(
-            orders,
-            makerAssetBuyAmount,
+            sortedOrders,
+            makerAssetFillAmount,
             MarketOperation.Buy,
             slippageBufferAmount,
         );
@@ -48,7 +49,7 @@ export const marketUtils = {
 };
 
 function findOrdersThatCoverAssetFillAmount(
-    orders: PrunedSignedOrder[],
+    sortedOrders: PrunedSignedOrder[],
     assetFillAmount: BigNumber,
     operation: MarketOperation,
     slippageBufferAmount: BigNumber,
@@ -58,7 +59,7 @@ function findOrdersThatCoverAssetFillAmount(
     const totalFillAmount = assetFillAmount.plus(slippageBufferAmount);
     // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
     const result = _.reduce(
-        orders,
+        sortedOrders,
         ({ resultOrders, remainingFillAmount }, order) => {
             if (remainingFillAmount.isLessThanOrEqualTo(constants.ZERO_AMOUNT)) {
                 return {
@@ -66,7 +67,7 @@ function findOrdersThatCoverAssetFillAmount(
                     remainingFillAmount: constants.ZERO_AMOUNT,
                 };
             } else {
-                const assetAmountAvailable = operation === MarketOperation.Buy ? order.remainingMakerAssetAmount.minus(order.remainingTakerFee) : order.remainingTakerAssetAmount;
+                const assetAmountAvailable = getAssetAmountAvailable(order, operation);
                 const shouldIncludeOrder = assetAmountAvailable.gt(constants.ZERO_AMOUNT);
                 // if there is no assetAmountAvailable do not append order to resultOrders
                 // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
@@ -86,4 +87,23 @@ function findOrdersThatCoverAssetFillAmount(
     );
 
     return result;
+}
+
+function getAssetAmountAvailable(
+    order: PrunedSignedOrder,
+    operation: MarketOperation,
+): BigNumber {
+    if (operation === MarketOperation.Buy) {
+        if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
+            return order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount);
+        } else {
+            return order.fillableMakerAssetAmount;
+        }
+    } else {
+        if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
+            return order.fillableTakerAssetAmount.plus(order.fillableTakerFeeAmount);
+        } else {
+            return order.fillableTakerAssetAmount;
+        }
+    }
 }

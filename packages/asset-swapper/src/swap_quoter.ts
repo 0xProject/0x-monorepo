@@ -1,6 +1,6 @@
-import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { assetDataUtils, ERC20AssetData, SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MeshOrderProviderOpts, Orderbook, SRAPollingOrderProviderOpts } from '@0x/orderbook';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -12,6 +12,7 @@ import {
     MarketBuySwapQuote,
     MarketOperation,
     MarketSellSwapQuote,
+    OrderPrunerPermittedFeeTypes,
     PrunedSignedOrder,
     SwapQuote,
     SwapQuoteRequestOpts,
@@ -29,6 +30,7 @@ export class SwapQuoter {
     public readonly provider: ZeroExProvider;
     public readonly orderbook: Orderbook;
     public readonly expiryBufferMs: number;
+    public readonly permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
     private readonly _contractWrappers: ContractWrappers;
     private readonly _orderPruner: OrderPruner;
     /**
@@ -133,7 +135,7 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { chainId, expiryBufferMs } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        const { chainId, expiryBufferMs, permittedOrderFeeTypes } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
         assert.isNumber('chainId', chainId);
@@ -141,11 +143,13 @@ export class SwapQuoter {
         this.provider = provider;
         this.orderbook = orderbook;
         this.expiryBufferMs = expiryBufferMs;
+        this.permittedOrderFeeTypes = permittedOrderFeeTypes;
         this._contractWrappers = new ContractWrappers(this.provider, {
             chainId,
         });
         this._orderPruner = new OrderPruner(this._contractWrappers.devUtils, {
             expiryBufferMs: this.expiryBufferMs,
+            permittedOrderFeeTypes: this.permittedOrderFeeTypes,
         });
     }
 
@@ -280,8 +284,8 @@ export class SwapQuoter {
         const assetPairs = await this.getAvailableMakerAssetDatasAsync(takerAssetData);
         if (!assetPairs.includes(makerAssetData)) {
             return {
-                makerTokensAvailableInBaseUnits: new BigNumber(0),
-                takerTokensAvailableInBaseUnits: new BigNumber(0),
+                makerAssetAvailableInBaseUnits: new BigNumber(0),
+                takerAssetAvailableInBaseUnits: new BigNumber(0),
             };
         }
 
@@ -364,15 +368,11 @@ export class SwapQuoter {
      * @param swapQuote The swapQuote in question to check enough allowance enabled for 0x exchange contracts to conduct the swap.
      * @param takerAddress The address of the taker of the provided swapQuote
      */
-    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
+    public async isSwapQuoteFillableByTakerAddressAsync(
         swapQuote: SwapQuote,
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
-        assetDataUtils.assertIsERC20AssetData(swapQuote.takerAssetData);
-        const erc20ProxyAddress = this._contractWrappers.erc20Proxy.address;
-        const erc20TokenAddress = (assetDataUtils.decodeAssetDataOrThrow(swapQuote.takerAssetData) as ERC20AssetData).tokenAddress;
-        const erc20TokenContract = new ERC20TokenContract(erc20TokenAddress, this.provider);
-        const allowance = await erc20TokenContract.allowance.callAsync(takerAddress, erc20ProxyAddress);
+        const [balance, allowance] = await this._contractWrappers.devUtils.getBalanceAndAssetProxyAllowance.callAsync(takerAddress, swapQuote.takerAssetData);
         return [
             allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
             allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
@@ -404,9 +404,9 @@ export class SwapQuoter {
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
+        const gasPrice = await utils.getGasPriceOrEstimationOrThrowAsync(options);
         // get the relevant orders for the makerAsset
         const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
-
         if (prunedOrders.length === 0) {
             throw new Error(
                 `${
@@ -422,12 +422,14 @@ export class SwapQuoter {
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
+                gasPrice,
             );
         } else {
             swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
                 prunedOrders,
                 assetFillAmount,
                 slippagePercentage,
+                gasPrice,
             );
         }
 
