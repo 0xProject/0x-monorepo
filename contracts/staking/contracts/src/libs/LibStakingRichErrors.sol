@@ -29,11 +29,6 @@ library LibStakingRichErrors {
         CanOnlyDecreaseOperatorShare
     }
 
-    enum ProtocolFeePaymentErrorCodes {
-        ZeroProtocolFeePaid,
-        MismatchedFeeAndPayment
-    }
-
     enum InitializationErrorCodes {
         MixinSchedulerAlreadyInitialized,
         MixinParamsAlreadyInitialized
@@ -104,9 +99,9 @@ library LibStakingRichErrors {
     bytes4 internal constant INVALID_PARAM_VALUE_ERROR_SELECTOR =
         0xfc45bd11;
 
-    // bytes4(keccak256("InvalidProtocolFeePaymentError(uint8,uint256,uint256)"))
+    // bytes4(keccak256("InvalidProtocolFeePaymentError(uint256,uint256)"))
     bytes4 internal constant INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR =
-        0xefd6cb33;
+        0x31d7a505;
 
     // bytes4(keccak256("PreviousEpochNotFinalizedError(uint256,uint256)"))
     bytes4 internal constant PREVIOUS_EPOCH_NOT_FINALIZED_ERROR_SELECTOR =
@@ -252,7 +247,6 @@ library LibStakingRichErrors {
     }
 
     function InvalidProtocolFeePaymentError(
-        ProtocolFeePaymentErrorCodes errorCodes,
         uint256 expectedProtocolFeePaid,
         uint256 actualProtocolFeePaid
     )
@@ -262,7 +256,6 @@ library LibStakingRichErrors {
     {
         return abi.encodeWithSelector(
             INVALID_PROTOCOL_FEE_PAYMENT_ERROR_SELECTOR,
-            errorCodes,
             expectedProtocolFeePaid,
             actualProtocolFeePaid
         );

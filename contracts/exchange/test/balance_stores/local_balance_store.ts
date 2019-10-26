@@ -1,4 +1,4 @@
-import { constants } from '@0x/contracts-test-utils';
+import { constants, Numberish } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -34,9 +34,22 @@ export class LocalBalanceStore extends BalanceStore {
 
     /**
      * Decreases the ETH balance of an address to simulate gas usage.
+     * @param senderAddress Address whose ETH balance to decrease.
+     * @param amount Amount to decrease the balance by.
      */
-    public burnGas(senderAddress: string, amount: BigNumber | number): void {
+    public burnGas(senderAddress: string, amount: Numberish): void {
         this._balances.eth[senderAddress] = this._balances.eth[senderAddress].minus(amount);
+    }
+
+    /**
+     * Sends ETH from `fromAddress` to `toAddress`.
+     * @param fromAddress Sender of ETH.
+     * @param toAddress Receiver of ETH.
+     * @param amount Amount of ETH to transfer.
+     */
+    public sendEth(fromAddress: string, toAddress: string, amount: Numberish): void {
+        this._balances.eth[fromAddress] = this._balances.eth[fromAddress].minus(amount);
+        this._balances.eth[toAddress] = this._balances.eth[toAddress].plus(amount);
     }
 
     /**

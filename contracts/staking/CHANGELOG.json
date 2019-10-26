@@ -5,6 +5,18 @@
             {
                 "note": "Add more overflow safeguards to `LibFixedMath`",
                 "pr": 2255
+            },
+            {
+                "note": "Refactored finalization state.",
+                "pr": 2276
+            },
+            {
+                "note": "Removed protocol fee != 0 assertion.",
+                "pr": 2278
+            },
+            {
+                "note": "Call `StakingProxy.assertValidStorageParams()` in `MixinParams.setParams()`",
+                "pr": 2279
             }
         ]
     },

@@ -23,9 +23,12 @@ import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./interfaces/IStructs.sol";
 import "./interfaces/IZrxVault.sol";
 import "./interfaces/IStakingProxy.sol";
+import "./interfaces/IZrxVaultBackstop.sol";
 
 
-contract ZrxVaultBackstop {
+contract ZrxVaultBackstop is
+    IZrxVaultBackstop
+{
 
     using LibSafeMath for uint256;
 

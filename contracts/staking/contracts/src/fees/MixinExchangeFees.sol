@@ -41,17 +41,17 @@ contract MixinExchangeFees is
     ///      (MixinExchangeManager).
     /// @param makerAddress The address of the order's maker.
     /// @param payerAddress The address of the protocol fee payer.
-    /// @param protocolFeePaid The protocol fee that should be paid.
+    /// @param protocolFee The protocol fee amount. This is either passed as ETH or transferred as WETH.
     function payProtocolFee(
         address makerAddress,
         address payerAddress,
-        uint256 protocolFeePaid
+        uint256 protocolFee
     )
         external
         payable
         onlyExchange
     {
-        _assertValidProtocolFee(protocolFeePaid);
+        _assertValidProtocolFee(protocolFee);
 
         // Transfer the protocol fee to this address if it should be paid in
         // WETH.
@@ -60,7 +60,7 @@ contract MixinExchangeFees is
                 getWethContract().transferFrom(
                     payerAddress,
                     address(this),
-                    protocolFeePaid
+                    protocolFee
                 ),
                 "WETH_TRANSFER_FAILED"
             );
@@ -106,10 +106,10 @@ contract MixinExchangeFees is
         }
 
         // Credit the fees to the pool.
-        poolStatsPtr.feesCollected = feesCollectedByPool.safeAdd(protocolFeePaid);
+        poolStatsPtr.feesCollected = feesCollectedByPool.safeAdd(protocolFee);
 
         // Increase the total fees collected this epoch.
-        aggregatedStatsPtr.totalFeesCollected = aggregatedStatsPtr.totalFeesCollected.safeAdd(protocolFeePaid);
+        aggregatedStatsPtr.totalFeesCollected = aggregatedStatsPtr.totalFeesCollected.safeAdd(protocolFee);
     }
 
     /// @dev Get stats on a staking pool in this epoch.
@@ -155,26 +155,18 @@ contract MixinExchangeFees is
 
     /// @dev Checks that the protocol fee passed into `payProtocolFee()` is
     ///      valid.
-    /// @param protocolFeePaid The `protocolFeePaid` parameter to
+    /// @param protocolFee The `protocolFee` parameter to
     ///        `payProtocolFee.`
-    function _assertValidProtocolFee(uint256 protocolFeePaid)
+    function _assertValidProtocolFee(uint256 protocolFee)
         private
         view
     {
-        if (protocolFeePaid == 0) {
+        // The protocol fee must equal the value passed to the contract; unless
+        // the value is zero, in which case the fee is taken in WETH.
+        if (msg.value != protocolFee && msg.value != 0) {
             LibRichErrors.rrevert(
                 LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.ZeroProtocolFeePaid,
-                    protocolFeePaid,
-                    msg.value
-                )
-            );
-        }
-        if (msg.value != protocolFeePaid && msg.value != 0) {
-            LibRichErrors.rrevert(
-                LibStakingRichErrors.InvalidProtocolFeePaymentError(
-                    LibStakingRichErrors.ProtocolFeePaymentErrorCodes.MismatchedFeeAndPayment,
-                    protocolFeePaid,
+                    protocolFee,
                     msg.value
                 )
             );

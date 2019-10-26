@@ -42,7 +42,7 @@ contract Eth2DaiBridge is
     /// @param amount Minimum amount of `toTokenAddress` tokens to buy.
     /// @param bridgeData The abi-encoeded "from" token address.
     /// @return success The magic bytes if successful.
-    function withdrawTo(
+    function bridgeTransferFrom(
         address toTokenAddress,
         address /* from */,
         address to,

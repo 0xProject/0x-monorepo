@@ -26,9 +26,20 @@ export function verifyEvents<TEventArgs>(
     expectedEvents: TEventArgs[],
     eventName: string,
 ): void {
-    const logs = filterLogsToArguments<TEventArgs>(txReceipt.logs, eventName);
-    expect(logs.length).to.eq(expectedEvents.length);
-    logs.forEach((log, index) => {
+    return verifyEventsFromLogs(txReceipt.logs, expectedEvents, eventName);
+}
+
+/**
+ * Given a collection of logs, verifies that matching events are identical.
+ */
+export function verifyEventsFromLogs<TEventArgs>(
+    logs: LogEntry[],
+    expectedEvents: TEventArgs[],
+    eventName: string,
+): void {
+    const _logs = filterLogsToArguments<TEventArgs>(logs, eventName);
+    expect(_logs.length).to.eq(expectedEvents.length);
+    _logs.forEach((log, index) => {
         expect(log).to.deep.equal(expectedEvents[index]);
     });
 }

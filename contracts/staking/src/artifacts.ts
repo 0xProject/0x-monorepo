@@ -12,6 +12,7 @@ import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
+import * as IZrxVaultBackstop from '../generated-artifacts/IZrxVaultBackstop.json';
 import * as LibCobbDouglas from '../generated-artifacts/LibCobbDouglas.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
@@ -47,8 +48,10 @@ import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json'
 import * as TestLibProxy from '../generated-artifacts/TestLibProxy.json';
 import * as TestLibProxyReceiver from '../generated-artifacts/TestLibProxyReceiver.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
+import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
+import * as TestMixinStakingPool from '../generated-artifacts/TestMixinStakingPool.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.json';
@@ -74,6 +77,7 @@ export const artifacts = {
     IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
+    IZrxVaultBackstop: IZrxVaultBackstop as ContractArtifact,
     LibCobbDouglas: LibCobbDouglas as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
@@ -101,8 +105,10 @@ export const artifacts = {
     TestLibProxy: TestLibProxy as ContractArtifact,
     TestLibProxyReceiver: TestLibProxyReceiver as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
+    TestMixinParams: TestMixinParams as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
+    TestMixinStakingPool: TestMixinStakingPool as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingNoWETH: TestStakingNoWETH as ContractArtifact,

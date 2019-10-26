@@ -15,33 +15,39 @@
   limitations under the License.
 
 */
+
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/StakingProxy.sol";
+import "../src/interfaces/IStructs.sol";
+import "./TestStakingNoWETH.sol";
 
 
-contract TestStakingProxy is
-    StakingProxy
+contract TestMixinStakingPool is
+    TestStakingNoWETH
 {
-    address public constant SHOULD_REVERT_STAKING_ADDRESS = 0x5ed6A38c6bEcEd15b0AB58566b6fD7A00463d2F7;
+    function setLastPoolId(bytes32 poolId)
+        external
+    {
+        lastPoolId = poolId;
+    }
+
+    function setPoolIdByMaker(bytes32 poolId, address maker)
+        external
+    {
+        poolIdByMaker[maker] = poolId;
+    }
 
     // solhint-disable no-empty-blocks
-    constructor(address _stakingContract)
-        public
-        StakingProxy(
-            _stakingContract,
-            NIL_ADDRESS
-        )
+    function testOnlyStakingPoolOperatorModifier(bytes32 poolId)
+        external
+        view
+        onlyStakingPoolOperator(poolId)
     {}
 
-    function assertValidStorageParams()
+    function setPoolById(bytes32 poolId, IStructs.Pool memory pool)
         public
-        view
     {
-        require(
-            stakingContract != SHOULD_REVERT_STAKING_ADDRESS,
-            "FORCED_STORAGE_PARAMS_REVERT"
-        );
+        _poolById[poolId] = pool;
     }
 }

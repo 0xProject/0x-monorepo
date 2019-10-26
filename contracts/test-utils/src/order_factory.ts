@@ -9,10 +9,12 @@ import { signingUtils } from './signing_utils';
 export class OrderFactory {
     private readonly _defaultOrderParams: Partial<Order>;
     private readonly _privateKey: Buffer;
+
     constructor(privateKey: Buffer, defaultOrderParams: Partial<Order>) {
         this._defaultOrderParams = defaultOrderParams;
         this._privateKey = privateKey;
     }
+
     public async newSignedOrderAsync(
         customOrderParams: Partial<Order> = {},
         signatureType: SignatureType = SignatureType.EthSign,
