@@ -18,7 +18,7 @@ blockchainTests('mocha blockchain extensions', env => {
         });
 
         it('initializes the test environment', async () => {
-            expect(await env.getChainIdAsync()).to.eq(constants.TESTRPC_NETWORK_ID);
+            expect(await env.getChainIdAsync()).to.eq(constants.TESTRPC_CHAIN_ID);
             expect(await env.getAccountAddressesAsync()).to.be.not.empty('');
         });
 
