@@ -138,11 +138,6 @@ blockchainTests('Deployment Manager', env => {
             expect(isValid).to.be.true();
         });
 
-        it('should have registered the read-only proxy in the staking proxy', async () => {
-            const readOnlyProxy = await deploymentManager.staking.stakingProxy.readOnlyProxy.callAsync();
-            expect(readOnlyProxy).to.be.eq(deploymentManager.staking.readOnlyProxy.address);
-        });
-
         it('should have registered the staking contract in the staking proxy', async () => {
             const stakingContract = await deploymentManager.staking.stakingProxy.stakingContract.callAsync();
             expect(stakingContract).to.be.eq(deploymentManager.staking.stakingLogic.address);
