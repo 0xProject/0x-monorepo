@@ -30,16 +30,6 @@ interface IStorage {
         view
         returns (address);
 
-    function readOnlyProxy()
-        external
-        view
-        returns (address);
-
-    function readOnlyProxyCallee()
-        external
-        view
-        returns (address);
-
     function lastPoolId()
         external
         view

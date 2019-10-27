@@ -34,15 +34,6 @@ contract MixinStorage is
     // address of staking contract
     address public stakingContract;
 
-    // address of read-only proxy
-    address public readOnlyProxy;
-
-    // address for read-only proxy to call
-    address public readOnlyProxyCallee;
-
-    // state of read-only mode in stakingProxy
-    IStructs.ReadOnlyState public readOnlyState;
-
     // mapping from StakeStatus to global stored balance
     // NOTE: only Status.DELEGATED is used to access this mapping, but this format
     // is used for extensibility
