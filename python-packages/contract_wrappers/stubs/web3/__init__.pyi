@@ -26,16 +26,24 @@ class Web3:
     class middleware_stack:
         @staticmethod
         def get(key: str) -> Callable: ...
+
+        def inject(
+            self, middleware_func: object, layer: object
+        ) -> None: ...
+
         ...
+
+    middleware_onion: middleware_stack
 
     class net:
         version: str
         ...
 
 
-    class eth:
+    class Eth:
         defaultAccount: str
         accounts: List[str]
+        chainId: int
         ...
 
         class account:
@@ -53,4 +61,7 @@ class Web3:
         @staticmethod
         def isAddress(address: str) -> bool: ...
         ...
+
+    eth: Eth
+
     ...

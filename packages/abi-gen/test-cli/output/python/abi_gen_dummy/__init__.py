@@ -1991,7 +1991,7 @@ class AbiGenDummy:
         else:
             try:
                 for middleware in MIDDLEWARE:
-                    web3.middleware_onion.inject(  # type: ignore
+                    web3.middleware_onion.inject(
                         middleware["function"], layer=middleware["layer"]
                     )
             except ValueError as value_error:
@@ -2000,9 +2000,7 @@ class AbiGenDummy:
                 ):
                     pass
 
-        self._web3_eth = (
-            web3.eth  # type: ignore # pylint: disable=no-member
-        )
+        self._web3_eth = web3.eth
 
         functions = self._web3_eth.contract(
             address=to_checksum_address(contract_address),

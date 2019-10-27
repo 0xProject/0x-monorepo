@@ -89,7 +89,7 @@ class LibDummy:
         else:
             try:
                 for middleware in MIDDLEWARE:
-                    web3.middleware_onion.inject(  # type: ignore
+                    web3.middleware_onion.inject(
                         middleware["function"], layer=middleware["layer"]
                     )
             except ValueError as value_error:
@@ -98,9 +98,7 @@ class LibDummy:
                 ):
                     pass
 
-        self._web3_eth = (
-            web3.eth  # type: ignore # pylint: disable=no-member
-        )
+        self._web3_eth = web3.eth
 
     @staticmethod
     def abi():

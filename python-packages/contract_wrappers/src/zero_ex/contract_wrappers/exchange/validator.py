@@ -34,9 +34,7 @@ class ExchangeValidator(Validator):
             )
 
         self.contract_address = contract_address
-        self.chain_id = (
-            web3.eth.chainId  # type: ignore # pylint: disable=no-member
-        )
+        self.chain_id = web3.eth.chainId
 
     def assert_valid(
         self, method_name: str, parameter_name: str, argument_value: Any
