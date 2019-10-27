@@ -3,7 +3,6 @@ import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-
 import { artifacts, ZeroExGovernorContract, ZeroExGovernorSubmissionEventArgs } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
-    ReadOnlyProxyContract,
     StakingContract,
     StakingProxyContract,
     ZrxVaultContract,
@@ -66,20 +65,12 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         chainId,
     );
 
-    const readOnlyProxy = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
-        stakingArtifacts.ReadOnlyProxy,
-        provider,
-        txDefaults,
-        stakingArtifacts,
-    );
-
     const stakingProxy = await StakingProxyContract.deployFrom0xArtifactAsync(
         stakingArtifacts.StakingProxy,
         provider,
         txDefaults,
         stakingArtifacts,
         stakingLogic.address,
-        readOnlyProxy.address,
     );
 
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
@@ -124,11 +115,6 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         {
             destination: deployedAddresses.multiAssetProxy,
             functionSelector: authorizableInterface.removeAuthorizedAddressAtIndex.getSelector(),
-            secondsTimeLocked: constants.ZERO_AMOUNT,
-        },
-        {
-            destination: deployedAddresses.stakingProxy,
-            functionSelector: stakingProxy.setReadOnlyMode.getSelector(),
             secondsTimeLocked: constants.ZERO_AMOUNT,
         },
         {

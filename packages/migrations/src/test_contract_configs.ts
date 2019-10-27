@@ -214,12 +214,6 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         const stakingLogicAddress = await stakingProxy.stakingContract.callAsync();
         warnIfMismatch(stakingLogicAddress, addresses.staking, 'Unexpected Staking contract attached to StakingProxy');
 
-        const readOnlyProxy = await stakingProxy.readOnlyProxy.callAsync();
-        warnIfMismatch(readOnlyProxy, addresses.readOnlyProxy, 'Unexpected ReadOnlyProxy set in StakingProxy');
-
-        const readOnlyCallee = await stakingProxy.readOnlyProxyCallee.callAsync();
-        warnIfMismatch(readOnlyCallee, addresses.staking, 'Unexpected readOnlyProxyCallee');
-
         const zrxVaultAddress = await stakingContract.getZrxVault.callAsync();
         warnIfMismatch(zrxVaultAddress, addresses.zrxVault, 'Unexpected ZrxVault set in Staking contract');
 
