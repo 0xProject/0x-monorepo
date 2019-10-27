@@ -11,6 +11,7 @@ export const constants = {
         ExchangeFunctionName.TransferOwnership,
         ExchangeFunctionName.SetProtocolFeeMultiplier,
         ExchangeFunctionName.SetProtocolFeeCollectorAddress,
+        ExchangeFunctionName.DetachProtocolFeeCollector,
     ],
     SINGLE_FILL_FN_NAMES: [ExchangeFunctionName.FillOrder, ExchangeFunctionName.FillOrKillOrder],
     BATCH_FILL_FN_NAMES: [
