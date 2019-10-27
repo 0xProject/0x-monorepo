@@ -51,6 +51,23 @@ contract MixinProtocolFees is
         external
         onlyOwner
     {
+        _setProtocolFeeCollectorAddress(updatedProtocolFeeCollector);
+    }
+
+    /// @dev Sets the protocolFeeCollector contract address to 0.
+    ///      Only callable by owner.
+    function detachProtocolFeeCollector()
+        external
+        onlyOwner
+    {
+        _setProtocolFeeCollectorAddress(address(0));
+    }
+
+    /// @dev Sets the protocolFeeCollector address and emits an event.
+    /// @param updatedProtocolFeeCollector The updated protocolFeeCollector contract address.
+    function _setProtocolFeeCollectorAddress(address updatedProtocolFeeCollector)
+        internal
+    {
         emit ProtocolFeeCollectorAddress(protocolFeeCollector, updatedProtocolFeeCollector);
         protocolFeeCollector = updatedProtocolFeeCollector;
     }
