@@ -92,13 +92,18 @@ contract MixinParams is
         _assertParamsNotInitialized();
 
         // Set up defaults.
-        // These cannot be set to variables, or we go over the stack variable limit.
+        uint256 _epochDurationInSeconds = 10 days;
+        uint32 _rewardDelegatedStakeWeight = (90 * PPM_DENOMINATOR) / 100;
+        uint256 _minimumPoolStake = 100 * MIN_TOKEN_VALUE;
+        uint32 _cobbDouglasAlphaNumerator = 2;
+        uint32 _cobbDouglasAlphaDenominator = 3;
+
         _setParams(
-            10 days,                       // epochDurationInSeconds
-            (90 * PPM_DENOMINATOR) / 100,  // rewardDelegatedStakeWeight
-            100 * MIN_TOKEN_VALUE,         // minimumPoolStake
-            1,                             // cobbDouglasAlphaNumerator
-            2                              // cobbDouglasAlphaDenominator
+            _epochDurationInSeconds,
+            _rewardDelegatedStakeWeight,
+            _minimumPoolStake,
+            _cobbDouglasAlphaNumerator,
+            _cobbDouglasAlphaDenominator
         );
     }
 
