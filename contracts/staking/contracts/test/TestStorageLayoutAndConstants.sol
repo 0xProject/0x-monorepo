@@ -103,30 +103,6 @@ contract TestStorageLayoutAndConstants is
             slot := add(slot, 0x1)
 
             assertSlotAndOffset(
-                readOnlyProxy_slot,
-                readOnlyProxy_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                readOnlyProxyCallee_slot,
-                readOnlyProxyCallee_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
-                readOnlyState_slot,
-                readOnlyState_offset,
-                slot,
-                offset
-            )
-            slot := add(slot, 0x1)
-
-            assertSlotAndOffset(
                 _globalStakeByStatus_slot,
                 _globalStakeByStatus_offset,
                 slot,

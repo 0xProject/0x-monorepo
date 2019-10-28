@@ -35,10 +35,7 @@ contract TestAssertStorageParams is
 
     constructor()
         public
-        StakingProxy(
-            NIL_ADDRESS,
-            NIL_ADDRESS
-        )
+        StakingProxy(NIL_ADDRESS)
     {}
 
     function setAndAssertParams(StorageParams memory params)

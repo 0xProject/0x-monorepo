@@ -21,7 +21,6 @@ import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/cont
 import {
     artifacts as stakingArtifacts,
     constants as stakingConstants,
-    ReadOnlyProxyContract,
     StakingContract,
     StakingEvents,
     StakingExchangeAddedEventArgs,
@@ -49,7 +48,6 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
     let erc1155Proxy: ERC1155ProxyContract;
     let exchange: ExchangeContract;
     let multiAssetProxy: MultiAssetProxyContract;
-    let readOnlyProxy: ReadOnlyProxyContract;
     let staking: StakingContract;
     let staticCallProxy: StaticCallProxyContract;
     let stakingProxy: StakingProxyContract;
@@ -100,14 +98,6 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             new BigNumber(chainId),
         );
 
-        // Deploy ReadOnlyProxy.
-        readOnlyProxy = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
-            stakingArtifacts.ReadOnlyProxy,
-            env.provider,
-            txDefaults,
-            stakingArtifacts,
-        );
-
         // Deploy Staking.
         staking = await StakingContract.deployFrom0xArtifactAsync(
             stakingArtifacts.Staking,
@@ -123,7 +113,6 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
             txDefaults,
             stakingArtifacts,
             staking.address,
-            readOnlyProxy.address,
         );
 
         // Authorize owner in the staking proxy.
@@ -271,15 +260,7 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         });
 
         describe('staking specific', () => {
-            it('should have properly configured the staking proxy with the logic contract and read-only proxy', async () => {
-                // Ensure that the registered read-only proxy is correct.
-                const readOnlyProxyAddress = await stakingProxy.readOnlyProxy.callAsync();
-                expect(readOnlyProxyAddress).to.be.eq(readOnlyProxy.address);
-
-                // Ensure that the registered read-only proxy callee is correct.
-                const readOnlyProxyCalleeAddress = await stakingProxy.readOnlyProxyCallee.callAsync();
-                expect(readOnlyProxyCalleeAddress).to.be.eq(staking.address);
-
+            it('should have properly configured the staking proxy with the logic contract', async () => {
                 // Ensure that the registered staking contract is correct.
                 const stakingAddress = await stakingProxy.stakingContract.callAsync();
                 expect(stakingAddress).to.be.eq(staking.address);
@@ -423,7 +404,6 @@ blockchainTests('Deployment and Configuration End to End Tests', env => {
         it('should transfer ownership of all appropriate contracts to the asset-proxy owner', async () => {
             // Transfer ownership of most contracts (we exclude contracts that are not ownable).
             await transferOwnershipAndAssertSuccessAsync(exchange);
-            await transferOwnershipAndAssertSuccessAsync(readOnlyProxy);
             await transferOwnershipAndAssertSuccessAsync(staking);
             await transferOwnershipAndAssertSuccessAsync(stakingProxy);
             await transferOwnershipAndAssertSuccessAsync(erc20Proxy);

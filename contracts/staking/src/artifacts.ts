@@ -12,7 +12,6 @@ import * as IStorage from '../generated-artifacts/IStorage.json';
 import * as IStorageInit from '../generated-artifacts/IStorageInit.json';
 import * as IStructs from '../generated-artifacts/IStructs.json';
 import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
-import * as IZrxVaultBackstop from '../generated-artifacts/IZrxVaultBackstop.json';
 import * as LibCobbDouglas from '../generated-artifacts/LibCobbDouglas.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
@@ -34,7 +33,6 @@ import * as MixinStakeStorage from '../generated-artifacts/MixinStakeStorage.jso
 import * as MixinStakingPool from '../generated-artifacts/MixinStakingPool.json';
 import * as MixinStakingPoolRewards from '../generated-artifacts/MixinStakingPoolRewards.json';
 import * as MixinStorage from '../generated-artifacts/MixinStorage.json';
-import * as ReadOnlyProxy from '../generated-artifacts/ReadOnlyProxy.json';
 import * as Staking from '../generated-artifacts/Staking.json';
 import * as StakingProxy from '../generated-artifacts/StakingProxy.json';
 import * as TestAssertStorageParams from '../generated-artifacts/TestAssertStorageParams.json';
@@ -58,13 +56,10 @@ import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.jso
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
 import * as TestStorageLayoutAndConstants from '../generated-artifacts/TestStorageLayoutAndConstants.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
-import * as ZrxVaultBackstop from '../generated-artifacts/ZrxVaultBackstop.json';
 export const artifacts = {
-    ReadOnlyProxy: ReadOnlyProxy as ContractArtifact,
     Staking: Staking as ContractArtifact,
     StakingProxy: StakingProxy as ContractArtifact,
     ZrxVault: ZrxVault as ContractArtifact,
-    ZrxVaultBackstop: ZrxVaultBackstop as ContractArtifact,
     MixinExchangeFees: MixinExchangeFees as ContractArtifact,
     MixinExchangeManager: MixinExchangeManager as ContractArtifact,
     MixinConstants: MixinConstants as ContractArtifact,
@@ -77,7 +72,6 @@ export const artifacts = {
     IStorageInit: IStorageInit as ContractArtifact,
     IStructs: IStructs as ContractArtifact,
     IZrxVault: IZrxVault as ContractArtifact,
-    IZrxVaultBackstop: IZrxVaultBackstop as ContractArtifact,
     LibCobbDouglas: LibCobbDouglas as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,

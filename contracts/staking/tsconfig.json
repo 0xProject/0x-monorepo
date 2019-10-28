@@ -10,7 +10,6 @@
         "generated-artifacts/IStorageInit.json",
         "generated-artifacts/IStructs.json",
         "generated-artifacts/IZrxVault.json",
-        "generated-artifacts/IZrxVaultBackstop.json",
         "generated-artifacts/LibCobbDouglas.json",
         "generated-artifacts/LibFixedMath.json",
         "generated-artifacts/LibFixedMathRichErrors.json",
@@ -32,7 +31,6 @@
         "generated-artifacts/MixinStakingPool.json",
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
-        "generated-artifacts/ReadOnlyProxy.json",
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingProxy.json",
         "generated-artifacts/TestAssertStorageParams.json",
@@ -55,8 +53,7 @@
         "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
         "generated-artifacts/TestStorageLayoutAndConstants.json",
-        "generated-artifacts/ZrxVault.json",
-        "generated-artifacts/ZrxVaultBackstop.json"
+        "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

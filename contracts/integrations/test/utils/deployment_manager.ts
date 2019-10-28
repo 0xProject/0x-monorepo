@@ -24,7 +24,6 @@ import {
 import { artifacts as multisigArtifacts, ZeroExGovernorContract } from '@0x/contracts-multisig';
 import {
     artifacts as stakingArtifacts,
-    ReadOnlyProxyContract,
     StakingProxyContract,
     TestStakingContract,
     ZrxVaultContract,
@@ -97,7 +96,6 @@ interface AssetProxyContracts {
 
 // Contract wrappers for all of the staking contracts
 interface StakingContracts {
-    readOnlyProxy: ReadOnlyProxyContract;
     stakingLogic: TestStakingContract;
     stakingProxy: StakingProxyContract;
     stakingWrapper: TestStakingContract;
@@ -199,7 +197,6 @@ export class DeploymentManager {
             assetProxies.erc1155Proxy,
             assetProxies.multiAssetProxy,
             exchange,
-            staking.readOnlyProxy,
             staking.stakingProxy,
         ]);
 
@@ -354,12 +351,6 @@ export class DeploymentManager {
             assetProxies.erc20Proxy.address,
             tokens.zrx.address,
         );
-        const readOnlyProxy = await ReadOnlyProxyContract.deployFrom0xArtifactAsync(
-            stakingArtifacts.ReadOnlyProxy,
-            environment.provider,
-            txDefaults,
-            stakingArtifacts,
-        );
         const stakingLogic = await TestStakingContract.deployFrom0xArtifactAsync(
             stakingArtifacts.TestStaking,
             environment.provider,
@@ -374,7 +365,6 @@ export class DeploymentManager {
             txDefaults,
             stakingArtifacts,
             stakingLogic.address,
-            readOnlyProxy.address,
         );
         const stakingWrapper = new TestStakingContract(stakingProxy.address, environment.provider);
 
@@ -391,7 +381,6 @@ export class DeploymentManager {
         await zrxVault.setStakingProxy.awaitTransactionSuccessAsync(stakingProxy.address, { from: owner });
 
         return {
-            readOnlyProxy,
             stakingLogic,
             stakingProxy,
             stakingWrapper,
