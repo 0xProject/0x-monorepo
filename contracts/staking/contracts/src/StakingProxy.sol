@@ -19,7 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibProxy.sol";
 import "./libs/LibSafeDowncast.sol";
 import "./immutable/MixinStorage.sol";
 import "./immutable/MixinConstants.sol";
@@ -32,7 +31,6 @@ contract StakingProxy is
     MixinStorage,
     MixinConstants
 {
-    using LibProxy for address;
     using LibSafeDowncast for uint256;
 
     /// @dev Constructor.
@@ -56,11 +54,19 @@ contract StakingProxy is
         external
         payable
     {
-        stakingContract.proxyCall(
-            LibProxy.RevertRule.REVERT_ON_ERROR,
-            bytes4(0),                              // no custom egress selector
-            false                                   // do not ignore ingress selector
-        );
+        // Call the staking contract with the provided calldata.
+        (bool success, bytes memory returnData) = stakingContract.delegatecall(msg.data);
+
+        // Revert on failure or return on success.
+        assembly {
+            switch success
+            case 0 {
+                revert(add(0x20, returnData), mload(returnData))
+            }
+            default {
+                return(add(0x20, returnData), mload(returnData))
+            }
+        }
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.

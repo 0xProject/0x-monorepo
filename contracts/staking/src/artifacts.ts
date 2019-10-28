@@ -15,7 +15,6 @@ import * as IZrxVault from '../generated-artifacts/IZrxVault.json';
 import * as LibCobbDouglas from '../generated-artifacts/LibCobbDouglas.json';
 import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
-import * as LibProxy from '../generated-artifacts/LibProxy.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
 import * as MixinAbstract from '../generated-artifacts/MixinAbstract.json';
@@ -43,8 +42,6 @@ import * as TestExchangeManager from '../generated-artifacts/TestExchangeManager
 import * as TestFinalizer from '../generated-artifacts/TestFinalizer.json';
 import * as TestInitTarget from '../generated-artifacts/TestInitTarget.json';
 import * as TestLibFixedMath from '../generated-artifacts/TestLibFixedMath.json';
-import * as TestLibProxy from '../generated-artifacts/TestLibProxy.json';
-import * as TestLibProxyReceiver from '../generated-artifacts/TestLibProxyReceiver.json';
 import * as TestLibSafeDowncast from '../generated-artifacts/TestLibSafeDowncast.json';
 import * as TestMixinParams from '../generated-artifacts/TestMixinParams.json';
 import * as TestMixinStake from '../generated-artifacts/TestMixinStake.json';
@@ -75,7 +72,6 @@ export const artifacts = {
     LibCobbDouglas: LibCobbDouglas as ContractArtifact,
     LibFixedMath: LibFixedMath as ContractArtifact,
     LibFixedMathRichErrors: LibFixedMathRichErrors as ContractArtifact,
-    LibProxy: LibProxy as ContractArtifact,
     LibSafeDowncast: LibSafeDowncast as ContractArtifact,
     LibStakingRichErrors: LibStakingRichErrors as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
@@ -96,8 +92,6 @@ export const artifacts = {
     TestFinalizer: TestFinalizer as ContractArtifact,
     TestInitTarget: TestInitTarget as ContractArtifact,
     TestLibFixedMath: TestLibFixedMath as ContractArtifact,
-    TestLibProxy: TestLibProxy as ContractArtifact,
-    TestLibProxyReceiver: TestLibProxyReceiver as ContractArtifact,
     TestLibSafeDowncast: TestLibSafeDowncast as ContractArtifact,
     TestMixinParams: TestMixinParams as ContractArtifact,
     TestMixinStake: TestMixinStake as ContractArtifact,
