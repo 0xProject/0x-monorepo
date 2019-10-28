@@ -55,6 +55,7 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
+        "@0x/contracts-asset-proxy": "2.3.0-beta.0",
         "@0x/contracts-multisig": "^3.2.0-beta.0",
         "@0x/contracts-staking": "^1.1.0-beta.0",
         "@0x/contracts-exchange": "^2.2.0-beta.0",
