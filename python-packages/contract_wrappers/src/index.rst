@@ -34,7 +34,7 @@ zero_ex.contract_wrappers.coordinator_registry
 
 
 zero_ex.contract_wrappers.dev_utils
-=======================================
+===================================
 
 .. automodule:: zero_ex.contract_wrappers.dev_utils
    :members:
