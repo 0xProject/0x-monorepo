@@ -40,6 +40,12 @@ except ImportError:
         """No-op input validator."""
 
 
+try:
+    from .middleware import MIDDLEWARE  # type: ignore
+except ImportError:
+    pass
+
+
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class LibDummy:
     """Wrapper class for LibDummy Solidity contract."""
@@ -56,14 +62,29 @@ class LibDummy:
         :param contract_address: where the contract has been deployed
         :param validator: for validation of method inputs.
         """
+        # pylint: disable=too-many-statements
+
         self.contract_address = contract_address
 
         if not validator:
             validator = LibDummyValidator(provider, contract_address)
 
-        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
-            provider
-        ).eth
+        web3 = Web3(provider)
+
+        # if any middleware was imported, inject it
+        try:
+            MIDDLEWARE
+        except NameError:
+            pass
+        else:
+            for middleware in MIDDLEWARE:
+                web3.middleware_onion.inject(  # type: ignore
+                    middleware["function"], layer=middleware["layer"]
+                )
+
+        self._web3_eth = (
+            web3.eth  # type: ignore # pylint: disable=no-member
+        )
 
     @staticmethod
     def abi():
