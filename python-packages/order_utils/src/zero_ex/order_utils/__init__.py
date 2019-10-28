@@ -31,6 +31,8 @@ from web3.contract import Contract
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 import zero_ex.contract_artifacts
+from zero_ex.contract_wrappers.exchange import Exchange
+from zero_ex.contract_wrappers.exchange.types import Order
 from zero_ex.contract_wrappers.order_conversions import order_to_jsdict
 from zero_ex.dev_utils.type_assertions import (
     assert_is_address,
@@ -48,13 +50,18 @@ class _Constants:
     eip191_header = b"\x19\x01"
 
     eip712_domain_separator_schema_hash = keccak(
-        b"EIP712Domain(string name,string version,address verifyingContract)"
+        b"EIP712Domain("
+        + b"string name,"
+        + b"string version,"
+        + b"uint256 chainId,"
+        + b"address verifyingContract"
+        + b")"
     )
 
     eip712_domain_struct_header = (
         eip712_domain_separator_schema_hash
         + keccak(b"0x Protocol")
-        + keccak(b"2")
+        + keccak(b"3.0.0")
     )
 
     eip712_order_schema_hash = keccak(
@@ -70,7 +77,9 @@ class _Constants:
         + b"uint256 expirationTimeSeconds,"
         + b"uint256 salt,"
         + b"bytes makerAssetData,"
-        + b"bytes takerAssetData"
+        + b"bytes takerAssetData,"
+        + b"bytes makerFeeAssetData,"
+        + b"bytes takerFeeAssetData"
         + b")"
     )
 
@@ -87,7 +96,9 @@ class _Constants:
         N_SIGNATURE_TYPES = auto()
 
 
-def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
+def generate_order_hash_hex(
+    order: Order, exchange_address: str, chain_id: int
+) -> str:
     """Calculate the hash of the given order as a hexadecimal string.
 
     :param order: The order to be hashed.  Must conform to `the 0x order JSON schema <https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/schemas/order_schema.json>`_.
@@ -95,27 +106,35 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
         contract has been deployed.
     :returns: A string, of ASCII hex digits, representing the order hash.
 
+    Inputs and expected result below were copied from
+    @0x/order-utils/test/order_hash_test.ts
+
     >>> generate_order_hash_hex(
     ...     Order(
     ...         makerAddress="0x0000000000000000000000000000000000000000",
     ...         takerAddress="0x0000000000000000000000000000000000000000",
     ...         feeRecipientAddress="0x0000000000000000000000000000000000000000",
     ...         senderAddress="0x0000000000000000000000000000000000000000",
-    ...         makerAssetAmount="1000000000000000000",
-    ...         takerAssetAmount="1000000000000000000",
+    ...         makerAssetAmount="0",
+    ...         takerAssetAmount="0",
     ...         makerFee="0",
     ...         takerFee="0",
-    ...         expirationTimeSeconds="12345",
-    ...         salt="12345",
+    ...         expirationTimeSeconds="0",
+    ...         salt="0",
     ...         makerAssetData=((0).to_bytes(1, byteorder='big') * 20),
     ...         takerAssetData=((0).to_bytes(1, byteorder='big') * 20),
+    ...         makerFeeAssetData=((0).to_bytes(1, byteorder='big') * 20),
+    ...         takerFeeAssetData=((0).to_bytes(1, byteorder='big') * 20),
     ...     ),
-    ...     exchange_address="0x0000000000000000000000000000000000000000",
+    ...     exchange_address="0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
+    ...     chain_id=50
     ... )
-    '55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692'
+    '331cb7e07a757bae130702da6646c26531798c92bcfaf671817268fd2c188531'
     """  # noqa: E501 (line too long)
     assert_is_address(exchange_address, "exchange_address")
-    assert_valid(order_to_jsdict(order, exchange_address), "/orderSchema")
+    assert_valid(
+        order_to_jsdict(order, chain_id, exchange_address), "/orderSchema"
+    )
 
     def pad_20_bytes_to_32(twenty_bytes: bytes):
         return bytes(12) + twenty_bytes
@@ -125,6 +144,7 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
 
     eip712_domain_struct_hash = keccak(
         _Constants.eip712_domain_struct_header
+        + int_to_32_big_endian_bytes(int(chain_id))
         + pad_20_bytes_to_32(to_bytes(hexstr=exchange_address))
     )
 
@@ -142,6 +162,8 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
         + int_to_32_big_endian_bytes(int(order["salt"]))
         + keccak(to_bytes(hexstr=order["makerAssetData"].hex()))
         + keccak(to_bytes(hexstr=order["takerAssetData"].hex()))
+        + keccak(to_bytes(hexstr=order["makerFeeAssetData"].hex()))
+        + keccak(to_bytes(hexstr=order["takerFeeAssetData"].hex()))
     )
 
     return keccak(
@@ -153,7 +175,7 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
 
 def is_valid_signature(
     provider: BaseProvider, data: str, signature: str, signer_address: str
-) -> Tuple[bool, str]:
+) -> bool:
     """Check the validity of the supplied signature.
 
     Check if the supplied `signature`:code: corresponds to signing `data`:code:
@@ -173,42 +195,25 @@ def is_valid_signature(
     ...     '0x1B61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
     ...     '0x5409ed021d9299bf6814279a6a1411a7e866a631',
     ... )
-    (True, '')
+    True
     """  # noqa: E501 (line too long)
     assert_is_provider(provider, "provider")
     assert_is_hex_string(data, "data")
     assert_is_hex_string(signature, "signature")
     assert_is_address(signer_address, "signer_address")
 
-    web3_instance = Web3(provider)
-    # false positive from pylint: disable=no-member
-    contract_address = NETWORK_TO_ADDRESSES[
-        NetworkId(int(web3_instance.net.version))
-    ].exchange
-    # false positive from pylint: disable=no-member
-    contract: Contract = web3_instance.eth.contract(
-        address=to_checksum_address(contract_address),
-        abi=zero_ex.contract_artifacts.abi_by_name("Exchange"),
+    return Exchange(
+        provider,
+        NETWORK_TO_ADDRESSES[
+            NetworkId(
+                int(Web3(provider).net.version)  # pylint: disable=no-member
+            )
+        ].exchange,
+    ).is_valid_hash_signature.call(
+        bytes.fromhex(remove_0x_prefix(data)),
+        to_checksum_address(signer_address),
+        bytes.fromhex(remove_0x_prefix(signature)),
     )
-    try:
-        return (
-            contract.functions.isValidSignature(
-                data, to_checksum_address(signer_address), signature
-            ).call(),
-            "",
-        )
-    except web3.exceptions.BadFunctionCallOutput as exception:
-        known_revert_reasons = [
-            "LENGTH_GREATER_THAN_0_REQUIRED",
-            "SIGNATURE_ILLEGAL",
-            "SIGNATURE_UNSUPPORTED",
-            "LENGTH_0_REQUIRED",
-            "LENGTH_65_REQUIRED",
-        ]
-        for known_revert_reason in known_revert_reasons:
-            if known_revert_reason in str(exception):
-                return (False, known_revert_reason)
-        return (False, f"Unknown: {exception}")
 
 
 class ECSignature(TypedDict):
@@ -319,7 +324,7 @@ def sign_hash(
             ).hex()
         )
 
-        (valid, _) = is_valid_signature(
+        valid = is_valid_signature(
             provider, hash_hex, signature_as_vrst_hex, signer_address
         )
 
@@ -334,7 +339,7 @@ def sign_hash(
                 1, byteorder="big"
             ).hex()
         )
-        (valid, _) = is_valid_signature(
+        valid = is_valid_signature(
             provider, hash_hex, signature_as_vrst_hex, signer_address
         )
 
@@ -342,8 +347,8 @@ def sign_hash(
             return signature_as_vrst_hex
 
     raise RuntimeError(
-        "Signature returned from web3 provider is in an unknown format."
-        + " Attempted to parse as RSV and as VRS."
+        "Signature returned from web3 provider is in an unknown format. "
+        + "Signature was: {signature}"
     )
 
 

@@ -11,11 +11,13 @@ Converting between the JSON wire format and the types accepted by Web3.py (eg
 converting Exchange structs between JSON and Python objects.
 """
 
+from enum import auto, Enum
 
 from . import (
-    Tuple0xbb41e5b3,
-    Tuple0x260219a2,
-    Tuple0x054ca44e,
+    Tuple0x735c43e3,
+    Tuple0x6ca34a6f,
+    Tuple0x4c5ca29b,
+    Tuple0xdabc15fe,
     Tuple0xb1e4a1ae,
 )
 
@@ -27,27 +29,35 @@ from . import (
 # of each of these classes.
 
 
-class FillResults(Tuple0xbb41e5b3):
+class FillResults(Tuple0x735c43e3):
     """The `FillResults`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0xbb41e5b3`:py:class:.
+    `zero_ex.contract_wrappers.exchange.Tuple0x735c43e3`:py:class:.
     """
 
 
-class Order(Tuple0x260219a2):
+class Order(Tuple0x6ca34a6f):
     """The `Order`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0x260219a2`:py:class:.
+    `zero_ex.contract_wrappers.exchange.Tuple0x6ca34a6f`:py:class:.
     """
 
 
-class MatchedFillResults(Tuple0x054ca44e):
+class MatchedFillResults(Tuple0x4c5ca29b):
     """The `MatchedFillResults`:code: Solidity struct.
 
     Also known as
-    `zero_ex.contract_wrappers.exchange.Tuple0x054ca44e`:py:class:.
+    `zero_ex.contract_wrappers.exchange.Tuple0x4c5ca29b`:py:class:.
+    """
+
+
+class ZeroExTransaction(Tuple0xdabc15fe):
+    """The `ZeroExTransaction`:code: Solidity struct.
+
+    Also known as
+    `zero_ex.contract_wrappers.exchange.Tuple0xdabc15fe`:py:class:.
     """
 
 
@@ -59,3 +69,11 @@ class OrderInfo(Tuple0xb1e4a1ae):
     """
 
 
+class OrderStatus(Enum):  # noqa: D101 # pylint: disable=missing-docstring
+    INVALID = 0
+    INVALID_MAKER_ASSET_AMOUNT = auto()
+    INVALID_TAKER_ASSET_AMOUNT = auto()
+    FILLABLE = auto()
+    EXPIRED = auto()
+    FULLY_FILLED = auto()
+    CANCELLED = auto()

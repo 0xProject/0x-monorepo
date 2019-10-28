@@ -11,6 +11,7 @@ from zero_ex.contract_wrappers.exchange.types import Order
 
 def order_to_jsdict(
     order: Order,
+    chain_id: int,
     exchange_address="0x0000000000000000000000000000000000000000",
     signature: str = None,
 ) -> dict:
@@ -35,27 +36,35 @@ def order_to_jsdict(
     ...         'salt': 1,
     ...         'makerAssetData': (0).to_bytes(1, byteorder='big') * 20,
     ...         'takerAssetData': (0).to_bytes(1, byteorder='big') * 20,
+    ...         'makerFeeAssetData': (0).to_bytes(1, byteorder='big') * 20,
+    ...         'takerFeeAssetData': (0).to_bytes(1, byteorder='big') * 20,
     ...     },
+    ...     chain_id=50
     ... ))
-    {'exchangeAddress': '0x0000000000000000000000000000000000000000',
+    {'chainId': 50,
+     'exchangeAddress': '0x0000000000000000000000000000000000000000',
      'expirationTimeSeconds': '1',
      'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
      'makerAddress': '0x0000000000000000000000000000000000000000',
      'makerAssetAmount': '1',
      'makerAssetData': '0x0000000000000000000000000000000000000000',
      'makerFee': '0',
+     'makerFeeAssetData': '0x0000000000000000000000000000000000000000',
      'salt': '1',
      'senderAddress': '0x0000000000000000000000000000000000000000',
      'takerAddress': '0x0000000000000000000000000000000000000000',
      'takerAssetAmount': '1',
      'takerAssetData': '0x0000000000000000000000000000000000000000',
-     'takerFee': '0'}
+     'takerFee': '0',
+     'takerFeeAssetData': '0x0000000000000000000000000000000000000000'}
     """
     jsdict = cast(Dict, copy(order))
 
     # encode bytes fields
     jsdict["makerAssetData"] = "0x" + order["makerAssetData"].hex()
+    jsdict["makerFeeAssetData"] = "0x" + order["makerFeeAssetData"].hex()
     jsdict["takerAssetData"] = "0x" + order["takerAssetData"].hex()
+    jsdict["takerFeeAssetData"] = "0x" + order["takerFeeAssetData"].hex()
 
     jsdict["exchangeAddress"] = exchange_address
 
@@ -68,6 +77,8 @@ def order_to_jsdict(
     jsdict["takerFee"] = str(order["takerFee"])
 
     jsdict["salt"] = str(order["salt"])
+
+    jsdict["chainId"] = chain_id
 
     if signature is not None:
         jsdict["signature"] = signature
@@ -98,23 +109,31 @@ def jsdict_to_order(jsdict: dict) -> Order:
     ...         'salt': "12345",
     ...         'makerAssetData': "0x0000000000000000000000000000000000000000",
     ...         'takerAssetData': "0x0000000000000000000000000000000000000000",
+    ...         'makerFeeAssetData': "0x0000000000000000000000000000000000000000",
+    ...         'takerFeeAssetData': "0x0000000000000000000000000000000000000000",
     ...         'exchangeAddress': "0x0000000000000000000000000000000000000000",
+    ...         'chainId': 50
     ...     },
     ... ))
-    {'expirationTimeSeconds': 12345,
+    {'chainId': 50,
+     'expirationTimeSeconds': 12345,
      'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
      'makerAddress': '0x0000000000000000000000000000000000000000',
      'makerAssetAmount': 1000000000000000000,
      'makerAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
                        b'\x00\x00\x00\x00\x00\x00\x00\x00',
      'makerFee': 0,
+     'makerFeeAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                          b'\x00\x00\x00\x00\x00\x00\x00\x00',
      'salt': 12345,
      'senderAddress': '0x0000000000000000000000000000000000000000',
      'takerAddress': '0x0000000000000000000000000000000000000000',
      'takerAssetAmount': 1000000000000000000,
      'takerAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
                        b'\x00\x00\x00\x00\x00\x00\x00\x00',
-     'takerFee': 0}
+     'takerFee': 0,
+     'takerFeeAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+                          b'\x00\x00\x00\x00\x00\x00\x00\x00'}
     """  # noqa: E501 (line too long)
     assert_valid(jsdict, "/orderSchema")
 
@@ -123,8 +142,14 @@ def jsdict_to_order(jsdict: dict) -> Order:
     order["makerAssetData"] = bytes.fromhex(
         remove_0x_prefix(jsdict["makerAssetData"])
     )
+    order["makerFeeAssetData"] = bytes.fromhex(
+        remove_0x_prefix(jsdict["makerFeeAssetData"])
+    )
     order["takerAssetData"] = bytes.fromhex(
         remove_0x_prefix(jsdict["takerAssetData"])
+    )
+    order["takerFeeAssetData"] = bytes.fromhex(
+        remove_0x_prefix(jsdict["takerFeeAssetData"])
     )
 
     order["makerAssetAmount"] = int(jsdict["makerAssetAmount"])

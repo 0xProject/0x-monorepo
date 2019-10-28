@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from web3 import Web3
 from web3.providers.base import BaseProvider
 
 from zero_ex import json_schemas
@@ -17,6 +18,9 @@ class ExchangeValidator(Validator):
         """Initialize the class."""
         super().__init__(provider, contract_address)
         self.contract_address = contract_address
+        self.chain_id = Web3(  # type: ignore # pylint: disable=no-member
+            provider
+        ).eth.chainId
 
     def assert_valid(
         self, method_name: str, parameter_name: str, argument_value: Any
@@ -30,13 +34,17 @@ class ExchangeValidator(Validator):
         """
         if parameter_name == "order":
             json_schemas.assert_valid(
-                order_to_jsdict(argument_value, self.contract_address),
+                order_to_jsdict(
+                    argument_value, self.chain_id, self.contract_address
+                ),
                 "/orderSchema",
             )
 
         if parameter_name == "orders":
             for order in argument_value:
                 json_schemas.assert_valid(
-                    order_to_jsdict(order, self.contract_address),
+                    order_to_jsdict(
+                        order, self.chain_id, self.contract_address
+                    ),
                     "/orderSchema",
                 )

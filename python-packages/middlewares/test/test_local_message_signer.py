@@ -17,8 +17,8 @@ from zero_ex.order_utils import (
 def test_local_message_signer__sign_order():
     """Test signing order with the local_message_signer middleware"""
     expected_signature = (
-        "0x1cd17d75b891accf16030c572a64cf9e7955de63bcafa5b084439cec630ade2d7"
-        "c00f47a2f4d5b6a4508267bf4b8527100bd97cf1af9984c0a58e42d25b13f4f0a03"
+        "0x1c8bdfbb3ce3ed0f38c5a358a7f49ad5f21ea9857224c2fe98c458f2fa25551d4"
+        "d6db0157d9dfe9f9fadb8dedabb7786352843357f4ec8d0fbcbeeb619b1091f5803"
     )
     address = "0x5409ED021D9299bf6814279A6A1411A7e866A631"
     exchange = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
@@ -36,7 +36,9 @@ def test_local_message_signer__sign_order():
         "senderAddress": "0x0000000000000000000000000000000000000000",
         "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
         "makerAssetData": (b"\x00") * 20,
+        "makerFeeAssetData": (b"\x00") * 20,
         "takerAssetData": (b"\x00") * 20,
+        "takerFeeAssetData": (b"\x00") * 20,
         "salt": 0,
         "makerFee": 0,
         "takerFee": 0,
@@ -44,8 +46,7 @@ def test_local_message_signer__sign_order():
         "takerAssetAmount": 0,
         "expirationTimeSeconds": 0,
     }
-    order_hash = generate_order_hash_hex(order, exchange)
+    order_hash = generate_order_hash_hex(order, exchange, chain_id=1337)
     signature = sign_hash(ganache, to_checksum_address(address), order_hash)
     assert signature == expected_signature
-    is_valid = is_valid_signature(ganache, order_hash, signature, address)[0]
-    assert is_valid is True
+    assert is_valid_signature(ganache, order_hash, signature, address)
