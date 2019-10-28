@@ -1,5 +1,14 @@
 [
     {
+        "timestamp": 1572293393,
+        "version": "4.5.3",
+        "changes": [
+            {
+                "note": "Support for both function signatures of provider.send from various web3 versions."
+            }
+        ]
+    },
+    {
         "timestamp": 1568744790,
         "version": "4.5.2",
         "changes": [
