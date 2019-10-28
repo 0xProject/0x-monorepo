@@ -49,6 +49,22 @@ zero_ex.contract_wrappers.dutch_auction
    :special-members:
 
 
+zero_ex.contract_wrappers.erc1155_mintable
+==========================================
+
+.. automodule:: zero_ex.contract_wrappers.erc1155_mintable
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.erc1155_proxy
+=======================================
+
+.. automodule:: zero_ex.contract_wrappers.erc1155_proxy
+   :members:
+   :special-members:
+
+
 zero_ex.contract_wrappers.erc20_proxy
 =====================================
 
@@ -141,6 +157,14 @@ zero_ex.contract_wrappers.order_validator
 =========================================
 
 .. automodule:: zero_ex.contract_wrappers.order_validator
+   :members:
+   :special-members:
+
+
+zero_ex.contract_wrappers.static_call_proxy
+===========================================
+
+.. automodule:: zero_ex.contract_wrappers.static_call_proxy
    :members:
    :special-members:
 
