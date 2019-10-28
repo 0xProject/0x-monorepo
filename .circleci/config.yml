@@ -192,7 +192,10 @@ jobs:
         working_directory: ~/repo
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
-            - image: 0xorg/ganache-cli:2.2.2
+            - image: 0xorg/ganache-cli:4.4.0-beta.1
+              environment:
+                  VERSION: 4.4.0-beta.1
+                  SNAPSHOT_NAME: 0x_ganache_snapshot-v3-beta
             - image: 0xorg/launch-kit-backend:74bcc39
               environment:
                   RPC_URL: http://localhost:8545
@@ -426,12 +429,11 @@ workflows:
                       - test-exchange-ganache-3.0
                       - test-rest
                       - static-tests
-            # - test-python:
-            #       requires:
-            #           - build
-            #           - test-rest
-            # - static-tests-python:
-            #       requires:
-            #           - test-python
+            - test-python:
+                  requires:
+                      - build
+            - static-tests-python:
+                  requires:
+                      - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             # - test-rest-python
