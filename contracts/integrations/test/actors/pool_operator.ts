@@ -1,28 +1,24 @@
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { Actor, ActorConfig, Constructor } from './base';
+import { Actor, Constructor } from './base';
 
-export interface PoolOperatorConfig extends ActorConfig {
-    operatorShare: number;
+export interface OperatorShareByPoolId {
+    [poolId: string]: number;
 }
 
 export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
-        public operatorShare: number;
-        public readonly poolIds: string[] = [];
+        public readonly operatorShares: OperatorShareByPoolId = {};
         public readonly actor: Actor;
 
         /**
          * The mixin pattern requires that this constructor uses `...args: any[]`, but this class
-         * really expects a single `PoolOperatorConfig` parameter (assuming `Actor` is used as the
+         * really expects a single `ActorConfig` parameter (assuming `Actor` is used as the
          * base class).
          */
         constructor(...args: any[]) {
             super(...args);
             this.actor = (this as any) as Actor;
-
-            const { operatorShare } = args[0] as PoolOperatorConfig;
-            this.operatorShare = operatorShare;
         }
 
         /**
@@ -41,7 +37,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
 
             const createStakingPoolLog = txReceipt.logs[0];
             const poolId = (createStakingPoolLog as any).args.poolId;
-            this.poolIds.push(poolId);
+            this.operatorShares[poolId] = operatorShare;
             return poolId;
         }
 
@@ -53,7 +49,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
             newOperatorShare: number,
         ): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
-            this.operatorShare = newOperatorShare;
+            this.operatorShares[poolId] = newOperatorShare;
             return stakingContract.decreaseStakingPoolOperatorShare.awaitTransactionSuccessAsync(
                 poolId,
                 newOperatorShare,

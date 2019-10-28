@@ -10,7 +10,7 @@ export interface MakerConfig extends ActorConfig {
 
 export function MakerMixin<TBase extends Constructor>(Base: TBase) {
     return class extends Base {
-        public poolId?: string;
+        public makerPoolId?: string;
         public readonly actor: Actor;
         public readonly orderFactory: OrderFactory;
 
@@ -56,7 +56,7 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase) {
          */
         public async joinStakingPoolAsync(poolId: string): Promise<TransactionReceiptWithDecodedLogs> {
             const stakingContract = this.actor.deployment.staking.stakingWrapper;
-            this.poolId = poolId;
+            this.makerPoolId = poolId;
             return stakingContract.joinStakingPoolAsMaker.awaitTransactionSuccessAsync(poolId, {
                 from: this.actor.address,
             });
