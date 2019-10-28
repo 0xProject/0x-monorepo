@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0 - TBD
+
+-   Updated for version 3 of the protocol
+
 ## 2.2.0 - 2019-08-08
 
 -   Added ERC1155Proxy address
