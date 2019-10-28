@@ -21,13 +21,6 @@ class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
         {{else if (equal type 'uint256')}}
         # safeguard against fractional inputs
         {{toPythonIdentifier this.name}} = int({{toPythonIdentifier this.name}})
-        {{else if (equal type 'bytes')}}
-        {{toPythonIdentifier this.name}} = bytes.fromhex({{toPythonIdentifier this.name}}.decode("utf-8"))
-        {{else if (equal type 'bytes[]')}}
-        {{toPythonIdentifier this.name}} = [
-            bytes.fromhex({{toPythonIdentifier this.name}}_element.decode("utf-8"))
-            for {{toPythonIdentifier this.name}}_element in {{toPythonIdentifier this.name}}
-        ]
 {{/if}}
 {{/each}}
         return ({{> params }})
