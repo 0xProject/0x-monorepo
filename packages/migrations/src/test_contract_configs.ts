@@ -2,6 +2,7 @@
 import * as wrappers from '@0x/abi-gen-wrappers';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { ExchangeContract } from '@0x/contracts-exchange';
+import { ZeroExGovernorContract } from '@0x/contracts-multisig';
 import { StakingContract, StakingProxyContract, ZrxVaultContract } from '@0x/contracts-staking';
 import { EmptyWalletSubprovider, RPCSubprovider, Web3ProviderEngine } from '@0x/subproviders';
 import { AssetProxyId } from '@0x/types';
@@ -37,14 +38,15 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     const erc721Proxy = new wrappers.ERC721ProxyContract(addresses.erc721Proxy, provider);
     const erc1155Proxy = new wrappers.ERC1155ProxyContract(addresses.erc1155Proxy, provider);
     const multiAssetProxy = new wrappers.MultiAssetProxyContract(addresses.multiAssetProxy, provider);
-    const assetProxyOwner = new wrappers.AssetProxyOwnerContract(addresses.assetProxyOwner, provider);
+    const erc20BridgeProxy = new wrappers.ERC20ProxyContract(addresses.erc20BridgeProxy, provider);
+    const governor = new ZeroExGovernorContract(addresses.zeroExGovernor, provider);
     const stakingProxy = new StakingProxyContract(addresses.stakingProxy, provider);
-    const stakingContract = new StakingContract(addresses.staking, provider);
+    const stakingContract = new StakingContract(addresses.stakingProxy, provider);
     const zrxVault = new ZrxVaultContract(addresses.zrxVault, provider);
 
     async function verifyExchangeV2ConfigsAsync(): Promise<void> {
         const exchangeOwner = await exchangeV2.owner.callAsync();
-        warnIfMismatch(exchangeOwner, assetProxyOwner.address, 'Unexpected ExchangeV2 owner');
+        warnIfMismatch(exchangeOwner, governor.address, 'Unexpected ExchangeV2 owner');
 
         const registeredERC20Proxy = await exchangeV2.getAssetProxy.callAsync(AssetProxyId.ERC20);
         warnIfMismatch(registeredERC20Proxy, erc20Proxy.address, 'Unexpected ERC20Proxy registered in ExchangeV2');
@@ -76,7 +78,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
 
     async function verifyExchangeV3ConfigsAsync(): Promise<void> {
         const exchangeOwner = await exchange.owner.callAsync();
-        warnIfMismatch(exchangeOwner, assetProxyOwner.address, 'Unexpected Exchange owner');
+        warnIfMismatch(exchangeOwner, governor.address, 'Unexpected Exchange owner');
 
         const registeredERC20Proxy = await exchange.getAssetProxy.callAsync(AssetProxyId.ERC20);
         warnIfMismatch(registeredERC20Proxy, erc20Proxy.address, 'Unexpected ERC20Proxy registered in Exchange');
@@ -111,7 +113,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     async function verifyAssetProxyConfigsAsync(): Promise<void> {
         // Verify ERC20Proxy configs
         const erc20ProxyOwner = await erc20Proxy.owner.callAsync();
-        warnIfMismatch(erc20ProxyOwner, assetProxyOwner.address, 'Unexpected ERC20Proxy owner');
+        warnIfMismatch(erc20ProxyOwner, governor.address, 'Unexpected ERC20Proxy owner');
 
         const erc20AuthorizedAddresses = await erc20Proxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(erc20AuthorizedAddresses.length, 4, 'Unexpected number of authorized addresses in ERC20Proxy');
@@ -130,7 +132,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
 
         // Verify ERC721Proxy configs
         const erc721ProxyOwner = await erc721Proxy.owner.callAsync();
-        warnIfMismatch(erc721ProxyOwner, assetProxyOwner.address, 'Unexpected ERC721Proxy owner');
+        warnIfMismatch(erc721ProxyOwner, governor.address, 'Unexpected ERC721Proxy owner');
 
         const erc721AuthorizedAddresses = await erc721Proxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(erc721AuthorizedAddresses.length, 3, 'Unexpected number of authorized addresses in ERC721Proxy');
@@ -146,7 +148,7 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
 
         // Verify ERC1155Proxy configs
         const erc1155ProxyOwner = await erc1155Proxy.owner.callAsync();
-        warnIfMismatch(erc1155ProxyOwner, assetProxyOwner.address, 'Unexpected ERC1155Proxy owner');
+        warnIfMismatch(erc1155ProxyOwner, governor.address, 'Unexpected ERC1155Proxy owner');
 
         const erc1155AuthorizedAddresses = await erc1155Proxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(
@@ -161,12 +163,29 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         const isExchangeAuthorizedInERC1155Proxy = await erc1155Proxy.authorized.callAsync(exchange.address);
         warnIfMismatch(isExchangeAuthorizedInERC1155Proxy, true, 'Exchange not authorized in ERC1155Proxy');
 
-        const isMAPAuthorizedInER1155Proxy = await erc1155Proxy.authorized.callAsync(multiAssetProxy.address);
-        warnIfMismatch(isMAPAuthorizedInER1155Proxy, true, 'MultiAssetProxy not authorized in ERC1155Proxy');
+        const isMAPAuthorizedInERC1155Proxy = await erc1155Proxy.authorized.callAsync(multiAssetProxy.address);
+        warnIfMismatch(isMAPAuthorizedInERC1155Proxy, true, 'MultiAssetProxy not authorized in ERC1155Proxy');
+
+        // Verify ERC20BridgeProxy configs
+        const erc20BridgeProxyOwner = await erc20BridgeProxy.owner.callAsync();
+        warnIfMismatch(erc20BridgeProxyOwner, governor.address, 'Unexpected ERC20BridgeProxy owner');
+
+        const erc20BridgeAuthorizedAddresses = await erc20BridgeProxy.getAuthorizedAddresses.callAsync();
+        warnIfMismatch(
+            erc20BridgeAuthorizedAddresses.length,
+            2,
+            'Unexpected number of authorized addresses in ERC20BridgeProxy',
+        );
+
+        const isExchangeAuthorizedInERC20BridgeProxy = await erc20BridgeProxy.authorized.callAsync(exchange.address);
+        warnIfMismatch(isExchangeAuthorizedInERC20BridgeProxy, true, 'Exchange not authorized in ERC20BridgeProxy');
+
+        const isMAPAuthorizedInERC20BridgeProxy = await erc20BridgeProxy.authorized.callAsync(multiAssetProxy.address);
+        warnIfMismatch(isMAPAuthorizedInERC20BridgeProxy, true, 'MultiAssetProxy not authorized in ERC20BridgeProxy');
 
         // Verify MultiAssetProxy configs
         const multiAssetProxyOwner = await multiAssetProxy.owner.callAsync();
-        warnIfMismatch(multiAssetProxyOwner, assetProxyOwner.address, 'Unexpected MultiAssetProxy owner');
+        warnIfMismatch(multiAssetProxyOwner, governor.address, 'Unexpected MultiAssetProxy owner');
 
         const multiAssetProxyAuthorizedAddresses = await multiAssetProxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(
@@ -208,6 +227,13 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
             addresses.staticCallProxy,
             'Unexpected StaticCallProxy registered in MultiAssetProxy',
         );
+
+        const registeredERC20BridgeProxyInMAP = await multiAssetProxy.getAssetProxy.callAsync(AssetProxyId.ERC20Bridge);
+        warnIfMismatch(
+            registeredERC20BridgeProxyInMAP,
+            addresses.erc20BridgeProxy,
+            'Unexpected ERC20BridgeProxy registered in MultiAssetProxy',
+        );
     }
 
     async function verifyStakingConfigsAsync(): Promise<void> {
@@ -221,10 +247,10 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
         warnIfMismatch(wethAddress, addresses.etherToken, 'Unexpected WETH contract set in Staking contract');
 
         const stakingProxyOwner = await stakingProxy.owner.callAsync();
-        warnIfMismatch(stakingProxyOwner, addresses.assetProxyOwner, 'Unexpected StakingProxy owner');
+        warnIfMismatch(stakingProxyOwner, addresses.zeroExGovernor, 'Unexpected StakingProxy owner');
 
         const zrxVaultOwner = await zrxVault.owner.callAsync();
-        warnIfMismatch(zrxVaultOwner, addresses.assetProxyOwner, 'Unexpected ZrxVault owner');
+        warnIfMismatch(zrxVaultOwner, addresses.zeroExGovernor, 'Unexpected ZrxVault owner');
 
         const stakingProxyAuthorizedAddresses = await stakingProxy.getAuthorizedAddresses.callAsync();
         warnIfMismatch(
@@ -232,22 +258,16 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
             1,
             'Unexpected number of authorized addresses in StakingProxy',
         );
-        const isAssetProxyOwnerAuthorizedInStakingProxy = await stakingProxy.authorized.callAsync(
-            addresses.assetProxyOwner,
-        );
-        warnIfMismatch(
-            isAssetProxyOwnerAuthorizedInStakingProxy,
-            true,
-            'AssetProxyOwner not authorized in StakingProxy',
-        );
+        const isGovernorAuthorizedInStakingProxy = await stakingProxy.authorized.callAsync(addresses.zeroExGovernor);
+        warnIfMismatch(isGovernorAuthorizedInStakingProxy, true, 'ZeroExGovernor not authorized in StakingProxy');
 
         const zrxVaultAuthorizedAddresses = await zrxVault.getAuthorizedAddresses.callAsync();
         warnIfMismatch(zrxVaultAuthorizedAddresses.length, 1, 'Unexpected number of authorized addresses in ZrxVault');
-        const isAssetProxyOwnerAuthorizedInZrxVault = await zrxVault.authorized.callAsync(addresses.assetProxyOwner);
-        warnIfMismatch(isAssetProxyOwnerAuthorizedInZrxVault, true, 'AssetProxyOwner not authorized in ZrxVault');
+        const isGovernorAuthorizedInZrxVault = await zrxVault.authorized.callAsync(addresses.zeroExGovernor);
+        warnIfMismatch(isGovernorAuthorizedInZrxVault, true, 'ZeroExGovernor not authorized in ZrxVault');
     }
 
-    // TODO: implement AssetProxyOwner config tests
+    // TODO: implement ZeroExGovernor config tests
     // async function verifyAssetProxyOwnerConfigsAsync(): Promise<void> {}
 
     await verifyExchangeV2ConfigsAsync();
