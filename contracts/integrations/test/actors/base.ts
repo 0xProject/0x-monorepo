@@ -1,7 +1,9 @@
 import { DummyERC20TokenContract, WETH9Contract } from '@0x/contracts-erc20';
-import { constants, TransactionFactory } from '@0x/contracts-test-utils';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { constants, getRandomInteger, TransactionFactory } from '@0x/contracts-test-utils';
 import { SignatureType, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
 
 import { DeploymentManager } from '../utils/deployment_manager';
 
@@ -60,6 +62,34 @@ export class Actor {
             constants.MAX_UINT256,
             { from: this.address },
         );
+    }
+
+    /**
+     * Mints some number of ERC721 NFTs and approves a spender (defaults to the ERC721 asset proxy)
+     * to transfer the token.
+     */
+    public async configureERC721TokenAsync(
+        token: DummyERC721TokenContract,
+        spender?: string,
+        numToMint: number = 1,
+    ): Promise<BigNumber[]> {
+        const tokenIds: BigNumber[] = [];
+        _.times(numToMint, async () => {
+            const tokenId = getRandomInteger(constants.ZERO_AMOUNT, constants.MAX_UINT256);
+            await token.mint.awaitTransactionSuccessAsync(this.address, tokenId, {
+                from: this.address,
+            });
+            tokenIds.push(tokenId);
+        });
+
+        await token.setApprovalForAll.awaitTransactionSuccessAsync(
+            spender || this.deployment.assetProxies.erc721Proxy.address,
+            true,
+            {
+                from: this.address,
+            },
+        );
+        return tokenIds;
     }
 
     /**

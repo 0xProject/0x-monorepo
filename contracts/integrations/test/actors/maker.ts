@@ -1,4 +1,4 @@
-import { constants, OrderFactory } from '@0x/contracts-test-utils';
+import { constants, OrderFactory, orderUtils } from '@0x/contracts-test-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
@@ -39,6 +39,16 @@ export function MakerMixin<TBase extends Constructor>(Base: TBase) {
          */
         public async signOrderAsync(customOrderParams: Partial<Order> = {}): Promise<SignedOrder> {
             return this.orderFactory.newSignedOrderAsync(customOrderParams);
+        }
+
+        /**
+         * Cancels one of the maker's orders.
+         */
+        public async cancelOrderAsync(order: SignedOrder): Promise<TransactionReceiptWithDecodedLogs> {
+            const params = orderUtils.createCancel(order);
+            return this.actor.deployment.exchange.cancelOrder.awaitTransactionSuccessAsync(params.order, {
+                from: this.actor.address,
+            });
         }
 
         /**
