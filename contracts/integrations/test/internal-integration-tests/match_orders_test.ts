@@ -12,17 +12,9 @@ import { DevUtilsContract } from '@0x/contracts-dev-utils';
 import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import {
-    chaiSetup,
-    constants,
-    OrderFactory,
-    orderHashUtils,
-    orderUtils,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, OrderFactory, orderUtils } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
@@ -30,30 +22,19 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import ExchangeRevertErrors = require('../src/revert_errors');
-
-import { ExchangeWrapper } from './utils/exchange_wrapper';
-
-import { artifacts } from './artifacts';
-import { ExchangeContract } from './wrappers';
-
-import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
+import { MatchOrderTester, TokenBalances } from '../utils/match_order_tester';
 
 const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
 const TWO = new BigNumber(2);
 const { isRoundingErrorCeil, isRoundingErrorFloor } = LibReferenceFunctions;
 
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-chaiSetup.configure();
-const expect = chai.expect;
-
 // Reduce the number of tokens to deploy to speed up tests, since we don't need
 // so many.
 constants.NUM_DUMMY_ERC721_TO_DEPLOY = 1;
 constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY = 1;
 
-describe('matchOrders', () => {
+blockchainTests.resets('matchOrders', env => {
     let chainId: number;
     let makerAddressLeft: string;
     let makerAddressRight: string;
@@ -90,16 +71,10 @@ describe('matchOrders', () => {
 
     const devUtils = new DevUtilsContract(constants.NULL_ADDRESS, provider, txDefaults);
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
         // Get the chain ID.
-        chainId = await providerUtils.getChainIdAsync(provider);
+        chainId = await env.getChainIdAsync();
         // Create accounts
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([
             owner,
             makerAddressLeft,
@@ -110,9 +85,9 @@ describe('matchOrders', () => {
         ] = accounts);
         const addressesWithBalances = usedAddresses.slice(1);
         // Create wrappers
-        erc20Wrapper = new ERC20Wrapper(provider, addressesWithBalances, owner);
-        erc721Wrapper = new ERC721Wrapper(provider, addressesWithBalances, owner);
-        erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, addressesWithBalances, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, addressesWithBalances, owner);
+        erc721Wrapper = new ERC721Wrapper(env.provider, addressesWithBalances, owner);
+        erc1155ProxyWrapper = new ERC1155ProxyWrapper(env.provider, addressesWithBalances, owner);
         // Deploy ERC20 token & ERC20 proxy
         const numDummyErc20ToDeploy = 4;
         erc20Tokens = await erc20Wrapper.deployDummyTokensAsync(numDummyErc20ToDeploy, constants.DUMMY_TOKEN_DECIMALS);
@@ -130,16 +105,16 @@ describe('matchOrders', () => {
         // Deploy MultiAssetProxy.
         const multiAssetProxyContract = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
             assetProxyArtifacts.MultiAssetProxy,
-            provider,
-            txDefaults,
-            {},
+            env.provider,
+            env.txDefaults,
+            assetProxyArtifacts,
         );
         // Depoy exchange
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
-            provider,
-            txDefaults,
-            {},
+            exchangeArtifacts.Exchange,
+            env.provider,
+            env.txDefaults,
+            exchangeArtifacts,
             new BigNumber(chainId),
         );
         exchangeWrapper = new ExchangeWrapper(exchange);
@@ -217,12 +192,7 @@ describe('matchOrders', () => {
         );
         tokenBalances = await matchOrderTester.getBalancesAsync();
     });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
+
     describe('matchOrders', () => {
         it('Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorFloor but fail isRoundingErrorCeil', async () => {
             // Create orders to match

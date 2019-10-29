@@ -6,8 +6,6 @@ import { BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { ExchangeWrapper } from './exchange_wrapper';
-
 const ZERO = new BigNumber(0);
 
 export interface IndividualERC1155Holdings {
