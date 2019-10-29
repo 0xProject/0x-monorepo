@@ -136,7 +136,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-middlewares",
-    version="1.0.0",
+    version="1.0.0.dev0",
     description="Web3 middlewares for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
