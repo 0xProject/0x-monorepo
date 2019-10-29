@@ -17,13 +17,11 @@ import * as LibFixedMath from '../generated-artifacts/LibFixedMath.json';
 import * as LibFixedMathRichErrors from '../generated-artifacts/LibFixedMathRichErrors.json';
 import * as LibSafeDowncast from '../generated-artifacts/LibSafeDowncast.json';
 import * as LibStakingRichErrors from '../generated-artifacts/LibStakingRichErrors.json';
-import * as MixinAbstract from '../generated-artifacts/MixinAbstract.json';
 import * as MixinConstants from '../generated-artifacts/MixinConstants.json';
 import * as MixinCumulativeRewards from '../generated-artifacts/MixinCumulativeRewards.json';
 import * as MixinDeploymentConstants from '../generated-artifacts/MixinDeploymentConstants.json';
 import * as MixinExchangeFees from '../generated-artifacts/MixinExchangeFees.json';
 import * as MixinExchangeManager from '../generated-artifacts/MixinExchangeManager.json';
-import * as MixinFinalizer from '../generated-artifacts/MixinFinalizer.json';
 import * as MixinParams from '../generated-artifacts/MixinParams.json';
 import * as MixinScheduler from '../generated-artifacts/MixinScheduler.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
@@ -80,8 +78,6 @@ export const artifacts = {
     MixinCumulativeRewards: MixinCumulativeRewards as ContractArtifact,
     MixinStakingPool: MixinStakingPool as ContractArtifact,
     MixinStakingPoolRewards: MixinStakingPoolRewards as ContractArtifact,
-    MixinAbstract: MixinAbstract as ContractArtifact,
-    MixinFinalizer: MixinFinalizer as ContractArtifact,
     MixinParams: MixinParams as ContractArtifact,
     MixinScheduler: MixinScheduler as ContractArtifact,
     TestAssertStorageParams: TestAssertStorageParams as ContractArtifact,

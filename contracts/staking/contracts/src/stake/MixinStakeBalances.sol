@@ -26,8 +26,8 @@ import "./MixinStakeStorage.sol";
 
 
 contract MixinStakeBalances is
-    MixinStakeStorage,
-    MixinDeploymentConstants
+    MixinDeploymentConstants,
+    MixinStakeStorage
 {
     using LibSafeMath for uint256;
 

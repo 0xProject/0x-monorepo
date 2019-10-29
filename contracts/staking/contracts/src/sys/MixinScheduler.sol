@@ -22,14 +22,65 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "../libs/LibStakingRichErrors.sol";
 import "../immutable/MixinStorage.sol";
+import "../immutable/MixinDeploymentConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinScheduler is
     IStakingEvents,
+    MixinDeploymentConstants,
     MixinStorage
 {
     using LibSafeMath for uint256;
+
+    /// @dev Begins a new epoch, preparing the prior one for finalization.
+    ///      Throws if not enough time has passed between epochs or if the
+    ///      previous epoch was not fully finalized.
+    /// @return numPoolsToFinalize The number of unfinalized pools.
+    function endEpoch()
+        external
+        returns (uint256)
+    {
+        uint256 currentEpoch_ = currentEpoch;
+        uint256 prevEpoch = currentEpoch_.safeSub(1);
+
+        // Make sure the previous epoch has been fully finalized.
+        uint256 numPoolsToFinalizeFromPrevEpoch = aggregatedStatsByEpoch[prevEpoch].numPoolsToFinalize;
+        if (numPoolsToFinalizeFromPrevEpoch != 0) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.PreviousEpochNotFinalizedError(
+                    prevEpoch,
+                    numPoolsToFinalizeFromPrevEpoch
+                )
+            );
+        }
+
+        // Convert all ETH to WETH; the WETH balance of this contract is the total rewards.
+        _wrapEth();
+
+        // Load aggregated stats for the epoch we're ending.
+        aggregatedStatsByEpoch[currentEpoch_].rewardsAvailable = _getAvailableWethBalance();
+        IStructs.AggregatedStats memory aggregatedStats = aggregatedStatsByEpoch[currentEpoch_];
+
+        // Emit an event.
+        emit EpochEnded(
+            currentEpoch_,
+            aggregatedStats.numPoolsToFinalize,
+            aggregatedStats.rewardsAvailable,
+            aggregatedStats.totalFeesCollected,
+            aggregatedStats.totalWeightedStake
+        );
+
+        // Advance the epoch. This will revert if not enough time has passed.
+        _goToNextEpoch();
+
+        // If there are no pools to finalize then the epoch is finalized.
+        if (aggregatedStats.numPoolsToFinalize == 0) {
+            emit EpochFinalized(currentEpoch_, 0, aggregatedStats.rewardsAvailable);
+        }
+
+        return aggregatedStats.numPoolsToFinalize;
+    }
 
     /// @dev Returns the earliest end time in seconds of this epoch.
     ///      The next epoch can begin once this time is reached.
@@ -94,5 +145,28 @@ contract MixinScheduler is
                 )
             );
         }
+    }
+
+    /// @dev Converts the entire ETH balance of this contract into WETH.
+    function _wrapEth()
+        internal
+    {
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance != 0) {
+            getWethContract().deposit.value(ethBalance)();
+        }
+    }
+
+    /// @dev Returns the WETH balance of this contract, minus
+    ///      any WETH that has already been reserved for rewards.
+    function _getAvailableWethBalance()
+        internal
+        view
+        returns (uint256 wethBalance)
+    {
+        wethBalance = getWethContract().balanceOf(address(this))
+            .safeSub(wethReservedForPoolRewards);
+
+        return wethBalance;
     }
 }
