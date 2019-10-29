@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
+import * as crypto from 'crypto';
 
 import {
     artifacts as proxyArtifacts,
@@ -21,10 +22,11 @@ import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '@0x/contracts-dev-utils';
+import { InvalidByteOperationError } from '@0x/utils/lib/src/lib_bytes_revert_errors';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -324,6 +326,41 @@ describe('LibAssetData', () => {
                 KNOWN_STATIC_CALL_ENCODING.staticCallData,
                 KNOWN_STATIC_CALL_ENCODING.expectedReturnDataHash,
             ]);
+        });
+    });
+    describe('revertIfInvalidAssetData', async () => {
+        it('should succeed for any valid asset data', async () => {
+            const assetData = [
+                KNOWN_ERC20_ENCODING.assetData,
+                KNOWN_ERC721_ENCODING.assetData,
+                KNOWN_ERC1155_ENCODING.assetData,
+                KNOWN_MULTI_ASSET_ENCODING.assetData,
+                KNOWN_STATIC_CALL_ENCODING.assetData,
+            ];
+
+            for (const data of assetData) {
+                await libAssetData.revertIfInvalidAssetData.callAsync(data);
+            }
+            return;
+        });
+
+        it('should revert for invalid assetProxyId', async () => {
+            const badAssetData = '0x' + crypto.randomBytes(4).toString('hex') + constants.NULL_ADDRESS;
+            await expect(libAssetData.revertIfInvalidAssetData.callAsync(badAssetData)).to.eventually.be.rejectedWith(
+                StringRevertError,
+            );
+        });
+
+        it('should revert for invalid assetData with valid assetProxyId', async () => {
+            // the other encodings are always valid if the assetProxyId is valid
+            const assetData = [KNOWN_ERC20_ENCODING.assetData, KNOWN_ERC721_ENCODING.assetData];
+
+            for (const data of assetData) {
+                const badData = data.substring(0, data.length - 2); // drop one byte but retain assetProxyId
+                await expect(libAssetData.revertIfInvalidAssetData.callAsync(badData)).to.eventually.be.rejectedWith(
+                    InvalidByteOperationError,
+                );
+            }
         });
     });
 

@@ -588,4 +588,25 @@ contract LibAssetData {
             (address, bytes, bytes32)
         );
     }
+
+    function revertIfInvalidAssetData(bytes memory assetData)
+        public
+        pure 
+    {
+        bytes4 assetProxyId = assetData.readBytes4(0);
+
+        if (assetProxyId == IAssetData(address(0)).ERC20Token.selector) {
+            decodeERC20AssetData(assetData);
+        } else if (assetProxyId == IAssetData(address(0)).ERC721Token.selector) {
+            decodeERC721AssetData(assetData);
+        } else if (assetProxyId == IAssetData(address(0)).ERC1155Assets.selector) {
+            decodeERC1155AssetData(assetData);
+        } else if (assetProxyId == IAssetData(address(0)).MultiAsset.selector) {
+            decodeMultiAssetData(assetData);
+        } else if (assetProxyId == IAssetData(address(0)).StaticCall.selector) {
+            decodeStaticCallAssetData(assetData);
+        } else {
+            revert("WRONG_PROXY_ID");
+        }
+    }
 }
