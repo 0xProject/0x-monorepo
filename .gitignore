@@ -168,8 +168,9 @@ __pycache__
 python-packages/*/src/*.egg-info
 python-packages/*/.coverage
 
-# python keeps package-local copies of json schemas
+# python keeps package-local copies of json schemas and contract addresses
 python-packages/json_schemas/src/zero_ex/json_schemas/schemas
+python-packages/contract_addresses/src/zero_ex/contract_addresses/addresses.json
 
 # Doc README copy
 packages/*/docs/README.md

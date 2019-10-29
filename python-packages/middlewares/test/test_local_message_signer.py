@@ -3,7 +3,7 @@
 from eth_utils import to_checksum_address
 from web3 import Web3, HTTPProvider
 
-from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+from zero_ex.contract_addresses import network_to_addresses, NetworkId
 from zero_ex.middlewares.local_message_signer import (
     construct_local_message_signer,
 )
@@ -17,7 +17,7 @@ def test_local_message_signer__sign_order():
         "d6db0157d9dfe9f9fadb8dedabb7786352843357f4ec8d0fbcbeeb619b1091f5803"
     )
     address = "0x5409ED021D9299bf6814279A6A1411A7e866A631"
-    exchange = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+    exchange = network_to_addresses(NetworkId.GANACHE).exchange
     private_key = (
         "f2f48ee19680706196e2e339e5da3491186e0c4c5030670656b0e0164837257d"
     )

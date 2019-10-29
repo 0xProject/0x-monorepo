@@ -60,7 +60,7 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     Raises an exception if validation fails.
 
     >>> from zero_ex.json_schemas import assert_valid
-    >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+    >>> from zero_ex.contract_addresses import network_to_addresses, NetworkId
     >>> from zero_ex.order_utils import asset_data_utils
     >>> from eth_utils import remove_0x_prefix
     >>> import random
@@ -74,10 +74,10 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
     ...          '0x0000000000000000000000000000000000000000'
     ...      ),
     ...      'makerAssetData': (
-    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
+    ...          network_to_addresses(NetworkId.MAINNET).zrx_token
     ...      ),
     ...      'takerAssetData': (
-    ...          NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
+    ...          network_to_addresses(NetworkId.MAINNET).ether_token
     ...      ),
     ...      'salt': random.randint(1, 100000000000000000),
     ...      'makerFee': 0,

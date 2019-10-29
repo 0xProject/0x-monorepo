@@ -29,7 +29,7 @@ import web3.exceptions
 from web3.providers.base import BaseProvider
 from web3.contract import Contract
 
-from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
+from zero_ex.contract_addresses import network_to_addresses, NetworkId
 import zero_ex.contract_artifacts
 from zero_ex.contract_wrappers.exchange import Exchange
 from zero_ex.contract_wrappers.exchange.types import Order
@@ -211,11 +211,11 @@ def is_valid_signature(
 
     return Exchange(
         provider,
-        NETWORK_TO_ADDRESSES[
+        network_to_addresses(
             NetworkId(
                 int(Web3(provider).net.version)  # pylint: disable=no-member
             )
-        ].exchange,
+        ).exchange,
     ).is_valid_hash_signature.call(
         bytes.fromhex(remove_0x_prefix(data)),
         to_checksum_address(signer_address),

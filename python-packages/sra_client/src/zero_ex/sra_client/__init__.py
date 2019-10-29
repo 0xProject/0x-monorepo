@@ -83,8 +83,8 @@ for this account, so the example orders below have the maker trading away ZRX.
 Before such an order can be valid, though, the maker must give the 0x contracts
 permission to trade their ZRX tokens:
 
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES
->>> contract_addresses = NETWORK_TO_ADDRESSES[network_id]
+>>> from zero_ex.contract_addresses import network_to_addresses
+>>> contract_addresses = network_to_addresses(network_id)
 >>>
 >>> from zero_ex.contract_artifacts import abi_by_name
 >>> zrx_token_contract = Web3(eth_node).eth.contract(
@@ -321,7 +321,7 @@ book.  Now let's have the taker fill it:
 >>> from zero_ex.order_utils import Order
 >>> exchange = Exchange(
 ...     provider=eth_node,
-...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+...     contract_address=network_to_addresses(NetworkId.GANACHE).exchange
 ... )
 
 (Due to `an Issue with the Launch Kit Backend

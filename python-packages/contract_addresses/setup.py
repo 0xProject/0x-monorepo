@@ -7,14 +7,46 @@
 # installed when you invoke this script
 
 import subprocess  # nosec
-from shutil import rmtree
-from os import environ, path
+from shutil import copyfile, rmtree
+from os import environ, path, remove
 from sys import argv, exit  # pylint: disable=redefined-builtin
 
 from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
+
+
+class PreInstallCommand(distutils.command.build_py.build_py):
+    """Custom setuptools command class for pulling in addresses.json."""
+
+    description = (
+        "Pull in addresses.json from ../../packages/contract-addresses"
+    )
+
+    def run(self):
+        """Copy over addresses.json."""
+        pkgdir = path.dirname(path.realpath(argv[0]))
+
+        destination_path = path.join(
+            pkgdir, "src", "zero_ex", "contract_addresses"
+        )
+
+        try:
+            remove(path.join(destination_path, "addresses.json"))
+        except FileNotFoundError:
+            pass
+        copyfile(
+            path.join(
+                pkgdir,
+                "..",
+                "..",
+                "packages",
+                "contract-addresses",
+                "addresses.json",
+            ),
+            path.join(destination_path, "addresses.json"),
+        )
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -135,6 +167,7 @@ setup(
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
         "clean": CleanCommandExtension,
+        "pre_install": PreInstallCommand,
         "lint": LintCommand,
         "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
@@ -160,7 +193,9 @@ setup(
         ]
     },
     python_requires=">=3.6, <4",
-    package_data={"zero_ex.contract_addresses": ["py.typed"]},
+    package_data={
+        "zero_ex.contract_addresses": ["py.typed", "addresses.json"]
+    },
     package_dir={"": "src"},
     license="Apache 2.0",
     keywords=(
