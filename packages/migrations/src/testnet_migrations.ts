@@ -1,6 +1,9 @@
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { artifacts as assetProxyArtifacts, ERC20BridgeProxyContract } from '@0x/contracts-asset-proxy';
+import { artifacts as coordinatorArtifacts, CoordinatorContract } from '@0x/contracts-coordinator';
+import { artifacts as devUtilsArtifacts, DevUtilsContract } from '@0x/contracts-dev-utils';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
+import { artifacts as forwarderArtifacts, ForwarderContract } from '@0x/contracts-exchange-forwarder';
 import {
     artifacts as multisigArtifacts,
     ZeroExGovernorContract,
@@ -81,6 +84,33 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
         provider,
         txDefaults,
         assetProxyArtifacts,
+    );
+
+    const devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+        devUtilsArtifacts.DevUtils,
+        provider,
+        txDefaults,
+        devUtilsArtifacts,
+        exchange.address,
+    );
+
+    await CoordinatorContract.deployFrom0xArtifactAsync(
+        coordinatorArtifacts.Coordinator,
+        provider,
+        txDefaults,
+        coordinatorArtifacts,
+        exchange.address,
+        chainId,
+    );
+
+    const wethAssetData = await devUtils.encodeERC20AssetData.callAsync(deployedAddresses.etherToken);
+    await ForwarderContract.deployFrom0xArtifactAsync(
+        forwarderArtifacts.Forwarder,
+        provider,
+        txDefaults,
+        forwarderArtifacts,
+        exchange.address,
+        wethAssetData,
     );
 
     const authorizableInterface = new IAuthorizableContract(constants.NULL_ADDRESS, provider, txDefaults);
@@ -385,6 +415,7 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
             ),
         },
     ];
+
     const batchTransactionEncoder = AbiEncoder.create('(bytes[],address[],uint256[])');
     const batchTransactionData = batchTransactionEncoder.encode([
         functionCalls.map(item => item.data),
@@ -395,8 +426,8 @@ export async function runMigrationsAsync(supportedProvider: SupportedProvider, t
 }
 
 (async () => {
-    const networkId = 42;
-    const rpcUrl = 'https://kovan.infura.io/v3/';
+    const networkId = 4;
+    const rpcUrl = 'https://rinkeby.infura.io/v3/';
     const provider = await providerFactory.getLedgerProviderAsync(networkId, rpcUrl);
     await runMigrationsAsync(provider, { from: constants.ASSET_PROXY_OWNER_OWNERS[0], gasPrice: 60000000000 });
 })().catch(err => {
