@@ -39,7 +39,7 @@ contract MixinScheduler is
     /// @return numPoolsToFinalize The number of unfinalized pools.
     function endEpoch()
         external
-        returns (uint256)
+        returns (uint256 numPoolsToFinalize)
     {
         uint256 currentEpoch_ = currentEpoch;
         uint256 prevEpoch = currentEpoch_.safeSub(1);
