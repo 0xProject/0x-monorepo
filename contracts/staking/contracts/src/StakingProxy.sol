@@ -19,7 +19,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibProxy.sol";
 import "./libs/LibSafeDowncast.sol";
 import "./immutable/MixinStorage.sol";
 import "./immutable/MixinConstants.sol";
@@ -32,21 +31,14 @@ contract StakingProxy is
     MixinStorage,
     MixinConstants
 {
-    using LibProxy for address;
     using LibSafeDowncast for uint256;
 
     /// @dev Constructor.
     /// @param _stakingContract Staking contract to delegate calls to.
-    /// @param _readOnlyProxy The address of the read only proxy.
-    constructor(
-        address _stakingContract,
-        address _readOnlyProxy
-    )
+    constructor(address _stakingContract)
         public
         MixinStorage()
     {
-        readOnlyProxy = _readOnlyProxy;
-
         // Deployer address must be authorized in order to call `init`
         _addAuthorizedAddress(msg.sender);
 
@@ -62,11 +54,19 @@ contract StakingProxy is
         external
         payable
     {
-        stakingContract.proxyCall(
-            LibProxy.RevertRule.REVERT_ON_ERROR,
-            bytes4(0),                              // no custom egress selector
-            false                                   // do not ignore ingress selector
-        );
+        // Call the staking contract with the provided calldata.
+        (bool success, bytes memory returnData) = stakingContract.delegatecall(msg.data);
+
+        // Revert on failure or return on success.
+        assembly {
+            switch success
+            case 0 {
+                revert(add(0x20, returnData), mload(returnData))
+            }
+            default {
+                return(add(0x20, returnData), mload(returnData))
+            }
+        }
     }
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
@@ -87,29 +87,6 @@ contract StakingProxy is
     {
         stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
-    }
-
-    /// @dev Set read-only mode (state cannot be changed).
-    function setReadOnlyMode(bool shouldSetReadOnlyMode)
-        external
-        onlyAuthorized
-    {
-        // solhint-disable-next-line not-rely-on-time
-        uint96 timestamp = block.timestamp.downcastToUint96();
-        if (shouldSetReadOnlyMode) {
-            stakingContract = readOnlyProxy;
-            readOnlyState = IStructs.ReadOnlyState({
-                isReadOnlyModeSet: true,
-                lastSetTimestamp: timestamp
-            });
-        } else {
-            stakingContract = readOnlyProxyCallee;
-            readOnlyState.isReadOnlyModeSet = false;
-        }
-        emit ReadOnlyModeSet(
-            shouldSetReadOnlyMode,
-            timestamp
-        );
     }
 
     /// @dev Batch executes a series of calls to the staking contract.
@@ -202,7 +179,7 @@ contract StakingProxy is
         internal
     {
         // Attach the staking contract
-        stakingContract = readOnlyProxyCallee = _stakingContract;
+        stakingContract = _stakingContract;
         emit StakingContractAttachedToProxy(_stakingContract);
 
         // Call `init()` on the staking contract to initialize storage.

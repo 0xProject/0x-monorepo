@@ -10,11 +10,9 @@
         "generated-artifacts/IStorageInit.json",
         "generated-artifacts/IStructs.json",
         "generated-artifacts/IZrxVault.json",
-        "generated-artifacts/IZrxVaultBackstop.json",
         "generated-artifacts/LibCobbDouglas.json",
         "generated-artifacts/LibFixedMath.json",
         "generated-artifacts/LibFixedMathRichErrors.json",
-        "generated-artifacts/LibProxy.json",
         "generated-artifacts/LibSafeDowncast.json",
         "generated-artifacts/LibStakingRichErrors.json",
         "generated-artifacts/MixinAbstract.json",
@@ -32,7 +30,6 @@
         "generated-artifacts/MixinStakingPool.json",
         "generated-artifacts/MixinStakingPoolRewards.json",
         "generated-artifacts/MixinStorage.json",
-        "generated-artifacts/ReadOnlyProxy.json",
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingProxy.json",
         "generated-artifacts/TestAssertStorageParams.json",
@@ -43,11 +40,10 @@
         "generated-artifacts/TestFinalizer.json",
         "generated-artifacts/TestInitTarget.json",
         "generated-artifacts/TestLibFixedMath.json",
-        "generated-artifacts/TestLibProxy.json",
-        "generated-artifacts/TestLibProxyReceiver.json",
         "generated-artifacts/TestLibSafeDowncast.json",
         "generated-artifacts/TestMixinParams.json",
         "generated-artifacts/TestMixinStake.json",
+        "generated-artifacts/TestMixinStakeBalances.json",
         "generated-artifacts/TestMixinStakeStorage.json",
         "generated-artifacts/TestMixinStakingPool.json",
         "generated-artifacts/TestProtocolFees.json",
@@ -55,8 +51,7 @@
         "generated-artifacts/TestStakingNoWETH.json",
         "generated-artifacts/TestStakingProxy.json",
         "generated-artifacts/TestStorageLayoutAndConstants.json",
-        "generated-artifacts/ZrxVault.json",
-        "generated-artifacts/ZrxVaultBackstop.json"
+        "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

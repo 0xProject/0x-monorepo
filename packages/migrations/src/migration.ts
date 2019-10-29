@@ -284,6 +284,8 @@ export async function runMigrationsAsync(
         exchange: exchange.address,
         // TODO (xianny): figure out how to deploy AssetProxyOwnerContract
         assetProxyOwner: constants.NULL_ADDRESS,
+        erc20BridgeProxy: constants.NULL_ADDRESS,
+        zeroExGovernor: constants.NULL_ADDRESS,
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
         dutchAuction: dutchAuction.address,

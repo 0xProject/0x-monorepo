@@ -29,10 +29,7 @@ contract TestStakingProxy is
     // solhint-disable no-empty-blocks
     constructor(address _stakingContract)
         public
-        StakingProxy(
-            _stakingContract,
-            NIL_ADDRESS
-        )
+        StakingProxy( _stakingContract)
     {}
 
     function assertValidStorageParams()

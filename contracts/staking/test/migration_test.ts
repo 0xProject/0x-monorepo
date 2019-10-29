@@ -108,7 +108,6 @@ blockchainTests('Migration tests', env => {
                     env.txDefaults,
                     artifacts,
                     stakingContract.address,
-                    stakingContract.address,
                 )).address;
 
                 const stakingProxyContract = new StakingContract(
