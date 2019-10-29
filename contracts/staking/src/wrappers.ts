@@ -43,6 +43,7 @@ export * from '../generated-wrappers/test_lib_fixed_math';
 export * from '../generated-wrappers/test_lib_safe_downcast';
 export * from '../generated-wrappers/test_mixin_params';
 export * from '../generated-wrappers/test_mixin_stake';
+export * from '../generated-wrappers/test_mixin_stake_balances';
 export * from '../generated-wrappers/test_mixin_stake_storage';
 export * from '../generated-wrappers/test_mixin_staking_pool';
 export * from '../generated-wrappers/test_protocol_fees';

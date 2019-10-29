@@ -43,6 +43,7 @@
         "generated-artifacts/TestLibSafeDowncast.json",
         "generated-artifacts/TestMixinParams.json",
         "generated-artifacts/TestMixinStake.json",
+        "generated-artifacts/TestMixinStakeBalances.json",
         "generated-artifacts/TestMixinStakeStorage.json",
         "generated-artifacts/TestMixinStakingPool.json",
         "generated-artifacts/TestProtocolFees.json",
