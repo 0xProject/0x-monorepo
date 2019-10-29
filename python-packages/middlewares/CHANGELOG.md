@@ -1,5 +1,5 @@
 # Changelog
 
-## 1.0.0 - 2019-04-30
+## 1.0.0 - TBD
 
 -   Initial release.
