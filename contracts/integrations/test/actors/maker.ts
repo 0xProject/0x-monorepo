@@ -8,7 +8,15 @@ export interface MakerConfig extends ActorConfig {
     orderConfig: Partial<Order>;
 }
 
-export function MakerMixin<TBase extends Constructor>(Base: TBase) {
+export interface MakerInterface {
+    makerPoolId?: string;
+    orderFactory: OrderFactory;
+    signOrderAsync: (customOrderParams?: Partial<Order>) => Promise<SignedOrder>;
+    cancelOrderAsync: (order: SignedOrder) => Promise<TransactionReceiptWithDecodedLogs>;
+    joinStakingPoolAsync: (poolId: string) => Promise<TransactionReceiptWithDecodedLogs>;
+}
+
+export function MakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<MakerInterface> {
     return class extends Base {
         public makerPoolId?: string;
         public readonly actor: Actor;

@@ -6,7 +6,16 @@ export interface OperatorShareByPoolId {
     [poolId: string]: number;
 }
 
-export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
+export interface PoolOperatorInterface {
+    operatorShares: OperatorShareByPoolId;
+    createStakingPoolAsync: (operatorShare: number, addOperatorAsMaker?: boolean) => Promise<string>;
+    decreaseOperatorShareAsync: (
+        poolId: string,
+        newOperatorShare: number,
+    ) => Promise<TransactionReceiptWithDecodedLogs>;
+}
+
+export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<PoolOperatorInterface> {
     return class extends Base {
         public readonly operatorShares: OperatorShareByPoolId = {};
         public readonly actor: Actor;

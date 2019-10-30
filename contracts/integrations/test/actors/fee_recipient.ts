@@ -8,7 +8,16 @@ export interface FeeRecipientConfig extends ActorConfig {
     verifyingContract?: BaseContract;
 }
 
-export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase) {
+export interface FeeRecipientInterface {
+    approvalFactory?: ApprovalFactory;
+    signCoordinatorApproval: (
+        transaction: SignedZeroExTransaction,
+        txOrigin: string,
+        signatureType?: SignatureType,
+    ) => SignedCoordinatorApproval;
+}
+
+export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<FeeRecipientInterface> {
     return class extends Base {
         public readonly actor: Actor;
         public readonly approvalFactory?: ApprovalFactory;

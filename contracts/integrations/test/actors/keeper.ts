@@ -5,7 +5,12 @@ import { BlockParamLiteral, TransactionReceiptWithDecodedLogs } from 'ethereum-t
 
 import { Actor, Constructor } from './base';
 
-export function KeeperMixin<TBase extends Constructor>(Base: TBase) {
+export interface KeeperInterface {
+    endEpochAsync: (shouldFastForward?: boolean) => Promise<TransactionReceiptWithDecodedLogs>;
+    finalizePoolsAsync: (poolIds?: string[]) => Promise<TransactionReceiptWithDecodedLogs[]>;
+}
+
+export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<KeeperInterface> {
     return class extends Base {
         public readonly actor: Actor;
 

@@ -5,7 +5,15 @@ import { TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
 import { Actor, Constructor } from './base';
 import { DeploymentManager } from '../utils/deployment_manager';
 
-export function TakerMixin<TBase extends Constructor>(Base: TBase) {
+export interface TakerInterface {
+    fillOrderAsync: (
+        order: SignedOrder,
+        fillAmount: BigNumber,
+        txData?: Partial<TxData>,
+    ) => Promise<TransactionReceiptWithDecodedLogs>;
+}
+
+export function TakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<TakerInterface> {
     return class extends Base {
         public readonly actor: Actor;
 

@@ -3,7 +3,14 @@ import { BigNumber } from '@0x/utils';
 
 import { Actor, Constructor } from './base';
 
-export function StakerMixin<TBase extends Constructor>(Base: TBase) {
+export interface StakerInterface {
+    stakeAsync: (
+        amount: BigNumber,
+        poolId?: string,
+    ) => Promise<void>;
+}
+
+export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<StakerInterface> {
     return class extends Base {
         public readonly actor: Actor;
 
