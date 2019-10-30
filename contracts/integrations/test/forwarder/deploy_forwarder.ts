@@ -5,11 +5,14 @@ import { assetDataUtils } from '@0x/order-utils';
 
 import { DeploymentManager } from '../utils/deployment_manager';
 
+/**
+ * Deploys a Forwarder contract configured to work alongside the provided `deployment`.
+ */
 export async function deployForwarderAsync(
     deployment: DeploymentManager,
     environment: BlockchainTestsEnvironment,
 ): Promise<ForwarderContract> {
-    return await ForwarderContract.deployFrom0xArtifactAsync(
+    return ForwarderContract.deployFrom0xArtifactAsync(
         artifacts.Forwarder,
         environment.provider,
         deployment.txDefaults,

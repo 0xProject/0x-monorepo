@@ -1,11 +1,4 @@
-import {
-    blockchainTests,
-    constants,
-    expect,
-    filterLogsToArguments,
-    getRandomInteger,
-    hexRandom,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, filterLogsToArguments, getRandomInteger } from '@0x/contracts-test-utils';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
@@ -30,10 +23,10 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         it('should call the before function with the provided arguments', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.returnInteger, {
-                before: async (input: BigNumber) => {
+                before: async (_input: BigNumber) => {
                     sideEffectTarget = randomInput;
                 },
-                after: async (beforeInfo: any, result: Result, input: BigNumber) => {},
+                after: async (_beforeInfo: any, _result: Result, _input: BigNumber) => null,
             });
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
             await assertion.executeAsync(randomInput);
@@ -43,8 +36,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         it('should call the after function with the provided arguments', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.returnInteger, {
-                before: async (input: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
+                before: async (_input: BigNumber) => null,
+                after: async (_beforeInfo: any, _result: Result, input: BigNumber) => {
                     sideEffectTarget = input;
                 },
             });
@@ -55,8 +48,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
         it('should not fail immediately if the wrapped function fails', async () => {
             const assertion = new FunctionAssertion(exampleContract.emptyRevert, {
-                before: async () => {},
-                after: async (beforeInfo: any, result: Result) => {},
+                before: async () => null,
+                after: async (_beforeInfo: any, _result: Result) => null,
             });
             await assertion.executeAsync();
         });
@@ -65,10 +58,10 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
             let sideEffectTarget = ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.returnInteger, {
-                before: async (input: BigNumber) => {
+                before: async (_input: BigNumber) => {
                     return randomInput;
                 },
-                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
+                after: async (beforeInfo: any, _result: Result, _input: BigNumber) => {
                     sideEffectTarget = beforeInfo;
                 },
             });
@@ -79,8 +72,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         it('should pass the result from the function call to "after"', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.returnInteger, {
-                before: async (input: BigNumber) => {},
-                after: async (beforeInfo: any, result: Result, input: BigNumber) => {
+                before: async (_input: BigNumber) => null,
+                after: async (_beforeInfo: any, result: Result, _input: BigNumber) => {
                     sideEffectTarget = result.data;
                 },
             });
@@ -90,12 +83,10 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         });
 
         it('should pass the receipt from the function call to "after"', async () => {
-            let sideEffectTarget = {} as TransactionReceiptWithDecodedLogs;
+            let sideEffectTarget: TransactionReceiptWithDecodedLogs;
             const assertion = new FunctionAssertion(exampleContract.emitEvent, {
-                before: async (input: string) => {
-                    return {};
-                },
-                after: async (beforeInfo: {}, result: Result, input: string) => {
+                before: async (_input: string) => null,
+                after: async (_beforeInfo: any, result: Result, _input: string) => {
                     if (result.receipt) {
                         sideEffectTarget = result.receipt;
                     }
@@ -107,7 +98,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
             // Ensure that the correct events were emitted.
             const [event] = filterLogsToArguments<TestFrameworkEventEventArgs>(
-                sideEffectTarget.logs,
+                sideEffectTarget!.logs, // tslint:disable-line:no-non-null-assertion
                 TestFrameworkEvents.Event,
             );
             expect(event).to.be.deep.eq({ input });
@@ -116,10 +107,8 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         it('should pass the error to "after" if the function call fails', async () => {
             let sideEffectTarget: Error;
             const assertion = new FunctionAssertion(exampleContract.stringRevert, {
-                before: async string => {
-                    return {};
-                },
-                after: async (any, result: Result, string) => {
+                before: async _string => null,
+                after: async (_beforeInfo: any, result: Result, _input: string) => {
                     sideEffectTarget = result.data;
                 },
             });
@@ -128,7 +117,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
 
             const expectedError = new StringRevertError(message);
             return expect(
-                new Promise((resolve, reject) => {
+                new Promise<Error>((_resolve, reject) => {
                     reject(sideEffectTarget);
                 }),
             ).to.revertWith(expectedError);

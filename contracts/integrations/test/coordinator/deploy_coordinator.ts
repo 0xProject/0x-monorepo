@@ -5,11 +5,14 @@ import { BigNumber } from '@0x/utils';
 
 import { DeploymentManager } from '../utils/deployment_manager';
 
+/**
+ * Deploys a Coordinator contract configured to work alongside the provided `deployment`.
+ */
 export async function deployCoordinatorAsync(
     deployment: DeploymentManager,
     environment: BlockchainTestsEnvironment,
 ): Promise<CoordinatorContract> {
-    return await CoordinatorContract.deployFrom0xArtifactAsync(
+    return CoordinatorContract.deployFrom0xArtifactAsync(
         artifacts.Coordinator,
         environment.provider,
         deployment.txDefaults,

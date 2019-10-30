@@ -1,4 +1,3 @@
-import { blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { IERC20TokenEvents, IERC20TokenTransferEventArgs } from '@0x/contracts-erc20';
 import {
     BlockchainBalanceStore,
@@ -14,13 +13,13 @@ import {
     IStakingEventsRewardsPaidEventArgs,
     IStakingEventsStakingPoolEarnedRewardsInEpochEventArgs,
 } from '@0x/contracts-staking';
-import { SignedOrder } from '@0x/types';
+import { blockchainTests, constants, expect, toBaseUnitAmount, verifyEvents } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { toBaseUnitAmount, verifyEvents } from '@0x/contracts-test-utils';
+import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { Taker, actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper } from '../actors';
+import { actorAddressesByName, FeeRecipient, Maker, OperatorStakerMaker, StakerKeeper, Taker } from '../actors';
 import { DeploymentManager } from '../utils/deployment_manager';
 
 blockchainTests.resets('fillOrder integration tests', env => {
@@ -78,7 +77,7 @@ blockchainTests.resets('fillOrder integration tests', env => {
         await delegator.configureERC20TokenAsync(deployment.tokens.zrx);
 
         // Create a staking pool with the operator as a maker.
-        poolId = await operator.createStakingPoolAsync(0.95 * stakingConstants.PPM, true);
+        poolId = await operator.createStakingPoolAsync(stakingConstants.PPM * 0.95, true);
         // A vanilla maker joins the pool as well.
         await maker.joinStakingPoolAsync(poolId);
 
@@ -97,8 +96,9 @@ blockchainTests.resets('fillOrder integration tests', env => {
     function simulateFill(
         order: SignedOrder,
         txReceipt: TransactionReceiptWithDecodedLogs,
-        msgValue: BigNumber = DeploymentManager.protocolFee,
+        msgValue?: BigNumber,
     ): LocalBalanceStore {
+        let remainingValue = msgValue !== undefined ? msgValue : DeploymentManager.protocolFee;
         const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
@@ -109,13 +109,13 @@ blockchainTests.resets('fillOrder integration tests', env => {
         localBalanceStore.transferAsset(maker.address, taker.address, order.makerAssetAmount, order.makerAssetData);
 
         // Protocol fee
-        if (msgValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
+        if (remainingValue.isGreaterThanOrEqualTo(DeploymentManager.protocolFee)) {
             localBalanceStore.sendEth(
                 txReceipt.from,
                 deployment.staking.stakingProxy.address,
                 DeploymentManager.protocolFee,
             );
-            msgValue = msgValue.minus(DeploymentManager.protocolFee);
+            remainingValue = remainingValue.minus(DeploymentManager.protocolFee);
         } else {
             localBalanceStore.transferAsset(
                 taker.address,

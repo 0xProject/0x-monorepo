@@ -4,7 +4,7 @@ import { SignatureType, SignedZeroExTransaction } from '@0x/types';
 
 import { Actor, ActorConfig, Constructor } from './base';
 
-export interface FeeRecipientConfig extends ActorConfig {
+interface FeeRecipientConfig extends ActorConfig {
     verifyingContract?: BaseContract;
 }
 
@@ -17,6 +17,10 @@ export interface FeeRecipientInterface {
     ) => SignedCoordinatorApproval;
 }
 
+/**
+ * This mixin encapsulates functionaltiy associated with fee recipients within the 0x ecosystem.
+ * As of writing, the only extra functionality provided is signing Coordinator approvals.
+ */
 export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<FeeRecipientInterface> {
     return class extends Base {
         public readonly actor: Actor;
@@ -28,6 +32,7 @@ export function FeeRecipientMixin<TBase extends Constructor>(Base: TBase): TBase
          * base class).
          */
         constructor(...args: any[]) {
+            // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
 

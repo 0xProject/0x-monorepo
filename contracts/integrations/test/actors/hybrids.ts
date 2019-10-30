@@ -1,8 +1,8 @@
 import { Actor } from './base';
+import { KeeperMixin } from './keeper';
 import { MakerMixin } from './maker';
 import { PoolOperatorMixin } from './pool_operator';
 import { StakerMixin } from './staker';
-import { KeeperMixin } from './keeper';
 
 export class OperatorMaker extends PoolOperatorMixin(MakerMixin(Actor)) {}
 export class StakerMaker extends StakerMixin(MakerMixin(Actor)) {}

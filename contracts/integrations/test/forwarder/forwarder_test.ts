@@ -19,9 +19,10 @@ import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { Actor, actorAddressesByName, FeeRecipient, Maker } from '../actors';
+import { DeploymentManager } from '../utils/deployment_manager';
+
 import { deployForwarderAsync } from './deploy_forwarder';
 import { ForwarderTestFactory } from './forwarder_test_factory';
-import { DeploymentManager } from '../utils/deployment_manager';
 
 blockchainTests('Forwarder integration tests', env => {
     let deployment: DeploymentManager;
@@ -71,7 +72,7 @@ blockchainTests('Forwarder integration tests', env => {
                 feeRecipientAddress: orderFeeRecipient.address,
                 makerAssetAmount: toBaseUnitAmount(2),
                 takerAssetAmount: toBaseUnitAmount(1),
-                makerAssetData: makerAssetData,
+                makerAssetData,
                 takerAssetData: wethAssetData,
                 takerFee: constants.ZERO_AMOUNT,
                 makerFeeAssetData: assetDataUtils.encodeERC20AssetData(makerFeeToken.address),
@@ -79,9 +80,9 @@ blockchainTests('Forwarder integration tests', env => {
             },
         });
 
-        maker.configureERC20TokenAsync(makerToken);
-        maker.configureERC20TokenAsync(makerFeeToken);
-        maker.configureERC20TokenAsync(anotherErc20Token);
+        await maker.configureERC20TokenAsync(makerToken);
+        await maker.configureERC20TokenAsync(makerFeeToken);
+        await maker.configureERC20TokenAsync(anotherErc20Token);
         await forwarder.approveMakerAssetProxy.awaitTransactionSuccessAsync(makerAssetData);
         [nftId] = await maker.configureERC721TokenAsync(erc721Token);
 
@@ -111,7 +112,6 @@ blockchainTests('Forwarder integration tests', env => {
     blockchainTests.resets('constructor', () => {
         it('should revert if assetProxy is unregistered', async () => {
             const chainId = await env.getChainIdAsync();
-            const wethAssetData = assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address);
             const exchange = await ExchangeContract.deployFrom0xArtifactAsync(
                 exchangeArtifacts.Exchange,
                 env.provider,

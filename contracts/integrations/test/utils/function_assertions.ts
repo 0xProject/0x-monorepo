@@ -74,7 +74,7 @@ export class FunctionAssertion<TBefore> implements Assertion {
         const beforeInfo = await this.condition.before(...args);
 
         // Initialize the callResult so that the default success value is true.
-        let callResult: Result = { success: true };
+        const callResult: Result = { success: true };
 
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.
