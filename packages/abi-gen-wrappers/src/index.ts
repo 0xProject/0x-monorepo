@@ -102,6 +102,37 @@ export {
 export { OrderValidatorContract } from './generated-wrappers/order_validator';
 export { StaticCallProxyContract } from './generated-wrappers/static_call_proxy';
 export {
+    StakingAuthorizedAddressAddedEventArgs,
+    StakingAuthorizedAddressRemovedEventArgs,
+    StakingContract,
+    StakingEpochEndedEventArgs,
+    StakingEpochFinalizedEventArgs,
+    StakingEventArgs,
+    StakingEvents,
+    StakingExchangeAddedEventArgs,
+    StakingExchangeRemovedEventArgs,
+    StakingMakerStakingPoolSetEventArgs,
+    StakingMoveStakeEventArgs,
+    StakingOperatorShareDecreasedEventArgs,
+    StakingOwnershipTransferredEventArgs,
+    StakingParamsSetEventArgs,
+    StakingRewardsPaidEventArgs,
+    StakingStakeEventArgs,
+    StakingStakingPoolCreatedEventArgs,
+    StakingStakingPoolEarnedRewardsInEpochEventArgs,
+    StakingUnstakeEventArgs,
+} from './generated-wrappers/staking';
+export {
+    StakingProxyAuthorizedAddressAddedEventArgs,
+    StakingProxyAuthorizedAddressRemovedEventArgs,
+    StakingProxyContract,
+    StakingProxyEventArgs,
+    StakingProxyEvents,
+    StakingProxyOwnershipTransferredEventArgs,
+    StakingProxyStakingContractAttachedToProxyEventArgs,
+    StakingProxyStakingContractDetachedFromProxyEventArgs,
+} from './generated-wrappers/staking_proxy';
+export {
     WETH9EventArgs,
     WETH9Events,
     WETH9ApprovalEventArgs,
