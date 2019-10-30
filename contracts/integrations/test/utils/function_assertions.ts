@@ -29,15 +29,19 @@ export interface Result {
  *              function.
  */
 export interface Condition<TBefore extends any> {
-    before?: (...args: any[]) => Promise<TBefore>;
-    after?: (beforeInfo: TBefore, result: Result, ...args: any[]) => Promise<any>;
+    before: (...args: any[]) => Promise<TBefore>;
+    after: (beforeInfo: TBefore, result: Result, ...args: any[]) => Promise<any>;
 }
 
 /**
- *
+ * The basic unit of abstraction for testing. This just consists of a command that
+ * can be run. For example, this can represent a simple command that can be run, or
+ * it can represent a command that executes a "Hoare Triple" (this is what most of
+ * our `Assertion` implementations will do in practice).
+ * @param runAsync The function to execute for the assertion.
  */
 export interface Assertion {
-    runAsync: (...args: any[]) => Promise<any>;
+    executeAsync: (...args: any[]) => Promise<any>;
 }
 
 export interface RunResult {
@@ -45,16 +49,20 @@ export interface RunResult {
     afterInfo: any;
 }
 
+/**
+ * This class implements `Assertion` and represents a "Hoare Triple" that can be
+ * executed.
+ */
 export class FunctionAssertion<TBefore extends any> implements Assertion {
     // A condition that will be applied to `wrapperFunction`.
     // Note: `TBefore | undefined` is used because the `before` and `after` functions
     //       are optional in `Condition`.
-    public condition: Condition<TBefore | undefined>;
+    public condition: Condition<TBefore>;
 
     // The wrapper function that will be wrapped in assertions.
     public wrapperFunction: ContractWrapperFunction;
 
-    constructor(wrapperFunction: ContractWrapperFunction, condition: Condition<TBefore | undefined>) {
+    constructor(wrapperFunction: ContractWrapperFunction, condition: Condition<TBefore>) {
         this.condition = condition;
         this.wrapperFunction = wrapperFunction;
     }
@@ -63,9 +71,9 @@ export class FunctionAssertion<TBefore extends any> implements Assertion {
      * Runs the wrapped function and fails if the before or after assertions fail.
      * @param ...args The args to the contract wrapper function.
      */
-    public async runAsync(...args: any[]): Promise<RunResult> {
+    public async executeAsync(...args: any[]): Promise<RunResult> {
         // Call the before condition.
-        const beforeInfo = this.condition.before !== undefined ? await this.condition.before(...args) : undefined;
+        const beforeInfo = await this.condition.before(...args);
 
         // Initialize the callResult so that the default success value is true.
         let callResult: Result = { success: true };
@@ -85,10 +93,7 @@ export class FunctionAssertion<TBefore extends any> implements Assertion {
         }
 
         // Call the after condition.
-        const afterInfo =
-            this.condition.after !== undefined
-                ? await this.condition.after(beforeInfo, callResult, ...args)
-                : undefined;
+        const afterInfo = await this.condition.after(beforeInfo, callResult, ...args);
 
         return {
             beforeInfo,
@@ -96,6 +101,8 @@ export class FunctionAssertion<TBefore extends any> implements Assertion {
         };
     }
 }
+
+export type IndexGenerator = () => number;
 
 export type InputGenerator = () => Promise<any[]>;
 
@@ -105,28 +112,41 @@ export interface AssertionGenerator {
 }
 
 /**
- * A class that can run a set of function assertions in a sequence. This will terminate
- * after every assertion in the sequence has been executed.
+ * This class is an abstract way to represent collections of function assertions.
+ * Using this, we can use closures to build up many useful collections with different
+ * properties. Notably, this abstraction supports function assertion collections
+ * that can be run continuously and also those that terminate in a finite number
+ * of steps.
  */
-export class FunctionAssertionSequence {
-    /**
-     * @constructor Initializes a readonly list of AssertionGenerator objects.
-     * @param assertionGenerators A list of objects that contain (1) assertions
-     *        and (2) functions that generate the arguments to "run" the assertions.
-     */
-    constructor(protected readonly assertionGenerators: AssertionGenerator[]) {}
+class MetaAssertion implements Assertion {
+    constructor(
+        protected readonly assertionGenerators: AssertionGenerator[],
+        protected readonly indexGenerator: IndexGenerator,
+    ) {}
 
-    /**
-     * Execute this class's function assertions in the order that they were initialized.
-     * The assertions corresponding input generators will provide the arguments when the
-     * assertion is executed.
-     */
-    public async runAsync(): Promise<void> {
-        for (let i = 0; i < this.assertionGenerators.length; i++) {
-            const args = await this.assertionGenerators[i].generator();
-            await this.assertionGenerators[i].assertion.runAsync(...args);
+    public async executeAsync(): Promise<void> {
+        let idx: number;
+        while ((idx = this.indexGenerator()) > 0) {
+            const args = await this.assertionGenerators[idx].generator();
+            this.assertionGenerators[idx].assertion.executeAsync(...args);
         }
     }
+}
+
+/**
+ * Returns a class that can execute a set of function assertions in sequence.
+ * @param assertionGenerators A set of assertion generators to run in sequence.
+ */
+export function FunctionAssertionSequence(assertionGenerators: AssertionGenerator[]): MetaAssertion {
+    let idx = 0;
+    return new MetaAssertion(assertionGenerators, () => {
+        if (idx < assertionGenerators.length) {
+            return idx++;
+        } else {
+            idx = 0;
+            return -1;
+        }
+    });
 }
 
 export interface WeightedAssertionGenerator extends AssertionGenerator {
@@ -134,39 +154,25 @@ export interface WeightedAssertionGenerator extends AssertionGenerator {
 }
 
 /**
- * A class that can execute a set of function assertions at random continuously.
+ * Returns a class that can execute a set of function assertions at random continuously.
  * This will not terminate unless the process that called `runAsync` terminates.
+ * @param weightedAssertionGenerators A set of function assertions that have been
+ *        assigned weights.
  */
-export class ContinuousFunctionAssertionSet {
-    protected readonly assertionGenerators: AssertionGenerator[] = [];
-
-    /**
-     * @constructor Initializes assertion generators so that assertion's can be
-     *              selected using a uniform distribution and the weights of the
-     *              assertions hold.
-     * @param weightedAssertionGenerators An array of assertion generators that
-     *        have specified "weights." These "weights" specify the relative frequency
-     *        that assertions should be executed when the set is run.
-     */
-    constructor(weightedAssertionGenerators: WeightedAssertionGenerator[]) {
-        for (const { assertion, generator, weight } of weightedAssertionGenerators) {
-            const weightedAssertions: AssertionGenerator[] = [];
-            _.fill(weightedAssertions, { assertion, generator }, 0, weight || 1);
-            this.assertionGenerators = this.assertionGenerators.concat(weightedAssertions);
-        }
+export function ContinuousFunctionAssertionSet(
+    weightedAssertionGenerators: WeightedAssertionGenerator[],
+): MetaAssertion {
+    // Construct an array of assertion generators that allows random sampling from a
+    // uniform distribution to correctly bias assertion selection.
+    let assertionGenerators: AssertionGenerator[] = [];
+    for (const { assertion, generator, weight } of weightedAssertionGenerators) {
+        const weightedAssertions: AssertionGenerator[] = [];
+        _.fill(weightedAssertions, { assertion, generator }, 0, weight || 1);
+        assertionGenerators = assertionGenerators.concat(weightedAssertions);
     }
 
-    /**
-     * Execute this class's function assertions continuously and randomly using the weights
-     * of the assertions to bias the assertion selection. The assertions corresponding
-     * input generators will provide the arguments when the
-     * assertion is executed.
-     */
-    public async runAsync(): Promise<void> {
-        for (;;) {
-            const randomIdx = Math.round(Math.random() * (this.assertionGenerators.length - 1));
-            const args = await this.assertionGenerators[randomIdx].generator();
-            await this.assertionGenerators[randomIdx].assertion.runAsync(...args);
-        }
-    }
+    // The index generator simply needs to sample from a uniform distribution.
+    const indexGenerator = () => Math.round(Math.random() * (assertionGenerators.length - 1));
+
+    return new MetaAssertion(assertionGenerators, indexGenerator);
 }
