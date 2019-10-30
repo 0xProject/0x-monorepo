@@ -1,18 +1,14 @@
-import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import {
-    MarketOperation,
-    PrunedSignedOrder,
-} from '../types';
+import { MarketOperation, PrunedSignedOrder } from '../types';
 
 import { assert } from './assert';
 import { utils } from './utils';
 
 export const marketUtils = {
-    findOrdersThatCoverTakerAssetSellAmount(
+    findOrdersThatCoverTakerAssetFillAmount(
         sortedOrders: PrunedSignedOrder[],
         takerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
@@ -34,7 +30,7 @@ export const marketUtils = {
      * @param   opts                        Optional arguments this function accepts.
      * @return  Resulting orders and remaining fill amount that could not be covered by the input.
      */
-    findOrdersThatCoverMakerAssetBuyAmount(
+    findOrdersThatCoverMakerAssetFillAmount(
         sortedOrders: PrunedSignedOrder[],
         makerAssetFillAmount: BigNumber,
         slippageBufferAmount: BigNumber = new BigNumber(0),
@@ -53,7 +49,7 @@ function findOrdersThatCoverAssetFillAmount(
     assetFillAmount: BigNumber,
     operation: MarketOperation,
     slippageBufferAmount: BigNumber,
-    ): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
+): { resultOrders: PrunedSignedOrder[]; remainingFillAmount: BigNumber } {
     assert.isValidBaseUnitAmount('slippageBufferAmount', slippageBufferAmount);
     // calculate total amount of asset needed to be filled
     const totalFillAmount = assetFillAmount.plus(slippageBufferAmount);
@@ -89,10 +85,7 @@ function findOrdersThatCoverAssetFillAmount(
     return result;
 }
 
-function getAssetAmountAvailable(
-    order: PrunedSignedOrder,
-    operation: MarketOperation,
-): BigNumber {
+function getAssetAmountAvailable(order: PrunedSignedOrder, operation: MarketOperation): BigNumber {
     if (operation === MarketOperation.Buy) {
         if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
             return order.fillableMakerAssetAmount.minus(order.fillableTakerFeeAmount);

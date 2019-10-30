@@ -6,6 +6,14 @@ export interface OrderPrunerOpts {
     expiryBufferMs: number;
     permittedOrderFeeTypes: Set<OrderPrunerPermittedFeeTypes>;
 }
+
+export interface OrderPrunerOnChainMetadata {
+    orderStatus: number;
+    orderHash: string;
+    orderTakerAssetFilledAmount: BigNumber;
+    fillableTakerAssetAmount: BigNumber;
+    isValidSignature: boolean;
+}
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
@@ -148,8 +156,7 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOpts {
-}
+export interface SwapQuoteGetOutputOpts {}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.

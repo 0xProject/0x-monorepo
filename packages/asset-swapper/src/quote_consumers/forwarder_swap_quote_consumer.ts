@@ -28,12 +28,16 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
     private readonly _contractWrappers: ContractWrappers;
 
-    constructor(supportedProvider: SupportedProvider, contractWrappers: ContractWrappers, options: Partial<SwapQuoteConsumerOpts> = {}) {
-        const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
-        assert.isNumber('networkId', networkId);
+    constructor(
+        supportedProvider: SupportedProvider,
+        contractWrappers: ContractWrappers,
+        options: Partial<SwapQuoteConsumerOpts> = {},
+    ) {
+        const { chainId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        assert.isNumber('chainId', chainId);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
-        this.chainId = networkId;
+        this.chainId = chainId;
         this._contractWrappers = contractWrappers;
     }
 
@@ -80,13 +84,13 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, await this._getEtherTokenAssetDataOrThrowAsync());
 
-        const { ethAmount: providedEthAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
+        const { ethAmount: providedEthAmount, feeRecipient, feePercentage } = _.merge(
             {},
             constants.DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
             opts,
         );
 
-        assert.isValidPercentage('feePercentage', unFormattedFeePercentage);
+        assert.isValidPercentage('feePercentage', feePercentage);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
         if (providedEthAmount !== undefined) {
             assert.isBigNumber('ethAmount', providedEthAmount);
@@ -99,7 +103,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const signatures = _.map(orders, o => o.signature);
 
-        const feePercentage = utils.numberPercentageToEtherTokenAmountPercentage(unFormattedFeePercentage);
+        const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
 
         let params: ForwarderSmartContractParams;
         let methodName: string;
@@ -111,7 +115,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 orders,
                 makerAssetFillAmount,
                 signatures,
-                feePercentage,
+                feePercentage: formattedFeePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
                 type: MarketOperation.Buy,
             };
@@ -121,7 +125,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             params = {
                 orders,
                 signatures,
-                feePercentage,
+                feePercentage: formattedFeePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
                 type: MarketOperation.Sell,
             };
@@ -133,7 +137,8 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         ) as MethodAbi;
 
         const ethAmount = worstCaseQuoteInfo.protocolFeeInEthAmount.plus(worstCaseQuoteInfo.totalTakerAssetAmount);
-        const ethAmountWithFees = ethAmount.dividedBy(constants.ONE_AMOUNT.minus(feePercentage));
+        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
+        const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
         return {
             params,
             toAddress: this._contractWrappers.forwarder.address,
@@ -180,7 +185,8 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
         // if no ethAmount is provided, default to the worst totalTakerAssetAmount
         const ethAmount = worstCaseQuoteInfo.protocolFeeInEthAmount.plus(worstCaseQuoteInfo.totalTakerAssetAmount);
-        const ethAmountWithFees = ethAmount.dividedBy(constants.ONE_AMOUNT.minus(feePercentage));
+        const affiliateFeeAmount = ethAmount.multipliedBy(feePercentage);
+        const ethAmountWithFees = ethAmount.plus(affiliateFeeAmount);
         // format fee percentage
         const formattedFeePercentage = utils.numberPercentageToEtherTokenAmountPercentage(feePercentage);
         try {
@@ -194,10 +200,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     formattedFeePercentage,
                     feeRecipient,
                     {
-                        value: providedEthAmount || ethAmountWithFees,
-                        from: finalTakerAddress.toLowerCase(),
+                        from: finalTakerAddress,
                         gas: gasLimit,
                         gasPrice,
+                        value: providedEthAmount || ethAmountWithFees,
                     },
                 );
             } else {
@@ -207,10 +213,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                     formattedFeePercentage,
                     feeRecipient,
                     {
-                        value: providedEthAmount || ethAmountWithFees,
-                        from: finalTakerAddress.toLowerCase(),
+                        from: finalTakerAddress,
                         gas: gasLimit,
                         gasPrice,
+                        value: providedEthAmount || ethAmountWithFees,
                     },
                 );
             }

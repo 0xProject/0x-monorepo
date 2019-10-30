@@ -25,6 +25,7 @@ export { BigNumber } from '@0x/utils';
 
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
+export { protocolFeeUtils } from './utils/protocol_fee_utils';
 export { InsufficientAssetLiquidityError } from './errors';
 
 export {

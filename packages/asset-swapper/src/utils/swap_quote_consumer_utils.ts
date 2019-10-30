@@ -56,9 +56,7 @@ export const swapQuoteConsumerUtils = {
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
-        return (
-            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData)
-        );
+        return swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData);
     },
     isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
         return _.every(orders, order => swapQuoteConsumerUtils.isValidForwarderSignedOrder(order, wethAssetData));
@@ -79,7 +77,9 @@ export const swapQuoteConsumerUtils = {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
             }
-            const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.takerAssetAmount;
+            const ethAmount =
+                opts.ethAmount ||
+                quote.worstCaseQuoteInfo.takerAssetAmount.plus(quote.worstCaseQuoteInfo.protocolFeeInEthAmount);
             const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
             const takerEthAndWethBalance =
                 takerAddress !== undefined

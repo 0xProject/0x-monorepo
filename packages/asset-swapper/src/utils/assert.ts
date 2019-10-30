@@ -1,7 +1,7 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
 import { Orderbook } from '@0x/orderbook';
-import { Order, SignedOrder} from '@0x/types';
+import { Order, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { MarketOperation, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
@@ -49,14 +49,13 @@ export const assert = {
             );
         });
     },
-    isValidOrdersForSwapQuoter<T extends Order>(
-        variableName: string,
-        orders: T[],
-    ): void {
+    isValidOrdersForSwapQuoter<T extends Order>(variableName: string, orders: T[]): void {
         _.every(orders, (order: T, index: number) => {
             assert.assert(
-                utils.isOrderTakerFeePayableWithMakerAsset(order),
-                `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} but found ${
+                order.takerFee.isZero() ||
+                    utils.isOrderTakerFeePayableWithTakerAsset(order) ||
+                    utils.isOrderTakerFeePayableWithMakerAsset(order),
+                `Expected ${variableName}[${index}].takerFeeAssetData to be ${order.makerAssetData} or ${order.takerAssetData} but found ${
                     order.takerFeeAssetData
                 }`,
             );

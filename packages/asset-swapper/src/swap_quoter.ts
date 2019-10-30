@@ -22,9 +22,9 @@ import {
 import { assert } from './utils/assert';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { OrderPruner } from './utils/order_prune_utils';
+import { protocolFeeUtils } from './utils/protocol_fee_utils';
 import { sortingUtils } from './utils/sorting_utils';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
-import { utils } from './utils/utils';
 
 export class SwapQuoter {
     public readonly provider: ZeroExProvider;
@@ -135,7 +135,11 @@ export class SwapQuoter {
      * @return  An instance of SwapQuoter
      */
     constructor(supportedProvider: SupportedProvider, orderbook: Orderbook, options: Partial<SwapQuoterOpts> = {}) {
-        const { chainId, expiryBufferMs, permittedOrderFeeTypes } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
+        const { chainId, expiryBufferMs, permittedOrderFeeTypes } = _.merge(
+            {},
+            constants.DEFAULT_SWAP_QUOTER_OPTS,
+            options,
+        );
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderbook('orderbook', orderbook);
         assert.isNumber('chainId', chainId);
@@ -356,9 +360,7 @@ export class SwapQuoter {
         // get orders
         const apiOrders = await this.orderbook.getOrdersAsync(makerAssetData, takerAssetData);
         const orders = _.map(apiOrders, o => o.order);
-        const prunedOrders = await this._orderPruner.pruneSignedOrdersAsync(
-            orders,
-        );
+        const prunedOrders = await this._orderPruner.pruneSignedOrdersAsync(orders);
         const sortedPrunedOrders = sortingUtils.sortOrders(prunedOrders);
         return sortedPrunedOrders;
     }
@@ -372,10 +374,13 @@ export class SwapQuoter {
         swapQuote: SwapQuote,
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
-        const [balance, allowance] = await this._contractWrappers.devUtils.getBalanceAndAssetProxyAllowance.callAsync(takerAddress, swapQuote.takerAssetData);
+        const balanceAndAllowance = await this._contractWrappers.devUtils.getBalanceAndAssetProxyAllowance.callAsync(
+            takerAddress,
+            swapQuote.takerAssetData,
+        );
         return [
-            allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
-            allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
+            balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerAssetAmount),
+            balanceAndAllowance[1].isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerAssetAmount),
         ];
     }
 
@@ -396,15 +401,17 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { slippagePercentage } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
-            options,
-        );
+        const { slippagePercentage } = _.merge({}, constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assert.isNumber('slippagePercentage', slippagePercentage);
-        const gasPrice = await utils.getGasPriceOrEstimationOrThrowAsync(options);
+        let gasPrice: BigNumber;
+        if (!!options.gasPrice) {
+            gasPrice = options.gasPrice;
+            assert.isBigNumber('gasPrice', gasPrice);
+        } else {
+            gasPrice = await protocolFeeUtils.getGasPriceEstimationOrThrowAsync();
+        }
         // get the relevant orders for the makerAsset
         const prunedOrders = await this.getPrunedSignedOrdersAsync(makerAssetData, takerAssetData);
         if (prunedOrders.length === 0) {

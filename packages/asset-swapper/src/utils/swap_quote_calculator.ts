@@ -1,3 +1,4 @@
+import { orderCalculationUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -13,6 +14,7 @@ import {
 } from '../types';
 
 import { marketUtils } from './market_utils';
+import { protocolFeeUtils } from './protocol_fee_utils';
 import { utils } from './utils';
 
 // Calculates a swap quote for orders
@@ -61,16 +63,18 @@ function calculateSwapQuote(
 
     if (marketOperation === MarketOperation.Buy) {
         // find the orders that cover the desired assetBuyAmount (with slippage)
-        ({
-            resultOrders,
-            remainingFillAmount,
-        } = marketUtils.findOrdersThatCoverMakerAssetBuyAmount(prunedOrders, assetFillAmount, slippageBufferAmount));
+        ({ resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(
+            prunedOrders,
+            assetFillAmount,
+            slippageBufferAmount,
+        ));
     } else {
         // find the orders that cover the desired assetBuyAmount (with slippage)
-        ({
-            resultOrders,
-            remainingFillAmount,
-        } = marketUtils.findOrdersThatCoverTakerAssetSellAmount(prunedOrders, assetFillAmount, slippageBufferAmount));
+        ({ resultOrders, remainingFillAmount } = marketUtils.findOrdersThatCoverTakerAssetFillAmount(
+            prunedOrders,
+            assetFillAmount,
+            slippageBufferAmount,
+        ));
     }
 
     // if we do not have enough orders to cover the desired assetBuyAmount, throw
@@ -90,20 +94,14 @@ function calculateSwapQuote(
 
         throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
     }
-
     // assetData information for the result
     const takerAssetData = resultOrders[0].takerAssetData;
     const makerAssetData = resultOrders[0].makerAssetData;
 
-    const bestCaseQuoteInfo = calculateQuoteInfo(
-        resultOrders,
-        assetFillAmount,
-        gasPrice,
-        marketOperation,
-    );
+    const bestCaseQuoteInfo = calculateQuoteInfo(resultOrders, assetFillAmount, gasPrice, marketOperation);
     // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
     const worstCaseQuoteInfo = calculateQuoteInfo(
-        _.reverse(resultOrders),
+        _.reverse(_.clone(resultOrders)),
         assetFillAmount,
         gasPrice,
         marketOperation,
@@ -139,17 +137,9 @@ function calculateQuoteInfo(
     operation: MarketOperation,
 ): SwapQuoteInfo {
     if (operation === MarketOperation.Buy) {
-        return calculateMarketBuyQuoteInfo(
-            prunedOrders,
-            assetFillAmount,
-            gasPrice,
-        );
+        return calculateMarketBuyQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
     } else {
-        return calculateMarketSellQuoteInfo(
-            prunedOrders,
-            assetFillAmount,
-            gasPrice,
-        );
+        return calculateMarketSellQuoteInfo(prunedOrders, assetFillAmount, gasPrice);
     }
 }
 
@@ -171,12 +161,18 @@ function calculateMarketSellQuoteInfo(
                 adjustedFillableMakerAssetAmount,
                 adjustedFillableTakerAssetAmount,
             ] = utils.getAdjustedFillableMakerAndTakerAmountsFromTakerFees(order);
-            const takerAssetAmountWithFees = BigNumber.min(remainingTakerAssetFillAmount, adjustedFillableTakerAssetAmount);
-            const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(order, takerAssetAmountWithFees);
+            const takerAssetAmountWithFees = BigNumber.min(
+                remainingTakerAssetFillAmount,
+                adjustedFillableTakerAssetAmount,
+            );
+            const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(
+                order,
+                takerAssetAmountWithFees,
+            );
             const makerAssetAmount = takerAssetAmountWithFees
-                                        .div(adjustedFillableTakerAssetAmount)
-                                        .multipliedBy(adjustedFillableMakerAssetAmount)
-                                        .integerValue(BigNumber.ROUND_CEIL);
+                .div(adjustedFillableTakerAssetAmount)
+                .multipliedBy(adjustedFillableMakerAssetAmount)
+                .integerValue(BigNumber.ROUND_CEIL);
             return {
                 totalMakerAssetAmount: totalMakerAssetAmount.plus(makerAssetAmount),
                 totalTakerAssetAmount: totalTakerAssetAmount.plus(takerAssetAmount),
@@ -199,7 +195,7 @@ function calculateMarketSellQuoteInfo(
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount: utils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
+        protocolFeeInEthAmount: protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
     };
 }
 
@@ -226,7 +222,10 @@ function calculateMarketBuyQuoteInfo(
                 .div(adjustedFillableMakerAssetAmount)
                 .multipliedBy(adjustedFillableTakerAssetAmount)
                 .integerValue(BigNumber.ROUND_CEIL);
-            const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(order, takerAssetAmountWithFees);
+            const { takerAssetAmount, feeTakerAssetAmount } = getTakerAssetAmountBreakDown(
+                order,
+                takerAssetAmountWithFees,
+            );
             return {
                 totalMakerAssetAmount: totalMakerAssetAmount.plus(makerFillAmount),
                 totalTakerAssetAmount: totalTakerAssetAmount.plus(takerAssetAmount),
@@ -249,26 +248,35 @@ function calculateMarketBuyQuoteInfo(
         takerAssetAmount: result.totalTakerAssetAmount,
         totalTakerAssetAmount: result.totalFeeTakerAssetAmount.plus(result.totalTakerAssetAmount),
         makerAssetAmount: result.totalMakerAssetAmount,
-        protocolFeeInEthAmount: utils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
+        protocolFeeInEthAmount: protocolFeeUtils.calculateWorstCaseProtocolFee(prunedOrders, gasPrice),
     };
 }
 
 function getTakerAssetAmountBreakDown(
     order: PrunedSignedOrder,
     takerAssetAmountWithFees: BigNumber,
-): { feeTakerAssetAmount: BigNumber; takerAssetAmount: BigNumber} {
+): { feeTakerAssetAmount: BigNumber; takerAssetAmount: BigNumber } {
     if (utils.isOrderTakerFeePayableWithTakerAsset(order)) {
-        // based on equation takerFillAmountAccountingForFees = takerAssetSellAmount / (1 + takerFee/takerAssetAmount)
-        const coefficient = constants.ONE_AMOUNT.div(constants.ONE_AMOUNT.minus(order.takerFee.div(order.takerAssetAmount)));
-        const takerAssetAmount = takerAssetAmountWithFees.multipliedBy(coefficient).integerValue(BigNumber.ROUND_CEIL);
+        const adjustedTakerAssetAmount = order.takerAssetAmount.plus(order.takerFee);
+        const filledRatio = takerAssetAmountWithFees.div(adjustedTakerAssetAmount);
+        const takerAssetAmount = filledRatio.multipliedBy(order.takerAssetAmount).integerValue(BigNumber.ROUND_CEIL);
         return {
             takerAssetAmount,
             feeTakerAssetAmount: takerAssetAmountWithFees.minus(takerAssetAmount),
         };
     } else if (utils.isOrderTakerFeePayableWithMakerAsset(order)) {
-        // based on equation takerFillAmountAccountingForFees = takerAssetSellAmount * (1 - takerFee/makerAssetAmount)
-        const coefficient = constants.ONE_AMOUNT.minus(order.takerFee.div(order.makerAssetAmount));
-        const takerAssetAmount = takerAssetAmountWithFees.multipliedBy(coefficient).integerValue(BigNumber.ROUND_CEIL);
+        if (takerAssetAmountWithFees.isZero()) {
+            return {
+                takerAssetAmount: constants.ZERO_AMOUNT,
+                feeTakerAssetAmount: constants.ZERO_AMOUNT,
+            };
+        }
+        const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerAssetAmountWithFees);
+        const makerAssetFillAmount = orderCalculationUtils.getMakerFillAmount(order, takerAssetAmountWithFees);
+        const takerAssetAmount = takerFeeAmount
+            .div(makerAssetFillAmount)
+            .multipliedBy(takerAssetAmountWithFees)
+            .integerValue(BigNumber.ROUND_CEIL);
         return {
             takerAssetAmount,
             feeTakerAssetAmount: takerAssetAmountWithFees.minus(takerAssetAmount),

@@ -28,7 +28,9 @@ export const sortingUtils = {
 };
 
 function getTakerFeeAdjustedRateOfOrder(order: Order): BigNumber {
-    const [adjustedMakerAssetAmount, adjustedTakerAssetAmount] = utils.getAdjustedMakerAndTakerAmountsFromTakerFees(order);
+    const [adjustedMakerAssetAmount, adjustedTakerAssetAmount] = utils.getAdjustedMakerAndTakerAmountsFromTakerFees(
+        order,
+    );
     const rate = adjustedTakerAssetAmount.div(adjustedMakerAssetAmount);
     return rate;
 }
