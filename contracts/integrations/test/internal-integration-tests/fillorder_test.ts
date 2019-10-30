@@ -87,7 +87,6 @@ blockchainTests.resets('fillOrder integration tests', env => {
             StakingProxy: deployment.staking.stakingProxy.address,
             ZrxVault: deployment.staking.zrxVault.address,
         };
-        console.log(tokenOwners);
         const tokenContracts = {
             erc20: { makerToken, takerToken, ZRX: deployment.tokens.zrx, WETH: deployment.tokens.weth },
         };
