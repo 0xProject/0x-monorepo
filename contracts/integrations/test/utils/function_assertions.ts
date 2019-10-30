@@ -28,7 +28,7 @@ export interface Result {
  * @param after A function that will be run after a call to the contract wrapper
  *              function.
  */
-export interface Condition<TBefore extends any> {
+export interface Condition<TBefore> {
     before: (...args: any[]) => Promise<TBefore>;
     after: (beforeInfo: TBefore, result: Result, ...args: any[]) => Promise<any>;
 }
@@ -53,10 +53,8 @@ export interface RunResult {
  * This class implements `Assertion` and represents a "Hoare Triple" that can be
  * executed.
  */
-export class FunctionAssertion<TBefore extends any> implements Assertion {
+export class FunctionAssertion<TBefore> implements Assertion {
     // A condition that will be applied to `wrapperFunction`.
-    // Note: `TBefore | undefined` is used because the `before` and `after` functions
-    //       are optional in `Condition`.
     public condition: Condition<TBefore>;
 
     // The wrapper function that will be wrapped in assertions.
