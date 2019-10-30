@@ -362,15 +362,10 @@ export class DeploymentManager {
             stakingLogic.address,
         );
 
-        const logDecoderDependencies = _.mapValues(
-            { ...stakingArtifacts, ...ERC20Artifacts, ...exchangeArtifacts },
-            v => v.compilerOutput.abi,
-        );
         const stakingWrapper = new TestStakingContract(
             stakingProxy.address,
             environment.provider,
             txDefaults,
-            logDecoderDependencies,
         );
 
         // Add the zrx vault and the weth contract to the staking proxy.
