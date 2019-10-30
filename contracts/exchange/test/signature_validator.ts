@@ -11,7 +11,7 @@ import {
     randomAddress,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { ExchangeRevertErrors, orderHashUtils, signatureUtils, transactionHashUtils } from '@0x/order-utils';
+import { ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -170,7 +170,9 @@ blockchainTests.resets('MixinSignatureValidator', env => {
         it('should return true when SignatureType=EthSign and signature is valid', async () => {
             // Create EthSign signature
             const hashHex = getCurrentHashHex();
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(hashHex);
+            const orderHashWithEthSignPrefixHex = ethUtil.bufferToHex(
+                ethUtil.hashPersonalMessage(ethUtil.toBuffer(hashHex)),
+            );
             const signatureHex = hexConcat(
                 signDataHex(orderHashWithEthSignPrefixHex, signerPrivateKey),
                 SignatureType.EthSign,
