@@ -90,7 +90,6 @@ const types = [
     FeePercentageTooLargeError,
     InsufficientEthForFeeError,
     OverspentWethError,
-    TransferFailedError,
     DefaultFunctionWethContractOnlyError,
     MsgValueCannotEqualZeroError,
     Erc721AmountMustEqualOneError,
