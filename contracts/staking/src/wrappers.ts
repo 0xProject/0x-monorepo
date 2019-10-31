@@ -46,6 +46,7 @@ export * from '../generated-wrappers/test_mixin_stake';
 export * from '../generated-wrappers/test_mixin_stake_balances';
 export * from '../generated-wrappers/test_mixin_stake_storage';
 export * from '../generated-wrappers/test_mixin_staking_pool';
+export * from '../generated-wrappers/test_mixin_staking_pool_rewards';
 export * from '../generated-wrappers/test_protocol_fees';
 export * from '../generated-wrappers/test_proxy_destination';
 export * from '../generated-wrappers/test_staking';
