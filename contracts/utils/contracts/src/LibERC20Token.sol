@@ -21,8 +21,9 @@ pragma solidity ^0.5.9;
 
 library LibERC20Token {
 
-    /// @dev Calls `IERC20Token(token).approve()`. Does not revert if
-    ///      no data is returned.
+    /// @dev Calls `IERC20Token(token).approve()`.
+    ///      Reverts if `false` is returned or if the return
+    ///      data length is nonzero and not 32 bytes.
     /// @param token The address of the token contract.
     /// @param spender The address that receives an allowance.
     /// @param allowance The allowance to set.
@@ -41,8 +42,9 @@ library LibERC20Token {
         _callWithOptionalBooleanResult(token, callData);
     }
 
-    /// @dev Calls `IERC20Token(token).transfer()`. Does not revert if
-    ///      no data is returned.
+    /// @dev Calls `IERC20Token(token).transfer()`.
+    ///      Reverts if `false` is returned or if the return
+    ///      data length is nonzero and not 32 bytes.
     /// @param token The address of the token contract.
     /// @param to The address that receives the tokens
     /// @param amount Number of tokens to transfer.
@@ -61,8 +63,9 @@ library LibERC20Token {
         _callWithOptionalBooleanResult(token, callData);
     }
 
-    /// @dev Calls `IERC20Token(token).transferFrom()`. Does not revert if
-    ///      no data is returned.
+    /// @dev Calls `IERC20Token(token).transferFrom()`.
+    ///      Reverts if `false` is returned or if the return
+    ///      data length is nonzero and not 32 bytes.
     /// @param token The address of the token contract.
     /// @param from The owner of the tokens.
     /// @param to The address that receives the tokens
