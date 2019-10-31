@@ -20,12 +20,14 @@ contract TestFramework {
 
     function emptyRevert()
         external
+        pure
     {
         revert();
     }
 
     function stringRevert(string calldata message)
         external
+        pure
     {
         revert(message);
     }

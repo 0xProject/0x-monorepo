@@ -19,7 +19,7 @@ export class BlockchainBalanceStore extends BalanceStore {
     public constructor(
         tokenOwnersByName: TokenOwnersByName,
         tokenContractsByName: Partial<TokenContractsByName>,
-        tokenIds: Partial<TokenIds>,
+        tokenIds: Partial<TokenIds> = {},
     ) {
         super(tokenOwnersByName, tokenContractsByName);
         this._tokenContracts = {
