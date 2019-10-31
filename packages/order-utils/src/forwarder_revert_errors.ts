@@ -60,12 +60,6 @@ export class OverspentWethError extends RevertError {
     }
 }
 
-export class TransferFailedError extends RevertError {
-    constructor(errorData?: string) {
-        super('TransferFailedError', 'TransferFailedError(bytes errorData)', { errorData });
-    }
-}
-
 export class DefaultFunctionWethContractOnlyError extends RevertError {
     constructor(senderAddress?: string) {
         super('DefaultFunctionWethContractOnlyError', 'DefaultFunctionWethContractOnlyError(address senderAddress)', {

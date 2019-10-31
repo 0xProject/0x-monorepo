@@ -101,7 +101,8 @@ library LibERC20Token {
                 return;
             }
             if (resultData.length == 32) {
-                uint256 result = abi.decode(resultData, (uint256));
+                uint256 result;
+                assembly { result := mload(add(resultData, 0x20)) }
                 if (result == 1) {
                     return;
                 }

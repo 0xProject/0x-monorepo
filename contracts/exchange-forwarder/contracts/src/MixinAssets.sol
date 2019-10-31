@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
@@ -105,38 +106,8 @@ contract MixinAssets is
         internal
     {
         address token = assetData.readAddress(16);
-
         // Transfer tokens.
-        // We do a raw call so we can check the success separate
-        // from the return data.
-        (bool success, bytes memory returnData) = token.call(abi.encodeWithSelector(
-            ERC20_TRANSFER_SELECTOR,
-            msg.sender,
-            amount
-        ));
-        if (!success) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
-        }
-
-        // Check return data.
-        // If there is no return data, we assume the token incorrectly
-        // does not return a bool. In this case we expect it to revert
-        // on failure, which was handled above.
-        // If the token does return data, we require that it is a single
-        // value that evaluates to true.
-        assembly {
-            if returndatasize {
-                success := 0
-                if eq(returndatasize, 32) {
-                    // First 64 bytes of memory are reserved scratch space
-                    returndatacopy(0, 0, 32)
-                    success := mload(0)
-                }
-            }
-        }
-        if (!success) {
-            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError(returnData));
-        }
+        LibERC20Token.transfer(token, msg.sender, amount);
     }
 
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
