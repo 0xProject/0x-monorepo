@@ -116,11 +116,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
             await assertion.executeAsync(message);
 
             const expectedError = new StringRevertError(message);
-            return expect(
-                new Promise<Error>((_resolve, reject) => {
-                    reject(sideEffectTarget);
-                }),
-            ).to.revertWith(expectedError);
+            return expect(Promise.reject(sideEffectTarget!)).to.revertWith(expectedError); // tslint:disable-line
         });
     });
 });

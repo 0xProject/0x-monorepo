@@ -10,7 +10,7 @@ import {
     ExchangeFunctionName,
     LocalBalanceStore,
 } from '@0x/contracts-exchange';
-import { blockchainTests, expect, hexConcat, hexSlice, verifyEvents } from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, hexConcat, hexSlice, verifyEvents } from '@0x/contracts-test-utils';
 import { assetDataUtils, CoordinatorRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -82,7 +82,7 @@ blockchainTests.resets('Coordinator integration tests', env => {
         txReceipt: TransactionReceiptWithDecodedLogs,
         msgValue?: BigNumber,
     ): LocalBalanceStore {
-        let remainingValue = msgValue || new BigNumber(0);
+        let remainingValue = msgValue || constants.ZERO_AMOUNT;
         const localBalanceStore = LocalBalanceStore.create(balanceStore);
         // Transaction gas cost
         localBalanceStore.burnGas(txReceipt.from, DeploymentManager.gasPrice.times(txReceipt.gasUsed));
