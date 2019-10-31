@@ -73,6 +73,10 @@
             {
                 "note": "Replaced `SafeMath` with `LibSafeMath`",
                 "pr": 2254
+            },
+            {
+                "note": "Create `LibERC20Token`",
+                "pr": 2309
             }
         ],
         "timestamp": 1570135330
