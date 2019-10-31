@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.3.0-beta.1",
+        "changes": [
+            {
+                "note": "Create `LibERC20Token`",
+                "pr": 2309
+            }
+        ]
+    },
+    {
         "version": "3.3.0-beta.0",
         "changes": [
             {
@@ -73,10 +82,6 @@
             {
                 "note": "Replaced `SafeMath` with `LibSafeMath`",
                 "pr": 2254
-            },
-            {
-                "note": "Create `LibERC20Token`",
-                "pr": 2309
             }
         ],
         "timestamp": 1570135330
