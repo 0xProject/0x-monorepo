@@ -3,7 +3,15 @@ import { BigNumber } from '@0x/utils';
 
 import { Actor, Constructor } from './base';
 
-export function StakerMixin<TBase extends Constructor>(Base: TBase) {
+export interface StakerInterface {
+    stakeAsync: (amount: BigNumber, poolId?: string) => Promise<void>;
+}
+
+/**
+ * This mixin encapsulates functionaltiy associated with stakers within the 0x ecosystem.
+ * This includes staking ZRX (and optionally delegating it to a specific pool).
+ */
+export function StakerMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<StakerInterface> {
     return class extends Base {
         public readonly actor: Actor;
 
@@ -13,6 +21,7 @@ export function StakerMixin<TBase extends Constructor>(Base: TBase) {
          * class).
          */
         constructor(...args: any[]) {
+            // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
         }

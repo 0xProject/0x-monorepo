@@ -1,8 +1,8 @@
 import { PromiseWithTransactionHash } from '@0x/base-contract';
-import { BlockchainTestsEnvironment } from '@0x/contracts-test-utils';
-import { decodeThrownErrorAsRevertError } from '@0x/utils';
-import { BlockParam, CallData, TransactionReceiptWithDecodedLogs, TxData } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
+
+// tslint:disable:max-classes-per-file
 
 export interface ContractGetterFunction {
     callAsync: (...args: any[]) => Promise<any>;
@@ -60,8 +60,12 @@ export class FunctionAssertion<TBefore> implements Assertion {
     // The wrapper function that will be wrapped in assertions.
     public wrapperFunction: ContractWrapperFunction;
 
-    constructor(wrapperFunction: ContractWrapperFunction, condition: Condition<TBefore>) {
-        this.condition = condition;
+    constructor(wrapperFunction: ContractWrapperFunction, condition: Partial<Condition<TBefore>> = {}) {
+        this.condition = {
+            before: _.noop.bind(this),
+            after: _.noop.bind(this),
+            ...condition,
+        };
         this.wrapperFunction = wrapperFunction;
     }
 
@@ -74,7 +78,7 @@ export class FunctionAssertion<TBefore> implements Assertion {
         const beforeInfo = await this.condition.before(...args);
 
         // Initialize the callResult so that the default success value is true.
-        let callResult: Result = { success: true };
+        const callResult: Result = { success: true };
 
         // Try to make the call to the function. If it is successful, pass the
         // result and receipt to the after condition.
@@ -123,10 +127,11 @@ class MetaAssertion implements Assertion {
     ) {}
 
     public async executeAsync(): Promise<void> {
-        let idx: number;
-        while ((idx = this.indexGenerator()) > 0) {
+        let idx = this.indexGenerator();
+        while (idx > 0) {
             const args = await this.assertionGenerators[idx].generator();
-            this.assertionGenerators[idx].assertion.executeAsync(...args);
+            await this.assertionGenerators[idx].assertion.executeAsync(...args);
+            idx = this.indexGenerator();
         }
     }
 }

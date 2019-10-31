@@ -5,7 +5,16 @@ import { BlockParamLiteral, TransactionReceiptWithDecodedLogs } from 'ethereum-t
 
 import { Actor, Constructor } from './base';
 
-export function KeeperMixin<TBase extends Constructor>(Base: TBase) {
+export interface KeeperInterface {
+    endEpochAsync: (shouldFastForward?: boolean) => Promise<TransactionReceiptWithDecodedLogs>;
+    finalizePoolsAsync: (poolIds?: string[]) => Promise<TransactionReceiptWithDecodedLogs[]>;
+}
+
+/**
+ * This mixin encapsulates functionaltiy associated with keepers within the 0x ecosystem.
+ * This includes ending epochs sand finalizing pools in the staking system.
+ */
+export function KeeperMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<KeeperInterface> {
     return class extends Base {
         public readonly actor: Actor;
 
@@ -15,6 +24,7 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase) {
          * class).
          */
         constructor(...args: any[]) {
+            // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
         }
@@ -58,11 +68,10 @@ export function KeeperMixin<TBase extends Constructor>(Base: TBase) {
             }
 
             return Promise.all(
-                poolIds.map(
-                    async poolId =>
-                        await stakingWrapper.finalizePool.awaitTransactionSuccessAsync(poolId, {
-                            from: this.actor.address,
-                        }),
+                poolIds.map(async poolId =>
+                    stakingWrapper.finalizePool.awaitTransactionSuccessAsync(poolId, {
+                        from: this.actor.address,
+                    }),
                 ),
             );
         }

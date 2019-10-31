@@ -2,11 +2,24 @@ import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
 import { Actor, Constructor } from './base';
 
-export interface OperatorShareByPoolId {
+interface OperatorShareByPoolId {
     [poolId: string]: number;
 }
 
-export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
+export interface PoolOperatorInterface {
+    operatorShares: OperatorShareByPoolId;
+    createStakingPoolAsync: (operatorShare: number, addOperatorAsMaker?: boolean) => Promise<string>;
+    decreaseOperatorShareAsync: (
+        poolId: string,
+        newOperatorShare: number,
+    ) => Promise<TransactionReceiptWithDecodedLogs>;
+}
+
+/**
+ * This mixin encapsulates functionaltiy associated with pool operators within the 0x ecosystem.
+ * This includes creating staking pools and decreasing the operator share of a pool.
+ */
+export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase): TBase & Constructor<PoolOperatorInterface> {
     return class extends Base {
         public readonly operatorShares: OperatorShareByPoolId = {};
         public readonly actor: Actor;
@@ -17,6 +30,7 @@ export function PoolOperatorMixin<TBase extends Constructor>(Base: TBase) {
          * base class).
          */
         constructor(...args: any[]) {
+            // tslint:disable-next-line:no-inferred-empty-object-type
             super(...args);
             this.actor = (this as any) as Actor;
         }

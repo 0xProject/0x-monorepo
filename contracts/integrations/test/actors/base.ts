@@ -21,7 +21,7 @@ export class Actor {
     public readonly name: string;
     public readonly privateKey: Buffer;
     public readonly deployment: DeploymentManager;
-    protected readonly transactionFactory: TransactionFactory;
+    protected readonly _transactionFactory: TransactionFactory;
 
     constructor(config: ActorConfig) {
         Actor.count++;
@@ -29,7 +29,7 @@ export class Actor {
         this.name = config.name || this.address;
         this.deployment = config.deployment;
         this.privateKey = constants.TESTRPC_PRIVATE_KEYS[config.deployment.accounts.indexOf(this.address)];
-        this.transactionFactory = new TransactionFactory(
+        this._transactionFactory = new TransactionFactory(
             this.privateKey,
             config.deployment.exchange.address,
             config.deployment.chainId,
@@ -99,6 +99,6 @@ export class Actor {
         customTransactionParams: Partial<ZeroExTransaction>,
         signatureType: SignatureType = SignatureType.EthSign,
     ): Promise<SignedZeroExTransaction> {
-        return this.transactionFactory.newSignedTransactionAsync(customTransactionParams, signatureType);
+        return this._transactionFactory.newSignedTransactionAsync(customTransactionParams, signatureType);
     }
 }
