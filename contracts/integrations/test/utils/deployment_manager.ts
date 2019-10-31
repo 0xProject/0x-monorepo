@@ -362,11 +362,7 @@ export class DeploymentManager {
             stakingLogic.address,
         );
 
-        const stakingWrapper = new TestStakingContract(
-            stakingProxy.address,
-            environment.provider,
-            txDefaults,
-        );
+        const stakingWrapper = new TestStakingContract(stakingProxy.address, environment.provider, txDefaults);
 
         // Add the zrx vault and the weth contract to the staking proxy.
         await stakingWrapper.setWethContract.awaitTransactionSuccessAsync(tokens.weth.address, { from: owner });

@@ -327,4 +327,46 @@ blockchainTests.resets('fillOrder integration tests', env => {
         const poolStats = await deployment.staking.stakingWrapper.getStakingPoolStatsThisEpoch.callAsync(poolId);
         expect(poolStats.feesCollected).to.bignumber.equal(DeploymentManager.protocolFee);
     });
+    it('should collect WETH fees and pay out rewards', async () => {
+        // Operator and delegator each stake some ZRX; wait an epoch so that the stake is active.
+        await operator.stakeAsync(toBaseUnitAmount(100), poolId);
+        await delegator.stakeAsync(toBaseUnitAmount(50), poolId);
+        await delegator.endEpochAsync();
+
+        // Fetch the current balances
+        await balanceStore.updateBalancesAsync();
+
+        // Create and fill the order. One order's worth of protocol fees are now available as rewards.
+        const order = await maker.signOrderAsync();
+        const receipt = await taker.fillOrderAsync(order, order.takerAssetAmount, { value: constants.ZERO_AMOUNT });
+        const rewardsAvailable = DeploymentManager.protocolFee;
+        const expectedBalances = simulateFill(order, receipt, constants.ZERO_AMOUNT);
+
+        // End the epoch. This should wrap the staking proxy's ETH balance.
+        const endEpochReceipt = await delegator.endEpochAsync();
+
+        // Check balances
+        expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(endEpochReceipt.gasUsed));
+        await balanceStore.updateBalancesAsync();
+        balanceStore.assertEquals(expectedBalances);
+
+        // The rewards are split between the operator and delegator based on the pool's operatorShare
+        const operatorReward = rewardsAvailable
+            .times(operator.operatorShares[poolId])
+            .dividedToIntegerBy(constants.PPM_DENOMINATOR);
+
+        // Finalize the pool. This should automatically pay the operator in WETH.
+        const [finalizePoolReceipt] = await delegator.finalizePoolsAsync([poolId]);
+
+        // Check balances
+        expectedBalances.transferAsset(
+            deployment.staking.stakingProxy.address,
+            operator.address,
+            operatorReward,
+            assetDataUtils.encodeERC20AssetData(deployment.tokens.weth.address),
+        );
+        expectedBalances.burnGas(delegator.address, DeploymentManager.gasPrice.times(finalizePoolReceipt.gasUsed));
+        await balanceStore.updateBalancesAsync();
+        balanceStore.assertEquals(expectedBalances);
+    });
 });
