@@ -26,7 +26,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         );
     });
 
-    describe('runAsync', () => {
+    describe('executeAsync', () => {
         it('should call the before function with the provided arguments', async () => {
             let sideEffectTarget = ZERO_AMOUNT;
             const assertion = new FunctionAssertion(exampleContract.returnInteger, {
@@ -36,7 +36,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 after: async (beforeInfo: any, result: Result, input: BigNumber) => {},
             });
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
-            await assertion.runAsync(randomInput);
+            await assertion.executeAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
@@ -49,7 +49,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 },
             });
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
-            await assertion.runAsync(randomInput);
+            await assertion.executeAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
@@ -58,7 +58,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 before: async () => {},
                 after: async (beforeInfo: any, result: Result) => {},
             });
-            await assertion.runAsync();
+            await assertion.executeAsync();
         });
 
         it('should pass the return value of "before" to "after"', async () => {
@@ -72,7 +72,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                     sideEffectTarget = beforeInfo;
                 },
             });
-            await assertion.runAsync(randomInput);
+            await assertion.executeAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
@@ -85,15 +85,17 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
                 },
             });
             const randomInput = getRandomInteger(ZERO_AMOUNT, MAX_UINT256);
-            await assertion.runAsync(randomInput);
+            await assertion.executeAsync(randomInput);
             expect(sideEffectTarget).bignumber.to.be.eq(randomInput);
         });
 
         it('should pass the receipt from the function call to "after"', async () => {
             let sideEffectTarget = {} as TransactionReceiptWithDecodedLogs;
             const assertion = new FunctionAssertion(exampleContract.emitEvent, {
-                before: async (input: string) => {},
-                after: async (beforeInfo: any, result: Result, input: string) => {
+                before: async (input: string) => {
+                    return {};
+                },
+                after: async (beforeInfo: {}, result: Result, input: string) => {
                     if (result.receipt) {
                         sideEffectTarget = result.receipt;
                     }
@@ -101,7 +103,7 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
             });
 
             const input = 'emitted data';
-            await assertion.runAsync(input);
+            await assertion.executeAsync(input);
 
             // Ensure that the correct events were emitted.
             const [event] = filterLogsToArguments<TestFrameworkEventEventArgs>(
@@ -114,13 +116,15 @@ blockchainTests.resets('FunctionAssertion Unit Tests', env => {
         it('should pass the error to "after" if the function call fails', async () => {
             let sideEffectTarget: Error;
             const assertion = new FunctionAssertion(exampleContract.stringRevert, {
-                before: async string => {},
+                before: async string => {
+                    return {};
+                },
                 after: async (any, result: Result, string) => {
                     sideEffectTarget = result.data;
                 },
             });
             const message = 'error message';
-            await assertion.runAsync(message);
+            await assertion.executeAsync(message);
 
             const expectedError = new StringRevertError(message);
             return expect(
