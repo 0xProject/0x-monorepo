@@ -54,8 +54,16 @@ contract StakingProxy is
         external
         payable
     {
+        // Sanity check that we have a staking contract to call
+        address stakingContract_ = stakingContract;
+        if (stakingContract_ == NIL_ADDRESS) {
+            LibRichErrors.rrevert(
+                LibStakingRichErrors.ProxyDestinationCannotBeNilError()
+            );
+        }
+
         // Call the staking contract with the provided calldata.
-        (bool success, bytes memory returnData) = stakingContract.delegatecall(msg.data);
+        (bool success, bytes memory returnData) = stakingContract_.delegatecall(msg.data);
 
         // Revert on failure or return on success.
         assembly {
@@ -186,6 +194,7 @@ contract StakingProxy is
         (bool didInitSucceed, bytes memory initReturnData) = stakingContract.delegatecall(
             abi.encodeWithSelector(IStorageInit(0).init.selector)
         );
+
         if (!didInitSucceed) {
             assembly {
                 revert(add(initReturnData, 0x20), mload(initReturnData))

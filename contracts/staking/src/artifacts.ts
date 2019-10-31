@@ -49,9 +49,11 @@ import * as TestMixinStakeBalances from '../generated-artifacts/TestMixinStakeBa
 import * as TestMixinStakeStorage from '../generated-artifacts/TestMixinStakeStorage.json';
 import * as TestMixinStakingPool from '../generated-artifacts/TestMixinStakingPool.json';
 import * as TestProtocolFees from '../generated-artifacts/TestProtocolFees.json';
+import * as TestProxyDestination from '../generated-artifacts/TestProxyDestination.json';
 import * as TestStaking from '../generated-artifacts/TestStaking.json';
 import * as TestStakingNoWETH from '../generated-artifacts/TestStakingNoWETH.json';
 import * as TestStakingProxy from '../generated-artifacts/TestStakingProxy.json';
+import * as TestStakingProxyUnit from '../generated-artifacts/TestStakingProxyUnit.json';
 import * as TestStorageLayoutAndConstants from '../generated-artifacts/TestStorageLayoutAndConstants.json';
 import * as ZrxVault from '../generated-artifacts/ZrxVault.json';
 export const artifacts = {
@@ -100,8 +102,10 @@ export const artifacts = {
     TestMixinStakeStorage: TestMixinStakeStorage as ContractArtifact,
     TestMixinStakingPool: TestMixinStakingPool as ContractArtifact,
     TestProtocolFees: TestProtocolFees as ContractArtifact,
+    TestProxyDestination: TestProxyDestination as ContractArtifact,
     TestStaking: TestStaking as ContractArtifact,
     TestStakingNoWETH: TestStakingNoWETH as ContractArtifact,
     TestStakingProxy: TestStakingProxy as ContractArtifact,
+    TestStakingProxyUnit: TestStakingProxyUnit as ContractArtifact,
     TestStorageLayoutAndConstants: TestStorageLayoutAndConstants as ContractArtifact,
 };
