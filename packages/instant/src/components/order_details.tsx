@@ -31,7 +31,7 @@ export class OrderDetails extends React.PureComponent<OrderDetailsProps> {
     public render(): React.ReactNode {
         const shouldShowUsdError = this.props.baseCurrency === BaseCurrency.USD && this._hadErrorFetchingUsdPrice();
         const { state } = this.props.account;
-        if (state === AccountState.None) {
+        if (state !== AccountState.Ready) {
             return null;
         } else {
             return (
