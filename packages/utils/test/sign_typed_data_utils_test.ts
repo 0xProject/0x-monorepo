@@ -36,7 +36,7 @@ describe('signTypedDataUtils', () => {
             },
             primaryType: 'Test',
         };
-        const orderSignTypedDataHashHex = '0x55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692';
+        const orderSignTypedDataHashHex = '0x78772b297e1b0b31089589a6608930cceba855af9d3ccf7b92cf47fa881e21f7';
         const orderSignTypedData = {
             types: {
                 EIP712Domain: [
@@ -47,6 +47,10 @@ describe('signTypedDataUtils', () => {
                     {
                         name: 'version',
                         type: 'string',
+                    },
+                    {
+                        name: 'chainId',
+                        type: 'uint256',
                     },
                     {
                         name: 'verifyingContract',
@@ -107,6 +111,7 @@ describe('signTypedDataUtils', () => {
             domain: {
                 name: '0x Protocol',
                 version: '2',
+                chainId: 1337,
                 verifyingContract: '0x0000000000000000000000000000000000000000',
             },
             message: {
@@ -122,7 +127,6 @@ describe('signTypedDataUtils', () => {
                 salt: '12345',
                 makerAssetData: '0x0000000000000000000000000000000000000000',
                 takerAssetData: '0x0000000000000000000000000000000000000000',
-                exchangeAddress: '0x0000000000000000000000000000000000000000',
             },
             primaryType: 'Order',
         };
@@ -152,12 +156,11 @@ describe('signTypedDataUtils', () => {
                     salt: 0,
                     makerAssetData: '0x0000000000000000000000000000000000000000',
                     takerAssetData: '0x0000000000000000000000000000000000000000',
-                    exchangeAddress: '0x0000000000000000000000000000000000000000',
                 },
             };
             const hash = signTypedDataUtils.generateTypedDataHash(uninitializedOrder).toString('hex');
             const hashHex = `0x${hash}`;
-            expect(hashHex).to.be.eq('0xfaa49b35faeb9197e9c3ba7a52075e6dad19739549f153b77dfcf59408a4b422');
+            expect(hashHex).to.be.eq('0x510449a190415c4770080d857a1c654b653a0c054c94a7a8e9f08f623f9e824f');
         });
     });
 });

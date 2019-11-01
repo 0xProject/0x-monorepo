@@ -1,5 +1,15 @@
 [
     {
+        "version": "6.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Let `toBaseUnitAmount()` accept a `number`",
+                "pr": 1819
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "6.0.13",
         "changes": [

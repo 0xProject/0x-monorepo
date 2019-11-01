@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.0-beta.0 - _October 3, 2019_
+
+    * Add `RevertErrorAbi` interface as part of `AbiDefinition` types (#1761)
+    * Add `DecodedLogs` type (#2220)
+
 ## v2.1.6 - _September 17, 2019_
 
     * Dependencies updated

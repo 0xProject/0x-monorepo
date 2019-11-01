@@ -1,40 +1,32 @@
 // tslint:disable:max-file-line-count
 
 import { BigNumber } from 'bignumber.js';
-import { ContractAbi, ContractNetworks, DevdocOutput } from 'ethereum-types';
+import {
+    ContractAbi,
+    ContractEventArg,
+    ContractNetworks,
+    DecodedLogArgs,
+    DevdocOutput,
+    LogWithDecodedArgs,
+} from 'ethereum-types';
 
-// HACK: Rather then extending from OrderWithoutExchangeAddress
-// we don't, because our docs don't expand inherited types, and it's unnecessarily
-// confusing to introduce the user to the OrderWithoutExchangeAddress type.
 export interface Order {
-    senderAddress: string;
-    makerAddress: string;
-    takerAddress: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
-    makerAssetAmount: BigNumber;
-    takerAssetAmount: BigNumber;
-    makerAssetData: string;
-    takerAssetData: string;
-    salt: BigNumber;
+    chainId: number;
     exchangeAddress: string;
-    feeRecipientAddress: string;
-    expirationTimeSeconds: BigNumber;
-}
-
-export interface OrderWithoutExchangeAddress {
-    senderAddress: string;
     makerAddress: string;
     takerAddress: string;
-    makerFee: BigNumber;
-    takerFee: BigNumber;
+    feeRecipientAddress: string;
+    senderAddress: string;
     makerAssetAmount: BigNumber;
     takerAssetAmount: BigNumber;
+    makerFee: BigNumber;
+    takerFee: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    salt: BigNumber;
     makerAssetData: string;
     takerAssetData: string;
-    salt: BigNumber;
-    feeRecipientAddress: string;
-    expirationTimeSeconds: BigNumber;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export interface SignedOrder extends Order {
@@ -50,10 +42,12 @@ export enum MarketOperation {
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
 export interface ZeroExTransaction {
-    verifyingContractAddress: string;
     salt: BigNumber;
+    expirationTimeSeconds: BigNumber;
+    gasPrice: BigNumber;
     signerAddress: string;
     data: string;
+    domain: EIP712DomainWithDefaultSchema;
 }
 
 export interface SignedZeroExTransaction extends ZeroExTransaction {
@@ -161,6 +155,7 @@ export enum SignatureType {
     Wallet,
     Validator,
     PreSigned,
+    EIP1271Wallet,
     NSignatureTypes,
 }
 
@@ -170,6 +165,7 @@ export enum AssetProxyId {
     MultiAsset = '0x94cfcdd7',
     ERC1155 = '0xa7cb5fb7',
     StaticCall = '0xc339d10a',
+    ERC20Bridge = '0xdc1600f3',
 }
 
 export interface ERC20AssetData {
@@ -333,6 +329,15 @@ export enum RevertReason {
     InvalidStaticCallDataOffset = 'INVALID_STATIC_CALL_DATA_OFFSET',
     TargetNotEven = 'TARGET_NOT_EVEN',
     UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
+    TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
+    // Staking
+    InsufficientFunds = 'INSUFFICIENT_FUNDS',
+    // AssetProxyOwner
+    TxAlreadyExecuted = 'TX_ALREADY_EXECUTED',
+    DefaultTimeLockIncomplete = 'DEFAULT_TIME_LOCK_INCOMPLETE',
+    CustomTimeLockIncomplete = 'CUSTOM_TIME_LOCK_INCOMPLETE',
+    EqualLengthsRequired = 'EQUAL_LENGTHS_REQUIRED',
+    OnlyCallableByWallet = 'ONLY_CALLABLE_BY_WALLET',
 }
 
 export enum StatusCodes {
@@ -431,6 +436,8 @@ export interface OrdersRequestOpts {
     senderAddress?: string;
     makerAssetData?: string;
     takerAssetData?: string;
+    makerFeeAssetData?: string;
+    takerFeeAssetData?: string;
     makerAddress?: string;
     takerAddress?: string;
     traderAddress?: string;
@@ -470,6 +477,8 @@ export interface OrderConfigResponse {
     takerFee: BigNumber;
     feeRecipientAddress: string;
     senderAddress: string;
+    makerFeeAssetData: string;
+    takerFeeAssetData: string;
 }
 
 export type FeeRecipientsResponse = PaginatedCollection<string>;
@@ -661,6 +670,18 @@ export interface Type {
     tupleElements?: Type[];
 }
 
+/**
+ * * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+ * * pollingIntervalMs: Used with `awaitTransactionSuccessAsync` to determine polling interval in milliseconds
+ * * timeoutMs: Used with `awaitTransactionSuccessAsync` to determine timeout in milliseconds
+ */
+export interface SendTransactionOpts {
+    shouldValidate?: boolean;
+    pollingIntervalMs?: number;
+    timeoutMs?: number;
+}
+
 export interface ElementType {
     name: string;
     typeDocType: TypeDocTypes;
@@ -733,27 +754,6 @@ export interface Stats {
     orderCount: number;
 }
 
-export interface SimpleContractArtifact {
-    schemaVersion: string;
-    contractName: string;
-    compilerOutput: SimpleStandardContractOutput;
-    networks: ContractNetworks;
-}
-
-export interface SimpleStandardContractOutput {
-    abi: ContractAbi;
-    evm: SimpleEvmOutput;
-    devdoc?: DevdocOutput;
-}
-
-export interface SimpleEvmOutput {
-    bytecode: SimpleEvmBytecodeOutput;
-}
-
-export interface SimpleEvmBytecodeOutput {
-    object: string;
-}
-
 export interface DutchAuctionDetails {
     beginTimeSeconds: BigNumber;
     endTimeSeconds: BigNumber;
@@ -790,5 +790,111 @@ export interface PackageJSON {
 export interface EIP712DomainWithDefaultSchema {
     name?: string;
     version?: string;
-    verifyingContractAddress: string;
+    chainId: number;
+    verifyingContract: string;
+}
+
+export enum OrderStatus {
+    Invalid,
+    InvalidMakerAssetAmount,
+    InvalidTakerAssetAmount,
+    Fillable,
+    Expired,
+    FullyFilled,
+    Cancelled,
+}
+
+export enum OrderTransferResults {
+    TakerAssetDataFailed,
+    MakerAssetDataFailed,
+    TakerFeeAssetDataFailed,
+    MakerFeeAssetDataFailed,
+    TransfersSuccessful,
+}
+
+export interface FillResults {
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
+    protocolFeePaid: BigNumber;
+}
+
+export interface MatchedFillResults {
+    left: FillResults;
+    right: FillResults;
+    profitInLeftMakerAsset: BigNumber;
+    profitInRightMakerAsset: BigNumber;
+}
+
+export interface BatchMatchedFillResults {
+    left: FillResults[];
+    right: FillResults[];
+    profitInLeftMakerAsset: BigNumber;
+    profitInRightMakerAsset: BigNumber;
+}
+
+export interface OrderInfo {
+    orderStatus: number;
+    orderHash: string;
+    orderTakerAssetFilledAmount: BigNumber;
+}
+
+export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
+    isRemoved: boolean;
+    log: LogWithDecodedArgs<ArgsType>;
+}
+
+export type EventCallback<ArgsType extends DecodedLogArgs> = (
+    err: null | Error,
+    log?: DecodedLogEvent<ArgsType>,
+) => void;
+
+export interface IndexedFilterValues {
+    [index: string]: ContractEventArg;
+}
+
+/* Begin types for @0x/abi-gen-wrappers
+ * Allow these types to be imported when needed instead of having to import
+ * the whole package,  which is large
+ */
+
+/**
+ * Used with `sendTransactionAsync`
+ * * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
+ * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.
+ */
+export interface SendTransactionOpts {
+    shouldValidate?: boolean;
+}
+
+/**
+ * Used with `awaitTransactionSuccessAsync`
+ * * pollingIntervalMs: Determine polling intervals in milliseconds
+ * * timeoutMs: Determines timeout in milliseconds
+ */
+export interface AwaitTransactionSuccessOpts extends SendTransactionOpts {
+    pollingIntervalMs?: number;
+    timeoutMs?: number;
+}
+
+export interface SimpleContractArtifact {
+    schemaVersion: string;
+    contractName: string;
+    compilerOutput: SimpleStandardContractOutput;
+    networks: ContractNetworks;
+}
+
+export interface SimpleStandardContractOutput {
+    abi: ContractAbi;
+    evm: SimpleEvmOutput;
+    devdoc?: DevdocOutput;
+}
+
+export interface SimpleEvmOutput {
+    bytecode: SimpleEvmBytecodeOutput;
+}
+
+export interface SimpleEvmBytecodeOutput {
+    object: string;
 }

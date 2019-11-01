@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "2.1.6",
         "changes": [
@@ -59,6 +68,10 @@
             {
                 "note": "Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber`",
                 "pr": 1823
+            },
+            {
+                "note": "Add `isNumberLike()` assertion",
+                "pr": 1819
             }
         ],
         "timestamp": 1563006338

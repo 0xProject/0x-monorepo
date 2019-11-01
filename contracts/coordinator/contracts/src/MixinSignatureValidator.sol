@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,38 +16,48 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "./mixins/MSignatureValidator.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "./interfaces/ICoordinatorSignatureValidator.sol";
+import "./libs/LibCoordinatorRichErrors.sol";
 
 
 contract MixinSignatureValidator is
-    MSignatureValidator
+    ICoordinatorSignatureValidator
 {
     using LibBytes for bytes;
 
     /// @dev Recovers the address of a signer given a hash and signature.
     /// @param hash Any 32 byte hash.
     /// @param signature Proof that the hash has been signed by signer.
+    /// @return signerAddress Address of the signer.
     function getSignerAddress(bytes32 hash, bytes memory signature)
         public
         pure
         returns (address signerAddress)
     {
-        require(
-            signature.length > 0,
-            "LENGTH_GREATER_THAN_0_REQUIRED"
-        );
+        uint256 signatureLength = signature.length;
+        if (signatureLength == 0) {
+            LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                LibCoordinatorRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signature
+            ));
+        }
 
         // Pop last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature.popLastByte());
+        uint8 signatureTypeRaw = uint8(signature[signature.length - 1]);
 
         // Ensure signature is supported
-        require(
-            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
-            "SIGNATURE_UNSUPPORTED"
-        );
+        if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
+            LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                LibCoordinatorRichErrors.SignatureErrorCodes.UNSUPPORTED,
+                hash,
+                signature
+            ));
+        }
 
         SignatureType signatureType = SignatureType(signatureTypeRaw);
 
@@ -57,25 +67,32 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (signatureType == SignatureType.Illegal) {
-            revert("SIGNATURE_ILLEGAL");
+            LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                LibCoordinatorRichErrors.SignatureErrorCodes.ILLEGAL,
+                hash,
+                signature
+            ));
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
         } else if (signatureType == SignatureType.Invalid) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
-            revert("SIGNATURE_INVALID");
+            LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                LibCoordinatorRichErrors.SignatureErrorCodes.INVALID,
+                hash,
+                signature
+            ));
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signatureLength != 66) {
+                LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                    LibCoordinatorRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    hash,
+                    signature
+                ));
+            }
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
@@ -89,10 +106,13 @@ contract MixinSignatureValidator is
 
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
+            if (signatureLength != 66) {
+                LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+                    LibCoordinatorRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    hash,
+                    signature
+                ));
+            }
             uint8 v = uint8(signature[0]);
             bytes32 r = signature.readBytes32(1);
             bytes32 s = signature.readBytes32(33);
@@ -113,6 +133,10 @@ contract MixinSignatureValidator is
         // that we currently support. In this case returning false
         // may lead the caller to incorrectly believe that the
         // signature was invalid.)
-        revert("SIGNATURE_UNSUPPORTED");
+        LibRichErrors.rrevert(LibCoordinatorRichErrors.SignatureError(
+            LibCoordinatorRichErrors.SignatureErrorCodes.UNSUPPORTED,
+            hash,
+            signature
+        ));
     }
 }

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -25,56 +25,53 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 
 contract IForwarderCore {
 
-    /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
-    ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
-    ///      Any ETH not spent will be refunded to sender.
+    /// @dev Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
+    ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
         returns (
-            LibFillResults.FillResults memory orderFillResults,
-            LibFillResults.FillResults memory feeOrderFillResults
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
         );
 
-    /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can
+    ///      pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return wethSpentAmount Amount of WETH spent on the given set of orders.
+    /// @return makerAssetAcquiredAmount Amount of maker asset acquired from the given set of orders.
+    /// @return ethFeePaid Amount of ETH spent on the given forwarder fee.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
-        LibOrder.Order[] memory feeOrders,
-        bytes[] memory feeSignatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
         returns (
-            LibFillResults.FillResults memory orderFillResults,
-            LibFillResults.FillResults memory feeOrderFillResults
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
         );
 }

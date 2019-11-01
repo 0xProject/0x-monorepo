@@ -23,6 +23,16 @@ describe('Assertions', () => {
             invalidInputs.forEach(input => expect(assert.isBigNumber.bind(assert, variableName, input)).to.throw());
         });
     });
+    describe('#isNumberLike', () => {
+        it('should not throw for valid input', () => {
+            const validInputs = [new BigNumber(23), 23];
+            validInputs.forEach(input => expect(assert.isNumberLike.bind(assert, variableName, input)).to.not.throw());
+        });
+        it('should throw for invalid input', () => {
+            const invalidInputs = ['test', false, { random: 'test' }, undefined];
+            invalidInputs.forEach(input => expect(assert.isNumberLike.bind(assert, variableName, input)).to.throw());
+        });
+    });
     describe('#isValidBaseUnitAmount', () => {
         it('should not throw for valid input', () => {
             const validInputs = [new BigNumber(23), new BigNumber('45000000')];

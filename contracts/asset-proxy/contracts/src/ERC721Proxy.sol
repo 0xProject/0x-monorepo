@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "./MixinAuthorizable.sol";
+import "../archive/MixinAuthorizable.sol";
 
 
 contract ERC721Proxy is
@@ -28,7 +28,7 @@ contract ERC721Proxy is
     bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
 
     // solhint-disable-next-line payable-fallback
-    function () 
+    function ()
         external
     {
         assembly {
@@ -93,10 +93,10 @@ contract ERC721Proxy is
                 // | Params   |        | 2 * 32  | function parameters:                |
                 // |          | 4      | 12 + 20 |   1. token address                  |
                 // |          | 36     |         |   2. tokenId                        |
-                
+
                 // We construct calldata for the `token.transferFrom` ABI.
                 // The layout of this calldata is in the table below.
-                // 
+                //
                 // | Area     | Offset | Length  | Contents                            |
                 // |----------|--------|---------|-------------------------------------|
                 // | Header   | 0      | 4       | function selector                   |
@@ -121,7 +121,7 @@ contract ERC721Proxy is
                 // Any trailing data in transferFromSelector will be
                 // overwritten in the next `mstore` call.
                 mstore(0, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // We copy the fields `from` and `to` in bulk
                 // from our own calldata to the new calldata.
@@ -145,7 +145,7 @@ contract ERC721Proxy is
                 if success {
                     return(0, 0)
                 }
-                
+
                 // Revert with `Error("TRANSFER_FAILED")`
                 mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                 mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)

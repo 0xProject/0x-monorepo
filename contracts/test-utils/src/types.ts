@@ -1,6 +1,8 @@
-import { OrderWithoutExchangeAddress } from '@0x/types';
+import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { AbiDefinition } from 'ethereum-types';
+
+export { OrderStatus } from '@0x/types';
 
 export interface ERC20BalancesByOwner {
     [ownerAddress: string]: {
@@ -35,30 +37,34 @@ export interface ERC1155HoldingsByOwner {
     nonFungible: ERC1155NonFungibleHoldingsByOwner;
 }
 
+export interface EthBalancesByOwner {
+    [owner: string]: BigNumber;
+}
+
 export interface SubmissionContractEventArgs {
     transactionId: BigNumber;
 }
 
 export interface BatchFillOrders {
-    orders: OrderWithoutExchangeAddress[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmounts: BigNumber[];
 }
 
 export interface MarketSellOrders {
-    orders: OrderWithoutExchangeAddress[];
+    orders: Order[];
     signatures: string[];
     takerAssetFillAmount: BigNumber;
 }
 
 export interface MarketBuyOrders {
-    orders: OrderWithoutExchangeAddress[];
+    orders: Order[];
     signatures: string[];
     makerAssetFillAmount: BigNumber;
 }
 
 export interface BatchCancelOrders {
-    orders: OrderWithoutExchangeAddress[];
+    orders: Order[];
 }
 
 export interface CancelOrdersBefore {
@@ -90,25 +96,14 @@ export interface Token {
     swarmHash: string;
 }
 
-export enum OrderStatus {
-    Invalid,
-    InvalidMakerAssetAmount,
-    InvalidTakerAssetAmount,
-    Fillable,
-    Expired,
-    FullyFilled,
-    Cancelled,
-}
-
 export enum ContractName {
     TokenRegistry = 'TokenRegistry',
     MultiSigWalletWithTimeLock = 'MultiSigWalletWithTimeLock',
     Exchange = 'Exchange',
-    ZRXToken = 'ZRXToken',
     DummyERC20Token = 'DummyERC20Token',
     EtherToken = 'WETH9',
     DutchAuction = 'DutchAuction',
-    AssetProxyOwner = 'AssetProxyOwner',
+    ZeroExGovernor = 'ZeroExGovernor',
     AccountLevels = 'AccountLevels',
     EtherDelta = 'EtherDelta',
     Arbitrage = 'Arbitrage',
@@ -128,129 +123,51 @@ export enum ContractName {
     BalanceThresholdFilter = 'BalanceThresholdFilter',
 }
 
-export interface TransferAmountsByMatchOrders {
-    // Left Maker
-    amountBoughtByLeftMaker: BigNumber;
-    amountSoldByLeftMaker: BigNumber;
-    feePaidByLeftMaker: BigNumber;
-    // Right Maker
-    amountBoughtByRightMaker: BigNumber;
-    amountSoldByRightMaker: BigNumber;
-    feePaidByRightMaker: BigNumber;
-    // Taker
-    amountReceivedByTaker: BigNumber;
-    feePaidByTakerLeft: BigNumber;
-    feePaidByTakerRight: BigNumber;
-}
-
-export interface TransferAmountsLoggedByMatchOrders {
-    makerAddress: string;
-    takerAddress: string;
-    makerAssetFilledAmount: string;
-    takerAssetFilledAmount: string;
-    makerFeePaid: string;
-    takerFeePaid: string;
-}
-
-export interface OrderInfo {
-    orderStatus: number;
-    orderHash: string;
-    orderTakerAssetFilledAmount: BigNumber;
-}
-
 export interface CancelOrder {
-    order: OrderWithoutExchangeAddress;
+    order: Order;
     takerAssetCancelAmount: BigNumber;
 }
 
+export interface BatchMatchOrder {
+    leftOrders: Order[];
+    rightOrders: Order[];
+    leftSignatures: string[];
+    rightSignatures: string[];
+}
+
 export interface MatchOrder {
-    left: OrderWithoutExchangeAddress;
-    right: OrderWithoutExchangeAddress;
+    left: Order;
+    right: Order;
     leftSignature: string;
     rightSignature: string;
 }
 
-// Combinatorial testing types
-
-export enum FeeRecipientAddressScenario {
-    BurnAddress = 'BURN_ADDRESS',
-    EthUserAddress = 'ETH_USER_ADDRESS',
+export interface ERC1155Holdings {
+    [owner: string]: {
+        [contract: string]: {
+            fungible: {
+                [tokenId: string]: BigNumber;
+            };
+            nonFungible: BigNumber[];
+        };
+    };
 }
 
-export enum OrderAssetAmountScenario {
-    Zero = 'ZERO',
-    Large = 'LARGE',
-    Small = 'SMALL',
+export interface TokenBalances {
+    erc20: ERC20BalancesByOwner;
+    erc721: ERC721TokenIdsByOwner;
+    erc1155: ERC1155Holdings;
+    eth: EthBalancesByOwner;
 }
 
-export enum TakerScenario {
-    CorrectlySpecified = 'CORRECTLY_SPECIFIED',
-    IncorrectlySpecified = 'INCORRECTLY_SPECIFIED',
-    Unspecified = 'UNSPECIFIED',
-}
-
-export enum ExpirationTimeSecondsScenario {
-    InPast = 'IN_PAST',
-    InFuture = 'IN_FUTURE',
-}
-
-export enum AssetDataScenario {
-    ERC20ZeroDecimals = 'ERC20_ZERO_DECIMALS',
-    ZRXFeeToken = 'ZRX_FEE_TOKEN',
-    ERC20FiveDecimals = 'ERC20_FIVE_DECIMALS',
-    ERC20NonZRXEighteenDecimals = 'ERC20_NON_ZRX_EIGHTEEN_DECIMALS',
-    ERC721 = 'ERC721',
-}
-
-export enum TakerAssetFillAmountScenario {
-    Zero = 'ZERO',
-    GreaterThanRemainingFillableTakerAssetAmount = 'GREATER_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
-    LessThanRemainingFillableTakerAssetAmount = 'LESS_THAN_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
-    ExactlyRemainingFillableTakerAssetAmount = 'EXACTLY_REMAINING_FILLABLE_TAKER_ASSET_AMOUNT',
-}
-
-export interface OrderScenario {
-    takerScenario: TakerScenario;
-    feeRecipientScenario: FeeRecipientAddressScenario;
-    makerAssetAmountScenario: OrderAssetAmountScenario;
-    takerAssetAmountScenario: OrderAssetAmountScenario;
-    makerFeeScenario: OrderAssetAmountScenario;
-    takerFeeScenario: OrderAssetAmountScenario;
-    expirationTimeSecondsScenario: ExpirationTimeSecondsScenario;
-    makerAssetDataScenario: AssetDataScenario;
-    takerAssetDataScenario: AssetDataScenario;
-}
-
-export enum BalanceAmountScenario {
-    Exact = 'EXACT',
-    TooLow = 'TOO_LOW',
-    Higher = 'HIGHER',
-}
-
-export enum AllowanceAmountScenario {
-    Exact = 'EXACT',
-    TooLow = 'TOO_LOW',
-    Higher = 'HIGHER',
-    Unlimited = 'UNLIMITED',
-}
-
-export interface TraderStateScenario {
-    traderAssetBalance: BalanceAmountScenario;
-    traderAssetAllowance: AllowanceAmountScenario;
-    zrxFeeBalance: BalanceAmountScenario;
-    zrxFeeAllowance: AllowanceAmountScenario;
-}
-
-export interface FillScenario {
-    orderScenario: OrderScenario;
-    takerAssetFillAmountScenario: TakerAssetFillAmountScenario;
-    makerStateScenario: TraderStateScenario;
-    takerStateScenario: TraderStateScenario;
-}
-
-export interface FillResults {
+export interface FillEventArgs {
+    orderHash: string;
+    makerAddress: string;
+    takerAddress: string;
     makerAssetFilledAmount: BigNumber;
     takerAssetFilledAmount: BigNumber;
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
 }
+
+export type Numberish = BigNumber | string | number;

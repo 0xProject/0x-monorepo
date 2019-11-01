@@ -1,5 +1,19 @@
 [
     {
+        "version": "12.2.0-beta.0",
+        "changes": [
+            {
+                "note": "Use new `Order` and `ZeroExTransaction` structures with `domain` field",
+                "pr": 1742
+            },
+            {
+                "note": "Update exchange wrapper",
+                "pr": 1742
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "version": "12.1.0",
         "changes": [
             {

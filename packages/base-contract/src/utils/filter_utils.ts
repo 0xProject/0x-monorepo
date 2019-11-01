@@ -1,10 +1,10 @@
+import { IndexedFilterValues } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { BlockRange, ContractAbi, EventAbi, FilterObject, LogEntry } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as jsSHA3 from 'js-sha3';
 import * as _ from 'lodash';
 import * as uuid from 'uuid/v4';
-
-import { IndexedFilterValues } from '../types';
 
 const TOPIC_LENGTH = 32;
 
@@ -51,7 +51,13 @@ export const filterUtils = {
                 // Null is a wildcard topic in a JSON-RPC call
                 topics.push(null);
             } else {
-                const value = indexFilterValues[eventInput.name] as string;
+                // tslint:disable: no-unnecessary-type-assertion
+                let value = indexFilterValues[eventInput.name] as any;
+                if (BigNumber.isBigNumber(value)) {
+                    // tslint:disable-next-line custom-no-magic-numbers
+                    value = ethUtil.fromSigned(value.toString(10) as any);
+                }
+                // tslint:enable: no-unnecessary-type-assertion
                 const buffer = ethUtil.toBuffer(value);
                 const paddedBuffer = ethUtil.setLengthLeft(buffer, TOPIC_LENGTH);
                 const topic = ethUtil.bufferToHex(paddedBuffer);

@@ -1,7 +1,6 @@
 export {
     AssetProxyOwnerEventArgs,
     AssetProxyOwnerEvents,
-    AssetProxyOwnerAssetProxyRegistrationEventArgs,
     AssetProxyOwnerConfirmationTimeSetEventArgs,
     AssetProxyOwnerTimeLockChangeEventArgs,
     AssetProxyOwnerConfirmationEventArgs,
@@ -31,6 +30,13 @@ export {
     DummyERC721TokenApprovalForAllEventArgs,
     DummyERC721TokenContract,
 } from './generated-wrappers/dummy_erc721_token';
+export {
+    ERC1155MintableContract,
+    ERC1155MintableApprovalForAllEventArgs,
+    ERC1155MintableTransferBatchEventArgs,
+    ERC1155MintableTransferSingleEventArgs,
+    ERC1155MintableURIEventArgs,
+} from './generated-wrappers/erc1155_mintable';
 export { DutchAuctionContract } from './generated-wrappers/dutch_auction';
 export {
     ERC1155ProxyEventArgs,
@@ -77,6 +83,9 @@ export {
     ExchangeCancelUpToEventArgs,
     ExchangeAssetProxyRegisteredEventArgs,
     ExchangeContract,
+    ExchangeProtocolFeeCollectorAddressEventArgs,
+    ExchangeProtocolFeeMultiplierEventArgs,
+    ExchangeTransactionExecutionEventArgs,
 } from './generated-wrappers/exchange';
 export { ForwarderContract } from './generated-wrappers/forwarder';
 export { IAssetProxyContract } from './generated-wrappers/i_asset_proxy';
@@ -92,6 +101,37 @@ export {
 } from './generated-wrappers/multi_asset_proxy';
 export { OrderValidatorContract } from './generated-wrappers/order_validator';
 export { StaticCallProxyContract } from './generated-wrappers/static_call_proxy';
+export {
+    StakingAuthorizedAddressAddedEventArgs,
+    StakingAuthorizedAddressRemovedEventArgs,
+    StakingContract,
+    StakingEpochEndedEventArgs,
+    StakingEpochFinalizedEventArgs,
+    StakingEventArgs,
+    StakingEvents,
+    StakingExchangeAddedEventArgs,
+    StakingExchangeRemovedEventArgs,
+    StakingMakerStakingPoolSetEventArgs,
+    StakingMoveStakeEventArgs,
+    StakingOperatorShareDecreasedEventArgs,
+    StakingOwnershipTransferredEventArgs,
+    StakingParamsSetEventArgs,
+    StakingRewardsPaidEventArgs,
+    StakingStakeEventArgs,
+    StakingStakingPoolCreatedEventArgs,
+    StakingStakingPoolEarnedRewardsInEpochEventArgs,
+    StakingUnstakeEventArgs,
+} from './generated-wrappers/staking';
+export {
+    StakingProxyAuthorizedAddressAddedEventArgs,
+    StakingProxyAuthorizedAddressRemovedEventArgs,
+    StakingProxyContract,
+    StakingProxyEventArgs,
+    StakingProxyEvents,
+    StakingProxyOwnershipTransferredEventArgs,
+    StakingProxyStakingContractAttachedToProxyEventArgs,
+    StakingProxyStakingContractDetachedFromProxyEventArgs,
+} from './generated-wrappers/staking_proxy';
 export {
     WETH9EventArgs,
     WETH9Events,

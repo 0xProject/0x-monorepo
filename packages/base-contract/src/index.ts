@@ -1,6 +1,15 @@
 import { assert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { AbiEncoder, abiUtils, BigNumber, providerUtils } from '@0x/utils';
+import {
+    AbiEncoder,
+    abiUtils,
+    BigNumber,
+    decodeBytesAsRevertError,
+    decodeThrownErrorAsRevertError,
+    providerUtils,
+    RevertError,
+    StringRevertError,
+} from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
@@ -18,7 +27,6 @@ import Account from 'ethereumjs-account';
 import * as util from 'ethereumjs-util';
 import { default as VM } from 'ethereumjs-vm';
 import PStateManager from 'ethereumjs-vm/dist/state/promisified';
-import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
@@ -40,25 +48,30 @@ const ARBITRARY_PRIVATE_KEY = 'e331b6d69882b4cb4ea581d88e0b604039a3de5967688d3dc
  *      `awaitTransactionSuccessAsync()`.
  *      Maybe there's a better place for this.
  */
-export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
+export class PromiseWithTransactionHash<T> implements Promise<T> {
     public readonly txHashPromise: Promise<string>;
     private readonly _promise: Promise<T>;
     constructor(txHashPromise: Promise<string>, promise: Promise<T>) {
         this.txHashPromise = txHashPromise;
         this._promise = promise;
     }
+    // tslint:disable:promise-function-async
+    // tslint:disable:async-suffix
     public then<TResult>(
-        onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,
-        onRejected?: (reason: any) => PromiseLike<never>,
-    ): PromiseLike<TResult> {
+        onFulfilled?: (v: T) => TResult | Promise<TResult>,
+        onRejected?: (reason: any) => Promise<never>,
+    ): Promise<TResult> {
         return this._promise.then<TResult>(onFulfilled, onRejected);
     }
+    public catch<TResult>(onRejected?: (reason: any) => Promise<TResult>): Promise<TResult | T> {
+        return this._promise.catch(onRejected);
+    }
+    // tslint:enable:promise-function-async
+    // tslint:enable:async-suffix
+    get [Symbol.toStringTag](): 'Promise' {
+        return this._promise[Symbol.toStringTag];
+    }
 }
-
-const REVERT_ERROR_SELECTOR = '08c379a0';
-const REVERT_ERROR_SELECTOR_OFFSET = 2;
-const REVERT_ERROR_SELECTOR_BYTES_LENGTH = 4;
-const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SELECTOR_BYTES_LENGTH * 2;
 
 export class BaseContract {
     protected _abiEncoderByFunctionSignature: AbiEncoderByFunctionSignature;
@@ -69,6 +82,7 @@ export class BaseContract {
     public constructorArgs: any[] = [];
     private _evmIfExists?: VM;
     private _evmAccountIfExists?: Buffer;
+    private _deployedBytecodeIfExists?: Buffer;
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
@@ -122,19 +136,31 @@ export class BaseContract {
         }
         return txDataWithDefaults;
     }
-    protected static _throwIfRevertWithReasonCallResult(rawCallResult: string): void {
-        if (rawCallResult.slice(REVERT_ERROR_SELECTOR_OFFSET, REVERT_ERROR_SELECTOR_END) === REVERT_ERROR_SELECTOR) {
-            const revertReasonArray = AbiEncoder.create('(string)').decodeAsArray(
-                ethers.utils.hexDataSlice(rawCallResult, REVERT_ERROR_SELECTOR_BYTES_LENGTH),
-            );
-            if (revertReasonArray.length !== 1) {
-                throw new Error(
-                    `Cannot safely decode revert reason: Expected an array with one element, got ${revertReasonArray}`,
-                );
-            }
-            const revertReason = revertReasonArray[0];
-            throw new Error(revertReason);
+    protected static _throwIfCallResultIsRevertError(rawCallResult: string): void {
+        // Try to decode the call result as a revert error.
+        let revert: RevertError;
+        try {
+            revert = decodeBytesAsRevertError(rawCallResult);
+        } catch (err) {
+            // Can't decode it as a revert error, so assume it didn't revert.
+            return;
         }
+        throw revert;
+    }
+    protected static _throwIfThrownErrorIsRevertError(error: Error): void {
+        // Try to decode a thrown error.
+        let revertError: RevertError;
+        try {
+            revertError = decodeThrownErrorAsRevertError(error);
+            // Re-cast StringRevertErrors as plain Errors for backwards-compatibility.
+            if (revertError instanceof StringRevertError) {
+                throw new Error(revertError.values.message as string);
+            }
+        } catch (err) {
+            // Can't decode it.
+            return;
+        }
+        throw revertError;
     }
     // Throws if the given arguments cannot be safely/correctly encoded based on
     // the given inputAbi. An argument may not be considered safely encodeable
@@ -158,7 +184,7 @@ export class BaseContract {
         }
         return rawEncoded;
     }
-    public async evmExecAsync(input: Buffer): Promise<string> {
+    protected async _evmExecAsync(input: Buffer): Promise<string> {
         const addressBuf = Buffer.from(this.address.substr(2), 'hex');
         // should only run once, the first time it is called
         if (this._evmIfExists === undefined) {
@@ -172,9 +198,11 @@ export class BaseContract {
             await psm.putAccount(accountAddress, account);
 
             // 'deploy' the contract
-            const contractCode = await this._web3Wrapper.getContractCodeAsync(this.address);
-            const deployedBytecode = Buffer.from(contractCode.substr(2), 'hex');
-            await psm.putContractCode(addressBuf, deployedBytecode);
+            if (this._deployedBytecodeIfExists === undefined) {
+                const contractCode = await this._web3Wrapper.getContractCodeAsync(this.address);
+                this._deployedBytecodeIfExists = Buffer.from(contractCode.substr(2), 'hex');
+            }
+            await psm.putContractCode(addressBuf, this._deployedBytecodeIfExists);
 
             // save for later
             this._evmIfExists = vm;
@@ -227,6 +255,8 @@ export class BaseContract {
     /// @param supportedProvider for communicating with an ethereum node.
     /// @param logDecodeDependencies the name and ABI of contracts whose event logs are
     ///        decoded by this wrapper.
+    /// @param deployedBytecode the deployedBytecode of the contract, used for executing
+    ///        pure Solidity functions in memory. This is different from the bytecode.
     constructor(
         contractName: string,
         abi: ContractAbi,
@@ -234,9 +264,14 @@ export class BaseContract {
         supportedProvider: SupportedProvider,
         callAndTxnDefaults?: Partial<CallData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode?: string,
     ) {
         assert.isString('contractName', contractName);
         assert.isETHAddressHex('address', address);
+        if (deployedBytecode !== undefined && deployedBytecode !== '') {
+            assert.isHexString('deployedBytecode', deployedBytecode);
+            this._deployedBytecodeIfExists = Buffer.from(deployedBytecode.substr(2), 'hex');
+        }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         if (callAndTxnDefaults !== undefined) {
             assert.doesConformToSchema('callAndTxnDefaults', callAndTxnDefaults, schemas.callDataSchema, [

@@ -1,15 +1,6 @@
-import { ContractEventArg, DecodedLogArgs, LogEntryEvent, LogWithDecodedArgs } from 'ethereum-types';
+import { LogEntryEvent } from 'ethereum-types';
 
 export type LogEvent = LogEntryEvent;
-export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
-    isRemoved: boolean;
-    log: LogWithDecodedArgs<ArgsType>;
-}
-
-export type EventCallback<ArgsType extends DecodedLogArgs> = (
-    err: null | Error,
-    log?: DecodedLogEvent<ArgsType>,
-) => void;
 
 export interface ContractEvent<ContractEventArgs> {
     logIndex: number;
@@ -26,8 +17,4 @@ export interface ContractEvent<ContractEventArgs> {
 export enum SubscriptionErrors {
     SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
     SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
-}
-
-export interface IndexedFilterValues {
-    [index: string]: ContractEventArg;
 }

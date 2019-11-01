@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,14 +16,10 @@
 
 */
 
-pragma solidity ^0.5.5;
-
-import "./mixins/MNonFungibleToken.sol";
+pragma solidity ^0.5.9;
 
 
-contract MixinNonFungibleToken is
-    MNonFungibleToken
-{
+contract MixinNonFungibleToken {
     /// Use a split bit implementation.
     /// Store the type in the upper 128 bits..
     uint256 constant internal TYPE_MASK = uint256(uint128(~0)) << 128;

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,29 +17,21 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "../src/MixinSignatureValidator.sol";
 import "../src/MixinTransactions.sol";
 
 
 contract TestSignatureValidator is
-    MixinSignatureValidator,
-    MixinTransactions
+    LibEIP712ExchangeDomain,
+    MixinSignatureValidator
 {
-    function publicIsValidSignature(
-        bytes32 hash,
-        address signer,
-        bytes memory signature
-    )
+
+    // solhint-disable no-empty-blocks
+    constructor (uint256 chainId)
         public
-        view
-        returns (bool isValid)
-    {
-        isValid = isValidSignature(
-            hash,
-            signer,
-            signature
-        );
-        return isValid;
-    }
+        LibEIP712ExchangeDomain(chainId, address(0))
+    {}
 }

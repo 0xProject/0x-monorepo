@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "./LibMathRichErrors.sol";
 
 
-contract LibMath is
-    SafeMath
-{
+library LibMath {
+
+    using LibSafeMath for uint256;
+
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
     /// @param numerator Numerator.
@@ -39,24 +42,19 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-
-        require(
-            !isRoundingErrorFloor(
+        if (isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
-            ),
-            "ROUNDING_ERROR"
-        );
-        
-        partialAmount = safeDiv(
-            safeMul(numerator, target),
-            denominator
-        );
+        )) {
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
+                numerator,
+                denominator,
+                target
+            ));
+        }
+
+        partialAmount = numerator.safeMul(target).safeDiv(denominator);
         return partialAmount;
     }
 
@@ -75,30 +73,25 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-
-        require(
-            !isRoundingErrorCeil(
+        if (isRoundingErrorCeil(
                 numerator,
                 denominator,
                 target
-            ),
-            "ROUNDING_ERROR"
-        );
-        
+        )) {
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
+                numerator,
+                denominator,
+                target
+            ));
+        }
+
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using safeDiv.
-        partialAmount = safeDiv(
-            safeAdd(
-                safeMul(numerator, target),
-                safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target)
+            .safeAdd(denominator.safeSub(1))
+            .safeDiv(denominator);
+
         return partialAmount;
     }
 
@@ -116,18 +109,10 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-
-        partialAmount = safeDiv(
-            safeMul(numerator, target),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target).safeDiv(denominator);
         return partialAmount;
     }
-    
+
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -142,24 +127,16 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-
         // safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using safeDiv.
-        partialAmount = safeDiv(
-            safeAdd(
-                safeMul(numerator, target),
-                safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target)
+            .safeAdd(denominator.safeSub(1))
+            .safeDiv(denominator);
+
         return partialAmount;
     }
-    
+
     /// @dev Checks if rounding error >= 0.1% when rounding down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -174,11 +151,10 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-        
+        if (denominator == 0) {
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
+        }
+
         // The absolute rounding error is the difference between the rounded
         // value and the ideal value. The relative rounding error is the
         // absolute rounding error divided by the absolute value of the
@@ -191,11 +167,11 @@ contract LibMath is
         // When the ideal value is zero, we require the absolute error to
         // be zero. Fortunately, this is always the case. The ideal value is
         // zero iff `numerator == 0` and/or `target == 0`. In this case the
-        // remainder and absolute error are also zero. 
+        // remainder and absolute error are also zero.
         if (target == 0 || numerator == 0) {
             return false;
         }
-        
+
         // Otherwise, we want the relative rounding error to be strictly
         // less than 0.1%.
         // The relative error is `remainder / (numerator * target)`.
@@ -210,10 +186,10 @@ contract LibMath is
             numerator,
             denominator
         );
-        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
+        isError = remainder.safeMul(1000) >= numerator.safeMul(target);
         return isError;
     }
-    
+
     /// @dev Checks if rounding error >= 0.1% when rounding up.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -228,11 +204,10 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
-        
+        if (denominator == 0) {
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
+        }
+
         // See the comments in `isRoundingError`.
         if (target == 0 || numerator == 0) {
             // When either is zero, the ideal value and rounded value are zero
@@ -246,8 +221,8 @@ contract LibMath is
             numerator,
             denominator
         );
-        remainder = safeSub(denominator, remainder) % denominator;
-        isError = safeMul(1000, remainder) >= safeMul(numerator, target);
+        remainder = denominator.safeSub(remainder) % denominator;
+        isError = remainder.safeMul(1000) >= numerator.safeMul(target);
         return isError;
     }
 }

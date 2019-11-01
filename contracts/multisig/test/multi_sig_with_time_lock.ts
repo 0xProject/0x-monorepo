@@ -108,24 +108,31 @@ describe('MultiSigWalletWithTimeLock', () => {
         });
         it('should confirm transaction for caller and log a Confirmation event', async () => {
             const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            expect(txReceipt.logs.length).to.equal(2);
             const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationEventArgs>;
             expect(log.event).to.be.equal('Confirmation');
             expect(log.args.sender).to.be.equal(owners[1]);
             expect(log.args.transactionId).to.be.bignumber.equal(txId);
         });
-        it('should revert if fully confirmed', async () => {
-            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
-            await expectTransactionFailedAsync(
-                multiSigWrapper.confirmTransactionAsync(txId, owners[2]),
-                RevertReason.TxFullyConfirmed,
-            );
-        });
         it('should set the confirmation time of the transaction if it becomes fully confirmed', async () => {
             const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            expect(txReceipt.logs.length).to.equal(2);
             const blockNum = await web3Wrapper.getBlockNumberAsync();
             const timestamp = new BigNumber(await web3Wrapper.getBlockTimestampAsync(blockNum));
             const log = txReceipt.logs[1] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationTimeSetEventArgs>;
             expect(log.args.confirmationTime).to.be.bignumber.equal(timestamp);
+            expect(log.args.transactionId).to.be.bignumber.equal(txId);
+        });
+        it('should confirm transaction for caller but not reset the confirmation time if tx is already fully confirmed', async () => {
+            await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
+            const confirmationTimeBefore = await multiSig.confirmationTimes.callAsync(txId);
+            const txReceipt = await multiSigWrapper.confirmTransactionAsync(txId, owners[2]);
+            const confirmationTimeAfter = await multiSig.confirmationTimes.callAsync(txId);
+            expect(confirmationTimeBefore).to.bignumber.equal(confirmationTimeAfter);
+            expect(txReceipt.logs.length).to.equal(1);
+            const log = txReceipt.logs[0] as LogWithDecodedArgs<MultiSigWalletWithTimeLockConfirmationEventArgs>;
+            expect(log.event).to.be.equal('Confirmation');
+            expect(log.args.sender).to.be.equal(owners[2]);
             expect(log.args.transactionId).to.be.bignumber.equal(txId);
         });
     });
@@ -246,13 +253,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 multiSigWrapper = new MultiSigWrapper(multiSig, provider);
             });
 
-            it('should throw when not called by wallet', async () => {
+            it('should revert when not called by wallet', async () => {
                 return expectTransactionFailedWithoutReasonAsync(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
                 );
             });
 
-            it('should throw without enough confirmations', async () => {
+            it('should revert without enough confirmations', async () => {
                 const destination = multiSig.address;
                 const changeTimeLockData = multiSig.changeTimeLock.getABIEncodedTransactionData(SECONDS_TIME_LOCKED);
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
@@ -331,7 +338,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
 
-            it('should throw if it has enough confirmations but is not past the time lock', async () => {
+            it('should revert if it has enough confirmations but is not past the time lock', async () => {
                 return expectTransactionFailedAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     RevertReason.TimeLockIncomplete,

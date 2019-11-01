@@ -1,27 +1,11 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { BigNumber } from '@0x/utils';
 
-import { ContractEventArg, DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
-
-export interface DecodedLogEvent<ArgsType extends DecodedLogArgs> {
-    isRemoved: boolean;
-    log: LogWithDecodedArgs<ArgsType>;
-}
-
-export type EventCallback<ArgsType extends DecodedLogArgs> = (
-    err: null | Error,
-    log?: DecodedLogEvent<ArgsType>,
-) => void;
-
 export interface TxOpts {
     from: string;
     gas?: number;
     value?: BigNumber;
     gasPrice?: BigNumber;
-}
-
-export interface IndexedFilterValues {
-    [index: string]: ContractEventArg;
 }
 
 export enum ForwarderError {
@@ -56,6 +40,7 @@ export interface ContractWrappersConfig {
     blockPollingIntervalMs?: number;
 }
 
+// TODO(xianny): remove after refactoring coordinator wrapper
 /**
  * gasPrice: Gas price in Wei to use for a transaction
  * gasLimit: The amount of gas to send with a transaction (in Gwei)
@@ -67,6 +52,7 @@ export interface TransactionOpts {
     nonce?: number;
 }
 
+// TODO(xianny): remove after refactoring coordinator wrapper
 /**
  * shouldValidate: Flag indicating whether the library should make attempts to validate a transaction before
  * broadcasting it. For example, order has a valid signature, maker has sufficient funds, etc. Default=true.

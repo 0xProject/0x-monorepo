@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import "./DummyERC20Token.sol";
 
 
 // solhint-disable no-empty-blocks
+// solhint-disable no-unused-vars
 contract UntransferrableDummyERC20Token is
     DummyERC20Token
 {

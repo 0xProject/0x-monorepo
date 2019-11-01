@@ -10,5 +10,6 @@
         "./fixtures/artifacts/LibDummy.json",
         "./fixtures/artifacts/TestLibDummy.json"
     ],
+    "exclude": ["./test_typescript/lib"],
     "include": ["./output/typescript/**/*", "./test_typescript/**/*"]
 }

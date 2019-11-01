@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,25 +23,20 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./LibAssetData.sol";
 
 
 contract OrderValidationUtils is
-    LibAssetData,
-    LibMath
+    LibAssetData
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
-    // solhint-disable var-name-mixedcase
-    bytes internal _ZRX_ASSET_DATA;
-    // solhint-enable var-name-mixedcase
-
-    constructor (address _exchange, bytes memory _zrxAssetData)
+    constructor (address _exchange)
         public
         LibAssetData(_exchange)
-    {
-        _ZRX_ASSET_DATA = _zrxAssetData;
-    }
+    {}
 
     /// @dev Fetches all order-relevant information needed to validate if the supplied order is fillable.
     /// @param order The order structure.
@@ -67,9 +62,8 @@ contract OrderValidationUtils is
 
         // Validate the maker's signature
         address makerAddress = order.makerAddress;
-        isValidSignature = _EXCHANGE.isValidSignature(
-            orderInfo.orderHash,
-            makerAddress,
+        isValidSignature = _EXCHANGE.isValidOrderSignature(
+            order,
             signature
         );
 
@@ -79,26 +73,22 @@ contract OrderValidationUtils is
         // Assign to stack variables to reduce redundant mloads/sloads
         uint256 takerAssetAmount = order.takerAssetAmount;
         uint256 makerFee = order.makerFee;
-        bytes memory zrxAssetData = _ZRX_ASSET_DATA;
-    
+
         // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
         uint256 transferableTakerAssetAmount;
-        if (order.makerAssetData.equals(zrxAssetData)) {
+        if (order.makerAssetData.equals(order.makerFeeAssetData)) {
             // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
             // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
-            transferableTakerAssetAmount = getPartialAmountFloor(
+            transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                 transferableMakerAssetAmount,
-                safeAdd(order.makerAssetAmount, makerFee),
+                order.makerAssetAmount.safeAdd(makerFee),
                 takerAssetAmount
             );
         } else {
-            // Get the transferable amount of the `makerFeeAsset`
-            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, zrxAssetData);
-
             // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
             if (makerFee == 0) {
-                transferableTakerAssetAmount = getPartialAmountFloor(
+                transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
@@ -107,23 +97,26 @@ contract OrderValidationUtils is
             // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
             // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
             } else {
-                uint256 transferableMakerToTakerAmount = getPartialAmountFloor(
+                // Get the transferable amount of the `makerFeeAsset`
+                uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
+
+                uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
                 );
-                uint256 transferableMakerFeeToTakerAmount = getPartialAmountFloor(
+                uint256 transferableMakerFeeToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerFeeAssetAmount,
                     makerFee,
                     takerAssetAmount
                 );
-                transferableTakerAssetAmount = min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
+                transferableTakerAssetAmount = LibSafeMath.min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
             }
         }
 
         // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
-        fillableTakerAssetAmount = min256(
-            safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
+        fillableTakerAssetAmount = LibSafeMath.min256(
+            takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
             transferableTakerAssetAmount
         );
 
@@ -170,7 +163,7 @@ contract OrderValidationUtils is
     /// @return The amount of the asset tranferable by the owner.
     /// NOTE: If the `assetData` encodes data for multiple assets, the `transferableAssetAmount`
     /// will represent the amount of times the entire `assetData` can be transferred. To calculate
-    /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by 
+    /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by
     /// the individual asset amounts located within the `assetData`.
     function getTransferableAssetAmount(address ownerAddress, bytes memory assetData)
         public
@@ -178,7 +171,7 @@ contract OrderValidationUtils is
         returns (uint256 transferableAssetAmount)
     {
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
-        transferableAssetAmount = min256(balance, allowance);
+        transferableAssetAmount = LibSafeMath.min256(balance, allowance);
         return transferableAssetAmount;
     }
 }

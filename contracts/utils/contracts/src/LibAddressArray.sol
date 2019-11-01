@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
+import "./LibAddressArrayRichErrors.sol";
 import "./LibBytes.sol";
+import "./LibRichErrors.sol";
 
 
 library LibAddressArray {
@@ -51,10 +53,12 @@ library LibAddressArray {
         //  `freeMemPtr` == `addressArrayEndPtr`: Nothing occupies memory after `addressArray`
         //  `freeMemPtr` > `addressArrayEndPtr`: Some value occupies memory after `addressArray`
         //  `freeMemPtr` < `addressArrayEndPtr`: Memory has not been managed properly.
-        require(
-            freeMemPtr >= addressArrayEndPtr,
-            "INVALID_FREE_MEMORY_PTR"
-        );
+        if (freeMemPtr < addressArrayEndPtr) {
+            LibRichErrors.rrevert(LibAddressArrayRichErrors.MismanagedMemoryError(
+                freeMemPtr,
+                addressArrayEndPtr
+            ));
+        }
 
         // If free memory begins at the end of `addressArray`
         // then we can append `addressToAppend` directly.

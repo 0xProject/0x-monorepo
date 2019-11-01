@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-artifacts",
-    "version": "2.2.2",
+    "version": "2.3.0-beta.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,7 +30,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-artifacts/README.md",
     "devDependencies": {
-        "@0x/utils": "^4.5.2",
+        "@0x/utils": "^4.6.0-beta.0",
         "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "lodash": "^4.17.11",

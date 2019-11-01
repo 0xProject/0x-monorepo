@@ -1,5 +1,5 @@
 import { Order, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -10,14 +10,16 @@ import { signatureUtils } from './signature_utils';
 import { CreateOrderOpts } from './types';
 export const orderFactory = {
     createOrderFromPartial(partialOrder: Partial<Order>): Order {
-        const defaultOrder = generateEmptyOrder();
+        const chainId: number = getChainIdFromPartial(partialOrder);
+        const defaultOrder = generateEmptyOrder(chainId);
         return {
             ...defaultOrder,
             ...partialOrder,
         };
     },
     createSignedOrderFromPartial(partialSignedOrder: Partial<SignedOrder>): SignedOrder {
-        const defaultOrder = generateEmptySignedOrder();
+        const chainId: number = getChainIdFromPartial(partialSignedOrder);
+        const defaultOrder = generateEmptySignedOrder(chainId);
         return {
             ...defaultOrder,
             ...partialSignedOrder,
@@ -30,6 +32,7 @@ export const orderFactory = {
         takerAssetAmount: BigNumber,
         takerAssetData: string,
         exchangeAddress: string,
+        chainId: number,
         createOrderOpts: CreateOrderOpts = generateDefaultCreateOrderOpts(),
     ): Order {
         const defaultCreateOrderOpts = generateDefaultCreateOrderOpts();
@@ -39,7 +42,8 @@ export const orderFactory = {
             takerAssetAmount,
             makerAssetData,
             takerAssetData,
-            exchangeAddress,
+            makerFeeAssetData: createOrderOpts.makerFeeAssetData || makerAssetData,
+            takerFeeAssetData: createOrderOpts.takerFeeAssetData || takerAssetData,
             takerAddress: createOrderOpts.takerAddress || defaultCreateOrderOpts.takerAddress,
             senderAddress: createOrderOpts.senderAddress || defaultCreateOrderOpts.senderAddress,
             makerFee: createOrderOpts.makerFee || defaultCreateOrderOpts.makerFee,
@@ -48,6 +52,8 @@ export const orderFactory = {
             salt: createOrderOpts.salt || defaultCreateOrderOpts.salt,
             expirationTimeSeconds:
                 createOrderOpts.expirationTimeSeconds || defaultCreateOrderOpts.expirationTimeSeconds,
+            exchangeAddress,
+            chainId,
         };
         return order;
     },
@@ -68,6 +74,7 @@ export const orderFactory = {
             takerAssetAmount,
             takerAssetData,
             exchangeAddress,
+            await providerUtils.getChainIdAsync(supportedProvider),
             createOrderOpts,
         );
         const orderHash = orderHashUtils.getOrderHashHex(order);
@@ -77,13 +84,22 @@ export const orderFactory = {
     },
 };
 
-function generateEmptySignedOrder(): SignedOrder {
+function getChainIdFromPartial(partialOrder: Partial<Order> | Partial<SignedOrder>): number {
+    const chainId = partialOrder.chainId;
+    if (!_.isNumber(chainId)) {
+        throw new Error('chainId must be valid');
+    }
+    return chainId;
+}
+
+function generateEmptySignedOrder(chainId: number): SignedOrder {
     return {
-        ...generateEmptyOrder(),
+        ...generateEmptyOrder(chainId),
         signature: constants.NULL_BYTES,
     };
 }
-function generateEmptyOrder(): Order {
+
+function generateEmptyOrder(chainId: number): Order {
     return {
         senderAddress: constants.NULL_ADDRESS,
         makerAddress: constants.NULL_ADDRESS,
@@ -94,10 +110,13 @@ function generateEmptyOrder(): Order {
         takerAssetAmount: constants.ZERO_AMOUNT,
         makerAssetData: constants.NULL_BYTES,
         takerAssetData: constants.NULL_BYTES,
+        makerFeeAssetData: constants.NULL_BYTES,
+        takerFeeAssetData: constants.NULL_BYTES,
         salt: generatePseudoRandomSalt(),
-        exchangeAddress: constants.NULL_ADDRESS,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.INFINITE_TIMESTAMP_SEC,
+        exchangeAddress: constants.NULL_ADDRESS,
+        chainId,
     };
 }
 

@@ -22,26 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "examples/ExchangeWrapper.sol",
-        "examples/Validator.sol",
-        "examples/Wallet.sol",
-        "examples/Whitelist.sol",
-        "src/Exchange.sol",
-        "src/interfaces/IAssetProxyDispatcher.sol",
-        "src/interfaces/IExchange.sol",
-        "src/interfaces/IExchangeCore.sol",
-        "src/interfaces/IMatchOrders.sol",
-        "src/interfaces/ISignatureValidator.sol",
-        "src/interfaces/ITransactions.sol",
-        "src/interfaces/IValidator.sol",
-        "src/interfaces/IWallet.sol",
-        "src/interfaces/IWrapperFunctions.sol",
-        "test/ReentrantERC20Token.sol",
-        "test/TestAssetProxyDispatcher.sol",
-        "test/TestExchangeInternals.sol",
-        "test/TestSignatureValidator.sol",
-        "test/TestStaticCallReceiver.sol"
-    ]
+    }
 }

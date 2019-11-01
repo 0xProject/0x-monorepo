@@ -337,6 +337,22 @@ export class ERC1155ProxyWrapper {
         return holdingsByOwner;
     }
     /**
+     * @dev Set the approval for the proxy on behalf of `userAddress` .
+     * @param userAddress owner of ERC1155 tokens.
+     * @param contractAddress address of ERC1155 contract.
+     * @param isApproved Whether to approve the proxy for all or not.
+     */
+    public async setProxyAllowanceForAllAsync(
+        userAddress: string,
+        contractAddress: string,
+        isApproved: boolean,
+    ): Promise<void> {
+        this._validateProxyContractExistsOrThrow();
+        const tokenWrapper = this.getContractWrapper(contractAddress);
+        const operator = (this._proxyContract as ERC1155ProxyContract).address;
+        await tokenWrapper.setApprovalForAllAsync(userAddress, operator, isApproved);
+    }
+    /**
      * @dev Checks if proxy is approved to transfer tokens on behalf of `userAddress`.
      * @param userAddress owner of ERC1155 tokens.
      * @param contractAddress address of ERC1155 contract.

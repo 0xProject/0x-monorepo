@@ -1,7 +1,7 @@
     
     /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,15 +17,12 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "./mixins/MExchangeCalldata.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 
 
-contract MixinExchangeCalldata is 
-    MExchangeCalldata
-{
+contract MixinExchangeCalldata {
 
     using LibAddressArray for address[];
 
@@ -33,7 +30,7 @@ contract MixinExchangeCalldata is
     ///      which is accessed through `signedExchangeTransaction`.
     /// @param offset  Offset into the Exchange calldata.
     /// @return value  Corresponding 32 byte value stored at `offset`.
-    function exchangeCalldataload(uint256 offset)
+    function _exchangeCalldataload(uint256 offset)
         internal
         pure
         returns (bytes32 value)
@@ -58,12 +55,12 @@ contract MixinExchangeCalldata is
     ///      from the embedded Exchange calldata.
     /// @param offset  Offset into the Exchange calldata (minus the 4 byte selector)
     /// @return value  Corresponding 32 byte value stored at `offset` + 4.
-    function loadExchangeData(uint256 offset)
+    function _loadExchangeData(uint256 offset)
         internal
         pure
         returns (bytes32 value)
     {
-        value = exchangeCalldataload(offset + 4);
+        value = _exchangeCalldataload(offset + 4);
         return value;
     }
 
@@ -71,14 +68,14 @@ contract MixinExchangeCalldata is
     ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderParamIndex  Index of the order in the Exchange function's signature.
     /// @return makerAddress The extracted maker address.
-    function loadMakerAddressFromOrder(uint256 orderParamIndex)
+    function _loadMakerAddressFromOrder(uint256 orderParamIndex)
         internal
         pure
         returns (address makerAddress)
     {
         uint256 orderOffsetInBytes = orderParamIndex * 32;
-        uint256 orderPtr = uint256(loadExchangeData(orderOffsetInBytes));
-        makerAddress = address(uint256(loadExchangeData(orderPtr)));
+        uint256 orderPtr = uint256(_loadExchangeData(orderOffsetInBytes));
+        makerAddress = address(uint256(_loadExchangeData(orderPtr)));
         return makerAddress;
     }
 
@@ -86,20 +83,20 @@ contract MixinExchangeCalldata is
     ///      (which is embedded in `signedExchangeTransaction`).
     /// @param orderArrayParamIndex  Index of the order array in the Exchange function's signature
     /// @return makerAddresses The extracted maker addresses.
-    function loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
+    function _loadMakerAddressesFromOrderArray(uint256 orderArrayParamIndex)
         internal
         pure
         returns (address[] memory makerAddresses)
     {
         uint256 orderArrayOffsetInBytes = orderArrayParamIndex * 32;
-        uint256 orderArrayPtr = uint256(loadExchangeData(orderArrayOffsetInBytes));
-        uint256 orderArrayLength = uint256(loadExchangeData(orderArrayPtr));
+        uint256 orderArrayPtr = uint256(_loadExchangeData(orderArrayOffsetInBytes));
+        uint256 orderArrayLength = uint256(_loadExchangeData(orderArrayPtr));
         uint256 orderArrayLengthInBytes = orderArrayLength * 32;
         uint256 orderArrayElementPtr = orderArrayPtr + 32;
         uint256 orderArrayElementEndPtr = orderArrayElementPtr + orderArrayLengthInBytes;
         for (uint orderPtrOffset = orderArrayElementPtr; orderPtrOffset < orderArrayElementEndPtr; orderPtrOffset += 32) {
-            uint256 orderPtr = uint256(loadExchangeData(orderPtrOffset));
-            address makerAddress = address(uint256(loadExchangeData(orderPtr + orderArrayElementPtr)));
+            uint256 orderPtr = uint256(_loadExchangeData(orderPtrOffset));
+            address makerAddress = address(uint256(_loadExchangeData(orderPtr + orderArrayElementPtr)));
             makerAddresses = makerAddresses.append(makerAddress);
         }
         return makerAddresses;

@@ -1,13 +1,7 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import {
-    BaseContract,
-    EventCallback,
-    IndexedFilterValues,
-    SubscriptionManager,
-    PromiseWithTransactionHash,
-} from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -25,27 +19,27 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
 export type ERC721TokenEventArgs =
-    | ERC721TokenTransferEventArgs
     | ERC721TokenApprovalEventArgs
-    | ERC721TokenApprovalForAllEventArgs;
+    | ERC721TokenApprovalForAllEventArgs
+    | ERC721TokenTransferEventArgs;
 
 export enum ERC721TokenEvents {
-    Transfer = 'Transfer',
     Approval = 'Approval',
     ApprovalForAll = 'ApprovalForAll',
-}
-
-export interface ERC721TokenTransferEventArgs extends DecodedLogArgs {
-    _from: string;
-    _to: string;
-    _tokenId: BigNumber;
+    Transfer = 'Transfer',
 }
 
 export interface ERC721TokenApprovalEventArgs extends DecodedLogArgs {
@@ -60,95 +54,20 @@ export interface ERC721TokenApprovalForAllEventArgs extends DecodedLogArgs {
     _approved: boolean;
 }
 
+export interface ERC721TokenTransferEventArgs extends DecodedLogArgs {
+    _from: string;
+    _to: string;
+    _tokenId: BigNumber;
+}
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ERC721TokenContract extends BaseContract {
     /**
-     * Throws if `_tokenId` is not a valid NFT.
+     * @ignore
      */
-    public getApproved = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param _tokenId The NFT to find the approved address for
-         * @returns The approved address for this NFT, or the zero address if there is none
-         */
-        async callAsync(
-            _tokenId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId The NFT to find the approved address for
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_tokenId: BigNumber): string {
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
+    public static deployedBytecode: string | undefined;
     /**
      * The zero address indicates there is no approved address.
      * Throws unless `msg.sender` is the current NFT owner, or an authorized
@@ -167,6 +86,7 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
@@ -182,10 +102,13 @@ export class ERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, _approved.toLowerCase(), _tokenId),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.approve.callAsync(_approved, _tokenId, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -204,21 +127,20 @@ export class ERC721TokenContract extends BaseContract {
             _approved: string,
             _tokenId: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -256,15 +178,6 @@ export class ERC721TokenContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _approved: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(_approved, _tokenId, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -305,9 +218,14 @@ export class ERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -333,578 +251,12 @@ export class ERC721TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
+        getSelector(): string {
             const self = (this as any) as ERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * Throws unless `msg.sender` is the current owner, an authorized
-     * operator, or the approved address for this NFT. Throws if `_from` is
-     * not the current owner. Throws if `_to` is the zero address. Throws if
-     * `_tokenId` is not a valid NFT.
-     */
-    public transferFrom = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _tokenId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         */
-        async callAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * This works identically to the other function with an extra data parameter,
-     * except this function just sets data to "".
-     */
-    public safeTransferFrom1 = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.safeTransferFrom1.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _tokenId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
-            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         */
-        async callAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * NFTs assigned to zero address are considered invalid, and queries
-     * about them do throw.
-     */
-    public ownerOf = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param _tokenId The identifier for an NFT
-         * @returns The address of the owner of the NFT
-         */
-        async callAsync(
-            _tokenId: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<string> {
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId The identifier for an NFT
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_tokenId: BigNumber): string {
-            assert.isBigNumber('_tokenId', _tokenId);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -946,188 +298,38 @@ export class ERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _owner An address for whom to query the balance
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_owner: string): string {
-            assert.isString('_owner', _owner);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
-        },
     };
     /**
-     * Emits the ApprovalForAll event. The contract MUST allow
-     * multiple operators per owner.
+     * Throws if `_tokenId` is not a valid NFT.
      */
-    public setApprovalForAll = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param _operator Address to add to the set of authorized operators
-         * @param _approved True if the operator is approved, false to revoke approval
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('_operator', _operator);
-            assert.isBoolean('_approved', _approved);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
-                _operator.toLowerCase(),
-                _approved,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setApprovalForAll.estimateGasAsync.bind(self, _operator.toLowerCase(), _approved),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param _operator Address to add to the set of authorized operators
-         * @param _approved True if the operator is approved, false to revoke approval
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_operator', _operator);
-            assert.isBoolean('_approved', _approved);
-            const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.setApprovalForAll.sendTransactionAsync(
-                _operator.toLowerCase(),
-                _approved,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _operator Address to add to the set of authorized operators
-         * @param _approved True if the operator is approved, false to revoke approval
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('_operator', _operator);
-            assert.isBoolean('_approved', _approved);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
-                _operator.toLowerCase(),
-                _approved,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _operator: string,
-            _approved: boolean,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
-            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
-            return txHash;
-        },
+    public getApproved = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
-         * @param _operator Address to add to the set of authorized operators
-         * @param _approved True if the operator is approved, false to revoke approval
+         * @param _tokenId The NFT to find the approved address for
+         * @returns The approved address for this NFT, or the zero address if there is none
          */
         async callAsync(
-            _operator: string,
-            _approved: boolean,
+            _tokenId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('_operator', _operator);
-            assert.isBoolean('_approved', _approved);
+        ): Promise<string> {
+            assert.isBigNumber('_tokenId', _tokenId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1137,10 +339,7 @@ export class ERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
-                _operator.toLowerCase(),
-                _approved,
-            ]);
+            const encodedData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1152,322 +351,19 @@ export class ERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _operator Address to add to the set of authorized operators
-         * @param _approved True if the operator is approved, false to revoke approval
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_operator: string, _approved: boolean): string {
-            assert.isString('_operator', _operator);
-            assert.isBoolean('_approved', _approved);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
-                _operator.toLowerCase(),
-                _approved,
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, boolean] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, boolean]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * Throws unless `msg.sender` is the current owner, an authorized
-     * operator, or the approved address for this NFT. Throws if `_from` is
-     * not the current owner. Throws if `_to` is the zero address. Throws if
-     * `_tokenId` is not a valid NFT. When transfer is complete, this function
-     * checks if `_to` is a smart contract (code size > 0). If so, it calls
-     * `onERC721Received` on `_to` and throws if the return value is not
-     * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`.
-     */
-    public safeTransferFrom2 = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param _data Additional data with no specified format, sent in call to `_to`
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.isString('_data', _data);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                _data,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.safeTransferFrom2.estimateGasAsync.bind(
-                    self,
-                    _from.toLowerCase(),
-                    _to.toLowerCase(),
-                    _tokenId,
-                    _data,
-                ),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param _data Additional data with no specified format, sent in call to `_to`
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.isString('_data', _data);
-            const self = (this as any) as ERC721TokenContract;
-            const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                _data,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param _data Additional data with no specified format, sent in call to `_to`
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.isString('_data', _data);
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                _data,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
-            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
-                _from,
-                _to,
-                _tokenId,
-                _data,
-                txData,
-            );
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param _data Additional data with no specified format, sent in call to `_to`
-         */
-        async callAsync(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.isString('_data', _data);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as ERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
-                _tokenId,
-                _data,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param _from The current owner of the NFT
-         * @param _to The new owner
-         * @param _tokenId The NFT to transfer
-         * @param _data Additional data with no specified format, sent in call to `_to`
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber, _data: string): string {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_tokenId', _tokenId);
-            assert.isString('_data', _data);
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'safeTransferFrom(address,address,uint256,bytes)',
-                [_from.toLowerCase(), _to.toLowerCase(), _tokenId, _data],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, string, BigNumber, string] {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, BigNumber, string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public isApprovedForAll = {
@@ -1511,12 +407,256 @@ export class ERC721TokenContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+    };
+    /**
+     * NFTs assigned to zero address are considered invalid, and queries
+     * about them do throw.
+     */
+    public ownerOf = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _tokenId The identifier for an NFT
+         * @returns The address of the owner of the NFT
+         */
+        async callAsync(
+            _tokenId: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string> {
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+    };
+    /**
+     * This works identically to the other function with an extra data parameter,
+     * except this function just sets data to "".
+     */
+    public safeTransferFrom1 = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.safeTransferFrom1.callAsync(_from, _to, _tokenId, txDataWithDefaults);
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData>,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                txData,
+                opts,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         */
+        async callAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -1524,43 +664,677 @@ export class ERC721TokenContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
-         * @param _owner The address that owns the NFTs
-         * @param _operator The address that acts on behalf of the owner
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
          * @returns The ABI encoded transaction data as a string
          */
-        getABIEncodedTransactionData(_owner: string, _operator: string): string {
-            assert.isString('_owner', _owner);
-            assert.isString('_operator', _operator);
+        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as ERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isApprovedForAll(address,address)', [
-                _owner.toLowerCase(),
-                _operator.toLowerCase(),
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
             ]);
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): string {
+        getSelector(): string {
             const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
+        },
+    };
+    /**
+     * Throws unless `msg.sender` is the current owner, an authorized
+     * operator, or the approved address for this NFT. Throws if `_from` is
+     * not the current owner. Throws if `_to` is the zero address. Throws if
+     * `_tokenId` is not a valid NFT. When transfer is complete, this function
+     * checks if `_to` is a smart contract (code size > 0). If so, it calls
+     * `onERC721Received` on `_to` and throws if the return value is not
+     * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`.
+     */
+    public safeTransferFrom2 = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                _data,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txDataWithDefaults);
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
-        getABIDecodedReturnData(returnData: string): boolean {
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData>,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
             const self = (this as any) as ERC721TokenContract;
-            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
+            const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                _data,
+                txData,
+                opts,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                _data,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         */
+        async callAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                _data,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
-            return abiDecodedReturnData;
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber, _data: string): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'safeTransferFrom(address,address,uint256,bytes)',
+                [_from.toLowerCase(), _to.toLowerCase(), _tokenId, _data],
+            );
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
+            return abiEncoder.getSelector();
+        },
+    };
+    /**
+     * Emits the ApprovalForAll event. The contract MUST allow
+     * multiple operators per owner.
+     */
+    public setApprovalForAll = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.setApprovalForAll.callAsync(_operator, _approved, txDataWithDefaults);
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData>,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            const self = (this as any) as ERC721TokenContract;
+            const txHashPromise = self.setApprovalForAll.sendTransactionAsync(
+                _operator.toLowerCase(),
+                _approved,
+                txData,
+                opts,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         */
+        async callAsync(
+            _operator: string,
+            _approved: boolean,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(_operator: string, _approved: boolean): string {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            return abiEncoder.getSelector();
+        },
+    };
+    /**
+     * Throws unless `msg.sender` is the current owner, an authorized
+     * operator, or the approved address for this NFT. Throws if `_from` is
+     * not the current owner. Throws if `_to` is the zero address. Throws if
+     * `_tokenId` is not a valid NFT.
+     */
+    public transferFrom = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async sendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.transferFrom.callAsync(_from, _to, _tokenId, txDataWithDefaults);
+            }
+
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
+        awaitTransactionSuccessAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData>,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const txHashPromise = self.transferFrom.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                txData,
+                opts,
+            );
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
+                    );
+                })(),
+            );
+        },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
+        async estimateGasAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         */
+        async callAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @returns The ABI encoded transaction data as a string
+         */
+        getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
+            return abiEncodedTransactionData;
+        },
+        /**
+         * Returns the 4 byte function selector as a hex string.
+         */
+        getSelector(): string {
+            const self = (this as any) as ERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            return abiEncoder.getSelector();
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
@@ -1634,215 +1408,6 @@ export class ERC721TokenContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                constant: true,
-                inputs: [
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'getApproved',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'address',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_approved',
-                        type: 'address',
-                    },
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'approve',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                    },
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'transferFrom',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                    },
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'safeTransferFrom',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'ownerOf',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'address',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                    },
-                ],
-                name: 'balanceOf',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'uint256',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_operator',
-                        type: 'address',
-                    },
-                    {
-                        name: '_approved',
-                        type: 'bool',
-                    },
-                ],
-                name: 'setApprovalForAll',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                    },
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                    },
-                    {
-                        name: '_data',
-                        type: 'bytes',
-                    },
-                ],
-                name: 'safeTransferFrom',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [
-                    {
-                        name: '_owner',
-                        type: 'address',
-                    },
-                    {
-                        name: '_operator',
-                        type: 'address',
-                    },
-                ],
-                name: 'isApprovedForAll',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'bool',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                anonymous: false,
-                inputs: [
-                    {
-                        name: '_from',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_to',
-                        type: 'address',
-                        indexed: true,
-                    },
-                    {
-                        name: '_tokenId',
-                        type: 'uint256',
-                        indexed: true,
-                    },
-                ],
-                name: 'Transfer',
-                outputs: [],
-                type: 'event',
-            },
-            {
                 anonymous: false,
                 inputs: [
                     {
@@ -1887,6 +1452,215 @@ export class ERC721TokenContract extends BaseContract {
                 name: 'ApprovalForAll',
                 outputs: [],
                 type: 'event',
+            },
+            {
+                anonymous: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                        indexed: true,
+                    },
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                        indexed: true,
+                    },
+                ],
+                name: 'Transfer',
+                outputs: [],
+                type: 'event',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: '_approved',
+                        type: 'address',
+                    },
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'approve',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                    },
+                ],
+                name: 'balanceOf',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint256',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'getApproved',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'address',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: '_owner',
+                        type: 'address',
+                    },
+                    {
+                        name: '_operator',
+                        type: 'address',
+                    },
+                ],
+                name: 'isApprovedForAll',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'bool',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'ownerOf',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'address',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'view',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                    },
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'safeTransferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                    },
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                    {
+                        name: '_data',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'safeTransferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: '_operator',
+                        type: 'address',
+                    },
+                    {
+                        name: '_approved',
+                        type: 'bool',
+                    },
+                ],
+                name: 'setApprovalForAll',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+            },
+            {
+                constant: false,
+                inputs: [
+                    {
+                        name: '_from',
+                        type: 'address',
+                    },
+                    {
+                        name: '_to',
+                        type: 'address',
+                    },
+                    {
+                        name: '_tokenId',
+                        type: 'uint256',
+                    },
+                ],
+                name: 'transferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
             },
         ] as ContractAbi;
         return abi;
@@ -1964,8 +1738,17 @@ export class ERC721TokenContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = ERC721TokenContract.deployedBytecode,
     ) {
-        super('ERC721Token', ERC721TokenContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'ERC721Token',
+            ERC721TokenContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>(
             ERC721TokenContract.ABI(),

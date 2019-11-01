@@ -22,15 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/LibAbiEncoder.sol",
-        "src/LibAssetProxyErrors.sol",
-        "src/LibConstants.sol",
-        "src/LibEIP712.sol",
-        "src/LibFillResults.sol",
-        "src/LibMath.sol",
-        "src/LibOrder.sol",
-        "test/TestLibs.sol"
-    ]
+    }
 }

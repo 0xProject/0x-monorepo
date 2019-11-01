@@ -38,7 +38,7 @@ export class SetCalldataBlock extends CalldataBlock {
         if (this._header !== undefined) {
             return this._header;
         }
-        return new Buffer('');
+        return Buffer.from('');
     }
 
     public getMembers(): CalldataBlock[] {

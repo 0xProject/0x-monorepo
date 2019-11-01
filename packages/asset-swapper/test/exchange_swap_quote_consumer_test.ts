@@ -1,6 +1,6 @@
 import { ContractAddresses, ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
+import { constants as devConstants, OrderFactory } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
-import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -39,7 +39,7 @@ describe('ExchangeSwapQuoteConsumer', () => {
     let coinbaseAddress: string;
     let makerAddress: string;
     let takerAddress: string;
-    let fillScenarios: FillScenarios;
+    let orderFactory: OrderFactory;
     let feeRecipient: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
@@ -59,14 +59,6 @@ describe('ExchangeSwapQuoteConsumer', () => {
         contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        fillScenarios = new FillScenarios(
-            provider,
-            userAddresses,
-            contractAddresses.zrxToken,
-            contractAddresses.exchange,
-            contractAddresses.erc20Proxy,
-            contractAddresses.erc721Proxy,
-        );
         const config = {
             networkId,
             contractAddresses,
@@ -80,6 +72,21 @@ describe('ExchangeSwapQuoteConsumer', () => {
             assetDataUtils.encodeERC20AssetData(contractAddresses.etherToken),
         ];
         erc20TokenContract = new ERC20TokenContract(makerTokenAddress, provider);
+
+        // Configure order defaults
+        const defaultOrderParams = {
+            ...devConstants.STATIC_ORDER_PARAMS,
+            makerAddress,
+            takerAddress,
+            makerAssetData,
+            takerAssetData,
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(contractAddresses.zrxToken),
+            exchangeAddress: contractAddresses.exchange,
+            chainId: networkId,
+        };
+        const privateKey = devConstants.TESTRPC_PRIVATE_KEYS[userAddresses.indexOf(makerAddress)];
+        orderFactory = new OrderFactory(privateKey, defaultOrderParams);
     });
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -87,14 +94,11 @@ describe('ExchangeSwapQuoteConsumer', () => {
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
         orders = [];
-        for (const fillableAmmount of FILLABLE_AMOUNTS) {
-            const order = await fillScenarios.createFillableSignedOrderAsync(
-                makerAssetData,
-                takerAssetData,
-                makerAddress,
-                takerAddress,
-                fillableAmmount,
-            );
+        for (const fillableAmount of FILLABLE_AMOUNTS) {
+            const order = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: fillableAmount,
+                takerAssetAmount: fillableAmount,
+            });
             orders.push(order);
         }
 

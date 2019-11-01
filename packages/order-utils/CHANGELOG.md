@@ -5,6 +5,36 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.5.0-beta.0 - _October 3, 2019_
+
+    * Add `chainId` `OrderValidationUtils`, `OrderFactory` (#1742)
+    * Update tools to use new `Order` and `ZeroExTransaction` structure (#1742)
+    * Update domain schema for Exchange and Coordinator (#1742)
+    * Add Exchange `RevertError` types to `ExchangeRevertErrors` (#1761)
+    * Add `SignatureOrderValidatorError` type to `ExchangeRevertErrors` (#1774)
+    * Add `SignatureWalletOrderValidatorError` type to `ExchangeRevertErrors` (#1774)
+    * Reorder parameters of some `RevertError` types to match smart contracts. (#1790)
+    * Use arbitrary fee tokens instead of ZRX (ZEIP-28) for tools needed by contracts packages. (#1819)
+    * Update `RevertError` types for new base constructor (#1819)
+    * Add `Expired` TransactionErrorCode (#1832)
+    * Add `expirationTimeSeconds` to `ZeroExTransaction` parameters used for hashing (#1832)
+    * Add `validator` field to `SignatureValidatorError` `RevertError` types. (#1885)
+    * Remove unused `RevertError` types. (#1885)
+    * Add `ExchangeRevertErrors.SignatureErrorCode.InvalidSigner`. (#2042)
+    * Add `takerAssetFillAmount` field to `IncompleteFillError` type (#2075)
+    * Update `IncompleteFillError` to take an `errorCode`, `expectedAssetFillAmount`, and `actualAssetFillAmount` fields. (#2075)
+    * Add EIP712 types for Staking (#1910)
+    * Add `InvalidCobbDouglasAlphaError` `RevertError` type to `StakingRevertErrors` (#2109)
+    * Rename `OperatorShareMustBeBetween0And100Error` `RevertError` type to `InvalidPoolOperatorShareError`. (#2109)
+    * Add `TransactionGasPriceError` and `TransactionInvalidContextError` to error registry. (#2109)
+    * Add `EthVaultNotSetError, `RewardVaultNotSetError`, and `InvalidStakeStatusError` to error registry. (#2118)
+    * Add `InvalidStakeStatusError` to error registry. (#2126)
+    * Add `InitializationError`, `InvalidParamValue` to `StakingRevertErrors`. (#2131)
+    * Add `CumulativeRewardIntervalError`. (#2154)
+    * Remove `validateOrderFillableOrThrowAsync`, `simpleValidateOrderFillableOrThrowAsync`, `validateMakerTransferThrowIfInvalidAsync` (#2181)
+    * Add `PreviousEpochNotFinalizedError` to `StakingRevertErrors`. (#2155)
+    * Add `InvalidMinimumPoolStake` to `StakingRevertErrors.InvalidParamValueErrorCode`. (#2155)
+
 ## v8.4.0 - _September 17, 2019_
 
     * Implement `simpleValidateOrderFillableOrThrowAsync` (#2096)

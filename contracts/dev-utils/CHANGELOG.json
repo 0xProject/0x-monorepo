@@ -1,5 +1,27 @@
 [
     {
+        "version": "0.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Use built in selectors instead of hard coded constants",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            },
+            {
+                "note": "Add `marketBuy/SellOrdersNoThrow` and `marketBuy/SellOrdersFillOrKill` to `LibTransactionDecoder`.",
+                "pr": 2075
+            },
+            {
+                "note": "`run_mocha` package script runs with `UNLIMITED_CONTRACT_SIZE=true` environment variable.",
+                "pr": 2075
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "0.0.10",
         "changes": [
@@ -116,6 +138,14 @@
             {
                 "note": "Add support for StaticCallProxy",
                 "pr": 1863
+            },
+            {
+                "note": "Add `OrderTransferSimulationUtils` contract for simulating order transfers on-chain",
+                "pr": 1868
+            },
+            {
+                "note": "Updated to use the new rich error pattern from @0x/contracts-exchange",
+                "pr": 1913
             }
         ]
     }

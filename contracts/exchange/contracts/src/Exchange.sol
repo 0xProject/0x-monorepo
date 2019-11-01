@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,38 +16,29 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibConstants.sol";
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidator.sol";
-import "./MixinWrapperFunctions.sol";
-import "./MixinAssetProxyDispatcher.sol";
-import "./MixinTransactions.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./MixinMatchOrders.sol";
+import "./MixinWrapperFunctions.sol";
+import "./MixinTransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
+// MixinAssetProxyDispatcher, MixinExchangeCore, MixinSignatureValidator,
+// and MixinTransactions are all inherited via the other Mixins that are
+// used.
 contract Exchange is
-    MixinExchangeCore,
+    LibEIP712ExchangeDomain,
     MixinMatchOrders,
-    MixinSignatureValidator,
-    MixinTransactions,
-    MixinAssetProxyDispatcher,
-    MixinWrapperFunctions
+    MixinWrapperFunctions,
+    MixinTransferSimulator
 {
-    string constant public VERSION = "3.0.0";
-
-    // Mixins are instantiated in the order they are inherited
-    constructor (bytes memory _zrxAssetData)
+    /// @dev Mixins are instantiated in the order they are inherited
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (uint256 chainId)
         public
-        LibConstants(_zrxAssetData) // @TODO: Remove when we deploy.
-        MixinExchangeCore()
-        MixinMatchOrders()
-        MixinSignatureValidator()
-        MixinTransactions()
-        MixinAssetProxyDispatcher()
-        MixinWrapperFunctions()
+        LibEIP712ExchangeDomain(chainId, address(0))
     {}
 }

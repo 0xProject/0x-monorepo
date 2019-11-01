@@ -44,6 +44,10 @@ const args = yargs
         normalize: true,
         demandOption: true,
     })
+    .option('debug', {
+        describe: 'Includes debug functions in the wrappers such as `getABIDecodedTransactionData`',
+        type: 'boolean',
+    })
     .option('partials', {
         describe: 'Glob pattern for the partial template files',
         type: 'string',
@@ -73,12 +77,11 @@ const args = yargs
         default: 'TypeScript',
     })
     .example(
-        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
+        "$0 --abis 'src/artifacts/**/*.json' --out 'src/contracts/generated/' --debug --partials 'src/templates/partials/**/*.handlebars' --template 'src/templates/contract.handlebars'",
         'Full usage example',
     ).argv;
 
 const templateFilename = args.template || `${__dirname}/../../templates/${args.language}/contract.handlebars`;
-
 const mainTemplate = utils.getNamedContent(templateFilename);
 const template = Handlebars.compile<ContextData>(mainTemplate.content);
 const abiFileNames = globSync(args.abis);
@@ -359,6 +362,25 @@ for (const abiFileName of abiFileNames) {
         continue;
     }
 
+    let deployedBytecode;
+    try {
+        deployedBytecode = parsedContent.compilerOutput.evm.deployedBytecode.object;
+        if (
+            deployedBytecode === '' ||
+            deployedBytecode === undefined ||
+            deployedBytecode === '0x' ||
+            deployedBytecode === '0x00'
+        ) {
+            throw new Error();
+        }
+    } catch (err) {
+        logUtils.log(
+            `Couldn't find deployedBytecode for ${chalk.bold(
+                namedContent.name,
+            )}, using undefined. Found [${deployedBytecode}]`,
+        );
+        deployedBytecode = undefined;
+    }
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
     if (ctor === undefined) {
         ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
@@ -398,13 +420,17 @@ for (const abiFileName of abiFileNames) {
         return eventData;
     });
 
+    const shouldIncludeBytecode = methodsData.find(methodData => methodData.stateMutability === 'pure') !== undefined;
+
     const contextData = {
         contractName: namedContent.name,
         ctor,
+        deployedBytecode: shouldIncludeBytecode ? deployedBytecode : undefined,
         ABI: ABI as ContractAbi,
         ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
+        debug: args.debug,
     };
     const renderedCode = template(contextData);
     utils.writeOutputFile(outFilePath, renderedCode);

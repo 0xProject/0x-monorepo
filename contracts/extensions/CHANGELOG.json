@@ -1,5 +1,18 @@
 [
     {
+        "version": "4.1.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            },
+            {
+                "note": "Replaced the use of `SafeMath` with `LibSafeMath`",
+                "pr": 2254
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "4.0.8",
         "changes": [
@@ -78,6 +91,18 @@
             {
                 "note": "Move `OrderValidator` to contracts/dev-utils package as `OrderValidationUtils`",
                 "pr": 1848
+            },
+            {
+                "note": "Remove unused `LibOrder` inheritance",
+                "pr": 1742
+            },
+            {
+                "note": "Refactor BalanceThresholdFilter to use new ITransactions interface",
+                "pr": 1753
+            },
+            {
+                "note": "Update tests for rich reverts",
+                "pr": 1761
             }
         ],
         "timestamp": 1563006338

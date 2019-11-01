@@ -9,7 +9,6 @@
         "generated-artifacts/IERC1155.json",
         "generated-artifacts/IERC1155Mintable.json",
         "generated-artifacts/IERC1155Receiver.json",
-        "generated-artifacts/MNonFungibleToken.json",
         "generated-artifacts/MixinNonFungibleToken.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

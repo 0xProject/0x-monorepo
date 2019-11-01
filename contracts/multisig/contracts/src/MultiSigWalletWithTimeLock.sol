@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 */
 
-pragma solidity 0.4.24;
+pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./MultiSigWallet.sol";
 
 
@@ -27,20 +28,14 @@ import "./MultiSigWallet.sol";
 contract MultiSigWalletWithTimeLock is
     MultiSigWallet
 {
+    using LibSafeMath for uint256;
+
     event ConfirmationTimeSet(uint256 indexed transactionId, uint256 confirmationTime);
     event TimeLockChange(uint256 secondsTimeLocked);
 
     uint256 public secondsTimeLocked;
 
     mapping (uint256 => uint256) public confirmationTimes;
-
-    modifier notFullyConfirmed(uint256 transactionId) {
-        require(
-            !isConfirmed(transactionId),
-            "TX_FULLY_CONFIRMED"
-        );
-        _;
-    }
 
     modifier fullyConfirmed(uint256 transactionId) {
         require(
@@ -52,7 +47,7 @@ contract MultiSigWalletWithTimeLock is
 
     modifier pastTimeLock(uint256 transactionId) {
         require(
-            block.timestamp >= confirmationTimes[transactionId] + secondsTimeLocked,
+            block.timestamp >= confirmationTimes[transactionId].safeAdd(secondsTimeLocked),
             "TIME_LOCK_INCOMPLETE"
         );
         _;
@@ -63,7 +58,7 @@ contract MultiSigWalletWithTimeLock is
     /// @param _required Number of required confirmations.
     /// @param _secondsTimeLocked Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
     constructor (
-        address[] _owners,
+        address[] memory _owners,
         uint256 _required,
         uint256 _secondsTimeLocked
     )
@@ -90,12 +85,14 @@ contract MultiSigWalletWithTimeLock is
         ownerExists(msg.sender)
         transactionExists(transactionId)
         notConfirmed(transactionId, msg.sender)
-        notFullyConfirmed(transactionId)
     {
+        bool isTxFullyConfirmedBeforeConfirmation = isConfirmed(transactionId);
+
         confirmations[transactionId][msg.sender] = true;
         emit Confirmation(msg.sender, transactionId);
-        if (isConfirmed(transactionId)) {
-            setConfirmationTime(transactionId, block.timestamp);
+
+        if (!isTxFullyConfirmedBeforeConfirmation && isConfirmed(transactionId)) {
+            _setConfirmationTime(transactionId, block.timestamp);
         }
     }
 
@@ -109,7 +106,7 @@ contract MultiSigWalletWithTimeLock is
     {
         Transaction storage txn = transactions[transactionId];
         txn.executed = true;
-        if (external_call(txn.destination, txn.value, txn.data.length, txn.data)) {
+        if (_externalCall(txn.destination, txn.value, txn.data.length, txn.data)) {
             emit Execution(transactionId);
         } else {
             emit ExecutionFailure(transactionId);
@@ -118,7 +115,7 @@ contract MultiSigWalletWithTimeLock is
     }
 
     /// @dev Sets the time of when a submission first passed.
-    function setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
+    function _setConfirmationTime(uint256 transactionId, uint256 confirmationTime)
         internal
     {
         confirmationTimes[transactionId] = confirmationTime;

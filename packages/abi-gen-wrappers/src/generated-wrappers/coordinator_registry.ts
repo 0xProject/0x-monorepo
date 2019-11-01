@@ -1,13 +1,7 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import {
-    BaseContract,
-    EventCallback,
-    IndexedFilterValues,
-    SubscriptionManager,
-    PromiseWithTransactionHash,
-} from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -25,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -47,6 +47,10 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 // tslint:disable-next-line:class-name
 export class CoordinatorRegistryContract extends BaseContract {
     /**
+     * @ignore
+     */
+    public static deployedBytecode: string | undefined;
+    /**
      * Called by a Coordinator operator to set the endpoint of their Coordinator.
      */
     public setCoordinatorEndpoint = {
@@ -57,7 +61,11 @@ export class CoordinatorRegistryContract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            coordinatorEndpoint: string,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
@@ -68,10 +76,13 @@ export class CoordinatorRegistryContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setCoordinatorEndpoint.estimateGasAsync.bind(self, coordinatorEndpoint),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -88,20 +99,19 @@ export class CoordinatorRegistryContract extends BaseContract {
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
-            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
+            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -130,14 +140,6 @@ export class CoordinatorRegistryContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            coordinatorEndpoint: string,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
-            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -172,9 +174,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -197,28 +204,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): [string] {
+        getSelector(): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -260,53 +251,19 @@ export class CoordinatorRegistryContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param coordinatorOperator operator of the Coordinator endpoint.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(coordinatorOperator: string): string {
-            assert.isString('coordinatorOperator', coordinatorOperator);
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
-                coordinatorOperator.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as CoordinatorRegistryContract;
-            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>;
@@ -519,6 +476,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = CoordinatorRegistryContract.deployedBytecode,
     ) {
         super(
             'CoordinatorRegistry',
@@ -527,6 +485,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             supportedProvider,
             txDefaults,
             logDecodeDependencies,
+            deployedBytecode,
         );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>(

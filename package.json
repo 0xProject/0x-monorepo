@@ -21,12 +21,12 @@
         "run:publish": "run-s install:all build:monorepo_scripts script:prepublish_checks rebuild script:publish",
         "run:publish:local": "IS_LOCAL_PUBLISH=true yarn run:publish",
         "script:prepublish_checks": "node ./packages/monorepo-scripts/lib/prepublish_checks.js",
-        "script:publish": "node ./packages/monorepo-scripts/lib/publish.js",
+        "script:publish": "DIST_TAG=protocolV3 node ./packages/monorepo-scripts/lib/publish.js",
         "install:all": "yarn install",
         "wsrun": "wsrun",
         "lerna": "lerna",
-        "build": "lerna link && wsrun build $PKG --fast-exit -r --stages --exclude-missing",
-        "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing",
+        "build": "lerna link && wsrun build $PKG -r --stages --fast-exit --exclude-missing --exclude @0x/contracts-extensions",
+        "build:ci": "lerna link && wsrun build:ci $PKG --fast-exit -r --stages --exclude-missing --exclude @0x/contracts-extensions",
         "build:contracts": "lerna link && wsrun build -p ${npm_package_config_contractsPackages} -c --fast-exit -r --stages --exclude-missing",
         "build:monorepo_scripts": "PKG=@0x/monorepo-scripts yarn build",
         "build:ts": "tsc -b",
@@ -34,7 +34,8 @@
         "clean": "wsrun clean $PKG --fast-exit -r --parallel --exclude-missing",
         "clean:contracts": "wsrun clean -p ${npm_package_config_contractsPackages} -c --fast-exit -r --parallel --exclude-missing",
         "contracts:gen": "wsrun contracts:gen $PKG --fast-exit -r --parallel --exclude-missing",
-        "contracts:compile": "wsrun compile $PKG --fast-exit -r --stages --exclude-missing",
+        "contracts:compile": "wsrun compile -p ${npm_package_config_contractsPackages} --fast-exit -r --stages --exclude-missing",
+        "contracts:compile:truffle": "wsrun compile:truffle -p ${npm_package_config_contractsPackages} --fast-exit -r --stages --exclude-missing",
         "contracts:watch": "wsrun watch $PKG --parallel --exclude-missing",
         "remove_node_modules": "lerna clean --yes; rm -rf node_modules",
         "rebuild": "run-s clean build",
@@ -45,10 +46,12 @@
         "diff_md_docs:ci": "wsrun diff_docs --exclude-missing",
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i || break -1; done;",
         "bundlewatch": "bundlewatch",
-        "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing"
+        "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
+        "lint:stages": "wsrun lint $PKG --fast-exit --stages --exclude-missing",
+        "lint:contracts": "wsrun lint -p ${npm_package_config_contractsPackages} -c --fast-exit --stages --exclude-missing"
     },
     "config": {
-        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-dev-utils",
+        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-dev-utils @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-integrations @0x/contracts-multisig @0x/contracts-staking @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator @0x/contracts-tests",
         "mnemonic": "concert load couple harbor equip island argue ramp clarify fence smart topic",
         "packagesWithDocPages": "contract-wrappers 0x.js connect json-schemas subproviders web3-wrapper order-utils sol-compiler sol-coverage sol-profiler sol-trace ethereum-types asset-buyer asset-swapper migrations",
         "ignoreDependencyVersions": "@types/styled-components @types/node",
@@ -58,11 +61,11 @@
         "files": [
             {
                 "path": "packages/0x.js/_bundles/index.min.js",
-                "maxSize": "1150kB"
+                "maxSize": "1260kB"
             },
             {
                 "path": "packages/instant/umd/instant.js",
-                "maxSize": "1350kB"
+                "maxSize": "1960kB"
             }
         ],
         "ci": {

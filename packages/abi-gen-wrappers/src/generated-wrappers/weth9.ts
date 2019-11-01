@@ -1,13 +1,7 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import {
-    BaseContract,
-    EventCallback,
-    IndexedFilterValues,
-    SubscriptionManager,
-    PromiseWithTransactionHash,
-} from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -25,7 +19,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -70,6 +70,10 @@ export interface WETH9WithdrawalEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class WETH9Contract extends BaseContract {
+    /**
+     * @ignore
+     */
+    public static deployedBytecode: string | undefined;
     public name = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -98,49 +102,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('name()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('name()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public approve = {
@@ -150,7 +124,12 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            guy: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -162,10 +141,13 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, guy.toLowerCase(), wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.approve.callAsync(guy, wad, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -182,21 +164,20 @@ export class WETH9Contract extends BaseContract {
             guy: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -225,15 +206,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            guy: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).approve.callAsync(guy, wad, txData);
-            const txHash = await (this as any).approve.sendTransactionAsync(guy, wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -269,9 +241,14 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
@@ -295,28 +272,12 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): string {
+        getSelector(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): boolean {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     public totalSupply = {
@@ -347,49 +308,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public transferFrom = {
@@ -404,6 +335,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -421,10 +353,13 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, src.toLowerCase(), dst.toLowerCase(), wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.transferFrom.callAsync(src, dst, wad, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -442,8 +377,7 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -454,6 +388,7 @@ export class WETH9Contract extends BaseContract {
                 dst.toLowerCase(),
                 wad,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -461,8 +396,8 @@ export class WETH9Contract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -502,16 +437,6 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
-        async validateAndSendTransactionAsync(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(src, dst, wad, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(src, dst, wad, txData);
-            return txHash;
-        },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
@@ -552,9 +477,14 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
@@ -580,28 +510,12 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): string {
+        getSelector(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): boolean {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     public withdraw = {
@@ -611,7 +525,11 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
@@ -622,10 +540,13 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.withdraw.estimateGasAsync.bind(self, wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.withdraw.callAsync(wad, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -641,20 +562,19 @@ export class WETH9Contract extends BaseContract {
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData);
+            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -682,11 +602,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).withdraw.callAsync(wad, txData);
-            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -716,9 +631,14 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -738,28 +658,12 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): [BigNumber] {
+        getSelector(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     public decimals = {
@@ -790,49 +694,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decimals()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<number>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('decimals()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): number {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('decimals()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public balanceOf = {
@@ -868,52 +742,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(index_0: string): string {
-            assert.isString('index_0', index_0);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [
-                index_0.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public symbol = {
@@ -944,49 +785,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('symbol()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('symbol()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public transfer = {
@@ -996,7 +807,12 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            dst: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -1008,10 +824,13 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(self, dst.toLowerCase(), wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.transfer.callAsync(dst, wad, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1028,21 +847,20 @@ export class WETH9Contract extends BaseContract {
             dst: string,
             wad: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData);
+            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1071,15 +889,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            dst: string,
-            wad: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transfer.callAsync(dst, wad, txData);
-            const txHash = await (this as any).transfer.sendTransactionAsync(dst, wad, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1115,9 +924,14 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
@@ -1141,28 +955,12 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): string {
+        getSelector(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): boolean {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     public deposit = {
@@ -1172,7 +970,10 @@ export class WETH9Contract extends BaseContract {
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
-        async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+        async sendTransactionAsync(
+            txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
+        ): Promise<string> {
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1182,10 +983,13 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.deposit.estimateGasAsync.bind(self),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.deposit.callAsync(txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -1200,19 +1004,18 @@ export class WETH9Contract extends BaseContract {
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.deposit.sendTransactionAsync(txData);
+            const txHashPromise = self.deposit.sendTransactionAsync(txData, opts);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -1239,11 +1042,6 @@ export class WETH9Contract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).deposit.callAsync(txData);
-            const txHash = await (this as any).deposit.sendTransactionAsync(txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1272,9 +1070,14 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('deposit()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -1293,28 +1096,12 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): void {
+        getSelector(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('deposit()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('deposit()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     public allowance = {
@@ -1355,54 +1142,19 @@ export class WETH9Contract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(index_0: string, index_1: string): string {
-            assert.isString('index_0', index_0);
-            assert.isString('index_1', index_1);
-            const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): string {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): BigNumber {
-            const self = (this as any) as WETH9Contract;
-            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
-            return abiDecodedReturnData;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
@@ -1834,8 +1586,17 @@ export class WETH9Contract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = WETH9Contract.deployedBytecode,
     ) {
-        super('WETH9', WETH9Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'WETH9',
+            WETH9Contract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<WETH9EventArgs, WETH9Events>(
             WETH9Contract.ABI(),

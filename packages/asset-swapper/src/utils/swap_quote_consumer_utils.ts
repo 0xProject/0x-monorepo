@@ -8,11 +8,11 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    ConsumerType,
+    ExtensionContractType,
+    GetExtensionContractTypeOpts,
     SwapQuote,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
-    SwapQuoteGetOutputOpts,
 } from '../types';
 
 import { assert } from './assert';
@@ -79,12 +79,12 @@ export const swapQuoteConsumerUtils = {
             return optimizedOrder;
         });
     },
-    async getConsumerTypeForSwapQuoteAsync(
+    async getExtensionContractTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
         provider: Provider,
-        opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<ConsumerType> {
+        opts: Partial<GetExtensionContractTypeOpts>,
+    ): Promise<ExtensionContractType> {
         const wethAssetData = assetDataUtils.encodeERC20AssetData(contractWrappers.contractAddresses.etherToken);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
@@ -102,14 +102,14 @@ export const swapQuoteConsumerUtils = {
             );
             if (isEnoughEthAndWethBalance[1]) {
                 // should be more gas efficient to use exchange consumer, so if possible use it.
-                return ConsumerType.Exchange;
+                return ExtensionContractType.None;
             } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
-                return ConsumerType.Forwarder;
+                return ExtensionContractType.Forwarder;
             }
             // Note: defaulting to forwarderConsumer if takerAddress is null or not enough balance of either wEth or Eth
-            return ConsumerType.Forwarder;
+            return ExtensionContractType.Forwarder;
         } else {
-            return ConsumerType.Exchange;
+            return ExtensionContractType.None;
         }
     },
 };

@@ -1,4 +1,4 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma enum-naming
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
@@ -18,7 +18,13 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact } from '@0x/types';
+import {
+    AwaitTransactionSuccessOpts,
+    EventCallback,
+    IndexedFilterValues,
+    SendTransactionOpts,
+    SimpleContractArtifact,
+} from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -29,555 +35,9 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class IAssetProxyContract extends BaseContract {
     /**
-     * Authorizes an address.
+     * @ignore
      */
-    public addAuthorizedAddress = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param target Address to authorize.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.addAuthorizedAddress.estimateGasAsync.bind(self, target.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param target Address to authorize.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            target: string,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target Address to authorize.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).addAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).addAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param target Address to authorize.
-         */
-        async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-            assert.isString('target', target);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param target Address to authorize.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(target: string): string {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [
-                target.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string] {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * Removes authorizion of an address.
-     */
-    public removeAuthorizedAddress = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param target Address to remove authorization from.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.removeAuthorizedAddress.estimateGasAsync.bind(self, target.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param target Address to remove authorization from.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            target: string,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target Address to remove authorization from.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).removeAuthorizedAddress.callAsync(target, txData);
-            const txHash = await (this as any).removeAuthorizedAddress.sendTransactionAsync(target, txData);
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param target Address to remove authorization from.
-         */
-        async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-            assert.isString('target', target);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param target Address to remove authorization from.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(target: string): string {
-            assert.isString('target', target);
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [
-                target.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string] {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * Removes authorizion of an address.
-     */
-    public removeAuthorizedAddressAtIndex = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param target Address to remove authorization from.
-         * @param index Index of target in authorities array.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target.toLowerCase(),
-                index,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(self, target.toLowerCase(), index),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param target Address to remove authorization from.
-         * @param index Index of target in authorities array.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
-            const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(
-                target.toLowerCase(),
-                index,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target Address to remove authorization from.
-         * @param index Index of target in authorities array.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<number> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target.toLowerCase(),
-                index,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(
-            target: string,
-            index: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
-            const txHash = await (this as any).removeAuthorizedAddressAtIndex.sendTransactionAsync(
-                target,
-                index,
-                txData,
-            );
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @param target Address to remove authorization from.
-         * @param index Index of target in authorities array.
-         */
-        async callAsync(
-            target: string,
-            index: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<void> {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target.toLowerCase(),
-                index,
-            ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @param target Address to remove authorization from.
-         * @param index Index of target in authorities array.
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(target: string, index: BigNumber): string {
-            assert.isString('target', target);
-            assert.isBigNumber('index', index);
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'removeAuthorizedAddressAtIndex(address,uint256)',
-                [target.toLowerCase(), index],
-            );
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string, BigNumber] {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
+    public static deployedBytecode: string | undefined;
     /**
      * Transfers assets. Either succeeds or throws.
      */
@@ -598,6 +58,7 @@ export class IAssetProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData> | undefined,
+            opts: SendTransactionOpts = { shouldValidate: true },
         ): Promise<string> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -617,10 +78,13 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, assetData, from.toLowerCase(), to.toLowerCase(), amount),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
+            if (opts.shouldValidate !== false) {
+                await self.transferFrom.callAsync(assetData, from, to, amount, txDataWithDefaults);
             }
 
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
@@ -643,8 +107,7 @@ export class IAssetProxyContract extends BaseContract {
             to: string,
             amount: BigNumber,
             txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
+            opts: AwaitTransactionSuccessOpts = { shouldValidate: true },
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -657,6 +120,7 @@ export class IAssetProxyContract extends BaseContract {
                 to.toLowerCase(),
                 amount,
                 txData,
+                opts,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
@@ -664,8 +128,8 @@ export class IAssetProxyContract extends BaseContract {
                     // When the transaction hash resolves, wait for it to be mined.
                     return self._web3Wrapper.awaitTransactionSuccessAsync(
                         await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
+                        opts.pollingIntervalMs,
+                        opts.timeoutMs,
                     );
                 })(),
             );
@@ -711,17 +175,6 @@ export class IAssetProxyContract extends BaseContract {
 
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
-        },
-        async validateAndSendTransactionAsync(
-            assetData: string,
-            from: string,
-            to: string,
-            amount: BigNumber,
-            txData?: Partial<TxData> | undefined,
-        ): Promise<string> {
-            await (this as any).transferFrom.callAsync(assetData, from, to, amount, txData);
-            const txHash = await (this as any).transferFrom.sendTransactionAsync(assetData, from, to, amount, txData);
-            return txHash;
         },
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -770,9 +223,14 @@ export class IAssetProxyContract extends BaseContract {
             callDataWithDefaults.from = callDataWithDefaults.from
                 ? callDataWithDefaults.from.toLowerCase()
                 : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
@@ -802,28 +260,12 @@ export class IAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
+         * Returns the 4 byte function selector as a hex string.
          */
-        getABIDecodedTransactionData(callData: string): [string, string, string, BigNumber] {
+        getSelector(): string {
             const self = (this as any) as IAssetProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string, string, string, BigNumber]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
+            return abiEncoder.getSelector();
         },
     };
     /**
@@ -849,285 +291,20 @@ export class IAssetProxyContract extends BaseContract {
             const encodedData = self._strictEncodeArguments('getProxyId()', []);
             const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
 
-            const rawCallResult = await self.evmExecAsync(encodedDataBytes);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._evmExecAsync(encodedDataBytes);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
+
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    /**
-     * Gets all authorized addresses.
-     */
-    public getAuthorizedAddresses = {
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         * @returns Array of authorized addresses.
-         */
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): string[] {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
-            return abiDecodedReturnData;
-        },
-    };
-    public transferOwnership = {
-        /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
-         * Ethereum operation and will cost gas.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
-        },
-        /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
-         * If the transaction was mined, but reverted, an error is thrown.
-         * @param txData Additional data for transaction
-         * @param pollingIntervalMs Interval at which to poll for success
-         * @returns A promise that resolves when the transaction is successful
-         */
-        awaitTransactionSuccessAsync(
-            newOwner: string,
-            txData?: Partial<TxData>,
-            pollingIntervalMs?: number,
-            timeoutMs?: number,
-        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
-        },
-        /**
-         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData Additional data for transaction
-         * @returns The hash of the transaction
-         */
-        async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
-        },
-        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            await (this as any).transferOwnership.callAsync(newOwner, txData);
-            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
-            return txHash;
-        },
-        /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
-         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
-         * since they don't modify state.
-         */
-        async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
-            assert.isString('newOwner', newOwner);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
-         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
-         * to create a 0x transaction (see protocol spec for more details).
-         * @returns The ABI encoded transaction data as a string
-         */
-        getABIEncodedTransactionData(newOwner: string): string {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
-                newOwner.toLowerCase(),
-            ]);
-            return abiEncodedTransactionData;
-        },
-        /**
-         * Decode the ABI-encoded transaction data into its input arguments
-         * @param callData The ABI-encoded transaction data
-         * @returns An array representing the input arguments in order. Keynames of nested structs are preserved.
-         */
-        getABIDecodedTransactionData(callData: string): [string] {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<[string]>(callData);
-            return abiDecodedCallData;
-        },
-        /**
-         * Decode the ABI-encoded return data from a transaction
-         * @param returnData the data returned after transaction execution
-         * @returns An array representing the output results in order.  Keynames of nested structs are preserved.
-         */
-        getABIDecodedReturnData(returnData: string): void {
-            const self = (this as any) as IAssetProxyContract;
-            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
-            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(
@@ -1203,52 +380,6 @@ export class IAssetProxyContract extends BaseContract {
                 constant: false,
                 inputs: [
                     {
-                        name: 'target',
-                        type: 'address',
-                    },
-                ],
-                name: 'addAuthorizedAddress',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'target',
-                        type: 'address',
-                    },
-                ],
-                name: 'removeAuthorizedAddress',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'target',
-                        type: 'address',
-                    },
-                    {
-                        name: 'index',
-                        type: 'uint256',
-                    },
-                ],
-                name: 'removeAuthorizedAddressAtIndex',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
                         name: 'assetData',
                         type: 'bytes',
                     },
@@ -1285,34 +416,6 @@ export class IAssetProxyContract extends BaseContract {
                 stateMutability: 'pure',
                 type: 'function',
             },
-            {
-                constant: true,
-                inputs: [],
-                name: 'getAuthorizedAddresses',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'address[]',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-            {
-                constant: false,
-                inputs: [
-                    {
-                        name: 'newOwner',
-                        type: 'address',
-                    },
-                ],
-                name: 'transferOwnership',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-            },
         ] as ContractAbi;
         return abi;
     }
@@ -1321,8 +424,17 @@ export class IAssetProxyContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults?: Partial<TxData>,
         logDecodeDependencies?: { [contractName: string]: ContractAbi },
+        deployedBytecode: string | undefined = IAssetProxyContract.deployedBytecode,
     ) {
-        super('IAssetProxy', IAssetProxyContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
+        super(
+            'IAssetProxy',
+            IAssetProxyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+            deployedBytecode,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

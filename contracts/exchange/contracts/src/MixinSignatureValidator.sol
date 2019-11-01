@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,22 +16,36 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IWallet.sol";
-import "./interfaces/IValidator.sol";
+import "./interfaces/IEIP1271Wallet.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/IEIP1271Data.sol";
+import "./MixinTransactions.sol";
 
 
 contract MixinSignatureValidator is
-    ReentrancyGuard,
-    MSignatureValidator,
-    MTransactions
+    LibEIP712ExchangeDomain,
+    LibEIP1271,
+    ISignatureValidator,
+    MixinTransactions
 {
     using LibBytes for bytes;
+    using LibOrder for LibOrder.Order;
+    using LibZeroExTransaction for LibZeroExTransaction.ZeroExTransaction;
+
+    // Magic bytes to be returned by `Wallet` signature type validators.
+    // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
 
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
@@ -39,31 +53,20 @@ contract MixinSignatureValidator is
     // Mapping of signer => validator => approved
     mapping (address => mapping (address => bool)) public allowedValidators;
 
-    /// @dev Approves a hash on-chain using any valid signature type.
+    /// @dev Approves a hash on-chain.
     ///      After presigning a hash, the preSign signature type will become valid for that hash and signer.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    function preSign(
-        bytes32 hash,
-        address signerAddress,
-        bytes calldata signature
-    )
+    /// @param hash Any 32-byte hash.
+    function preSign(bytes32 hash)
         external
+        payable
+        refundFinalBalanceNoReentry
     {
-        if (signerAddress != msg.sender) {
-            require(
-                isValidSignature(
-                    hash,
-                    signerAddress,
-                    signature
-                ),
-                "INVALID_SIGNATURE"
-            );
-        }
+        address signerAddress = _getCurrentContextAddress();
         preSigned[hash][signerAddress] = true;
     }
 
-    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
+    /// @dev Approves/unnapproves a Validator contract to verify signatures on signer's behalf
+    ///      using the `Validator` signature type.
     /// @param validatorAddress Address of Validator contract.
     /// @param approval Approval or disapproval of  Validator contract.
     function setSignatureValidatorApproval(
@@ -71,9 +74,10 @@ contract MixinSignatureValidator is
         bool approval
     )
         external
-        nonReentrant
+        payable
+        refundFinalBalanceNoReentry
     {
-        address signerAddress = getCurrentContextAddress();
+        address signerAddress = _getCurrentContextAddress();
         allowedValidators[signerAddress][validatorAddress] = approval;
         emit SignatureValidatorApproval(
             signerAddress,
@@ -83,11 +87,11 @@ contract MixinSignatureValidator is
     }
 
     /// @dev Verifies that a hash has been signed by the given signer.
-    /// @param hash Any 32 byte hash.
+    /// @param hash Any 32-byte hash.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidSignature(
+    /// @return isValid `true` if the signature is valid for the given hash and signer.
+    function isValidHashSignature(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
@@ -96,76 +100,233 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        require(
-            signature.length > 0,
-            "LENGTH_GREATER_THAN_0_REQUIRED"
+        SignatureType signatureType = _readValidSignatureType(
+            hash,
+            signerAddress,
+            signature
         );
-
-        // Pop last byte off of signature byte array.
-        uint8 signatureTypeRaw = uint8(signature.popLastByte());
-
-        // Ensure signature is supported
-        require(
-            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
-            "SIGNATURE_UNSUPPORTED"
+        // Only hash-compatible signature types can be handled by this
+        // function.
+        if (
+            signatureType == SignatureType.Validator ||
+            signatureType == SignatureType.EIP1271Wallet
+        ) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        isValid = _validateHashSignatureTypes(
+            signatureType,
+            hash,
+            signerAddress,
+            signature
         );
+        return isValid;
+    }
 
-        SignatureType signatureType = SignatureType(signatureTypeRaw);
+    /// @dev Verifies that a signature for an order is valid.
+    /// @param order The order.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given order and signer.
+    function isValidOrderSignature(
+        LibOrder.Order memory order,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid)
+    {
+        bytes32 orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        isValid = _isValidOrderWithHashSignature(
+            order,
+            orderHash,
+            signature
+        );
+        return isValid;
+    }
 
-        // Variables are not scoped in Solidity.
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-        address recovered;
+    /// @dev Verifies that a signature for a transaction is valid.
+    /// @param transaction The transaction.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given transaction and signer.
+    function isValidTransactionSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid)
+    {
+        bytes32 transactionHash = transaction.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        isValid = _isValidTransactionWithHashSignature(
+            transaction,
+            transactionHash,
+            signature
+        );
+        return isValid;
+    }
 
-        // Always illegal signature.
-        // This is always an implicit option since a signer can create a
-        // signature array with invalid type or length. We may as well make
-        // it an explicit option. This aids testing and analysis. It is
-        // also the initialization value for the enum type.
-        if (signatureType == SignatureType.Illegal) {
-            revert("SIGNATURE_ILLEGAL");
+    /// @dev Verifies that an order, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param order The order.
+    /// @param orderHash The hash of the order.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given order and signer.
+    function _isValidOrderWithHashSignature(
+        LibOrder.Order memory order,
+        bytes32 orderHash,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        address signerAddress = order.makerAddress;
+        SignatureType signatureType = _readValidSignatureType(
+            orderHash,
+            signerAddress,
+            signature
+        );
+        if (signatureType == SignatureType.Validator) {
+            // The entire order is verified by a validator contract.
+            isValid = _validateBytesWithValidator(
+                _encodeEIP1271OrderWithHash(order, orderHash),
+                orderHash,
+                signerAddress,
+                signature
+            );
+        } else if (signatureType == SignatureType.EIP1271Wallet) {
+            // The entire order is verified by a wallet contract.
+            isValid = _validateBytesWithWallet(
+                _encodeEIP1271OrderWithHash(order, orderHash),
+                signerAddress,
+                signature
+            );
+        } else {
+            // Otherwise, it's one of the hash-only signature types.
+            isValid = _validateHashSignatureTypes(
+                signatureType,
+                orderHash,
+                signerAddress,
+                signature
+            );
+        }
+        return isValid;
+    }
 
+    /// @dev Verifies that a transaction, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param transaction The transaction.
+    /// @param transactionHash The hash of the transaction.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given transaction and signer.
+    function _isValidTransactionWithHashSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes32 transactionHash,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid)
+    {
+        address signerAddress = transaction.signerAddress;
+        SignatureType signatureType = _readValidSignatureType(
+            transactionHash,
+            signerAddress,
+            signature
+        );
+        if (signatureType == SignatureType.Validator) {
+            // The entire transaction is verified by a validator contract.
+            isValid = _validateBytesWithValidator(
+                _encodeEIP1271TransactionWithHash(transaction, transactionHash),
+                transactionHash,
+                signerAddress,
+                signature
+            );
+        } else if (signatureType == SignatureType.EIP1271Wallet) {
+            // The entire transaction is verified by a wallet contract.
+            isValid = _validateBytesWithWallet(
+                _encodeEIP1271TransactionWithHash(transaction, transactionHash),
+                signerAddress,
+                signature
+            );
+        } else {
+            // Otherwise, it's one of the hash-only signature types.
+            isValid = _validateHashSignatureTypes(
+                signatureType,
+                transactionHash,
+                signerAddress,
+                signature
+            );
+        }
+        return isValid;
+    }
+
+    /// Validates a hash-only signature type
+    /// (anything but `Validator` and `EIP1271Wallet`).
+    function _validateHashSignatureTypes(
+        SignatureType signatureType,
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
-        } else if (signatureType == SignatureType.Invalid) {
-            require(
-                signature.length == 0,
-                "LENGTH_0_REQUIRED"
-            );
+        if (signatureType == SignatureType.Invalid) {
+            if (signature.length != 1) {
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    hash,
+                    signerAddress,
+                    signature
+                ));
+            }
             isValid = false;
-            return isValid;
 
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
-            v = uint8(signature[0]);
-            r = signature.readBytes32(1);
-            s = signature.readBytes32(33);
-            recovered = ecrecover(
+            if (signature.length != 66) {
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    hash,
+                    signerAddress,
+                    signature
+                ));
+            }
+            uint8 v = uint8(signature[0]);
+            bytes32 r = signature.readBytes32(1);
+            bytes32 s = signature.readBytes32(33);
+            address recovered = ecrecover(
                 hash,
                 v,
                 r,
                 s
             );
             isValid = signerAddress == recovered;
-            return isValid;
 
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
-            require(
-                signature.length == 65,
-                "LENGTH_65_REQUIRED"
-            );
-            v = uint8(signature[0]);
-            r = signature.readBytes32(1);
-            s = signature.readBytes32(33);
-            recovered = ecrecover(
+            if (signature.length != 66) {
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    hash,
+                    signerAddress,
+                    signature
+                ));
+            }
+            uint8 v = uint8(signature[0]);
+            bytes32 r = signature.readBytes32(1);
+            bytes32 s = signature.readBytes32(33);
+            address recovered = ecrecover(
                 keccak256(abi.encodePacked(
                     "\x19Ethereum Signed Message:\n32",
                     hash
@@ -175,200 +336,284 @@ contract MixinSignatureValidator is
                 s
             );
             isValid = signerAddress == recovered;
-            return isValid;
 
         // Signature verified by wallet contract.
-        // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = isValidWalletSignature(
+            isValid = _validateHashWithWallet(
                 hash,
                 signerAddress,
                 signature
             );
-            return isValid;
 
-        // Signature verified by validator contract.
-        // If used with an order, the maker of the order can still be an EOA.
-        // A signature using this type should be encoded as:
-        // | Offset   | Length | Contents                        |
-        // | 0x00     | x      | Signature to validate           |
-        // | 0x00 + x | 20     | Address of validator contract   |
-        // | 0x14 + x | 1      | Signature type is always "\x06" |
-        } else if (signatureType == SignatureType.Validator) {
-            // Pop last 20 bytes off of signature byte array.
-            address validatorAddress = signature.popLast20Bytes();
-
-            // Ensure signer has approved validator.
-            if (!allowedValidators[signerAddress][validatorAddress]) {
-                return false;
-            }
-            isValid = isValidValidatorSignature(
-                validatorAddress,
-                hash,
-                signerAddress,
-                signature
-            );
-            return isValid;
-
-        // Signer signed hash previously using the preSign function.
-        } else if (signatureType == SignatureType.PreSigned) {
+        // Otherwise, signatureType == SignatureType.PreSigned
+        } else {
+            assert(signatureType == SignatureType.PreSigned);
+            // Signer signed hash previously using the preSign function.
             isValid = preSigned[hash][signerAddress];
-            return isValid;
-        }
-
-        // Anything else is illegal (We do not return false because
-        // the signature may actually be valid, just not in a format
-        // that we currently support. In this case returning false
-        // may lead the caller to incorrectly believe that the
-        // signature was invalid.)
-        revert("SIGNATURE_UNSUPPORTED");
-    }
-
-    /// @dev Verifies signature using logic defined by Wallet contract. Wallet contract
-    ///      must return `bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))`
-    /// @param hash Any 32 byte hash.
-    /// @param walletAddress Address that should have signed the given hash
-    ///                      and defines its own signature verification method.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if signature is valid for given wallet..
-    function isValidWalletSignature(
-        bytes32 hash,
-        address walletAddress,
-        bytes memory signature
-    )
-        internal
-        view
-        returns (bool isValid)
-    {
-        bytes memory callData = abi.encodeWithSelector(
-            IWallet(walletAddress).isValidSignature.selector,
-            hash,
-            signature
-        );
-        // bytes4 0xb0671381
-        bytes32 magicValue = bytes32(bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)")));
-        assembly {
-            // extcodesize added as an extra safety measure
-            if iszero(extcodesize(walletAddress)) {
-                // Revert with `Error("WALLET_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-
-            let cdStart := add(callData, 32)
-            let success := staticcall(
-                gas,              // forward all gas
-                walletAddress,    // address of Wallet contract
-                cdStart,          // pointer to start of input
-                mload(callData),  // length of input
-                cdStart,          // write output over input
-                32                // output size is 32 bytes
-            )
-
-            if iszero(eq(returndatasize(), 32)) {
-                // Revert with `Error("WALLET_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-
-            switch success
-            case 0 {
-                // Revert with `Error("WALLET_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            case 1 {
-                // Signature is valid if call did not revert and returned true
-                isValid := eq(
-                    and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
-                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
-                )
-            }
         }
         return isValid;
     }
 
-    /// @dev Verifies signature using logic defined by Validator contract.
-    ///      Validator must return `bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)"))`
-    /// @param validatorAddress Address of validator contract.
-    /// @param hash Any 32 byte hash.
-    /// @param signerAddress Address that should have signed the given hash.
-    /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the address recovered from the provided signature matches the input signer address.
-    function isValidValidatorSignature(
-        address validatorAddress,
+    /// @dev Reads the `SignatureType` from a signature with minimal validation.
+    function _readSignatureType(
         bytes32 hash,
         address signerAddress,
         bytes memory signature
     )
-        internal
-        view
-        returns (bool isValid)
+        private
+        pure
+        returns (SignatureType)
     {
-        bytes memory callData = abi.encodeWithSelector(
-            IValidator(signerAddress).isValidSignature.selector,
+        if (signature.length == 0) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        return SignatureType(uint8(signature[signature.length - 1]));
+    }
+
+    /// @dev Reads the `SignatureType` from the end of a signature and validates it.
+    function _readValidSignatureType(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        pure
+        returns (SignatureType signatureType)
+    {
+        // Read the signatureType from the signature
+        signatureType = _readSignatureType(
             hash,
             signerAddress,
             signature
         );
-        // bytes4 0x42b38674
-        bytes32 magicValue = bytes32(bytes4(keccak256("isValidValidatorSignature(address,bytes32,address,bytes)")));
-        assembly {
-            // extcodesize added as an extra safety measure
-            if iszero(extcodesize(validatorAddress)) {
-                // Revert with `Error("VALIDATOR_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
 
-            let cdStart := add(callData, 32)
-            let success := staticcall(
-                gas,               // forward all gas
-                validatorAddress,  // address of Validator contract
-                cdStart,           // pointer to start of input
-                mload(callData),   // length of input
-                cdStart,           // write output over input
-                32                 // output size is 32 bytes
-            )
-
-            if iszero(eq(returndatasize(), 32)) {
-                // Revert with `Error("VALIDATOR_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-
-            switch success
-            case 0 {
-                // Revert with `Error("VALIDATOR_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000f56414c494441544f525f4552524f5200000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            case 1 {
-                // Signature is valid if call did not revert and returned true
-                isValid := eq(
-                    and(mload(cdStart), 0xffffffff00000000000000000000000000000000000000000000000000000000),
-                    and(magicValue, 0xffffffff00000000000000000000000000000000000000000000000000000000)
-                )
-            }
+        // Disallow address zero because ecrecover() returns zero on failure.
+        if (signerAddress == address(0)) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
+                hash,
+                signerAddress,
+                signature
+            ));
         }
+
+        // Ensure signature is supported
+        if (uint8(signatureType) >= uint8(SignatureType.NSignatureTypes)) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+
+        // Always illegal signature.
+        // This is always an implicit option since a signer can create a
+        // signature array with invalid type or length. We may as well make
+        // it an explicit option. This aids testing and analysis. It is
+        // also the initialization value for the enum type.
+        if (signatureType == SignatureType.Illegal) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+
+        return signatureType;
+    }
+
+    /// @dev ABI encodes an order and hash with a selector to be passed into
+    ///      an EIP1271 compliant `isValidSignature` function.
+    function _encodeEIP1271OrderWithHash(
+        LibOrder.Order memory order,
+        bytes32 orderHash
+    )
+        private
+        pure
+        returns (bytes memory encoded)
+    {
+        return abi.encodeWithSelector(
+            IEIP1271Data(address(0)).OrderWithHash.selector,
+            order,
+            orderHash
+        );
+    }
+
+    /// @dev ABI encodes a transaction and hash with a selector to be passed into
+    ///      an EIP1271 compliant `isValidSignature` function.
+    function _encodeEIP1271TransactionWithHash(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes32 transactionHash
+    )
+        private
+        pure
+        returns (bytes memory encoded)
+    {
+        return abi.encodeWithSelector(
+            IEIP1271Data(address(0)).ZeroExTransactionWithHash.selector,
+            transaction,
+            transactionHash
+        );
+    }
+
+    /// @dev Verifies a hash and signature using logic defined by Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own signature verification method.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the signature is validated by the Wallet.
+    function _validateHashWithWallet(
+        bytes32 hash,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool)
+    {
+        // Backup length of signature
+        uint256 signatureLength = signature.length;
+        // Temporarily remove signatureType byte from end of signature
+        signature.writeLength(signatureLength - 1);
+        // Encode the call data.
+        bytes memory callData = abi.encodeWithSelector(
+            IWallet(address(0)).isValidSignature.selector,
+            hash,
+            signature
+        );
+        // Restore the original signature length
+        signature.writeLength(signatureLength);
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return the validity of the signature if the call was successful
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
+        }
+        // Revert if the call was unsuccessful
+        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
+            hash,
+            walletAddress,
+            signature,
+            returnData
+        ));
+    }
+
+    /// @dev Verifies arbitrary data and a signature via an EIP1271 Wallet
+    ///      contract, where the wallet address is also the signer address.
+    /// @param data Arbitrary signed data.
+    /// @param walletAddress Contract that will verify the data and signature.
+    /// @param signature Proof that the data has been signed by signer.
+    /// @return isValid True if the signature is validated by the Wallet.
+    function _validateBytesWithWallet(
+        bytes memory data,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        isValid = _staticCallEIP1271WalletWithReducedSignatureLength(
+            walletAddress,
+            data,
+            signature,
+            1  // The last byte of the signature (signatureType) is removed before making the staticcall
+        );
         return isValid;
+    }
+
+    /// @dev Verifies arbitrary data and a signature via an EIP1271 contract
+    ///      whose address is encoded in the signature.
+    /// @param data Arbitrary signed data.
+    /// @param hash The hash associated with the data.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the data has been signed by signer.
+    /// @return isValid True if the signature is validated by the validator contract.
+    function _validateBytesWithValidator(
+        bytes memory data,
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        uint256 signatureLength = signature.length;
+        if (signatureLength < 21) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        // The validator address is appended to the signature before the signatureType.
+        // Read the validator address from the signature.
+        address validatorAddress = signature.readAddress(signatureLength - 21);
+        // Ensure signer has approved validator.
+        if (!allowedValidators[signerAddress][validatorAddress]) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorNotApprovedError(
+                signerAddress,
+                validatorAddress
+            ));
+        }
+        isValid = _staticCallEIP1271WalletWithReducedSignatureLength(
+            validatorAddress,
+            data,
+            signature,
+            21  // The last 21 bytes of the signature (validatorAddress + signatureType) are removed before making the staticcall
+        );
+        return isValid;
+    }
+
+    /// @dev Performs a staticcall to an EIP1271 compiant `isValidSignature` function and validates the output.
+    /// @param verifyingContractAddress Address of EIP1271Wallet or Validator contract.
+    /// @param data Arbitrary signed data.
+    /// @param signature Proof that the hash has been signed by signer. Bytes will be temporarily be popped
+    ///                  off of the signature before calling `isValidSignature`.
+    /// @param ignoredSignatureBytesLen The amount of bytes that will be temporarily popped off the the signature.
+    /// @return The validity of the signature.
+    function _staticCallEIP1271WalletWithReducedSignatureLength(
+        address verifyingContractAddress,
+        bytes memory data,
+        bytes memory signature,
+        uint256 ignoredSignatureBytesLen
+    )
+        private
+        view
+        returns (bool)
+    {
+        // Backup length of the signature
+        uint256 signatureLength = signature.length;
+        // Temporarily remove bytes from signature end
+        signature.writeLength(signatureLength - ignoredSignatureBytesLen);
+        bytes memory callData = abi.encodeWithSelector(
+            IEIP1271Wallet(address(0)).isValidSignature.selector,
+            data,
+            signature
+        );
+        // Restore original signature length
+        signature.writeLength(signatureLength);
+        // Static call the verification function
+        (bool didSucceed, bytes memory returnData) = verifyingContractAddress.staticcall(callData);
+        // Return the validity of the signature if the call was successful
+        if (didSucceed && returnData.length == 32) {
+            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
+        }
+        // Revert if the call was unsuccessful
+        LibRichErrors.rrevert(LibExchangeRichErrors.EIP1271SignatureError(
+            verifyingContractAddress,
+            data,
+            signature,
+            returnData
+        ));
     }
 }

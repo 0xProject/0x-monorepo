@@ -21,7 +21,7 @@
             "required": ["EIP712Domain"]
         },
         "primaryType": { "type": "string" },
-        "domain": { "type": "object" },
+        "domain": { "$ref": "/eip712DomainSchema" },
         "message": { "type": "object" }
     },
     "required": ["types", "primaryType", "domain", "message"]

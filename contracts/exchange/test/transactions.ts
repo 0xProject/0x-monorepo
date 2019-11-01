@@ -1,466 +1,1001 @@
+// tslint:disable: max-file-line-count
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
-    ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
+    describe,
+    expect,
+    getLatestBlockTimestampAsync,
     OrderFactory,
-    orderUtils,
-    provider,
     TransactionFactory,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, generatePseudoRandomSalt } from '@0x/order-utils';
-import { OrderWithoutExchangeAddress, RevertReason, SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, transactionHashUtils } from '@0x/order-utils';
+import { FillResults, OrderStatus } from '@0x/types';
+import { AbiEncoder, BigNumber } from '@0x/utils';
+import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract, ExchangeWrapper, ExchangeWrapperContract, WhitelistContract } from '../src/';
+import {
+    artifacts as localArtifacts,
+    constants as exchangeConstants,
+    ExchangeCancelEventArgs,
+    ExchangeCancelUpToEventArgs,
+    ExchangeContract,
+    exchangeDataEncoder,
+    ExchangeFillEventArgs,
+    ExchangeFunctionName,
+    ExchangeSignatureValidatorApprovalEventArgs,
+    ExchangeTransactionExecutionEventArgs,
+    ExchangeWrapper,
+} from '../src/';
 
-import { dependencyArtifacts } from './utils/dependency_artifacts';
+const artifacts = { ...erc20Artifacts, ...localArtifacts };
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('Exchange transactions', () => {
+// tslint:disable:no-unnecessary-type-assertion
+blockchainTests.resets('Exchange transactions', env => {
+    let chainId: number;
     let senderAddress: string;
     let owner: string;
     let makerAddress: string;
     let takerAddress: string;
     let feeRecipientAddress: string;
+    let validatorAddress: string;
+    let taker2Address: string;
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
-    let exchange: ExchangeContract;
+    let takerFeeToken: DummyERC20TokenContract;
+    let makerFeeToken: DummyERC20TokenContract;
+    let exchangeInstance: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
 
-    let erc20Balances: ERC20BalancesByOwner;
-    let signedOrder: SignedOrder;
-    let signedTx: SignedZeroExTransaction;
-    let orderWithoutExchangeAddress: OrderWithoutExchangeAddress;
     let orderFactory: OrderFactory;
     let makerTransactionFactory: TransactionFactory;
     let takerTransactionFactory: TransactionFactory;
+    let taker2TransactionFactory: TransactionFactory;
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
 
     let defaultMakerTokenAddress: string;
     let defaultTakerTokenAddress: string;
+    let defaultMakerFeeTokenAddress: string;
+    let defaultTakerFeeTokenAddress: string;
     let makerPrivateKey: Buffer;
     let takerPrivateKey: Buffer;
+    let taker2PrivateKey: Buffer;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, senderAddress, makerAddress, takerAddress, feeRecipientAddress] = _.slice(
-            accounts,
-            0,
-            5,
-        ));
+        chainId = await env.getChainIdAsync();
+        const accounts = await env.getAccountAddressesAsync();
+        const usedAddresses = ([
+            owner,
+            senderAddress,
+            makerAddress,
+            takerAddress,
+            feeRecipientAddress,
+            validatorAddress,
+            taker2Address,
+        ] = _.slice(accounts, 0, 7));
 
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
 
-        const numDummyErc20ToDeploy = 3;
-        [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
+        const numDummyErc20ToDeploy = 4;
+        [erc20TokenA, erc20TokenB, takerFeeToken, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
         erc20Proxy = await erc20Wrapper.deployProxyAsync();
         await erc20Wrapper.setBalancesAndAllowancesAsync();
 
-        exchange = await ExchangeContract.deployFrom0xArtifactAsync(
+        exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
-            provider,
-            txDefaults,
-            dependencyArtifacts,
-            assetDataUtils.encodeERC20AssetData(zrxToken.address),
+            env.provider,
+            env.txDefaults,
+            {},
+            new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, { from: owner }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeInstance.address, { from: owner });
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
+        defaultMakerFeeTokenAddress = makerFeeToken.address;
+        defaultTakerFeeTokenAddress = takerFeeToken.address;
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            senderAddress,
-            exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
+            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerFeeTokenAddress),
+            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerFeeTokenAddress),
+            exchangeAddress: exchangeInstance.address,
+            chainId,
         };
         makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         takerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(takerAddress)];
+        taker2PrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(taker2Address)];
         orderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchange.address);
-        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchange.address);
+        makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchangeInstance.address, chainId);
+        takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId);
+        taker2TransactionFactory = new TransactionFactory(taker2PrivateKey, exchangeInstance.address, chainId);
     });
     describe('executeTransaction', () => {
-        describe('fillOrder', () => {
-            let takerAssetFillAmount: BigNumber;
-            beforeEach(async () => {
-                erc20Balances = await erc20Wrapper.getBalancesAsync();
-                signedOrder = await orderFactory.newSignedOrderAsync();
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-
-                takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-                const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    signedOrder.signature,
+        describe('general functionality', () => {
+            it('should log the correct transactionHash if successfully executed', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
                 );
-                signedTx = takerTransactionFactory.newSignedTransaction(data);
-            });
-
-            it('should throw if not called by specified sender', async () => {
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, takerAddress),
-                    RevertReason.FailedExecution,
+                expect(transactionExecutionLogs.length).to.eq(1);
+                const executionLogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(executionLogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction),
                 );
             });
-
-            it('should transfer the correct amounts when signed by taker and called by sender', async () => {
-                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-                const makerAssetFillAmount = takerAssetFillAmount
-                    .times(signedOrder.makerAssetAmount)
-                    .dividedToIntegerBy(signedOrder.takerAssetAmount);
-                const makerFeePaid = signedOrder.makerFee
-                    .times(makerAssetFillAmount)
-                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
-                const takerFeePaid = signedOrder.takerFee
-                    .times(makerAssetFillAmount)
-                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
+            it('should revert if the transaction is expired', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                    expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const expectedError = new ExchangeRevertErrors.TransactionError(
+                    ExchangeRevertErrors.TransactionErrorCode.Expired,
+                    transactionHashHex,
                 );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerTokenAddress].plus(takerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][zrxToken.address].minus(makerFeePaid),
-                );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerTokenAddress].plus(makerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][zrxToken.address].minus(takerFeePaid),
-                );
-                expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
-                );
+                const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
-
-            it('should throw if the a 0x transaction with the same transactionHash has already been executed', async () => {
-                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, senderAddress),
-                    RevertReason.InvalidTxHash,
+            it('should revert if the actual gasPrice is greater than expected', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const actualGasPrice = transaction.gasPrice.plus(1);
+                const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                    transactionHashHex,
+                    actualGasPrice,
+                    transaction.gasPrice,
                 );
+                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    { gasPrice: actualGasPrice, from: senderAddress },
+                );
+                return expect(tx).to.revertWith(expectedError);
             });
-
-            it('should reset the currentContextAddress', async () => {
-                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                const currentContextAddress = await exchange.currentContextAddress.callAsync();
-                expect(currentContextAddress).to.equal(constants.NULL_ADDRESS);
+            it('should revert if the actual gasPrice is less than expected', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({
+                    data,
+                });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const actualGasPrice = transaction.gasPrice.minus(1);
+                const expectedError = new ExchangeRevertErrors.TransactionGasPriceError(
+                    transactionHashHex,
+                    actualGasPrice,
+                    transaction.gasPrice,
+                );
+                const tx = exchangeInstance.executeTransaction.sendTransactionAsync(
+                    transaction,
+                    transaction.signature,
+                    { gasPrice: actualGasPrice, from: senderAddress },
+                );
+                return expect(tx).to.revertWith(expectedError);
             });
         });
+        describe('fill methods', () => {
+            for (const fnName of [
+                ...exchangeConstants.SINGLE_FILL_FN_NAMES,
+                ...exchangeConstants.BATCH_FILL_FN_NAMES,
+                ...exchangeConstants.MARKET_FILL_FN_NAMES,
+            ]) {
+                it(`${fnName} should revert if signature is invalid and not called by signer`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    const v = ethUtil.toBuffer(transaction.signature.slice(0, 4));
+                    const invalidR = ethUtil.sha3('invalidR');
+                    const invalidS = ethUtil.sha3('invalidS');
+                    const signatureType = ethUtil.toBuffer(`0x${transaction.signature.slice(-2)}`);
+                    const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
+                    const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;
+                    transaction.signature = invalidSigHex;
+                    const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                    const expectedError = new ExchangeRevertErrors.SignatureError(
+                        ExchangeRevertErrors.SignatureErrorCode.BadTransactionSignature,
+                        transactionHashHex,
+                        transaction.signerAddress,
+                        transaction.signature,
+                    );
+                    const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                    return expect(tx).to.revertWith(expectedError);
+                });
+                it(`${fnName} should be successful if signed by taker and called by sender`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    const transactionReceipt = await exchangeWrapper.executeTransactionAsync(
+                        transaction,
+                        senderAddress,
+                    );
+                    const fillLogs = transactionReceipt.logs.filter(
+                        log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                    );
+                    expect(fillLogs.length).to.eq(1);
+                    const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                    expect(fillLogArgs.makerAddress).to.eq(makerAddress);
+                    expect(fillLogArgs.takerAddress).to.eq(takerAddress);
+                    expect(fillLogArgs.senderAddress).to.eq(senderAddress);
+                    expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                    expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
+                    expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
+                    expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(orders[0].makerAssetAmount);
+                    expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(orders[0].takerAssetAmount);
+                    expect(fillLogArgs.makerFeePaid).to.bignumber.eq(orders[0].makerFee);
+                    expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
+                    expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
+                });
+                it(`${fnName} should be successful if called by taker without a transaction signature`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    transaction.signature = constants.NULL_BYTES;
+                    const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
+                    const fillLogs = transactionReceipt.logs.filter(
+                        log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                    );
+                    expect(fillLogs.length).to.eq(1);
+                    const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                    expect(fillLogArgs.makerAddress).to.eq(makerAddress);
+                    expect(fillLogArgs.takerAddress).to.eq(takerAddress);
+                    expect(fillLogArgs.senderAddress).to.eq(takerAddress);
+                    expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                    expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
+                    expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
+                    expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(orders[0].makerAssetAmount);
+                    expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(orders[0].takerAssetAmount);
+                    expect(fillLogArgs.makerFeePaid).to.bignumber.eq(orders[0].makerFee);
+                    expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
+                    expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
+                });
+                it(`${fnName} should return the correct data if successful`, async () => {
+                    const order = await orderFactory.newSignedOrderAsync();
+                    const orders = [order];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    const returnData = await exchangeInstance.executeTransaction.callAsync(
+                        transaction,
+                        transaction.signature,
+                        {
+                            from: senderAddress,
+                        },
+                    );
+                    const abi = artifacts.Exchange.compilerOutput.abi;
+                    const methodAbi = abi.filter(abiItem => (abiItem as MethodAbi).name === fnName)[0] as MethodAbi;
+                    const abiEncoder = new AbiEncoder.Method(methodAbi);
 
+                    const decodedReturnData = abiEncoder.decodeReturnValues(returnData);
+                    const fillResults =
+                        exchangeConstants.BATCH_FILL_FN_NAMES.indexOf(fnName) !== -1
+                            ? decodedReturnData.fillResults[0]
+                            : decodedReturnData.fillResults;
+
+                    expect(fillResults.makerAssetFilledAmount).to.be.bignumber.eq(order.makerAssetAmount);
+                    expect(fillResults.takerAssetFilledAmount).to.be.bignumber.eq(order.takerAssetAmount);
+                    expect(fillResults.makerFeePaid).to.be.bignumber.eq(order.makerFee);
+                    expect(fillResults.takerFeePaid).to.be.bignumber.eq(order.takerFee);
+                });
+                it(`${fnName} should revert if transaction has already been executed`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                    const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                    const expectedError = new ExchangeRevertErrors.TransactionError(
+                        ExchangeRevertErrors.TransactionErrorCode.AlreadyExecuted,
+                        transactionHashHex,
+                    );
+                    const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                    return expect(tx).to.revertWith(expectedError);
+                });
+                it(`${fnName} should revert and rethrow error if executeTransaction is called recursively with a signature`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                    const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
+                        transaction,
+                        transaction.signature,
+                    );
+                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
+                        data: recursiveData,
+                    });
+                    const recursiveTransactionHashHex = transactionHashUtils.getTransactionHashHex(
+                        recursiveTransaction,
+                    );
+                    const noReentrancyError = new ExchangeRevertErrors.TransactionInvalidContextError(
+                        transactionHashHex,
+                        transaction.signerAddress,
+                    ).encode();
+                    const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                        recursiveTransactionHashHex,
+                        noReentrancyError,
+                    );
+                    const tx = exchangeWrapper.executeTransactionAsync(recursiveTransaction, senderAddress);
+                    return expect(tx).to.revertWith(expectedError);
+                });
+                it(`${fnName} should be successful if executeTransaction is called recursively by taker without a signature`, async () => {
+                    const orders = [await orderFactory.newSignedOrderAsync()];
+                    const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                    const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                    const recursiveData = exchangeInstance.executeTransaction.getABIEncodedTransactionData(
+                        transaction,
+                        constants.NULL_BYTES,
+                    );
+                    const recursiveTransaction = await takerTransactionFactory.newSignedTransactionAsync({
+                        data: recursiveData,
+                    });
+                    const transactionReceipt = await exchangeWrapper.executeTransactionAsync(
+                        recursiveTransaction,
+                        takerAddress,
+                    );
+                    const fillLogs = transactionReceipt.logs.filter(
+                        log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                    );
+                    expect(fillLogs.length).to.eq(1);
+                    const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                    expect(fillLogArgs.makerAddress).to.eq(makerAddress);
+                    expect(fillLogArgs.takerAddress).to.eq(takerAddress);
+                    expect(fillLogArgs.senderAddress).to.eq(takerAddress);
+                    expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                    expect(fillLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
+                    expect(fillLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
+                    expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(orders[0].makerAssetAmount);
+                    expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(orders[0].takerAssetAmount);
+                    expect(fillLogArgs.makerFeePaid).to.bignumber.eq(orders[0].makerFee);
+                    expect(fillLogArgs.takerFeePaid).to.bignumber.eq(orders[0].takerFee);
+                    expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
+                });
+                if (
+                    [
+                        ExchangeFunctionName.FillOrderNoThrow,
+                        ExchangeFunctionName.BatchFillOrdersNoThrow,
+                        ExchangeFunctionName.MarketBuyOrdersNoThrow,
+                        ExchangeFunctionName.MarketSellOrdersNoThrow,
+                        ExchangeFunctionName.MarketBuyOrdersFillOrKill,
+                        ExchangeFunctionName.MarketSellOrdersFillOrKill,
+                    ].indexOf(fnName) === -1
+                ) {
+                    it(`${fnName} should revert and rethrow error if the underlying function reverts`, async () => {
+                        const order = await orderFactory.newSignedOrderAsync();
+                        order.signature = constants.NULL_BYTES;
+                        const orders = [order];
+                        const data = exchangeDataEncoder.encodeOrdersToExchangeData(fnName, orders);
+                        const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                        const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                        const nestedError = new ExchangeRevertErrors.SignatureError(
+                            ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
+                            orderHashUtils.getOrderHashHex(order),
+                            order.makerAddress,
+                            order.signature,
+                        ).encode();
+                        const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                            transactionHashHex,
+                            nestedError,
+                        );
+                        const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                        return expect(tx).to.revertWith(expectedError);
+                    });
+                }
+            }
+        });
         describe('cancelOrder', () => {
-            beforeEach(async () => {
-                const data = exchange.cancelOrder.getABIEncodedTransactionData(orderWithoutExchangeAddress);
-                signedTx = makerTransactionFactory.newSignedTransaction(data);
-            });
-
-            it('should throw if not called by specified sender', async () => {
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.executeTransactionAsync(signedTx, makerAddress),
-                    RevertReason.FailedExecution,
+            it('should revert if not signed by or called by maker', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orders = [order];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const nestedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                    ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
+                    orderHashUtils.getOrderHashHex(order),
+                    takerAddress,
+                ).encode();
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashHex,
+                    nestedError,
                 );
+                const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
             });
-
-            it('should cancel the order when signed by maker and called by sender', async () => {
-                await exchangeWrapper.executeTransactionAsync(signedTx, senderAddress);
-                return expectTransactionFailedAsync(
-                    exchangeWrapper.fillOrderAsync(signedOrder, senderAddress),
-                    RevertReason.OrderUnfillable,
+            it('should be successful if signed by maker and called by sender', async () => {
+                const orders = [await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
                 );
+                expect(cancelLogs.length).to.eq(1);
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.senderAddress).to.eq(senderAddress);
+                expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(cancelLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
+                expect(cancelLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
+                expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
+            });
+            it('should be successful if called by maker without a signature', async () => {
+                const orders = [await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, orders);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                transaction.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
+                );
+                expect(cancelLogs.length).to.eq(1);
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.senderAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(cancelLogArgs.makerAssetData).to.eq(orders[0].makerAssetData);
+                expect(cancelLogArgs.takerAssetData).to.eq(orders[0].takerAssetData);
+                expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(orders[0]));
             });
         });
-
+        describe('batchCancelOrders', () => {
+            it('should revert if not signed by or called by maker', async () => {
+                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(
+                    ExchangeFunctionName.BatchCancelOrders,
+                    orders,
+                );
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+                const nestedError = new ExchangeRevertErrors.ExchangeInvalidContextError(
+                    ExchangeRevertErrors.ExchangeContextErrorCodes.InvalidMaker,
+                    orderHashUtils.getOrderHashHex(orders[0]),
+                    takerAddress,
+                ).encode();
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashHex,
+                    nestedError,
+                );
+                const tx = exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                return expect(tx).to.revertWith(expectedError);
+            });
+            it('should be successful if signed by maker and called by sender', async () => {
+                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(
+                    ExchangeFunctionName.BatchCancelOrders,
+                    orders,
+                );
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
+                );
+                expect(cancelLogs.length).to.eq(orders.length);
+                orders.forEach((order, index) => {
+                    const cancelLogArgs = (cancelLogs[index] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                    expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                    expect(cancelLogArgs.senderAddress).to.eq(senderAddress);
+                    expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                    expect(cancelLogArgs.makerAssetData).to.eq(order.makerAssetData);
+                    expect(cancelLogArgs.takerAssetData).to.eq(order.takerAssetData);
+                    expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order));
+                });
+            });
+            it('should be successful if called by maker without a signature', async () => {
+                const orders = [await orderFactory.newSignedOrderAsync(), await orderFactory.newSignedOrderAsync()];
+                const data = exchangeDataEncoder.encodeOrdersToExchangeData(
+                    ExchangeFunctionName.BatchCancelOrders,
+                    orders,
+                );
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                transaction.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel',
+                );
+                expect(cancelLogs.length).to.eq(orders.length);
+                orders.forEach((order, index) => {
+                    const cancelLogArgs = (cancelLogs[index] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                    expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                    expect(cancelLogArgs.senderAddress).to.eq(makerAddress);
+                    expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                    expect(cancelLogArgs.makerAssetData).to.eq(order.makerAssetData);
+                    expect(cancelLogArgs.takerAssetData).to.eq(order.takerAssetData);
+                    expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order));
+                });
+            });
+        });
         describe('cancelOrdersUpTo', () => {
-            let exchangeWrapperContract: ExchangeWrapperContract;
-
-            before(async () => {
-                exchangeWrapperContract = await ExchangeWrapperContract.deployFrom0xArtifactAsync(
-                    artifacts.ExchangeWrapper,
-                    provider,
-                    txDefaults,
-                    dependencyArtifacts,
-                    exchange.address,
+            it('should be successful if signed by maker and called by sender', async () => {
+                const targetEpoch = constants.ZERO_AMOUNT;
+                const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
                 );
+                expect(cancelLogs.length).to.eq(1);
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.orderSenderAddress).to.eq(senderAddress);
+                expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
             });
+            it('should be successful if called by maker without a signature', async () => {
+                const targetEpoch = constants.ZERO_AMOUNT;
+                const data = exchangeInstance.cancelOrdersUpTo.getABIEncodedTransactionData(targetEpoch);
+                const transaction = await makerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, makerAddress);
+                const cancelLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).event === 'CancelUpTo',
+                );
+                expect(cancelLogs.length).to.eq(1);
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelUpToEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.orderSenderAddress).to.eq(constants.NULL_ADDRESS);
+                expect(cancelLogArgs.orderEpoch).to.bignumber.eq(targetEpoch.plus(1));
+            });
+        });
+        describe('preSign', () => {
+            it('should preSign a hash for the signer', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orderHash = orderHashUtils.getOrderHashHex(order);
+                const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                expect(isPreSigned).to.be.eq(false);
+                await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                expect(isPreSigned).to.be.eq(true);
+            });
+            it('should preSign a hash for the caller if called without a signature', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const orderHash = orderHashUtils.getOrderHashHex(order);
+                const data = exchangeInstance.preSign.getABIEncodedTransactionData(orderHash);
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                transaction.signature = constants.NULL_BYTES;
+                let isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                expect(isPreSigned).to.be.eq(false);
+                await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
+                isPreSigned = await exchangeInstance.preSigned.callAsync(orderHash, takerAddress);
+                expect(isPreSigned).to.be.eq(true);
+            });
+        });
+        describe('setSignatureValidatorApproval', () => {
+            it('should approve a validator for the signer', async () => {
+                const shouldApprove = true;
+                const data = exchangeInstance.setSignatureValidatorApproval.getABIEncodedTransactionData(
+                    validatorAddress,
+                    shouldApprove,
+                );
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
+                const validatorApprovalLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeSignatureValidatorApprovalEventArgs>).event ===
+                        'SignatureValidatorApproval',
+                );
+                expect(validatorApprovalLogs.length).to.eq(1);
+                const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
+                    ExchangeSignatureValidatorApprovalEventArgs
+                >).args;
+                expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
+                expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
+                expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
+            });
+            it('should approve a validator for the caller if called with no signature', async () => {
+                const shouldApprove = true;
+                const data = exchangeInstance.setSignatureValidatorApproval.getABIEncodedTransactionData(
+                    validatorAddress,
+                    shouldApprove,
+                );
+                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
+                transaction.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
+                const validatorApprovalLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeSignatureValidatorApprovalEventArgs>).event ===
+                        'SignatureValidatorApproval',
+                );
+                expect(validatorApprovalLogs.length).to.eq(1);
+                const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
+                    ExchangeSignatureValidatorApprovalEventArgs
+                >).args;
+                expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
+                expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
+                expect(validatorApprovalLogArgs.isApproved).to.eq(shouldApprove);
+            });
+        });
+        describe('batchExecuteTransactions', () => {
+            it('should successfully call fillOrder via 2 transactions with different taker signatures', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    senderAddress,
+                );
 
-            it("should cancel an order if called from the order's sender", async () => {
-                const orderSalt = new BigNumber(0);
-                signedOrder = await orderFactory.newSignedOrderAsync({
-                    senderAddress: exchangeWrapperContract.address,
-                    salt: orderSalt,
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                );
+
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(senderAddress);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.senderAddress).to.eq(senderAddress);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should successfully call fillOrder via 2 transactions when called by taker with no signatures', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync({ data: data2 });
+                transaction1.signature = constants.NULL_BYTES;
+                transaction2.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    takerAddress,
+                );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                );
+
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill2LogArgs.senderAddress).to.eq(takerAddress);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should successfully call fillOrder via 2 transactions when one is signed by taker1 and executeTransaction is called by taker2', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
+                transaction2.signature = constants.NULL_BYTES;
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    taker2Address,
+                );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                );
+
+                const fillLogs = transactionReceipt.logs.filter(
+                    log => (log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill',
+                );
+                expect(fillLogs.length).to.eq(2);
+
+                const fill1LogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill1LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill1LogArgs.takerAddress).to.eq(takerAddress);
+                expect(fill1LogArgs.senderAddress).to.eq(taker2Address);
+                expect(fill1LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill1LogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fill1LogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fill1LogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fill1LogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fill1LogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fill1LogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fill1LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
+
+                const fill2LogArgs = (fillLogs[1] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fill2LogArgs.makerAddress).to.eq(makerAddress);
+                expect(fill2LogArgs.takerAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.senderAddress).to.eq(taker2Address);
+                expect(fill2LogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fill2LogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(fill2LogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(fill2LogArgs.makerAssetFilledAmount).to.bignumber.eq(order2.makerAssetAmount);
+                expect(fill2LogArgs.takerAssetFilledAmount).to.bignumber.eq(order2.takerAssetAmount);
+                expect(fill2LogArgs.makerFeePaid).to.bignumber.eq(order2.makerFee);
+                expect(fill2LogArgs.takerFeePaid).to.bignumber.eq(order2.takerFee);
+                expect(fill2LogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
+            });
+            it('should return the correct data for 2 different fillOrder calls', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({ data: data2 });
+                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                    { from: senderAddress },
+                );
+                const abi = artifacts.Exchange.compilerOutput.abi;
+                const methodAbi = abi.filter(
+                    abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
+                )[0] as MethodAbi;
+                const abiEncoder = new AbiEncoder.Method(methodAbi);
+                const fillResults1: FillResults = abiEncoder.decodeReturnValues(returnData[0]).fillResults;
+                const fillResults2: FillResults = abiEncoder.decodeReturnValues(returnData[1]).fillResults;
+                expect(fillResults1.makerAssetFilledAmount).to.be.bignumber.eq(order1.makerAssetAmount);
+                expect(fillResults1.takerAssetFilledAmount).to.be.bignumber.eq(order1.takerAssetAmount);
+                expect(fillResults1.makerFeePaid).to.be.bignumber.eq(order1.makerFee);
+                expect(fillResults1.takerFeePaid).to.be.bignumber.eq(order1.takerFee);
+                expect(fillResults2.makerAssetFilledAmount).to.be.bignumber.eq(order2.makerAssetAmount);
+                expect(fillResults2.takerAssetFilledAmount).to.be.bignumber.eq(order2.takerAssetAmount);
+                expect(fillResults2.makerFeePaid).to.be.bignumber.eq(order2.makerFee);
+                expect(fillResults2.takerFeePaid).to.be.bignumber.eq(order2.takerFee);
+            });
+            it('should successfully call fillOrder and cancelOrder via 2 transactions', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                    order2,
+                ]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync({ data: data2 });
+                const transactionReceipt = await exchangeWrapper.batchExecuteTransactionsAsync(
+                    [transaction1, transaction2],
+                    senderAddress,
+                );
+
+                const transactionExecutionLogs = transactionReceipt.logs.filter(
+                    log =>
+                        (log as LogWithDecodedArgs<ExchangeTransactionExecutionEventArgs>).event ===
+                        'TransactionExecution',
+                );
+                expect(transactionExecutionLogs.length).to.eq(2);
+
+                const execution1LogArgs = (transactionExecutionLogs[0] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution1LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction1),
+                );
+
+                const execution2LogArgs = (transactionExecutionLogs[1] as LogWithDecodedArgs<
+                    ExchangeTransactionExecutionEventArgs
+                >).args;
+                expect(execution2LogArgs.transactionHash).to.equal(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                );
+
+                let fillLogIndex: number = 0;
+                let cancelLogIndex: number = 0;
+                const fillLogs = transactionReceipt.logs.filter((log, index) => {
+                    if ((log as LogWithDecodedArgs<ExchangeFillEventArgs>).event === 'Fill') {
+                        fillLogIndex = index;
+                        return true;
+                    }
+                    return false;
                 });
-                const targetOrderEpoch = orderSalt.plus(1);
-                const cancelData = exchange.cancelOrdersUpTo.getABIEncodedTransactionData(targetOrderEpoch);
-                const signedCancelTx = makerTransactionFactory.newSignedTransaction(cancelData);
-                await exchangeWrapperContract.cancelOrdersUpTo.sendTransactionAsync(
-                    targetOrderEpoch,
-                    signedCancelTx.salt,
-                    signedCancelTx.signature,
-                    {
-                        from: makerAddress,
-                    },
-                );
-
-                const takerAssetFillAmount = signedOrder.takerAssetAmount;
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-                const fillData = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    signedOrder.signature,
-                );
-                const signedFillTx = takerTransactionFactory.newSignedTransaction(fillData);
-                return expectTransactionFailedAsync(
-                    exchangeWrapperContract.fillOrder.sendTransactionAsync(
-                        orderWithoutExchangeAddress,
-                        takerAssetFillAmount,
-                        signedFillTx.salt,
-                        signedOrder.signature,
-                        signedFillTx.signature,
-                        { from: takerAddress },
-                    ),
-                    RevertReason.FailedExecution,
-                );
-            });
-
-            it("should not cancel an order if not called from the order's sender", async () => {
-                const orderSalt = new BigNumber(0);
-                signedOrder = await orderFactory.newSignedOrderAsync({
-                    senderAddress: exchangeWrapperContract.address,
-                    salt: orderSalt,
+                const cancelLogs = transactionReceipt.logs.filter((log, index) => {
+                    if ((log as LogWithDecodedArgs<ExchangeCancelEventArgs>).event === 'Cancel') {
+                        cancelLogIndex = index;
+                        return true;
+                    }
+                    return false;
                 });
-                const targetOrderEpoch = orderSalt.plus(1);
-                await exchangeWrapper.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
+                expect(fillLogs.length).to.eq(1);
+                expect(cancelLogs.length).to.eq(1);
+                expect(cancelLogIndex).to.greaterThan(fillLogIndex);
 
-                erc20Balances = await erc20Wrapper.getBalancesAsync();
-                const takerAssetFillAmount = signedOrder.takerAssetAmount;
-                orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-                const data = exchange.fillOrder.getABIEncodedTransactionData(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    signedOrder.signature,
-                );
-                signedTx = takerTransactionFactory.newSignedTransaction(data);
-                await exchangeWrapperContract.fillOrder.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    signedTx.salt,
-                    signedOrder.signature,
-                    signedTx.signature,
-                    { from: takerAddress },
-                );
+                const fillLogArgs = (fillLogs[0] as LogWithDecodedArgs<ExchangeFillEventArgs>).args;
+                expect(fillLogArgs.makerAddress).to.eq(makerAddress);
+                expect(fillLogArgs.takerAddress).to.eq(takerAddress);
+                expect(fillLogArgs.senderAddress).to.eq(senderAddress);
+                expect(fillLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(fillLogArgs.makerAssetData).to.eq(order1.makerAssetData);
+                expect(fillLogArgs.takerAssetData).to.eq(order1.takerAssetData);
+                expect(fillLogArgs.makerAssetFilledAmount).to.bignumber.eq(order1.makerAssetAmount);
+                expect(fillLogArgs.takerAssetFilledAmount).to.bignumber.eq(order1.takerAssetAmount);
+                expect(fillLogArgs.makerFeePaid).to.bignumber.eq(order1.makerFee);
+                expect(fillLogArgs.takerFeePaid).to.bignumber.eq(order1.takerFee);
+                expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order1));
 
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-                const makerAssetFillAmount = takerAssetFillAmount
-                    .times(signedOrder.makerAssetAmount)
-                    .dividedToIntegerBy(signedOrder.takerAssetAmount);
-                const makerFeePaid = signedOrder.makerFee
-                    .times(makerAssetFillAmount)
-                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
-                const takerFeePaid = signedOrder.takerFee
-                    .times(makerAssetFillAmount)
-                    .dividedToIntegerBy(signedOrder.makerAssetAmount);
-                expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerTokenAddress].plus(takerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][zrxToken.address].minus(makerFeePaid),
-                );
-                expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerTokenAddress].plus(makerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][zrxToken.address].minus(takerFeePaid),
-                );
-                expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
-                );
+                const cancelLogArgs = (cancelLogs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>).args;
+                expect(cancelLogArgs.makerAddress).to.eq(makerAddress);
+                expect(cancelLogArgs.senderAddress).to.eq(senderAddress);
+                expect(cancelLogArgs.feeRecipientAddress).to.eq(feeRecipientAddress);
+                expect(cancelLogArgs.makerAssetData).to.eq(order2.makerAssetData);
+                expect(cancelLogArgs.takerAssetData).to.eq(order2.takerAssetData);
+                expect(cancelLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(order2));
             });
-        });
-    });
-
-    describe('Whitelist', () => {
-        let whitelist: WhitelistContract;
-        let whitelistOrderFactory: OrderFactory;
-
-        before(async () => {
-            whitelist = await WhitelistContract.deployFrom0xArtifactAsync(
-                artifacts.Whitelist,
-                provider,
-                txDefaults,
-                dependencyArtifacts,
-                exchange.address,
-            );
-            const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await exchange.setSignatureValidatorApproval.sendTransactionAsync(whitelist.address, isApproved, {
-                    from: takerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-            const defaultOrderParams = {
-                ...constants.STATIC_ORDER_PARAMS,
-                senderAddress: whitelist.address,
-                exchangeAddress: exchange.address,
-                makerAddress,
-                feeRecipientAddress,
-                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerTokenAddress),
-                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerTokenAddress),
-            };
-            whitelistOrderFactory = new OrderFactory(makerPrivateKey, defaultOrderParams);
-        });
-
-        beforeEach(async () => {
-            signedOrder = await whitelistOrderFactory.newSignedOrderAsync();
-            erc20Balances = await erc20Wrapper.getBalancesAsync();
-        });
-
-        it('should revert if maker has not been whitelisted', async () => {
-            const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-            const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = generatePseudoRandomSalt();
-            return expectTransactionFailedAsync(
-                whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    salt,
-                    signedOrder.signature,
-                    { from: takerAddress },
-                ),
-                RevertReason.MakerNotWhitelisted,
-            );
-        });
-
-        it('should revert if taker has not been whitelisted', async () => {
-            const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-            const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = generatePseudoRandomSalt();
-            return expectTransactionFailedAsync(
-                whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    salt,
-                    signedOrder.signature,
-                    { from: takerAddress },
-                ),
-                RevertReason.TakerNotWhitelisted,
-            );
-        });
-
-        it('should fill the order if maker and taker have been whitelisted', async () => {
-            const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await whitelist.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, { from: owner }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await whitelist.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, { from: owner }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-
-            orderWithoutExchangeAddress = orderUtils.getOrderWithoutExchangeAddress(signedOrder);
-            const takerAssetFillAmount = signedOrder.takerAssetAmount;
-            const salt = generatePseudoRandomSalt();
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await whitelist.fillOrderIfWhitelisted.sendTransactionAsync(
-                    orderWithoutExchangeAddress,
-                    takerAssetFillAmount,
-                    salt,
-                    signedOrder.signature,
-                    { from: takerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-
-            const newBalances = await erc20Wrapper.getBalancesAsync();
-
-            const makerAssetFillAmount = signedOrder.makerAssetAmount;
-            const makerFeePaid = signedOrder.makerFee;
-            const takerFeePaid = signedOrder.takerFee;
-
-            expect(newBalances[makerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultMakerTokenAddress].minus(makerAssetFillAmount),
-            );
-            expect(newBalances[makerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][defaultTakerTokenAddress].plus(takerAssetFillAmount),
-            );
-            expect(newBalances[makerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[makerAddress][zrxToken.address].minus(makerFeePaid),
-            );
-            expect(newBalances[takerAddress][defaultTakerTokenAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultTakerTokenAddress].minus(takerAssetFillAmount),
-            );
-            expect(newBalances[takerAddress][defaultMakerTokenAddress]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][defaultMakerTokenAddress].plus(makerAssetFillAmount),
-            );
-            expect(newBalances[takerAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[takerAddress][zrxToken.address].minus(takerFeePaid),
-            );
-            expect(newBalances[feeRecipientAddress][zrxToken.address]).to.be.bignumber.equal(
-                erc20Balances[feeRecipientAddress][zrxToken.address].plus(makerFeePaid.plus(takerFeePaid)),
-            );
+            it('should return the correct data for a fillOrder and cancelOrder call', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [
+                    order2,
+                ]);
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await makerTransactionFactory.newSignedTransactionAsync({ data: data2 });
+                const returnData = await exchangeInstance.batchExecuteTransactions.callAsync(
+                    [transaction1, transaction2],
+                    [transaction1.signature, transaction2.signature],
+                    { from: senderAddress },
+                );
+                const abi = artifacts.Exchange.compilerOutput.abi;
+                const methodAbi = abi.filter(
+                    abiItem => (abiItem as MethodAbi).name === ExchangeFunctionName.FillOrder,
+                )[0] as MethodAbi;
+                const abiEncoder = new AbiEncoder.Method(methodAbi);
+                const fillResults: FillResults = abiEncoder.decodeReturnValues(returnData[0]).fillResults;
+                expect(fillResults.makerAssetFilledAmount).to.be.bignumber.eq(order1.makerAssetAmount);
+                expect(fillResults.takerAssetFilledAmount).to.be.bignumber.eq(order1.takerAssetAmount);
+                expect(fillResults.makerFeePaid).to.be.bignumber.eq(order1.makerFee);
+                expect(fillResults.takerFeePaid).to.be.bignumber.eq(order1.takerFee);
+                expect(returnData[1]).to.eq(constants.NULL_BYTES);
+            });
+            it('should revert if a single transaction reverts', async () => {
+                const order = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.CancelOrder, [order]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order]);
+                const transaction1 = await makerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await takerTransactionFactory.newSignedTransactionAsync({ data: data2 });
+                const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
+                const nestedError = new ExchangeRevertErrors.OrderStatusError(
+                    orderHashUtils.getOrderHashHex(order),
+                    OrderStatus.Cancelled,
+                ).encode();
+                const expectedError = new ExchangeRevertErrors.TransactionExecutionError(
+                    transactionHashUtils.getTransactionHashHex(transaction2),
+                    nestedError,
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
+            it('should revert if a single transaction is expired', async () => {
+                const order1 = await orderFactory.newSignedOrderAsync();
+                const order2 = await orderFactory.newSignedOrderAsync();
+                const data1 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order1]);
+                const data2 = exchangeDataEncoder.encodeOrdersToExchangeData(ExchangeFunctionName.FillOrder, [order2]);
+                const currentTimestamp = await getLatestBlockTimestampAsync();
+                const transaction1 = await takerTransactionFactory.newSignedTransactionAsync({ data: data1 });
+                const transaction2 = await taker2TransactionFactory.newSignedTransactionAsync({
+                    data: data2,
+                    expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
+                });
+                const tx = exchangeWrapper.batchExecuteTransactionsAsync([transaction1, transaction2], senderAddress);
+                const expiredTransactionHash = transactionHashUtils.getTransactionHashHex(transaction2);
+                const expectedError = new ExchangeRevertErrors.TransactionError(
+                    ExchangeRevertErrors.TransactionErrorCode.Expired,
+                    expiredTransactionHash,
+                );
+                return expect(tx).to.revertWith(expectedError);
+            });
         });
     });
 });

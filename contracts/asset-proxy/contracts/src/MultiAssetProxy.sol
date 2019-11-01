@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "./MixinAssetProxyDispatcher.sol";
-import "./MixinAuthorizable.sol";
+import "../archive/MixinAssetProxyDispatcher.sol";
+import "../archive/MixinAuthorizable.sol";
 
 
 contract MultiAssetProxy is
@@ -105,7 +105,7 @@ contract MultiAssetProxy is
                 // |          | 36          |         |   2. offset to nestedAssetData (*)  |
                 // | Data     |             |         | amounts:                            |
                 // |          | 68          | 32      | amounts Length                      |
-                // |          | 100         | a       | amounts Contents                    | 
+                // |          | 100         | a       | amounts Contents                    |
                 // |          |             |         | nestedAssetData:                    |
                 // |          | 100 + a     | 32      | nestedAssetData Length              |
                 // |          | 132 + a     | b       | nestedAssetData Contents (offsets)  |
@@ -149,8 +149,8 @@ contract MultiAssetProxy is
                 // + 32 (amounts offset)
                 let nestedAssetDataOffset := calldataload(add(assetDataOffset, 68))
 
-                // In order to find the start of the `amounts` contents, we must add: 
-                // assetDataOffset 
+                // In order to find the start of the `amounts` contents, we must add:
+                // assetDataOffset
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
                 // + amountsOffset
@@ -160,8 +160,8 @@ contract MultiAssetProxy is
                 // Load number of elements in `amounts`
                 let amountsLen := calldataload(sub(amountsContentsStart, 32))
 
-                // In order to find the start of the `nestedAssetData` contents, we must add: 
-                // assetDataOffset 
+                // In order to find the start of the `nestedAssetData` contents, we must add:
+                // assetDataOffset
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
                 // + nestedAssetDataOffset
@@ -190,10 +190,10 @@ contract MultiAssetProxy is
 
                 // Overwrite existing offset to `assetData` with our own
                 mstore(4, 128)
-                
+
                 // Load `amount`
                 let amount := calldataload(100)
-        
+
                 // Calculate number of bytes in `amounts` contents
                 let amountsByteLen := mul(amountsLen, 32)
 
@@ -208,7 +208,7 @@ contract MultiAssetProxy is
                     let amountsElement := calldataload(add(amountsContentsStart, i))
                     let totalAmount := mul(amountsElement, amount)
 
-                    // Revert if `amount` != 0 and multiplication resulted in an overflow 
+                    // Revert if `amount` != 0 and multiplication resulted in an overflow
                     if iszero(or(
                         iszero(amount),
                         eq(div(totalAmount, amount), amountsElement)
@@ -228,7 +228,7 @@ contract MultiAssetProxy is
                     let nestedAssetDataElementOffset := calldataload(add(nestedAssetDataContentsStart, i))
 
                     // In order to find the start of the `nestedAssetData[i]` contents, we must add:
-                    // assetDataOffset 
+                    // assetDataOffset
                     // + 32 (assetData len)
                     // + 4 (assetProxyId)
                     // + nestedAssetDataOffset
@@ -274,7 +274,7 @@ contract MultiAssetProxy is
                         mstore(164, assetProxies_slot)
                         assetProxy := sload(keccak256(132, 64))
                     }
-                    
+
                     // Revert if AssetProxy with given id does not exist
                     if iszero(assetProxy) {
                         // Revert with `Error("ASSET_PROXY_DOES_NOT_EXIST")`
@@ -284,7 +284,7 @@ contract MultiAssetProxy is
                         mstore(96, 0)
                         revert(0, 100)
                     }
-    
+
                     // Copy `nestedAssetData[i]` from calldata to memory
                     calldatacopy(
                         132,                                // memory slot after `amounts[i]`
@@ -298,7 +298,7 @@ contract MultiAssetProxy is
                         assetProxy,                             // call address of asset proxy
                         0,                                      // don't send any ETH
                         0,                                      // pointer to start of input
-                        add(164, nestedAssetDataElementLen),    // length of input  
+                        add(164, nestedAssetDataElementLen),    // length of input
                         0,                                      // write output over memory that won't be reused
                         0                                       // don't copy output to memory
                     )

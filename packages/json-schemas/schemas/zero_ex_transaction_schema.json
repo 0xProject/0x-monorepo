@@ -1,11 +1,13 @@
 {
     "id": "/zeroExTransactionSchema",
     "properties": {
-        "verifyingContractAddress": { "$ref": "/addressSchema" },
         "data": { "$ref": "/hexSchema" },
         "signerAddress": { "$ref": "/addressSchema" },
-        "salt": { "$ref": "/wholeNumberSchema" }
+        "salt": { "$ref": "/wholeNumberSchema" },
+        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" },
+        "gasPrice": { "$ref": "/wholeNumberSchema" },
+        "domain": { "$ref": "/eip712DomainSchema" }
     },
-    "required": ["verifyingContractAddress", "data", "salt", "signerAddress"],
+    "required": ["data", "salt", "expirationTimeSeconds", "gasPrice", "signerAddress", "domain"],
     "type": "object"
 }

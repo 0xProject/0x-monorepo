@@ -1,8 +1,8 @@
 import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -15,7 +15,6 @@ import {
     constants,
     ContractName,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     OrderFactory,
     OrderStatus,
     provider,
@@ -40,6 +39,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
     const makerAssetAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), DECIMALS_DEFAULT);
     const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(250), DECIMALS_DEFAULT);
 
+    let chainId: number;
     let validMakerAddress: string;
     let validMakerAddress2: string;
     let owner: string;
@@ -88,6 +88,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
     };
 
     before(async () => {
+        // Get the chain ID.
+        chainId = await providerUtils.getChainIdAsync(provider);
         // Create accounts
         await blockchainLifecycle.startAsync();
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -132,8 +134,9 @@ describe(ContractName.BalanceThresholdFilter, () => {
             txDefaults,
             artifacts,
             zrxAssetData,
+            new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance);
         // Register proxies
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, {
@@ -166,7 +169,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
         );
         // Default order parameters
         defaultOrderParams = {
-            exchangeAddress: exchangeInstance.address,
             feeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
@@ -175,6 +177,8 @@ describe(ContractName.BalanceThresholdFilter, () => {
             makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), DECIMALS_DEFAULT),
             takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(150), DECIMALS_DEFAULT),
             senderAddress: erc721BalanceThresholdFilterInstance.address,
+            exchangeAddress: exchangeInstance.address,
+            chainId,
         };
         // Create two order factories with valid makers (who meet the threshold balance), and
         // one factory for an invalid address (that does not meet the threshold balance)
@@ -200,25 +204,25 @@ describe(ContractName.BalanceThresholdFilter, () => {
         erc20TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc20BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(takerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721TakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(takerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721MakerBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(makerPrivateKey, exchangeInstance.address),
+            new TransactionFactory(makerPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
         erc721NonValidBalanceThresholdWrapper = new BalanceThresholdWrapper(
             erc721BalanceThresholdFilterInstance,
             exchangeInstance,
-            new TransactionFactory(invalidAddressPrivateKey, exchangeInstance.address),
+            new TransactionFactory(invalidAddressPrivateKey, exchangeInstance.address, chainId),
             provider,
         );
     });
@@ -289,15 +293,13 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const badSelectorHex = '0x00000000';
             const signatureHex = '0x';
             // Call valid forwarder
-            return expectTransactionFailedAsync(
-                erc721BalanceThresholdFilterInstance.executeTransaction.sendTransactionAsync(
-                    salt,
-                    validTakerAddress,
-                    badSelectorHex,
-                    signatureHex,
-                ),
-                RevertReason.InvalidOrBlockedExchangeSelector,
+            const tx = erc721BalanceThresholdFilterInstance.executeTransaction.sendTransactionAsync(
+                salt,
+                validTakerAddress,
+                badSelectorHex,
+                signatureHex,
             );
+            return expect(tx).to.revertWith(RevertReason.InvalidOrBlockedExchangeSelector);
         });
         it('should revert if senderAddress is not set to the valid forwarding contract', async () => {
             // Create signed order with incorrect senderAddress
@@ -305,13 +307,14 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const signedOrderWithBadSenderAddress = await orderFactory.newSignedOrderAsync({
                 senderAddress: notBalanceThresholdFilterAddress,
             });
+            const expectedError = new ExchangeRevertErrors.TransactionExecutionError();
             // Call valid forwarder
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.fillOrderAsync(signedOrderWithBadSenderAddress, validTakerAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.FailedExecution,
+            const tx = erc721TakerBalanceThresholdWrapper.fillOrderAsync(
+                signedOrderWithBadSenderAddress,
+                validTakerAddress,
+                { takerAssetFillAmount },
             );
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -392,22 +395,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
             });
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.batchFillOrdersAsync(orders, validTakerAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.batchFillOrdersAsync(orders, validTakerAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
             const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.batchFillOrdersAsync(orders, invalidAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.batchFillOrdersAsync(orders, invalidAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -426,10 +425,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmounts,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses
@@ -496,22 +491,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
             });
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.batchFillOrdersNoThrowAsync(orders, validTakerAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.batchFillOrdersNoThrowAsync(orders, validTakerAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
             const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.batchFillOrdersNoThrowAsync(orders, invalidAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.batchFillOrdersNoThrowAsync(orders, invalidAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -594,33 +585,29 @@ describe(ContractName.BalanceThresholdFilter, () => {
             });
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, validTakerAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, validTakerAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
             const takerAssetFillAmounts = [takerAssetFillAmount, takerAssetFillAmount];
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, invalidAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, invalidAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if one takerAssetFillAmount is not fully filled', async () => {
             const tooBigTakerAssetFillAmount = validSignedOrder.takerAssetAmount.times(2);
             const orders = [validSignedOrder, validSignedOrder2];
             const takerAssetFillAmounts = [takerAssetFillAmount, tooBigTakerAssetFillAmount];
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, validTakerAddress, {
-                    takerAssetFillAmounts,
-                }),
-                RevertReason.FailedExecution,
-            );
+            const expectedError = new ExchangeRevertErrors.TransactionExecutionError();
+            // Call valid forwarder
+            const tx = erc721TakerBalanceThresholdWrapper.batchFillOrKillOrdersAsync(orders, validTakerAddress, {
+                takerAssetFillAmounts,
+            });
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -679,20 +666,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 makerAddress: invalidAddress,
             });
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.fillOrderAsync(signedOrderWithBadMakerAddress, validTakerAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721TakerBalanceThresholdWrapper.fillOrderAsync(
+                signedOrderWithBadMakerAddress,
+                validTakerAddress,
+                { takerAssetFillAmount },
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.fillOrderAsync(validSignedOrder, invalidAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.fillOrderAsync(validSignedOrder, invalidAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -708,10 +693,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses
@@ -757,22 +738,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 makerAddress: invalidAddress,
             });
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.fillOrderNoThrowAsync(
-                    signedOrderWithBadMakerAddress,
-                    validTakerAddress,
-                    { takerAssetFillAmount },
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721TakerBalanceThresholdWrapper.fillOrderNoThrowAsync(
+                signedOrderWithBadMakerAddress,
+                validTakerAddress,
+                { takerAssetFillAmount },
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.fillOrderNoThrowAsync(validSignedOrder, invalidAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.fillOrderNoThrowAsync(validSignedOrder, invalidAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -832,31 +809,26 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 makerAddress: invalidAddress,
             });
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.fillOrKillOrderAsync(
-                    signedOrderWithBadMakerAddress,
-                    validTakerAddress,
-                    { takerAssetFillAmount },
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721TakerBalanceThresholdWrapper.fillOrKillOrderAsync(
+                signedOrderWithBadMakerAddress,
+                validTakerAddress,
+                { takerAssetFillAmount },
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.fillOrKillOrderAsync(validSignedOrder, invalidAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.fillOrKillOrderAsync(validSignedOrder, invalidAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if takerAssetFillAmount is not fully filled', async () => {
             const tooBigTakerAssetFillAmount = validSignedOrder.takerAssetAmount.times(2);
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.fillOrKillOrderAsync(validSignedOrder, validTakerAddress, {
-                    takerAssetFillAmount: tooBigTakerAssetFillAmount,
-                }),
-                RevertReason.FailedExecution,
-            );
+            const expectedError = new ExchangeRevertErrors.TransactionExecutionError();
+            const tx = erc721TakerBalanceThresholdWrapper.fillOrKillOrderAsync(validSignedOrder, validTakerAddress, {
+                takerAssetFillAmount: tooBigTakerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -940,21 +912,17 @@ describe(ContractName.BalanceThresholdFilter, () => {
             });
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.marketSellOrdersAsync(orders, validTakerAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.marketSellOrdersAsync(orders, validTakerAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.marketSellOrdersAsync(orders, invalidAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.marketSellOrdersAsync(orders, invalidAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -973,10 +941,6 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 validTakerAddress,
                 {
                     takerAssetFillAmount: cumulativeTakerAssetFillAmount,
-                    // HACK(albrow): We need to hardcode the gas estimate here because
-                    // the Geth gas estimator doesn't work with the way we use
-                    // delegatecall and swallow errors.
-                    gas: 600000,
                 },
             );
             // Assert validated addresses
@@ -1044,21 +1008,17 @@ describe(ContractName.BalanceThresholdFilter, () => {
             });
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.marketSellOrdersNoThrowAsync(orders, validTakerAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.marketSellOrdersNoThrowAsync(orders, validTakerAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.marketSellOrdersNoThrowAsync(orders, invalidAddress, {
-                    takerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.marketSellOrdersNoThrowAsync(orders, invalidAddress, {
+                takerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -1141,22 +1101,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
             const dummyMakerAssetFillAmount = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.marketBuyOrdersAsync(orders, validTakerAddress, {
-                    makerAssetFillAmount: dummyMakerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.marketBuyOrdersAsync(orders, validTakerAddress, {
+                makerAssetFillAmount: dummyMakerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
             const dummyMakerAssetFillAmount = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.marketBuyOrdersAsync(orders, invalidAddress, {
-                    makerAssetFillAmount: dummyMakerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.marketBuyOrdersAsync(orders, invalidAddress, {
+                makerAssetFillAmount: dummyMakerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -1247,22 +1203,18 @@ describe(ContractName.BalanceThresholdFilter, () => {
             const orders = [validSignedOrder, signedOrderWithBadMakerAddress];
             // Execute transaction
             const dummyMakerAssetFillAmount = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.marketBuyOrdersNoThrowAsync(orders, validTakerAddress, {
-                    makerAssetFillAmount: dummyMakerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721TakerBalanceThresholdWrapper.marketBuyOrdersNoThrowAsync(orders, validTakerAddress, {
+                makerAssetFillAmount: dummyMakerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
             const orders = [validSignedOrder, validSignedOrder2];
             const dummyMakerAssetFillAmount = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.marketBuyOrdersNoThrowAsync(orders, invalidAddress, {
-                    makerAssetFillAmount: dummyMakerAssetFillAmount,
-                }),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
-            );
+            const tx = erc721NonValidBalanceThresholdWrapper.marketBuyOrdersNoThrowAsync(orders, invalidAddress, {
+                makerAssetFillAmount: dummyMakerAssetFillAmount,
+            });
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 
@@ -1405,14 +1357,12 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 makerAddress: invalidAddress,
             });
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.matchOrdersAsync(
-                    validSignedOrder,
-                    signedOrderWithBadMakerAddress,
-                    validTakerAddress,
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721TakerBalanceThresholdWrapper.matchOrdersAsync(
+                validSignedOrder,
+                signedOrderWithBadMakerAddress,
+                validTakerAddress,
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if right maker does not meet the balance threshold', async () => {
             // Create signed order with non-valid maker address
@@ -1421,24 +1371,20 @@ describe(ContractName.BalanceThresholdFilter, () => {
                 makerAddress: invalidAddress,
             });
             // Execute transaction
-            return expectTransactionFailedAsync(
-                erc721TakerBalanceThresholdWrapper.matchOrdersAsync(
-                    signedOrderWithBadMakerAddress,
-                    validSignedOrder,
-                    validTakerAddress,
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721TakerBalanceThresholdWrapper.matchOrdersAsync(
+                signedOrderWithBadMakerAddress,
+                validSignedOrder,
+                validTakerAddress,
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
         it('should revert if taker does not meet the balance threshold', async () => {
-            return expectTransactionFailedAsync(
-                erc721NonValidBalanceThresholdWrapper.matchOrdersAsync(
-                    validSignedOrder,
-                    validSignedOrder,
-                    invalidAddress,
-                ),
-                RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold,
+            const tx = erc721NonValidBalanceThresholdWrapper.matchOrdersAsync(
+                validSignedOrder,
+                validSignedOrder,
+                invalidAddress,
             );
+            return expect(tx).to.revertWith(RevertReason.AtLeastOneAddressDoesNotMeetBalanceThreshold);
         });
     });
 

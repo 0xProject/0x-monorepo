@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
-import "./MixinAuthorizable.sol";
+import "../archive/MixinAuthorizable.sol";
 
 
 contract ERC20Proxy is
@@ -26,9 +26,9 @@ contract ERC20Proxy is
 {
     // Id of this proxy.
     bytes4 constant internal PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
-    
+
     // solhint-disable-next-line payable-fallback
-    function () 
+    function ()
         external
     {
         assembly {
@@ -117,13 +117,13 @@ contract ERC20Proxy is
                 // * The "token address" is offset 32+4=36 bytes into "assetData" (tables 1 & 2).
                 //   [tokenOffset = assetDataOffsetFromHeader + 36 = calldataload(4) + 4 + 36]
                 let token := calldataload(add(calldataload(4), 40))
-                
+
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFrom` selector.
                 // Any trailing data in transferFromSelector will be
                 // overwritten in the next `mstore` call.
                 mstore(0, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // We copy the fields `from`, `to` and `amount` in bulk
                 // from our own calldata to the new calldata.
@@ -147,7 +147,7 @@ contract ERC20Proxy is
                 // If the token does return data, we require that it is a single
                 // nonzero 32 bytes value.
                 // So the transfer succeeded if the call succeeded and either
-                // returned nothing, or returned a non-zero 32 byte value. 
+                // returned nothing, or returned a non-zero 32 byte value.
                 success := and(success, or(
                     iszero(returndatasize),
                     and(
@@ -158,7 +158,7 @@ contract ERC20Proxy is
                 if success {
                     return(0, 0)
                 }
-                
+
                 // Revert with `Error("TRANSFER_FAILED")`
                 mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                 mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)

@@ -22,12 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/AssetProxyOwner.sol",
-        "src/MultiSigWallet.sol",
-        "src/MultiSigWalletWithTimeLock.sol",
-        "test/TestAssetProxyOwner.sol",
-        "test/TestRejectEther.sol"
-    ]
+    }
 }

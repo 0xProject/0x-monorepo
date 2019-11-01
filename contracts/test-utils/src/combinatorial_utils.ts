@@ -36,30 +36,30 @@ export const bytes32Values = [
     '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 ];
 
-export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, R>(
+export function testCombinatoriallyWithReferenceFunc<P0, P1, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1) => Promise<R>,
     testFunc: (p0: P0, p1: P1) => Promise<R>,
     allValues: [P0[], P1[]],
-): Promise<void>;
-export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, R>(
+): void;
+export function testCombinatoriallyWithReferenceFunc<P0, P1, P2, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2) => Promise<R>,
     allValues: [P0[], P1[], P2[]],
-): Promise<void>;
-export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, R>(
+): void;
+export function testCombinatoriallyWithReferenceFunc<P0, P1, P2, P3, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2, p3: P3) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2, p3: P3) => Promise<R>,
     allValues: [P0[], P1[], P2[], P3[]],
-): Promise<void>;
-export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, P4, R>(
+): void;
+export function testCombinatoriallyWithReferenceFunc<P0, P1, P2, P3, P4, R>(
     name: string,
     referenceFunc: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => Promise<R>,
     testFunc: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) => Promise<R>,
     allValues: [P0[], P1[], P2[], P3[], P4[]],
-): Promise<void>;
+): void;
 
 /**
  * Uses combinatorics to test the behavior of a test function by comparing it to
@@ -96,12 +96,12 @@ export async function testCombinatoriallyWithReferenceFuncAsync<P0, P1, P2, P3, 
  * @return A Promise that resolves if the test passes and rejects if the test
  * fails, according to the rules described above.
  */
-export async function testCombinatoriallyWithReferenceFuncAsync(
+export function testCombinatoriallyWithReferenceFunc(
     name: string,
     referenceFuncAsync: (...args: any[]) => Promise<any>,
     testFuncAsync: (...args: any[]) => Promise<any>,
     allValues: any[],
-): Promise<void> {
+): void {
     const testCases = combinatorics.cartesianProduct(...allValues);
     let counter = 0;
     testCases.forEach(async testCase => {

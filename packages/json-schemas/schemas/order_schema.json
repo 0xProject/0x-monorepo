@@ -1,19 +1,54 @@
 {
     "id": "/orderSchema",
     "properties": {
-        "makerAddress": { "$ref": "/addressSchema" },
-        "takerAddress": { "$ref": "/addressSchema" },
-        "makerFee": { "$ref": "/wholeNumberSchema" },
-        "takerFee": { "$ref": "/wholeNumberSchema" },
-        "senderAddress": { "$ref": "/addressSchema" },
-        "makerAssetAmount": { "$ref": "/wholeNumberSchema" },
-        "takerAssetAmount": { "$ref": "/wholeNumberSchema" },
-        "makerAssetData": { "$ref": "/hexSchema" },
-        "takerAssetData": { "$ref": "/hexSchema" },
-        "salt": { "$ref": "/wholeNumberSchema" },
-        "exchangeAddress": { "$ref": "/addressSchema" },
-        "feeRecipientAddress": { "$ref": "/addressSchema" },
-        "expirationTimeSeconds": { "$ref": "/wholeNumberSchema" }
+        "makerAddress": {
+            "$ref": "/addressSchema"
+        },
+        "takerAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "takerFee": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "senderAddress": {
+            "$ref": "/addressSchema"
+        },
+        "makerAssetAmount": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "takerAssetAmount": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "makerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "makerFeeAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "takerFeeAssetData": {
+            "$ref": "/hexSchema"
+        },
+        "salt": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "feeRecipientAddress": {
+            "$ref": "/addressSchema"
+        },
+        "expirationTimeSeconds": {
+            "$ref": "/wholeNumberSchema"
+        },
+        "chainId": {
+            "type": "number"
+        },
+        "exchangeAddress": {
+            "$ref": "/addressSchema"
+        }
     },
     "required": [
         "makerAddress",
@@ -25,10 +60,13 @@
         "takerAssetAmount",
         "makerAssetData",
         "takerAssetData",
+        "makerFeeAssetData",
+        "takerFeeAssetData",
         "salt",
-        "exchangeAddress",
         "feeRecipientAddress",
-        "expirationTimeSeconds"
+        "expirationTimeSeconds",
+        "chainId",
+        "exchangeAddress"
     ],
     "type": "object"
 }

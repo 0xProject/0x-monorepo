@@ -5,21 +5,31 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as LibAbiEncoder from '../generated-artifacts/LibAbiEncoder.json';
-import * as LibAssetProxyErrors from '../generated-artifacts/LibAssetProxyErrors.json';
-import * as LibConstants from '../generated-artifacts/LibConstants.json';
-import * as LibEIP712 from '../generated-artifacts/LibEIP712.json';
+import * as IWallet from '../generated-artifacts/IWallet.json';
+import * as LibEIP712ExchangeDomain from '../generated-artifacts/LibEIP712ExchangeDomain.json';
+import * as LibExchangeRichErrors from '../generated-artifacts/LibExchangeRichErrors.json';
 import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
 import * as LibMath from '../generated-artifacts/LibMath.json';
+import * as LibMathRichErrors from '../generated-artifacts/LibMathRichErrors.json';
 import * as LibOrder from '../generated-artifacts/LibOrder.json';
-import * as TestLibs from '../generated-artifacts/TestLibs.json';
+import * as LibZeroExTransaction from '../generated-artifacts/LibZeroExTransaction.json';
+import * as TestLibEIP712ExchangeDomain from '../generated-artifacts/TestLibEIP712ExchangeDomain.json';
+import * as TestLibFillResults from '../generated-artifacts/TestLibFillResults.json';
+import * as TestLibMath from '../generated-artifacts/TestLibMath.json';
+import * as TestLibOrder from '../generated-artifacts/TestLibOrder.json';
+import * as TestLibZeroExTransaction from '../generated-artifacts/TestLibZeroExTransaction.json';
 export const artifacts = {
-    LibAbiEncoder: LibAbiEncoder as ContractArtifact,
-    LibAssetProxyErrors: LibAssetProxyErrors as ContractArtifact,
-    LibConstants: LibConstants as ContractArtifact,
-    LibEIP712: LibEIP712 as ContractArtifact,
+    IWallet: IWallet as ContractArtifact,
+    LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
+    LibExchangeRichErrors: LibExchangeRichErrors as ContractArtifact,
     LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
+    LibMathRichErrors: LibMathRichErrors as ContractArtifact,
     LibOrder: LibOrder as ContractArtifact,
-    TestLibs: TestLibs as ContractArtifact,
+    LibZeroExTransaction: LibZeroExTransaction as ContractArtifact,
+    TestLibEIP712ExchangeDomain: TestLibEIP712ExchangeDomain as ContractArtifact,
+    TestLibFillResults: TestLibFillResults as ContractArtifact,
+    TestLibMath: TestLibMath as ContractArtifact,
+    TestLibOrder: TestLibOrder as ContractArtifact,
+    TestLibZeroExTransaction: TestLibZeroExTransaction as ContractArtifact,
 };

@@ -1,5 +1,23 @@
 [
     {
+        "version": "4.4.0-beta.0",
+        "changes": [
+            {
+                "note": "Add `getSelector` method to all functions",
+                "pr": 2224
+            }
+        ]
+    },
+    {
+        "version": "4.3.0-beta.0",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "version": "4.2.1",
         "changes": [
             {

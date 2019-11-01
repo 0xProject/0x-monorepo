@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 
 contract IAssetProxyDispatcher {
+
+    // Logs registration of new asset proxy
+    event AssetProxyRegistered(
+        bytes4 id,              // Id of new registered AssetProxy.
+        address assetProxy      // Address of new registered AssetProxy.
+    );
 
     /// @dev Registers an asset proxy to its asset proxy id.
     ///      Once an asset proxy is registered, it cannot be unregistered.

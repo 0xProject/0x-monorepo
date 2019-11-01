@@ -6,4 +6,24 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as Forwarder from '../generated-artifacts/Forwarder.json';
-export const artifacts = { Forwarder: Forwarder as ContractArtifact };
+import * as IAssets from '../generated-artifacts/IAssets.json';
+import * as IForwarder from '../generated-artifacts/IForwarder.json';
+import * as IForwarderCore from '../generated-artifacts/IForwarderCore.json';
+import * as LibConstants from '../generated-artifacts/LibConstants.json';
+import * as LibForwarderRichErrors from '../generated-artifacts/LibForwarderRichErrors.json';
+import * as MixinAssets from '../generated-artifacts/MixinAssets.json';
+import * as MixinExchangeWrapper from '../generated-artifacts/MixinExchangeWrapper.json';
+import * as MixinForwarderCore from '../generated-artifacts/MixinForwarderCore.json';
+import * as MixinWeth from '../generated-artifacts/MixinWeth.json';
+export const artifacts = {
+    Forwarder: Forwarder as ContractArtifact,
+    MixinAssets: MixinAssets as ContractArtifact,
+    MixinExchangeWrapper: MixinExchangeWrapper as ContractArtifact,
+    MixinForwarderCore: MixinForwarderCore as ContractArtifact,
+    MixinWeth: MixinWeth as ContractArtifact,
+    IAssets: IAssets as ContractArtifact,
+    IForwarder: IForwarder as ContractArtifact,
+    IForwarderCore: IForwarderCore as ContractArtifact,
+    LibConstants: LibConstants as ContractArtifact,
+    LibForwarderRichErrors: LibForwarderRichErrors as ContractArtifact,
+};

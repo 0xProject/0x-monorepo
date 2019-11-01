@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 */
 
-pragma solidity ^0.5.5;
-pragma experimental "ABIEncoderV2";
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibEIP712CoordinatorDomain.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinCoordinatorApprovalVerifier.sol";
 import "./MixinCoordinatorCore.sol";
@@ -32,8 +34,12 @@ contract Coordinator is
     MixinCoordinatorApprovalVerifier,
     MixinCoordinatorCore
 {
-    constructor (address _exchange)
+    /// @param exchange Address of the 0x Exchange contract.
+    /// @param chainId Chain ID of the network this contract is deployed on.
+    constructor (address exchange, uint256 chainId)
         public
-        LibConstants(_exchange)
+        LibConstants(exchange)
+        LibEIP712CoordinatorDomain(chainId, address(0))
+        LibEIP712ExchangeDomain(chainId, exchange)
     {}
 }

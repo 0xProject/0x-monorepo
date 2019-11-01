@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,21 +16,48 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
+
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract ITransactions {
 
-    /// @dev Executes an exchange method call in the context of signer.
-    /// @param salt Arbitrary number to ensure uniqueness of transaction hash.
-    /// @param signerAddress Address of transaction signer.
-    /// @param data AbiV2 encoded calldata.
-    /// @param signature Proof of signer transaction by signer.
+    // TransactionExecution event is emitted when a ZeroExTransaction is executed.
+    event TransactionExecution(bytes32 indexed transactionHash);
+
+    /// @dev Executes an Exchange method call in the context of signer.
+    /// @param transaction 0x transaction containing salt, signerAddress, and data.
+    /// @param signature Proof that transaction has been signed by signer.
+    /// @return ABI encoded return data of the underlying Exchange function call.
     function executeTransaction(
-        uint256 salt,
-        address signerAddress,
-        bytes calldata data,
-        bytes calldata signature
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes memory signature
     )
-        external;
+        public
+        payable
+        returns (bytes memory);
+
+    /// @dev Executes a batch of Exchange method calls in the context of signer(s).
+    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param signatures Array of proofs that transactions have been signed by signer(s).
+    /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
+    function batchExecuteTransactions(
+        LibZeroExTransaction.ZeroExTransaction[] memory transactions,
+        bytes[] memory signatures
+    )
+        public
+        payable
+        returns (bytes[] memory);
+
+    /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
+    ///      If calling a fill function, this address will represent the taker.
+    ///      If calling a cancel function, this address will represent the maker.
+    /// @return Signer of 0x transaction if entry point is `executeTransaction`.
+    ///         `msg.sender` if entry point is any other function.
+    function _getCurrentContextAddress()
+        internal
+        view
+        returns (address);
 }

@@ -1,5 +1,48 @@
 [
     {
+        "version": "4.6.0-beta.1",
+        "changes": [
+            {
+                "note": "Consolidated FixedMathRevertErrors",
+                "pr": 2255
+            },
+            {
+                "note": "Changed provider_utils.providerUtils.getChainIdAsync() to invoke RPC method eth_chainId rather than net_version",
+                "pr": 2270
+            }
+        ]
+    },
+    {
+        "version": "4.6.0-beta.0",
+        "changes": [
+            {
+                "note": "Allow for array types in `RevertError`s.",
+                "pr": 2075
+            },
+            {
+                "note": "Have Ganache `Error` -> `RevertError` coercion fail if it can't look up the selector.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `LibFixedMath` `RevertError` types.",
+                "pr": 2109
+            },
+            {
+                "note": "Add `RawRevertError` `RevertError` type.",
+                "pr": 2109
+            },
+            {
+                "note": "Make `RevertError.decode()` optionally return a `RawRevertError` if the selector is unknown.",
+                "pr": 2109
+            },
+            {
+                "note": "Rename `length` field of `AuthorizableRevertErrors.IndexOutOfBoundsError` type to `len`.",
+                "pr": 2109
+            }
+        ],
+        "timestamp": 1570135330
+    },
+    {
         "timestamp": 1568744790,
         "version": "4.5.2",
         "changes": [
@@ -20,6 +63,10 @@
     {
         "version": "4.5.0",
         "changes": [
+            {
+                "note": "Add `SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero`",
+                "pr": 2031
+            },
             {
                 "note": "Updated to include `strictDecode` for decoding method arguments",
                 "pr": 2018
@@ -55,6 +102,30 @@
             {
                 "note": "Add function deleteNestedProperty",
                 "pr": 1842
+            },
+            {
+                "note": "Add `getChainIdAsync()` to `providerUtils`",
+                "pr": 1742
+            },
+            {
+                "note": "More robust normalization of `uint256` types in `sign_typed_data_utils`",
+                "pr": 1742
+            },
+            {
+                "note": "Add `RevertError`, `StringRevertError`, `AnyRevertError` types and associated utilities",
+                "pr": 1761
+            },
+            {
+                "note": "Update `RevertError` construction to produce a readable `Error` message",
+                "pr": 1819
+            },
+            {
+                "note": "Add `Error` -> `RevertError` functions",
+                "pr": 1819
+            },
+            {
+                "note": "Add `toStringTag` symbol to `RevertError`",
+                "pr": 1885
             }
         ],
         "timestamp": 1563006338

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -26,7 +26,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 contract IWrapperFunctions {
 
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
-    /// @param order LibOrder.Order struct containing order specifications.
+    /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signature Proof that order has been created by maker.
     function fillOrKillOrder(
@@ -35,77 +35,54 @@ contract IWrapperFunctions {
         bytes memory signature
     )
         public
+        payable
         returns (LibFillResults.FillResults memory fillResults);
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
-    ///      Returns false if the transaction would otherwise revert.
-    /// @param order LibOrder.Order struct containing order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signature Proof that order has been created by maker.
-    /// @return Amounts filled and fees paid by maker and taker.
-    function fillOrderNoThrow(
-        LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
-    )
-        public
-        returns (LibFillResults.FillResults memory fillResults);
-
-    /// @dev Synchronously executes multiple calls of fillOrder.
+    /// @dev Executes multiple calls of fillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        payable
+        returns (LibFillResults.FillResults[] memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrKill.
+    /// @dev Executes multiple calls of fillOrKillOrder.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrKillOrders(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        payable
+        returns (LibFillResults.FillResults[] memory fillResults);
 
-    /// @dev Fills an order with specified parameters and ECDSA signature.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrder. If any fill reverts, the error is caught and ignored.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell in orders.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Array of amounts filled and fees paid by makers and taker.
     function batchFillOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256[] memory takerAssetFillAmounts,
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        payable
+        returns (LibFillResults.FillResults[] memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    /// @param orders Array of order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrders(
-        LibOrder.Order[] memory orders,
-        uint256 takerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        returns (LibFillResults.FillResults memory totalFillResults);
-
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+    ///      If any fill reverts, the error is caught and ignored.
+    ///      NOTE: This function does not enforce that the takerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -116,23 +93,12 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        payable
+        returns (LibFillResults.FillResults memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
-    /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
-    /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrders(
-        LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        returns (LibFillResults.FillResults memory totalFillResults);
-
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+    ///      If any fill reverts, the error is caught and ignored.
+    ///      NOTE: This function does not enforce that the makerAsset is the same for each order.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -143,18 +109,42 @@ contract IWrapperFunctions {
         bytes[] memory signatures
     )
         public
-        returns (LibFillResults.FillResults memory totalFillResults);
+        payable
+        returns (LibFillResults.FillResults memory fillResults);
 
-    /// @dev Synchronously cancels multiple orders in a single transaction.
+    /// @dev Calls marketSellOrdersNoThrow then reverts if < takerAssetFillAmount has been sold.
+    ///      NOTE: This function does not enforce that the takerAsset is the same for each order.
+    /// @param orders Array of order specifications.
+    /// @param takerAssetFillAmount Minimum amount of takerAsset to sell.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketSellOrdersFillOrKill(
+        LibOrder.Order[] memory orders,
+        uint256 takerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        payable
+        returns (LibFillResults.FillResults memory fillResults);
+
+    /// @dev Calls marketBuyOrdersNoThrow then reverts if < makerAssetFillAmount has been bought.
+    ///      NOTE: This function does not enforce that the makerAsset is the same for each order.
+    /// @param orders Array of order specifications.
+    /// @param makerAssetFillAmount Minimum amount of makerAsset to buy.
+    /// @param signatures Proofs that orders have been signed by makers.
+    /// @return Amounts filled and fees paid by makers and taker.
+    function marketBuyOrdersFillOrKill(
+        LibOrder.Order[] memory orders,
+        uint256 makerAssetFillAmount,
+        bytes[] memory signatures
+    )
+        public
+        payable
+        returns (LibFillResults.FillResults memory fillResults);
+
+    /// @dev Executes multiple calls of cancelOrder.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
-        public;
-
-    /// @dev Fetches information for all passed in orders
-    /// @param orders Array of order specifications.
-    /// @return Array of OrderInfo instances that correspond to each order.
-    function getOrdersInfo(LibOrder.Order[] memory orders)
         public
-        view
-        returns (LibOrder.OrderInfo[] memory);
+        payable;
 }
