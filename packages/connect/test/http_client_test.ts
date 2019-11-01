@@ -53,9 +53,9 @@ describe('HttpClient', () => {
                 assetDataA: assetData,
                 page: 3,
                 perPage: 50,
-                networkdId: 42,
+                networkId: 42,
             };
-            const urlWithQuery = `${url}?assetDataA=${assetData}&networkdId=42&page=3&perPage=50`;
+            const urlWithQuery = `${url}?assetDataA=${assetData}&networkId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, assetDataPairsResponseJSON);
             const assetDataPairs = await relayerClient.getAssetPairsAsync(assetPairsRequestOpts);
             expect(assetDataPairs).to.be.deep.equal(assetDataPairsResponse);
@@ -78,9 +78,9 @@ describe('HttpClient', () => {
                 assetDataAddress,
                 page: 3,
                 perPage: 50,
-                networkdId: 42,
+                networkId: 42,
             };
-            const urlWithQuery = `${url}?assetDataAddress=${assetDataAddress}&networkdId=42&page=3&perPage=50`;
+            const urlWithQuery = `${url}?assetDataAddress=${assetDataAddress}&networkId=42&page=3&perPage=50`;
             fetchMock.get(urlWithQuery, ordersResponseJSON);
             const orders = await relayerClient.getOrdersAsync(ordersRequest);
             expect(orders).to.be.deep.equal(ordersResponse);

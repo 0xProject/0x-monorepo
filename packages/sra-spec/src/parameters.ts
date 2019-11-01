@@ -22,7 +22,7 @@ export const paginationParameters: ParameterObject[] = [
     },
 ];
 
-export const networkdIdParameter: ParameterObject = {
+export const networkIdParameter: ParameterObject = {
     name: 'networkId',
     in: 'query',
     description: 'The id of the Ethereum network',
@@ -35,5 +35,5 @@ export const networkdIdParameter: ParameterObject = {
 
 export const generateParameters = (parameters: ParameterObject[], isPaginated: boolean = false): ParameterObject[] => {
     const optionalParameters = isPaginated ? paginationParameters : [];
-    return [...parameters, networkdIdParameter, ...optionalParameters];
+    return [...parameters, networkIdParameter, ...optionalParameters];
 };
