@@ -111,6 +111,7 @@ describe.skip('CoordinatorWrapper', () => {
         const coordinatorServerConfigs = {
             HTTP_PORT: 3000, // Only used in default instantiation in 0x-coordinator-server/server.js; not used here
             NETWORK_ID_TO_SETTINGS: {
+                // TODO: change to CHAIN_ID_TO_SETTINGS when @0x/coordinator-server is ready
                 [config.networkId]: {
                     FEE_RECIPIENTS: [
                         {
@@ -138,6 +139,7 @@ describe.skip('CoordinatorWrapper', () => {
                 },
             },
             NETWORK_ID_TO_CONTRACT_ADDRESSES: {
+                // TODO: change to CHAIN_ID_TO_CONTRACT_ADDRESSES when @0x/coordinator-server is ready
                 [config.networkId]: contractAddresses,
             },
             // Optional selective delay on fill requests
