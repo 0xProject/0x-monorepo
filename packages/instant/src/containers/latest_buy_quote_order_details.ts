@@ -22,6 +22,7 @@ const mapStateToProps = (state: State, _ownProps: LatestBuyQuoteOrderDetailsProp
     isLoading: state.quoteRequestState === AsyncProcessState.Pending,
     assetName: assetUtils.bestNameForAsset(state.selectedAsset),
     baseCurrency: state.baseCurrency,
+    account: state.providerState.account,
 });
 
 interface ConnectedDispatch extends Pick<OrderDetailsProps, DispatchProperties> {}
