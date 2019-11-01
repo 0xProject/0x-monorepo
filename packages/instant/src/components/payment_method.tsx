@@ -1,19 +1,19 @@
 import * as React from 'react';
 
 import PhoneIconSvg from '../assets/icons/phone.svg';
-import { ColorOption } from '../style/theme';
-import { Account, AccountState, Network, ProviderType } from '../types';
-import { envUtil } from '../util/env';
+import {ColorOption} from '../style/theme';
+import {Account, AccountState, Network, ProviderType} from '../types';
+import {envUtil} from '../util/env';
 
-import { CoinbaseWalletLogo } from './coinbase_wallet_logo';
-import { MetaMaskLogo } from './meta_mask_logo';
-import { PaymentMethodDropdown } from './payment_method_dropdown';
-import { SectionHeader } from './section_header';
-import { Circle } from './ui/circle';
-import { Container } from './ui/container';
-import { Flex } from './ui/flex';
-import { Text } from './ui/text';
-import { WalletPrompt } from './wallet_prompt';
+import {CoinbaseWalletLogo} from './coinbase_wallet_logo';
+import {MetaMaskLogo} from './meta_mask_logo';
+import {PaymentMethodDropdown} from './payment_method_dropdown';
+import {SectionHeader} from './section_header';
+import {Circle} from './ui/circle';
+import {Container} from './ui/container';
+import {Flex} from './ui/flex';
+import {Text} from './ui/text';
+import {WalletPrompt} from './wallet_prompt';
 
 export interface PaymentMethodProps {
     account: Account;
@@ -25,8 +25,9 @@ export interface PaymentMethodProps {
 
 export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
     public render(): React.ReactNode {
+        const marginBottom = this.props.account.state !== AccountState.Ready ? '77px' : null;
         return (
-            <Container width="100%" height="100%" padding="20px 20px 0px 20px">
+            <Container width="100%" height="100%" padding="20px 20px 0px 20px" marginBottom={marginBottom}>
                 <Container marginBottom="12px">
                     <Flex justify="space-between">
                         <SectionHeader>{this._renderTitleText()}</SectionHeader>
@@ -86,6 +87,8 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                             onClick={onUnlockGenericWallet}
                             display="flex"
                             alignText={'flex-start'}
+                            marginLeft="16px"
+                            fontWeight="normal"
                             image={
                                 <Container position="relative" display="flex">
                                     <MetaMaskLogo width={23} height={22} />
@@ -98,6 +101,8 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                         <WalletPrompt
                             onClick={onUnlockFormatic}
                             marginTop="5px"
+                            marginLeft="19px"
+                            fontWeight="normal"
                             image={
                                 <Container position="relative" display="flex">
                                     <PhoneIconSvg />
@@ -113,12 +118,14 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
             case AccountState.None:
                 return (
                     <Flex direction="column" justify="space-between" height="100%">
-                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors}>
+                        <WalletPrompt onClick={this.props.onInstallWalletClick} image={logo} {...colors} fontWeight="normal" marginLeft="19px">
                             {isMobile ? 'Install Coinbase Wallet' : 'Install MetaMask'}
                         </WalletPrompt>
                         <WalletPrompt
                             onClick={onUnlockFormatic}
                             marginTop="5px"
+                            fontWeight="normal"
+                            marginLeft="19px"
                             image={
                                 <Container position="relative" display="flex">
                                     <PhoneIconSvg />
