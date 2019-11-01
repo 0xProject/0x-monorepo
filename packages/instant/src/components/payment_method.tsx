@@ -88,7 +88,7 @@ export class PaymentMethod extends React.PureComponent<PaymentMethodProps> {
                             alignText={'flex-start'}
                             image={
                                 <Container position="relative" display="flex">
-                                    <MetaMaskLogo width={16} height={19} />
+                                    <MetaMaskLogo width={23} height={22} />
                                 </Container>
                             }
                             {...colors}
