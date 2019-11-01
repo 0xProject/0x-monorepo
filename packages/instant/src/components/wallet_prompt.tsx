@@ -5,7 +5,6 @@ import { ColorOption } from '../style/theme';
 
 import { Container } from './ui/container';
 import { Flex } from './ui/flex';
-import {Icon} from './ui/icon';
 import { Text } from './ui/text';
 
 export interface WalletPromptProps {
@@ -16,6 +15,8 @@ export interface WalletPromptProps {
     marginTop?: string;
     display?: string;
     alignText?: string;
+    marginLeft?: string;
+    fontWeight?: string;
 }
 
 export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
@@ -27,6 +28,8 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
     marginTop,
     display,
     alignText,
+    marginLeft = '10px',
+    fontWeight = '500',
 }) => (
     <Container
         padding="10px"
@@ -43,8 +46,8 @@ export const WalletPrompt: React.StatelessComponent<WalletPromptProps> = ({
     >
         <Flex width="100%">
             {image}
-            <Container marginLeft="10px" display={display} width="100%" alignSelf={alignText}>
-                <Text fontSize="16px" fontColor={primaryColor} fontWeight="500">
+            <Container marginLeft={marginLeft} display={display} width="100%" alignSelf={alignText}>
+                <Text fontSize="16px" fontColor={primaryColor} fontWeight={fontWeight}>
                     {children}
                 </Text>
             </Container>
