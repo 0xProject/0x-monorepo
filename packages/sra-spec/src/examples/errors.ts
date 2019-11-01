@@ -3,9 +3,9 @@ export const validationError = {
     reason: 'Validation failed',
     validationErrors: [
         {
-            field: 'networkId',
+            field: 'chainId',
             code: 1006,
-            reason: 'Network id 42 is not supported',
+            reason: 'Chain id 42 is not supported',
         },
     ],
 };

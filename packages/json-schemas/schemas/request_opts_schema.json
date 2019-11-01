@@ -2,6 +2,6 @@
     "id": "/RequestOptsSchema",
     "type": "object",
     "properties": {
-        "networkId": { "type": "number" }
+        "chainId": { "type": "number" }
     }
 }

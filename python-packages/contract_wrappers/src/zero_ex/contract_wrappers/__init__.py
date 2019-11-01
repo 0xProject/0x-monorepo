@@ -48,14 +48,14 @@ Contract Addresses
 
 The `0x-contract-addresses`:code: package (which is used by
 `0x-contract-wrappers`:code: and thus gets installed along with it) provides
-the addresses of the 0x contracts on each network, including those that come
+the addresses of the 0x contracts on each chain, including those that come
 pre-deployed deployed in the `0xorg/ganache-cli`:code: docker image.  Let's
 capture the addresses we'll use throughout the examples below:
 
->>> from zero_ex.contract_addresses import network_to_addresses, NetworkId
->>> weth_address     = network_to_addresses(NetworkId.GANACHE).ether_token
->>> zrx_address      = network_to_addresses(NetworkId.GANACHE).zrx_token
->>> exchange_address = network_to_addresses(NetworkId.GANACHE).exchange
+>>> from zero_ex.contract_addresses import chain_to_addresses, ChainId
+>>> weth_address     = chain_to_addresses(ChainId.GANACHE).ether_token
+>>> zrx_address      = chain_to_addresses(ChainId.GANACHE).zrx_token
+>>> exchange_address = chain_to_addresses(ChainId.GANACHE).exchange
 
 Wrapping ETH
 ------------
@@ -93,14 +93,14 @@ balance:
 >>> from zero_ex.contract_wrappers.erc20_token import ERC20Token
 >>> zrx_token = ERC20Token(
 ...     web3_or_provider=ganache,
-...     contract_address=network_to_addresses(NetworkId.GANACHE).zrx_token,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).zrx_token,
 ... )
 >>> weth_token = ERC20Token(
 ...     web3_or_provider=ganache,
-...     contract_address=network_to_addresses(NetworkId.GANACHE).ether_token,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).ether_token,
 ... )
 
->>> erc20_proxy_addr = network_to_addresses(NetworkId.GANACHE).erc20_proxy
+>>> erc20_proxy_addr = chain_to_addresses(ChainId.GANACHE).erc20_proxy
 
 >>> tx = zrx_token.approve.send_transaction(
 ...     erc20_proxy_addr,
@@ -166,7 +166,7 @@ Now we'll have our Taker fill the order.
 >>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> exchange = Exchange(
 ...     web3_or_provider=ganache,
-...     contract_address=network_to_addresses(NetworkId.GANACHE).exchange,
+...     contract_address=chain_to_addresses(ChainId.GANACHE).exchange,
 ... )
 
 But before filling an order, one may wish to check that it's actually fillable:

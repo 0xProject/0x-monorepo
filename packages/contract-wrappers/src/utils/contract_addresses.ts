@@ -1,15 +1,15 @@
-import { ContractAddresses, getContractAddressesForNetworkOrThrow, NetworkId } from '@0x/contract-addresses';
+import { ChainId, ContractAddresses, getContractAddressesForChainOrThrow } from '@0x/contract-addresses';
 import * as _ from 'lodash';
 
 /**
- * Returns the default contract addresses for the given networkId or throws with
- * a context-specific error message if the networkId is not recognized.
+ * Returns the default contract addresses for the given chainId or throws with
+ * a context-specific error message if the chainId is not recognized.
  */
-export function _getDefaultContractAddresses(networkId: number): ContractAddresses {
-    if (!(networkId in NetworkId)) {
+export function _getDefaultContractAddresses(chainId: number): ContractAddresses {
+    if (!(chainId in ChainId)) {
         throw new Error(
-            `No default contract addresses found for the given network id (${networkId}). If you want to use ContractWrappers on this network, you must manually pass in the contract address(es) to the constructor.`,
+            `No default contract addresses found for the given chain id (${chainId}). If you want to use ContractWrappers on this chain, you must manually pass in the contract address(es) to the constructor.`,
         );
     }
-    return getContractAddressesForNetworkOrThrow(networkId);
+    return getContractAddressesForChainOrThrow(chainId);
 }

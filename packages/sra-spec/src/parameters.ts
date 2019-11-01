@@ -22,10 +22,10 @@ export const paginationParameters: ParameterObject[] = [
     },
 ];
 
-export const networkIdParameter: ParameterObject = {
-    name: 'networkId',
+export const chainIdParameter: ParameterObject = {
+    name: 'chainId',
     in: 'query',
-    description: 'The id of the Ethereum network',
+    description: 'The id of the Ethereum chain',
     example: 42,
     schema: {
         type: 'number',
@@ -35,5 +35,5 @@ export const networkIdParameter: ParameterObject = {
 
 export const generateParameters = (parameters: ParameterObject[], isPaginated: boolean = false): ParameterObject[] => {
     const optionalParameters = isPaginated ? paginationParameters : [];
-    return [...parameters, networkIdParameter, ...optionalParameters];
+    return [...parameters, chainIdParameter, ...optionalParameters];
 };

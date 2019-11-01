@@ -35,7 +35,7 @@ interface OrdersEntry {
 export class AssetBuyer {
     public readonly provider: ZeroExProvider;
     public readonly orderProvider: OrderProvider;
-    public readonly networkId: number;
+    public readonly chainId: number;
     public readonly orderRefreshIntervalMs: number;
     public readonly expiryBufferSeconds: number;
     private readonly _contractWrappers: ContractWrappers;
@@ -76,8 +76,8 @@ export class AssetBuyer {
     ): AssetBuyer {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
-        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
+        const chainId = options.chainId || constants.DEFAULT_ASSET_BUYER_OPTS.chainId;
+        const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, chainId);
         const assetBuyer = new AssetBuyer(provider, orderProvider, options);
         return assetBuyer;
     }
@@ -94,23 +94,23 @@ export class AssetBuyer {
         orderProvider: OrderProvider,
         options: Partial<AssetBuyerOpts> = {},
     ) {
-        const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
+        const { chainId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
             constants.DEFAULT_ASSET_BUYER_OPTS,
             options,
         );
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isValidOrderProvider('orderProvider', orderProvider);
-        assert.isNumber('networkId', networkId);
+        assert.isNumber('chainId', chainId);
         assert.isNumber('orderRefreshIntervalMs', orderRefreshIntervalMs);
         assert.isNumber('expiryBufferSeconds', expiryBufferSeconds);
         this.provider = provider;
         this.orderProvider = orderProvider;
-        this.networkId = networkId;
+        this.chainId = chainId;
         this.orderRefreshIntervalMs = orderRefreshIntervalMs;
         this.expiryBufferSeconds = expiryBufferSeconds;
         this._contractWrappers = new ContractWrappers(this.provider, {
-            networkId,
+            chainId,
         });
     }
     /**
@@ -331,7 +331,7 @@ export class AssetBuyer {
         const orderProviderRequest = {
             makerAssetData: assetData,
             takerAssetData: etherTokenAssetData,
-            networkId: this.networkId,
+            chainId: this.chainId,
         };
         const request = orderProviderRequest;
         // get provider response
@@ -357,14 +357,14 @@ export class AssetBuyer {
     }
     /**
      * Get the assetData that represents the WETH token.
-     * Will throw if WETH does not exist for the current network.
+     * Will throw if WETH does not exist for the current chain.
      */
     private _getEtherTokenAssetDataOrThrow(): string {
         return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken);
     }
     /**
      * Get the assetData that represents the ZRX token.
-     * Will throw if ZRX does not exist for the current network.
+     * Will throw if ZRX does not exist for the current chain.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
         return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);

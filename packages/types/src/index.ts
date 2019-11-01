@@ -3,8 +3,8 @@
 import { BigNumber } from 'bignumber.js';
 import {
     ContractAbi,
+    ContractChains,
     ContractEventArg,
-    ContractNetworks,
     DecodedLogArgs,
     DevdocOutput,
     LogWithDecodedArgs,
@@ -103,8 +103,8 @@ export type ArtifactContractName = 'ZRX' | 'TokenTransferProxy' | 'TokenRegistry
 export interface Artifact {
     contract_name: ArtifactContractName;
     abi: ContractAbi;
-    networks: {
-        [networkId: number]: {
+    chains: {
+        [chainId: number]: {
             address: string;
         };
     };
@@ -484,7 +484,7 @@ export interface OrderConfigResponse {
 export type FeeRecipientsResponse = PaginatedCollection<string>;
 
 export interface RequestOpts {
-    networkId?: number;
+    chainId?: number;
 }
 
 export interface PagedRequestOpts {
@@ -882,7 +882,7 @@ export interface SimpleContractArtifact {
     schemaVersion: string;
     contractName: string;
     compilerOutput: SimpleStandardContractOutput;
-    networks: ContractNetworks;
+    chains: ContractChains;
 }
 
 export interface SimpleStandardContractOutput {

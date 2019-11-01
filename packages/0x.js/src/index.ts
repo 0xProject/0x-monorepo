@@ -1,4 +1,4 @@
-export { getContractAddressesForNetworkOrThrow, NetworkId, ContractAddresses } from '@0x/contract-addresses';
+export { getContractAddressesForChainOrThrow, ChainId, ContractAddresses } from '@0x/contract-addresses';
 
 export {
     assetDataUtils,
@@ -124,11 +124,11 @@ export {
     BlockParam,
     CompilerOpts,
     StandardContractOutput,
-    ContractNetworks,
+    ContractChains,
     TxDataPayable,
     BlockParamLiteral,
     CompilerSettings,
-    ContractNetworkData,
+    ContractChainData,
     DevdocOutput,
     EvmOutput,
     CompilerSettingsMetadata,

@@ -4,7 +4,7 @@ export interface FunctionInfo {
     functionSignature: string;
     contractName?: string;
     contractAddress?: string;
-    networkId?: number;
+    chainId?: number;
     abiEncoder?: AbiEncoder.Method;
 }
 

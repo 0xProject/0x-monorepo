@@ -4,7 +4,7 @@
     "properties": {
         "makerAssetProxyId": { "$ref": "/hexSchema" },
         "takerAssetProxyId": { "$ref": "/hexSchema" },
-        "networkId": { "type": "number" },
+        "chainId": { "type": "number" },
         "makerAssetAddress": { "$ref": "/addressSchema" },
         "takerAssetAddress": { "$ref": "/addressSchema" },
         "makerAssetData": { "$ref": "/hexSchema" },

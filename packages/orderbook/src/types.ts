@@ -26,8 +26,8 @@ export interface SRAWebsocketOrderProviderOpts {
     httpEndpoint: string;
     // The websocket endpoint to the SRA service, e.g wss://ws.sra.0x.org/
     websocketEndpoint: string;
-    // The network Id
-    networkId?: number;
+    // The chain Id
+    chainId?: number;
 }
 
 /**
@@ -40,8 +40,8 @@ export interface SRAPollingOrderProviderOpts {
     pollingIntervalMs: number;
     // The amount of records to request per request to the SRA endpoint
     perPage?: number;
-    // The network Id
-    networkId?: number;
+    // The chain Id
+    chainId?: number;
 }
 
 /**

@@ -10,7 +10,7 @@ Python zero_ex.contract_addresses
 .. automodule:: zero_ex.contract_addresses
    :no-members:
 
-.. autoclass:: zero_ex.contract_addresses.NetworkId
+.. autoclass:: zero_ex.contract_addresses.ChainId
    :members:
    :undoc-members:
    :show-inheritance:
@@ -19,8 +19,8 @@ Python zero_ex.contract_addresses
    :members:
    :show-inheritance:
 
-.. autodata:: zero_ex.contract_addresses.network_to_addresses
-   :annotation: : Dict[NetworkId, ContractAddresses]
+.. autodata:: zero_ex.contract_addresses.chain_to_addresses
+   :annotation: : Dict[ChainId, ContractAddresses]
 
 Indices and tables
 ==================
